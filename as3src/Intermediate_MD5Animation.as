@@ -295,7 +295,7 @@ package
 			whiteLight.castsShadows = true;
 			whiteLight.ambient = 1;
 			whiteLight.ambientColor = 0x303040;
-			whiteLight.shadowMapper = new NearDirectionalShadowMapper(.2);
+			//whiteLight.shadowMapper = new NearDirectionalShadowMapper(.2);
 			scene.addChild(whiteLight);
 
 			lightPicker = new StaticLightPicker([redLight, blueLight, whiteLight]);
