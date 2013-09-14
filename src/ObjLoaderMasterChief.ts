@@ -3,7 +3,7 @@
 module examples
 {
 
-    export class ObjLoaderMasterChief//extends away.events.EventDispatcher
+    export class ObjLoaderMasterChief
     {
 
         private token           : away.loaders.AssetLoaderToken;
