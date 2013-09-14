@@ -1,11 +1,5 @@
 ///<reference path="Away3D/Away3D.next.d.ts" />
 
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
-
 module examples
 {
 
