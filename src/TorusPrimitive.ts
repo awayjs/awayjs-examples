@@ -95,7 +95,6 @@ module examples
 		public render (dt:number = null):void
 		{
 			this._mesh.rotationY += 1;
-			this._mesh.rotationX += 1;
 			this._view.render ();
 		}
 
