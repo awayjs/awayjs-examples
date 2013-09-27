@@ -17,12 +17,20 @@ module examples
 
 		constructor ()
 		{
-			this._view = new away.containers.View3D ();// Create the Away3D View
-			this._view.backgroundColor = 0x000000;// Change the background color to black
+
+			this.initView();
 			this.loadResources (); // Start loading the resources
 			window.onresize = () => this.resize (); // Add event handler for window resize
 		}
 
+		/**
+		 *
+		 */
+		private initView()
+		{
+			this._view = new away.containers.View3D ();// Create the Away3D View
+			this._view.backgroundColor = 0x000000;// Change the background color to black
+		}
 		/**
 		 *
 		 */

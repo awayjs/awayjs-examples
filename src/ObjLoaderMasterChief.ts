@@ -12,33 +12,28 @@ module examples
 		private mat:away.materials.TextureMaterial;
 		private terrainMaterial:away.materials.TextureMaterial;
 		private light:away.lights.DirectionalLight;
-
-		private spartan:away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D ();
+		private spartan:away.containers.ObjectContainer3D
 		private terrain:away.entities.Mesh;
+		private spartanFlag:boolean = false;
+		private terrainObjFlag:boolean = false;
 
 		constructor ()
 		{
 
-			this.view = new away.containers.View3D ();
-			this.view.camera.z = -50;
-			this.view.camera.y = 20;
-			this.view.camera.lens.near = 0.1;
-			this.view.backgroundColor = 0xCEC8C6;
+			this.initView ();
+			this.initLights ();
+			this.initSpartanContainer ();
+			this.loadAssets ();
 
-			this.raf = new away.utils.RequestAnimationFrame (this.render, this);
+			window.onresize = () => this.resize ();
 
-			this.light = new away.lights.DirectionalLight ();
-			this.light.color = 0xc1582d;
-			this.light.direction = new away.geom.Vector3D (1, 0, 0);
-			this.light.ambient = 0.4;
-			this.light.ambientColor = 0x85b2cd;
-			this.light.diffuse = 2.8;
-			this.light.specular = 1.8;
+		}
 
-			this.spartan.scale (.25);
-			this.spartan.y = 0;
-
-			this.view.scene.addChild (this.light);
+		/**
+		 *
+		 */
+		private loadAssets ():void
+		{
 
 			away.library.AssetLibrary.enableParser (away.loaders.OBJParser);
 
@@ -58,11 +53,58 @@ module examples
 			this.token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
 			this.token.addEventListener (away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
 
-			window.onresize = () => this.resize ();
-
 		}
 
-		private render ()
+		/**
+		 *
+		 */
+		private startRAF ():void
+		{
+			this.raf = new away.utils.RequestAnimationFrame (this.render, this);
+			this.raf.start (); // Start the frame loop ( request animation frame )
+		}
+
+		/**
+		 *
+		 */
+		private initSpartanContainer ():void
+		{
+			this.spartan = new away.containers.ObjectContainer3D ();
+			this.spartan.scale (.25);
+			this.spartan.y = 0;
+		}
+
+		/**
+		 *
+		 */
+		private initView ():void
+		{
+			this.view = new away.containers.View3D ();
+			this.view.camera.z = -50;
+			this.view.camera.y = 20;
+			this.view.camera.lens.near = 0.1;
+			this.view.backgroundColor = 0xCEC8C6;
+		}
+
+		/**
+		 *
+		 */
+		private initLights ():void
+		{
+			this.light = new away.lights.DirectionalLight ();
+			this.light.color = 0xc1582d;
+			this.light.direction = new away.geom.Vector3D (1, 0, 0);
+			this.light.ambient = 0.4;
+			this.light.ambientColor = 0x85b2cd;
+			this.light.diffuse = 2.8;
+			this.light.specular = 1.8;
+			this.view.scene.addChild (this.light);
+		}
+
+		/**
+		 *
+		 */
+		private render ():void
 		{
 			if (this.terrain)
 			{
@@ -73,23 +115,24 @@ module examples
 			this.view.render ();
 		}
 
-		public onAssetComplete (e:away.events.AssetEvent)
+		/**
+		 *
+		 * @param e
+		 */
+		public onAssetComplete (e:away.events.AssetEvent):void
 		{
 
 		}
 
-		private spartanFlag:boolean = false;
-		private terrainObjFlag:boolean = false;
-
-		public onResourceComplete (e:away.events.LoaderEvent)
+		/**
+		 *
+		 * @param e
+		 */
+		public onResourceComplete (e:away.events.LoaderEvent):void
 		{
 
 			var loader:away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
 			var l:number = loader.baseDependency.assets.length//dependencies.length;
-
-			console.log ('------------------------------------------------------------------------------');
-			console.log ('away.events.LoaderEvent.RESOURCE_COMPLETE', e, l, loader);
-			console.log ('------------------------------------------------------------------------------');
 
 			for (var c:number = 0; c < l; c++)
 			{
@@ -107,21 +150,17 @@ module examples
 							var mesh:away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset (d.name);
 
 							this.spartan.addChild (mesh);
-							this.raf.start ();
 							this.spartanFlag = true;
-
 							this.meshes.push (mesh);
 
 						}
 
 						if (e.url == 'assets/terrain.obj')
 						{
-
 							this.terrainObjFlag = true;
 							this.terrain = <away.entities.Mesh> away.library.AssetLibrary.getAsset (d.name);
 							this.terrain.y = 98;
 							this.view.scene.addChild (this.terrain);
-
 						}
 
 						break;
@@ -130,24 +169,20 @@ module examples
 
 						if (e.url == 'assets/masterchief_base.png')
 						{
-
 							var lightPicker:away.materials.StaticLightPicker = new away.materials.StaticLightPicker ([this.light]);
 							var tx:away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset (d.name);
 
 							this.mat = new away.materials.TextureMaterial (tx, true, true, false);
 							this.mat.lightPicker = lightPicker;
-
 						}
 
 						if (e.url == 'assets/stone_tx.jpg')
 						{
-
 							var lp:away.materials.StaticLightPicker = new away.materials.StaticLightPicker ([this.light]);
 							var txT:away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset (d.name);
 
 							this.terrainMaterial = new away.materials.TextureMaterial (txT, true, true, false);
 							this.terrainMaterial.lightPicker = lp;
-
 						}
 
 						break;
@@ -168,6 +203,9 @@ module examples
 				{
 					this.meshes[c].material = this.mat;
 				}
+
+				this.startRAF ();
+
 			}
 
 			this.view.scene.addChild (this.spartan);
@@ -175,11 +213,13 @@ module examples
 
 		}
 
-		public resize ()
+		/**
+		 *
+		 */
+		public resize ():void
 		{
 			this.view.y = 0;
 			this.view.x = 0;
-
 			this.view.width = window.innerWidth;
 			this.view.height = window.innerHeight;
 		}

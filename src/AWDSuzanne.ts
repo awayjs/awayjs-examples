@@ -16,16 +16,42 @@ module examples {
 		constructor ()
 		{
 
+			this.initView ();
+			this.loadAssets ();
+			this.initLights ();
+
+			window.onresize = () => this.resize ();
+
+		}
+
+		/**
+		 *
+		 */
+		private initView ():void
+		{
+			this._view = new away.containers.View3D ();
+			this._view.camera.lens.far = 6000;
+		}
+
+		/**
+		 *
+		 */
+		private loadAssets ():void
+		{
+
 			away.library.AssetLibrary.enableParser (away.loaders.AWDParser);
 
 			this._token = away.library.AssetLibrary.load (new away.net.URLRequest ('assets/suzanne.awd'));
 			this._token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
 			this._token.addEventListener (away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
 
-			this._view = new away.containers.View3D ();
-			this._view.camera.lens.far = 6000;
-			this._timer = new away.utils.RequestAnimationFrame (this.render, this);
+		}
 
+		/**
+		 *
+		 */
+		private initLights ():void
+		{
 			this._light = new away.lights.DirectionalLight ();
 			this._light.color = 0x683019;
 			this._light.direction = new away.geom.Vector3D (1, 0, 0);
@@ -33,15 +59,22 @@ module examples {
 			this._light.ambientColor = 0x85b2cd;
 			this._light.diffuse = 2.8;
 			this._light.specular = 1.8;
-
 			this._view.scene.addChild (this._light);
-
 			this._lightPicker = new away.materials.StaticLightPicker ([this._light]);
-
-			window.onresize = () => this.resize ();
-
 		}
 
+		/**
+		 *
+		 */
+		private startRAF ():void
+		{
+			this._timer = new away.utils.RequestAnimationFrame (this.render, this);
+			this._timer.start ();
+		}
+
+		/**
+		 *
+		 */
 		private resize ()
 		{
 			this._view.y = 0;
@@ -50,6 +83,10 @@ module examples {
 			this._view.height = window.innerHeight;
 		}
 
+		/**
+		 *
+		 * @param dt
+		 */
 		private render (dt:number) //animate based on dt for firefox
 		{
 
@@ -69,21 +106,21 @@ module examples {
 
 		}
 
+		/**
+		 *
+		 * @param e
+		 */
 		public onAssetComplete (e:away.events.AssetEvent)
 		{
 
-			console.log ('------------------------------------------------------------------------------');
-			console.log ('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset (e.asset.name));
-			console.log ('------------------------------------------------------------------------------');
-
 		}
 
+		/**
+		 *
+		 * @param e
+		 */
 		public onResourceComplete (e:away.events.LoaderEvent)
 		{
-
-			console.log ('------------------------------------------------------------------------------');
-			console.log ('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
-			console.log ('------------------------------------------------------------------------------');
 
 			var loader:away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
 			var numAssets:number = loader.baseDependency.assets.length;
@@ -118,8 +155,7 @@ module examples {
 						mesh.scale (500);
 						this._view.scene.addChild (mesh);
 
-						this._timer.start ();
-
+						this.startRAF ();
 						this.resize ();
 
 						break;
@@ -136,6 +172,12 @@ module examples {
 
 		}
 
+		/**
+		 *
+		 * @param min
+		 * @param max
+		 * @returns {number}
+		 */
 		private getRandom (min:number, max:number):number
 		{
 			return Math.random () * (max - min) + min;
