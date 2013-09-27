@@ -1,16 +1,23 @@
-///<reference path="Away3D/Away3D.next.d.ts" />
+///<reference path="../libs/Away3D.next.d.ts" />
 var examples;
 (function (examples) {
     var TorusPrimitive = (function () {
         function TorusPrimitive() {
             var _this = this;
-            this._view = new away.containers.View3D();
-            this._view.backgroundColor = 0x000000;
+            this.initView();
             this.loadResources();
             window.onresize = function () {
                 return _this.resize();
             };
         }
+        /**
+        *
+        */
+        TorusPrimitive.prototype.initView = function () {
+            this._view = new away.containers.View3D();
+            this._view.backgroundColor = 0x000000;
+        };
+
         /**
         *
         */

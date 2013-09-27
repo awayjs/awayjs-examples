@@ -1,4 +1,4 @@
-///<reference path="Away3D/Away3D.next.d.ts" />
+///<reference path="../libs/Away3D.next.d.ts" />
 var examples;
 (function (examples) {
     var ObjLoaderMasterChief = (function () {
