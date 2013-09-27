@@ -40,7 +40,6 @@ module examples
 		private initLights ():void
 		{
 			this._light = new away.lights.DirectionalLight (); // Create a directional light
-			this._light.ambient = 0.6;
 			this._light.diffuse = .7;
 			this._light.specular = 1;
 			this._view.scene.addChild (this._light);
