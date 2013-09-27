@@ -91,15 +91,15 @@ module examples
 		{
 			this.initLights ();
 			this.initMaterial (<away.net.IMGLoader> e.target);
-		this.initTorus ();
-		this.resize ();
-		this.startRAF ();
-	}
+			this.initTorus ();
+			this.resize ();
+			this.startRAF ();
+		}
 
-	/**
-	 *
-	 */
-public render (dt:number = null):void
+		/**
+		 *
+		 */
+		public render (dt:number = null):void
 		{
 			this._mesh.rotationY += 1;
 			this._view.render ();
