@@ -1,39 +1,25 @@
 ///<reference path="Away3D/Away3D.next.d.ts" />
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
 var examples;
 (function (examples) {
     var ObjLoaderMasterChief = (function () {
         function ObjLoaderMasterChief() {
             var _this = this;
             this.meshes = new Array();
-            this.spartan = new away.containers.ObjectContainer3D();
             this.spartanFlag = false;
             this.terrainObjFlag = false;
-            this.view = new away.containers.View3D();
-            this.view.camera.z = -50;
-            this.view.camera.y = 20;
-            this.view.camera.lens.near = 0.1;
-            this.view.backgroundColor = 0xCEC8C6;
+            this.initView();
+            this.initLights();
+            this.initSpartanContainer();
+            this.loadAssets();
 
-            this.raf = new away.utils.RequestAnimationFrame(this.render, this);
-
-            this.light = new away.lights.DirectionalLight();
-            this.light.color = 0xc1582d;
-            this.light.direction = new away.geom.Vector3D(1, 0, 0);
-            this.light.ambient = 0.4;
-            this.light.ambientColor = 0x85b2cd;
-            this.light.diffuse = 2.8;
-            this.light.specular = 1.8;
-
-            this.spartan.scale(.25);
-            this.spartan.y = 0;
-
-            this.view.scene.addChild(this.light);
-
+            window.onresize = function () {
+                return _this.resize();
+            };
+        }
+        /**
+        *
+        */
+        ObjLoaderMasterChief.prototype.loadAssets = function () {
             away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
@@ -51,29 +37,76 @@ var examples;
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg'));
             this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+        };
 
-            window.onresize = function () {
-                return _this.resize();
-            };
-        }
+        /**
+        *
+        */
+        ObjLoaderMasterChief.prototype.startRAF = function () {
+            this.raf = new away.utils.RequestAnimationFrame(this.render, this);
+            this.raf.start();
+        };
+
+        /**
+        *
+        */
+        ObjLoaderMasterChief.prototype.initSpartanContainer = function () {
+            this.spartan = new away.containers.ObjectContainer3D();
+            this.spartan.scale(.25);
+            this.spartan.y = 0;
+        };
+
+        /**
+        *
+        */
+        ObjLoaderMasterChief.prototype.initView = function () {
+            this.view = new away.containers.View3D();
+            this.view.camera.z = -50;
+            this.view.camera.y = 20;
+            this.view.camera.lens.near = 0.1;
+            this.view.backgroundColor = 0xCEC8C6;
+        };
+
+        /**
+        *
+        */
+        ObjLoaderMasterChief.prototype.initLights = function () {
+            this.light = new away.lights.DirectionalLight();
+            this.light.color = 0xc1582d;
+            this.light.direction = new away.geom.Vector3D(1, 0, 0);
+            this.light.ambient = 0.4;
+            this.light.ambientColor = 0x85b2cd;
+            this.light.diffuse = 2.8;
+            this.light.specular = 1.8;
+            this.view.scene.addChild(this.light);
+        };
+
+        /**
+        *
+        */
         ObjLoaderMasterChief.prototype.render = function () {
-            if (this.terrain)
+            if (this.terrain) {
                 this.terrain.rotationY += 0.4;
+            }
 
             this.spartan.rotationY += 0.4;
             this.view.render();
         };
 
+        /**
+        *
+        * @param e
+        */
         ObjLoaderMasterChief.prototype.onAssetComplete = function (e) {
         };
 
+        /**
+        *
+        * @param e
+        */
         ObjLoaderMasterChief.prototype.onResourceComplete = function (e) {
             var loader = e.target;
             var l = loader.baseDependency.assets.length;
-
-            console.log('------------------------------------------------------------------------------');
-            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e, l, loader);
-            console.log('------------------------------------------------------------------------------');
 
             for (var c = 0; c < l; c++) {
                 var d = loader.baseDependency.assets[c];
@@ -84,9 +117,7 @@ var examples;
                             var mesh = away.library.AssetLibrary.getAsset(d.name);
 
                             this.spartan.addChild(mesh);
-                            this.raf.start();
                             this.spartanFlag = true;
-
                             this.meshes.push(mesh);
                         }
 
@@ -129,16 +160,20 @@ var examples;
                 for (var c = 0; c < this.meshes.length; c++) {
                     this.meshes[c].material = this.mat;
                 }
+
+                this.startRAF();
             }
 
             this.view.scene.addChild(this.spartan);
             this.resize();
         };
 
+        /**
+        *
+        */
         ObjLoaderMasterChief.prototype.resize = function () {
             this.view.y = 0;
             this.view.x = 0;
-
             this.view.width = window.innerWidth;
             this.view.height = window.innerHeight;
         };

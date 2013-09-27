@@ -6,58 +6,82 @@ var examples;
             var _this = this;
             this._view = new away.containers.View3D();
             this._view.backgroundColor = 0x000000;
-            this._view.camera.lens = new away.cameras.PerspectiveLens(60);
-            this._torus = new away.primitives.TorusGeometry(220, 80, 32, 16, false);
-
             this.loadResources();
-
             window.onresize = function () {
                 return _this.resize();
             };
         }
+        /**
+        *
+        */
         TorusPrimitive.prototype.loadResources = function () {
             var urlRequest = new away.net.URLRequest("assets/dots.png");
-
             var imgLoader = new away.net.IMGLoader();
             imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
             imgLoader.load(urlRequest);
         };
 
-        TorusPrimitive.prototype.imageCompleteHandler = function (e) {
-            var imageLoader = e.target;
+        /**
+        *
+        */
+        TorusPrimitive.prototype.initLights = function () {
+            this._light = new away.lights.DirectionalLight();
+            this._light.diffuse = .7;
+            this._light.specular = 1;
+            this._view.scene.addChild(this._light);
+            this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+        };
+
+        /**
+        *
+        */
+        TorusPrimitive.prototype.initMaterial = function (imageLoader) {
             this._image = imageLoader.image;
+            this._texture = new away.textures.HTMLImageElementTexture(this._image, false);
+            this._material = new away.materials.TextureMaterial(this._texture, true, true, false);
+            this._material.lightPicker = this._lightPicker;
+        };
 
-            var ts = new away.textures.HTMLImageElementTexture(this._image, false);
-
-            var light = new away.lights.DirectionalLight();
-            light.ambientColor = 0xff0000;
-            light.ambient = 0.3;
-            light.diffuse = .7;
-            light.specular = 1;
-
-            this._view.scene.addChild(light);
-
-            var lightPicker = new away.materials.StaticLightPicker([light]);
-
-            var matTx = new away.materials.TextureMaterial(ts, true, true, false);
-            matTx.lightPicker = lightPicker;
-
-            this._mesh = new away.entities.Mesh(this._torus, matTx);
-
+        /**
+        *
+        */
+        TorusPrimitive.prototype.initTorus = function () {
+            this._torus = new away.primitives.TorusGeometry(220, 80, 32, 16, false);
+            this._mesh = new away.entities.Mesh(this._torus, this._material);
             this._view.scene.addChild(this._mesh);
+        };
 
-            this.resize();
-
+        /**
+        *
+        */
+        TorusPrimitive.prototype.startRAF = function () {
             this._raf = new away.utils.RequestAnimationFrame(this.render, this);
             this._raf.start();
         };
 
+        /**
+        *
+        */
+        TorusPrimitive.prototype.imageCompleteHandler = function (e) {
+            this.initLights();
+            this.initMaterial(e.target);
+            this.initTorus();
+            this.resize();
+            this.startRAF();
+        };
+
+        /**
+        *
+        */
         TorusPrimitive.prototype.render = function (dt) {
             if (typeof dt === "undefined") { dt = null; }
             this._mesh.rotationY += 1;
             this._view.render();
         };
 
+        /**
+        *
+        */
         TorusPrimitive.prototype.resize = function () {
             this._view.y = 0;
             this._view.x = 0;
