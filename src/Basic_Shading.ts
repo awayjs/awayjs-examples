@@ -306,8 +306,8 @@ module examples
         {
             this._lastPanAngle = this._cameraController.panAngle;
             this._lastTiltAngle = this._cameraController.tiltAngle;
-            this._lastMouseX = window.event.clientX;
-            this._lastMouseY = window.event.clientY;
+            this._lastMouseX = event.clientX;
+            this._lastMouseY = event.clientY;
             this._move = true;
         }
 
