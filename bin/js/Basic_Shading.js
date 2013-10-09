@@ -173,6 +173,9 @@ var examples;
             document.onmousemove = function (e) {
                 return _this.onMouseMove(e);
             };
+            document.onmousewheel = function (e) {
+                return _this.onMouseWheel(e);
+            };
 
             this.onResize();
 
@@ -280,6 +283,17 @@ var examples;
             if (this._move) {
                 this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
                 this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+            }
+        };
+
+        /**
+        * Mouse wheel listener
+        */
+        Basic_Shading.prototype.onMouseWheel = function (event) {
+            if (event.wheelDelta > 0) {
+                this._cameraController.distance += 10;
+            } else {
+                this._cameraController.distance -= 10;
             }
         };
 

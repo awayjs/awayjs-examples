@@ -206,6 +206,7 @@ module examples
             document.onmousedown        = ( e ) => this.onMouseDown( e );
             document.onmouseup          = ( e ) => this.onMouseUp( e );
             document.onmousemove        = ( e ) => this.onMouseMove( e );
+	        document.onmousewheel       = ( e ) => this.onMouseWheel( e );
 
             this.onResize();
 
@@ -326,16 +327,35 @@ module examples
                 this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
-        /**
-         * stage listener for resize events
-         */
-        private onResize(event = null):void
-        {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
-        }
+	    /**
+	     * Mouse wheel listener
+	     */
+	    private onMouseWheel(event ):void
+	    {
+
+		    if ( event.wheelDelta > 0 )
+		    {
+			    this._cameraController.distance += 10;
+
+		    }
+		    else
+		    {
+			    this._cameraController.distance -= 10;
+		    }
+
+
+	    }
+	    /**
+	     * stage listener for resize events
+	     */
+	    private onResize(event = null):void
+	    {
+		    this._view.y         = 0;
+		    this._view.x         = 0;
+		    this._view.width     = window.innerWidth;
+		    this._view.height    = window.innerHeight;
+	    }
+
     }
 }
 
