@@ -201,11 +201,11 @@ module examples
          */
         private initListeners():void
         {
-            window.onresize             = (event) => this.onResize(event);
+            window.onresize  = (event) => this.onResize(event);
 
-            document.onmousedown        = ( e ) => this.onMouseDown( e );
-            document.onmouseup          = ( e ) => this.onMouseUp( e );
-            document.onmousemove        = ( e ) => this.onMouseMove( e );
+            document.onmousedown = (event) => this.onMouseDown(event);
+            document.onmouseup = (event) => this.onMouseUp(event);
+            document.onmousemove = (event) => this.onMouseMove(event);
 
             this.onResize();
 
@@ -245,6 +245,9 @@ module examples
             this._view.render();
         }
 
+        /**
+         * Listener function for resource complete event on asset library
+         */
         private onResourceComplete (event:away.events.LoaderEvent)
         {
             var assets:away.library.IAsset[] = event.assets;
@@ -341,5 +344,5 @@ module examples
 
 window.onload = function ()
 {
-    new examples.Basic_Shading ();
+    new examples.Basic_Shading();
 }
