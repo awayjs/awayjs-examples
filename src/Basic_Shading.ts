@@ -1,4 +1,4 @@
-///<reference path="../../away3d-core-ts/build/Away3D.next.d.ts" />
+///<reference path="../libs/Away3D.next.d.ts" />
 
 /*
 
@@ -201,12 +201,11 @@ module examples
          */
         private initListeners():void
         {
-            window.onresize             = (event) => this.onResize(event);
+            window.onresize  = (event) => this.onResize(event);
 
-            document.onmousedown        = ( e ) => this.onMouseDown( e );
-            document.onmouseup          = ( e ) => this.onMouseUp( e );
-            document.onmousemove        = ( e ) => this.onMouseMove( e );
-	        document.onmousewheel       = ( e ) => this.onMouseWheel( e );
+            document.onmousedown = (event) => this.onMouseDown(event);
+            document.onmouseup = (event) => this.onMouseUp(event);
+            document.onmousemove = (event) => this.onMouseMove(event);
 
             this.onResize();
 
@@ -246,6 +245,9 @@ module examples
             this._view.render();
         }
 
+        /**
+         * Listener function for resource complete event on asset library
+         */
         private onResourceComplete (event:away.events.LoaderEvent)
         {
             var assets:away.library.IAsset[] = event.assets;
@@ -327,39 +329,20 @@ module examples
                 this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
-	    /**
-	     * Mouse wheel listener
-	     */
-	    private onMouseWheel(event ):void
-	    {
-
-		    if ( event.wheelDelta > 0 )
-		    {
-			    this._cameraController.distance += 10;
-
-		    }
-		    else
-		    {
-			    this._cameraController.distance -= 10;
-		    }
-
-
-	    }
-	    /**
-	     * stage listener for resize events
-	     */
-	    private onResize(event = null):void
-	    {
-		    this._view.y         = 0;
-		    this._view.x         = 0;
-		    this._view.width     = window.innerWidth;
-		    this._view.height    = window.innerHeight;
-	    }
-
+        /**
+         * stage listener for resize events
+         */
+        private onResize(event = null):void
+        {
+            this._view.y         = 0;
+            this._view.x         = 0;
+            this._view.width     = window.innerWidth;
+            this._view.height    = window.innerHeight;
+        }
     }
 }
 
 window.onload = function ()
 {
-    new examples.Basic_Shading ();
+    new examples.Basic_Shading();
 }
