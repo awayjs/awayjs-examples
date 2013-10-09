@@ -1,4 +1,4 @@
-///<reference path="../../away3d-core-ts/build/Away3D.next.d.ts" />
+///<reference path="../libs/Away3D.next.d.ts" />
 /*
 
 Shading example in Away3d
@@ -164,17 +164,14 @@ var examples;
                 return _this.onResize(event);
             };
 
-            document.onmousedown = function (e) {
-                return _this.onMouseDown(e);
+            document.onmousedown = function (event) {
+                return _this.onMouseDown(event);
             };
-            document.onmouseup = function (e) {
-                return _this.onMouseUp(e);
+            document.onmouseup = function (event) {
+                return _this.onMouseUp(event);
             };
-            document.onmousemove = function (e) {
-                return _this.onMouseMove(e);
-            };
-            document.onmousewheel = function (e) {
-                return _this.onMouseWheel(e);
+            document.onmousemove = function (event) {
+                return _this.onMouseMove(event);
             };
 
             this.onResize();
@@ -214,6 +211,9 @@ var examples;
             this._view.render();
         };
 
+        /**
+        * Listener function for resource complete event on asset library
+        */
         Basic_Shading.prototype.onResourceComplete = function (event) {
             var assets = event.assets;
             var length = assets.length;
@@ -283,17 +283,6 @@ var examples;
             if (this._move) {
                 this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
                 this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
-            }
-        };
-
-        /**
-        * Mouse wheel listener
-        */
-        Basic_Shading.prototype.onMouseWheel = function (event) {
-            if (event.wheelDelta > 0) {
-                this._cameraController.distance += 10;
-            } else {
-                this._cameraController.distance -= 10;
             }
         };
 

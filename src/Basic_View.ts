@@ -1,4 +1,4 @@
-///<reference path="../../away3d-core-ts/build/Away3D.next.d.ts" />
+///<reference path="../libs/Away3D.next.d.ts" />
 
 /*
 
