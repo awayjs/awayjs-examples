@@ -3,8 +3,6 @@
 /**
 * Base event class
 * @class away.events.Event
-*
-* @author Karim Beyrouti
 */
 declare module away.events {
     class Event {
@@ -249,11 +247,6 @@ declare module away.library {
         private updateFullPath();
     }
 }
-/**
-* @author Gary Paluk
-* @created 6/29/13
-* @module away.geom
-*/
 declare module away.geom {
     class Vector3D {
         static X_AXIS: Vector3D;
@@ -1233,10 +1226,6 @@ declare module away.display3D {
         public mipfilter: number;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.geom {
     class Point {
         public x: number;
@@ -1260,10 +1249,6 @@ declare module away.geom {
         public clone(): Rectangle;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DTextureFormat {
         static BGRA: string;
@@ -1576,10 +1561,6 @@ declare module away.display3D {
         public glTextureAt(index: number): WebGLTexture;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DTriangleFace {
         static BACK: string;
@@ -1588,10 +1569,6 @@ declare module away.display3D {
         static NONE: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DVertexBufferFormat {
         static BYTES_4: string;
@@ -1601,20 +1578,12 @@ declare module away.display3D {
         static FLOAT_4: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DProgramType {
         static FRAGMENT: string;
         static VERTEX: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DBlendFactor {
         static DESTINATION_ALPHA: string;
@@ -1629,10 +1598,6 @@ declare module away.display3D {
         static ZERO: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DCompareMode {
         static ALWAYS: string;
@@ -1645,10 +1610,6 @@ declare module away.display3D {
         static NOT_EQUAL: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DMipFilter {
         static MIPLINEAR: string;
@@ -1656,10 +1617,6 @@ declare module away.display3D {
         static MIPNONE: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DProfile {
         static BASELINE: string;
@@ -1667,10 +1624,6 @@ declare module away.display3D {
         static BASELINE_EXTENDED: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DStencilAction {
         static DECREMENT_SATURATE: string;
@@ -1683,20 +1636,12 @@ declare module away.display3D {
         static ZERO: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DTextureFilter {
         static LINEAR: string;
         static NEAREST: string;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.display3D {
     class Context3DWrapMode {
         static CLAMP: string;
@@ -3193,10 +3138,6 @@ declare module away.partition {
         public _pUpdateNumEntities(value: number): void;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.partition {
     class NullNode {
         constructor();
@@ -3309,10 +3250,6 @@ declare module away.partition {
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.partition {
     class LightNode extends partition.EntityNode {
         private _light;
@@ -3321,10 +3258,6 @@ declare module away.partition {
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.partition {
     class DirectionalLightNode extends partition.EntityNode {
         private _light;
@@ -3467,10 +3400,6 @@ declare module away.display {
         public context3D : away.display3D.Context3D;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.utils {
     class CSS {
         static setCanvasSize(canvas: HTMLCanvasElement, width: number, height: number): void;
@@ -4735,6 +4664,7 @@ declare module away.events {
         */
         static DEPENDENCY_COMPLETE: string;
         private _url;
+        private _assets;
         private _message;
         private _isDependency;
         private _isDefaultPrevented;
@@ -4744,11 +4674,15 @@ declare module away.events {
         * @param resource The loaded or parsed resource.
         * @param url The url of the loaded resource.
         */
-        constructor(type: string, url?: string, isDependency?: boolean, errmsg?: string);
+        constructor(type: string, url?: string, assets?: away.library.IAsset[], isDependency?: boolean, errmsg?: string);
         /**
         * The url of the loaded resource.
         */
         public url : string;
+        /**
+        * The error string on loadError.
+        */
+        public assets : away.library.IAsset[];
         /**
         * The error string on loadError.
         */
@@ -5259,6 +5193,7 @@ declare module away.loaders {
     */
     class SingleFileLoader extends away.events.EventDispatcher {
         private _parser;
+        private _assets;
         private _req;
         private _fileExtension;
         private _fileName;
@@ -7959,10 +7894,6 @@ declare module away.data {
         public dispose(): void;
     }
 }
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 declare module away.data {
     class RenderableListItemPool {
         private _pool;

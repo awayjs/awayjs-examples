@@ -3,8 +3,6 @@
     /**
     * Base event class
     * @class away.events.Event
-    *
-    * @author Karim Beyrouti
     */
     (function (events) {
         var Event = (function () {
@@ -48,10 +46,6 @@
 })(away || (away = {}));
 var away;
 (function (away) {
-    /*
-    * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
-    * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
-    */
     ///<reference path="../_definitions.ts"/>
     /**
     * @module away.events
@@ -197,10 +191,6 @@ var __extends = this.__extends || function (d, b) {
 };
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     /**
     * @module away.events
@@ -224,7 +214,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    ///<reference path="../../../_definitions.ts"/>
     (function (base) {
         /**
         * Vertex value object.
@@ -333,7 +323,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    ///<reference path="../../../_definitions.ts"/>
     (function (base) {
         /**
         * Texture coordinates value object.
@@ -599,11 +589,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * @author Gary Paluk
-    * @created 6/29/13
-    * @module away.geom
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Vector3D = (function () {
             /**
@@ -917,11 +903,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Matrix3D = (function () {
             /**
@@ -1252,9 +1234,7 @@ var away;
                 var rot = new geom.Vector3D();
                 rot.y = Math.asin(-mr[2]);
 
-                var cos = Math.cos(rot.y);
-
-                if (cos > 0) {
+                if (mr[2] != 1 && mr[2] != -1) {
                     rot.x = Math.atan2(mr[6], mr[10]);
                     rot.z = Math.atan2(mr[1], mr[0]);
                 } else {
@@ -1563,6 +1543,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
     (function (math) {
         /**
         * MathConsts provides some commonly used mathematical constants
@@ -1581,7 +1562,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (math) {
         //import flash.geom.Matrix3D;
         //import flash.geom.Orientation3D;
@@ -1951,6 +1932,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
     (function (math) {
         var PlaneClassification = (function () {
             function PlaneClassification() {
@@ -1969,7 +1951,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (math) {
         var Plane3D = (function () {
             /**
@@ -2120,7 +2102,7 @@ else
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (math) {
         //import flash.geom.*;
         /**
@@ -2324,10 +2306,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     /**
     * @module away.events
@@ -2353,7 +2331,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -2860,7 +2838,7 @@ var away;
                 * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
                 */
                 function () {
-                    this._pTransform.copyColumnTo(3, this._pPos);
+                    this.transform.copyColumnTo(3, this._pPos);
 
                     return this._pPos.clone();
                 },
@@ -3151,8 +3129,16 @@ var away;
             * @param    angle        The amount of rotation in degrees
             */
             Object3D.prototype.rotate = function (axis, angle) {
-                this.transform.prependRotation(angle, axis);
-                this.transform = this.transform;
+                var m = new away.geom.Matrix3D();
+                m.prependRotation(angle, axis);
+
+                var vec = m.decompose()[1];
+
+                this._rotationX += vec.x;
+                this._rotationY += vec.y;
+                this._rotationZ += vec.z;
+
+                this.invalidateRotation();
             };
 
             /**
@@ -3178,42 +3164,38 @@ var away;
                 xAxis = upAxis.crossProduct(zAxis);
                 xAxis.normalize();
 
-                if (xAxis.length < .05)
+                if (isNaN(xAxis.length) || xAxis.length < .05)
                     xAxis = upAxis.crossProduct(away.geom.Vector3D.Z_AXIS);
 
                 yAxis = zAxis.crossProduct(xAxis);
 
                 raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 
-                raw[0] = this._pScaleX * xAxis.x;
-                raw[1] = this._pScaleX * xAxis.y;
-                raw[2] = this._pScaleX * xAxis.z;
+                raw[0] = xAxis.x;
+                raw[1] = xAxis.y;
+                raw[2] = xAxis.z;
                 raw[3] = 0;
 
-                raw[4] = this._pScaleY * yAxis.x;
-                raw[5] = this._pScaleY * yAxis.y;
-                raw[6] = this._pScaleY * yAxis.z;
+                raw[4] = yAxis.x;
+                raw[5] = yAxis.y;
+                raw[6] = yAxis.z;
                 raw[7] = 0;
 
-                raw[8] = this._pScaleZ * zAxis.x;
-                raw[9] = this._pScaleZ * zAxis.y;
-                raw[10] = this._pScaleZ * zAxis.z;
+                raw[8] = zAxis.x;
+                raw[9] = zAxis.y;
+                raw[10] = zAxis.z;
                 raw[11] = 0;
 
-                raw[12] = this._x;
-                raw[13] = this._y;
-                raw[14] = this._z;
-                raw[15] = 1;
+                var m = new away.geom.Matrix3D();
+                m.copyRawDataFrom(raw);
 
-                this._pTransform.copyRawDataFrom(raw);
+                var vec = m.decompose()[1];
 
-                this.transform = this.transform;
+                this._rotationX = vec.x;
+                this._rotationY = vec.y;
+                this._rotationZ = vec.z;
 
-                if (zAxis.z < 0) {
-                    this.rotationY = (180 - this.rotationY);
-                    this.rotationX -= 180;
-                    this.rotationZ -= 180;
-                }
+                this.invalidateRotation();
             };
 
             /**
@@ -3307,10 +3289,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     /**
     * @module away.events
@@ -3341,10 +3319,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var Scene3D = (function (_super) {
@@ -3450,6 +3424,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
     (function (display) {
         var BlendMode = (function () {
             function BlendMode() {
@@ -3477,11 +3452,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DClearMask = (function () {
             function Context3DClearMask() {
@@ -3498,11 +3469,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var VertexBuffer3D = (function () {
             function VertexBuffer3D(gl, numVertices, data32PerVertex) {
@@ -3555,11 +3522,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var IndexBuffer3D = (function () {
             function IndexBuffer3D(gl, numIndices) {
@@ -3601,11 +3564,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Program3D = (function () {
             function Program3D(gl) {
@@ -3664,11 +3623,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var SamplerState = (function () {
             function SamplerState() {
@@ -3684,10 +3639,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Point = (function () {
             function Point(x, y) {
@@ -3704,11 +3656,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Rectangle = (function () {
             function Rectangle(x, y, width, height) {
@@ -3780,10 +3728,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DTextureFormat = (function () {
             function Context3DTextureFormat() {
@@ -3801,11 +3746,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var TextureBase = (function () {
             function TextureBase(gl) {
@@ -3823,7 +3764,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Matrix = (function () {
             function Matrix(a, b, c, d, tx, ty) {
@@ -4183,7 +4124,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (display) {
         /**
         *
@@ -4570,11 +4511,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Texture = (function (_super) {
             __extends(Texture, _super);
@@ -4635,11 +4572,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var CubeTexture = (function (_super) {
             __extends(CubeTexture, _super);
@@ -4754,10 +4687,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DTriangleFace = (function () {
             function Context3DTriangleFace() {
@@ -4774,10 +4704,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DVertexBufferFormat = (function () {
             function Context3DVertexBufferFormat() {
@@ -4795,10 +4722,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DProgramType = (function () {
             function Context3DProgramType() {
@@ -4813,10 +4737,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DBlendFactor = (function () {
             function Context3DBlendFactor() {
@@ -4839,10 +4760,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DCompareMode = (function () {
             function Context3DCompareMode() {
@@ -4863,10 +4781,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DMipFilter = (function () {
             function Context3DMipFilter() {
@@ -4882,10 +4797,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DProfile = (function () {
             function Context3DProfile() {
@@ -4901,10 +4813,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DStencilAction = (function () {
             function Context3DStencilAction() {
@@ -4925,10 +4834,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DTextureFilter = (function () {
             function Context3DTextureFilter() {
@@ -4943,10 +4849,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3DWrapMode = (function () {
             function Context3DWrapMode() {
@@ -4961,11 +4864,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var Context3D = (function () {
             function Context3D(canvas) {
@@ -5474,7 +5373,7 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                //if ( buffer == null ) return;
+                //if ( buffer == null )return;
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
                 if (!buffer) {
                     if (location > -1) {
@@ -5533,11 +5432,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (display3D) {
         var AGLSLContext3D = (function (_super) {
             __extends(AGLSLContext3D, _super);
@@ -6287,10 +6182,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts"/>
     (function (primitives) {
         var Segment = (function () {
@@ -6457,10 +6348,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (bounds) {
         var BoundingVolumeBase = (function () {
@@ -6719,10 +6606,6 @@ else if (v > maxZ)
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     /**
     * @module away.events
@@ -6750,10 +6633,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var LensBase = (function (_super) {
@@ -6915,10 +6794,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var PerspectiveLens = (function (_super) {
@@ -7062,10 +6937,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts"/>
     (function (cameras) {
         var FreeMatrixLens = (function (_super) {
@@ -7124,10 +6995,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var OrthographicLens = (function (_super) {
@@ -7240,10 +7107,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var OrthographicOffCenterLens = (function (_super) {
@@ -7361,10 +7224,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var PerspectiveOffCenterLens = (function (_super) {
@@ -7525,10 +7384,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (cameras) {
         var ObliqueNearPlaneLens = (function (_super) {
@@ -7648,10 +7503,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     /**
     * @module away.events
@@ -7682,10 +7533,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (bounds) {
         var NullBounds = (function (_super) {
@@ -7748,10 +7595,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (bounds) {
         var BoundingSphere = (function (_super) {
@@ -8305,10 +8148,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var ObjectContainer3D = (function (_super) {
@@ -8919,10 +8758,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (entities) {
         var Entity = (function (_super) {
@@ -9317,10 +9152,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (cameras) {
         var Camera3D = (function (_super) {
@@ -9567,10 +9398,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (entities) {
         var SegmentSet = (function (_super) {
@@ -10887,7 +10714,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -11346,10 +11173,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         var WireframePrimitiveBase = (function (_super) {
@@ -12618,11 +12441,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var NodeBase = (function () {
             function NodeBase() {
@@ -12762,10 +12581,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var NullNode = (function () {
             function NullNode() {
@@ -12778,11 +12594,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var Partition3D = (function () {
             function Partition3D(rootNode) {
@@ -12881,7 +12693,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
@@ -12906,11 +12718,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var EntityNode = (function (_super) {
             __extends(EntityNode, _super);
@@ -12966,11 +12774,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var CameraNode = (function (_super) {
             __extends(CameraNode, _super);
@@ -12989,10 +12793,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var LightNode = (function (_super) {
             __extends(LightNode, _super);
@@ -13023,10 +12824,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var DirectionalLightNode = (function (_super) {
             __extends(DirectionalLightNode, _super);
@@ -13057,11 +12855,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var PointLightNode = (function (_super) {
             __extends(PointLightNode, _super);
@@ -13091,11 +12885,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         var LightProbeNode = (function (_super) {
             __extends(LightProbeNode, _super);
@@ -13126,7 +12916,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         //import away3d.core.base.SubMesh;
         //import away3d.core.traverse.PartitionTraverser;
@@ -13178,7 +12968,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         /**
         * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
@@ -13276,11 +13066,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (display) {
         var Stage3D = (function (_super) {
             __extends(Stage3D, _super);
@@ -13392,10 +13178,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var CSS = (function () {
             function CSS() {
@@ -13463,10 +13246,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (errors) {
         var DocumentError = (function (_super) {
@@ -13485,7 +13264,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * An abstract base class for all picking collider classes. It should not be instantiated directly.
@@ -13553,7 +13332,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
@@ -13694,7 +13473,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
@@ -13718,10 +13497,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var View3D = (function () {
@@ -15960,8 +15735,7 @@ var away;
 
                     this.retrieveNext(parser);
                 } else {
-                    //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri, this._baseDependency.assets));
                 }
             };
 
@@ -15994,7 +15768,7 @@ var away;
                     if (this._loadingDependency.retrieveAsRawData) {
                         // No need to parse. The parent parser is expecting this
                         // to be raw data so it can be passed directly.
-                        this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, true));
+                        this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, this._baseDependency.assets, true));
                         this._loadingDependency._iSetData(data);
                         this._loadingDependency.resolve();
 
@@ -16098,7 +15872,7 @@ else
 
                 this.removeEventListeners(loader);
 
-                event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, isDependency, event.message);
+                event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, this._baseDependency.assets, isDependency, event.message);
 
                 // TODO: JS / AS3 Change - debug this code with a fine tooth combe
                 //if (this.hasEventListener( away.events.LoaderEvent.LOAD_ERROR , this )) {
@@ -16207,7 +15981,7 @@ else
                 this._loadingDependency._iSetData(loader.data);
                 this._loadingDependency._iSuccess = true;
 
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url, this._baseDependency.assets));
                 this.removeEventListeners(loader);
 
                 if (loader.dependencies.length && (!this._context || this._context.includeDependencies)) {
@@ -16345,7 +16119,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         /**
         *
@@ -17109,13 +16883,15 @@ var away;
             * @param resource The loaded or parsed resource.
             * @param url The url of the loaded resource.
             */
-            function LoaderEvent(type, url, isDependency, errmsg) {
+            function LoaderEvent(type, url, assets, isDependency, errmsg) {
                 if (typeof url === "undefined") { url = null; }
+                if (typeof assets === "undefined") { assets = null; }
                 if (typeof isDependency === "undefined") { isDependency = false; }
                 if (typeof errmsg === "undefined") { errmsg = null; }
                 _super.call(this, type);
 
                 this._url = url;
+                this._assets = assets;
                 this._message = errmsg;
                 this._isDependency = isDependency;
             }
@@ -17125,6 +16901,17 @@ var away;
                 */
                 function () {
                     return this._url;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderEvent.prototype, "assets", {
+                get: /**
+                * The error string on loadError.
+                */
+                function () {
+                    return this._assets;
                 },
                 enumerable: true,
                 configurable: true
@@ -17159,7 +16946,7 @@ var away;
             * @return An exact duplicate of the current event.
             */
             LoaderEvent.prototype.clone = function () {
-                return new LoaderEvent(this.type, this._url, this._isDependency, this._message);
+                return new LoaderEvent(this.type, this._url, this._assets, this._isDependency, this._message);
             };
             LoaderEvent.LOAD_ERROR = "loadError";
 
@@ -17406,7 +17193,7 @@ var AssetLibrarySingletonEnforcer = (function () {
 })();
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         // TODO: implement / test cross domain policy
         var IMGLoader = (function (_super) {
@@ -17676,6 +17463,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         var URLLoaderDataFormat = (function () {
             function URLLoaderDataFormat() {
@@ -17697,6 +17485,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         var URLRequestMethod = (function () {
             function URLRequestMethod() {
@@ -17712,7 +17501,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         // TODO: implement / test cross domain policy
         var URLLoader = (function (_super) {
@@ -18271,6 +18060,7 @@ var away;
                 if (typeof materialMode === "undefined") { materialMode = 0; }
                 _super.call(this);
                 this._materialMode = materialMode;
+                this._assets = new Array();
             }
             SingleFileLoader.enableParser = function (parser) {
                 if (SingleFileLoader._parsers.indexOf(parser) < 0) {
@@ -18506,7 +18296,7 @@ var away;
                 this.removeListeners(urlLoader);
 
                 //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets));
             };
 
             /**
@@ -18520,7 +18310,7 @@ var away;
 
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets));
                 } else {
                     this.parse(this._data);
                 }
@@ -18564,7 +18354,7 @@ var away;
                     var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
 
                     //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets, true, msg));
                     //} else{
                     //	throw new Error(msg);
                     //}
@@ -18580,6 +18370,9 @@ var away;
             };
 
             SingleFileLoader.prototype.onAssetComplete = function (event) {
+                if (event.type == away.events.AssetEvent.ASSET_COMPLETE)
+                    this._assets.push(event.asset);
+
                 this.dispatchEvent(event.clone());
             };
 
@@ -18591,7 +18384,7 @@ var away;
             * Called when parsing is complete.
             */
             SingleFileLoader.prototype.onParseComplete = function (event) {
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets));
 
                 this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
                 this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
@@ -22550,10 +22343,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (textures) {
         var CubeTextureBase = (function (_super) {
@@ -24115,11 +23904,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (display) {
         var Stage = (function (_super) {
             __extends(Stage, _super);
@@ -25125,7 +24910,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (net) {
         var URLVariables = (function () {
             /**
@@ -25206,10 +24991,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var PerspectiveMatrix3D = (function (_super) {
@@ -25401,7 +25182,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -26274,7 +26055,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (base) {
         /**
         * @class away.base.Geometry
@@ -26785,7 +26566,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -27005,7 +26786,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -27196,7 +26977,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -27746,10 +27527,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (controllers) {
         var ControllerBase = (function () {
@@ -27823,10 +27600,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (controllers) {
         var LookAtController = (function (_super) {
@@ -28631,10 +28404,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (lights) {
         var LightBase = (function (_super) {
@@ -28831,10 +28600,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (lights) {
         var PointLight = (function (_super) {
@@ -28954,10 +28719,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (lights) {
         var DirectionalLight = (function (_super) {
@@ -29093,10 +28854,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts" />
     (function (lights) {
         var LightProbe = (function (_super) {
@@ -29164,10 +28921,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts"/>
     (function (lights) {
         var ShadowMapperBase = (function () {
@@ -29297,10 +29050,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts"/>
     (function (lights) {
         var CubeMapShadowMapper = (function (_super) {
@@ -29380,10 +29129,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../_definitions.ts" />
     (function (lights) {
         var DirectionalShadowMapper = (function (_super) {
@@ -29569,11 +29314,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (data) {
         var RenderableListItem = (function () {
             function RenderableListItem() {
@@ -29586,11 +29327,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (data) {
         var EntityListItem = (function () {
             function EntityListItem() {
@@ -29603,11 +29340,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (data) {
         var EntityListItemPool = (function () {
             function EntityListItemPool() {
@@ -29642,10 +29375,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
+    ///<reference path="../../_definitions.ts"/>
     (function (data) {
         var RenderableListItemPool = (function () {
             function RenderableListItemPool() {
@@ -29679,11 +29409,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (traverse) {
         var PartitionTraverser = (function () {
             function PartitionTraverser() {
@@ -29737,11 +29463,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (traverse) {
         var EntityCollector = (function (_super) {
             __extends(EntityCollector, _super);
@@ -29992,11 +29714,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (traverse) {
         var ShadowCasterCollector = (function (_super) {
             __extends(ShadowCasterCollector, _super);
@@ -30050,7 +29768,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (traverse) {
         /**
         * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
@@ -30134,7 +29852,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (partition) {
         /**
         * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
@@ -30171,24 +29889,8 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
-        //import away3d.arcane;
-        //import away3d.cameras.*;
-        //import away3d.containers.*;
-        //import away3d.core.base.*;
-        //import away3d.core.data.*;
-        //import away3d.managers.*;
-        //import away3d.core.math.*;
-        //import away3d.core.traverse.*;
-        //import away3d.entities.*;
-        //import away3d.utils.GeometryUtils;
-        //import flash.display.*;
-        //import flash.display3D.*;
-        //import flash.display3D.textures.*;
-        //import flash.geom.*;
-        //import com.adobe.utils.*;
-        //use namespace arcane;
         /**
         * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
         * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
@@ -30659,7 +30361,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * Picks a 3d object from a view or scene by 3D raycast calculations.
@@ -30886,7 +30588,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (pick) {
         /**
         * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
@@ -31068,10 +30770,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         var LineSegment = (function (_super) {
@@ -33308,7 +33006,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var ColorTransform = (function () {
             function ColorTransform(inRedMultiplier, inGreenMultiplier, inBlueMultiplier, inAlphaMultiplier, inRedOffset, inGreenOffset, inBlueOffset, inAlphaOffset) {
@@ -44538,11 +44236,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (render) {
         var RenderBase = (function () {
             function RenderBase(renderToTexture) {
@@ -44869,11 +44563,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (sort) {
         var RenderableMergeSort = (function () {
             function RenderableMergeSort() {
@@ -45041,7 +44731,7 @@ else if (headB)
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (render) {
         /**
         * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
@@ -45444,7 +45134,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (render) {
         /**
         * The DepthRenderer class renders 32-bit depth information encoded as RGBA
@@ -45633,7 +45323,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (render) {
         /**
         * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
@@ -46455,7 +46145,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    ///<reference path="../../_definitions.ts"/>
     (function (render) {
         var Filter3DRenderer = (function () {
             function Filter3DRenderer(stage3DProxy) {
@@ -46633,10 +46323,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var ByteArrayBase = (function () {
@@ -46720,9 +46406,7 @@ var away;
                 }
             };
 
-            ByteArrayBase.prototype.dumpToConsole = function (start, len) {
-                if (typeof start === "undefined") { start = 0; }
-                if (typeof len === "undefined") { len = -1; }
+            ByteArrayBase.prototype.dumpToConsole = function () {
                 var oldpos = this.position;
                 this.position = 0;
                 var nstep = 8;
@@ -46735,11 +46419,9 @@ var away;
                     return sh;
                 }
 
-                var l = (len > -1) ? len : this.length;
-
-                for (var i = start; i < len; i += nstep) {
+                for (var i = 0; i < this.length; i += nstep) {
                     var s = asHexString(i, 4) + ":";
-                    for (var j = 0; j < nstep && i + j < l; j++) {
+                    for (var j = 0; j < nstep && i + j < this.length; j++) {
                         s += " " + asHexString(this.readUnsignedByte(), 2);
                     }
                     console.log(s);
@@ -46786,10 +46468,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var ByteArray = (function (_super) {
@@ -47062,10 +46740,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var ByteArrayBuffer = (function (_super) {
@@ -47193,10 +46867,6 @@ var away;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
 })(away || (away = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47214,10 +46884,6 @@ var aglsl;
     })();
     aglsl.Sampler = Sampler;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47232,10 +46898,6 @@ var aglsl;
     })();
     aglsl.Token = Token;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47249,10 +46911,6 @@ var aglsl;
     })();
     aglsl.Header = Header;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47274,10 +46932,6 @@ var aglsl;
     })();
     aglsl.OpLUT = OpLUT;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47297,10 +46951,6 @@ var aglsl;
     })();
     aglsl.Description = Description;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47315,10 +46965,6 @@ var aglsl;
     })();
     aglsl.Destination = Destination;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47338,10 +46984,6 @@ var aglsl;
     })();
     aglsl.Context3D = Context3D;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -47402,10 +47044,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var Opcode = (function () {
@@ -47447,10 +47085,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var OpcodeMap = (function () {
@@ -47512,10 +47146,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var Part = (function () {
@@ -47536,10 +47166,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var Reg = (function () {
@@ -47603,10 +47229,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var Sampler = (function () {
@@ -47738,10 +47360,6 @@ var aglsl;
 })(aglsl || (aglsl = {}));
 var aglsl;
 (function (aglsl) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     ///<reference path="../../away/_definitions.ts" />
     (function (assembler) {
         var AGALMiniAssembler = (function () {
@@ -48044,10 +47662,6 @@ var aglsl;
     })(aglsl.assembler || (aglsl.assembler = {}));
     var assembler = aglsl.assembler;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -48171,10 +47785,6 @@ var aglsl;
     })();
     aglsl.AGALTokenizer = AGALTokenizer;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -48409,10 +48019,6 @@ var aglsl;
     })();
     aglsl.AGLSLParser = AGLSLParser;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
 ///<reference path="../away/_definitions.ts" />
 var aglsl;
 (function (aglsl) {
@@ -48451,11 +48057,6 @@ var aglsl;
     })();
     aglsl.AGLSLCompiler = AGLSLCompiler;
 })(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-* @author Karim Beyrouti - http://www.kurst.co.uk
-*/
 ///<reference path="away/_definitions.ts"/>
 away.Debug.THROW_ERRORS = false;
 away.Debug.LOG_PI_ERRORS = false;
