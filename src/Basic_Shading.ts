@@ -205,7 +205,8 @@ module examples
 
             document.onmousedown = (event) => this.onMouseDown(event);
             document.onmouseup = (event) => this.onMouseUp(event);
-            document.onmousemove = (event) => this.onMouseMove(event);
+	        document.onmousemove = (event) => this.onMouseMove(event);
+	        document.onmousewheel= (event) => this.onMouseWheel(event);
 
             this.onResize();
 
@@ -322,13 +323,28 @@ module examples
             this._move = false;
         }
 
-        private onMouseMove(event)
-        {
-            if (this._move) {
-                this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
-                this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
-            }
-        }
+	    private onMouseMove(event)
+	    {
+		    if (this._move) {
+			    this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+			    this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
+		    }
+	    }
+
+	    private onMouseWheel(event)
+	    {
+		    if (event.wheelDelta > 0 )
+		    {
+			    this._cameraController.distance += 20;
+		    }
+		    else
+		    {
+			    this._cameraController.distance -= 20;
+		    }
+	    }
+
+
+
         /**
          * stage listener for resize events
          */
