@@ -177,8 +177,6 @@ var examples;
                     material.ambientColor = 0x303040;
                     material.ambient = 1;
 
-                    this.initInterface();
-
                     break;
             }
         };
@@ -237,59 +235,6 @@ var examples;
             this._view.x = 0;
             this._view.width = window.innerWidth;
             this._view.height = window.innerHeight;
-        };
-
-        /**
-        * Test interface to swap ShadowMapMethod
-        */
-        Basic_Load3DS.prototype.initInterface = function () {
-            var _this = this;
-            var testDiv = document.createElement('div');
-            testDiv.style.cssFloat = 'none';
-            testDiv.style.position = 'absolute';
-            testDiv.style.top = '15px';
-            testDiv.style.width = '600px';
-            testDiv.style.left = '50%';
-            testDiv.style.marginLeft = '-300px';
-            testDiv.style.textAlign = 'center';
-
-            this.dropDown = document.createElement('select');
-            this.dropDown.name = "selectTestDropDown";
-            this.dropDown.id = "selectTest";
-
-            testDiv.appendChild(this.dropDown);
-
-            var option = new Option('FilteredShadowMapMethod', 'FilteredShadowMapMethod');
-            this.dropDown.add(option);
-
-            option = new Option('SoftShadowMapMethod', 'SoftShadowMapMethod');
-            this.dropDown.add(option);
-
-            option = new Option('DitheredShadowMapMethod', 'DitheredShadowMapMethod');
-            this.dropDown.add(option);
-
-            document.body.appendChild(testDiv);
-
-            this.dropDown.onchange = function (e) {
-                return _this.dropDownChange(e);
-            };
-        };
-
-        Basic_Load3DS.prototype.dropDownChange = function (e) {
-            switch (this.dropDown.options[this.dropDown.selectedIndex].value) {
-                case 'FilteredShadowMapMethod':
-                    this._groundMaterial.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
-                    break;
-
-                case 'SoftShadowMapMethod':
-                    this._groundMaterial.shadowMethod = new away.materials.SoftShadowMapMethod(this._light, 10, 5);
-                    break;
-
-                case 'DitheredShadowMapMethod':
-                    this._groundMaterial.shadowMethod = new away.materials.DitheredShadowMapMethod(this._light, 10, 5);
-                    break;
-            }
-            //var dataIndex : number = parseInt( this.dropDown.options[this.dropDown.selectedIndex].value ) ;
         };
         return Basic_Load3DS;
     })();
