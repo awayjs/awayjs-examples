@@ -5,7 +5,7 @@ module examples
 
 	export class CubePrimitive {
 
-		private _view:away.containers.View3D;
+		private _view:away.containers.View;
 		private _cube:away.primitives.CubeGeometry;
 		private _torus:away.primitives.TorusGeometry;
 		private _mesh:away.entities.Mesh;
@@ -32,7 +32,7 @@ module examples
 		 */
 		private initView ():void
 		{
-			this._view = new away.containers.View3D ();
+			this._view = new away.containers.View(new away.render.DefaultRenderer());
 			this._view.backgroundColor = 0x000000;
 			this._view.camera.x = 130;
 			this._view.camera.y = 0;
@@ -71,7 +71,7 @@ module examples
 		private initCamera ():void
 		{
 			this._cameraAxis = new away.geom.Vector3D (0, 0, 1);
-			this._view.camera.lens = new away.cameras.PerspectiveLens (120);
+			this._view.camera.projection = new away.projections.PerspectiveProjection (120);
 		}
 
 		/**
@@ -98,10 +98,23 @@ module examples
 		private loadResources ()
 		{
 			var urlRequest:away.net.URLRequest = new away.net.URLRequest ("assets/spacy_texture.png");
-			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader ();
+			var imgLoader:away.net.URLLoader = new away.net.URLLoader ();
+			imgLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
 
-			imgLoader.addEventListener (away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+			imgLoader.addEventListener (away.events.Event.COMPLETE, (event:away.events.Event) => this.urlCompleteHandler(event));
 			imgLoader.load (urlRequest);
+		}
+
+		/**
+		 *
+		 * @param e
+		 */
+		private urlCompleteHandler (event:away.events.Event)
+		{
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> event.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.imageCompleteHandler(event);
+
 		}
 
 		/**
@@ -110,12 +123,9 @@ module examples
 		 */
 		private imageCompleteHandler (e)
 		{
-			var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
-			this._image = imageLoader.image;
-
-			var ts:away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture (this._image, false);
+			var ts:away.textures.ImageTexture = new away.textures.ImageTexture (this._image, false);
 			var matTx:away.materials.TextureMaterial = new away.materials.TextureMaterial (ts, true, true, false);
-			matTx.blendMode = away.display.BlendMode.ADD;
+			matTx.blendMode = away.base.BlendMode.ADD;
 			matTx.bothSides = true;
 			matTx.lightPicker = this._lightPicker;
 

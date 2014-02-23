@@ -43,9 +43,9 @@ module examples
     export class Basic_Shading
     {
         //engine variables
-        private _scene:away.containers.Scene3D;
-        private _camera:away.cameras.Camera3D;
-        private _view:away.containers.View3D;
+        private _scene:away.containers.Scene;
+        private _camera:away.entities.Camera;
+        private _view:away.containers.View;
         private _cameraController:away.controllers.HoverController;
 
         //material objects
@@ -99,12 +99,12 @@ module examples
          */
         private initEngine():void
         {
-            this._scene = new away.containers.Scene3D();
+            this._scene = new away.containers.Scene();
 
-            this._camera = new away.cameras.Camera3D();
+            this._camera = new away.entities.Camera();
 
-            this._view = new away.containers.View3D();
-            this._view.antiAlias = 4;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            //this._view.antiAlias = 4;
             this._view.scene = this._scene;
             this._view.camera = this._camera;
 
@@ -213,7 +213,7 @@ module examples
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //plane textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
@@ -323,6 +323,9 @@ module examples
             this._move = false;
         }
 
+        /**
+         * Mouse move listener for navigation
+         */
 	    private onMouseMove(event)
 	    {
 		    if (this._move) {
@@ -331,6 +334,9 @@ module examples
 		    }
 	    }
 
+        /**
+         * Mouse wheel listener for navigation
+         */
 	    private onMouseWheel(event)
 	    {
 		    if (event.wheelDelta > 0 )
@@ -343,10 +349,8 @@ module examples
 		    }
 	    }
 
-
-
         /**
-         * stage listener for resize events
+         * window listener for resize events
          */
         private onResize(event = null):void
         {

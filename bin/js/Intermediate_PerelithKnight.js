@@ -1,34 +1,24 @@
 ///<reference path="../libs/Away3D.next.d.ts" />
 /*
-
 Vertex animation example in Away3d using the MD2 format
-
 Demonstrates:
-
 How to use the AssetLibrary class to load an embedded internal md2 model.
 How to clone an asset from the AssetLibrary and apply different mateirals.
 How to load animations into an animation set and apply to individual meshes.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 Perelith Knight, by James Green (no email given)
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +26,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -56,10 +45,10 @@ var examples;
             this._move = false;
             this._lookAtPosition = new away.geom.Vector3D();
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera for optimal rendering
-            this._view.camera.lens.far = 5000;
+            this._view.camera.projection.far = 5000;
 
             //setup controller to be used on the camera
             this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
@@ -90,8 +79,8 @@ var examples;
             this._view.scene.addChild(this._light);
 
             //setup listeners on AssetLibrary
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //load perilith knight textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight1.png"));
@@ -103,7 +92,7 @@ var examples;
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
 
             //load perelith knight data
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.loaders.MD2Parser());
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.parsers.MD2Parser());
 
             //create a global shadow map method
             this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
@@ -199,7 +188,7 @@ var examples;
 
                     //adjust the mesh
                     this._mesh.y = 120;
-                    this._mesh.scale(5);
+                    this._mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
 
                     this._meshInitialised = true;
 
@@ -354,7 +343,7 @@ var examples;
 
             if (this._cameraController.distance < 100)
                 this._cameraController.distance = 100;
-else if (this._cameraController.distance > 2000)
+            else if (this._cameraController.distance > 2000)
                 this._cameraController.distance = 2000;
         };
 

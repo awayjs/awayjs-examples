@@ -43,7 +43,7 @@ module examples
     export class Basic_View
     {
         //engine variables
-        private _view:away.containers.View3D;
+        private _view:away.containers.View;
 
         //material objects
         private _planeMaterial:away.materials.TextureMaterial;
@@ -60,7 +60,7 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera
             this._view.camera.z = -600;
@@ -82,7 +82,7 @@ module examples
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
 
             //plane textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));

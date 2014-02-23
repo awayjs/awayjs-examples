@@ -4,8 +4,8 @@ module examples {
 
 	export class AWDSuzanne {
 
-		private _view:away.containers.View3D;
-		private _token:away.loaders.AssetLoaderToken;
+		private _view:away.containers.View;
+		private _token:away.net.AssetLoaderToken;
 		private _timer:away.utils.RequestAnimationFrame;
 		private _suzane:away.entities.Mesh;
 		private _light:away.lights.DirectionalLight;
@@ -29,8 +29,8 @@ module examples {
 		 */
 		private initView ():void
 		{
-			this._view = new away.containers.View3D ();
-			this._view.camera.lens.far = 6000;
+			this._view = new away.containers.View(new away.render.DefaultRenderer());
+			this._view.camera.projection.far = 6000;
 		}
 
 		/**
@@ -39,11 +39,11 @@ module examples {
 		private loadAssets ():void
 		{
 
-			away.library.AssetLibrary.enableParser (away.loaders.AWDParser);
+			away.library.AssetLibrary.enableParser (away.parsers.AWDParser);
 
 			this._token = away.library.AssetLibrary.load (new away.net.URLRequest ('assets/suzanne.awd'));
-			this._token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-			this._token.addEventListener (away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			this._token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
+			this._token.addEventListener (away.events.AssetEvent.ASSET_COMPLETE, (event:away.events.AssetEvent) => this.onAssetComplete(event));
 
 		}
 
@@ -122,7 +122,7 @@ module examples {
 		public onResourceComplete (e:away.events.LoaderEvent)
 		{
 
-			var loader:away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
+			var loader:away.net.AssetLoader = <away.net.AssetLoader> e.target;
 			var numAssets:number = loader.baseDependency.assets.length;
 
 			for (var i:number = 0; i < numAssets; ++i)
@@ -142,17 +142,18 @@ module examples {
 						for (var c:number = 0; c < 80; c++)
 						{
 
-							var clone:away.entities.Mesh = mesh.clone ();
+							var clone:away.entities.Mesh = <away.entities.Mesh> mesh.clone ();
+							var scale:number = this.getRandom (50, 200)
 							clone.x = this.getRandom (-2000, 2000);
 							clone.y = this.getRandom (-2000, 2000);
 							clone.z = this.getRandom (-2000, 2000);
-							clone.scale (this.getRandom (50, 200));
+							clone.transform.scale = new away.geom.Vector3D(scale, scale, scale);
 							clone.rotationY = this.getRandom (0, 360);
 							this._view.scene.addChild (clone);
 
 						}
 
-						mesh.scale (500);
+						mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
 						this._view.scene.addChild (mesh);
 
 						this.startRAF ();

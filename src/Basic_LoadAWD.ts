@@ -44,7 +44,7 @@ module examples
     export class Basic_LoadAWD
     {
         //engine variables
-        private _view:away.containers.View3D;
+        private _view:away.containers.View;
 
         //light objects
         private _light:away.lights.DirectionalLight;
@@ -83,7 +83,7 @@ module examples
          */
         private initEngine():void
         {
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //set the background of the view to something suitable
             this._view.backgroundColor = 0x1e2125;
@@ -138,9 +138,9 @@ module examples
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+            away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, (event:away.events.AssetEvent) => this.onAssetComplete(event));
 
             away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
         }
@@ -170,7 +170,7 @@ module examples
                 case away.library.AssetType.MESH :
                     var mesh:away.entities.Mesh = <away.entities.Mesh> asset;
                     mesh.y = -300;
-                    mesh.scale(900);
+                    mesh.transform.scale = new away.geom.Vector3D(900, 900, 900);
 
                     this._suzanne = mesh;
                     this._view.scene.addChild(mesh);

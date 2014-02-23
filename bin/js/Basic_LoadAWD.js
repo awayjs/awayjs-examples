@@ -1,32 +1,23 @@
 ///<reference path="../libs/Away3D.next.d.ts" />
 /*
-
 AWD file loading example in Away3d
-
 Demonstrates:
-
 How to use the Loader3D object to load an embedded internal 3ds model.
 How to map an external asset reference inside a file to an internal embedded asset.
 How to extract material data and use it to set custom material properties on a model.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +25,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -61,7 +51,7 @@ var examples;
         * Initialise the engine
         */
         Basic_LoadAWD.prototype.initEngine = function () {
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //set the background of the view to something suitable
             this._view.backgroundColor = 0x1e2125;
@@ -115,9 +105,11 @@ var examples;
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+            away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
 
             away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
         };
@@ -144,7 +136,7 @@ var examples;
                 case away.library.AssetType.MESH:
                     var mesh = asset;
                     mesh.y = -300;
-                    mesh.scale(900);
+                    mesh.transform.scale = new away.geom.Vector3D(900, 900, 900);
 
                     this._suzanne = mesh;
                     this._view.scene.addChild(mesh);

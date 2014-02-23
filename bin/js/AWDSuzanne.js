@@ -18,19 +18,24 @@ var examples;
         *
         */
         AWDSuzanne.prototype.initView = function () {
-            this._view = new away.containers.View3D();
-            this._view.camera.lens.far = 6000;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view.camera.projection.far = 6000;
         };
 
         /**
         *
         */
         AWDSuzanne.prototype.loadAssets = function () {
-            away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+            var _this = this;
+            away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
             this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
-            this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-            this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
+            this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
         };
 
         /**
@@ -112,15 +117,16 @@ var examples;
 
                         for (var c = 0; c < 80; c++) {
                             var clone = mesh.clone();
+                            var scale = this.getRandom(50, 200);
                             clone.x = this.getRandom(-2000, 2000);
                             clone.y = this.getRandom(-2000, 2000);
                             clone.z = this.getRandom(-2000, 2000);
-                            clone.scale(this.getRandom(50, 200));
+                            clone.transform.scale = new away.geom.Vector3D(scale, scale, scale);
                             clone.rotationY = this.getRandom(0, 360);
                             this._view.scene.addChild(clone);
                         }
 
-                        mesh.scale(500);
+                        mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
                         this._view.scene.addChild(mesh);
 
                         this.startRAF();

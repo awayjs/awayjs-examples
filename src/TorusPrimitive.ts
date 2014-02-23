@@ -5,12 +5,12 @@ module examples
 
 	export class TorusPrimitive {
 
-		private _view:away.containers.View3D;
+		private _view:away.containers.View;
 		private _torus:away.primitives.TorusGeometry;
 		private _mesh:away.entities.Mesh;
 		private _raf:away.utils.RequestAnimationFrame;
 		private _image:HTMLImageElement;
-		private _texture:away.textures.HTMLImageElementTexture;
+		private _texture:away.textures.ImageTexture;
 		private _material:away.materials.TextureMaterial;
 		private _light:away.lights.DirectionalLight;
 		private _lightPicker:away.materials.StaticLightPicker
@@ -28,7 +28,7 @@ module examples
 		 */
 		private initView()
 		{
-			this._view = new away.containers.View3D ();// Create the Away3D View
+			this._view = new away.containers.View (new away.render.DefaultRenderer());// Create the Away3D View
 			this._view.backgroundColor = 0x000000;// Change the background color to black
 		}
 		/**
@@ -37,9 +37,22 @@ module examples
 		private loadResources ()
 		{
 			var urlRequest:away.net.URLRequest = new away.net.URLRequest ("assets/dots.png");
-			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader (); // Image Loader
-			imgLoader.addEventListener (away.events.Event.COMPLETE, this.imageCompleteHandler, this); // Add event listener for image complete
+			var imgLoader:away.net.URLLoader = new away.net.URLLoader (); // Image Loader
+			imgLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+
+			imgLoader.addEventListener (away.events.Event.COMPLETE, (event:away.events.Event) => this.urlCompleteHandler(event)); // Add event listener for image complete
 			imgLoader.load (urlRequest); // start loading
+		}
+
+		/**
+		 *
+		 * @param e
+		 */
+		private urlCompleteHandler (event:away.events.Event)
+		{
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> event.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.imageCompleteHandler(event);
 		}
 
 		/**
@@ -57,10 +70,9 @@ module examples
 		/**
 		 *
 		 */
-		private initMaterial (imageLoader:away.net.IMGLoader):void
+		private initMaterial (image:HTMLImageElement):void
 		{
-			this._image = imageLoader.image;
-			this._texture = new away.textures.HTMLImageElementTexture (this._image, false); // Create a texture
+			this._texture = new away.textures.ImageTexture (image, false); // Create a texture
 			this._material = new away.materials.TextureMaterial (this._texture, true, true, false); // Create a material
 			this._material.lightPicker = this._lightPicker; // assign the lights to the material
 		}
@@ -90,7 +102,7 @@ module examples
 		private imageCompleteHandler (e)
 		{
 			this.initLights ();
-			this.initMaterial (<away.net.IMGLoader> e.target);
+			this.initMaterial (<HTMLImageElement> e.target);
 			this.initTorus ();
 			this.resize ();
 			this.startRAF ();

@@ -1,31 +1,22 @@
 ///<reference path="../libs/Away3D.next.d.ts" />
 /*
-
 SkyBox example in Away3d
-
 Demonstrates:
-
 How to use a CubeTexture to create a SkyBox object.
 How to apply a CubeTexture to a material as an environment map.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,7 +24,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -60,14 +50,14 @@ var examples;
         */
         Basic_SkyBox.prototype.initEngine = function () {
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera
             this._view.camera.z = -600;
             this._view.camera.y = 0;
             this._view.camera.lookAt(new away.geom.Vector3D());
-            this._view.camera.lens = new away.cameras.PerspectiveLens(90);
-
+            this._view.camera.projection = new away.projections.PerspectiveProjection(90);
+            this._view.backgroundColor = 0xFFFF00;
             this._mouseX = window.innerWidth / 2;
         };
 
@@ -109,10 +99,10 @@ var examples;
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //environment texture
@@ -126,9 +116,9 @@ var examples;
             this._torus.rotationX += 2;
             this._torus.rotationY += 1;
 
-            this._view.camera.position = new away.geom.Vector3D();
+            this._view.camera.transform.position = new away.geom.Vector3D();
             this._view.camera.rotationY += 0.5 * (this._mouseX - window.innerWidth / 2) / 800;
-            this._view.camera.moveBackward(600);
+            this._view.camera.transform.moveBackward(600);
             this._view.render();
         };
 
@@ -140,7 +130,7 @@ var examples;
                 case 'assets/skybox/snow_texture.cube':
                     this._cubeTexture = event.assets[0];
 
-                    this._skyBox = new away.entities.SkyBox(this._cubeTexture);
+                    this._skyBox = new away.entities.Skybox(this._cubeTexture);
                     this._view.scene.addChild(this._skyBox);
 
                     this._torusMaterial.addMethod(new away.materials.EnvMapMethod(this._cubeTexture, 1));

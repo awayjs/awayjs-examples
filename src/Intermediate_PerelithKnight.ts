@@ -54,7 +54,7 @@ module examples
         private _pKnightMaterials:Array<away.materials.TextureMaterial> = new Array<away.materials.TextureMaterial>();
 
         //engine variables
-        private _view:away.containers.View3D;
+        private _view:away.containers.View;
         private _cameraController:away.controllers.HoverController;
 
         //stats
@@ -93,10 +93,10 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera for optimal rendering
-            this._view.camera.lens.far = 5000;
+            this._view.camera.projection.far = 5000;
 
             //setup controller to be used on the camera
             this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
@@ -128,8 +128,8 @@ module examples
             this._view.scene.addChild(this._light);
 
             //setup listeners on AssetLibrary
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //load perilith knight textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight1.png"));
@@ -141,7 +141,7 @@ module examples
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
 
             //load perelith knight data
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.loaders.MD2Parser());
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.parsers.MD2Parser());
 
             //create a global shadow map method
             this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
@@ -228,7 +228,7 @@ module examples
 
                     //adjust the mesh
                     this._mesh.y = 120;
-                    this._mesh.scale(5);
+                    this._mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
 
                     this._meshInitialised = true;
 

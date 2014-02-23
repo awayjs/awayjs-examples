@@ -13,7 +13,7 @@ var examples;
         *
         */
         CubePrimitive.prototype.initView = function () {
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
             this._view.backgroundColor = 0x000000;
             this._view.camera.x = 130;
             this._view.camera.y = 0;
@@ -48,7 +48,7 @@ var examples;
         */
         CubePrimitive.prototype.initCamera = function () {
             this._cameraAxis = new away.geom.Vector3D(0, 0, 1);
-            this._view.camera.lens = new away.cameras.PerspectiveLens(120);
+            this._view.camera.projection = new away.projections.PerspectiveProjection(120);
         };
 
         /**
@@ -74,10 +74,14 @@ var examples;
         *
         */
         CubePrimitive.prototype.loadResources = function () {
+            var _this = this;
             var urlRequest = new away.net.URLRequest("assets/spacy_texture.png");
-            var imgLoader = new away.net.IMGLoader();
+            var imgLoader = new away.net.URLLoader();
+            imgLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
 
-            imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+            imgLoader.addEventListener(away.events.Event.COMPLETE, function (event) {
+                return _this.urlCompleteHandler(event);
+            });
             imgLoader.load(urlRequest);
         };
 
@@ -85,13 +89,23 @@ var examples;
         *
         * @param e
         */
-        CubePrimitive.prototype.imageCompleteHandler = function (e) {
-            var imageLoader = e.target;
-            this._image = imageLoader.image;
+        CubePrimitive.prototype.urlCompleteHandler = function (event) {
+            var _this = this;
+            var imageLoader = event.target;
+            this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+            this._image.onload = function (event) {
+                return _this.imageCompleteHandler(event);
+            };
+        };
 
-            var ts = new away.textures.HTMLImageElementTexture(this._image, false);
+        /**
+        *
+        * @param e
+        */
+        CubePrimitive.prototype.imageCompleteHandler = function (e) {
+            var ts = new away.textures.ImageTexture(this._image, false);
             var matTx = new away.materials.TextureMaterial(ts, true, true, false);
-            matTx.blendMode = away.display.BlendMode.ADD;
+            matTx.blendMode = away.base.BlendMode.ADD;
             matTx.bothSides = true;
             matTx.lightPicker = this._lightPicker;
 

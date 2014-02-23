@@ -51,11 +51,11 @@ module examples
 	import ParticleProperties					= away.animators.ParticleProperties;
 	import Geometry								= away.base.Geometry;
 	import ParticleGeometry						= away.base.ParticleGeometry;
-	import Camera3D								= away.cameras.Camera3D;
-	import Scene3D								= away.containers.Scene3D;
-	import View3D								= away.containers.View3D;
+	import Scene								= away.containers.Scene;
+	import View									= away.containers.View;
 	import HoverController						= away.controllers.HoverController;
-	import BlendMode							= away.display.BlendMode;
+	import BlendMode							= away.base.BlendMode;
+	import Camera								= away.entities.Camera;
 	import Mesh									= away.entities.Mesh;
 	import TimerEvent							= away.events.TimerEvent;
 	import ColorTransform						= away.geom.ColorTransform;
@@ -75,9 +75,9 @@ module examples
 		private static NUM_FIRES:number /*uint*/ = 10;
     	
     	//engine variables
-    	private scene:Scene3D;
-		private camera:Camera3D;
-		private view:View3D;
+    	private scene:Scene;
+		private camera:Camera;
+		private view:View;
 		private cameraController:HoverController;
 		
 		//material objects
@@ -132,12 +132,12 @@ module examples
 		 */
 		private initEngine():void
 		{
-			this.scene = new Scene3D();
+			this.scene = new Scene();
 
-			this.camera = new Camera3D();
+			this.camera = new Camera();
 
-			this.view = new View3D();
-			this.view.antiAlias = 4;
+			this.view = new View(new away.render.DefaultRenderer());
+			//this.view.antiAlias = 4;
 			this.view.scene = this.scene;
 			this.view.camera = this.camera;
 			
@@ -245,7 +245,7 @@ module examples
 			
 			//setup timer for triggering each particle aniamtor
 			this.fireTimer = new Timer(1000, this.fireObjects.length);
-			this.fireTimer.addEventListener(TimerEvent.TIMER, this.onTimer, this);
+			this.fireTimer.addEventListener(TimerEvent.TIMER, away.utils.Delegate.create(this, this.onTimer));
 			this.fireTimer.start();
 		}
 		
@@ -265,7 +265,7 @@ module examples
 			this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this.timer.start();
 
-			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
 			//plane textures
 			away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
@@ -293,9 +293,9 @@ module examples
 		/**
 		 * Returns an array of active lights in the scene
 		 */
-		private getAllLights():Array
+		private getAllLights():Array<any>
 		{
-			var lights:Array = new Array();
+			var lights:Array<any> = new Array<any>();
 			
 			lights.push(this.directionalLight);
 
@@ -324,7 +324,7 @@ module examples
 			light.color = 0xFF3301;
 			light.diffuse = 0;
 			light.specular = 0;
-			light.position = fireObject.mesh.position;
+			light.transform.position = fireObject.mesh.transform.position;
 			
 			//add the lightsource to the fire object
 			fireObject.light = light;

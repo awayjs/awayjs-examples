@@ -44,7 +44,7 @@ module examples
     export class Basic_Load3DS
     {
         //engine variables
-        private _view:away.containers.View3D;
+        private _view:away.containers.View;
         private _cameraController:away.controllers.HoverController;
 
         //material objects
@@ -56,7 +56,7 @@ module examples
         private _direction:away.geom.Vector3D;
 
         //scene objects
-        private _loader:away.loaders.Loader3D;
+        private _loader:away.containers.Loader3D;
         private _ground:away.entities.Mesh;
 
         //navigation variables
@@ -67,9 +67,6 @@ module examples
         private _lastTiltAngle:number;
         private _lastMouseX:number;
         private _lastMouseY:number;
-
-	    //ui
-	    private dropDown : HTMLSelectElement;
 
 	    /**
          * Constructor
@@ -96,10 +93,10 @@ module examples
          */
         private initEngine():void
         {
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera for optimal shadow rendering
-            this._view.camera.lens.far = 2100;
+            this._view.camera.projection.far = 2100;
 
             //setup controller to be used on the camera
             this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
@@ -136,8 +133,8 @@ module examples
          */
         private initObjects():void
         {
-            this._loader = new away.loaders.Loader3D();
-            this._loader.scale(300);
+            this._loader = new away.containers.Loader3D();
+            this._loader.transform.scale = new away.geom.Vector3D(300, 300, 300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);
         }
@@ -158,17 +155,14 @@ module examples
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            //setup parser to be used on Loader3D
-            away.loaders.Parsers.enableAllBundled();
-
             //setup the url map for textures in the 3ds file
-            var assetLoaderContext:away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
 
-            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            this._loader.load(new away.net.URLRequest("assets/soldier_ant.3ds"), assetLoaderContext);
+            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+            this._loader.load(new away.net.URLRequest("assets/soldier_ant.3ds"), assetLoaderContext, null, new away.parsers.Max3DSParser(false));
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/CoarseRedSand.jpg"));
         }
 
@@ -264,6 +258,7 @@ module examples
                 this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
+
         /**
          * stage listener for resize events
          */

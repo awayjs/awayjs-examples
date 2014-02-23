@@ -8,8 +8,8 @@ module examples
 
 		private height : number = 0;
 
-		private token   : away.loaders.AssetLoaderToken;
-		private view    : away.containers.View3D;
+		private token   : away.net.AssetLoaderToken;
+		private view    : away.containers.View;
 		private raf     : away.utils.RequestAnimationFrame;
 		private mesh    : away.entities.Mesh;
 		private meshes  : Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
@@ -21,7 +21,7 @@ module examples
 		private light   : away.lights.DirectionalLight;
 		private t800M   : away.entities.Mesh;
 
-		private spartan : away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
+		private spartan : away.containers.DisplayObjectContainer = new away.containers.DisplayObjectContainer();
 		private terrain : away.entities.Mesh;
 
 		constructor()
@@ -30,10 +30,10 @@ module examples
 			away.Debug.LOG_PI_ERRORS    = false;
 			away.Debug.THROW_ERRORS     = false;
 
-			this.view                  = new away.containers.View3D( );
+			this.view                  = new away.containers.View(new away.render.DefaultRenderer());
 			this.view.camera.z          = -50;
 			this.view.camera.y          = 20;
-			this.view.camera.lens.near  = 0.1;
+			this.view.camera.projection.near  = 0.1;
 			this.view.backgroundColor   = 0xCEC8C6//A0A7DE;//0E0E10;
 
 			//this.view.backgroundColor   = 0xFF0000;
@@ -49,30 +49,30 @@ module examples
 			//this.light.x                = 800;
 			//this.light.y                = 800;
 
-			this.spartan.scale(.25 );
+			this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25 );
 			this.spartan.y = 0;
 
 			this.view.scene.addChild( this.light );
 
-			away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
+			away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
 
 			this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj') );
-			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , (event:away.events.LoaderEvent) => this.onResourceComplete(event) );
+			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , (event:away.events.AssetEvent) => this.onAssetComplete(event) );
 
 			this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/terrain.obj') );
-			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , (event:away.events.LoaderEvent) => this.onResourceComplete(event) );
+			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , (event:away.events.AssetEvent) => this.onAssetComplete(event) );
 
 
 			//*
 			this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/masterchief_base.png') );
-			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , (event:away.events.LoaderEvent) => this.onResourceComplete(event) );
+			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , (event:away.events.AssetEvent) => this.onAssetComplete(event) );
 
 			this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg' ) );
-			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+			this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , (event:away.events.LoaderEvent) => this.onResourceComplete(event) );
+			this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , (event:away.events.AssetEvent) => this.onAssetComplete(event) );
 			// */
 			window.onresize = () => this.resize();
 
@@ -101,7 +101,7 @@ module examples
 		public onResourceComplete ( e : away.events.LoaderEvent )
 		{
 
-			var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+			var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
 			var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
 
 
@@ -111,7 +111,7 @@ module examples
 
 
 			//*
-			var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+			var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
 			var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
 
 			for ( var c : number = 0 ; c < l ; c ++ )
@@ -163,7 +163,7 @@ module examples
 						{
 
 							var lightPicker:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-							var tx  : away.textures.HTMLImageElementTexture     = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
+							var tx  : away.textures.ImageTexture     = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
 
 							this.mat                                            = new away.materials.TextureMaterial( tx, true, true, false );
 							this.mat.lightPicker                                = lightPicker;
@@ -175,7 +175,7 @@ module examples
 						{
 
 							var lp:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-							var txT  : away.textures.HTMLImageElementTexture    = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
+							var txT  : away.textures.ImageTexture    = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
 
 							this.terrainMaterial                                = new away.materials.TextureMaterial( txT, true, true, false );
 							this.terrainMaterial.lightPicker                    = lp;

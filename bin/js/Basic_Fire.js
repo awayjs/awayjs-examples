@@ -1,33 +1,24 @@
 ///<reference path="../libs/Away3D.next.d.ts" />
 /*
-
 Creating fire effects with particles in Away3D
-
 Demonstrates:
-
 How to setup a particle geometry and particle animationset in order to simulate fire.
 How to stagger particle animation instances with different animator objects running on different timers.
 How to apply fire lighting to a floor mesh using a multipass material.
-
 Code by Rob Bateman & Liao Cheng
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
 liaocheng210@126.com
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +26,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -49,11 +39,11 @@ var examples;
     var ParticleProperties = away.animators.ParticleProperties;
     var Geometry = away.base.Geometry;
     var ParticleGeometry = away.base.ParticleGeometry;
-    var Camera3D = away.cameras.Camera3D;
-    var Scene3D = away.containers.Scene3D;
-    var View3D = away.containers.View3D;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
-    var BlendMode = away.display.BlendMode;
+    var BlendMode = away.base.BlendMode;
+    var Camera = away.entities.Camera;
     var Mesh = away.entities.Mesh;
     var TimerEvent = away.events.TimerEvent;
     var ColorTransform = away.geom.ColorTransform;
@@ -94,12 +84,13 @@ var examples;
         * Initialise the engine
         */
         Basic_Fire.prototype.initEngine = function () {
-            this.scene = new Scene3D();
+            this.scene = new Scene();
 
-            this.camera = new Camera3D();
+            this.camera = new Camera();
 
-            this.view = new View3D();
-            this.view.antiAlias = 4;
+            this.view = new View(new away.render.DefaultRenderer());
+
+            //this.view.antiAlias = 4;
             this.view.scene = this.scene;
             this.view.camera = this.camera;
 
@@ -201,7 +192,7 @@ var examples;
 
             //setup timer for triggering each particle aniamtor
             this.fireTimer = new Timer(1000, this.fireObjects.length);
-            this.fireTimer.addEventListener(TimerEvent.TIMER, this.onTimer, this);
+            this.fireTimer.addEventListener(TimerEvent.TIMER, away.utils.Delegate.create(this, this.onTimer));
             this.fireTimer.start();
         };
 
@@ -229,7 +220,7 @@ var examples;
             this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this.timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //plane textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
@@ -285,7 +276,7 @@ var examples;
             light.color = 0xFF3301;
             light.diffuse = 0;
             light.specular = 0;
-            light.position = fireObject.mesh.position;
+            light.transform.position = fireObject.mesh.transform.position;
 
             //add the lightsource to the fire object
             fireObject.light = light;

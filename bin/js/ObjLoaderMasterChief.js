@@ -6,55 +6,71 @@ var examples;
             var _this = this;
             this.height = 0;
             this.meshes = new Array();
-            this.spartan = new away.containers.ObjectContainer3D();
+            this.spartan = new away.containers.DisplayObjectContainer();
             this.t = 0;
             this.spartanFlag = false;
             this.terrainObjFlag = false;
             away.Debug.LOG_PI_ERRORS = false;
             away.Debug.THROW_ERRORS = false;
 
-            this.view = new away.containers.View3D();
+            this.view = new away.containers.View(new away.render.DefaultRenderer());
             this.view.camera.z = -50;
             this.view.camera.y = 20;
-            this.view.camera.lens.near = 0.1;
+            this.view.camera.projection.near = 0.1;
             this.view.backgroundColor = 0xCEC8C6;
 
             //this.view.backgroundColor   = 0xFF0000;
             this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
             this.light = new away.lights.DirectionalLight();
-            this.light.color = 0xc1582d;
+            this.light.color = 0xc1582d; //683019;
             this.light.direction = new away.geom.Vector3D(1, 0, 0);
-            this.light.ambient = 0.4;
-            this.light.ambientColor = 0x85b2cd;
+            this.light.ambient = 0.4; //0.05;//.4;
+            this.light.ambientColor = 0x85b2cd; //4F6877;//313D51;
             this.light.diffuse = 2.8;
             this.light.specular = 1.8;
 
             //this.light.x                = 800;
             //this.light.y                = 800;
-            this.spartan.scale(.25);
+            this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25);
             this.spartan.y = 0;
 
             this.view.scene.addChild(this.light);
 
-            away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
+            away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/terrain.obj'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
 
             //*
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/masterchief_base.png'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
 
             // */
             window.onresize = function () {
@@ -159,6 +175,6 @@ var examples;
 })(examples || (examples = {}));
 
 window.onload = function () {
-    new examples.ObjChiefTestDay();
+    new examples.ObjChiefTestDay(); // Start the demo
 };
 //# sourceMappingURL=ObjLoaderMasterChief.js.map
