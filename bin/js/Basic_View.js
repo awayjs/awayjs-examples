@@ -1,4 +1,4 @@
-///<reference path="../libs/Away3D.next.d.ts" />
+///<reference path="../libs/away3d.next.d.ts" />
 /*
 Basic 3D scene example in Away3D
 Demonstrates:
