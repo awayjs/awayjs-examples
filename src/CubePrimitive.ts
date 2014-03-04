@@ -24,7 +24,6 @@ module examples
 			this.initLights ();
 			this.initGeometry ();
 			this.loadResources ();
-
 		}
 
 		/**
@@ -47,6 +46,11 @@ module examples
 		{
 			this._cube = new away.primitives.CubeGeometry (20.0, 20.0, 20.0);
 			this._torus = new away.primitives.TorusGeometry (150, 80, 32, 16, true);
+
+			this._mesh = new away.entities.Mesh (this._torus);
+			this._mesh2 = new away.entities.Mesh (this._cube);
+			this._mesh2.x = 130;
+			this._mesh2.z = 40;
 		}
 
 		/**
@@ -77,26 +81,14 @@ module examples
 		/**
 		 *
 		 */
-		public initResizeHandler ():void
-		{
-			this.resize ();
-			window.onresize = () => this.resize ();
-		}
-
-		/**
-		 *
-		 */
-		public startRAF ():void
-		{
-			this._raf = new away.utils.RequestAnimationFrame (this.render, this);
-			this._raf.start ();
-		}
-
-		/**
-		 *
-		 */
 		private loadResources ()
 		{
+			window.onresize = () => this.resize ();
+			this.resize ();
+
+			this._raf = new away.utils.RequestAnimationFrame (this.render, this);
+			this._raf.start ();
+
 			var urlRequest:away.net.URLRequest = new away.net.URLRequest ("assets/spacy_texture.png");
 			var imgLoader:away.net.URLLoader = new away.net.URLLoader ();
 			imgLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
@@ -129,18 +121,11 @@ module examples
 			matTx.bothSides = true;
 			matTx.lightPicker = this._lightPicker;
 
-			this._lightPicker
-
-			this._mesh = new away.entities.Mesh (this._torus, matTx);
-			this._mesh2 = new away.entities.Mesh (this._cube, matTx);
-			this._mesh2.x = 130;
-			this._mesh2.z = 40;
+			this._mesh.material = matTx;
+			this._mesh2.material = matTx;
 
 			this._view.scene.addChild (this._mesh);
 			this._view.scene.addChild (this._mesh2);
-
-			this.initResizeHandler ();
-			this.startRAF ();
 
 		}
 

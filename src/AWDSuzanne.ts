@@ -21,7 +21,7 @@ module examples {
 			this.initLights ();
 
 			window.onresize = () => this.resize ();
-
+			this.resize ();
 		}
 
 		/**
@@ -38,12 +38,13 @@ module examples {
 		 */
 		private loadAssets ():void
 		{
+			this._timer = new away.utils.RequestAnimationFrame (this.render, this);
+			this._timer.start ();
 
 			away.library.AssetLibrary.enableParser (away.parsers.AWDParser);
 
 			this._token = away.library.AssetLibrary.load (new away.net.URLRequest ('assets/suzanne.awd'));
 			this._token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
-			this._token.addEventListener (away.events.AssetEvent.ASSET_COMPLETE, (event:away.events.AssetEvent) => this.onAssetComplete(event));
 
 		}
 
@@ -61,15 +62,6 @@ module examples {
 			this._light.specular = 1.8;
 			this._view.scene.addChild (this._light);
 			this._lightPicker = new away.materials.StaticLightPicker ([this._light]);
-		}
-
-		/**
-		 *
-		 */
-		private startRAF ():void
-		{
-			this._timer = new away.utils.RequestAnimationFrame (this.render, this);
-			this._timer.start ();
 		}
 
 		/**
@@ -103,15 +95,6 @@ module examples {
 			}
 
 			this._view.render ();
-
-		}
-
-		/**
-		 *
-		 * @param e
-		 */
-		public onAssetComplete (e:away.events.AssetEvent)
-		{
 
 		}
 
@@ -155,9 +138,6 @@ module examples {
 
 						mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
 						this._view.scene.addChild (mesh);
-
-						this.startRAF ();
-						this.resize ();
 
 						break;
 

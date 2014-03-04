@@ -26,6 +26,11 @@ var examples;
         CubePrimitive.prototype.initGeometry = function () {
             this._cube = new away.primitives.CubeGeometry(20.0, 20.0, 20.0);
             this._torus = new away.primitives.TorusGeometry(150, 80, 32, 16, true);
+
+            this._mesh = new away.entities.Mesh(this._torus);
+            this._mesh2 = new away.entities.Mesh(this._cube);
+            this._mesh2.x = 130;
+            this._mesh2.z = 40;
         };
 
         /**
@@ -54,27 +59,16 @@ var examples;
         /**
         *
         */
-        CubePrimitive.prototype.initResizeHandler = function () {
+        CubePrimitive.prototype.loadResources = function () {
             var _this = this;
-            this.resize();
             window.onresize = function () {
                 return _this.resize();
             };
-        };
+            this.resize();
 
-        /**
-        *
-        */
-        CubePrimitive.prototype.startRAF = function () {
             this._raf = new away.utils.RequestAnimationFrame(this.render, this);
             this._raf.start();
-        };
 
-        /**
-        *
-        */
-        CubePrimitive.prototype.loadResources = function () {
-            var _this = this;
             var urlRequest = new away.net.URLRequest("assets/spacy_texture.png");
             var imgLoader = new away.net.URLLoader();
             imgLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
@@ -109,18 +103,11 @@ var examples;
             matTx.bothSides = true;
             matTx.lightPicker = this._lightPicker;
 
-            this._lightPicker;
-
-            this._mesh = new away.entities.Mesh(this._torus, matTx);
-            this._mesh2 = new away.entities.Mesh(this._cube, matTx);
-            this._mesh2.x = 130;
-            this._mesh2.z = 40;
+            this._mesh.material = matTx;
+            this._mesh2.material = matTx;
 
             this._view.scene.addChild(this._mesh);
             this._view.scene.addChild(this._mesh2);
-
-            this.initResizeHandler();
-            this.startRAF();
         };
 
         /**

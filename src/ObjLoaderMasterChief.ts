@@ -38,6 +38,7 @@ module examples
 
 			//this.view.backgroundColor   = 0xFF0000;
 			this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
+			this.raf.start();
 
 			this.light                  = new away.lights.DirectionalLight();
 			this.light.color            = 0xc1582d;//683019;
@@ -76,6 +77,7 @@ module examples
 			// */
 			window.onresize = () => this.resize();
 
+			this.resize();
 		}
 
 
@@ -133,7 +135,6 @@ module examples
 							var mesh : away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
 
 							this.spartan.addChild( mesh );
-							this.raf.start();
 							this.spartanFlag = true;
 
 
@@ -205,7 +206,6 @@ module examples
 			}
 
 			this.view.scene.addChild( this.spartan );
-			this.resize();
 
 		}
 

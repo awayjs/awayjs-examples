@@ -13,6 +13,7 @@ var examples;
             window.onresize = function () {
                 return _this.resize();
             };
+            this.resize();
         }
         /**
         *
@@ -27,14 +28,14 @@ var examples;
         */
         AWDSuzanne.prototype.loadAssets = function () {
             var _this = this;
+            this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+            this._timer.start();
+
             away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
             this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
             this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
-            });
-            this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
             });
         };
 
@@ -51,14 +52,6 @@ var examples;
             this._light.specular = 1.8;
             this._view.scene.addChild(this._light);
             this._lightPicker = new away.materials.StaticLightPicker([this._light]);
-        };
-
-        /**
-        *
-        */
-        AWDSuzanne.prototype.startRAF = function () {
-            this._timer = new away.utils.RequestAnimationFrame(this.render, this);
-            this._timer.start();
         };
 
         /**
@@ -93,13 +86,6 @@ var examples;
         *
         * @param e
         */
-        AWDSuzanne.prototype.onAssetComplete = function (e) {
-        };
-
-        /**
-        *
-        * @param e
-        */
         AWDSuzanne.prototype.onResourceComplete = function (e) {
             var loader = e.target;
             var numAssets = loader.baseDependency.assets.length;
@@ -128,9 +114,6 @@ var examples;
 
                         mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
                         this._view.scene.addChild(mesh);
-
-                        this.startRAF();
-                        this.resize();
 
                         break;
 

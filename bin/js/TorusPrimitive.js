@@ -5,10 +5,16 @@ var examples;
         function TorusPrimitive() {
             var _this = this;
             this.initView();
+
+            this._raf = new away.utils.RequestAnimationFrame(this.render, this);
+            this._raf.start(); // Start the frame loop ( request animation frame )
+
             this.loadResources(); // Start loading the resources
             window.onresize = function () {
                 return _this.resize();
             }; // Add event handler for window resize
+
+            this.resize();
         }
         /**
         *
@@ -78,20 +84,10 @@ var examples;
         /**
         *
         */
-        TorusPrimitive.prototype.startRAF = function () {
-            this._raf = new away.utils.RequestAnimationFrame(this.render, this);
-            this._raf.start(); // Start the frame loop ( request animation frame )
-        };
-
-        /**
-        *
-        */
         TorusPrimitive.prototype.imageCompleteHandler = function (e) {
             this.initLights();
             this.initMaterial(e.target);
             this.initTorus();
-            this.resize();
-            this.startRAF();
         };
 
         /**
@@ -99,7 +95,9 @@ var examples;
         */
         TorusPrimitive.prototype.render = function (dt) {
             if (typeof dt === "undefined") { dt = null; }
-            this._mesh.rotationY += 1;
+            if (this._mesh)
+                this._mesh.rotationY += 1;
+
             this._view.render();
         };
 

@@ -19,8 +19,14 @@ module examples
 		{
 
 			this.initView();
+
+			this._raf = new away.utils.RequestAnimationFrame (this.render, this);
+			this._raf.start (); // Start the frame loop ( request animation frame )
+
 			this.loadResources (); // Start loading the resources
 			window.onresize = () => this.resize (); // Add event handler for window resize
+
+			this.resize ();
 		}
 
 		/**
@@ -90,22 +96,11 @@ module examples
 		/**
 		 *
 		 */
-		private startRAF ():void
-		{
-			this._raf = new away.utils.RequestAnimationFrame (this.render, this);
-			this._raf.start (); // Start the frame loop ( request animation frame )
-		}
-
-		/**
-		 *
-		 */
 		private imageCompleteHandler (e)
 		{
 			this.initLights ();
 			this.initMaterial (<HTMLImageElement> e.target);
 			this.initTorus ();
-			this.resize ();
-			this.startRAF ();
 		}
 
 		/**
@@ -113,7 +108,9 @@ module examples
 		 */
 		public render (dt:number = null):void
 		{
-			this._mesh.rotationY += 1;
+			if (this._mesh)
+				this._mesh.rotationY += 1;
+
 			this._view.render ();
 		}
 
