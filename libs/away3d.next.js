@@ -14789,7 +14789,7 @@ var away;
                 _super.call(this, null, baseMethod);
                 this._smoothness = .1;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.clampDiffuse(vo, target, regCache, sharedRegisters);
                 };
 
@@ -19230,7 +19230,7 @@ var away;
                 this._smoothness = .1;
                 this._specularCutOff = .1;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.clampSpecular(vo, target, regCache, sharedRegisters);
                 };
 
@@ -19337,7 +19337,7 @@ var away;
                 this._fresnelPower = 5;
                 this._normalReflectance = .028;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.modulateSpecular(vo, target, regCache, sharedRegisters);
                 };
 

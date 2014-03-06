@@ -168,8 +168,8 @@ module examples {
 
 }
 
-window.onload = function ()
+window.onload = function()
 {
-	new examples.AWDSuzanne ();
+	new examples.AWDSuzanne();
 }
 
