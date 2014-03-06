@@ -95,7 +95,7 @@ var examples;
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.parsers.MD2Parser());
 
             //create a global shadow map method
-            this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
+            this._shadowMapMethod = new away.materials.ShadowFilteredMethod(this._light);
             this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material

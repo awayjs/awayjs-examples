@@ -66,11 +66,11 @@ module examples
 	import MD5AnimParser                        = away.parsers.MD5AnimParser;
     import MD5MeshParser                        = away.parsers.MD5MeshParser;
 	import PlaneGeometry                        = away.primitives.PlaneGeometry;
-    import FogMethod                            = away.materials.FogMethod;
+    import EffectFogMethod                      = away.materials.EffectFogMethod;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
     import TextureMaterial                      = away.materials.TextureMaterial;
-    import SoftShadowMapMethod                  = away.materials.SoftShadowMapMethod;
-    import NearShadowMapMethod                  = away.materials.NearShadowMapMethod;
+    import ShadowSoftMethod                  	= away.materials.ShadowSoftMethod;
+    import ShadowNearMethod                  	= away.materials.ShadowNearMethod;
     import URLRequest                           = away.net.URLRequest;
 	import DefaultRenderer                      = away.render.DefaultRenderer;
 	import ImageCubeTexture          			= away.textures.ImageCubeTexture;
@@ -114,8 +114,8 @@ module examples
 		private blueLight:PointLight;
 		private whiteLight:DirectionalLight;
 		private lightPicker:StaticLightPicker;
-		private shadowMapMethod:NearShadowMapMethod;
-		private fogMethod:FogMethod;
+		private shadowMapMethod:ShadowNearMethod;
+		private fogMethod:EffectFogMethod;
 		private count:number = 0;
 
 		//material objects
@@ -226,11 +226,11 @@ module examples
 
 
 			//create a global shadow method
-            this.shadowMapMethod = new NearShadowMapMethod(new SoftShadowMapMethod(this.whiteLight, 15, 8));
+            this.shadowMapMethod = new ShadowNearMethod(new ShadowSoftMethod(this.whiteLight, 15, 8));
             this.shadowMapMethod.epsilon = .1;
 
 			//create a global fog method
-            this.fogMethod = new FogMethod(0, this.camera.projection.far*0.5, 0x000000);
+            this.fogMethod = new EffectFogMethod(0, this.camera.projection.far*0.5, 0x000000);
 		}
 
 		/**

@@ -54,11 +54,11 @@ var examples;
     var MD5AnimParser = away.parsers.MD5AnimParser;
     var MD5MeshParser = away.parsers.MD5MeshParser;
     var PlaneGeometry = away.primitives.PlaneGeometry;
-    var FogMethod = away.materials.FogMethod;
+    var EffectFogMethod = away.materials.EffectFogMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
-    var SoftShadowMapMethod = away.materials.SoftShadowMapMethod;
-    var NearShadowMapMethod = away.materials.NearShadowMapMethod;
+    var ShadowSoftMethod = away.materials.ShadowSoftMethod;
+    var ShadowNearMethod = away.materials.ShadowNearMethod;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
     var ImageCubeTexture = away.textures.ImageCubeTexture;
@@ -157,11 +157,11 @@ var examples;
             this.lightPicker = new StaticLightPicker([this.redLight, this.blueLight, this.whiteLight]);
 
             //create a global shadow method
-            this.shadowMapMethod = new NearShadowMapMethod(new SoftShadowMapMethod(this.whiteLight, 15, 8));
+            this.shadowMapMethod = new ShadowNearMethod(new ShadowSoftMethod(this.whiteLight, 15, 8));
             this.shadowMapMethod.epsilon = .1;
 
             //create a global fog method
-            this.fogMethod = new FogMethod(0, this.camera.projection.far * 0.5, 0x000000);
+            this.fogMethod = new EffectFogMethod(0, this.camera.projection.far * 0.5, 0x000000);
         };
 
         /**

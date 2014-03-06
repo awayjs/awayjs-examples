@@ -70,9 +70,9 @@ module examples
 	import TextureMaterial					= away.materials.TextureMaterial;
 	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
 	import StaticLightPicker				= away.materials.StaticLightPicker;
-	import CascadeShadowMapMethod			= away.materials.CascadeShadowMapMethod;
-	import FilteredShadowMapMethod			= away.materials.FilteredShadowMapMethod;
-	import FogMethod						= away.materials.FogMethod;
+	import ShadowCascadeMethod				= away.materials.ShadowCascadeMethod;
+	import ShadowSoftMethod					= away.materials.ShadowSoftMethod;
+	import EffectFogMethod					= away.materials.EffectFogMethod;
 	import AssetLoaderContext				= away.net.AssetLoaderContext;
 	import URLLoader						= away.net.URLLoader;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
@@ -134,9 +134,9 @@ module examples
 		
 		//light variables
 		private _lightPicker:StaticLightPicker;
-		private _baseShadowMethod:FilteredShadowMapMethod;
-		private _cascadeMethod:CascadeShadowMapMethod;
-		private _fogMethod : FogMethod;
+		private _baseShadowMethod:ShadowSoftMethod;
+		private _cascadeMethod:ShadowCascadeMethod;
+		private _fogMethod : EffectFogMethod;
 		private _cascadeShadowMapper:DirectionalShadowMapper;
 		private _directionalLight:DirectionalLight;
 		private _lights:Array<any> = new Array<any>();
@@ -252,12 +252,12 @@ module examples
 			
 			//create our global light picker
 			this._lightPicker = new StaticLightPicker(this._lights);
-			this._baseShadowMethod = new away.materials.SoftShadowMapMethod(this._directionalLight , 10 , 5 );
-//			this._baseShadowMethod = new FilteredShadowMapMethod(this._directionalLight);
+			this._baseShadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
+//			this._baseShadowMethod = new ShadowFilteredMethod(this._directionalLight);
 			
 			//create our global fog method
-			this._fogMethod = new FogMethod(0, 4000, 0x9090e7);
-//			this._cascadeMethod = new CascadeShadowMapMethod(this._baseShadowMethod);
+			this._fogMethod = new EffectFogMethod(0, 4000, 0x9090e7);
+//			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
 		}
 		        
         /**

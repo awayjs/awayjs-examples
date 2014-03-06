@@ -58,14 +58,14 @@ module examples
     import Vector3D                     = away.geom.Vector3D;
     import Point                        = away.geom.Point;
     import PointLight                   = away.lights.PointLight;
-    import CompositeDiffuseMethod       = away.materials.CompositeDiffuseMethod;
-    import CompositeSpecularMethod      = away.materials.CompositeSpecularMethod;
+    import DiffuseCompositeMethod       = away.materials.DiffuseCompositeMethod;
+    import SpecularCompositeMethod      = away.materials.SpecularCompositeMethod;
     import ColorMaterial                = away.materials.ColorMaterial;
-    import BasicDiffuseMethod           = away.materials.BasicDiffuseMethod;
-    import BasicSpecularMethod          = away.materials.BasicSpecularMethod;
+    import DiffuseBasicMethod           = away.materials.DiffuseBasicMethod;
+    import SpecularBasicMethod          = away.materials.SpecularBasicMethod;
     import MethodVO                     = away.materials.MethodVO;
-    import FresnelSpecularMethod        = away.materials.FresnelSpecularMethod;
-    import PhongSpecularMethod          = away.materials.PhongSpecularMethod;
+    import SpecularFresnelMethod        = away.materials.SpecularFresnelMethod;
+    import SpecularPhongMethod          = away.materials.SpecularPhongMethod;
     import ShaderRegisterElement        = away.materials.ShaderRegisterElement;
     import ShaderRegisterCache          = away.materials.ShaderRegisterCache;
     import ShaderRegisterData           = away.materials.ShaderRegisterData;
@@ -92,8 +92,8 @@ module examples
         private groundMaterial:TextureMaterial;
         private cloudMaterial:TextureMaterial;
         private atmosphereMaterial:ColorMaterial;
-        private atmosphereDiffuseMethod:BasicDiffuseMethod;
-        private atmosphereSpecularMethod:BasicSpecularMethod;
+        private atmosphereDiffuseMethod:DiffuseBasicMethod;
+        private atmosphereSpecularMethod:SpecularBasicMethod;
         private cubeTexture:ImageCubeTexture;
 
         //scene objects
@@ -205,7 +205,7 @@ module examples
             //var specBitmap:BitmapData = Cast.bitmapData(EarthSpecular);
             //specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
 
-            var specular:FresnelSpecularMethod = new FresnelSpecularMethod(true, new PhongSpecularMethod());
+            var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, new SpecularPhongMethod());
             specular.fresnelPower = 1;
             specular.normalReflectance = 0.1;
 
@@ -227,8 +227,8 @@ module examples
             this.cloudMaterial.ambientColor = 0x1b2048;
             this.cloudMaterial.ambient = 1;
 
-            this.atmosphereDiffuseMethod = new CompositeDiffuseMethod(this, this.modulateDiffuseMethod);
-            this.atmosphereSpecularMethod = new CompositeSpecularMethod(this, this.modulateSpecularMethod, new PhongSpecularMethod());
+            this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
+            this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
             this.atmosphereMaterial = new ColorMaterial(0x1671cc);
             this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
@@ -243,8 +243,8 @@ module examples
 
         private modulateDiffuseMethod(vo : MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
         {
-            var viewDirFragmentReg:ShaderRegisterElement = this.atmosphereDiffuseMethod._sharedRegisters.viewDirFragment;
-            var normalFragmentReg:ShaderRegisterElement = this.atmosphereDiffuseMethod._sharedRegisters.normalFragment;
+            var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+            var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
 
             var code:string = "dp3 " + t + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
                 "mul " + t + ".w, " + t + ".w, " + t + ".w\n";
@@ -254,8 +254,8 @@ module examples
 
         private modulateSpecularMethod(vo : MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
         {
-            var viewDirFragmentReg:ShaderRegisterElement = this.atmosphereDiffuseMethod._sharedRegisters.viewDirFragment;
-            var normalFragmentReg:ShaderRegisterElement = this.atmosphereDiffuseMethod._sharedRegisters.normalFragment;
+            var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+            var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
             var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
             regCache.addFragmentTempUsages(temp, 1);
 

@@ -169,7 +169,7 @@ module examples
                     this._skyBox = new away.entities.Skybox(this._cubeTexture);
                     this._view.scene.addChild(this._skyBox);
 
-                    this._torusMaterial.addMethod(new away.materials.EnvMapMethod(this._cubeTexture, 1));
+                    this._torusMaterial.addMethod(new away.materials.EffectEnvMapMethod(this._cubeTexture, 1));
 
                     break;
             }

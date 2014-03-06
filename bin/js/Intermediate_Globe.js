@@ -46,14 +46,14 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var Point = away.geom.Point;
     var PointLight = away.lights.PointLight;
-    var CompositeDiffuseMethod = away.materials.CompositeDiffuseMethod;
-    var CompositeSpecularMethod = away.materials.CompositeSpecularMethod;
+    var DiffuseCompositeMethod = away.materials.DiffuseCompositeMethod;
+    var SpecularCompositeMethod = away.materials.SpecularCompositeMethod;
     var ColorMaterial = away.materials.ColorMaterial;
-    var BasicDiffuseMethod = away.materials.BasicDiffuseMethod;
-    var BasicSpecularMethod = away.materials.BasicSpecularMethod;
+    var DiffuseBasicMethod = away.materials.DiffuseBasicMethod;
+    var SpecularBasicMethod = away.materials.SpecularBasicMethod;
     var MethodVO = away.materials.MethodVO;
-    var FresnelSpecularMethod = away.materials.FresnelSpecularMethod;
-    var PhongSpecularMethod = away.materials.PhongSpecularMethod;
+    var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
+    var SpecularPhongMethod = away.materials.SpecularPhongMethod;
     var ShaderRegisterElement = away.materials.ShaderRegisterElement;
     var ShaderRegisterCache = away.materials.ShaderRegisterCache;
     var ShaderRegisterData = away.materials.ShaderRegisterData;
@@ -149,7 +149,7 @@ var examples;
             //adjust specular map
             //var specBitmap:BitmapData = Cast.bitmapData(EarthSpecular);
             //specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-            var specular = new FresnelSpecularMethod(true, new PhongSpecularMethod());
+            var specular = new SpecularFresnelMethod(true, new SpecularPhongMethod());
             specular.fresnelPower = 1;
             specular.normalReflectance = 0.1;
 
@@ -171,8 +171,8 @@ var examples;
             this.cloudMaterial.ambientColor = 0x1b2048;
             this.cloudMaterial.ambient = 1;
 
-            this.atmosphereDiffuseMethod = new CompositeDiffuseMethod(this, this.modulateDiffuseMethod);
-            this.atmosphereSpecularMethod = new CompositeSpecularMethod(this, this.modulateSpecularMethod, new PhongSpecularMethod());
+            this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
+            this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
             this.atmosphereMaterial = new ColorMaterial(0x1671cc);
             this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
@@ -186,8 +186,8 @@ var examples;
         };
 
         Intermediate_Globe.prototype.modulateDiffuseMethod = function (vo, t, regCache, sharedRegisters) {
-            var viewDirFragmentReg = this.atmosphereDiffuseMethod._sharedRegisters.viewDirFragment;
-            var normalFragmentReg = this.atmosphereDiffuseMethod._sharedRegisters.normalFragment;
+            var viewDirFragmentReg = sharedRegisters.viewDirFragment;
+            var normalFragmentReg = sharedRegisters.normalFragment;
 
             var code = "dp3 " + t + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" + "mul " + t + ".w, " + t + ".w, " + t + ".w\n";
 
@@ -195,8 +195,8 @@ var examples;
         };
 
         Intermediate_Globe.prototype.modulateSpecularMethod = function (vo, t, regCache, sharedRegisters) {
-            var viewDirFragmentReg = this.atmosphereDiffuseMethod._sharedRegisters.viewDirFragment;
-            var normalFragmentReg = this.atmosphereDiffuseMethod._sharedRegisters.normalFragment;
+            var viewDirFragmentReg = sharedRegisters.viewDirFragment;
+            var normalFragmentReg = sharedRegisters.normalFragment;
             var temp = regCache.getFreeFragmentSingleTemp();
             regCache.addFragmentTempUsages(temp, 1);
 
