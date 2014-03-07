@@ -254,6 +254,25 @@ var examples;
 
             this.onResize();
 
+            this.parseAWDDelegate = function (event) {
+                return _this.parseAWD(event);
+            };
+            this.parseBitmapDelegate = function (event) {
+                return _this.parseBitmap(event);
+            };
+            this.loadProgressDelegate = function (event) {
+                return _this.loadProgress(event);
+            };
+            this.onBitmapCompleteDelegate = function (event) {
+                return _this.onBitmapComplete(event);
+            };
+            this.onAssetCompleteDelegate = function (event) {
+                return _this.onAssetComplete(event);
+            };
+            this.onResourceCompleteDelegate = function (event) {
+                return _this.onResourceComplete(event);
+            };
+
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
         };
@@ -313,32 +332,25 @@ var examples;
         * Global binary file loader
         */
         Advanced_MultiPassSponzaDemo.prototype.load = function (url) {
-            var _this = this;
             var loader = new URLLoader();
             switch (url.substring(url.length - 3)) {
                 case "AWD":
                 case "awd":
                     loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
                     this._loadingText = "Loading Model";
-                    loader.addEventListener(Event.COMPLETE, function (event) {
-                        return _this.parseAWD(event);
-                    });
+                    loader.addEventListener(Event.COMPLETE, this.parseAWDDelegate);
                     break;
                 case "png":
                 case "jpg":
                     loader.dataFormat = URLLoaderDataFormat.BLOB;
                     this._currentTexture++;
                     this._loadingText = "Loading Textures";
-                    loader.addEventListener(Event.COMPLETE, function (event) {
-                        return _this.parseBitmap(event);
-                    });
+                    loader.addEventListener(Event.COMPLETE, this.parseBitmapDelegate);
                     url = "sponza/" + url;
                     break;
             }
 
-            loader.addEventListener(ProgressEvent.PROGRESS, function (e) {
-                return _this.loadProgress(e);
-            });
+            loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
             var urlReq = new URLRequest(this._assetsRoot + url);
             loader.load(urlReq);
         };
@@ -396,14 +408,11 @@ var examples;
         * Parses the Bitmap file
         */
         Advanced_MultiPassSponzaDemo.prototype.parseBitmap = function (e) {
-            var _this = this;
             var urlLoader = e.target;
             var image = away.parsers.ParserUtils.blobToImage(urlLoader.data);
-            image.onload = function (event) {
-                return _this.onBitmapComplete(event);
-            };
-            urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmap);
-            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
+            image.onload = this.onBitmapCompleteDelegate;
+            urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmapDelegate);
+            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
             urlLoader = null;
         };
 
@@ -412,10 +421,11 @@ var examples;
         */
         Advanced_MultiPassSponzaDemo.prototype.onBitmapComplete = function (e) {
             var image = e.target;
+            image.onload = null;
 
             //create bitmap texture in dictionary
             if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-                this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings) ? new ImageTexture(image, true) : new ImageTexture(image, true);
+                this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image, true);
 
             while (this._n++ < this._loadingTextureStrings.length - 1)
                 if (this._loadingTextureStrings[this._n])
@@ -441,24 +451,16 @@ var examples;
         * Parses the AWD file
         */
         Advanced_MultiPassSponzaDemo.prototype.parseAWD = function (e) {
-            var _this = this;
             console.log("Parsing Data");
             var urlLoader = e.target;
             var loader = new Loader(false);
-            var context = new AssetLoaderContext();
-            context.includeDependencies = false;
 
-            //context.dependencyBaseUrl = "assets/sponza/";
-            loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
-            });
-            loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
-                return _this.onResourceComplete(event);
-            });
-            loader.loadData(urlLoader.data, context, null, new AWDParser());
+            loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+            loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+            loader.loadData(urlLoader.data, new AssetLoaderContext(false), null, new AWDParser());
 
-            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-            urlLoader.removeEventListener(Event.COMPLETE, this.parseAWD);
+            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+            urlLoader.removeEventListener(Event.COMPLETE, this.parseAWDDelegate);
             urlLoader = null;
         };
 
@@ -479,8 +481,8 @@ var examples;
             var merge = new Merge(false, false, true);
 
             var loader = e.target;
-            loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete);
-            loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete);
+            loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+            loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 
             //reassign materials
             var mesh;

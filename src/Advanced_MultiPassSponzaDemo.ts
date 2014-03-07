@@ -172,6 +172,12 @@ module examples
 
 		private _timer:away.utils.RequestAnimationFrame;
 		private _time:number = 0;
+		private parseAWDDelegate:(event:Event) => void;
+		private parseBitmapDelegate:(event:Event) => void;
+		private loadProgressDelegate:(event:ProgressEvent) => void;
+		private onBitmapCompleteDelegate:(event) => void;
+		private onAssetCompleteDelegate:(event:AssetEvent) => void;
+		private onResourceCompleteDelegate:(event:LoaderEvent) => void;
 
 		/**
          * Constructor
@@ -298,6 +304,12 @@ module examples
 
 			this.onResize();
 
+			this.parseAWDDelegate = (event:Event) => this.parseAWD(event);
+			this.parseBitmapDelegate = (event) => this.parseBitmap(event);
+			this.loadProgressDelegate = (event:ProgressEvent) => this.loadProgress(event);
+			this.onBitmapCompleteDelegate = (event) => this.onBitmapComplete(event);
+			this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
+			this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
 
 			this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this._timer.start();
@@ -373,14 +385,14 @@ module examples
 				case "awd":
 					loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 					this._loadingText = "Loading Model";
-                    loader.addEventListener(Event.COMPLETE, (event:Event) => this.parseAWD(event));
+                    loader.addEventListener(Event.COMPLETE, this.parseAWDDelegate);
                     break;
                 case "png": 
                 case "jpg":
 					loader.dataFormat = URLLoaderDataFormat.BLOB;
 					this._currentTexture++;
 					this._loadingText = "Loading Textures";
-                    loader.addEventListener(Event.COMPLETE, (event) => this.parseBitmap(event));
+                    loader.addEventListener(Event.COMPLETE, this.parseBitmapDelegate);
 					url = "sponza/" + url;
                     break;
 //				case "atf":
@@ -391,7 +403,7 @@ module examples
 //                    break;
             }
 			
-            loader.addEventListener(ProgressEvent.PROGRESS, (e:ProgressEvent) => this.loadProgress(e));
+            loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
 			var urlReq:URLRequest = new URLRequest(this._assetsRoot+url);
  			loader.load(urlReq);
 			
@@ -456,9 +468,9 @@ module examples
 		{
             var urlLoader:URLLoader = <URLLoader> e.target;
             var image:HTMLImageElement = away.parsers.ParserUtils.blobToImage(urlLoader.data);
-			image.onload = (event) => this.onBitmapComplete(event);
-            urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmap);
-            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
+			image.onload = this.onBitmapCompleteDelegate;
+            urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmapDelegate);
+            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
 			urlLoader = null;
         }
         
@@ -468,13 +480,11 @@ module examples
         private onBitmapComplete(e:Event)
 		{
 			var image:HTMLImageElement = <HTMLImageElement> e.target;
-			
+			image.onload = null;
+
 			//create bitmap texture in dictionary
 			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new ImageTexture(image, true) : new ImageTexture(image, true);
-
-			//this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
-
+				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image, true);
 
 			//skip null textures
 			while (this._n++ < this._loadingTextureStrings.length - 1)
@@ -505,15 +515,13 @@ module examples
 			console.log("Parsing Data");
             var urlLoader:URLLoader = <URLLoader> e.target;
             var loader:Loader = new Loader(false);
-			var context:AssetLoaderContext = new AssetLoaderContext();
-			context.includeDependencies = false;
-			//context.dependencyBaseUrl = "assets/sponza/";
-            loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
-            loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
-            loader.loadData(urlLoader.data, context, null, new AWDParser());
 
-			urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-			urlLoader.removeEventListener(Event.COMPLETE, this.parseAWD);
+            loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+            loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+            loader.loadData(urlLoader.data, new AssetLoaderContext(false), null, new AWDParser());
+
+			urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+			urlLoader.removeEventListener(Event.COMPLETE, this.parseAWDDelegate);
 			urlLoader = null;
         }
         
@@ -536,8 +544,8 @@ module examples
 			var merge:Merge = new Merge(false, false, true);
 
             var loader:Loader = <Loader> e.target;
-            loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete);
-            loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete);
+            loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+            loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 			
 			//reassign materials
 			var mesh:Mesh;
