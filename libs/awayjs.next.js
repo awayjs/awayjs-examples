@@ -346,7 +346,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-            CameraEvent.LENS_CHANGED = "projectionChanged";
+            CameraEvent.PROJECTION_CHANGED = "projectionChanged";
             return CameraEvent;
         })(away.events.Event);
         events.CameraEvent = CameraEvent;
@@ -665,6 +665,160 @@ var away;
             return ParserEvent;
         })(away.events.Event);
         events.ParserEvent = ParserEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        /**
+        * A MouseEvent is dispatched when a mouse event occurs over a mouseEnabled object in View.
+        * TODO: we don't have screenZ data, tho this should be easy to implement
+        */
+        var MouseEvent = (function (_super) {
+            __extends(MouseEvent, _super);
+            /**
+            * Create a new MouseEvent object.
+            * @param type The type of the MouseEvent.
+            */
+            function MouseEvent(type) {
+                _super.call(this, type);
+                // Private.
+                this._iAllowedToPropagate = true;
+            }
+            Object.defineProperty(MouseEvent.prototype, "bubbles", {
+                /**
+                * @inheritDoc
+                */
+                get: function () {
+                    var doesBubble = this._iAllowedToPropagate;
+                    this._iAllowedToPropagate = true;
+
+                    // Don't bubble if propagation has been stopped.
+                    return doesBubble;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            MouseEvent.prototype.stopPropagation = function () {
+                this._iAllowedToPropagate = false;
+
+                if (this._iParentEvent)
+                    this._iParentEvent.stopPropagation();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MouseEvent.prototype.stopImmediatePropagation = function () {
+                this._iAllowedToPropagate = false;
+
+                if (this._iParentEvent)
+                    this._iParentEvent.stopImmediatePropagation();
+            };
+
+            /**
+            * Creates a copy of the MouseEvent object and sets the value of each property to match that of the original.
+            */
+            MouseEvent.prototype.clone = function () {
+                var result = new away.events.MouseEvent(this.type);
+
+                /* TODO: Debug / test - look into isDefaultPrevented
+                if (isDefaultPrevented())
+                result.preventDefault();
+                */
+                result.screenX = this.screenX;
+                result.screenY = this.screenY;
+
+                result.view = this.view;
+                result.object = this.object;
+                result.materialOwner = this.materialOwner;
+                result.material = this.material;
+                result.uv = this.uv;
+                result.localPosition = this.localPosition;
+                result.localNormal = this.localNormal;
+                result.index = this.index;
+                result.subGeometryIndex = this.subGeometryIndex;
+                result.delta = this.delta;
+
+                result.ctrlKey = this.ctrlKey;
+                result.shiftKey = this.shiftKey;
+
+                result._iParentEvent = this;
+                result._iAllowedToPropagate = this._iAllowedToPropagate;
+
+                return result;
+            };
+
+            Object.defineProperty(MouseEvent.prototype, "scenePosition", {
+                /**
+                * The position in scene space where the event took place
+                */
+                get: function () {
+                    return this.object.sceneTransform.transformVector(this.localPosition);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MouseEvent.prototype, "sceneNormal", {
+                /**
+                * The normal in scene space where the event took place
+                */
+                get: function () {
+                    var sceneNormal = this.object.sceneTransform.deltaTransformVector(this.localNormal);
+                    sceneNormal.normalize();
+
+                    return sceneNormal;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            MouseEvent.MOUSE_OVER = "mouseOver3d";
+
+            MouseEvent.MOUSE_OUT = "mouseOut3d";
+
+            MouseEvent.MOUSE_UP = "mouseUp3d";
+
+            MouseEvent.MOUSE_DOWN = "mouseDown3d";
+
+            MouseEvent.MOUSE_MOVE = "mouseMove3d";
+
+            MouseEvent.CLICK = "click3d";
+
+            MouseEvent.DOUBLE_CLICK = "doubleClick3d";
+
+            MouseEvent.MOUSE_WHEEL = "mouseWheel3d";
+            return MouseEvent;
+        })(away.events.Event);
+        events.MouseEvent = MouseEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        var MaterialEvent = (function (_super) {
+            __extends(MaterialEvent, _super);
+            function MaterialEvent(type) {
+                _super.call(this, type);
+            }
+            MaterialEvent.SIZE_CHANGED = "sizeChanged";
+            return MaterialEvent;
+        })(away.events.Event);
+        events.MaterialEvent = MaterialEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -2616,7 +2770,7 @@ var away;
                     //				this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.TEXTURE_SIZE_ERROR, <away.library.IAsset> asset));
                 }
 
-                this._pContent = new away.entities.Billboard(new away.materials.CSSMaterialBase(asset), asset.width, asset.height);
+                this._pContent = new away.entities.Billboard(new away.materials.CSSMaterialBase(asset));
 
                 return away.parsers.ParserBase.PARSING_DONE;
             };
@@ -4634,7 +4788,7 @@ var away;
             }
             AlignmentMode.REGISTRATION_POINT = "registrationPoint";
 
-            AlignmentMode.PIVOT_POINT = "pivotPoint";
+            AlignmentMode.PIVOT_POINT = "pivot";
             return AlignmentMode;
         })();
         base.AlignmentMode = AlignmentMode;
@@ -4788,6 +4942,37 @@ var away;
                     this._imageData.data[index + 1] = argb[2];
                     this._imageData.data[index + 2] = argb[3];
                     this._imageData.data[index + 3] = 255;
+                }
+
+                if (!this._locked) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param rect
+            * @param inputByteArray
+            */
+            BitmapData.prototype.setPixels = function (rect, inputByteArray) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                }
+
+                if (this._imageData) {
+                    inputByteArray.position = 0;
+                    var i, j, index;
+                    for (i = 0; i < rect.width; ++i) {
+                        for (j = 0; j < rect.height; ++j) {
+                            index = (i + rect.x + (j + rect.y) * this._imageCanvas.width) * 4;
+
+                            this._imageData.data[index + 0] = inputByteArray.readUnsignedInt();
+                            this._imageData.data[index + 1] = inputByteArray.readUnsignedInt();
+                            this._imageData.data[index + 2] = inputByteArray.readUnsignedInt();
+                            this._imageData.data[index + 3] = inputByteArray.readUnsignedInt();
+                        }
+                    }
                 }
 
                 if (!this._locked) {
@@ -5363,7 +5548,7 @@ var away;
                 this._x = 0;
                 this._y = 0;
                 this._z = 0;
-                this._pivotPoint = new away.geom.Vector3D();
+                this._pivot = new away.geom.Vector3D();
                 this._orientationMatrix = new away.geom.Matrix3D();
                 this._pivotZero = true;
                 this._pivotDirty = true;
@@ -5822,25 +6007,25 @@ var away;
                 *
                 */
                 get: function () {
-                    return this._pickingCollider;
+                    return this._pPickingCollider;
                 },
                 set: function (value) {
-                    this._pickingCollider = value;
+                    this._pPickingCollider = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            Object.defineProperty(DisplayObject.prototype, "pivotPoint", {
+            Object.defineProperty(DisplayObject.prototype, "pivot", {
                 /**
                 * Defines the local point around which the object rotates.
                 */
                 get: function () {
-                    return this._pivotPoint;
+                    return this._pivot;
                 },
                 set: function (pivot) {
-                    this._pivotPoint = pivot.clone();
+                    this._pivot = pivot.clone();
 
                     this.invalidatePivot();
                 },
@@ -6049,8 +6234,9 @@ var away;
                 get: function () {
                     if (this._scenePositionDirty) {
                         if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT) {
-                            this._scenePosition = this.sceneTransform.transformVector(this._pivotPoint);
-                            //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivotPoint.x*this._pScaleX, this._pivotPoint.y*this._pScaleY, this._pivotPoint.z*this._pScaleZ));
+                            var pivotScale = new away.geom.Vector3D(this._pivot.x / this._pScaleX, this._pivot.y / this._pScaleY, this._pivot.z / this._pScaleZ);
+                            this._scenePosition = this.sceneTransform.transformVector(pivotScale);
+                            //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivot.x*this._pScaleX, this._pivot.y*this._pScaleY, this._pivot.z*this._pScaleZ));
                         } else {
                             this.sceneTransform.copyColumnTo(3, this._scenePosition);
                         }
@@ -6352,7 +6538,7 @@ var away;
             */
             DisplayObject.prototype.clone = function () {
                 var clone = new DisplayObject();
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone._iMatrix3D = this._iMatrix3D;
                 clone.name = name;
 
@@ -6367,9 +6553,8 @@ var away;
                 if (this.parent)
                     this.parent.removeChild(this);
 
-                var len = this._pRenderables.length;
-                for (var i = 0; i < len; i++)
-                    this._pRenderables[i].dispose();
+                while (this._pRenderables.length)
+                    this._pRenderables[0].dispose();
             };
 
             /**
@@ -6672,12 +6857,12 @@ var away;
             * @param    dz        The amount of movement along the local z axis.
             */
             DisplayObject.prototype.movePivot = function (dx, dy, dz) {
-                if (this._pivotPoint == null)
-                    this._pivotPoint = new away.geom.Vector3D();
+                if (this._pivot == null)
+                    this._pivot = new away.geom.Vector3D();
 
-                this._pivotPoint.x += dx;
-                this._pivotPoint.y += dy;
-                this._pivotPoint.z += dz;
+                this._pivot.x += dx;
+                this._pivot.y += dy;
+                this._pivot.z += dz;
 
                 this.invalidatePivot();
             };
@@ -6701,11 +6886,12 @@ var away;
                     comps[0] = this.scenePosition;
                     scale.x = this._pScaleX;
                     scale.y = this._pScaleY;
+                    scale.z = this._pScaleZ;
                     this._orientationMatrix.recompose(comps);
 
                     //add in case of pivot
                     if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT)
-                        this._orientationMatrix.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                        this._orientationMatrix.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
 
                     return this._orientationMatrix;
                 }
@@ -6905,10 +7091,10 @@ var away;
                 * @internal
                 */
                 get: function () {
-                    if (!this._pickingCollisionVO)
-                        this._pickingCollisionVO = new away.pick.PickingCollisionVO(this);
+                    if (!this._pPickingCollisionVO)
+                        this._pPickingCollisionVO = new away.pick.PickingCollisionVO(this);
 
-                    return this._pickingCollisionVO;
+                    return this._pPickingCollisionVO;
                 },
                 enumerable: true,
                 configurable: true
@@ -6956,6 +7142,9 @@ var away;
             DisplayObject.prototype.pInvalidateBounds = function () {
                 this._pBoundsInvalid = true;
                 this._worldBoundsInvalid = true;
+
+                if (this.isEntity)
+                    this.invalidatePartition();
             };
 
             /**
@@ -6967,6 +7156,9 @@ var away;
                 this._scenePositionDirty = !this._pIgnoreTransform;
 
                 this._worldBoundsInvalid = !this._pIgnoreTransform;
+
+                if (this.isEntity)
+                    this.invalidatePartition();
 
                 if (this._listenToSceneTransformChanged)
                     this.notifySceneTransformChange();
@@ -6990,8 +7182,8 @@ var away;
                 this._pImplicitMouseEnabled = this._explicitMouseEnabled && value;
 
                 // If there is a parent and this child does not have a picking collider, use its parent's picking collider.
-                if (this._pImplicitMouseEnabled && this._pParent && !this._pickingCollider)
-                    this._pickingCollider = this._pParent._pickingCollider;
+                if (this._pImplicitMouseEnabled && this._pParent && !this._pPickingCollider)
+                    this._pPickingCollider = this._pParent._pPickingCollider;
             };
 
             /**
@@ -7028,9 +7220,9 @@ var away;
                 this._matrix3D.recompose(this._transformComponents);
 
                 if (!this._pivotZero) {
-                    this._matrix3D.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                    this._matrix3D.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
                     if (this.alignmentMode != away.base.AlignmentMode.PIVOT_POINT)
-                        this._matrix3D.appendTranslation(this._pivotPoint.x * this._pScaleX, this._pivotPoint.y * this._pScaleY, this._pivotPoint.z * this._pScaleZ);
+                        this._matrix3D.appendTranslation(this._pivot.x, this._pivot.y, this._pivot.z);
                 }
 
                 this._matrix3DDirty = false;
@@ -7069,10 +7261,16 @@ var away;
             };
 
             /**
+            * //TODO
+            *
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
             * @internal
             */
-            DisplayObject.prototype._iCollidesBefore = function (shortestCollisionDistance, findClosest) {
-                return true;
+            DisplayObject.prototype._iTestCollision = function (shortestCollisionDistance, findClosest) {
+                return false;
             };
 
             /**
@@ -7226,8 +7424,16 @@ var away;
             /**
             * @private
             */
+            DisplayObject.prototype.invalidatePartition = function () {
+                if (this._iAssignedPartition)
+                    this._iAssignedPartition.iMarkForUpdate(this);
+            };
+
+            /**
+            * @private
+            */
             DisplayObject.prototype.invalidatePivot = function () {
-                this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
+                this._pivotZero = (this._pivot.x == 0) && (this._pivot.y == 0) && (this._pivot.z == 0);
 
                 if (this._pivotDirty)
                     return;
@@ -9281,6 +9487,7 @@ var away;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     /**
@@ -9291,17 +9498,61 @@ var away;
         * @class away.pool.RenderablePool
         */
         var RenderablePool = (function () {
+            /**
+            * //TODO
+            *
+            * @param renderableClass
+            */
             function RenderablePool(renderableClass) {
                 this._pool = new Object();
                 this._renderableClass = renderableClass;
             }
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            * @returns IRenderable
+            */
             RenderablePool.prototype.getItem = function (materialOwner) {
                 return (this._pool[materialOwner.id] || (this._pool[materialOwner.id] = materialOwner._iAddRenderable(new this._renderableClass(this, materialOwner))));
             };
 
+            /**
+            * //TODO
+            *
+            * @param materialOwner
+            */
             RenderablePool.prototype.disposeItem = function (materialOwner) {
+                materialOwner._iRemoveRenderable(this._pool[materialOwner.id]);
+
                 this._pool[materialOwner.id] = null;
             };
+
+            /**
+            * //TODO
+            *
+            * @param renderableClass
+            * @returns RenderablePool
+            */
+            RenderablePool.getPool = function (renderableClass) {
+                var pool = RenderablePool._pools[renderableClass.id];
+
+                if (pool != undefined)
+                    return pool;
+
+                return (RenderablePool._pools[renderableClass.id] = new RenderablePool(renderableClass));
+            };
+
+            /**
+            * //TODO
+            *
+            * @param renderableClass
+            */
+            RenderablePool.disposePool = function (renderableClass) {
+                if (RenderablePool._pools[renderableClass.id])
+                    RenderablePool._pools[renderableClass.id] = undefined;
+            };
+            RenderablePool._pools = new Object();
             return RenderablePool;
         })();
         pool.RenderablePool = RenderablePool;
@@ -9332,8 +9583,18 @@ var away;
                 this.sourceEntity = sourceEntity;
                 this.materialOwner = materialOwner;
             }
+            /**
+            *
+            */
             CSSRenderableBase.prototype.dispose = function () {
                 this._pool.disposeItem(this.materialOwner);
+            };
+
+            /**
+            *
+            */
+            CSSRenderableBase.prototype._iUpdate = function () {
+                //nothing to do here
             };
             return CSSRenderableBase;
         })();
@@ -9372,8 +9633,9 @@ var away;
 
                 div.appendChild(img);
 
-                img.className = "material" + this.materialOwner.material.id;
+                img.className = "material" + billboard.material.id;
             }
+            CSSBillboardRenderable.id = "billboard";
             return CSSBillboardRenderable;
         })(away.pool.CSSRenderableBase);
         pool.CSSBillboardRenderable = CSSBillboardRenderable;
@@ -9389,20 +9651,16 @@ var away;
     */
     (function (traverse) {
         /**
-        * @class away.traverse.EntityCollector
+        * @class away.traverse.CollectorBase
         */
-        var CSSEntityCollector = (function () {
-            function CSSEntityCollector() {
+        var CollectorBase = (function () {
+            function CollectorBase() {
+                this._numCullPlanes = 0;
                 this._pNumEntities = 0;
                 this._pNumInteractiveEntities = 0;
-                this._pNumLights = 0;
-                this._numDirectionalLights = 0;
-                this._numPointLights = 0;
-                this._numLightProbes = 0;
-                this._numCullPlanes = 0;
                 this._pEntityListItemPool = new away.pool.EntityListItemPool();
             }
-            Object.defineProperty(CSSEntityCollector.prototype, "camera", {
+            Object.defineProperty(CollectorBase.prototype, "camera", {
                 /**
                 *
                 */
@@ -9418,7 +9676,7 @@ var away;
             });
 
 
-            Object.defineProperty(CSSEntityCollector.prototype, "cullPlanes", {
+            Object.defineProperty(CollectorBase.prototype, "cullPlanes", {
                 /**
                 *
                 */
@@ -9433,7 +9691,29 @@ var away;
             });
 
 
-            Object.defineProperty(CSSEntityCollector.prototype, "numInteractiveEntities", {
+            Object.defineProperty(CollectorBase.prototype, "entityHead", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pEntityHead;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CollectorBase.prototype, "numEntities", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pNumEntities;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CollectorBase.prototype, "numInteractiveEntities", {
                 /**
                 *
                 */
@@ -9444,40 +9724,23 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(CSSEntityCollector.prototype, "entityHead", {
-                /**
-                *
-                */
-                //		public get skyBox():away.render.RenderableBase
-                //		{
-                //			return this._pSkyBox;
-                //		}
-                /**
-                *
-                */
-                get: function () {
-                    return this._entityHead;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             /**
             *
             */
-            CSSEntityCollector.prototype.clear = function () {
+            CollectorBase.prototype.clear = function () {
                 this._pNumEntities = this._pNumInteractiveEntities = 0;
-
                 this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
                 this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
-                this._entityHead = null;
+                this._pEntityHead = null;
                 this._pEntityListItemPool.freeAll();
             };
 
             /**
             *
+            * @param node
+            * @returns {boolean}
             */
-            CSSEntityCollector.prototype.enterNode = function (node) {
+            CollectorBase.prototype.enterNode = function (node) {
                 var enter = this.scene._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
                 node._iCollectionMark = this.scene._iCollectionMark;
@@ -9487,16 +9750,18 @@ var away;
 
             /**
             *
+            * @param entity
             */
-            //		public applySkyBox(renderable:away.render.RenderableBase)
-            //		{
-            //			this._pSkyBox = renderable;
-            //		}
+            CollectorBase.prototype.applyDirectionalLight = function (entity) {
+                //don't do anything here
+            };
+
             /**
             *
+            * @param entity
             */
-            CSSEntityCollector.prototype.applyEntity = function (entity) {
-                ++this._pNumEntities;
+            CollectorBase.prototype.applyEntity = function (entity) {
+                this._pNumEntities++;
 
                 if (entity._iIsMouseEnabled())
                     this._pNumInteractiveEntities++;
@@ -9504,17 +9769,119 @@ var away;
                 var item = this._pEntityListItemPool.getItem();
                 item.entity = entity;
 
-                item.next = this._entityHead;
-                this._entityHead = item;
+                item.next = this._pEntityHead;
+                this._pEntityHead = item;
             };
 
             /**
-            * Cleans up any data at the end of a frame.
+            *
+            * @param entity
             */
-            CSSEntityCollector.prototype.cleanUp = function () {
+            CollectorBase.prototype.applyLightProbe = function (entity) {
+                //don't do anything here
             };
-            return CSSEntityCollector;
+
+            /**
+            *
+            * @param entity
+            */
+            CollectorBase.prototype.applyPointLight = function (entity) {
+                //don't do anything here
+            };
+            return CollectorBase;
         })();
+        traverse.CollectorBase = CollectorBase;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.traverse
+    */
+    (function (traverse) {
+        /**
+        * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
+        * considered intersecting with the defined ray.
+        *
+        * @see away.partition.Partition
+        * @see away.entities.IEntity
+        *
+        * @class away.traverse.RaycastCollector
+        */
+        var RaycastCollector = (function (_super) {
+            __extends(RaycastCollector, _super);
+            /**
+            * Creates a new RaycastCollector object.
+            */
+            function RaycastCollector() {
+                _super.call(this);
+                this._rayPosition = new away.geom.Vector3D();
+                this._rayDirection = new away.geom.Vector3D();
+                this._iCollectionMark = 0;
+            }
+            Object.defineProperty(RaycastCollector.prototype, "rayPosition", {
+                /**
+                * Provides the starting position of the ray.
+                */
+                get: function () {
+                    return this._rayPosition;
+                },
+                set: function (value) {
+                    this._rayPosition = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RaycastCollector.prototype, "rayDirection", {
+                /**
+                * Provides the direction vector of the ray.
+                */
+                get: function () {
+                    return this._rayDirection;
+                },
+                set: function (value) {
+                    this._rayDirection = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
+            *
+            * @param node The Partition3DNode object to frustum-test.
+            */
+            RaycastCollector.prototype.enterNode = function (node) {
+                return node.isIntersectingRay(this._rayPosition, this._rayDirection);
+            };
+            return RaycastCollector;
+        })(away.traverse.CollectorBase);
+        traverse.RaycastCollector = RaycastCollector;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.traverse
+    */
+    (function (traverse) {
+        /**
+        * @class away.traverse.CSSEntityCollector
+        */
+        var CSSEntityCollector = (function (_super) {
+            __extends(CSSEntityCollector, _super);
+            function CSSEntityCollector() {
+                _super.call(this);
+            }
+            return CSSEntityCollector;
+        })(away.traverse.CollectorBase);
         traverse.CSSEntityCollector = CSSEntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -9952,6 +10319,196 @@ var away;
     var pick = away.pick;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pick
+    */
+    (function (pick) {
+        /**
+        * Picks a 3d object from a view or scene by 3D raycast calculations.
+        * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+        * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+        *
+        * @class away.pick.RaycastPicker
+        */
+        var RaycastPicker = (function () {
+            /**
+            * Creates a new <code>RaycastPicker</code> object.
+            *
+            * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+            * or simply returns the first collision encountered. Defaults to false.
+            */
+            function RaycastPicker(findClosestCollision) {
+                if (typeof findClosestCollision === "undefined") { findClosestCollision = false; }
+                this._ignoredEntities = [];
+                this._onlyMouseEnabled = true;
+                this._numEntities = 0;
+                this._raycastCollector = new away.traverse.RaycastCollector();
+
+                this._findClosestCollision = findClosestCollision;
+                this._entities = new Array();
+            }
+            Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
+                /**
+                * @inheritDoc
+                */
+                get: function () {
+                    return this._onlyMouseEnabled;
+                },
+                set: function (value) {
+                    this._onlyMouseEnabled = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            RaycastPicker.prototype.getViewCollision = function (x, y, view) {
+                //update ray
+                var rayPosition = view.unproject(x, y, 0);
+                var rayDirection = view.unproject(x, y, 1).subtract(rayPosition);
+
+                return this.getSceneCollision(rayPosition, rayDirection, view.scene);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            RaycastPicker.prototype.getSceneCollision = function (rayPosition, rayDirection, scene) {
+                //clear collector
+                this._raycastCollector.clear();
+
+                //setup ray vectors
+                this._raycastCollector.rayPosition = rayPosition;
+                this._raycastCollector.rayDirection = rayDirection;
+
+                // collect entities to test
+                scene.traversePartitions(this._raycastCollector);
+
+                this._numEntities = 0;
+                var node = this._raycastCollector.entityHead;
+                var entity;
+
+                while (node) {
+                    if (!this.isIgnored(entity = node.entity))
+                        this._entities[this._numEntities++] = entity;
+
+                    node = node.next;
+                }
+
+                //early out if no collisions detected
+                if (!this._numEntities)
+                    return null;
+
+                return this.getPickingCollisionVO(this._raycastCollector);
+            };
+
+            //		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:Array<away.entities.IEntity>):PickingCollisionVO
+            //		{
+            //			this._numEntities = 0;
+            //
+            //			var entity:away.entities.IEntity;
+            //			var l:number = entities.length;
+            //
+            //			for (var c:number = 0; c < l; c++) {
+            //				entity = entities[c];
+            //
+            //				if (entity.isIntersectingRay(position, direction))
+            //					this._entities[this._numEntities++] = entity;
+            //			}
+            //
+            //			return this.getPickingCollisionVO(this._raycastCollector);
+            //		}
+            RaycastPicker.prototype.setIgnoreList = function (entities) {
+                this._ignoredEntities = entities;
+            };
+
+            RaycastPicker.prototype.isIgnored = function (entity) {
+                if (this._onlyMouseEnabled && !entity._iIsMouseEnabled())
+                    return true;
+
+                var len = this._ignoredEntities.length;
+                for (var i = 0; i < len; i++)
+                    if (this._ignoredEntities[i] == entity)
+                        return true;
+
+                return false;
+            };
+
+            RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
+                return entity1._iPickingCollisionVO.rayEntryDistance > entity2._iPickingCollisionVO.rayEntryDistance ? 1 : -1;
+            };
+
+            RaycastPicker.prototype.getPickingCollisionVO = function (collector) {
+                // trim before sorting
+                this._entities.length = this._numEntities;
+
+                // Sort entities from closest to furthest.
+                this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
+
+                // ---------------------------------------------------------------------
+                // Evaluate triangle collisions when needed.
+                // Replaces collision data provided by bounds collider with more precise data.
+                // ---------------------------------------------------------------------
+                var shortestCollisionDistance = Number.MAX_VALUE;
+                var bestCollisionVO;
+                var pickingCollisionVO;
+                var entity;
+                var i;
+
+                for (i = 0; i < this._numEntities; ++i) {
+                    entity = this._entities[i];
+                    pickingCollisionVO = entity._iPickingCollisionVO;
+                    if (entity.pickingCollider) {
+                        // If a collision exists, update the collision data and stop all checks.
+                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && entity._iTestCollision(shortestCollisionDistance, this._findClosestCollision)) {
+                            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+                            bestCollisionVO = pickingCollisionVO;
+                            if (!this._findClosestCollision) {
+                                this.updateLocalPosition(pickingCollisionVO);
+                                return pickingCollisionVO;
+                            }
+                        }
+                    } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
+                        // Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
+                        // to enable the detection of a corresponsding triangle collision.
+                        // Therefore, bounds collisions with a ray origin inside its bounds can be ignored
+                        // if it has been established that there is NO triangle collider to test
+                        if (!pickingCollisionVO.rayOriginIsInsideBounds) {
+                            this.updateLocalPosition(pickingCollisionVO);
+                            return pickingCollisionVO;
+                        }
+                    }
+                }
+
+                return bestCollisionVO;
+            };
+
+            RaycastPicker.prototype.updateLocalPosition = function (pickingCollisionVO) {
+                var collisionPos = (pickingCollisionVO.localPosition == null) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
+
+                var rayDir = pickingCollisionVO.localRayDirection;
+                var rayPos = pickingCollisionVO.localRayPosition;
+                var t = pickingCollisionVO.rayEntryDistance;
+                collisionPos.x = rayPos.x + t * rayDir.x;
+                collisionPos.y = rayPos.y + t * rayDir.y;
+                collisionPos.z = rayPos.z + t * rayDir.z;
+            };
+
+            RaycastPicker.prototype.dispose = function () {
+                //TODO
+            };
+            return RaycastPicker;
+        })();
+        pick.RaycastPicker = RaycastPicker;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
@@ -9979,13 +10536,12 @@ var away;
                 this._backgroundG = 0;
                 this._backgroundB = 0;
                 this._backgroundAlpha = 1;
+                this._shareContext = false;
                 this._pBackBufferInvalid = true;
                 this._depthTextureInvalid = true;
-            }
-            CSSRendererBase.prototype._iCreateEntityCollector = function () {
-                return new away.traverse.CSSEntityCollector();
-            };
 
+                this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.CSSBillboardRenderable);
+            }
             Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundR", {
                 /**
                 * The background color's red component, used when clearing.
@@ -10046,6 +10602,23 @@ var away;
                     this._backgroundB = value;
 
                     this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "shareContext", {
+                get: function () {
+                    return this._shareContext;
+                },
+                set: function (value) {
+                    if (this._shareContext == value)
+                        return;
+
+                    this._shareContext = value;
+
+                    this.updateGlobalPos();
                 },
                 enumerable: true,
                 configurable: true
@@ -10148,7 +10721,7 @@ var away;
             * @protected
             */
             CSSRendererBase.prototype.applyBillboard = function (billboard) {
-                this.applyRenderable(CSSRendererBase.billboardRenderablePool.getItem(billboard));
+                this.applyRenderable(this._billboardRenderablePool.getItem(billboard));
             };
 
             /**
@@ -10190,33 +10763,6 @@ var away;
                     this.applyBillboard(entity);
                 }
             };
-
-            /**
-            * //TODO
-            *
-            * @param entity
-            * @param shortestCollisionDistance
-            * @param findClosest
-            * @returns {boolean}
-            *
-            * @internal
-            */
-            CSSRendererBase._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
-                var pickingCollider = entity.pickingCollider;
-                var pickingCollisionVO = entity._iPickingCollisionVO;
-
-                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
-                pickingCollisionVO.materialOwner = null;
-
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    //return this.testBillBoard(<away.entities.Billboard> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    //return this.testMesh(<away.entities.Mesh> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                }
-
-                return false;
-            };
-            CSSRendererBase.billboardRenderablePool = new away.pool.RenderablePool(away.pool.CSSBillboardRenderable);
             return CSSRendererBase;
         })(away.events.EventDispatcher);
         render.CSSRendererBase = CSSRendererBase;
@@ -10258,7 +10804,6 @@ var away;
 
                 //add container to body
                 document.body.appendChild(this._container);
-                document.body.style.margin = "0px";
 
                 //create conxtext for the renderer
                 this._context = document.createElement("div");
@@ -10422,6 +10967,13 @@ var away;
                 //			}
                 //
                 //			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
+                var sheet = document.styleSheets[document.styleSheets.length - 1];
+
+                for (var i = 0; i < sheet.cssRules.length; i++) {
+                    var style = sheet.cssRules[i].style;
+                    style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = (entityCollector.camera.projection.coordinateSystem == away.projections.CoordinateSystem.RIGHT_HANDED) ? "" : "scale3d(1, -1, 1) translateY(-" + style.height + ")";
+                }
+
                 this.drawRenderables(this._renderableHead, entityCollector);
 
                 //			if (this._activeMaterial)
@@ -10438,8 +10990,8 @@ var away;
                 this._container.style.clip = "rect(0px, " + this._width + "px, " + this._height + "px, 0px)";
 
                 //update context matrix
-                this._contextMatrix.rawData[0] = this._width;
-                this._contextMatrix.rawData[5] = -this._height;
+                this._contextMatrix.rawData[0] = this._width / 2;
+                this._contextMatrix.rawData[5] = -this._height / 2;
                 this._contextMatrix.rawData[10] = -1; //fix for innaccurate z-sort
                 this._contextMatrix.rawData[12] = this._width / 2;
                 this._contextMatrix.rawData[13] = this._height / 2;
@@ -10572,6 +11124,10 @@ var away;
 
                 this.notifyViewportUpdate();
                 this.notifyScissorUpdate();
+            };
+
+            CSSDefaultRenderer.prototype._iCreateEntityCollector = function () {
+                return new away.traverse.CSSEntityCollector();
             };
             return CSSDefaultRenderer;
         })(away.render.CSSRendererBase);
@@ -11501,7 +12057,14 @@ var away;
             };
 
             ContextGL.prototype.drawToBitmapData = function (destination) {
-                throw new away.errors.PartialImplementationError();
+                var arrayBuffer = new ArrayBuffer(destination.width * destination.height * 4);
+
+                this._gl.readPixels(0, 0, destination.width, destination.height, this._gl.RGBA, this._gl.UNSIGNED_BYTE, new Uint8Array(arrayBuffer));
+
+                var byteArray = new away.utils.ByteArray();
+                byteArray.setArrayBuffer(arrayBuffer);
+
+                destination.setPixels(new away.geom.Rectangle(0, 0, destination.width, destination.height), byteArray);
             };
 
             ContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
@@ -11607,17 +12170,18 @@ var away;
                 this._gl.colorMask(red, green, blue, alpha);
             };
 
-            ContextGL.prototype.setCulling = function (triangleFaceToCull) {
+            ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
                 if (triangleFaceToCull == away.gl.ContextGLTriangleFace.NONE) {
                     this._gl.disable(this._gl.CULL_FACE);
                 } else {
                     this._gl.enable(this._gl.CULL_FACE);
                     switch (triangleFaceToCull) {
-                        case away.gl.ContextGLTriangleFace.FRONT:
-                            this._gl.cullFace(this._gl.BACK);
-                            break;
                         case away.gl.ContextGLTriangleFace.BACK:
-                            this._gl.cullFace(this._gl.FRONT);
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
+                            break;
+                        case away.gl.ContextGLTriangleFace.FRONT:
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
                             break;
                         case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
                             this._gl.cullFace(this._gl.FRONT_AND_BACK);
@@ -11966,18 +12530,11 @@ var away;
             __extends(AGLSLContextGL, _super);
             function AGLSLContextGL(canvas) {
                 _super.call(this, canvas);
-                this._yFlip = -1;
             }
             //@override
             AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
                 if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                /*
-                console.log( "======== setProgramConstantsFromMatrix ========" );
-                console.log( "programType       >>> " + programType );
-                console.log( "firstRegister     >>> " + firstRegister );
-                console.log( "matrix            >>> " + matrix.rawData );
-                console.log( "transposedMatrix  >>> " + transposedMatrix );
-                */
+                //TODO remove special case for WebGL matrix calls?
                 var d = matrix.rawData;
                 if (transposedMatrix) {
                     this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
@@ -11989,44 +12546,6 @@ var away;
                     this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
                     this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
                     this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
-                }
-            };
-
-            //@override
-            AGLSLContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
-                if (typeof firstIndex === "undefined") { firstIndex = 0; }
-                if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                /*
-                console.log( "======= drawTriangles ========" );
-                console.log( indexBuffer );
-                console.log( "firstIndex: " +  firstIndex );
-                console.log( "numTriangles:" + numTriangles );
-                */
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, "yflip");
-                this._gl.uniform1f(location, this._yFlip);
-                _super.prototype.drawTriangles.call(this, indexBuffer, firstIndex, numTriangles);
-            };
-
-            //@override
-            AGLSLContextGL.prototype.setCulling = function (triangleFaceToCull) {
-                _super.prototype.setCulling.call(this, triangleFaceToCull);
-
-                switch (triangleFaceToCull) {
-                    case away.gl.ContextGLTriangleFace.FRONT:
-                        this._yFlip = -1;
-                        break;
-                    case away.gl.ContextGLTriangleFace.BACK:
-                        this._yFlip = 1; // checked
-                        break;
-                    case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
-                        this._yFlip = 1;
-                        break;
-                    case away.gl.ContextGLTriangleFace.NONE:
-                        this._yFlip = 1; // checked
-                        break;
-                    default:
-                        throw "Unknown culling mode " + triangleFaceToCull + ".";
-                        break;
                 }
             };
             return AGLSLContextGL;
@@ -13676,8 +14195,11 @@ var away;
             * coordinate to another.
             */
             Matrix3D.prototype.deltaTransformVector = function (v) {
-                var x = v.x, y = v.y, z = v.z;
-                return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[1] + z * this.rawData[2] + this.rawData[3]), (x * this.rawData[4] + y * this.rawData[5] + z * this.rawData[6] + this.rawData[7]), (x * this.rawData[8] + y * this.rawData[9] + z * this.rawData[10] + this.rawData[11]), 0);
+                var x = v.x;
+                var y = v.y;
+                var z = v.z;
+
+                return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8]), (x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9]), (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10]), (x * this.rawData[3] + y * this.rawData[7] + z * this.rawData[11]));
             };
 
             /**
@@ -13791,9 +14313,9 @@ var away;
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
 
                 /*
-                if ( pivotPoint != null )
+                if ( pivot != null )
                 {
-                var p:Vector3D = pivotPoint;
+                var p:Vector3D = pivot;
                 m.appendTranslation( p.x, p.y, p.z );
                 }
                 */
@@ -13846,10 +14368,10 @@ var away;
             };
 
             Matrix3D.prototype.transformVector = function (v) {
-                // Initial Tests - OK
                 var x = v.x;
                 var y = v.y;
                 var z = v.z;
+
                 return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]), (x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]), (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]), (x * this.rawData[3] + y * this.rawData[7] + z * this.rawData[11] + this.rawData[15]));
             };
 
@@ -19108,7 +19630,7 @@ var away;
             */
             DisplayObjectContainer.prototype.clone = function () {
                 var clone = new away.containers.DisplayObjectContainer();
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone._iMatrix3D = this._iMatrix3D;
                 clone.partition = this.partition;
                 clone.name = name;
@@ -19482,26 +20004,30 @@ var away;
     * contains the Billboard object.</p>
     */
     (function (entities) {
+        var MaterialEvent = away.events.MaterialEvent;
+        var Matrix3D = away.geom.Matrix3D;
+        var UVTransform = away.geom.UVTransform;
+
         var Billboard = (function (_super) {
             __extends(Billboard, _super);
-            function Billboard(material, width, height, pixelSnapping, smoothing) {
+            function Billboard(material, pixelSnapping, smoothing) {
                 if (typeof pixelSnapping === "undefined") { pixelSnapping = "auto"; }
                 if (typeof smoothing === "undefined") { smoothing = false; }
+                var _this = this;
                 _super.call(this);
 
                 this._pIsEntity = true;
 
+                this.onSizeChangedDelegate = function (event) {
+                    return _this.onSizeChanged(event);
+                };
+
                 this.material = material;
 
-                //TODO don't rely on scaling for the width and height of the billboard
-                this.width = width;
-                this.height = height;
+                this._billboardWidth = material.width;
+                this._billboardHeight = material.height;
 
-                this.pivotPoint = new away.geom.Vector3D(0.5, 0.5, 0);
-
-                this._bitmapMatrix = new away.geom.Matrix3D();
-
-                this._uvTransform = new away.geom.UVTransform(this);
+                this._uvTransform = new UVTransform(this);
             }
             Object.defineProperty(Billboard.prototype, "animator", {
                 /**
@@ -19525,6 +20051,28 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(Billboard.prototype, "billboardHeight", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._billboardHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Billboard.prototype, "billboardWidth", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._billboardWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Billboard.prototype, "material", {
                 /**
                 *
@@ -19536,18 +20084,33 @@ var away;
                     if (value == this._material)
                         return;
 
-                    if (this._material)
+                    if (this._material) {
                         this._material.iRemoveOwner(this);
+                        this._material.removeEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
 
                     this._material = value;
 
-                    if (this._material)
+                    if (this._material) {
                         this._material.iAddOwner(this);
+                        this._material.addEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            Object.defineProperty(Billboard.prototype, "sourceEntity", {
+                /**
+                *
+                */
+                get: function () {
+                    return this;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(Billboard.prototype, "uvTransform", {
                 /**
@@ -19571,25 +20134,40 @@ var away;
             * @protected
             */
             Billboard.prototype.pUpdateBounds = function () {
-                this._pBounds.fromExtremes(0, 0, 0, 1, 1, 0);
+                this._pBounds.fromExtremes(0, 0, 0, this._billboardWidth, this._billboardHeight, 0);
 
                 _super.prototype.pUpdateBounds.call(this);
-            };
-
-            /**
-            * @protected
-            */
-            Billboard.prototype.pInvalidateBounds = function () {
-                _super.prototype.pInvalidateBounds.call(this);
-
-                if (this._iAssignedPartition)
-                    this._iAssignedPartition.iMarkForUpdate(this);
             };
 
             /**
             * @internal
             */
             Billboard.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
+            };
+
+            /**
+            * //TODO
+            *
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            Billboard.prototype._iTestCollision = function (shortestCollisionDistance, findClosest) {
+                return this._pPickingCollider.testBillboardCollision(this, this._pPickingCollisionVO, shortestCollisionDistance);
+            };
+
+            /**
+            * @private
+            */
+            Billboard.prototype.onSizeChanged = function (event) {
+                this._billboardWidth = this._material.width;
+                this._billboardHeight = this._material.height;
+
+                var len = this._pRenderables.length;
+                for (var i = 0; i < len; i++)
+                    this._pRenderables[i]._iUpdate();
             };
             return Billboard;
         })(away.base.DisplayObject);
@@ -19796,7 +20374,7 @@ var away;
                     this._projection.removeEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
                     this._projection = value;
                     this._projection.addEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
+                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.PROJECTION_CHANGED, this));
                 },
                 enumerable: true,
                 configurable: true
@@ -19845,8 +20423,8 @@ var away;
             /**
             * Calculates the scene position of the given normalized coordinates in screen space.
             *
-            * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
-            * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+            * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
+            * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
             * @param sZ The z coordinate in screen space, representing the distance into the screen.
             * @return The scene position of the given screen coordinates.
             */
@@ -20501,14 +21079,37 @@ var away;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
+var away;
+(function (away) {
+    (function (projections) {
+        /**
+        * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
+        *
+        * @see away.projections.PerspectiveLens#coordinateSystem
+        */
+        var CoordinateSystem = (function () {
+            function CoordinateSystem() {
+            }
+            CoordinateSystem.LEFT_HANDED = "leftHanded";
+
+            CoordinateSystem.RIGHT_HANDED = "rightHanded";
+            return CoordinateSystem;
+        })();
+        projections.CoordinateSystem = CoordinateSystem;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
     (function (projections) {
         var ProjectionBase = (function (_super) {
             __extends(ProjectionBase, _super);
-            function ProjectionBase() {
+            function ProjectionBase(coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
                 _super.call(this);
+                this._pMatrix = new away.geom.Matrix3D();
                 this._pScissorRect = new away.geom.Rectangle();
                 this._pViewPort = new away.geom.Rectangle();
                 this._pNear = 20;
@@ -20516,9 +21117,32 @@ var away;
                 this._pAspectRatio = 1;
                 this._pMatrixInvalid = true;
                 this._pFrustumCorners = [];
+                this._pOriginX = 0.5;
+                this._pOriginY = 0.5;
                 this._unprojectionInvalid = true;
-                this._pMatrix = new away.geom.Matrix3D();
+
+                this.coordinateSystem = coordinateSystem;
             }
+            Object.defineProperty(ProjectionBase.prototype, "coordinateSystem", {
+                /**
+                * The handedness of the coordinate system projection. The default is LEFT_HANDED.
+                */
+                get: function () {
+                    return this._pCoordinateSystem;
+                },
+                set: function (value) {
+                    if (this._pCoordinateSystem == value)
+                        return;
+
+                    this._pCoordinateSystem = value;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(ProjectionBase.prototype, "frustumCorners", {
                 get: function () {
                     return this._pFrustumCorners;
@@ -20564,6 +21188,36 @@ var away;
             });
 
 
+            Object.defineProperty(ProjectionBase.prototype, "originX", {
+                get: function () {
+                    return this._pOriginX;
+                },
+                set: function (value) {
+                    if (this._pOriginX == value)
+                        return;
+
+                    this._pOriginX = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ProjectionBase.prototype, "originY", {
+                get: function () {
+                    return this._pOriginY;
+                },
+                set: function (value) {
+                    if (this._pOriginY == value)
+                        return;
+
+                    this._pOriginY = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(ProjectionBase.prototype, "far", {
                 get: function () {
                     return this._pFar;
@@ -20594,9 +21248,9 @@ var away;
             Object.defineProperty(ProjectionBase.prototype, "unprojectionMatrix", {
                 get: function () {
                     if (this._unprojectionInvalid) {
-                        if (!this._unprojection) {
+                        if (!this._unprojection)
                             this._unprojection = new away.geom.Matrix3D();
-                        }
+
                         this._unprojection.copyFrom(this.matrix);
                         this._unprojection.invert();
                         this._unprojectionInvalid = false;
@@ -20615,15 +21269,16 @@ var away;
                 throw new away.errors.AbstractMethodError();
             };
 
-            Object.defineProperty(ProjectionBase.prototype, "iAspectRatio", {
+            Object.defineProperty(ProjectionBase.prototype, "_iAspectRatio", {
                 get: function () {
                     return this._pAspectRatio;
                 },
                 set: function (value) {
-                    if (this._pAspectRatio == value) {
+                    if (this._pAspectRatio == value)
                         return;
-                    }
+
                     this._pAspectRatio = value;
+
                     this.pInvalidateMatrix();
                 },
                 enumerable: true,
@@ -20641,7 +21296,7 @@ var away;
                 throw new away.errors.AbstractMethodError();
             };
 
-            ProjectionBase.prototype.iUpdateScissorRect = function (x, y, width, height) {
+            ProjectionBase.prototype._iUpdateScissorRect = function (x, y, width, height) {
                 this._pScissorRect.x = x;
                 this._pScissorRect.y = y;
                 this._pScissorRect.width = width;
@@ -20649,7 +21304,7 @@ var away;
                 this.pInvalidateMatrix();
             };
 
-            ProjectionBase.prototype.iUpdateViewport = function (x, y, width, height) {
+            ProjectionBase.prototype._iUpdateViewport = function (x, y, width, height) {
                 this._pViewPort.x = x;
                 this._pViewPort.y = y;
                 this._pViewPort.width = width;
@@ -20668,23 +21323,71 @@ var away;
     (function (projections) {
         var PerspectiveProjection = (function (_super) {
             __extends(PerspectiveProjection, _super);
-            function PerspectiveProjection(fieldOfView) {
+            function PerspectiveProjection(fieldOfView, coordinateSystem) {
                 if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
-                _super.call(this);
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
+                _super.call(this, coordinateSystem);
+                this._fieldOfView = 60;
+                this._focalLength = 1000;
+                this._hFieldOfView = 60;
+                this._hFocalLength = 1000;
+                this._preserveAspectRatio = true;
+                this._preserveFocalLength = false;
                 this.fieldOfView = fieldOfView;
             }
+            Object.defineProperty(PerspectiveProjection.prototype, "preserveAspectRatio", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._preserveAspectRatio;
+                },
+                set: function (value) {
+                    if (this._preserveAspectRatio == value)
+                        return;
+
+                    this._preserveAspectRatio = value;
+
+                    if (this._preserveAspectRatio)
+                        this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "preserveFocalLength", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._preserveFocalLength;
+                },
+                set: function (value) {
+                    if (this._preserveFocalLength == value)
+                        return;
+
+                    this._preserveFocalLength = value;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
+                /**
+                *
+                */
                 get: function () {
                     return this._fieldOfView;
                 },
                 set: function (value) {
-                    if (value == this._fieldOfView) {
+                    if (this._fieldOfView == value)
                         return;
-                    }
-                    this._fieldOfView = value;
 
-                    this._focalLengthInv = Math.tan(this._fieldOfView * Math.PI / 360);
-                    this._focalLength = 1 / this._focalLengthInv;
+                    this._fieldOfView = value;
 
                     this.pInvalidateMatrix();
                 },
@@ -20694,17 +21397,59 @@ var away;
 
 
             Object.defineProperty(PerspectiveProjection.prototype, "focalLength", {
+                /**
+                *
+                */
                 get: function () {
                     return this._focalLength;
                 },
                 set: function (value) {
-                    if (value == this._focalLength) {
+                    if (this._focalLength == value)
                         return;
-                    }
+
                     this._focalLength = value;
 
-                    this._focalLengthInv = 1 / this._focalLength;
-                    this._fieldOfView = Math.atan(this._focalLengthInv) * 360 / Math.PI;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "hFieldOfView", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._hFieldOfView;
+                },
+                set: function (value) {
+                    if (this._hFieldOfView == value)
+                        return;
+
+                    this._hFieldOfView = value;
+
+                    this._hFocalLength = 1 / Math.tan(this._hFieldOfView * Math.PI / 360);
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "hFocalLength", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._hFocalLength;
+                },
+                set: function (value) {
+                    if (this._hFocalLength == value)
+                        return;
+
+                    this._hFocalLength = value;
 
                     this.pInvalidateMatrix();
                 },
@@ -20734,6 +21479,7 @@ var away;
                 clone._pNear = this._pNear;
                 clone._pFar = this._pFar;
                 clone._pAspectRatio = this._pAspectRatio;
+                clone._pCoordinateSystem = this._pCoordinateSystem;
                 return clone;
             };
 
@@ -20741,61 +21487,63 @@ var away;
             PerspectiveProjection.prototype.pUpdateMatrix = function () {
                 var raw = [];
 
-                this._yMax = this._pNear * this._focalLengthInv;
-                this._xMax = this._yMax * this._pAspectRatio;
+                if (this._preserveFocalLength) {
+                    if (this._preserveAspectRatio)
+                        this._hFocalLength = this._focalLength;
 
-                var left, right, top, bottom;
-
-                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
-                    // assume unscissored frustum
-                    left = -this._xMax;
-                    right = this._xMax;
-                    top = -this._yMax;
-                    bottom = this._yMax;
-
-                    // assume unscissored frustum
-                    raw[0] = this._pNear / this._xMax;
-                    raw[5] = this._pNear / this._yMax;
-                    raw[10] = this._pFar / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -this._pNear * raw[10];
+                    this._fieldOfView = Math.atan(0.5 * this._pScissorRect.height / this._focalLength) * 360 / Math.PI;
+                    this._hFieldOfView = Math.atan(0.5 * this._pScissorRect.width / this._hFocalLength) * 360 / Math.PI;
                 } else {
-                    // assume scissored frustum
-                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
-                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
-                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
-                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+                    this._focalLength = 0.5 * this._pScissorRect.height / Math.tan(this._fieldOfView * Math.PI / 360);
 
-                    left = center - xWidth;
-                    right = center + xWidth;
-                    top = middle - yHgt;
-                    bottom = middle + yHgt;
-
-                    raw[0] = 2 * this._pNear / (right - left);
-                    raw[5] = 2 * this._pNear / (bottom - top);
-                    raw[8] = (right + left) / (right - left);
-                    raw[9] = (bottom + top) / (bottom - top);
-                    raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+                    if (this._preserveAspectRatio)
+                        this._hFocalLength = this._focalLength;
+                    else
+                        this._hFocalLength = 0.5 * this._pScissorRect.width / Math.tan(this._hFieldOfView * Math.PI / 360);
                 }
+
+                var tanMinX = -this._pOriginX / this._hFocalLength;
+                var tanMaxX = (1 - this._pOriginX) / this._hFocalLength;
+                var tanMinY = -this._pOriginY / this._focalLength;
+                var tanMaxY = (1 - this._pOriginY) / this._focalLength;
+
+                var left;
+                var right;
+                var top;
+                var bottom;
+
+                // assume scissored frustum
+                var center = -((tanMinX - tanMaxX) * this._pScissorRect.x + tanMinX * this._pScissorRect.width);
+                var middle = ((tanMinY - tanMaxY) * this._pScissorRect.y + tanMinY * this._pScissorRect.height);
+
+                left = center - (tanMaxX - tanMinX) * this._pViewPort.width;
+                right = center;
+                top = middle;
+                bottom = middle + (tanMaxY - tanMinY) * this._pViewPort.height;
+
+                raw[0] = 2 / (right - left);
+                raw[5] = 2 / (bottom - top);
+                raw[8] = (right + left) / (right - left);
+                raw[9] = (bottom + top) / (bottom - top);
+                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                raw[11] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+
+                if (this._pCoordinateSystem == away.projections.CoordinateSystem.RIGHT_HANDED)
+                    raw[5] = -raw[5];
 
                 this._pMatrix.copyRawDataFrom(raw);
 
-                var yMaxFar = this._pFar * this._focalLengthInv;
-                var xMaxFar = yMaxFar * this._pAspectRatio;
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pNear * left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pNear * right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pNear * top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pNear * bottom;
 
-                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
-                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
-                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
-                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
-
-                this._pFrustumCorners[12] = this._pFrustumCorners[21] = -xMaxFar;
-                this._pFrustumCorners[15] = this._pFrustumCorners[18] = xMaxFar;
-                this._pFrustumCorners[13] = this._pFrustumCorners[16] = -yMaxFar;
-                this._pFrustumCorners[19] = this._pFrustumCorners[22] = yMaxFar;
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._pFar * left;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._pFar * right;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._pFar * top;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._pFar * bottom;
 
                 this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
                 this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
@@ -21099,166 +21847,6 @@ var away;
 var away;
 (function (away) {
     (function (projections) {
-        var PerspectiveOffCenterProjection = (function (_super) {
-            __extends(PerspectiveOffCenterProjection, _super);
-            function PerspectiveOffCenterProjection(minAngleX, maxAngleX, minAngleY, maxAngleY) {
-                if (typeof minAngleX === "undefined") { minAngleX = -40; }
-                if (typeof maxAngleX === "undefined") { maxAngleX = 40; }
-                if (typeof minAngleY === "undefined") { minAngleY = -40; }
-                if (typeof maxAngleY === "undefined") { maxAngleY = 40; }
-                _super.call(this);
-
-                this.minAngleX = minAngleX;
-                this.maxAngleX = maxAngleX;
-                this.minAngleY = minAngleY;
-                this.maxAngleY = maxAngleY;
-            }
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleX", {
-                get: function () {
-                    return this._minAngleX;
-                },
-                set: function (value) {
-                    this._minAngleX = value;
-                    this._tanMinX = Math.tan(this._minAngleX * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleX", {
-                get: function () {
-                    return this._maxAngleX;
-                },
-                set: function (value) {
-                    this._maxAngleX = value;
-                    this._tanMaxX = Math.tan(this._maxAngleX * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleY", {
-                get: function () {
-                    return this._minAngleY;
-                },
-                set: function (value) {
-                    this._minAngleY = value;
-                    this._tanMinY = Math.tan(this._minAngleY * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleY", {
-                get: function () {
-                    return this._maxAngleY;
-                },
-                set: function (value) {
-                    this._maxAngleY = value;
-                    this._tanMaxY = Math.tan(this._maxAngleY * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
-                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
-
-                v.x *= sZ;
-                v.y *= sZ;
-                v = this.unprojectionMatrix.transformVector(v);
-
-                //z is unaffected by transform
-                v.z = sZ;
-
-                return v;
-            };
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.clone = function () {
-                var clone = new PerspectiveOffCenterProjection(this._minAngleX, this._maxAngleX, this._minAngleY, this._maxAngleY);
-                clone._pNear = this._pNear;
-                clone._pFar = this._pFar;
-                clone._pAspectRatio = this._pAspectRatio;
-                return clone;
-            };
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.pUpdateMatrix = function () {
-                var raw = [];
-
-                this._minLengthX = this._pNear * this._tanMinX;
-                this._maxLengthX = this._pNear * this._tanMaxX;
-                this._minLengthY = this._pNear * this._tanMinY;
-                this._maxLengthY = this._pNear * this._tanMaxY;
-
-                var minLengthFracX = -this._minLengthX / (this._maxLengthX - this._minLengthX);
-                var minLengthFracY = -this._minLengthY / (this._maxLengthY - this._minLengthY);
-
-                var left;
-                var right;
-                var top;
-                var bottom;
-
-                // assume scissored frustum
-                var center = -this._minLengthX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
-                var middle = this._minLengthY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
-
-                left = center - (this._maxLengthX - this._minLengthX) * (this._pViewPort.width / this._pScissorRect.width);
-                right = center;
-                top = middle;
-                bottom = middle + (this._maxLengthY - this._minLengthY) * (this._pViewPort.height / this._pScissorRect.height);
-
-                raw[0] = 2 * this._pNear / (right - left);
-                raw[5] = 2 * this._pNear / (bottom - top);
-                raw[8] = (right + left) / (right - left);
-                raw[9] = (bottom + top) / (bottom - top);
-                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
-                raw[11] = 1;
-                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
-                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
-
-                this._pMatrix.copyRawDataFrom(raw);
-
-                this._minLengthX = this._pFar * this._tanMinX;
-                this._maxLengthX = this._pFar * this._tanMaxX;
-                this._minLengthY = this._pFar * this._tanMinY;
-                this._maxLengthY = this._pFar * this._tanMaxY;
-
-                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
-                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
-                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
-                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
-
-                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minLengthX;
-                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxLengthX;
-                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minLengthY;
-                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxLengthY;
-
-                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
-                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
-
-                this._pMatrixInvalid = false;
-            };
-            return PerspectiveOffCenterProjection;
-        })(away.projections.ProjectionBase);
-        projections.PerspectiveOffCenterProjection = PerspectiveOffCenterProjection;
-    })(away.projections || (away.projections = {}));
-    var projections = away.projections;
-})(away || (away = {}));
-///<reference path="../_definitions.ts" />
-var away;
-(function (away) {
-    (function (projections) {
         var ObliqueNearPlaneProjection = (function (_super) {
             __extends(ObliqueNearPlaneProjection, _super);
             function ObliqueNearPlaneProjection(baseProjection, plane) {
@@ -21308,11 +21896,11 @@ var away;
             Object.defineProperty(ObliqueNearPlaneProjection.prototype, "iAspectRatio", {
                 //@override
                 get: function () {
-                    return this._baseProjection.iAspectRatio;
+                    return this._baseProjection._iAspectRatio;
                 },
                 //@override
                 set: function (value) {
-                    this._baseProjection.iAspectRatio = value;
+                    this._baseProjection._iAspectRatio = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -21376,6 +21964,752 @@ var away;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    // Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
+    (function (managers) {
+        /**
+        * MouseManager enforces a singleton pattern and is not intended to be instanced.
+        * it provides a manager class for detecting mouse hits on scene objects and sending out mouse events.
+        */
+        var MouseManager = (function () {
+            /**
+            * Creates a new <code>MouseManager</code> object.
+            */
+            function MouseManager() {
+                var _this = this;
+                this._viewLookup = new Array();
+                this._nullVector = new away.geom.Vector3D();
+                this._queuedEvents = new Array();
+                this._mouseUp = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_UP);
+                this._mouseClick = new away.events.MouseEvent(away.events.MouseEvent.CLICK);
+                this._mouseOut = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_OUT);
+                this._mouseDown = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_DOWN);
+                this._mouseMove = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_MOVE);
+                this._mouseOver = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_OVER);
+                this._mouseWheel = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_WHEEL);
+                this._mouseDoubleClick = new away.events.MouseEvent(away.events.MouseEvent.DOUBLE_CLICK);
+                this.onClickDelegate = function (event) {
+                    return _this.onClick(event);
+                };
+                this.onDoubleClickDelegate = function (event) {
+                    return _this.onDoubleClick(event);
+                };
+                this.onMouseDownDelegate = function (event) {
+                    return _this.onMouseDown(event);
+                };
+                this.onMouseMoveDelegate = function (event) {
+                    return _this.onMouseMove(event);
+                };
+                this.onMouseUpDelegate = function (event) {
+                    return _this.onMouseUp(event);
+                };
+                this.onMouseWheelDelegate = function (event) {
+                    return _this.onMouseWheel(event);
+                };
+                this.onMouseOverDelegate = function (event) {
+                    return _this.onMouseOver(event);
+                };
+                this.onMouseOutDelegate = function (event) {
+                    return _this.onMouseOut(event);
+                };
+            }
+            MouseManager.getInstance = function () {
+                if (this._instance)
+                    return this._instance;
+
+                return (this._instance = new MouseManager());
+            };
+
+            MouseManager.prototype.fireMouseEvents = function (forceMouseMove) {
+                // If colliding object has changed, queue over/out events.
+                if (this._iCollidingObject != this._previousCollidingObject) {
+                    if (this._previousCollidingObject)
+                        this.queueDispatch(this._mouseOut, this._mouseMoveEvent, this._previousCollidingObject);
+
+                    if (this._iCollidingObject)
+                        this.queueDispatch(this._mouseOver, this._mouseMoveEvent);
+                }
+
+                // Fire mouse move events here if forceMouseMove is on.
+                if (forceMouseMove && this._iCollidingObject)
+                    this.queueDispatch(this._mouseMove, this._mouseMoveEvent);
+
+                var event;
+                var dispatcher;
+
+                // Dispatch all queued events.
+                var len = this._queuedEvents.length;
+                for (var i = 0; i < len; ++i) {
+                    // Only dispatch from first implicitly enabled object ( one that is not a child of a mouseChildren = false hierarchy ).
+                    event = this._queuedEvents[i];
+                    dispatcher = event.object;
+
+                    while (dispatcher && !dispatcher._iIsMouseEnabled())
+                        dispatcher = dispatcher.parent;
+
+                    if (dispatcher)
+                        dispatcher.dispatchEvent(event);
+                }
+
+                this._queuedEvents.length = 0;
+
+                this._previousCollidingObject = this._iCollidingObject;
+
+                this._iUpdateDirty = false;
+            };
+
+            //		public addViewLayer(view:away.containers.View)
+            //		{
+            //			var stg:Stage = view.stage;
+            //
+            //			// Add instance to mouse3dmanager to fire mouse events for multiple views
+            //			if (!view.stageGL.mouse3DManager)
+            //				view.stageGL.mouse3DManager = this;
+            //
+            //			if (!hasKey(view))
+            //				_view3Ds[view] = 0;
+            //
+            //			_childDepth = 0;
+            //			traverseDisplayObjects(stg);
+            //			_viewCount = _childDepth;
+            //		}
+            MouseManager.prototype.registerView = function (view) {
+                view.htmlElement.addEventListener("click", this.onClickDelegate);
+                view.htmlElement.addEventListener("dblclick", this.onDoubleClickDelegate);
+                view.htmlElement.addEventListener("mousedown", this.onMouseDownDelegate);
+                view.htmlElement.addEventListener("mousemove", this.onMouseMoveDelegate);
+                view.htmlElement.addEventListener("mouseup", this.onMouseUpDelegate);
+                view.htmlElement.addEventListener("mousewheel", this.onMouseWheelDelegate);
+                view.htmlElement.addEventListener("mouseover", this.onMouseOverDelegate);
+                view.htmlElement.addEventListener("mouseout", this.onMouseOutDelegate);
+
+                this._viewLookup.push(view);
+            };
+
+            MouseManager.prototype.unregisterView = function (view) {
+                view.htmlElement.removeEventListener("click", this.onClickDelegate);
+                view.htmlElement.removeEventListener("dblclick", this.onDoubleClickDelegate);
+                view.htmlElement.removeEventListener("mousedown", this.onMouseDownDelegate);
+                view.htmlElement.removeEventListener("mousemove", this.onMouseMoveDelegate);
+                view.htmlElement.removeEventListener("mouseup", this.onMouseUpDelegate);
+                view.htmlElement.removeEventListener("mousewheel", this.onMouseWheelDelegate);
+                view.htmlElement.removeEventListener("mouseover", this.onMouseOverDelegate);
+                view.htmlElement.removeEventListener("mouseout", this.onMouseOutDelegate);
+
+                this._viewLookup.slice(this._viewLookup.indexOf(view), 1);
+            };
+
+            // ---------------------------------------------------------------------
+            // Private.
+            // ---------------------------------------------------------------------
+            MouseManager.prototype.queueDispatch = function (event, sourceEvent, collider) {
+                if (typeof collider === "undefined") { collider = null; }
+                // 2D properties.
+                if (sourceEvent) {
+                    event.ctrlKey = sourceEvent.ctrlKey;
+                    event.altKey = sourceEvent.altKey;
+                    event.shiftKey = sourceEvent.shiftKey;
+                    event.screenX = sourceEvent.clientX;
+                    event.screenY = sourceEvent.clientY;
+                }
+
+                if (collider == null)
+                    collider = this._iCollidingObject;
+
+                // 3D properties.
+                if (collider) {
+                    // Object.
+                    event.object = collider.displayObject;
+                    event.materialOwner = collider.materialOwner;
+
+                    // UV.
+                    event.uv = collider.uv;
+
+                    // Position.
+                    event.localPosition = collider.localPosition ? collider.localPosition.clone() : null;
+
+                    // Normal.
+                    event.localNormal = collider.localNormal ? collider.localNormal.clone() : null;
+
+                    // Face index.
+                    event.index = collider.index;
+                } else {
+                    // Set all to null.
+                    event.uv = null;
+                    event.object = null;
+                    event.localPosition = this._nullVector;
+                    event.localNormal = this._nullVector;
+                    event.index = 0;
+                    event.subGeometryIndex = 0;
+                }
+
+                // Store event to be dispatched later.
+                this._queuedEvents.push(event);
+            };
+
+            // ---------------------------------------------------------------------
+            // Listeners.
+            // ---------------------------------------------------------------------
+            MouseManager.prototype.onMouseMove = function (event) {
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseMove, this._mouseMoveEvent = event);
+            };
+
+            MouseManager.prototype.onMouseOut = function (event) {
+                this._iActiveDiv = null;
+
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseOut, event);
+            };
+
+            MouseManager.prototype.onMouseOver = function (event) {
+                this._iActiveDiv = event.target;
+
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseOver, event);
+            };
+
+            MouseManager.prototype.onClick = function (event) {
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseClick, event);
+            };
+
+            MouseManager.prototype.onDoubleClick = function (event) {
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseDoubleClick, event);
+            };
+
+            MouseManager.prototype.onMouseDown = function (event) {
+                this._iActiveDiv = event.target;
+
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseDown, event);
+            };
+
+            MouseManager.prototype.onMouseUp = function (event) {
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseUp, event);
+            };
+
+            MouseManager.prototype.onMouseWheel = function (event) {
+                this.updateColliders(event);
+
+                if (this._iCollidingObject)
+                    this.queueDispatch(this._mouseWheel, event);
+            };
+
+            MouseManager.prototype.updateColliders = function (event) {
+                if (this._iUpdateDirty)
+                    return;
+
+                var view;
+                var bounds;
+                var mouseX = event.clientX;
+                var mouseY = event.clientY;
+                var len = this._viewLookup.length;
+                for (var i = 0; i < len; i++) {
+                    view = this._viewLookup[i];
+                    bounds = view.htmlElement.getBoundingClientRect();
+                    if (mouseX < bounds.left || mouseX > bounds.right || mouseY < bounds.top || mouseY > bounds.bottom) {
+                        view._pMouseX = null;
+                        view._pMouseY = null;
+                    } else {
+                        view._pMouseX = mouseX + bounds.left;
+                        view._pMouseY = mouseY + bounds.top;
+                        view.updateCollider();
+
+                        if (view.layeredView && this._iCollidingObject)
+                            break;
+                    }
+                }
+
+                this._iUpdateDirty = true;
+            };
+            return MouseManager;
+        })();
+        managers.MouseManager = MouseManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (managers) {
+        var RTTBufferManager = (function (_super) {
+            __extends(RTTBufferManager, _super);
+            function RTTBufferManager(se, stageGL) {
+                _super.call(this);
+                this._viewWidth = -1;
+                this._viewHeight = -1;
+                this._textureWidth = -1;
+                this._textureHeight = -1;
+                this._buffersInvalid = true;
+
+                if (!se) {
+                    throw new Error("No cheating the multiton!");
+                }
+
+                this._renderToTextureRect = new away.geom.Rectangle();
+
+                this._stageGL = stageGL;
+            }
+            RTTBufferManager.getInstance = function (stageGL) {
+                if (!stageGL)
+                    throw new Error("stageGL key cannot be null!");
+
+                if (RTTBufferManager._instances == null) {
+                    RTTBufferManager._instances = new Array();
+                }
+
+                var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStageGL(stageGL);
+
+                if (rttBufferManager == null) {
+                    rttBufferManager = new away.managers.RTTBufferManager(new SingletonEnforcer(), stageGL);
+
+                    var vo = new RTTBufferManagerVO();
+
+                    vo.stage3d = stageGL;
+                    vo.rttbfm = rttBufferManager;
+
+                    RTTBufferManager._instances.push(vo);
+                }
+
+                return rttBufferManager;
+            };
+
+            RTTBufferManager.getRTTBufferManagerFromStageGL = function (stageGL) {
+                var l = RTTBufferManager._instances.length;
+                var r;
+
+                for (var c = 0; c < l; c++) {
+                    r = RTTBufferManager._instances[c];
+
+                    if (r.stage3d === stageGL) {
+                        return r.rttbfm;
+                    }
+                }
+
+                return null;
+            };
+
+            RTTBufferManager.deleteRTTBufferManager = function (stageGL) {
+                var l = RTTBufferManager._instances.length;
+                var r;
+
+                for (var c = 0; c < l; c++) {
+                    r = RTTBufferManager._instances[c];
+
+                    if (r.stage3d === stageGL) {
+                        RTTBufferManager._instances.splice(c, 1);
+                        return;
+                    }
+                }
+            };
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureRatioX", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._textureRatioX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureRatioY", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._textureRatioY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "viewWidth", {
+                get: function () {
+                    return this._viewWidth;
+                },
+                set: function (value) {
+                    if (value == this._viewWidth) {
+                        return;
+                    }
+
+                    this._viewWidth = value;
+
+                    this._buffersInvalid = true;
+
+                    this._textureWidth = away.utils.TextureUtils.getBestPowerOf2(this._viewWidth);
+
+                    if (this._textureWidth > this._viewWidth) {
+                        this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth) * .5);
+                        this._renderToTextureRect.width = this._viewWidth;
+                    } else {
+                        this._renderToTextureRect.x = 0;
+                        this._renderToTextureRect.width = this._textureWidth;
+                    }
+
+                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RTTBufferManager.prototype, "viewHeight", {
+                get: function () {
+                    return this._viewHeight;
+                },
+                set: function (value) {
+                    if (value == this._viewHeight) {
+                        return;
+                    }
+
+                    this._viewHeight = value;
+
+                    this._buffersInvalid = true;
+
+                    this._textureHeight = away.utils.TextureUtils.getBestPowerOf2(this._viewHeight);
+
+                    if (this._textureHeight > this._viewHeight) {
+                        this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight) * .5);
+                        this._renderToTextureRect.height = this._viewHeight;
+                    } else {
+                        this._renderToTextureRect.y = 0;
+                        this._renderToTextureRect.height = this._textureHeight;
+                    }
+
+                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureVertexBuffer", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToTextureVertexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToScreenVertexBuffer", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToScreenVertexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "indexBuffer", {
+                get: function () {
+                    return this._indexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureRect", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToTextureRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureWidth", {
+                get: function () {
+                    return this._textureWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureHeight", {
+                get: function () {
+                    return this._textureHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            RTTBufferManager.prototype.dispose = function () {
+                RTTBufferManager.deleteRTTBufferManager(this._stageGL);
+
+                if (this._indexBuffer) {
+                    this._indexBuffer.dispose();
+                    this._renderToScreenVertexBuffer.dispose();
+                    this._renderToTextureVertexBuffer.dispose();
+                    this._renderToScreenVertexBuffer = null;
+                    this._renderToTextureVertexBuffer = null;
+                    this._indexBuffer = null;
+                }
+            };
+
+            // todo: place all this in a separate model, since it's used all over the place
+            // maybe it even has a place in the core (together with screenRect etc)?
+            // needs to be stored per view of course
+            RTTBufferManager.prototype.updateRTTBuffers = function () {
+                var context = this._stageGL.contextGL;
+                var textureVerts;
+                var screenVerts;
+
+                var x;
+                var y;
+
+                if (this._renderToTextureVertexBuffer == null) {
+                    this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 5);
+                }
+
+                if (this._renderToScreenVertexBuffer == null) {
+                    this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 5);
+                }
+
+                if (!this._indexBuffer) {
+                    this._indexBuffer = context.createIndexBuffer(6);
+
+                    this._indexBuffer.uploadFromArray([2, 1, 0, 3, 2, 0], 0, 6);
+                }
+
+                this._textureRatioX = x = Math.min(this._viewWidth / this._textureWidth, 1);
+                this._textureRatioY = y = Math.min(this._viewHeight / this._textureHeight, 1);
+
+                var u1 = (1 - x) * .5;
+                var u2 = (x + 1) * .5;
+                var v1 = (y + 1) * .5;
+                var v2 = (1 - y) * .5;
+
+                // last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
+                textureVerts = [-x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3];
+
+                screenVerts = [-1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3];
+
+                this._renderToTextureVertexBuffer.uploadFromArray(textureVerts, 0, 4);
+                this._renderToScreenVertexBuffer.uploadFromArray(screenVerts, 0, 4);
+
+                this._buffersInvalid = false;
+            };
+            return RTTBufferManager;
+        })(away.events.EventDispatcher);
+        managers.RTTBufferManager = RTTBufferManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var RTTBufferManagerVO = (function () {
+    function RTTBufferManagerVO() {
+    }
+    return RTTBufferManagerVO;
+})();
+
+var SingletonEnforcer = (function () {
+    function SingletonEnforcer() {
+    }
+    return SingletonEnforcer;
+})();
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (managers) {
+        //import away.arcane;
+        //import flash.base.Stage;
+        //import flash.utils.Dictionary;
+        //use namespace arcane;
+        /**
+        * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
+        * should not be requested directly, but are exposed by a StageGLProxy.
+        *
+        * @see away.base.StageGLProxy
+        */
+        var StageGLManager = (function (_super) {
+            __extends(StageGLManager, _super);
+            /**
+            * Creates a new StageGLManager class.
+            * @param stage The Stage object that contains the StageGL objects to be managed.
+            * @private
+            */
+            function StageGLManager(StageGLManagerSingletonEnforcer) {
+                _super.call(this);
+
+                if (!StageGLManagerSingletonEnforcer)
+                    throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
+
+                this._stageGLs = new Array(StageGLManager.STAGEGL_MAX_QUANTITY);
+
+                this._onContextCreatedDelegate = away.utils.Delegate.create(this, this.onContextCreated);
+            }
+            /**
+            * Gets a StageGLManager instance for the given Stage object.
+            * @param stage The Stage object that contains the StageGL objects to be managed.
+            * @return The StageGLManager instance for the given Stage object.
+            */
+            StageGLManager.getInstance = function () {
+                if (this._instance == null)
+                    this._instance = new StageGLManager(new StageGLManagerSingletonEnforcer());
+
+                return this._instance;
+            };
+
+            /**
+            * Requests the StageGL for the given index.
+            *
+            * @param index The index of the requested StageGL.
+            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+            * @param profile The compatibility profile, an enumeration of ContextGLProfile
+            * @return The StageGL for the given index.
+            */
+            StageGLManager.prototype.getStageGLAt = function (index, forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                if (index < 0 || index >= StageGLManager.STAGEGL_MAX_QUANTITY)
+                    throw new away.errors.ArgumentError("Index is out of bounds [0.." + StageGLManager.STAGEGL_MAX_QUANTITY + "]");
+
+                if (!this._stageGLs[index]) {
+                    StageGLManager._numStageGLs++;
+
+                    var canvas = document.createElement("canvas");
+                    var stageGL = this._stageGLs[index] = new away.base.StageGL(canvas, index, this, forceSoftware, profile);
+                    stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
+                    stageGL.requestContext(true, forceSoftware, profile);
+                }
+
+                return stageGL;
+            };
+
+            /**
+            * Removes a StageGL from the manager.
+            * @param stageGL
+            * @private
+            */
+            StageGLManager.prototype.iRemoveStageGL = function (stageGL) {
+                StageGLManager._numStageGLs--;
+
+                stageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
+
+                this._stageGLs[stageGL._iStageGLIndex] = null;
+            };
+
+            /**
+            * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
+            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+            * @param profile The compatibility profile, an enumeration of ContextGLProfile
+            * @return The allocated stageGL
+            */
+            StageGLManager.prototype.getFreeStageGL = function (forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                var i = 0;
+                var len = this._stageGLs.length;
+
+                while (i < len) {
+                    if (!this._stageGLs[i])
+                        return this.getStageGLAt(i, forceSoftware, profile);
+
+                    ++i;
+                }
+
+                return null;
+            };
+
+            Object.defineProperty(StageGLManager.prototype, "hasFreeStageGL", {
+                /**
+                * Checks if a new stageGL can be created and managed by the class.
+                * @return true if there is one slot free for a new stageGL
+                */
+                get: function () {
+                    return StageGLManager._numStageGLs < StageGLManager.STAGEGL_MAX_QUANTITY ? true : false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(StageGLManager.prototype, "numSlotsFree", {
+                /**
+                * Returns the amount of stageGL objects that can be created and managed by the class
+                * @return the amount of free slots
+                */
+                get: function () {
+                    return StageGLManager.STAGEGL_MAX_QUANTITY - StageGLManager._numStageGLs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(StageGLManager.prototype, "numSlotsUsed", {
+                /**
+                * Returns the amount of StageGL objects currently managed by the class.
+                * @return the amount of slots used
+                */
+                get: function () {
+                    return StageGLManager._numStageGLs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(StageGLManager.prototype, "numSlotsTotal", {
+                /**
+                * The maximum amount of StageGL objects that can be managed by the class
+                */
+                get: function () {
+                    return this._stageGLs.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            StageGLManager.prototype.onContextCreated = function (e) {
+                var stageGL = e.target;
+                document.body.appendChild(stageGL.canvas);
+            };
+            StageGLManager.STAGEGL_MAX_QUANTITY = 8;
+
+            StageGLManager._numStageGLs = 0;
+            return StageGLManager;
+        })(away.events.EventDispatcher);
+        managers.StageGLManager = StageGLManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var StageGLManagerSingletonEnforcer = (function () {
+    function StageGLManagerSingletonEnforcer() {
+    }
+    return StageGLManagerSingletonEnforcer;
+})();
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -22125,22 +23459,23 @@ var away;
 var away;
 (function (away) {
     (function (containers) {
-        var ContextGL = away.gl.ContextGL;
-        var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
-        var Texture = away.gl.Texture;
+        var Scene = away.containers.Scene;
+        var Camera = away.entities.Camera;
+        var CameraEvent = away.events.CameraEvent;
+        var SceneEvent = away.events.SceneEvent;
         var RendererEvent = away.events.RendererEvent;
         var Matrix3D = away.geom.Matrix3D;
         var Point = away.geom.Point;
         var Rectangle = away.geom.Rectangle;
         var Vector3D = away.geom.Vector3D;
-        var Delegate = away.utils.Delegate;
-
-        var Camera = away.entities.Camera;
-        var Scene = away.containers.Scene;
-        var CameraEvent = away.events.CameraEvent;
-        var SceneEvent = away.events.SceneEvent;
+        var ContextGL = away.gl.ContextGL;
+        var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
+        var Texture = away.gl.Texture;
+        var MouseManager = away.managers.MouseManager;
 
         var CSSRendererBase = away.render.CSSRendererBase;
+
+        var Delegate = away.utils.Delegate;
 
         var View = (function () {
             /*
@@ -22150,7 +23485,6 @@ var away;
             *
             * private _background:away.textures.Texture2DBase;
             *
-            * public _pMouse3DManager:away.managers.Mouse3DManager;
             * public _pTouch3DManager:away.managers.Touch3DManager;
             *
             */
@@ -22165,6 +23499,7 @@ var away;
                 this._backgroundAlpha = 1;
                 this._viewportDirty = true;
                 this._scissorDirty = true;
+                this._mousePicker = new away.pick.RaycastPicker();
                 this._onScenePartitionChangedDelegate = Delegate.create(this, this.onScenePartitionChanged);
                 this._onProjectionChangedDelegate = Delegate.create(this, this.onProjectionChanged);
                 this._onViewportUpdatedDelegate = Delegate.create(this, this.onViewportUpdated);
@@ -22173,6 +23508,19 @@ var away;
                 this.scene = scene || new Scene();
                 this.camera = camera || new Camera();
                 this.renderer = renderer;
+
+                //make sure document border is zero
+                document.body.style.margin = "0px";
+
+                this._htmlElement = document.createElement("div");
+                this._htmlElement.style.position = "absolute";
+
+                document.body.appendChild(this._htmlElement);
+
+                this._mouseManager = MouseManager.getInstance();
+                this._mouseManager.registerView(this);
+                //			if (this._shareContext)
+                //				this._mouse3DManager.addViewLayer(this);
             }
             /**
             *
@@ -22182,6 +23530,33 @@ var away;
                 if (this._pCamera)
                     this._pCamera.partition = this.scene.partition;
             };
+
+            Object.defineProperty(View.prototype, "mouseX", {
+                get: function () {
+                    return this._pMouseX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View.prototype, "mouseY", {
+                get: function () {
+                    return this._pMouseY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View.prototype, "htmlElement", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._htmlElement;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(View.prototype, "renderer", {
                 /**
@@ -22218,6 +23593,28 @@ var away;
                     this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
                     this._pRenderer.width = this._width;
                     this._pRenderer.height = this._height;
+                    this._pRenderer.shareContext = this._shareContext;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "shareContext", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._shareContext;
+                },
+                set: function (value) {
+                    if (this._shareContext == value)
+                        return;
+
+                    this._shareContext = value;
+
+                    if (this._pRenderer)
+                        this._pRenderer.shareContext = this._shareContext;
                 },
                 enumerable: true,
                 configurable: true
@@ -22227,15 +23624,10 @@ var away;
             Object.defineProperty(View.prototype, "backgroundColor", {
                 /**
                 *
-                * @returns {number}
                 */
                 get: function () {
                     return this._backgroundColor;
                 },
-                /**
-                *
-                * @param value
-                */
                 set: function (value) {
                     if (this._backgroundColor == value)
                         return;
@@ -22295,7 +23687,7 @@ var away;
                         return;
 
                     if (this._pCamera)
-                        this._pCamera.removeEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+                        this._pCamera.removeEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
 
                     this._pCamera = value;
 
@@ -22305,7 +23697,7 @@ var away;
                     if (this._pScene)
                         this._pCamera.partition = this._pScene.partition;
 
-                    this._pCamera.addEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+                    this._pCamera.addEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
                     this._scissorDirty = true;
                     this._viewportDirty = true;
                 },
@@ -22369,8 +23761,9 @@ var away;
 
                     this._width = value;
                     this._aspectRatio = this._width / this._height;
-                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pCamera.projection._iAspectRatio = this._aspectRatio;
                     this._pRenderer.width = value;
+                    this._htmlElement.style.width = value + "px";
                 },
                 enumerable: true,
                 configurable: true
@@ -22390,8 +23783,30 @@ var away;
 
                     this._height = value;
                     this._aspectRatio = this._width / this._height;
-                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pCamera.projection._iAspectRatio = this._aspectRatio;
                     this._pRenderer.height = value;
+                    this._htmlElement.style.height = value + "px";
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "mousePicker", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._mousePicker;
+                },
+                set: function (value) {
+                    if (this._mousePicker == value)
+                        return;
+
+                    if (value == null)
+                        this._mousePicker = new away.pick.RaycastPicker();
+                    else
+                        this._mousePicker = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -22410,6 +23825,7 @@ var away;
                         return;
 
                     this._pRenderer.x == value;
+                    this._htmlElement.style.left = value + "px";
                 },
                 enumerable: true,
                 configurable: true
@@ -22428,6 +23844,7 @@ var away;
                         return;
 
                     this._pRenderer.y == value;
+                    this._htmlElement.style.top = value + "px";
                 },
                 enumerable: true,
                 configurable: true
@@ -22439,10 +23856,11 @@ var away;
                 *
                 */
                 get: function () {
-                    return true;
+                    return (this._htmlElement.style.visibility == "visible");
                 },
-                set: function (v) {
-                    //TODO
+                set: function (value) {
+                    this._htmlElement.style.visibility = value ? "visible" : "hidden";
+                    //TODO transfer visible property to associated context (if one exists)
                 },
                 enumerable: true,
                 configurable: true
@@ -22469,36 +23887,36 @@ var away;
                 this.pUpdateTime();
 
                 //update view and size data
-                this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                this._pCamera.projection._iAspectRatio = this._aspectRatio;
 
                 if (this._scissorDirty) {
                     this._scissorDirty = false;
-                    this._pCamera.projection.iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
+                    this._pCamera.projection._iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
                 }
 
                 if (this._viewportDirty) {
                     this._viewportDirty = false;
-                    this._pCamera.projection.iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
+                    this._pCamera.projection._iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
                 }
 
+                // update picking
+                if (!this._shareContext) {
+                    if (this.forceMouseMove && this._htmlElement == this._mouseManager._iActiveDiv && !this._mouseManager._iUpdateDirty)
+                        this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+
+                    this._mouseManager.fireMouseEvents(this.forceMouseMove);
+                    //_touch3DManager.fireTouchEvents();
+                }
+
+                //_touch3DManager.updateCollider();
                 //clear entity collector ready for collection
                 this._pEntityCollector.clear();
 
                 // collect stuff to render
                 this._pScene.traversePartitions(this._pEntityCollector);
 
-                // TODO: implement & integrate mouse3DManager
-                // update picking
-                //_mouse3DManager.updateCollider(this);
-                //_touch3DManager.updateCollider();
                 //render the contents of the entity collector
                 this._pRenderer.render(this._pEntityCollector);
-                //if (!this._pShareContext) {
-                // TODO: imeplement mouse3dManager
-                // fire collected mouse events
-                //_mouse3DManager.fireMouseEvents();
-                //_touch3DManager.fireTouchEvents();
-                //}
             };
 
             /**
@@ -22520,12 +23938,13 @@ var away;
             View.prototype.dispose = function () {
                 this._pRenderer.dispose();
 
-                // TODO: imeplement mouse3DManager / touch3DManager
-                //this._mouse3DManager.disableMouseListeners(this);
-                //this._mouse3DManager.dispose();
+                // TODO: imeplement mouseManager / touch3DManager
+                this._mouseManager.unregisterView(this);
+
                 //this._touch3DManager.disableTouchListeners(this);
                 //this._touch3DManager.dispose();
-                //this._mouse3DManager = null;
+                this._mouseManager = null;
+
                 //this._touch3DManager = null;
                 this._pRenderer = null;
                 this._pEntityCollector = null;
@@ -22566,18 +23985,44 @@ var away;
 
             View.prototype.project = function (point3d) {
                 var v = this._pCamera.project(point3d);
-                v.x = (v.x + 1.0) * this._width / 2.0;
-                v.y = (v.y + 1.0) * this._height / 2.0;
+                v.x = (v.x * this._pRenderer.viewPort.width + this._width * this._pCamera.projection.originX) / 2.0;
+                v.y = (v.y * this._pRenderer.viewPort.height + this._height * this._pCamera.projection.originY) / 2.0;
 
                 return v;
             };
 
             View.prototype.unproject = function (sX, sY, sZ) {
-                return this._pCamera.unproject((sX * 2 - this._width) / this._pRenderer.viewPort.width, (sY * 2 - this._height) / this._pRenderer.viewPort.height, sZ);
+                return this._pCamera.unproject(2 * (sX - this._width * this._pCamera.projection.originX) / this._pRenderer.viewPort.width, 2 * (sY - this._height * this._pCamera.projection.originY) / this._pRenderer.viewPort.height, sZ);
             };
 
             View.prototype.getRay = function (sX, sY, sZ) {
                 return this._pCamera.getRay((sX * 2 - this._width) / this._width, (sY * 2 - this._height) / this._height, sZ);
+            };
+
+            /*TODO: implement Background
+            public get background():away.textures.Texture2DBase
+            {
+            return this._background;
+            }
+            */
+            /*TODO: implement Background
+            public set background( value:away.textures.Texture2DBase )
+            {
+            this._background = value;
+            this._renderer.background = _background;
+            }
+            */
+            // TODO: required dependency stageGL
+            View.prototype.updateCollider = function () {
+                if (!this._shareContext) {
+                    if (this._htmlElement == this._mouseManager._iActiveDiv)
+                        this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+                } else {
+                    var collidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+
+                    if (this.layeredView || this._mouseManager._iCollidingObject == null || collidingObject.rayEntryDistance < this._mouseManager._iCollidingObject.rayEntryDistance)
+                        this._mouseManager._iCollidingObject = collidingObject;
+                }
             };
             return View;
         })();
@@ -24255,7 +25700,7 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
-        var Event = away.events.Event;
+        var MaterialEvent = away.events.MaterialEvent;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
@@ -24301,6 +25746,17 @@ var away;
 
                 this._owners = new Array();
             }
+            Object.defineProperty(CSSMaterialBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(CSSMaterialBase.prototype, "imageElement", {
                 get: function () {
                     return this._imageElement;
@@ -24380,13 +25836,28 @@ var away;
                         style.width = this._imageElement.width + "px";
                         style.height = this._imageElement.height + "px";
                         style.transformOrigin = style["-webkit-transform-origin"] = style["-moz-transform-origin"] = style["-o-transform-origin"] = style["-ms-transform-origin"] = "0% 0%";
-                        style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = "scale3d(" + 1 / this._imageElement.width + ", -" + 1 / this._imageElement.height + ", 1) translateY(-" + this._imageElement.height + "px)";
+
+                        this._height = this._imageElement.height;
+                        this._width = this._imageElement.width;
+
+                        this.notifySizeChanged();
                     }
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            Object.defineProperty(CSSMaterialBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(CSSMaterialBase.prototype, "assetType", {
                 /**
@@ -24470,8 +25941,10 @@ var away;
             * @private
             */
             CSSMaterialBase.prototype.iAddOwner = function (owner) {
-                this._owners.push(owner);
-                //TODO
+                var index = this._owners.indexOf(owner);
+
+                if (index == -1)
+                    this._owners.push(owner);
             };
 
             /**
@@ -24481,7 +25954,10 @@ var away;
             * @internal
             */
             CSSMaterialBase.prototype.iRemoveOwner = function (owner) {
-                //TODO
+                var index = this._owners.indexOf(owner);
+
+                if (index != -1)
+                    this._owners.splice(index, 1);
             };
 
             Object.defineProperty(CSSMaterialBase.prototype, "iOwners", {
@@ -24496,475 +25972,19 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            CSSMaterialBase.prototype.notifySizeChanged = function () {
+                if (!this._sizeChanged)
+                    this._sizeChanged = new away.events.MaterialEvent(away.events.MaterialEvent.SIZE_CHANGED);
+
+                this.dispatchEvent(this._sizeChanged);
+            };
             return CSSMaterialBase;
         })(away.library.NamedAssetBase);
         materials.CSSMaterialBase = CSSMaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (managers) {
-        var RTTBufferManager = (function (_super) {
-            __extends(RTTBufferManager, _super);
-            function RTTBufferManager(se, stageGL) {
-                _super.call(this);
-                this._viewWidth = -1;
-                this._viewHeight = -1;
-                this._textureWidth = -1;
-                this._textureHeight = -1;
-                this._buffersInvalid = true;
-
-                if (!se) {
-                    throw new Error("No cheating the multiton!");
-                }
-
-                this._renderToTextureRect = new away.geom.Rectangle();
-
-                this._stageGL = stageGL;
-            }
-            RTTBufferManager.getInstance = function (stageGL) {
-                if (!stageGL)
-                    throw new Error("stageGL key cannot be null!");
-
-                if (RTTBufferManager._instances == null) {
-                    RTTBufferManager._instances = new Array();
-                }
-
-                var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStageGL(stageGL);
-
-                if (rttBufferManager == null) {
-                    rttBufferManager = new away.managers.RTTBufferManager(new SingletonEnforcer(), stageGL);
-
-                    var vo = new RTTBufferManagerVO();
-
-                    vo.stage3d = stageGL;
-                    vo.rttbfm = rttBufferManager;
-
-                    RTTBufferManager._instances.push(vo);
-                }
-
-                return rttBufferManager;
-            };
-
-            RTTBufferManager.getRTTBufferManagerFromStageGL = function (stageGL) {
-                var l = RTTBufferManager._instances.length;
-                var r;
-
-                for (var c = 0; c < l; c++) {
-                    r = RTTBufferManager._instances[c];
-
-                    if (r.stage3d === stageGL) {
-                        return r.rttbfm;
-                    }
-                }
-
-                return null;
-            };
-
-            RTTBufferManager.deleteRTTBufferManager = function (stageGL) {
-                var l = RTTBufferManager._instances.length;
-                var r;
-
-                for (var c = 0; c < l; c++) {
-                    r = RTTBufferManager._instances[c];
-
-                    if (r.stage3d === stageGL) {
-                        RTTBufferManager._instances.splice(c, 1);
-                        return;
-                    }
-                }
-            };
-
-            Object.defineProperty(RTTBufferManager.prototype, "textureRatioX", {
-                get: function () {
-                    if (this._buffersInvalid) {
-                        this.updateRTTBuffers();
-                    }
-
-                    return this._textureRatioX;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "textureRatioY", {
-                get: function () {
-                    if (this._buffersInvalid) {
-                        this.updateRTTBuffers();
-                    }
-
-                    return this._textureRatioY;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "viewWidth", {
-                get: function () {
-                    return this._viewWidth;
-                },
-                set: function (value) {
-                    if (value == this._viewWidth) {
-                        return;
-                    }
-
-                    this._viewWidth = value;
-
-                    this._buffersInvalid = true;
-
-                    this._textureWidth = away.utils.TextureUtils.getBestPowerOf2(this._viewWidth);
-
-                    if (this._textureWidth > this._viewWidth) {
-                        this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth) * .5);
-                        this._renderToTextureRect.width = this._viewWidth;
-                    } else {
-                        this._renderToTextureRect.x = 0;
-                        this._renderToTextureRect.width = this._textureWidth;
-                    }
-
-                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RTTBufferManager.prototype, "viewHeight", {
-                get: function () {
-                    return this._viewHeight;
-                },
-                set: function (value) {
-                    if (value == this._viewHeight) {
-                        return;
-                    }
-
-                    this._viewHeight = value;
-
-                    this._buffersInvalid = true;
-
-                    this._textureHeight = away.utils.TextureUtils.getBestPowerOf2(this._viewHeight);
-
-                    if (this._textureHeight > this._viewHeight) {
-                        this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight) * .5);
-                        this._renderToTextureRect.height = this._viewHeight;
-                    } else {
-                        this._renderToTextureRect.y = 0;
-                        this._renderToTextureRect.height = this._textureHeight;
-                    }
-
-                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureVertexBuffer", {
-                get: function () {
-                    if (this._buffersInvalid) {
-                        this.updateRTTBuffers();
-                    }
-
-                    return this._renderToTextureVertexBuffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "renderToScreenVertexBuffer", {
-                get: function () {
-                    if (this._buffersInvalid) {
-                        this.updateRTTBuffers();
-                    }
-
-                    return this._renderToScreenVertexBuffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "indexBuffer", {
-                get: function () {
-                    return this._indexBuffer;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureRect", {
-                get: function () {
-                    if (this._buffersInvalid) {
-                        this.updateRTTBuffers();
-                    }
-
-                    return this._renderToTextureRect;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "textureWidth", {
-                get: function () {
-                    return this._textureWidth;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RTTBufferManager.prototype, "textureHeight", {
-                get: function () {
-                    return this._textureHeight;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            RTTBufferManager.prototype.dispose = function () {
-                RTTBufferManager.deleteRTTBufferManager(this._stageGL);
-
-                if (this._indexBuffer) {
-                    this._indexBuffer.dispose();
-                    this._renderToScreenVertexBuffer.dispose();
-                    this._renderToTextureVertexBuffer.dispose();
-                    this._renderToScreenVertexBuffer = null;
-                    this._renderToTextureVertexBuffer = null;
-                    this._indexBuffer = null;
-                }
-            };
-
-            // todo: place all this in a separate model, since it's used all over the place
-            // maybe it even has a place in the core (together with screenRect etc)?
-            // needs to be stored per view of course
-            RTTBufferManager.prototype.updateRTTBuffers = function () {
-                var context = this._stageGL.contextGL;
-                var textureVerts;
-                var screenVerts;
-
-                var x;
-                var y;
-
-                if (this._renderToTextureVertexBuffer == null) {
-                    this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 5);
-                }
-
-                if (this._renderToScreenVertexBuffer == null) {
-                    this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 5);
-                }
-
-                if (!this._indexBuffer) {
-                    this._indexBuffer = context.createIndexBuffer(6);
-
-                    this._indexBuffer.uploadFromArray([2, 1, 0, 3, 2, 0], 0, 6);
-                }
-
-                this._textureRatioX = x = Math.min(this._viewWidth / this._textureWidth, 1);
-                this._textureRatioY = y = Math.min(this._viewHeight / this._textureHeight, 1);
-
-                var u1 = (1 - x) * .5;
-                var u2 = (x + 1) * .5;
-                var v1 = (y + 1) * .5;
-                var v2 = (1 - y) * .5;
-
-                // last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
-                textureVerts = [-x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3];
-
-                screenVerts = [-1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3];
-
-                this._renderToTextureVertexBuffer.uploadFromArray(textureVerts, 0, 4);
-                this._renderToScreenVertexBuffer.uploadFromArray(screenVerts, 0, 4);
-
-                this._buffersInvalid = false;
-            };
-            return RTTBufferManager;
-        })(away.events.EventDispatcher);
-        managers.RTTBufferManager = RTTBufferManager;
-    })(away.managers || (away.managers = {}));
-    var managers = away.managers;
-})(away || (away = {}));
-
-var RTTBufferManagerVO = (function () {
-    function RTTBufferManagerVO() {
-    }
-    return RTTBufferManagerVO;
-})();
-
-var SingletonEnforcer = (function () {
-    function SingletonEnforcer() {
-    }
-    return SingletonEnforcer;
-})();
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (managers) {
-        //import away.arcane;
-        //import flash.base.Stage;
-        //import flash.utils.Dictionary;
-        //use namespace arcane;
-        /**
-        * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-        * should not be requested directly, but are exposed by a StageGLProxy.
-        *
-        * @see away.base.StageGLProxy
-        */
-        var StageGLManager = (function (_super) {
-            __extends(StageGLManager, _super);
-            /**
-            * Creates a new StageGLManager class.
-            * @param stage The Stage object that contains the StageGL objects to be managed.
-            * @private
-            */
-            function StageGLManager(StageGLManagerSingletonEnforcer) {
-                _super.call(this);
-
-                if (!StageGLManagerSingletonEnforcer)
-                    throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
-
-                this._stageGLs = new Array(StageGLManager.STAGEGL_MAX_QUANTITY);
-
-                this._onContextCreatedDelegate = away.utils.Delegate.create(this, this.onContextCreated);
-            }
-            /**
-            * Gets a StageGLManager instance for the given Stage object.
-            * @param stage The Stage object that contains the StageGL objects to be managed.
-            * @return The StageGLManager instance for the given Stage object.
-            */
-            StageGLManager.getInstance = function () {
-                if (this._instance == null)
-                    this._instance = new StageGLManager(new StageGLManagerSingletonEnforcer());
-
-                return this._instance;
-            };
-
-            /**
-            * Requests the StageGL for the given index.
-            *
-            * @param index The index of the requested StageGL.
-            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-            * @param profile The compatibility profile, an enumeration of ContextGLProfile
-            * @return The StageGL for the given index.
-            */
-            StageGLManager.prototype.getStageGLAt = function (index, forceSoftware, profile) {
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                if (index < 0 || index >= StageGLManager.STAGEGL_MAX_QUANTITY)
-                    throw new away.errors.ArgumentError("Index is out of bounds [0.." + StageGLManager.STAGEGL_MAX_QUANTITY + "]");
-
-                if (!this._stageGLs[index]) {
-                    StageGLManager._numStageGLs++;
-
-                    var canvas = document.createElement("canvas");
-                    var stageGL = this._stageGLs[index] = new away.base.StageGL(canvas, index, this, forceSoftware, profile);
-                    stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
-                    stageGL.requestContext(true, forceSoftware, profile);
-                }
-
-                return stageGL;
-            };
-
-            /**
-            * Removes a StageGL from the manager.
-            * @param stageGL
-            * @private
-            */
-            StageGLManager.prototype.iRemoveStageGL = function (stageGL) {
-                StageGLManager._numStageGLs--;
-
-                stageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextCreatedDelegate);
-
-                this._stageGLs[stageGL._iStageGLIndex] = null;
-            };
-
-            /**
-            * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-            * @param profile The compatibility profile, an enumeration of ContextGLProfile
-            * @return The allocated stageGL
-            */
-            StageGLManager.prototype.getFreeStageGL = function (forceSoftware, profile) {
-                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "baseline"; }
-                var i = 0;
-                var len = this._stageGLs.length;
-
-                while (i < len) {
-                    if (!this._stageGLs[i])
-                        return this.getStageGLAt(i, forceSoftware, profile);
-
-                    ++i;
-                }
-
-                return null;
-            };
-
-            Object.defineProperty(StageGLManager.prototype, "hasFreeStageGL", {
-                /**
-                * Checks if a new stageGL can be created and managed by the class.
-                * @return true if there is one slot free for a new stageGL
-                */
-                get: function () {
-                    return StageGLManager._numStageGLs < StageGLManager.STAGEGL_MAX_QUANTITY ? true : false;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsFree", {
-                /**
-                * Returns the amount of stageGL objects that can be created and managed by the class
-                * @return the amount of free slots
-                */
-                get: function () {
-                    return StageGLManager.STAGEGL_MAX_QUANTITY - StageGLManager._numStageGLs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsUsed", {
-                /**
-                * Returns the amount of StageGL objects currently managed by the class.
-                * @return the amount of slots used
-                */
-                get: function () {
-                    return StageGLManager._numStageGLs;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(StageGLManager.prototype, "numSlotsTotal", {
-                /**
-                * The maximum amount of StageGL objects that can be managed by the class
-                */
-                get: function () {
-                    return this._stageGLs.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            StageGLManager.prototype.onContextCreated = function (e) {
-                var stageGL = e.target;
-                document.body.appendChild(stageGL.canvas);
-            };
-            StageGLManager.STAGEGL_MAX_QUANTITY = 8;
-
-            StageGLManager._numStageGLs = 0;
-            return StageGLManager;
-        })(away.events.EventDispatcher);
-        managers.StageGLManager = StageGLManager;
-    })(away.managers || (away.managers = {}));
-    var managers = away.managers;
-})(away || (away = {}));
-
-var StageGLManagerSingletonEnforcer = (function () {
-    function StageGLManagerSingletonEnforcer() {
-    }
-    return StageGLManagerSingletonEnforcer;
-})();
 ///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts"/>
 var away;
@@ -27197,7 +28217,7 @@ var aglsl;
 
             // adjust z from opengl range of -1..1 to 0..1 as in d3d, this also enforces a left handed coordinate system
             if (desc.header.type == "vertex") {
-                body += "  gl_Position = vec4(outpos.x, yflip*outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
+                body += "  gl_Position = vec4(outpos.x, outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
             }
 
             // clamp fragment depth

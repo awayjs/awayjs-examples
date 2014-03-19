@@ -41,171 +41,6 @@ var away;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    /**
-    * @module away.events
-    */
-    (function (events) {
-        //import away3d.arcane;
-        //import away3d.containers.ObjectContainer3D;
-        //import away3d.containers.View;
-        //import away3d.core.base.IRenderable;
-        //import away3d.materials.MaterialBase;
-        //import flash.events.Event;
-        //import flash.geom.Point;
-        //import flash.geom.Vector3D;
-        //use namespace arcane;
-        /**
-        * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View.
-        * todo: we don't have screenZ data, tho this should be easy to implement
-        */
-        var MouseEvent3D = (function (_super) {
-            __extends(MouseEvent3D, _super);
-            /**
-            * Create a new MouseEvent3D object.
-            * @param type The type of the MouseEvent3D.
-            */
-            function MouseEvent3D(type) {
-                _super.call(this, type); //, true, true);
-                // Private.
-                this._iAllowedToPropagate = true;
-            }
-            Object.defineProperty(MouseEvent3D.prototype, "bubbles", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    var doesBubble = this._iAllowedToPropagate;
-                    this._iAllowedToPropagate = true;
-
-                    // Don't bubble if propagation has been stopped.
-                    return doesBubble;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * @inheritDoc
-            */
-            MouseEvent3D.prototype.stopPropagation = function () {
-                this._iAllowedToPropagate = false;
-
-                if (this._iParentEvent) {
-                    this._iParentEvent.stopPropagation();
-                }
-            };
-
-            /**
-            * @inheritDoc
-            */
-            MouseEvent3D.prototype.stopImmediatePropagation = function () {
-                this._iAllowedToPropagate = false;
-
-                if (this._iParentEvent) {
-                    this._iParentEvent.stopImmediatePropagation();
-                }
-            };
-
-            /**
-            * Creates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.
-            */
-            MouseEvent3D.prototype.clone = function () {
-                var result = new away.events.MouseEvent3D(this.type);
-
-                /* TODO: Debug / test - look into isDefaultPrevented
-                if (isDefaultPrevented())
-                result.preventDefault();
-                */
-                result.screenX = this.screenX;
-                result.screenY = this.screenY;
-
-                result.view = this.view;
-                result.object = this.object;
-                result.materialOwner = this.materialOwner;
-                result.material = this.material;
-                result.uv = this.uv;
-                result.localPosition = this.localPosition;
-                result.localNormal = this.localNormal;
-                result.index = this.index;
-                result.subGeometryIndex = this.subGeometryIndex;
-                result.delta = this.delta;
-
-                result.ctrlKey = this.ctrlKey;
-                result.shiftKey = this.shiftKey;
-
-                result._iParentEvent = this;
-                result._iAllowedToPropagate = this._iAllowedToPropagate;
-
-                return result;
-            };
-
-            Object.defineProperty(MouseEvent3D.prototype, "scenePosition", {
-                /**
-                * The position in scene space where the event took place
-                */
-                get: function () {
-                    if (this.object instanceof away.containers.DisplayObjectContainer) {
-                        var objContainer = this.object;
-                        return objContainer.sceneTransform.transformVector(this.localPosition);
-                    } else {
-                        return this.localPosition;
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(MouseEvent3D.prototype, "sceneNormal", {
-                /**
-                * The normal in scene space where the event took place
-                */
-                get: function () {
-                    if (this.object instanceof away.containers.DisplayObjectContainer) {
-                        var objContainer = this.object;
-                        var sceneNormal = objContainer.sceneTransform.deltaTransformVector(this.localNormal);
-
-                        sceneNormal.normalize();
-
-                        return sceneNormal;
-                    } else {
-                        return this.localNormal;
-                    }
-                    /*
-                    if (object is ObjectContainer3D) {
-                    var sceneNormal:Vector3D = ObjectContainer3D(object)
-                    sceneNormal.normalize();
-                    return sceneNormal;
-                    } else
-                    return localNormal;
-                    */
-                },
-                enumerable: true,
-                configurable: true
-            });
-            MouseEvent3D.MOUSE_OVER = "mouseOver3d";
-
-            MouseEvent3D.MOUSE_OUT = "mouseOut3d";
-
-            MouseEvent3D.MOUSE_UP = "mouseUp3d";
-
-            MouseEvent3D.MOUSE_DOWN = "mouseDown3d";
-
-            MouseEvent3D.MOUSE_MOVE = "mouseMove3d";
-
-            MouseEvent3D.CLICK = "click3d";
-
-            MouseEvent3D.DOUBLE_CLICK = "doubleClick3d";
-
-            MouseEvent3D.MOUSE_WHEEL = "mouseWheel3d";
-            return MouseEvent3D;
-        })(away.events.Event);
-        events.MouseEvent3D = MouseEvent3D;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -3797,6 +3632,13 @@ var away;
             RenderableBase.prototype.dispose = function () {
                 this._pool.disposeItem(this.materialOwner);
             };
+
+            /**
+            *
+            */
+            RenderableBase.prototype._iUpdate = function () {
+                //nothing to do here
+            };
             return RenderableBase;
         })();
         pool.RenderableBase = RenderableBase;
@@ -3818,17 +3660,36 @@ var away;
             function BillboardRenderable(pool, billboard) {
                 _super.call(this, pool, billboard, billboard, null, null);
 
-                if (!BillboardRenderable._geometry) {
-                    BillboardRenderable._geometry = new away.base.SubGeometry();
-                    BillboardRenderable._geometry.updateVertexData(Array(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0));
-                    BillboardRenderable._geometry.updateUVData(Array(0, 0, 1, 0, 1, 1, 0, 1));
-                    BillboardRenderable._geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
-                    BillboardRenderable._geometry.updateVertexTangentData(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
-                    BillboardRenderable._geometry.updateVertexNormalData(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+                this._billboard = billboard;
+
+                this.subGeometry = this.getGeometry(billboard.material);
+            }
+            /**
+            *
+            */
+            BillboardRenderable.prototype._iUpdate = function () {
+                var material = this._billboard.material;
+
+                this.getGeometry(material).updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+            };
+
+            BillboardRenderable.prototype.getGeometry = function (material) {
+                var geometry = BillboardRenderable._materialGeometry[material.id];
+
+                if (!geometry) {
+                    geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.SubGeometry();
+                    geometry.updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+                    geometry.updateUVData(Array(0, 0, 1, 0, 1, 1, 0, 1));
+                    geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
+                    geometry.updateVertexTangentData(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
+                    geometry.updateVertexNormalData(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
                 }
 
-                this.subGeometry = BillboardRenderable._geometry;
-            }
+                return geometry;
+            };
+            BillboardRenderable._materialGeometry = new Object();
+
+            BillboardRenderable.id = "billboard";
             return BillboardRenderable;
         })(away.pool.RenderableBase);
         pool.BillboardRenderable = BillboardRenderable;
@@ -3850,6 +3711,7 @@ var away;
             function SegmentSetRenderable(pool, segmentSet) {
                 _super.call(this, pool, segmentSet, segmentSet, segmentSet.subGeometry, null);
             }
+            SegmentSetRenderable.id = "segmentset";
             return SegmentSetRenderable;
         })(away.pool.RenderableBase);
         pool.SegmentSetRenderable = SegmentSetRenderable;
@@ -3873,6 +3735,7 @@ var away;
 
                 this.subMesh = subMesh;
             }
+            SubMeshRenderable.id = "submesh";
             return SubMeshRenderable;
         })(away.pool.RenderableBase);
         pool.SubMeshRenderable = SubMeshRenderable;
@@ -3902,6 +3765,7 @@ var away;
 
                 this.subGeometry = SkyboxRenderable._geometry;
             }
+            SkyboxRenderable.id = "skybox";
             return SkyboxRenderable;
         })(away.pool.RenderableBase);
         pool.SkyboxRenderable = SkyboxRenderable;
@@ -3918,110 +3782,11 @@ var away;
         /**
         * @class away.traverse.EntityCollector
         */
-        var RenderableCollectorBase = (function () {
-            function RenderableCollectorBase() {
-                this._numCullPlanes = 0;
-                this._pEntityListItemPool = new away.pool.EntityListItemPool();
-            }
-            Object.defineProperty(RenderableCollectorBase.prototype, "camera", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._pCamera;
-                },
-                set: function (value) {
-                    this._pCamera = value;
-                    this._cullPlanes = this._pCamera.frustumPlanes;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderableCollectorBase.prototype, "cullPlanes", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._customCullPlanes;
-                },
-                set: function (value) {
-                    this._customCullPlanes = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderableCollectorBase.prototype, "entityHead", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._pEntityHead;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            *
-            */
-            RenderableCollectorBase.prototype.clear = function () {
-                this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
-                this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
-                this._pEntityHead = null;
-                this._pEntityListItemPool.freeAll();
-            };
-
-            /**
-            *
-            * @param node
-            * @returns {boolean}
-            */
-            RenderableCollectorBase.prototype.enterNode = function (node) {
-                var enter = this.scene._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
-
-                node._iCollectionMark = this.scene._iCollectionMark;
-
-                return enter;
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            RenderableCollectorBase.prototype.applyEntity = function (entity) {
-                var item = this._pEntityListItemPool.getItem();
-                item.entity = entity;
-
-                item.next = this._pEntityHead;
-                this._pEntityHead = item;
-            };
-            return RenderableCollectorBase;
-        })();
-        traverse.RenderableCollectorBase = RenderableCollectorBase;
-    })(away.traverse || (away.traverse = {}));
-    var traverse = away.traverse;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.traverse
-    */
-    (function (traverse) {
-        /**
-        * @class away.traverse.EntityCollector
-        */
         var EntityCollector = (function (_super) {
             __extends(EntityCollector, _super);
             function EntityCollector() {
                 _super.call(this);
                 this._pNumLights = 0;
-                this._pNumEntities = 0;
-                this._pNumInteractiveEntities = 0;
                 this._numDirectionalLights = 0;
                 this._numPointLights = 0;
                 this._numLightProbes = 0;
@@ -4064,28 +3829,6 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(EntityCollector.prototype, "numEntities", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._pNumEntities;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "numInteractiveEntities", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._pNumInteractiveEntities;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(EntityCollector.prototype, "pointLights", {
                 /**
                 *
@@ -4110,25 +3853,26 @@ var away;
 
             /**
             *
+            * @param entity
             */
-            EntityCollector.prototype.applyEntity = function (entity) {
-                _super.prototype.applyEntity.call(this, entity);
+            EntityCollector.prototype.applyDirectionalLight = function (entity) {
+                this._directionalLights[this._numDirectionalLights++] = entity;
+            };
 
-                this._pNumEntities++;
+            /**
+            *
+            * @param entity
+            */
+            EntityCollector.prototype.applyLightProbe = function (entity) {
+                this._lightProbes[this._numLightProbes++] = entity;
+            };
 
-                if (entity._iIsMouseEnabled())
-                    this._pNumInteractiveEntities++;
-
-                if (entity.assetType === away.library.AssetType.LIGHT) {
-                    this._pLights[this._pNumLights++] = entity;
-
-                    if (entity instanceof away.lights.DirectionalLight)
-                        this._directionalLights[this._numDirectionalLights++] = entity;
-                    else if (entity instanceof away.lights.PointLight)
-                        this._pointLights[this._numPointLights++] = entity;
-                    else if (entity instanceof away.lights.LightProbe)
-                        this._lightProbes[this._numLightProbes++] = entity;
-                }
+            /**
+            *
+            * @param entity
+            */
+            EntityCollector.prototype.applyPointLight = function (entity) {
+                this._pointLights[this._numPointLights++] = entity;
             };
 
             /**
@@ -4137,7 +3881,6 @@ var away;
             EntityCollector.prototype.clear = function () {
                 _super.prototype.clear.call(this);
 
-                this._pNumEntities = this._pNumInteractiveEntities = 0;
                 this._pSkybox = null;
 
                 if (this._pNumLights > 0)
@@ -4153,7 +3896,7 @@ var away;
                     this._lightProbes.length = this._numLightProbes = 0;
             };
             return EntityCollector;
-        })(away.traverse.RenderableCollectorBase);
+        })(away.traverse.CollectorBase);
         traverse.EntityCollector = EntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -4188,79 +3931,8 @@ var away;
                 return _super.prototype.enterNode.call(this, node);
             };
             return ShadowCasterCollector;
-        })(away.traverse.RenderableCollectorBase);
+        })(away.traverse.CollectorBase);
         traverse.ShadowCasterCollector = ShadowCasterCollector;
-    })(away.traverse || (away.traverse = {}));
-    var traverse = away.traverse;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.traverse
-    */
-    (function (traverse) {
-        /**
-        * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
-        * considered intersecting with the defined ray.
-        *
-        * @see away.partition.Partition
-        * @see away.entities.IEntity
-        *
-        * @class away.traverse.RaycastCollector
-        */
-        var RaycastCollector = (function (_super) {
-            __extends(RaycastCollector, _super);
-            /**
-            * Creates a new RaycastCollector object.
-            */
-            function RaycastCollector() {
-                _super.call(this);
-                this._rayPosition = new away.geom.Vector3D();
-                this._rayDirection = new away.geom.Vector3D();
-                this._iCollectionMark = 0;
-            }
-            Object.defineProperty(RaycastCollector.prototype, "rayPosition", {
-                /**
-                * Provides the starting position of the ray.
-                */
-                get: function () {
-                    return this._rayPosition;
-                },
-                set: function (value) {
-                    this._rayPosition = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RaycastCollector.prototype, "rayDirection", {
-                /**
-                * Provides the direction vector of the ray.
-                */
-                get: function () {
-                    return this._rayDirection;
-                },
-                set: function (value) {
-                    this._rayDirection = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
-            *
-            * @param node The Partition3DNode object to frustum-test.
-            */
-            RaycastCollector.prototype.enterNode = function (node) {
-                return node.isIntersectingRay(this._rayPosition, this._rayDirection);
-            };
-            return RaycastCollector;
-        })(away.traverse.RenderableCollectorBase);
-        traverse.RaycastCollector = RaycastCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
 })(away || (away = {}));
@@ -4290,7 +3962,7 @@ var away;
             */
             DirectionalLightNode.prototype.acceptTraverser = function (traverser) {
                 //do not run frustum checks on lights
-                traverser.applyEntity(this._directionalLight);
+                traverser.applyDirectionalLight(this._directionalLight);
             };
 
             /**
@@ -4332,7 +4004,7 @@ var away;
             */
             LightProbeNode.prototype.acceptTraverser = function (traverser) {
                 //do not run frustum checks on lights
-                traverser.applyEntity(this._lightProbe);
+                traverser.applyLightProbe(this._lightProbe);
             };
 
             /**
@@ -4374,7 +4046,7 @@ var away;
             */
             PointLightNode.prototype.acceptTraverser = function (traverser) {
                 //do not run frustum checks on lights
-                traverser.applyEntity(this._pointLight);
+                traverser.applyPointLight(this._pointLight);
             };
 
             /**
@@ -4446,6 +4118,8 @@ var away;
         */
         var PickingColliderBase = (function () {
             function PickingColliderBase() {
+                this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
+                this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
             }
             PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/ , vertexData, triangleIndex) {
                 var normal = new away.geom.Vector3D();
@@ -4475,7 +4149,10 @@ var away;
                 return uv;
             };
 
-            PickingColliderBase.prototype.testRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
+            /**
+            * @inheritDoc
+            */
+            PickingColliderBase.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
                 throw new away.errors.AbstractMethodError();
             };
 
@@ -4485,6 +4162,60 @@ var away;
             PickingColliderBase.prototype.setLocalRay = function (localPosition, localDirection) {
                 this.rayPosition = localPosition;
                 this.rayDirection = localDirection;
+            };
+
+            /**
+            * Tests a <code>Billboard</code> object for a collision with the picking ray.
+            *
+            * @param billboard The billboard instance to be tested.
+            * @param pickingCollisionVO The collision object used to store the collision results
+            * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+            * @param findClosest
+            */
+            PickingColliderBase.prototype.testBillboardCollision = function (billboard, pickingCollisionVO, shortestCollisionDistance) {
+                this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+                pickingCollisionVO.materialOwner = null;
+
+                if (this._pTestRenderableCollision(this._billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+                    shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+                    pickingCollisionVO.materialOwner = billboard;
+
+                    return true;
+                }
+
+                return false;
+            };
+
+            /**
+            * Tests a <code>Mesh</code> object for a collision with the picking ray.
+            *
+            * @param mesh The mesh instance to be tested.
+            * @param pickingCollisionVO The collision object used to store the collision results
+            * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+            * @param findClosest
+            */
+            PickingColliderBase.prototype.testMeshCollision = function (mesh, pickingCollisionVO, shortestCollisionDistance, findClosest) {
+                this.setLocalRay(pickingCollisionVO.localRayPosition, pickingCollisionVO.localRayDirection);
+                pickingCollisionVO.materialOwner = null;
+
+                var subMesh;
+
+                var len = mesh.subMeshes.length;
+                for (var i = 0; i < len; ++i) {
+                    subMesh = mesh.subMeshes[i];
+
+                    if (this._pTestRenderableCollision(this._subMeshRenderablePool.getItem(subMesh), pickingCollisionVO, shortestCollisionDistance)) {
+                        shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+                        pickingCollisionVO.materialOwner = subMesh;
+
+                        if (!findClosest)
+                            return true;
+                    }
+                }
+
+                return pickingCollisionVO.materialOwner != null;
             };
             return PickingColliderBase;
         })();
@@ -4523,7 +4254,7 @@ var away;
             /**
             * @inheritDoc
             */
-            JSPickingCollider.prototype.testRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
+            JSPickingCollider.prototype._pTestRenderableCollision = function (renderable, pickingCollisionVO, shortestCollisionDistance) {
                 var subGeometry = renderable.subGeometry;
 
                 var t;
@@ -4677,9 +4408,9 @@ var away;
                 this._rayDir = new away.geom.Vector3D();
                 this._shaderPickingDetails = shaderPickingDetails;
 
-                this._id = new Array(4); //new Vector.<Number>(4, true);
-                this._viewportData = new Array(4); //new Vector.<Number>(4, true); // first 2 contain scale, last 2 translation
-                this._boundOffsetScale = new Array(8); //new Vector.<Number>(8, true); // first 2 contain scale, last 2 translation
+                this._id = new Array(4);
+                this._viewportData = new Array(4); // first 2 contain scale, last 2 translation
+                this._boundOffsetScale = new Array(8); // first 2 contain scale, last 2 translation
                 this._boundOffsetScale[3] = 0;
                 this._boundOffsetScale[7] = 1;
             }
@@ -4702,10 +4433,6 @@ var away;
             * @inheritDoc
             */
             ShaderPicker.prototype.getViewCollision = function (x, y, view) {
-                away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
-
-                return null;
-
                 var collector = view.iEntityCollector;
 
                 this._stageGL = view.renderer.stageGL;
@@ -4722,6 +4449,10 @@ var away;
 
                 // _potentialFound will be set to true if any object is actually rendered
                 this._potentialFound = false;
+
+                //reset head values
+                this._blendedRenderableHead = null;
+                this._opaqueRenderableHead = null;
 
                 this.pDraw(collector, null);
 
@@ -4793,8 +4524,9 @@ var away;
                 this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
                 this._context.setProgram(this._objectProgram);
                 this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-                //			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-                //			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+                //this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+                //this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+                //TODO: reimplement ShaderPicker inheriting from RendererBase
             };
 
             /**
@@ -4803,8 +4535,6 @@ var away;
             * @param camera The camera for which to render.
             */
             ShaderPicker.prototype.drawRenderables = function (renderable, camera) {
-                away.Debug.throwPIR('ShaderPicker', 'drawRenderables', 'implement');
-
                 var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
                 var viewProjection = camera.viewProjection;
 
@@ -4817,7 +4547,7 @@ var away;
 
                     this._potentialFound = true;
 
-                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
+                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
                     this._interactives[this._interactiveId++] = renderable;
 
@@ -5119,297 +4849,6 @@ var away;
 var away;
 (function (away) {
     /**
-    * @module away.pick
-    */
-    (function (pick) {
-        /**
-        * Picks a 3d object from a view or scene by 3D raycast calculations.
-        * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
-        * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
-        *
-        * @class away.pick.RaycastPicker
-        */
-        var RaycastPicker = (function () {
-            /**
-            * Creates a new <code>RaycastPicker</code> object.
-            *
-            * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
-            * or simply returns the first collision encountered Defaults to false.
-            */
-            function RaycastPicker(findClosestCollision) {
-                this._ignoredEntities = [];
-                this._onlyMouseEnabled = true;
-                this._numEntities = 0;
-                this._raycastCollector = new away.traverse.RaycastCollector();
-
-                this._findClosestCollision = findClosestCollision;
-                this._entities = new Array();
-            }
-            Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
-                /**
-                * @inheritDoc
-                */
-                get: function () {
-                    return this._onlyMouseEnabled;
-                },
-                set: function (value) {
-                    this._onlyMouseEnabled = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            RaycastPicker.prototype.getViewCollision = function (x, y, view) {
-                //cast ray through the collection of entities on the view
-                var collector = view.iEntityCollector;
-
-                //var i:number;
-                if (collector.numInteractiveEntities == 0)
-                    return null;
-
-                //update ray
-                var rayPosition = view.unproject(x, y, 0);
-                var rayDirection = view.unproject(x, y, 1);
-                rayDirection = rayDirection.subtract(rayPosition);
-
-                // Perform ray-bounds collision checks.
-                this._numEntities = 0;
-                var node = collector.entityHead;
-                var entity;
-                while (node) {
-                    entity = node.entity;
-
-                    if (this.isIgnored(entity)) {
-                        node = node.next;
-                        continue;
-                    }
-
-                    // If collision detected, store in new data set.
-                    if (entity._iIsVisible() && entity.isIntersectingRay(rayPosition, rayDirection))
-                        this._entities[this._numEntities++] = entity;
-
-                    node = node.next;
-                }
-
-                //early out if no collisions detected
-                if (!this._numEntities)
-                    return null;
-
-                return this.getPickingCollisionVO(collector);
-            };
-
-            //*/
-            /**
-            * @inheritDoc
-            */
-            //* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
-            RaycastPicker.prototype.getSceneCollision = function (position, direction, scene) {
-                //clear collector
-                this._raycastCollector.clear();
-
-                //setup ray vectors
-                this._raycastCollector.rayPosition = position;
-                this._raycastCollector.rayDirection = direction;
-
-                // collect entities to test
-                scene.traversePartitions(this._raycastCollector);
-
-                this._numEntities = 0;
-                var node = this._raycastCollector.entityHead;
-                var entity;
-
-                while (node) {
-                    entity = node.entity;
-
-                    if (this.isIgnored(entity)) {
-                        node = node.next;
-                        continue;
-                    }
-
-                    this._entities[this._numEntities++] = entity;
-
-                    node = node.next;
-                }
-
-                //early out if no collisions detected
-                if (!this._numEntities)
-                    return null;
-
-                return this.getPickingCollisionVO(this._raycastCollector);
-            };
-
-            //		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:Array<away.entities.IEntity>):PickingCollisionVO
-            //		{
-            //			this._numEntities = 0;
-            //
-            //			var entity:away.entities.IEntity;
-            //			var l:number = entities.length;
-            //
-            //			for (var c:number = 0; c < l; c++) {
-            //				entity = entities[c];
-            //
-            //				if (entity.isIntersectingRay(position, direction))
-            //					this._entities[this._numEntities++] = entity;
-            //			}
-            //
-            //			return this.getPickingCollisionVO(this._raycastCollector);
-            //		}
-            RaycastPicker.prototype.setIgnoreList = function (entities) {
-                this._ignoredEntities = entities;
-            };
-
-            RaycastPicker.prototype.isIgnored = function (entity) {
-                if (this._onlyMouseEnabled && entity._iIsMouseEnabled)
-                    return true;
-
-                var ignoredEntity;
-
-                var l = this._ignoredEntities.length;
-
-                for (var c = 0; c < l; c++) {
-                    ignoredEntity = this._ignoredEntities[c];
-
-                    if (ignoredEntity == entity)
-                        return true;
-                }
-
-                return false;
-            };
-
-            RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
-                return entity1._iPickingCollisionVO.rayEntryDistance > entity2._iPickingCollisionVO.rayEntryDistance ? 1 : -1;
-            };
-
-            RaycastPicker.prototype.getPickingCollisionVO = function (collector) {
-                // trim before sorting
-                this._entities.length = this._numEntities;
-
-                // Sort entities from closest to furthest.
-                this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
-
-                // ---------------------------------------------------------------------
-                // Evaluate triangle collisions when needed.
-                // Replaces collision data provided by bounds collider with more precise data.
-                // ---------------------------------------------------------------------
-                var shortestCollisionDistance = Number.MAX_VALUE;
-                var bestCollisionVO;
-                var pickingCollisionVO;
-                var entity;
-                var i;
-
-                for (i = 0; i < this._numEntities; ++i) {
-                    entity = this._entities[i];
-                    pickingCollisionVO = entity._iPickingCollisionVO;
-                    if (entity.pickingCollider) {
-                        // If a collision exists, update the collision data and stop all checks.
-                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && away.render.RendererBase._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
-                            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-                            bestCollisionVO = pickingCollisionVO;
-                            if (!this._findClosestCollision) {
-                                this.updateLocalPosition(pickingCollisionVO);
-                                return pickingCollisionVO;
-                            }
-                        }
-                    } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
-                        // Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
-                        // to enable the detection of a corresponsding triangle collision.
-                        // Therefore, bounds collisions with a ray origin inside its bounds can be ignored
-                        // if it has been established that there is NO triangle collider to test
-                        if (!pickingCollisionVO.rayOriginIsInsideBounds) {
-                            this.updateLocalPosition(pickingCollisionVO);
-                            return pickingCollisionVO;
-                        }
-                    }
-                }
-
-                return bestCollisionVO;
-            };
-
-            RaycastPicker.prototype.updateLocalPosition = function (pickingCollisionVO) {
-                var collisionPos = (pickingCollisionVO.localPosition == null) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
-
-                //var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
-                var rayDir = pickingCollisionVO.localRayDirection;
-                var rayPos = pickingCollisionVO.localRayPosition;
-                var t = pickingCollisionVO.rayEntryDistance;
-                collisionPos.x = rayPos.x + t * rayDir.x;
-                collisionPos.y = rayPos.y + t * rayDir.y;
-                collisionPos.z = rayPos.z + t * rayDir.z;
-            };
-
-            RaycastPicker.prototype.dispose = function () {
-            };
-            return RaycastPicker;
-        })();
-        pick.RaycastPicker = RaycastPicker;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    /**
-    * @module away.pick
-    */
-    (function (pick) {
-        /**
-        * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
-        *
-        * @see away3d.containers.View#mousePicker
-        *
-        * @class away.pick.PickingType
-        */
-        var PickingType = (function () {
-            function PickingType() {
-            }
-            PickingType.SHADER = new away.pick.ShaderPicker();
-
-            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
-
-            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
-            return PickingType;
-        })();
-        pick.PickingType = PickingType;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.pick
-    */
-    (function (pick) {
-        /**
-        * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
-        *
-        * @see away.entities.Entity#pickingCollider
-        * @see away.pick.RaycastPicker
-        *
-        * @class away.pick.PickingColliderType
-        */
-        var PickingColliderType = (function () {
-            function PickingColliderType() {
-            }
-            PickingColliderType.BOUNDS_ONLY = null;
-
-            PickingColliderType.AS3_FIRST_ENCOUNTERED = new away.pick.JSPickingCollider(false);
-
-            PickingColliderType.AS3_BEST_HIT = new away.pick.JSPickingCollider(true);
-            return PickingColliderType;
-        })();
-        pick.PickingColliderType = PickingColliderType;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
     * @module away.render
     */
     (function (render) {
@@ -5438,6 +4877,11 @@ var away;
                 this.textureRatioY = 1;
                 this._pRttViewProjectionMatrix = new away.geom.Matrix3D();
                 this._pNumTriangles = 0;
+
+                this._billboardRenderablePool = away.pool.RenderablePool.getPool(away.pool.BillboardRenderable);
+                this._segmentSetRenderablePool = away.pool.RenderablePool.getPool(away.pool.SegmentSetRenderable);
+                this._skyboxRenderablePool = away.pool.RenderablePool.getPool(away.pool.SkyboxRenderable);
+                this._subMeshRenderablePool = away.pool.RenderablePool.getPool(away.pool.SubMeshRenderable);
 
                 this._renderToTexture = renderToTexture;
 
@@ -5807,7 +5251,7 @@ var away;
             * @protected
             */
             RendererBase.prototype.pApplyBillboard = function (billboard) {
-                this.pApplyRenderable(RendererBase.billboardRenderablePool.getItem(billboard));
+                this.pApplyRenderable(this._billboardRenderablePool.getItem(billboard));
             };
 
             /**
@@ -5821,7 +5265,7 @@ var away;
 
                 var len = mesh.subMeshes.length;
                 for (var i = 0; i < len; i++)
-                    this.pApplyRenderable(RendererBase.subMeshRenderablePool.getItem(mesh.subMeshes[i]));
+                    this.pApplyRenderable(this._subMeshRenderablePool.getItem(mesh.subMeshes[i]));
             };
 
             /**
@@ -5860,11 +5304,11 @@ var away;
             };
 
             RendererBase.prototype.pApplySkybox = function (skybox) {
-                this.pApplyRenderable(RendererBase.skyboxRenderablePool.getItem(skybox));
+                this.pApplyRenderable(this._skyboxRenderablePool.getItem(skybox));
             };
 
             RendererBase.prototype.pApplySegmentSet = function (segmentSet) {
-                this.pApplyRenderable(RendererBase.segmentSetRenderablePool.getItem(segmentSet));
+                this.pApplyRenderable(this._segmentSetRenderablePool.getItem(segmentSet));
             };
 
             /**
@@ -5883,70 +5327,6 @@ var away;
                     this.pApplySegmentSet(entity);
                 }
             };
-
-            /**
-            * //TODO
-            *
-            * @param entity
-            * @param shortestCollisionDistance
-            * @param findClosest
-            * @returns {boolean}
-            *
-            * @internal
-            */
-            RendererBase._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
-                var pickingCollider = entity.pickingCollider;
-                var pickingCollisionVO = entity._iPickingCollisionVO;
-
-                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
-                pickingCollisionVO.materialOwner = null;
-
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    return this.testBillBoard(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    return this.testMesh(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                }
-
-                return false;
-            };
-
-            RendererBase.testBillBoard = function (billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-                if (pickingCollider.testRenderableCollision(this.billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
-                    shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-
-                    pickingCollisionVO.materialOwner = billboard;
-
-                    return true;
-                }
-
-                return false;
-            };
-
-            RendererBase.testMesh = function (mesh, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-                var subMesh;
-                var renderable;
-
-                var len = mesh.subMeshes.length;
-                for (var i = 0; i < len; ++i) {
-                    subMesh = mesh.subMeshes[i];
-                    renderable = this.subMeshRenderablePool.getItem(subMesh);
-
-                    if (pickingCollider.testRenderableCollision(renderable, pickingCollisionVO, shortestCollisionDistance)) {
-                        shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-
-                        pickingCollisionVO.materialOwner = subMesh;
-
-                        if (!findClosest)
-                            return true;
-                    }
-                }
-
-                return pickingCollisionVO.materialOwner != null;
-            };
-            RendererBase.billboardRenderablePool = new away.pool.RenderablePool(away.pool.BillboardRenderable);
-            RendererBase.segmentSetRenderablePool = new away.pool.RenderablePool(away.pool.SegmentSetRenderable);
-            RendererBase.skyboxRenderablePool = new away.pool.RenderablePool(away.pool.SkyboxRenderable);
-            RendererBase.subMeshRenderablePool = new away.pool.RenderablePool(away.pool.SubMeshRenderable);
             return RendererBase;
         })(away.events.EventDispatcher);
         render.RendererBase = RendererBase;
@@ -7518,7 +6898,7 @@ var away;
                 var clone = new Mesh(this._geometry, this._material);
 
                 clone._iMatrix3D = this._iMatrix3D;
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone.partition = this.partition;
                 clone.bounds = this.bounds.clone();
 
@@ -7579,16 +6959,19 @@ var away;
                 var maxX, maxY, maxZ;
 
                 if (numSubGeoms > 0) {
+                    var subGeom = subGeoms[0];
+                    var vertices = subGeom.vertexData;
+                    var i = subGeom.vertexOffset;
+                    minX = maxX = vertices[i];
+                    minY = maxY = vertices[i + 1];
+                    minZ = maxZ = vertices[i + 2];
+
                     var j = 0;
-
-                    minX = minY = minZ = Number.POSITIVE_INFINITY;
-                    maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
-
                     while (j < numSubGeoms) {
-                        var subGeom = subGeoms[j++];
-                        var vertices = subGeom.vertexData;
+                        subGeom = subGeoms[j++];
+                        vertices = subGeom.vertexData;
                         var vertexDataLen = vertices.length;
-                        var i = subGeom.vertexOffset;
+                        i = subGeom.vertexOffset;
                         var stride = subGeom.vertexStride;
 
                         while (i < vertexDataLen) {
@@ -7698,6 +7081,19 @@ var away;
                     this._subMeshes[i].uvTransform.scaleV = scaleV;
                     this._subMeshes[i].uvTransform.rotationUV = rotationUV;
                 }
+            };
+
+            /**
+            * //TODO
+            *
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            Mesh.prototype._iTestCollision = function (shortestCollisionDistance, findClosest) {
+                return this._pPickingCollider.testMeshCollision(this, this._pPickingCollisionVO, shortestCollisionDistance, findClosest);
             };
             return Mesh;
         })(away.containers.DisplayObjectContainer);
@@ -8785,7 +8181,7 @@ var away;
                 var projection = cam.projection;
                 projection.fieldOfView = 90;
                 this._projections.push(projection);
-                cam.projection.iAspectRatio = 1;
+                cam.projection._iAspectRatio = 1;
                 this._depthCameras.push(cam);
             };
 
@@ -9016,7 +8412,7 @@ var away;
     (function (lights) {
         var Camera = away.entities.Camera;
         var FreeMatrixProjection = away.projections.FreeMatrixProjection;
-        var ProjectionBase = away.projections.ProjectionBase;
+
         var Scene = away.containers.Scene;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var DepthRenderer = away.render.DepthRenderer;
@@ -9315,418 +8711,6 @@ var away;
         lights.NearDirectionalShadowMapper = NearDirectionalShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    // Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
-    (function (managers) {
-        //import away3d.arcane;
-        //import away3d.containers.ObjectContainer3D;
-        //import away3d.containers.View;
-        //import away3d.core.pick.IPicker;
-        //import away3d.core.pick.PickingCollisionVO;
-        //import away3d.core.pick.PickingType;
-        //import away3d.events.MouseEvent3D;
-        //import flash.display.DisplayObject;
-        //import flash.display.DisplayObjectContainer;
-        //import flash.display.Stage;
-        //import flash.events.MouseEvent;
-        //import flash.geom.Vector3D;
-        //import flash.utils.Dictionary;
-        //use namespace arcane;
-        /**
-        * Mouse3DManager enforces a singleton pattern and is not intended to be instanced.
-        * it provides a manager class for detecting 3D mouse hits on View objects and sending out 3D mouse events.
-        */
-        var Mouse3DManager = (function () {
-            /**
-            * Creates a new <code>Mouse3DManager</code> object.
-            */
-            function Mouse3DManager() {
-                this._updateDirty = true;
-                this._nullVector = new away.geom.Vector3D();
-                this._mousePicker = away.pick.PickingType.RAYCAST_FIRST_ENCOUNTERED;
-                this._childDepth = 0;
-                if (!Mouse3DManager._view3Ds) {
-                    Mouse3DManager._view3Ds = new Object();
-                    Mouse3DManager._view3DLookup = new Array(); //Vector.<View>();
-                }
-            }
-            // ---------------------------------------------------------------------
-            // Interface.
-            // ---------------------------------------------------------------------
-            // TODO: required dependency stageGL
-            Mouse3DManager.prototype.updateCollider = function (view) {
-                throw new away.errors.PartialImplementationError('stageGL');
-                /*
-                this._previousCollidingView = this._collidingView;
-                
-                if (view) {
-                // Clear the current colliding objects for multiple views if backBuffer just cleared
-                if (view.stageGL.bufferClear)
-                _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
-                
-                if (!view.shareContext) {
-                if (view == _activeView && (_forceMouseMove || _updateDirty)) { // If forceMouseMove is off, and no 2D mouse events dirtied the update, don't update either.
-                _collidingObject = _mousePicker.getViewCollision(view.mouseX, view.mouseY, view);
-                }
-                } else {
-                if (view.getBounds(view.parent).contains(view.mouseX + view.x, view.mouseY + view.y)) {
-                if (!_collidingViewObjects)
-                _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
-                _collidingObject = _collidingViewObjects[_view3Ds[view]] = _mousePicker.getViewCollision(view.mouseX, view.mouseY, view);
-                }
-                }
-                }
-                */
-            };
-
-            Mouse3DManager.prototype.fireMouseEvents = function () {
-                throw new away.errors.PartialImplementationError('View().layeredView');
-                /*
-                
-                var i:number;
-                var len:number;
-                var event:away.events.MouseEvent3D;
-                var dispatcher:away.containers.ObjectContainer3D;
-                
-                
-                
-                // If multiple view are used, determine the best hit based on the depth intersection.
-                if ( Mouse3DManager._collidingViewObjects )
-                {
-                Mouse3DManager._pCollidingObject = null;//_collidingObject = null;
-                
-                // Get the top-most view colliding object
-                var distance:number = Infinity;
-                var view:away.containers.View;
-                
-                for (var v:number = Mouse3DManager._viewCount - 1; v >= 0; v--)
-                {
-                view = _view3DLookup[v];
-                
-                if ( Mouse3DManager._collidingViewObjects[v] && (view.layeredView || Mouse3DManager._collidingViewObjects[v].rayEntryDistance < distance))
-                {
-                
-                distance = Mouse3DManager._collidingViewObjects[v].rayEntryDistance;
-                
-                Mouse3DManager._pCollidingObject = Mouse3DManager._collidingViewObjects[v];//_collidingObject = Mouse3DManager._collidingViewObjects[v];
-                
-                if (view.layeredView)
-                {
-                
-                break;
-                
-                }
-                
-                }
-                }
-                }
-                
-                // If colliding object has changed, queue over/out events.
-                if (Mouse3DManager._pCollidingObject  != Mouse3DManager._previousCollidingObject)
-                {
-                
-                if (Mouse3DManager._previousCollidingObject)
-                {
-                
-                this.queueDispatch(Mouse3DManager._mouseOut, this._mouseMoveEvent, Mouse3DManager._previousCollidingObject);
-                
-                }
-                
-                if (Mouse3DManager._pCollidingObject)
-                {
-                this.queueDispatch(Mouse3DManager._mouseOver, this._mouseMoveEvent, Mouse3DManager._pCollidingObject );
-                }
-                
-                }
-                
-                // Fire mouse move events here if forceMouseMove is on.
-                if ( this._forceMouseMove && Mouse3DManager._pCollidingObject)
-                {
-                
-                this.queueDispatch( Mouse3DManager._mouseMove, this._mouseMoveEvent, Mouse3DManager._pCollidingObject);
-                
-                }
-                
-                
-                // Dispatch all queued events.
-                len = Mouse3DManager._queuedEvents.length;
-                
-                for (i = 0; i < len; ++i)
-                {
-                // Only dispatch from first implicitly enabled object ( one that is not a child of a mouseChildren = false hierarchy ).
-                event = Mouse3DManager._queuedEvents[i];
-                dispatcher = event.object;
-                
-                while (dispatcher && ! dispatcher._iAncestorsAllowMouseEnabled )
-                {
-                
-                dispatcher = dispatcher.parent;
-                
-                }
-                
-                
-                if (dispatcher)
-                {
-                
-                dispatcher.dispatchEvent(event);
-                
-                }
-                
-                }
-                Mouse3DManager._queuedEvents.length = 0;
-                
-                this._updateDirty = false;
-                Mouse3DManager._previousCollidingObject = Mouse3DManager._pCollidingObject;//_collidingObject;
-                //*/
-            };
-
-            Mouse3DManager.prototype.addViewLayer = function (view) {
-                throw new away.errors.PartialImplementationError('StageGL, Stage, DisplayObjectContainer ( as3 / native ) ');
-                /*
-                var stg:Stage = view.stage;
-                
-                // Add instance to mouse3dmanager to fire mouse events for multiple views
-                if (!view.stageGL.mouse3DManager)
-                view.stageGL.mouse3DManager = this;
-                
-                if (!hasKey(view))
-                _view3Ds[view] = 0;
-                
-                _childDepth = 0;
-                traverseDisplayObjects(stg);
-                _viewCount = _childDepth;
-                */
-            };
-
-            Mouse3DManager.prototype.enableMouseListeners = function (view) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-                /*
-                view.addEventListener(MouseEvent.CLICK, onClick);
-                view.addEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
-                view.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-                view.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-                view.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-                view.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-                view.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-                view.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-                */
-            };
-
-            Mouse3DManager.prototype.disableMouseListeners = function (view) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-                /*
-                view.removeEventListener(MouseEvent.CLICK, onClick);
-                view.removeEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
-                view.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-                view.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-                view.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-                view.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-                view.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-                view.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-                */
-            };
-
-            Mouse3DManager.prototype.dispose = function () {
-                this._mousePicker.dispose();
-            };
-
-            // ---------------------------------------------------------------------
-            // Private.
-            // ---------------------------------------------------------------------
-            Mouse3DManager.prototype.queueDispatch = function (event, sourceEvent, collider) {
-                if (typeof collider === "undefined") { collider = null; }
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-                /*
-                // 2D properties.
-                event.ctrlKey = sourceEvent.ctrlKey;
-                event.altKey = sourceEvent.altKey;
-                event.shiftKey = sourceEvent.shiftKey;
-                event.delta = sourceEvent.delta;
-                event.screenX = sourceEvent.localX;
-                event.screenY = sourceEvent.localY;
-                
-                collider ||= _collidingObject;
-                
-                // 3D properties.
-                if (collider) {
-                // Object.
-                event.object = collider.entity;
-                event.renderable = collider.renderable;
-                // UV.
-                event.uv = collider.uv;
-                // Position.
-                event.localPosition = collider.localPosition? collider.localPosition.clone() : null;
-                // Normal.
-                event.localNormal = collider.localNormal? collider.localNormal.clone() : null;
-                // Face index.
-                event.index = collider.index;
-                // SubGeometryIndex.
-                event.subGeometryIndex = collider.subGeometryIndex;
-                
-                } else {
-                // Set all to null.
-                event.uv = null;
-                event.object = null;
-                event.localPosition = _nullVector;
-                event.localNormal = _nullVector;
-                event.index = 0;
-                event.subGeometryIndex = 0;
-                }
-                
-                // Store event to be dispatched later.
-                _queuedEvents.push(event);
-                */
-            };
-
-            Mouse3DManager.prototype.reThrowEvent = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent - AS3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.hasKey = function (view) {
-                for (var v in Mouse3DManager._view3Ds) {
-                    if (v === view) {
-                        return true;
-                    }
-                }
-
-                return false;
-            };
-
-            Mouse3DManager.prototype.traverseDisplayObjects = function (container) {
-                throw new away.errors.PartialImplementationError('DisplayObjectContainer ( as3 / native ) as3 <> JS Conversion');
-                /*
-                var childCount:number = container.numChildren;
-                var c:number = 0;
-                var child:DisplayObject;
-                for (c = 0; c < childCount; c++) {
-                child = container.getChildAt(c);
-                for (var v:* in _view3Ds) {
-                if (child == v) {
-                _view3Ds[child] = _childDepth;
-                _view3DLookup[_childDepth] = v;
-                _childDepth++;
-                }
-                }
-                if (child is DisplayObjectContainer)
-                traverseDisplayObjects(child as DisplayObjectContainer);
-                }
-                */
-            };
-
-            // ---------------------------------------------------------------------
-            // Listeners.
-            // ---------------------------------------------------------------------
-            Mouse3DManager.prototype.onMouseMove = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-                /*
-                if (Mouse3DManager._pCollidingObject)
-                {
-                
-                this.queueDispatch(Mouse3DManager._mouseMove, this._mouseMoveEvent = event);
-                
-                }
-                else
-                {
-                
-                this.reThrowEvent(event);
-                
-                }
-                
-                this._updateDirty = true;
-                */
-            };
-
-            Mouse3DManager.prototype.onMouseOut = function (event) {
-                this._activeView = null;
-
-                if (Mouse3DManager._pCollidingObject) {
-                    this.queueDispatch(Mouse3DManager._mouseOut, event, Mouse3DManager._pCollidingObject);
-                }
-
-                this._updateDirty = true;
-
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.onMouseOver = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.onClick = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.onDoubleClick = function (event) {
-                if (Mouse3DManager._pCollidingObject) {
-                    this.queueDispatch(Mouse3DManager._mouseDoubleClick, event);
-                } else {
-                    this.reThrowEvent(event);
-                }
-
-                this._updateDirty = true;
-            };
-
-            Mouse3DManager.prototype.onMouseDown = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.onMouseUp = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Mouse3DManager.prototype.onMouseWheel = function (event) {
-                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
-            };
-
-            Object.defineProperty(Mouse3DManager.prototype, "forceMouseMove", {
-                // ---------------------------------------------------------------------
-                // Getters & setters.
-                // ---------------------------------------------------------------------
-                get: function () {
-                    return this._forceMouseMove;
-                },
-                set: function (value) {
-                    this._forceMouseMove = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Mouse3DManager.prototype, "mousePicker", {
-                get: function () {
-                    return this._mousePicker;
-                },
-                set: function (value) {
-                    this._mousePicker = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Mouse3DManager._viewCount = 0;
-
-            Mouse3DManager._queuedEvents = new Array();
-
-            Mouse3DManager._mouseUp = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_UP);
-            Mouse3DManager._mouseClick = new away.events.MouseEvent3D(away.events.MouseEvent3D.CLICK);
-            Mouse3DManager._mouseOut = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_OUT);
-            Mouse3DManager._mouseDown = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_DOWN);
-            Mouse3DManager._mouseMove = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_MOVE);
-            Mouse3DManager._mouseOver = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_OVER);
-            Mouse3DManager._mouseWheel = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_WHEEL);
-            Mouse3DManager._mouseDoubleClick = new away.events.MouseEvent3D(away.events.MouseEvent3D.DOUBLE_CLICK);
-
-            Mouse3DManager._previousCollidingView = -1;
-            Mouse3DManager._collidingView = -1;
-            return Mouse3DManager;
-        })();
-        managers.Mouse3DManager = Mouse3DManager;
-    })(away.managers || (away.managers = {}));
-    var managers = away.managers;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
@@ -10320,7 +9304,7 @@ var away;
 
                 context.setProgram(this._iPrograms[contextIndex]);
 
-                context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling);
+                context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
                 if (this._renderToTexture) {
                     this._oldTarget = stageGL.renderTarget;
@@ -22203,6 +21187,8 @@ var away;
                 this._smooth = true;
                 this._repeat = false;
                 this._pDepthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+                this._pHeight = 1;
+                this._pWidth = 1;
 
                 this._iMaterialId = Number(this.id);
 
@@ -22226,6 +21212,17 @@ var away;
                 */
                 get: function () {
                     return AssetType.MATERIAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pHeight;
                 },
                 enumerable: true,
                 configurable: true
@@ -22433,6 +21430,17 @@ var away;
                 */
                 get: function () {
                     return this.getRequiresBlending();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pWidth;
                 },
                 enumerable: true,
                 configurable: true
@@ -24173,6 +23181,11 @@ var away;
                 },
                 set: function (value) {
                     this.diffuseMethod.texture = value;
+
+                    if (value) {
+                        this._pHeight = value.height;
+                        this._pWidth = value.width;
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -24335,6 +23348,11 @@ var away;
                 },
                 set: function (value) {
                     this._pScreenPass.diffuseMethod.texture = value;
+
+                    if (value) {
+                        this._pHeight = value.height;
+                        this._pWidth = value.width;
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -27461,11 +26479,12 @@ var away;
             __extends(WireframeSphere, _super);
             /**
             * Creates a new WireframeSphere object.
-            * @param radius The radius of the sphere.
-            * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-            * @param segmentsH Defines the number of vertical segments that make up the sphere.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param radius The radius of the sphere. Defaults to 50.
+            * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
+            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
             function WireframeSphere(radius, segmentsW, segmentsH, color, thickness) {
                 if (typeof radius === "undefined") { radius = 50; }
@@ -27479,6 +26498,66 @@ var away;
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
             }
+            Object.defineProperty(WireframeSphere.prototype, "radius", {
+                /**
+                * The radius of the sphere. Defaults to 50.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    if (this._radius == value)
+                        return;
+
+                    this._radius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeSphere.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeSphere.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             /**
             * @inheritDoc
             */
@@ -27560,39 +26639,260 @@ var away;
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
+        * Generates a wireframeCone primitive.
+        */
+        var WireframeCone = (function (_super) {
+            __extends(WireframeCone, _super);
+            /**
+            * Creates a new WireframeCone instance
+            *
+            * @param topRadius Top radius of the cone. Defaults to 50.
+            * @param radius Bottom radius of the cone. Defaults to 50.
+            * @param coneHeight The height of the cone. Defaults to 100.
+            * @param segmentsW Number of radial segments. Defaults to 16.
+            * @param segmentsH Number of vertical segments. Defaults to 1.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
+            */
+            function WireframeCone(radius, coneHeight, segmentsW, segmentsH, color, thickness) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof coneHeight === "undefined") { coneHeight = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+                this._radius = radius;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+
+                this._coneHeight = coneHeight;
+            }
+            Object.defineProperty(WireframeCone.prototype, "radius", {
+                /**
+                * Bottom radius of the cone. Defaults to 50.
+                */
+                get: function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    if (this._radius == value)
+                        return;
+
+                    this._radius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "coneHeight", {
+                /**
+                * The size of the cone along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._coneHeight;
+                },
+                set: function (value) {
+                    if (this._coneHeight == value)
+                        return;
+
+                    this._coneHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the cone. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCone.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the cone. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            WireframeCone.prototype.pBuildGeometry = function () {
+                var i, j;
+                var radius;
+                var revolutionAngle;
+                var revolutionAngleDelta = WireframeCone.TWO_PI / this._segmentsW;
+                var nextVertexIndex = 0;
+                var x, y, z;
+
+                var lastLayer = new Array(this._segmentsH + 1);
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    lastLayer[j] = new Array(this._segmentsW + 1);
+
+                    radius = ((j / this._segmentsH) * this._radius);
+                    z = this._coneHeight * (j / this._segmentsH - 0.5);
+
+                    var previousV = null;
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        // revolution vertex
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = radius * Math.cos(revolutionAngle);
+                        y = radius * Math.sin(revolutionAngle);
+                        var vertex;
+                        if (previousV) {
+                            vertex = new away.geom.Vector3D(x, -z, y);
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, previousV);
+                            previousV = vertex;
+                        } else
+                            previousV = new away.geom.Vector3D(x, -z, y);
+
+                        if (j > 0) {
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, lastLayer[j - 1][i]);
+                        }
+                        lastLayer[j][i] = previousV;
+                    }
+                }
+            };
+            WireframeCone.TWO_PI = 2 * Math.PI;
+            return WireframeCone;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeCone = WireframeCone;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (primitives) {
+        //TODO - convert to geometry primitive
+        /**
         * A WirefameCube primitive mesh.
         */
         var WireframeCube = (function (_super) {
             __extends(WireframeCube, _super);
             /**
             * Creates a new WireframeCube object.
-            * @param width The size of the cube along its X-axis.
-            * @param height The size of the cube along its Y-axis.
-            * @param depth The size of the cube along its Z-axis.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
+            * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
+            * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
+            * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
-            function WireframeCube(width, height, depth, color, thickness) {
-                if (typeof width === "undefined") { width = 100; }
-                if (typeof height === "undefined") { height = 100; }
-                if (typeof depth === "undefined") { depth = 100; }
+            function WireframeCube(cubeWidth, cubeHeight, cubeDepth, color, thickness) {
+                if (typeof cubeWidth === "undefined") { cubeWidth = 100; }
+                if (typeof cubeHeight === "undefined") { cubeHeight = 100; }
+                if (typeof cubeDepth === "undefined") { cubeDepth = 100; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
                 _super.call(this, color, thickness);
 
-                this.width = width;
-                this.height = height;
-                this.depth = depth;
+                this._cubeWidth = cubeWidth;
+                this._cubeHeight = cubeHeight;
+                this._cubeDepth = cubeDepth;
             }
+            Object.defineProperty(WireframeCube.prototype, "cubeDepth", {
+                /**
+                * The size of the cube along its Z-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeDepth;
+                },
+                set: function (value) {
+                    if (this._cubeDepth == value)
+                        return;
+
+                    this._cubeDepth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "cubeHeight", {
+                /**
+                * The size of the cube along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeHeight;
+                },
+                set: function (value) {
+                    if (this._cubeHeight == value)
+                        return;
+
+                    this._cubeHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "cubeWidth", {
+                /**
+                * The size of the cube along its X-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cubeWidth;
+                },
+                set: function (value) {
+                    if (this._cubeWidth == value)
+                        return;
+
+                    this._cubeWidth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             /**
             * @inheritDoc
             */
             WireframeCube.prototype.pBuildGeometry = function () {
                 var v0 = new away.geom.Vector3D();
                 var v1 = new away.geom.Vector3D();
-                var hw = 0.5;
-                var hh = 0.5;
-                var hd = 0.5;
+                var hw = this._cubeWidth / 2;
+                var hh = this._cubeHeight / 2;
+                var hd = this._cubeDepth / 2;
 
                 v0.x = -hw;
                 v0.y = hh;
@@ -27664,18 +26964,19 @@ var away;
             __extends(WireframeCylinder, _super);
             /**
             * Creates a new WireframeCylinder instance
-            * @param topRadius Top radius of the cylinder
-            * @param bottomRadius Bottom radius of the cylinder
-            * @param height The height of the cylinder
-            * @param segmentsW Number of radial segments
-            * @param segmentsH Number of vertical segments
-            * @param color The color of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
+            *
+            * @param topRadius Top radius of the cylinder. Defaults to 50.
+            * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
+            * @param cylinderHeight The height of the cylinder. Defaults to 100.
+            * @param segmentsW Number of radial segments. Defaults to 16.
+            * @param segmentsH Number of vertical segments. Defaults to 1.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
             */
-            function WireframeCylinder(topRadius, bottomRadius, height, segmentsW, segmentsH, color, thickness) {
+            function WireframeCylinder(topRadius, bottomRadius, cylinderHeight, segmentsW, segmentsH, color, thickness) {
                 if (typeof topRadius === "undefined") { topRadius = 50; }
                 if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
-                if (typeof height === "undefined") { height = 100; }
+                if (typeof cylinderHeight === "undefined") { cylinderHeight = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 16; }
                 if (typeof segmentsH === "undefined") { segmentsH = 1; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
@@ -27686,8 +26987,108 @@ var away;
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
 
-                this.height = height;
+                this._cylinderHeight = cylinderHeight;
             }
+            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
+                /**
+                * Bottom radius of the cylinder. Defaults to 50.
+                */
+                get: function () {
+                    return this._bottomRadius;
+                },
+                set: function (value) {
+                    if (this._bottomRadius == value)
+                        return;
+
+                    this._bottomRadius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "cylinderHeight", {
+                /**
+                * The size of the cylinder along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._cylinderHeight;
+                },
+                set: function (value) {
+                    if (this._cylinderHeight == value)
+                        return;
+
+                    this._cylinderHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "segmentsH", {
+                /**
+                * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+                */
+                get: function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
+                    this._segmentsH = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "segmentsW", {
+                /**
+                * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
+                /**
+                * Top radius of the cylinder. Defaults to 50.
+                */
+                get: function () {
+                    return this._topRadius;
+                },
+                set: function (value) {
+                    if (this._topRadius == value)
+                        return;
+
+                    this._topRadius = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             WireframeCylinder.prototype.pBuildGeometry = function () {
                 var i, j;
                 var radius = this._topRadius;
@@ -27702,7 +27103,7 @@ var away;
                     lastLayer[j] = new Array(this._segmentsW + 1);
 
                     radius = this._topRadius - ((j / this._segmentsH) * (this._topRadius - this._bottomRadius));
-                    z = -(1 / 2) + (j / this._segmentsH * 1);
+                    z = this._cylinderHeight * (j / this._segmentsH - 0.5);
 
                     var previousV = null;
 
@@ -27726,38 +27127,6 @@ var away;
                     }
                 }
             };
-
-            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
-                /**
-                * Top radius of the cylinder
-                */
-                get: function () {
-                    return this._topRadius;
-                },
-                set: function (value) {
-                    this._topRadius = value;
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
-                /**
-                * Bottom radius of the cylinder
-                */
-                get: function () {
-                    return this._bottomRadius;
-                },
-                set: function (value) {
-                    this._bottomRadius = value;
-                    this.pInvalidateGeometry();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             WireframeCylinder.TWO_PI = 2 * Math.PI;
             return WireframeCylinder;
         })(away.primitives.WireframePrimitiveBase);
@@ -27777,38 +27146,45 @@ var away;
             __extends(WireframePlane, _super);
             /**
             * Creates a new WireframePlane object.
-            * @param width The size of the cube along its X-axis.
-            * @param height The size of the cube along its Y-axis.
-            * @param segmentsW The number of segments that make up the cube along the X-axis.
-            * @param segmentsH The number of segments that make up the cube along the Y-axis.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
-            * @param orientation The orientaion in which the plane lies.
+            *
+            * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
+            * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
+            * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
+            * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
+            * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
+            * @param thickness The thickness of the wireframe lines. Defaults to 1.
+            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
             */
-            function WireframePlane(width, height, segmentsW, segmentsH, color, thickness, orientation) {
+            function WireframePlane(planeWidth, planeHeight, segmentsW, segmentsH, color, thickness, orientation) {
+                if (typeof planeWidth === "undefined") { planeWidth = 100; }
+                if (typeof planeHeight === "undefined") { planeHeight = 100; }
                 if (typeof segmentsW === "undefined") { segmentsW = 10; }
                 if (typeof segmentsH === "undefined") { segmentsH = 10; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._segmentsW = segmentsW;
                 this._segmentsH = segmentsH;
                 this._orientation = orientation;
 
-                this.width = width;
-                this.height = height;
+                this._planeWidth = planeWidth;
+                this._planeHeight = planeHeight;
             }
-            Object.defineProperty(WireframePlane.prototype, "orientation", {
+            Object.defineProperty(WireframePlane.prototype, "planeHeight", {
                 /**
-                * The orientaion in which the plane lies.
+                * The size of the plane along its Y-axis. Defaults to 100.
                 */
                 get: function () {
-                    return this._orientation;
+                    return this._planeHeight;
                 },
                 set: function (value) {
-                    this._orientation = value;
+                    if (this._planeHeight == value)
+                        return;
+
+                    this._planeHeight == value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27816,16 +27192,39 @@ var away;
             });
 
 
-            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
+            Object.defineProperty(WireframePlane.prototype, "planeWidth", {
                 /**
-                * The number of segments that make up the plane along the X-axis.
+                * The size of the plane along its X-axis. Defaults to 100.
                 */
                 get: function () {
-                    return this._segmentsW;
+                    return this._planeWidth;
                 },
                 set: function (value) {
-                    this._segmentsW = value;
-                    this.removeAllSegments();
+                    if (this._planeWidth == value)
+                        return;
+
+                    this._planeWidth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "orientation", {
+                /**
+                * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
+                */
+                get: function () {
+                    return this._orientation;
+                },
+                set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
+                    this._orientation = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27835,13 +27234,38 @@ var away;
 
             Object.defineProperty(WireframePlane.prototype, "segmentsH", {
                 /**
-                * The number of segments that make up the plane along the Y-axis.
+                * The number of segments that make up the plane along the Y-axis. Defaults to 10.
                 */
                 get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
+                    if (this._segmentsH == value)
+                        return;
+
                     this._segmentsH = value;
+
+                    this.removeAllSegments();
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
+                /**
+                * The number of segments that make up the plane along the X-axis. Defaults to 10.
+                */
+                get: function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    if (this._segmentsW == value)
+                        return;
+
+                    this._segmentsW = value;
+
                     this.removeAllSegments();
                     this.pInvalidateGeometry();
                 },
@@ -27856,8 +27280,8 @@ var away;
             WireframePlane.prototype.pBuildGeometry = function () {
                 var v0 = new away.geom.Vector3D();
                 var v1 = new away.geom.Vector3D();
-                var hw = 0.5;
-                var hh = 0.5;
+                var hw = this._planeWidth / 2;
+                var hh = this._planeHeight / 2;
                 var index = 0;
                 var ws, hs;
 
@@ -27868,7 +27292,7 @@ var away;
                     v1.z = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = (ws / this._segmentsW - .5);
+                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27876,7 +27300,7 @@ var away;
                     v1.x = hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = (hs / this._segmentsH - .5);
+                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 } else if (this._orientation == WireframePlane.ORIENTATION_XZ) {
@@ -27886,7 +27310,7 @@ var away;
                     v1.y = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.x = v1.x = (ws / this._segmentsW - .5);
+                        v0.x = v1.x = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27894,7 +27318,7 @@ var away;
                     v1.x = hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.z = v1.z = (hs / this._segmentsH - .5);
+                        v0.z = v1.z = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 } else if (this._orientation == WireframePlane.ORIENTATION_YZ) {
@@ -27904,7 +27328,7 @@ var away;
                     v1.x = 0;
 
                     for (ws = 0; ws <= this._segmentsW; ++ws) {
-                        v0.z = v1.z = (ws / this._segmentsW - .5);
+                        v0.z = v1.z = this._planeWidth * ws / this._segmentsW - hw;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
 
@@ -27912,7 +27336,7 @@ var away;
                     v1.z = -hw;
 
                     for (hs = 0; hs <= this._segmentsH; ++hs) {
-                        v0.y = v1.y = (hs / this._segmentsH - .5);
+                        v0.y = v1.y = this._planeHeight * hs / this._segmentsH - hh;
                         this.pUpdateOrAddSegment(index++, v0, v1);
                     }
                 }
@@ -27938,16 +27362,19 @@ var away;
             __extends(WireframeRegularPolygon, _super);
             /**
             * Creates a new WireframeRegularPolygon object.
-            * @param radius The radius of the polygon.
-            * @param sides The number of sides on the polygon.
-            * @param color The colour of the wireframe lines
-            * @param thickness The thickness of the wireframe lines
-            * @param orientation The orientaion in which the plane lies.
+            *
+            * @param radius The radius of the polygon. Defaults to 50.
+            * @param sides The number of sides on the polygon. Defaults to 16.
+            * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines.  Defaults to 1.
+            * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
             */
             function WireframeRegularPolygon(radius, sides, color, thickness, orientation) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof sides === "undefined") { sides = 16; }
                 if (typeof color === "undefined") { color = 0xFFFFFF; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._radius = radius;
@@ -27956,13 +27383,17 @@ var away;
             }
             Object.defineProperty(WireframeRegularPolygon.prototype, "orientation", {
                 /**
-                * The orientaion in which the polygon lies.
+                * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
                 */
                 get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
                     this._orientation = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27972,13 +27403,17 @@ var away;
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "radius", {
                 /**
-                * The radius of the regular polygon.
+                * The radius of the regular polygon. Defaults to 100.
                 */
                 get: function () {
                     return this._radius;
                 },
                 set: function (value) {
+                    if (this._radius == value)
+                        return;
+
                     this._radius = value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -27988,13 +27423,17 @@ var away;
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "sides", {
                 /**
-                * The number of sides to the regular polygon.
+                * The number of sides to the regular polygon. Defaults to 16.
                 */
                 get: function () {
                     return this._sides;
                 },
                 set: function (value) {
+                    if (this._sides == value)
+                        return;
+
                     this._sides = value;
+
                     this.removeAllSegments();
                     this.pInvalidateGeometry();
                 },
@@ -28068,31 +27507,101 @@ var away;
             __extends(WireframeTetrahedron, _super);
             /**
             * Creates a new WireframeTetrahedron object.
-            * @param width The size of the tetrahedron buttom size.
-            * @param height The size of the tetranhedron height.
-            * @param color The color of the wireframe lines.
-            * @param thickness The thickness of the wireframe lines.
+            *
+            * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
+            * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
+            * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
+            * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+            * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
             */
-            function WireframeTetrahedron(width, height, color, thickness, orientation) {
+            function WireframeTetrahedron(tetrahedronWidth, tetrahedronHeight, tetrahedronDepth, color, thickness, orientation) {
+                if (typeof tetrahedronWidth === "undefined") { tetrahedronWidth = 100; }
+                if (typeof tetrahedronHeight === "undefined") { tetrahedronHeight = 100; }
+                if (typeof tetrahedronDepth === "undefined") { tetrahedronDepth = 100; }
                 if (typeof color === "undefined") { color = 0xffffff; }
                 if (typeof thickness === "undefined") { thickness = 1; }
-                if (typeof orientation === "undefined") { orientation = "yz"; }
+                if (typeof orientation === "undefined") { orientation = "xz"; }
                 _super.call(this, color, thickness);
 
                 this._orientation = orientation;
 
-                this.width = width;
-                this.height = height;
+                this._tetrahedronHeight = tetrahedronHeight;
+                this._tetrahedronWidth = tetrahedronWidth;
+                this._tetrahedronDepth = tetrahedronDepth;
             }
             Object.defineProperty(WireframeTetrahedron.prototype, "orientation", {
                 /**
-                * The orientation in which the plane lies
+                * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
                 */
                 get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
+                    if (this._orientation == value)
+                        return;
+
                     this._orientation = value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronDepth", {
+                /**
+                * The size of the tetrahedron along its Z-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronDepth;
+                },
+                set: function (value) {
+                    if (this._tetrahedronDepth == value)
+                        return;
+
+                    this._tetrahedronDepth == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronHeight", {
+                /**
+                * The size of the tetrahedron along its Y-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronHeight;
+                },
+                set: function (value) {
+                    if (this._tetrahedronHeight == value)
+                        return;
+
+                    this._tetrahedronHeight == value;
+
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "tetrahedronWidth", {
+                /**
+                * The size of the tetrahedron along its X-axis. Defaults to 100.
+                */
+                get: function () {
+                    return this._tetrahedronWidth;
+                },
+                set: function (value) {
+                    if (this._tetrahedronWidth == value)
+                        return;
+
+                    this._tetrahedronWidth == value;
+
                     this.pInvalidateGeometry();
                 },
                 enumerable: true,
@@ -28110,29 +27619,30 @@ var away;
                 var bv3;
                 var top;
 
-                var hw = 0.5;
+                var hw = this._tetrahedronWidth / 2;
+                var hd = this._tetrahedronDepth / 2;
 
                 switch (this._orientation) {
                     case WireframeTetrahedron.ORIENTATION_XY:
-                        bv0 = new away.geom.Vector3D(-hw, hw, 0);
-                        bv1 = new away.geom.Vector3D(hw, hw, 0);
-                        bv2 = new away.geom.Vector3D(hw, -hw, 0);
-                        bv3 = new away.geom.Vector3D(-hw, -hw, 0);
-                        top = new away.geom.Vector3D(0, 0, 1);
+                        bv0 = new away.geom.Vector3D(-hw, hd, 0);
+                        bv1 = new away.geom.Vector3D(hw, hd, 0);
+                        bv2 = new away.geom.Vector3D(hw, -hd, 0);
+                        bv3 = new away.geom.Vector3D(-hw, -hd, 0);
+                        top = new away.geom.Vector3D(0, 0, this._tetrahedronHeight);
                         break;
                     case WireframeTetrahedron.ORIENTATION_XZ:
-                        bv0 = new away.geom.Vector3D(-hw, 0, hw);
-                        bv1 = new away.geom.Vector3D(hw, 0, hw);
-                        bv2 = new away.geom.Vector3D(hw, 0, -hw);
-                        bv3 = new away.geom.Vector3D(-hw, 0, -hw);
-                        top = new away.geom.Vector3D(0, 1, 0);
+                        bv0 = new away.geom.Vector3D(-hw, 0, hd);
+                        bv1 = new away.geom.Vector3D(hw, 0, hd);
+                        bv2 = new away.geom.Vector3D(hw, 0, -hd);
+                        bv3 = new away.geom.Vector3D(-hw, 0, -hd);
+                        top = new away.geom.Vector3D(0, this._tetrahedronHeight, 0);
                         break;
                     case WireframeTetrahedron.ORIENTATION_YZ:
-                        bv0 = new away.geom.Vector3D(0, -hw, hw);
-                        bv1 = new away.geom.Vector3D(0, hw, hw);
-                        bv2 = new away.geom.Vector3D(0, hw, -hw);
-                        bv3 = new away.geom.Vector3D(0, -hw, -hw);
-                        top = new away.geom.Vector3D(1, 0, 0);
+                        bv0 = new away.geom.Vector3D(0, -hw, hd);
+                        bv1 = new away.geom.Vector3D(0, hw, hd);
+                        bv2 = new away.geom.Vector3D(0, hw, -hd);
+                        bv3 = new away.geom.Vector3D(0, -hw, -hd);
+                        top = new away.geom.Vector3D(this._tetrahedronHeight, 0, 0);
                         break;
                 }
 
@@ -39074,7 +38584,7 @@ var away;
                 // in AWD version 2.1 we read the Container properties
                 if ((this._version[0] == 2) && (this._version[1] == 1)) {
                     var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
-                    ctr.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    ctr.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                 } else {
                     this.parseProperties(null);
                 }
@@ -39162,7 +38672,7 @@ var away;
                 }
                 if ((this._version[0] == 2) && (this._version[1] == 1)) {
                     var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8, 5: AWDParser.BOOL });
-                    mesh.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    mesh.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                     mesh.castsShadows = props.get(5, true);
                 } else {
                     this.parseProperties(null);
@@ -39333,7 +38843,7 @@ var away;
 
                 camera.name = name;
                 props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
-                camera.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                camera.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                 camera.extra = this.parseUserAttributes();
 
                 this._pFinalizeAsset(camera, name);
@@ -39886,7 +39396,7 @@ var away;
                 if (targetObject) {
                     props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
 
-                    targetObject.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    targetObject.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                     targetObject.extra = this.parseUserAttributes();
                 }
                 this._blocks[blockID].data = targetObject;

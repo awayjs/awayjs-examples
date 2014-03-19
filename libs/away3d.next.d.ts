@@ -16,140 +16,6 @@ declare module away.events {
         public clone(): events.Event;
     }
 }
-/**
-* @module away.events
-*/
-declare module away.events {
-    /**
-    * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View.
-    * todo: we don't have screenZ data, tho this should be easy to implement
-    */
-    class MouseEvent3D extends events.Event {
-        public _iAllowedToPropagate: boolean;
-        public _iParentEvent: MouseEvent3D;
-        /**
-        * Defines the value of the type property of a mouseOver3d event object.
-        */
-        static MOUSE_OVER: string;
-        /**
-        * Defines the value of the type property of a mouseOut3d event object.
-        */
-        static MOUSE_OUT: string;
-        /**
-        * Defines the value of the type property of a mouseUp3d event object.
-        */
-        static MOUSE_UP: string;
-        /**
-        * Defines the value of the type property of a mouseDown3d event object.
-        */
-        static MOUSE_DOWN: string;
-        /**
-        * Defines the value of the type property of a mouseMove3d event object.
-        */
-        static MOUSE_MOVE: string;
-        /**
-        * Defines the value of the type property of a click3d event object.
-        */
-        static CLICK: string;
-        /**
-        * Defines the value of the type property of a doubleClick3d event object.
-        */
-        static DOUBLE_CLICK: string;
-        /**
-        * Defines the value of the type property of a mouseWheel3d event object.
-        */
-        static MOUSE_WHEEL: string;
-        /**
-        * The horizontal coordinate at which the event occurred in view coordinates.
-        */
-        public screenX: number;
-        /**
-        * The vertical coordinate at which the event occurred in view coordinates.
-        */
-        public screenY: number;
-        /**
-        * The view object inside which the event took place.
-        */
-        public view: away.containers.View;
-        /**
-        * The 3d object inside which the event took place.
-        */
-        public object: away.containers.DisplayObjectContainer;
-        /**
-        * The material owner inside which the event took place.
-        */
-        public materialOwner: away.base.IMaterialOwner;
-        /**
-        * The material of the 3d element inside which the event took place.
-        */
-        public material: away.materials.MaterialBase;
-        /**
-        * The uv coordinate inside the draw primitive where the event took place.
-        */
-        public uv: away.geom.Point;
-        /**
-        * The index of the face where the event took place.
-        */
-        public index: number;
-        /**
-        * The index of the subGeometry where the event took place.
-        */
-        public subGeometryIndex: number;
-        /**
-        * The position in object space where the event took place
-        */
-        public localPosition: away.geom.Vector3D;
-        /**
-        * The normal in object space where the event took place
-        */
-        public localNormal: away.geom.Vector3D;
-        /**
-        * Indicates whether the Control key is active (true) or inactive (false).
-        */
-        public ctrlKey: boolean;
-        /**
-        * Indicates whether the Alt key is active (true) or inactive (false).
-        */
-        public altKey: boolean;
-        /**
-        * Indicates whether the Shift key is active (true) or inactive (false).
-        */
-        public shiftKey: boolean;
-        /**
-        * Indicates how many lines should be scrolled for each unit the user rotates the mouse wheel.
-        */
-        public delta: number;
-        /**
-        * Create a new MouseEvent3D object.
-        * @param type The type of the MouseEvent3D.
-        */
-        constructor(type: string);
-        /**
-        * @inheritDoc
-        */
-        public bubbles : boolean;
-        /**
-        * @inheritDoc
-        */
-        public stopPropagation(): void;
-        /**
-        * @inheritDoc
-        */
-        public stopImmediatePropagation(): void;
-        /**
-        * Creates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.
-        */
-        public clone(): events.Event;
-        /**
-        * The position in scene space where the event took place
-        */
-        public scenePosition : away.geom.Vector3D;
-        /**
-        * The normal in scene space where the event took place
-        */
-        public sceneNormal : away.geom.Vector3D;
-    }
-}
 declare module away.events {
     /**
     * Dispatched to notify changes in an animation state's state.
@@ -1219,7 +1085,7 @@ declare module away.pool {
     /**
     * @class away.pool.RenderableListItem
     */
-    class RenderableBase {
+    class RenderableBase implements pool.IRenderable {
         /**
         *
         */
@@ -1273,6 +1139,10 @@ declare module away.pool {
         */
         constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, subGeometry: away.base.ISubGeometry, animationSubGeometry: away.animators.AnimationSubGeometry);
         public dispose(): void;
+        /**
+        *
+        */
+        public _iUpdate(): void;
     }
 }
 /**
@@ -1283,8 +1153,15 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class BillboardRenderable extends pool.RenderableBase {
-        private static _geometry;
+        private static _materialGeometry;
+        static id: string;
+        private _billboard;
         constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+        /**
+        *
+        */
+        public _iUpdate(): void;
+        private getGeometry(material);
     }
 }
 /**
@@ -1295,6 +1172,7 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class SegmentSetRenderable extends pool.RenderableBase {
+        static id: string;
         constructor(pool: pool.RenderablePool, segmentSet: away.entities.SegmentSet);
     }
 }
@@ -1306,6 +1184,7 @@ declare module away.pool {
     * @class away.pool.SubMeshRenderable
     */
     class SubMeshRenderable extends pool.RenderableBase {
+        static id: string;
         public subMesh: away.base.SubMesh;
         constructor(pool: pool.RenderablePool, subMesh: away.base.SubMesh);
     }
@@ -1318,6 +1197,7 @@ declare module away.pool {
     * @class away.pool.SkyboxRenderable
     */
     class SkyboxRenderable extends pool.RenderableBase {
+        static id: string;
         private static _geometry;
         constructor(pool: pool.RenderablePool, skybox: away.entities.Skybox);
     }
@@ -1329,61 +1209,13 @@ declare module away.traverse {
     /**
     * @class away.traverse.EntityCollector
     */
-    class RenderableCollectorBase implements traverse.ICollector {
-        public scene: away.containers.Scene;
-        public _pSkybox: away.pool.RenderableBase;
-        public _pEntityHead: away.pool.EntityListItem;
-        public _pEntityListItemPool: away.pool.EntityListItemPool;
-        public _pCamera: away.entities.Camera;
-        private _customCullPlanes;
-        private _cullPlanes;
-        private _numCullPlanes;
-        constructor();
-        /**
-        *
-        */
-        public camera : away.entities.Camera;
-        /**
-        *
-        */
-        public cullPlanes : away.geom.Plane3D[];
-        /**
-        *
-        */
-        public entityHead : away.pool.EntityListItem;
-        /**
-        *
-        */
-        public clear(): void;
-        /**
-        *
-        * @param node
-        * @returns {boolean}
-        */
-        public enterNode(node: away.partition.NodeBase): boolean;
-        /**
-        *
-        * @param entity
-        */
-        public applyEntity(entity: away.entities.IEntity): void;
-    }
-}
-/**
-* @module away.traverse
-*/
-declare module away.traverse {
-    /**
-    * @class away.traverse.EntityCollector
-    */
-    class EntityCollector extends traverse.RenderableCollectorBase {
+    class EntityCollector extends traverse.CollectorBase {
         public _pSkybox: away.pool.RenderableBase;
         public _pLights: away.lights.LightBase[];
         private _directionalLights;
         private _pointLights;
         private _lightProbes;
         public _pNumLights: number;
-        public _pNumEntities: number;
-        public _pNumInteractiveEntities: number;
         private _numDirectionalLights;
         private _numPointLights;
         private _numLightProbes;
@@ -1402,14 +1234,6 @@ declare module away.traverse {
         /**
         *
         */
-        public numEntities : number;
-        /**
-        *
-        */
-        public numInteractiveEntities : number;
-        /**
-        *
-        */
         public pointLights : away.lights.PointLight[];
         /**
         *
@@ -1418,8 +1242,19 @@ declare module away.traverse {
         constructor();
         /**
         *
+        * @param entity
         */
-        public applyEntity(entity: away.entities.IEntity): void;
+        public applyDirectionalLight(entity: away.entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applyLightProbe(entity: away.entities.IEntity): void;
+        /**
+        *
+        * @param entity
+        */
+        public applyPointLight(entity: away.entities.IEntity): void;
         /**
         *
         */
@@ -1433,47 +1268,10 @@ declare module away.traverse {
     /**
     * @class away.traverse.ShadowCasterCollector
     */
-    class ShadowCasterCollector extends traverse.RenderableCollectorBase {
+    class ShadowCasterCollector extends traverse.CollectorBase {
         constructor();
         /**
         *
-        */
-        public enterNode(node: away.partition.NodeBase): boolean;
-    }
-}
-/**
-* @module away.traverse
-*/
-declare module away.traverse {
-    /**
-    * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
-    * considered intersecting with the defined ray.
-    *
-    * @see away.partition.Partition
-    * @see away.entities.IEntity
-    *
-    * @class away.traverse.RaycastCollector
-    */
-    class RaycastCollector extends traverse.RenderableCollectorBase implements traverse.ICollector {
-        private _rayPosition;
-        private _rayDirection;
-        public _iCollectionMark: number;
-        /**
-        * Provides the starting position of the ray.
-        */
-        public rayPosition : away.geom.Vector3D;
-        /**
-        * Provides the direction vector of the ray.
-        */
-        public rayDirection : away.geom.Vector3D;
-        /**
-        * Creates a new RaycastCollector object.
-        */
-        constructor();
-        /**
-        * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
-        *
-        * @param node The Partition3DNode object to frustum-test.
         */
         public enterNode(node: away.partition.NodeBase): boolean;
     }
@@ -1588,16 +1386,39 @@ declare module away.pick {
     * @class away.pick.PickingColliderBase
     */
     class PickingColliderBase {
+        private _billboardRenderablePool;
+        private _subMeshRenderablePool;
         public rayPosition: away.geom.Vector3D;
         public rayDirection: away.geom.Vector3D;
         constructor();
         public _pPetCollisionNormal(indexData: number[], vertexData: number[], triangleIndex: number): away.geom.Vector3D;
         public _pGetCollisionUV(indexData: number[], uvData: number[], triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): away.geom.Point;
-        public testRenderableCollision(renderable: away.pool.RenderableBase, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _pTestRenderableCollision(renderable: away.pool.RenderableBase, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
         /**
         * @inheritDoc
         */
         public setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): void;
+        /**
+        * Tests a <code>Billboard</code> object for a collision with the picking ray.
+        *
+        * @param billboard The billboard instance to be tested.
+        * @param pickingCollisionVO The collision object used to store the collision results
+        * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+        * @param findClosest
+        */
+        public testBillboardCollision(billboard: away.entities.Billboard, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
+        /**
+        * Tests a <code>Mesh</code> object for a collision with the picking ray.
+        *
+        * @param mesh The mesh instance to be tested.
+        * @param pickingCollisionVO The collision object used to store the collision results
+        * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
+        * @param findClosest
+        */
+        public testMeshCollision(mesh: away.entities.Mesh, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -1623,7 +1444,7 @@ declare module away.pick {
         /**
         * @inheritDoc
         */
-        public testRenderableCollision(renderable: away.pool.RenderableBase, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
+        public _pTestRenderableCollision(renderable: away.pool.RenderableBase, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
     }
 }
 /**
@@ -1642,6 +1463,8 @@ declare module away.pick {
     * @class away.pick.ShaderPicker
     */
     class ShaderPicker implements pick.IPicker {
+        private _opaqueRenderableHead;
+        private _blendedRenderableHead;
         private _stageGL;
         private _context;
         private _onlyMouseEnabled;
@@ -1740,107 +1563,6 @@ declare module away.pick {
     }
 }
 /**
-* @module away.pick
-*/
-declare module away.pick {
-    /**
-    * Picks a 3d object from a view or scene by 3D raycast calculations.
-    * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
-    * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
-    *
-    * @class away.pick.RaycastPicker
-    */
-    class RaycastPicker implements pick.IPicker {
-        private _findClosestCollision;
-        private _raycastCollector;
-        private _ignoredEntities;
-        private _onlyMouseEnabled;
-        private _entities;
-        private _numEntities;
-        private _hasCollisions;
-        /**
-        * @inheritDoc
-        */
-        public onlyMouseEnabled : boolean;
-        /**
-        * Creates a new <code>RaycastPicker</code> object.
-        *
-        * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
-        * or simply returns the first collision encountered Defaults to false.
-        */
-        constructor(findClosestCollision: boolean);
-        /**
-        * @inheritDoc
-        */
-        public getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
-        public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
-        public setIgnoreList(entities: any): void;
-        private isIgnored(entity);
-        private sortOnNearT(entity1, entity2);
-        private getPickingCollisionVO(collector);
-        private updateLocalPosition(pickingCollisionVO);
-        public dispose(): void;
-    }
-}
-/**
-* @module away.pick
-*/
-declare module away.pick {
-    /**
-    * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
-    *
-    * @see away3d.containers.View#mousePicker
-    *
-    * @class away.pick.PickingType
-    */
-    class PickingType {
-        /**
-        * Uses a render pass to pick objects based on a key color that is read back into the engine.
-        * Performance can be variable on some GPUs.
-        */
-        static SHADER: pick.IPicker;
-        /**
-        * Uses AS3 and Pixel Bender to pick objects based on ray intersection. Returns the hit on the first encountered Entity.
-        */
-        static RAYCAST_FIRST_ENCOUNTERED: pick.IPicker;
-        /**
-        * Uses AS3 and Pixel Bender to pick objects based on ray intersection. Returns the best (closest) hit on an Entity.
-        */
-        static RAYCAST_BEST_HIT: pick.IPicker;
-    }
-}
-/**
-* @module away.pick
-*/
-declare module away.pick {
-    /**
-    * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
-    *
-    * @see away.entities.Entity#pickingCollider
-    * @see away.pick.RaycastPicker
-    *
-    * @class away.pick.PickingColliderType
-    */
-    class PickingColliderType {
-        /**
-        * Default null collider that forces picker to only use entity bounds for hit calculations on an Entity
-        */
-        static BOUNDS_ONLY: pick.IPickingCollider;
-        /**
-        * Pure AS3 picking collider that returns the first encountered hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
-        *
-        * @see away.pick.JSPickingCollider
-        */
-        static AS3_FIRST_ENCOUNTERED: pick.IPickingCollider;
-        /**
-        * Pure AS3 picking collider that returns the best (closest) hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
-        *
-        * @see away.pick.JSPickingCollider
-        */
-        static AS3_BEST_HIT: pick.IPickingCollider;
-    }
-}
-/**
 * @module away.render
 */
 declare module away.render {
@@ -1851,10 +1573,10 @@ declare module away.render {
     * @class away.render.RendererBase
     */
     class RendererBase extends away.events.EventDispatcher {
-        static billboardRenderablePool: away.pool.RenderablePool;
-        static segmentSetRenderablePool: away.pool.RenderablePool;
-        static skyboxRenderablePool: away.pool.RenderablePool;
-        static subMeshRenderablePool: away.pool.RenderablePool;
+        private _billboardRenderablePool;
+        private _segmentSetRenderablePool;
+        private _skyboxRenderablePool;
+        private _subMeshRenderablePool;
         public _pContext: away.gl.ContextGL;
         public _pStageGL: away.base.StageGL;
         public _pCamera: away.entities.Camera;
@@ -1986,19 +1708,6 @@ declare module away.render {
         * @param entity
         */
         public pFindRenderables(entity: away.entities.IEntity): void;
-        /**
-        * //TODO
-        *
-        * @param entity
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        static _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
-        private static testBillBoard(billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-        private static testMesh(mesh, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
     }
 }
 /**
@@ -2314,7 +2023,7 @@ declare module away.entities {
     * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
     * of the geometry to be assigned different materials.
     */
-    class Mesh extends away.containers.DisplayObjectContainer implements entities.IEntity, away.base.IMaterialOwner, away.library.IAsset {
+    class Mesh extends away.containers.DisplayObjectContainer implements entities.IEntity, away.base.IMaterialOwner {
         private _uvTransform;
         private _subMeshes;
         private _geometry;
@@ -2444,6 +2153,16 @@ declare module away.entities {
         * @internal
         */
         public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
+        /**
+        * //TODO
+        *
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
+        * @internal
+        */
+        public _iTestCollision(shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 declare module away.entities {
@@ -2738,63 +2457,6 @@ declare module away.lights {
         */
         public coverageRatio : number;
         public pUpdateDepthProjection(viewCamera: away.entities.Camera): void;
-    }
-}
-declare module away.managers {
-    /**
-    * Mouse3DManager enforces a singleton pattern and is not intended to be instanced.
-    * it provides a manager class for detecting 3D mouse hits on View objects and sending out 3D mouse events.
-    */
-    class Mouse3DManager {
-        private static _view3Ds;
-        private static _view3DLookup;
-        private static _viewCount;
-        private _activeView;
-        private _updateDirty;
-        private _nullVector;
-        static _pCollidingObject: away.pick.PickingCollisionVO;
-        private static _previousCollidingObject;
-        private static _collidingViewObjects;
-        private static _queuedEvents;
-        private static _mouseUp;
-        private static _mouseClick;
-        private static _mouseOut;
-        private static _mouseDown;
-        private static _mouseMove;
-        private static _mouseOver;
-        private static _mouseWheel;
-        private static _mouseDoubleClick;
-        private _forceMouseMove;
-        private _mousePicker;
-        private _childDepth;
-        private static _previousCollidingView;
-        private static _collidingView;
-        private _collidingDownObject;
-        private _collidingUpObject;
-        /**
-        * Creates a new <code>Mouse3DManager</code> object.
-        */
-        constructor();
-        public updateCollider(view: away.containers.View): void;
-        public fireMouseEvents(): void;
-        public addViewLayer(view: away.containers.View): void;
-        public enableMouseListeners(view: away.containers.View): void;
-        public disableMouseListeners(view: away.containers.View): void;
-        public dispose(): void;
-        private queueDispatch(event, sourceEvent, collider?);
-        private reThrowEvent(event);
-        private hasKey(view);
-        private traverseDisplayObjects(container);
-        private onMouseMove(event);
-        private onMouseOut(event);
-        private onMouseOver(event);
-        private onClick(event);
-        private onDoubleClick(event);
-        private onMouseDown(event);
-        private onMouseUp(event);
-        private onMouseWheel(event);
-        public forceMouseMove : boolean;
-        public mousePicker : away.pick.IPicker;
     }
 }
 declare module away.managers {
@@ -7049,6 +6711,8 @@ declare module away.materials {
         public _pLightPicker: materials.LightPickerBase;
         private _distanceBasedDepthRender;
         public _pDepthCompareMode: string;
+        public _pHeight: number;
+        public _pWidth: number;
         private _onPassChangeDelegate;
         private _onDepthPassChangeDelegate;
         private _onDistancePassChangeDelegate;
@@ -7060,6 +6724,10 @@ declare module away.materials {
         * @inheritDoc
         */
         public assetType : string;
+        /**
+        *
+        */
+        public height : number;
         /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
@@ -7121,6 +6789,10 @@ declare module away.materials {
         * Indicates whether or not the material requires alpha blending during rendering.
         */
         public requiresBlending : boolean;
+        /**
+        *
+        */
+        public width : number;
         public getRequiresBlending(): boolean;
         /**
         * The amount of passes used by the material.
@@ -8370,12 +8042,25 @@ declare module away.primitives {
         private _segmentsH;
         private _radius;
         /**
+        * The radius of the sphere. Defaults to 50.
+        */
+        public radius : number;
+        /**
+        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
         * Creates a new WireframeSphere object.
-        * @param radius The radius of the sphere.
-        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-        * @param segmentsH Defines the number of vertical segments that make up the sphere.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        *
+        * @param radius The radius of the sphere. Defaults to 50.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
         constructor(radius?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
         /**
@@ -8386,18 +8071,75 @@ declare module away.primitives {
 }
 declare module away.primitives {
     /**
+    * Generates a wireframeCone primitive.
+    */
+    class WireframeCone extends primitives.WireframePrimitiveBase {
+        private static TWO_PI;
+        private _radius;
+        private _coneHeight;
+        private _segmentsH;
+        private _segmentsW;
+        /**
+        * Bottom radius of the cone. Defaults to 50.
+        */
+        public radius : number;
+        /**
+        * The size of the cone along its Y-axis. Defaults to 100.
+        */
+        public coneHeight : number;
+        /**
+        * Defines the number of vertical segments that make up the cone. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the cone. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Creates a new WireframeCone instance
+        *
+        * @param topRadius Top radius of the cone. Defaults to 50.
+        * @param radius Bottom radius of the cone. Defaults to 50.
+        * @param coneHeight The height of the cone. Defaults to 100.
+        * @param segmentsW Number of radial segments. Defaults to 16.
+        * @param segmentsH Number of vertical segments. Defaults to 1.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
+        */
+        constructor(radius?: number, coneHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        public pBuildGeometry(): void;
+    }
+}
+declare module away.primitives {
+    /**
     * A WirefameCube primitive mesh.
     */
     class WireframeCube extends primitives.WireframePrimitiveBase {
+        private _cubeDepth;
+        private _cubeHeight;
+        private _cubeWidth;
+        /**
+        * The size of the cube along its Z-axis. Defaults to 100.
+        */
+        public cubeDepth : number;
+        /**
+        * The size of the cube along its Y-axis. Defaults to 100.
+        */
+        public cubeHeight : number;
+        /**
+        * The size of the cube along its X-axis. Defaults to 100.
+        */
+        public cubeWidth : number;
         /**
         * Creates a new WireframeCube object.
-        * @param width The size of the cube along its X-axis.
-        * @param height The size of the cube along its Y-axis.
-        * @param depth The size of the cube along its Z-axis.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        *
+        * @param cubeWidth The size of the cube along its X-axis. Defaults to 100.
+        * @param cubeHeight The size of the cube along its Y-axis. Defaults to 100.
+        * @param cubeDepth The size of the cube along its Z-axis. Defaults to 100.
+        * @param color The colour of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
-        constructor(width?: number, height?: number, depth?: number, color?: number, thickness?: number);
+        constructor(cubeWidth?: number, cubeHeight?: number, cubeDepth?: number, color?: number, thickness?: number);
         /**
         * @inheritDoc
         */
@@ -8410,30 +8152,44 @@ declare module away.primitives {
     */
     class WireframeCylinder extends primitives.WireframePrimitiveBase {
         private static TWO_PI;
-        private _topRadius;
         private _bottomRadius;
-        private _segmentsW;
+        private _cylinderHeight;
         private _segmentsH;
+        private _segmentsW;
+        private _topRadius;
         /**
-        * Creates a new WireframeCylinder instance
-        * @param topRadius Top radius of the cylinder
-        * @param bottomRadius Bottom radius of the cylinder
-        * @param height The height of the cylinder
-        * @param segmentsW Number of radial segments
-        * @param segmentsH Number of vertical segments
-        * @param color The color of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
+        * Bottom radius of the cylinder. Defaults to 50.
         */
-        constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
-        public pBuildGeometry(): void;
+        public bottomRadius : number;
         /**
-        * Top radius of the cylinder
+        * The size of the cylinder along its Y-axis. Defaults to 100.
+        */
+        public cylinderHeight : number;
+        /**
+        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Top radius of the cylinder. Defaults to 50.
         */
         public topRadius : number;
         /**
-        * Bottom radius of the cylinder
+        * Creates a new WireframeCylinder instance
+        *
+        * @param topRadius Top radius of the cylinder. Defaults to 50.
+        * @param bottomRadius Bottom radius of the cylinder. Defaults to 50.
+        * @param cylinderHeight The height of the cylinder. Defaults to 100.
+        * @param segmentsW Number of radial segments. Defaults to 16.
+        * @param segmentsH Number of vertical segments. Defaults to 1.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
         */
-        public bottomRadius : number;
+        constructor(topRadius?: number, bottomRadius?: number, cylinderHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
@@ -8444,32 +8200,43 @@ declare module away.primitives {
         static ORIENTATION_YZ: string;
         static ORIENTATION_XY: string;
         static ORIENTATION_XZ: string;
+        private _planeHeight;
+        private _planeWidth;
+        private _orientation;
         private _segmentsW;
         private _segmentsH;
-        private _orientation;
         /**
-        * Creates a new WireframePlane object.
-        * @param width The size of the cube along its X-axis.
-        * @param height The size of the cube along its Y-axis.
-        * @param segmentsW The number of segments that make up the cube along the X-axis.
-        * @param segmentsH The number of segments that make up the cube along the Y-axis.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
-        * @param orientation The orientaion in which the plane lies.
+        * The size of the plane along its Y-axis. Defaults to 100.
         */
-        constructor(width: number, height: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
+        public planeHeight : number;
         /**
-        * The orientaion in which the plane lies.
+        * The size of the plane along its X-axis. Defaults to 100.
+        */
+        public planeWidth : number;
+        /**
+        * The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
         /**
-        * The number of segments that make up the plane along the X-axis.
+        * The number of segments that make up the plane along the Y-axis. Defaults to 10.
+        */
+        public segmentsH : number;
+        /**
+        * The number of segments that make up the plane along the X-axis. Defaults to 10.
         */
         public segmentsW : number;
         /**
-        * The number of segments that make up the plane along the Y-axis.
+        * Creates a new WireframePlane object.
+        *
+        * @param planeWidth The size of the plane along its X-axis. Defaults to 100.
+        * @param planeHeight The size of the plane along its Y-axis. Defaults to 100.
+        * @param segmentsW The number of segments that make up the plane along the X-axis. Defaults to 10.
+        * @param segmentsH The number of segments that make up the plane along the Y-axis. Defaults to 10.
+        * @param color The colour of the wireframe lines. Defaults to 0xFFFFFF.
+        * @param thickness The thickness of the wireframe lines. Defaults to 1.
+        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
-        public segmentsH : number;
+        constructor(planeWidth?: number, planeHeight?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */
@@ -8488,26 +8255,27 @@ declare module away.primitives {
         private _sides;
         private _orientation;
         /**
-        * Creates a new WireframeRegularPolygon object.
-        * @param radius The radius of the polygon.
-        * @param sides The number of sides on the polygon.
-        * @param color The colour of the wireframe lines
-        * @param thickness The thickness of the wireframe lines
-        * @param orientation The orientaion in which the plane lies.
-        */
-        constructor(radius: number, sides: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * The orientaion in which the polygon lies.
+        * The orientaion in which the polygon lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
         /**
-        * The radius of the regular polygon.
+        * The radius of the regular polygon. Defaults to 100.
         */
         public radius : number;
         /**
-        * The number of sides to the regular polygon.
+        * The number of sides to the regular polygon. Defaults to 16.
         */
         public sides : number;
+        /**
+        * Creates a new WireframeRegularPolygon object.
+        *
+        * @param radius The radius of the polygon. Defaults to 50.
+        * @param sides The number of sides on the polygon. Defaults to 16.
+        * @param color The colour of the wireframe lines.  Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines.  Defaults to 1.
+        * @param orientation The orientaion in which the plane lies. Defaults to <code>ORIENTATION_YZ</code>.
+        */
+        constructor(radius?: number, sides?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */
@@ -8523,18 +8291,35 @@ declare module away.primitives {
         static ORIENTATION_XY: string;
         static ORIENTATION_XZ: string;
         private _orientation;
+        private _tetrahedronDepth;
+        private _tetrahedronHeight;
+        private _tetrahedronWidth;
         /**
-        * Creates a new WireframeTetrahedron object.
-        * @param width The size of the tetrahedron buttom size.
-        * @param height The size of the tetranhedron height.
-        * @param color The color of the wireframe lines.
-        * @param thickness The thickness of the wireframe lines.
-        */
-        constructor(width: number, height: number, color?: number, thickness?: number, orientation?: string);
-        /**
-        * The orientation in which the plane lies
+        * The orientation in which the plane lies. Defaults to <code>ORIENTATION_XZ</code>.
         */
         public orientation : string;
+        /**
+        * The size of the tetrahedron along its Z-axis. Defaults to 100.
+        */
+        public tetrahedronDepth : number;
+        /**
+        * The size of the tetrahedron along its Y-axis. Defaults to 100.
+        */
+        public tetrahedronHeight : number;
+        /**
+        * The size of the tetrahedron along its X-axis. Defaults to 100.
+        */
+        public tetrahedronWidth : number;
+        /**
+        * Creates a new WireframeTetrahedron object.
+        *
+        * @param tetrahedronWidth The size of the tetrahedron along its X-axis. Defaults to 100.
+        * @param tetrahedronHeight The size of the tetranhedron along its Y-axis. Defaults to 100.
+        * @param tetrahedronDepth The size of the tetranhedron along its Z-axis. Defaults to 100.
+        * @param color The color of the wireframe lines. Defaults to <code>0xFFFFFF</code>.
+        * @param thickness The thickness of the wireframe lines. Defaults to <code>ORIENTATION_XZ</code>.
+        */
+        constructor(tetrahedronWidth?: number, tetrahedronHeight?: number, tetrahedronDepth?: number, color?: number, thickness?: number, orientation?: string);
         /**
         * @inheritDoc
         */
