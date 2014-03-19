@@ -1,6 +1,9 @@
 ///<reference path="../libs/away3d.next.d.ts" />
 
-module examples {
+module examples
+{
+	import ColorMaterial			 = away.materials.ColorMaterial;
+	import TextureMaterial			 = away.materials.TextureMaterial;
 
 	export class AWDSuzanne {
 
@@ -12,6 +15,8 @@ module examples {
 		private _lightPicker:away.materials.StaticLightPicker;
 		private _lookAtPosition:away.geom.Vector3D = new away.geom.Vector3D ();
 		private _cameraIncrement:number = 0;
+		private _mouseOverMaterial:ColorMaterial = new ColorMaterial(0xFF0000);
+		private _mouseOutMaterial:TextureMaterial;
 
 		constructor ()
 		{
@@ -31,6 +36,7 @@ module examples {
 		{
 			this._view = new away.containers.View(new away.render.DefaultRenderer());
 			this._view.camera.projection.far = 6000;
+			this._view.forceMouseMove = true;
 		}
 
 		/**
@@ -121,6 +127,7 @@ module examples {
 						this._suzane = mesh;
 						this._suzane.material.lightPicker = this._lightPicker;
 						this._suzane.y = -100;
+						this._mouseOutMaterial = <TextureMaterial> this._suzane.material;
 
 						for (var c:number = 0; c < 80; c++)
 						{
@@ -132,11 +139,17 @@ module examples {
 							clone.z = this.getRandom (-2000, 2000);
 							clone.transform.scale = new away.geom.Vector3D(scale, scale, scale);
 							clone.rotationY = this.getRandom (0, 360);
+							clone.addEventListener(away.events.MouseEvent.MOUSE_OVER, (event:away.events.MouseEvent) => this.onMouseOver(event));
+							clone.addEventListener(away.events.MouseEvent.MOUSE_OUT, (event:away.events.MouseEvent) => this.onMouseOut(event));
 							this._view.scene.addChild (clone);
 
 						}
 
 						mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
+						mesh.pickingCollider = new away.pick.JSPickingCollider();
+
+						mesh.addEventListener(away.events.MouseEvent.MOUSE_OVER, (event:away.events.MouseEvent) => this.onMouseOver(event));
+						mesh.addEventListener(away.events.MouseEvent.MOUSE_OUT, (event:away.events.MouseEvent) => this.onMouseOut(event));
 						this._view.scene.addChild (mesh);
 
 						break;
@@ -152,6 +165,22 @@ module examples {
 			}
 
 		}
+
+		private onMouseOver(event:away.events.MouseEvent)
+		{
+			(<away.entities.Mesh> event.object).material = this._mouseOverMaterial;
+
+			console.log("mouseover");
+		}
+
+		private onMouseOut(event:away.events.MouseEvent)
+		{
+			(<away.entities.Mesh> event.object).material = this._mouseOutMaterial;
+
+			console.log("mouseout");
+		}
+
+
 
 		/**
 		 *
