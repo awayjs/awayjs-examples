@@ -1,0 +1,14 @@
+{
+	"name": "",
+	"version": "0.1.0",
+	"description": "Away3D examples build scripts",
+	"url": "http://www.away3d.com",
+	"devDependencies": {
+		"grunt" : "0.4.1",
+		"grunt-contrib-watch":"*",
+		"grunt-shell":"*",
+		"grunt-ts" : "latest",
+		"typescript" : "latest"
+
+	}
+}
