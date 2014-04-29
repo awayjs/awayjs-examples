@@ -52,7 +52,8 @@ var examples;
     var TextureMaterial = away.materials.TextureMaterial;
     var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var PlaneGeometry = away.primitives.PlaneGeometry;
+    var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
+    var DefaultRenderer = away.render.DefaultRenderer;
     var ParticleGeometryHelper = away.tools.ParticleGeometryHelper;
     var Cast = away.utils.Cast;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -88,7 +89,7 @@ var examples;
 
             this.camera = new Camera();
 
-            this.view = new View(new away.render.DefaultRenderer());
+            this.view = new View(new DefaultRenderer());
 
             //this.view.antiAlias = 4;
             this.view.scene = this.scene;
@@ -154,12 +155,12 @@ var examples;
             this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
             //create the original particle geometry
-            var particle = new PlaneGeometry(10, 10, 1, 1, false);
+            var particle = new PrimitivePlanePrefab(10, 10, 1, 1, false);
 
             //combine them into a list
             var geometrySet = new Array();
             for (var i = 0; i < 500; i++)
-                geometrySet.push(particle);
+                geometrySet.push(particle.geometry);
 
             this.particleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
         };
@@ -168,7 +169,8 @@ var examples;
         * Initialise the scene objects
         */
         Basic_Fire.prototype.initObjects = function () {
-            this.plane = new Mesh(new PlaneGeometry(1000, 1000), this.planeMaterial);
+            this.plane = new PrimitivePlanePrefab(1000, 1000).getNewObject();
+            this.plane.material = this.planeMaterial;
             this.plane.geometry.scaleUV(2, 2);
             this.plane.y = -20;
 

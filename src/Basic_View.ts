@@ -40,19 +40,37 @@
 
 module examples
 {
-    export class Basic_View
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import Skybox						= away.entities.Skybox;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import AssetLoaderContext			= away.net.AssetLoaderContext;
+	import URLRequest					= away.net.URLRequest;
+	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
+	import PerspectiveProjection		= away.projections.PerspectiveProjection;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import Texture2DBase				= away.textures.Texture2DBase;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
+
+
+	export class Basic_View
     {
         //engine variables
-        private _view:away.containers.View;
+        private _view:View;
 
         //material objects
-        private _planeMaterial:away.materials.TextureMaterial;
+        private _planeMaterial:TextureMaterial;
 
         //scene objects
-        private _plane:away.entities.Mesh;
+        private _plane:Mesh;
 
         //tick for frame update
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
 
         /**
          * Constructor
@@ -60,32 +78,33 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //setup the camera
             this._view.camera.z = -600;
             this._view.camera.y = 500;
-            this._view.camera.lookAt(new away.geom.Vector3D());
+            this._view.camera.lookAt(new Vector3D());
 
             //setup the materials
-            this._planeMaterial = new away.materials.TextureMaterial();
+            this._planeMaterial = new TextureMaterial();
 
             //setup the scene
-            this._plane = new away.entities.Mesh(new away.primitives.PlaneGeometry(700, 700), this._planeMaterial);
+            this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();
+			this._plane.material = this._planeMaterial;
             this._view.scene.addChild(this._plane);
 
             //setup the render loop
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
+            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
             //plane textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
         }
 
         /**
@@ -101,22 +120,20 @@ module examples
         /**
          * Listener function for resource complete event on asset library
          */
-        private onResourceComplete (event:away.events.LoaderEvent)
+        private onResourceComplete (event:LoaderEvent)
         {
-            var assets:away.library.IAsset[] = event.assets;
+            var assets:Array<IAsset> = event.assets;
             var length:number = assets.length;
 
-            for ( var c : number = 0 ; c < length ; c ++ )
-            {
-                var asset:away.library.IAsset = assets[c];
+            for (var c:number = 0; c < length; c++) {
+                var asset:IAsset = assets[c];
 
                 console.log(asset.name, event.url);
 
-                switch (event.url)
-                {
+                switch (event.url) {
                     //plane textures
                     case "assets/floor_diffuse.jpg" :
-                        this._planeMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._planeMaterial.texture = <Texture2DBase> asset;
                         break;
                 }
             }
@@ -125,12 +142,12 @@ module examples
         /**
          * stage listener for resize events
          */
-        private onResize(event:Event = null):void
+        private onResize(event:UIEvent = null):void
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
     }
 }

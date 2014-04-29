@@ -41,8 +41,7 @@ module examples
     import SkeletonAnimator			= away.animators.SkeletonAnimator;
     import SkeletonClipNode			= away.animators.SkeletonClipNode;
     import CrossfadeTransition		= away.animators.CrossfadeTransition;
-    import PerspectiveProjection	= away.projections.PerspectiveProjection;
-    import View					= away.containers.View;
+    import View						= away.containers.View;
     import HoverController			= away.controllers.HoverController;
     import AnimationStateEvent		= away.events.AnimationStateEvent;
     import AssetEvent				= away.events.AssetEvent;
@@ -51,6 +50,7 @@ module examples
     import AssetType				= away.library.AssetType;
     import Loader					= away.containers.Loader;
     import AWD2Parser				= away.parsers.AWDParser;
+	import PerspectiveProjection	= away.projections.PerspectiveProjection;
 	import URLRequest				= away.net.URLRequest;
 	import DefaultRenderer			= away.render.DefaultRenderer;
 	import Keyboard					= away.ui.Keyboard;

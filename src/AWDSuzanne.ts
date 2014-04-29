@@ -125,7 +125,7 @@ module examples
 						var mesh:away.entities.Mesh = <away.entities.Mesh> asset;
 
 						this._suzane = mesh;
-						this._suzane.material.lightPicker = this._lightPicker;
+						(<away.materials.TextureMaterial> this._suzane.material).lightPicker = this._lightPicker;
 						this._suzane.y = -100;
 						this._mouseOutMaterial = <TextureMaterial> this._suzane.material;
 

@@ -42,6 +42,29 @@
 
 module examples
 {
+	import VertexAnimationSet		= away.animators.VertexAnimationSet;
+	import VertexAnimator			= away.animators.VertexAnimator;
+	import View						= away.containers.View;
+	import HoverController			= away.controllers.HoverController;
+	import Mesh						= away.entities.Mesh;
+	import AssetEvent				= away.events.AssetEvent;
+	import LoaderEvent				= away.events.LoaderEvent;
+	import Vector3D					= away.geom.Vector3D;
+	import AssetLibrary				= away.library.AssetLibrary;
+	import AssetType				= away.library.AssetType;
+	import IAsset					= away.library.IAsset;
+	import DirectionalLight			= away.lights.DirectionalLight;
+	import MD2Parser				= away.parsers.MD2Parser;
+	import PrimitivePlanePrefab		= away.prefabs.PrimitivePlanePrefab;
+	import ShadowFilteredMethod		= away.materials.ShadowFilteredMethod;
+	import StaticLightPicker		= away.materials.StaticLightPicker;
+	import TextureMaterial          = away.materials.TextureMaterial;
+	import URLRequest				= away.net.URLRequest;
+	import DefaultRenderer			= away.render.DefaultRenderer;
+	import Texture2DBase			= away.textures.Texture2DBase;
+	import Keyboard					= away.ui.Keyboard;
+	import RequestAnimationFrame	= away.utils.RequestAnimationFrame;
+
     export class Intermediate_PerelithKnight
     {
 
@@ -51,29 +74,29 @@ module examples
 
         //array of materials for random sampling
         private _pKnightTextures:Array<string> = new Array<string>("assets/pknight1.png", "assets/pknight2.png", "assets/pknight3.png", "assets/pknight4.png");
-        private _pKnightMaterials:Array<away.materials.TextureMaterial> = new Array<away.materials.TextureMaterial>();
+        private _pKnightMaterials:Array<TextureMaterial> = new Array<TextureMaterial>();
 
         //engine variables
-        private _view:away.containers.View;
-        private _cameraController:away.controllers.HoverController;
+        private _view:View;
+        private _cameraController:HoverController;
 
         //stats
         //private _stats:AwayStats;
 
         //light objects
-        private _light:away.lights.DirectionalLight;
-        private _lightPicker:away.materials.StaticLightPicker;
+        private _light:DirectionalLight;
+        private _lightPicker:StaticLightPicker;
 
         //material objects
-        private _floorMaterial:away.materials.TextureMaterial;
-        private _shadowMapMethod:away.materials.ShadowFilteredMethod;
+        private _floorMaterial:TextureMaterial;
+        private _shadowMapMethod:ShadowFilteredMethod;
 
         //scene objects
-        private _floor:away.entities.Mesh;
-        private _mesh:away.entities.Mesh;
+        private _floor:Mesh;
+        private _mesh:Mesh;
 
         //navigation variables
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
         private _time:number = 0;
         private _move:boolean = false;
         private _lastPanAngle:number;
@@ -84,8 +107,8 @@ module examples
         private _keyDown:boolean;
         private _keyLeft:boolean;
         private _keyRight:boolean;
-        private _lookAtPosition:away.geom.Vector3D = new away.geom.Vector3D();
-        private _animationSet:away.animators.VertexAnimationSet;
+        private _lookAtPosition:Vector3D = new Vector3D();
+        private _animationSet:VertexAnimationSet;
 
         /**
          * Constructor
@@ -93,13 +116,13 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //setup the camera for optimal rendering
             this._view.camera.projection.far = 5000;
 
             //setup controller to be used on the camera
-            this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
+            this._cameraController = new HoverController(this._view.camera, null, 45, 20, 2000, 5);
 
             //setup the help text
             /*
@@ -122,33 +145,33 @@ module examples
             */
             
             //setup the lights for the scene
-            this._light = new away.lights.DirectionalLight(-0.5, -1, -1);
+            this._light = new DirectionalLight(-0.5, -1, -1);
             this._light.ambient = 0.4;
-            this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+            this._lightPicker = new StaticLightPicker([this._light]);
             this._view.scene.addChild(this._light);
 
             //setup listeners on AssetLibrary
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
             //load perilith knight textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight1.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight2.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight3.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight4.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight1.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight2.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight3.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight4.png"));
 
             //load floor texture
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
 
             //load perelith knight data
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.parsers.MD2Parser());
+            AssetLibrary.load(new URLRequest("assets/pknight.md2"), null, null, new MD2Parser());
 
             //create a global shadow map method
-            this._shadowMapMethod = new away.materials.ShadowFilteredMethod(this._light);
+            this._shadowMapMethod = new ShadowFilteredMethod(this._light);
             this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material
-            this._floorMaterial = new away.materials.TextureMaterial();
+            this._floorMaterial = new TextureMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
@@ -157,7 +180,7 @@ module examples
 
             //setup knight materials
             for (var i:number /*uint*/  = 0; i < this._pKnightTextures.length; i++) {
-                var knightMaterial:away.materials.TextureMaterial = new away.materials.TextureMaterial();
+                var knightMaterial:TextureMaterial = new TextureMaterial();
                 //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
                 //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
                 knightMaterial.lightPicker = this._lightPicker;
@@ -169,7 +192,8 @@ module examples
             }
 
             //setup the floor
-            this._floor = new away.entities.Mesh(new away.primitives.PlaneGeometry(5000, 5000), this._floorMaterial);
+            this._floor = <Mesh> new PrimitivePlanePrefab(5000, 5000).getNewObject();
+			this._floor.material = this._floorMaterial;
             this._floor.geometry.scaleUV(5, 5);
 
             //setup the scene
@@ -179,17 +203,17 @@ module examples
             //addChild(_stats = new AwayStats(_view));
 
             //add listeners
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
-            document.onmousedown = (event) => this.onMouseDown(event);
-            document.onmouseup = (event) => this.onMouseUp(event);
-            document.onmousemove = (event) => this.onMouseMove(event);
-            document.onmousewheel = (event) => this.onMouseWheel(event);
-            document.onkeydown = (event) => this.onKeyDown(event);
-            document.onkeyup = (event) => this.onKeyUp(event);
+            document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+            document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+            document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+            document.onmousewheel = (event:MouseWheelEvent) => this.onMouseWheel(event);
+            document.onkeydown = (event:KeyboardEvent) => this.onKeyDown(event);
+            document.onkeyup = (event:KeyboardEvent) => this.onKeyUp(event);
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
         }
 
@@ -217,25 +241,25 @@ module examples
         /**
          * Listener for asset complete event on loader
          */
-        private onAssetComplete(event:away.events.AssetEvent):void
+        private onAssetComplete(event:AssetEvent):void
         {
-            var asset:away.library.IAsset = event.asset;
+            var asset:IAsset = event.asset;
 
             switch (asset.assetType)
             {
-                case away.library.AssetType.MESH :
-                    this._mesh = <away.entities.Mesh> event.asset;
+                case AssetType.MESH :
+                    this._mesh = <Mesh> event.asset;
 
                     //adjust the mesh
                     this._mesh.y = 120;
-                    this._mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
+                    this._mesh.transform.scale = new Vector3D(5, 5, 5);
 
                     this._meshInitialised = true;
 
 
                     break;
-                case away.library.AssetType.ANIMATION_SET :
-                    this._animationSet = <away.animators.VertexAnimationSet> event.asset
+                case AssetType.ANIMATION_SET :
+                    this._animationSet = <VertexAnimationSet> event.asset;
                     this._animationSetInitialised = true;
                     break;
             }
@@ -250,7 +274,7 @@ module examples
                 for (var i:number /*uint*/  = 0; i < numWide; i++) {
                     for (var j:number /*uint*/  = 0; j < numDeep; j++) {
                         //clone mesh
-                        var clone:away.entities.Mesh = <away.entities.Mesh> this._mesh.clone();
+                        var clone:Mesh = <Mesh> this._mesh.clone();
                         clone.x = (i-(numWide-1)/2)*5000/numWide;
                         clone.z = (j-(numDeep-1)/2)*5000/numDeep;
                         clone.castsShadows = true;
@@ -258,7 +282,7 @@ module examples
                         this._view.scene.addChild(clone);
 
                         //create animator
-                        var vertexAnimator:away.animators.VertexAnimator = new away.animators.VertexAnimator(this._animationSet);
+                        var vertexAnimator:VertexAnimator = new VertexAnimator(this._animationSet);
 
                         //play specified state
                         vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random()*this._animationSet.animationNames.length)], null, Math.random()*1000);
@@ -273,14 +297,14 @@ module examples
         /**
          * Listener function for resource complete event on asset library
          */
-        private onResourceComplete (event:away.events.LoaderEvent)
+        private onResourceComplete(event:LoaderEvent)
         {
-            var assets:away.library.IAsset[] = event.assets;
+            var assets:Array<IAsset> = event.assets;
             var length:number = assets.length;
 
             for ( var c : number = 0 ; c < length ; c ++ )
             {
-                var asset:away.library.IAsset = assets[c];
+                var asset:IAsset = assets[c];
 
                 console.log(asset.name, event.url);
 
@@ -288,7 +312,7 @@ module examples
                 {
                     //floor texture
                     case "assets/floor_diffuse.jpg" :
-                        this._floorMaterial.texture = <away.textures.Texture2DBase> asset;
+                        this._floorMaterial.texture = <Texture2DBase> asset;
                         break;
                     
                     //knight textures
@@ -296,7 +320,7 @@ module examples
                     case "assets/pknight2.png" :
                     case "assets/pknight3.png" :
                     case "assets/pknight4.png" :
-                        this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = <away.textures.Texture2DBase> asset;
+                        this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = <Texture2DBase> asset;
                         break;
                     
                     //knight data
@@ -310,25 +334,25 @@ module examples
         /**
          * Key down listener for animation
          */
-        private onKeyDown(event):void
+        private onKeyDown(event:KeyboardEvent):void
         {
             switch (event.keyCode) {
-                case 38://Keyboard.UP:
-                case 87://Keyboard.W:
-                case 90://Keyboard.Z: //fr
+                case Keyboard.UP:
+                case Keyboard.W:
+                case Keyboard.Z: //fr
                     this._keyUp = true;
                     break;
-                case 40://Keyboard.DOWN:
-                case 83://Keyboard.S:
+                case Keyboard.DOWN:
+                case Keyboard.S:
                     this._keyDown = true;
                     break;
-                case 37://Keyboard.LEFT:
-                case 65://Keyboard.A:
-                case 81://Keyboard.Q: //fr
+                case Keyboard.LEFT:
+                case Keyboard.A:
+                case Keyboard.Q: //fr
                     this._keyLeft = true;
                     break;
-                case 39://Keyboard.RIGHT:
-                case 68://Keyboard.D:
+                case Keyboard.RIGHT:
+                case Keyboard.D:
                     this._keyRight = true;
                     break;
             }
@@ -337,25 +361,25 @@ module examples
         /**
          * Key up listener
          */
-        private onKeyUp(event):void
+        private onKeyUp(event:KeyboardEvent):void
         {
             switch (event.keyCode) {
-                case 38://Keyboard.UP:
-                case 87://Keyboard.W:
-                case 90://Keyboard.Z: //fr
+                case Keyboard.UP:
+                case Keyboard.W:
+                case Keyboard.Z: //fr
                     this._keyUp = false;
                     break;
-                case 40://Keyboard.DOWN:
-                case 83://Keyboard.S:
+                case Keyboard.DOWN:
+                case Keyboard.S:
                     this._keyDown = false;
                     break;
-                case 37://Keyboard.LEFT:
-                case 65://Keyboard.A:
-                case 81://Keyboard.Q: //fr
+                case Keyboard.LEFT:
+                case Keyboard.A:
+                case Keyboard.Q: //fr
                     this._keyLeft = false;
                     break;
-                case 39://Keyboard.RIGHT:
-                case 68://Keyboard.D:
+                case Keyboard.RIGHT:
+                case Keyboard.D:
                     this._keyRight = false;
                     break;
             }
@@ -364,7 +388,7 @@ module examples
         /**
          * Mouse down listener for navigation
          */
-        private onMouseDown(event):void
+        private onMouseDown(event:MouseEvent):void
         {
             this._lastPanAngle = this._cameraController.panAngle;
             this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -376,12 +400,12 @@ module examples
         /**
          * Mouse up listener for navigation
          */
-        private onMouseUp(event):void
+        private onMouseUp(event:MouseEvent):void
         {
             this._move = false;
         }
 
-        private onMouseMove(event)
+        private onMouseMove(event:MouseEvent)
         {
             if (this._move) {
                 this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -392,9 +416,9 @@ module examples
         /**
          * Mouse wheel listener for navigation
          */
-        private onMouseWheel(event):void
+        private onMouseWheel(event:MouseWheelEvent):void
         {
-            this._cameraController.distance -= event.wheelDelta * 5;
+            this._cameraController.distance -= event.wheelDelta;
 
             if (this._cameraController.distance < 100)
                 this._cameraController.distance = 100;
@@ -405,12 +429,12 @@ module examples
         /**
          * Stage listener for resize events
          */
-        private onResize(event = null):void
+        private onResize(event:UIEvent = null):void
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
     }
 }

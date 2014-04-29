@@ -46,6 +46,7 @@ var examples;
     var AnimationStateEvent = away.events.AnimationStateEvent;
     var AssetEvent = away.events.AssetEvent;
     var LoaderEvent = away.events.LoaderEvent;
+    var UVTransform = away.geom.UVTransform;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
     var PointLight = away.lights.PointLight;
@@ -53,8 +54,9 @@ var examples;
     var NearDirectionalShadowMapper = away.lights.NearDirectionalShadowMapper;
     var MD5AnimParser = away.parsers.MD5AnimParser;
     var MD5MeshParser = away.parsers.MD5MeshParser;
-    var PlaneGeometry = away.primitives.PlaneGeometry;
+    var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var EffectFogMethod = away.materials.EffectFogMethod;
+    var SkyboxMaterial = away.materials.SkyboxMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
@@ -210,9 +212,13 @@ var examples;
         */
         Intermediate_MD5Animation.prototype.initObjects = function () {
             //create light billboards
-            var redSprite = new Billboard(this.redLightMaterial, 200, 200);
+            var redSprite = new Billboard(this.redLightMaterial);
+            redSprite.width = 200;
+            redSprite.height = 200;
             redSprite.castsShadows = false;
-            var blueSprite = new Billboard(this.blueLightMaterial, 200, 200);
+            var blueSprite = new Billboard(this.blueLightMaterial);
+            blueSprite.width = 200;
+            blueSprite.height = 200;
             blueSprite.castsShadows = false;
             this.redLight.addChild(redSprite);
             this.blueLight.addChild(blueSprite);
@@ -221,7 +227,8 @@ var examples;
             AssetLibrary.enableParser(MD5AnimParser);
 
             //create a rocky ground plane
-            this.ground = new Mesh(new PlaneGeometry(50000, 50000, 1, 1), this.groundMaterial);
+            this.ground = new PrimitivePlanePrefab(50000, 50000, 1, 1).getNewObject();
+            this.ground.material = this.groundMaterial;
             this.ground.geometry.scaleUV(200, 200);
             this.ground.castsShadows = false;
             this.scene.addChild(this.ground);
@@ -337,6 +344,7 @@ var examples;
                 this.mesh.subMeshes[1].material = this.mesh.subMeshes[2].material = this.mesh.subMeshes[3].material = this.gobMaterial;
                 this.mesh.castsShadows = true;
                 this.mesh.rotationY = 180;
+                this.mesh.subMeshes[1].uvTransform = this.mesh.subMeshes[2].uvTransform = this.mesh.subMeshes[3].uvTransform = new UVTransform();
                 this.scene.addChild(this.mesh);
 
                 //add our lookat object to the mesh
@@ -352,7 +360,7 @@ var examples;
                 case 'assets/skybox/grimnight_texture.cube':
                     this.cubeTexture = event.assets[0];
 
-                    this.skyBox = new Skybox(this.cubeTexture);
+                    this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
                     this.scene.addChild(this.skyBox);
                     break;
 

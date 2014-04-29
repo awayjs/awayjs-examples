@@ -29,7 +29,6 @@ var examples;
     var SkeletonAnimator = away.animators.SkeletonAnimator;
     var SkeletonClipNode = away.animators.SkeletonClipNode;
     var CrossfadeTransition = away.animators.CrossfadeTransition;
-    var PerspectiveProjection = away.projections.PerspectiveProjection;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var AnimationStateEvent = away.events.AnimationStateEvent;
@@ -39,6 +38,7 @@ var examples;
     var AssetType = away.library.AssetType;
     var Loader = away.containers.Loader;
     var AWD2Parser = away.parsers.AWDParser;
+    var PerspectiveProjection = away.projections.PerspectiveProjection;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
     var Keyboard = away.ui.Keyboard;
@@ -95,7 +95,7 @@ var examples;
             var loader = new Loader();
             loader.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
-            loader.load(new URLRequest("assets/shambler.awd"));
+            loader.load(new URLRequest("assets/shambler_new.awd"));
 
             this._view.scene.addChild(loader);
         };

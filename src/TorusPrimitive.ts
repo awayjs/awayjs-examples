@@ -6,7 +6,7 @@ module examples
 	export class TorusPrimitive {
 
 		private _view:away.containers.View;
-		private _torus:away.primitives.TorusGeometry;
+		private _torus:away.prefabs.PrimitiveTorusPrefab;
 		private _mesh:away.entities.Mesh;
 		private _raf:away.utils.RequestAnimationFrame;
 		private _image:HTMLImageElement;
@@ -88,8 +88,9 @@ module examples
 		 */
 		private initTorus ():void
 		{
-			this._torus = new away.primitives.TorusGeometry (220, 80, 32, 16, false); // Create the TorusGeometry
-			this._mesh = new away.entities.Mesh (this._torus, this._material); // Create the mesh with the TorusGeometry
+			this._torus = new away.prefabs.PrimitiveTorusPrefab(220, 80, 32, 16, false); // Create the Torus prefab
+			this._mesh = <away.entities.Mesh> this._torus.getNewObject(); //Create the mesh
+			this._mesh.material = this._material; //apply the material
 			this._view.scene.addChild (this._mesh); // Add the mesh to the scene
 		}
 

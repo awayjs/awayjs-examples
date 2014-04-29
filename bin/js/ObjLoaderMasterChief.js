@@ -1,84 +1,86 @@
 ///<reference path="../libs/away3d.next.d.ts" />
 var examples;
 (function (examples) {
+    var DisplayObjectContainer = away.containers.DisplayObjectContainer;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
+    var Mesh = away.entities.Mesh;
+    var LoaderEvent = away.events.LoaderEvent;
+    var Vector3D = away.geom.Vector3D;
+    var AssetLibrary = away.library.AssetLibrary;
+    var AssetType = away.library.AssetType;
+
+    var DirectionalLight = away.lights.DirectionalLight;
+    var ColorMaterial = away.materials.ColorMaterial;
+    var StaticLightPicker = away.materials.StaticLightPicker;
+    var TextureMaterial = away.materials.TextureMaterial;
+    var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+    var AssetLoader = away.net.AssetLoader;
+    var AssetLoaderToken = away.net.AssetLoaderToken;
+    var URLRequest = away.net.URLRequest;
+    var OBJParser = away.parsers.OBJParser;
+    var DefaultRenderer = away.render.DefaultRenderer;
+    var ImageTexture = away.textures.ImageTexture;
+    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
     var ObjChiefTestDay = (function () {
         function ObjChiefTestDay() {
             var _this = this;
-            this.height = 0;
             this.meshes = new Array();
-            this.spartan = new away.containers.DisplayObjectContainer();
-            this.t = 0;
+            this.spartan = new DisplayObjectContainer();
             this.spartanFlag = false;
             this.terrainObjFlag = false;
             away.Debug.LOG_PI_ERRORS = false;
             away.Debug.THROW_ERRORS = false;
 
-            this.view = new away.containers.View(new away.render.DefaultRenderer());
+            this.view = new View(new DefaultRenderer());
             this.view.camera.z = -50;
             this.view.camera.y = 20;
             this.view.camera.projection.near = 0.1;
             this.view.backgroundColor = 0xCEC8C6;
 
-            //this.view.backgroundColor   = 0xFF0000;
-            this.raf = new away.utils.RequestAnimationFrame(this.render, this);
-            this.raf.start();
+            this.raf = new RequestAnimationFrame(this.render, this);
 
-            this.light = new away.lights.DirectionalLight();
-            this.light.color = 0xc1582d; //683019;
-            this.light.direction = new away.geom.Vector3D(1, 0, 0);
-            this.light.ambient = 0.4; //0.05;//.4;
-            this.light.ambientColor = 0x85b2cd; //4F6877;//313D51;
+            this.light = new DirectionalLight();
+            this.light.color = 0xc1582d;
+            this.light.direction = new Vector3D(1, 0, 0);
+            this.light.ambient = 0.4;
+            this.light.ambientColor = 0x85b2cd;
             this.light.diffuse = 2.8;
             this.light.specular = 1.8;
 
-            //this.light.x                = 800;
-            //this.light.y                = 800;
-            this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25);
+            this.spartan.transform.scale = new Vector3D(.25, .25, .25);
             this.spartan.y = 0;
 
             this.view.scene.addChild(this.light);
 
-            away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
+            AssetLibrary.enableParser(OBJParser);
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+            this.token = AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
+            this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
             });
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
-            });
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/terrain.obj'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+            this.token = AssetLibrary.load(new URLRequest('assets/terrain.obj'));
+            this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
             });
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
-            });
 
-            //*
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/masterchief_base.png'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+            this.token = AssetLibrary.load(new URLRequest('assets/masterchief_base.png'));
+            this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
             });
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
-            });
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg'));
-            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, function (event) {
+            this.token = AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg'));
+            this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
             });
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, function (event) {
-                return _this.onAssetComplete(event);
-            });
 
-            // */
-            window.onresize = function () {
-                return _this.resize();
+            window.onresize = function (event) {
+                return _this.onResize();
             };
 
-            this.resize();
+            this.raf.start();
         }
         ObjChiefTestDay.prototype.render = function () {
             if (this.terrain)
@@ -88,61 +90,45 @@ var examples;
             this.view.render();
         };
 
-        ObjChiefTestDay.prototype.onAssetComplete = function (e) {
-        };
-
-        ObjChiefTestDay.prototype.onResourceComplete = function (e) {
-            var loader = e.target;
+        ObjChiefTestDay.prototype.onResourceComplete = function (event) {
+            var loader = event.target;
             var l = loader.baseDependency.assets.length;
 
             console.log('------------------------------------------------------------------------------');
-            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e, l, loader);
+            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', event, l, loader);
             console.log('------------------------------------------------------------------------------');
 
-            //*
-            var loader = e.target;
+            var loader = event.target;
             var l = loader.baseDependency.assets.length;
 
             for (var c = 0; c < l; c++) {
                 var d = loader.baseDependency.assets[c];
 
-                console.log(d.name, e.url);
+                console.log(d.name, event.url);
 
                 switch (d.assetType) {
-                    case away.library.AssetType.MESH:
-                        if (e.url == 'assets/Halo_3_SPARTAN4.obj') {
-                            var mesh = away.library.AssetLibrary.getAsset(d.name);
+                    case AssetType.MESH:
+                        if (event.url == 'assets/Halo_3_SPARTAN4.obj') {
+                            var mesh = d;
 
                             this.spartan.addChild(mesh);
                             this.spartanFlag = true;
-
                             this.meshes.push(mesh);
-                        }
-
-                        if (e.url == 'assets/terrain.obj') {
+                        } else if (event.url == 'assets/terrain.obj') {
                             this.terrainObjFlag = true;
-                            this.terrain = away.library.AssetLibrary.getAsset(d.name);
+                            this.terrain = d;
                             this.terrain.y = 98;
                             this.view.scene.addChild(this.terrain);
                         }
 
                         break;
-
-                    case away.library.AssetType.TEXTURE:
-                        if (e.url == 'assets/masterchief_base.png') {
-                            var lightPicker = new away.materials.StaticLightPicker([this.light]);
-                            var tx = away.library.AssetLibrary.getAsset(d.name);
-
-                            this.mat = new away.materials.TextureMaterial(tx, true, true, false);
-                            this.mat.lightPicker = lightPicker;
-                        }
-
-                        if (e.url == 'assets/stone_tx.jpg') {
-                            var lp = new away.materials.StaticLightPicker([this.light]);
-                            var txT = away.library.AssetLibrary.getAsset(d.name);
-
-                            this.terrainMaterial = new away.materials.TextureMaterial(txT, true, true, false);
-                            this.terrainMaterial.lightPicker = lp;
+                    case AssetType.TEXTURE:
+                        if (event.url == 'assets/masterchief_base.png') {
+                            this.mat = new TextureMaterial(d, true, true, false);
+                            this.mat.lightPicker = new StaticLightPicker([this.light]);
+                        } else if (event.url == 'assets/stone_tx.jpg') {
+                            this.terrainMaterial = new TextureMaterial(d, true, true, false);
+                            this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                         }
 
                         break;
@@ -154,16 +140,16 @@ var examples;
                 this.terrain.geometry.scaleUV(20, 20);
             }
 
-            if (this.mat && this.spartanFlag) {
-                for (var c = 0; c < this.meshes.length; c++) {
+            if (this.mat && this.spartanFlag)
+                for (var c = 0; c < this.meshes.length; c++)
                     this.meshes[c].material = this.mat;
-                }
-            }
 
             this.view.scene.addChild(this.spartan);
+            this.onResize();
         };
 
-        ObjChiefTestDay.prototype.resize = function () {
+        ObjChiefTestDay.prototype.onResize = function (event) {
+            if (typeof event === "undefined") { event = null; }
             this.view.y = 0;
             this.view.x = 0;
 

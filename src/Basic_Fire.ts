@@ -64,7 +64,8 @@ module examples
 	import TextureMaterial						= away.materials.TextureMaterial;
 	import TextureMultiPassMaterial				= away.materials.TextureMultiPassMaterial;
 	import StaticLightPicker					= away.materials.StaticLightPicker;
-	import PlaneGeometry						= away.primitives.PlaneGeometry;
+	import PrimitivePlanePrefab					= away.prefabs.PrimitivePlanePrefab;
+	import DefaultRenderer						= away.render.DefaultRenderer;
 	import ParticleGeometryHelper				= away.tools.ParticleGeometryHelper;
 	import Cast									= away.utils.Cast;
 	import RequestAnimationFrame				= away.utils.RequestAnimationFrame
@@ -136,7 +137,7 @@ module examples
 
 			this.camera = new Camera();
 
-			this.view = new View(new away.render.DefaultRenderer());
+			this.view = new View(new DefaultRenderer());
 			//this.view.antiAlias = 4;
 			this.view.scene = this.scene;
 			this.view.camera = this.camera;
@@ -205,12 +206,12 @@ module examples
 			this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 			
 			//create the original particle geometry
-			var particle:Geometry = new PlaneGeometry(10, 10, 1, 1, false);
+			var particle:PrimitivePlanePrefab = new PrimitivePlanePrefab(10, 10, 1, 1, false);
 			
 			//combine them into a list
 			var geometrySet:Array<Geometry> = new Array<Geometry>();
 			for (var i:number /*int*/ = 0; i < 500; i++)
-				geometrySet.push(particle);
+				geometrySet.push(particle.geometry);
 			
 			this.particleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
 		}
@@ -220,7 +221,8 @@ module examples
 		 */
 		private initObjects():void
 		{
-			this.plane = new Mesh(new PlaneGeometry(1000, 1000), this.planeMaterial);
+			this.plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
+			this.plane.material = this.planeMaterial;
 			this.plane.geometry.scaleUV(2, 2);
 			this.plane.y = -20;
 

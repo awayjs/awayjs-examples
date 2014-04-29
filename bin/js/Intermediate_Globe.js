@@ -52,6 +52,7 @@ var examples;
     var DiffuseBasicMethod = away.materials.DiffuseBasicMethod;
     var SpecularBasicMethod = away.materials.SpecularBasicMethod;
     var MethodVO = away.materials.MethodVO;
+    var SkyboxMaterial = away.materials.SkyboxMaterial;
     var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
     var SpecularPhongMethod = away.materials.SpecularPhongMethod;
     var ShaderRegisterElement = away.materials.ShaderRegisterElement;
@@ -59,7 +60,7 @@ var examples;
     var ShaderRegisterData = away.materials.ShaderRegisterData;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
-    var SphereGeometry = away.primitives.SphereGeometry;
+    var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
     var ImageCubeTexture = away.textures.ImageCubeTexture;
     var ImageTexture = away.textures.ImageTexture;
@@ -215,17 +216,23 @@ var examples;
             this.orbitContainer.addChild(this.light);
             this.scene.addChild(this.orbitContainer);
 
-            this.sun = new Billboard(this.sunMaterial, 3000, 3000);
+            this.sun = new Billboard(this.sunMaterial);
+            this.sun.width = 3000;
+            this.sun.height = 3000;
+            this.sun.pivot = new Vector3D(1500, 1500, 0);
             this.sun.orientationMode = OrientationMode.CAMERA_PLANE;
             this.sun.alignmentMode = AlignmentMode.PIVOT_POINT;
             this.sun.x = 10000;
             this.orbitContainer.addChild(this.sun);
 
-            this.earth = new Mesh(new SphereGeometry(200, 200, 100), this.groundMaterial);
+            this.earth = new PrimitiveSpherePrefab(200, 200, 100).getNewObject();
+            this.earth.material = this.groundMaterial;
 
-            this.clouds = new Mesh(new SphereGeometry(202, 200, 100), this.cloudMaterial);
+            this.clouds = new PrimitiveSpherePrefab(202, 200, 100).getNewObject();
+            this.clouds.material = this.cloudMaterial;
 
-            this.atmosphere = new Mesh(new SphereGeometry(210, 200, 100), this.atmosphereMaterial);
+            this.atmosphere = new PrimitiveSpherePrefab(210, 200, 100).getNewObject();
+            this.atmosphere.material = this.atmosphereMaterial;
             this.atmosphere.scaleX = -1;
 
             this.tiltContainer = new DisplayObjectContainer();
@@ -352,7 +359,7 @@ var examples;
                 case 'assets/skybox/space_texture.cube':
                     this.cubeTexture = event.assets[0];
 
-                    this.skyBox = new Skybox(this.cubeTexture);
+                    this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
                     this.scene.addChild(this.skyBox);
                     break;
 
@@ -476,11 +483,7 @@ var examples;
         * Mouse wheel listener for navigation
         */
         Intermediate_Globe.prototype.onMouseWheel = function (event) {
-            if (event.wheelDelta > 0) {
-                this.cameraController.distance -= 20;
-            } else {
-                this.cameraController.distance += 20;
-            }
+            this.cameraController.distance -= event.wheelDelta;
 
             if (this.cameraController.distance < 400)
                 this.cameraController.distance = 400;
@@ -532,6 +535,7 @@ var OrientationMode = away.base.OrientationMode;
 var AlignmentMode = away.base.AlignmentMode;
 var Billboard = away.entities.Billboard;
 var Point = away.geom.Point;
+var Vector3D = away.geom.Vector3D;
 var TextureMaterial = away.materials.TextureMaterial;
 var BitmapTexture = away.textures.BitmapTexture;
 var Cast = away.utils.Cast;
@@ -550,7 +554,10 @@ var FlareObject = (function () {
         billboardMaterial.alphaBlending = true;
 
         //billboardMaterial.blendMode = BlendMode.LAYER;
-        this.billboard = new Billboard(billboardMaterial, size * this.flareSize, size * this.flareSize);
+        this.billboard = new Billboard(billboardMaterial);
+        this.billboard.width = size * this.flareSize;
+        this.billboard.height = size * this.flareSize;
+        this.billboard.pivot = new Vector3D(size * this.flareSize / 2, size * this.flareSize / 2, 0);
         this.billboard.orientationMode = OrientationMode.CAMERA_PLANE;
         this.billboard.alignmentMode = AlignmentMode.PIVOT_POINT;
         this.billboard.visible = false;

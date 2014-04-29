@@ -29,6 +29,29 @@ THE SOFTWARE.
 */
 var examples;
 (function (examples) {
+    var VertexAnimationSet = away.animators.VertexAnimationSet;
+    var VertexAnimator = away.animators.VertexAnimator;
+    var View = away.containers.View;
+    var HoverController = away.controllers.HoverController;
+    var Mesh = away.entities.Mesh;
+    var AssetEvent = away.events.AssetEvent;
+    var LoaderEvent = away.events.LoaderEvent;
+    var Vector3D = away.geom.Vector3D;
+    var AssetLibrary = away.library.AssetLibrary;
+    var AssetType = away.library.AssetType;
+
+    var DirectionalLight = away.lights.DirectionalLight;
+    var MD2Parser = away.parsers.MD2Parser;
+    var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
+    var ShadowFilteredMethod = away.materials.ShadowFilteredMethod;
+    var StaticLightPicker = away.materials.StaticLightPicker;
+    var TextureMaterial = away.materials.TextureMaterial;
+    var URLRequest = away.net.URLRequest;
+    var DefaultRenderer = away.render.DefaultRenderer;
+    var Texture2DBase = away.textures.Texture2DBase;
+    var Keyboard = away.ui.Keyboard;
+    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
     var Intermediate_PerelithKnight = (function () {
         /**
         * Constructor
@@ -43,15 +66,15 @@ var examples;
             this._pKnightMaterials = new Array();
             this._time = 0;
             this._move = false;
-            this._lookAtPosition = new away.geom.Vector3D();
+            this._lookAtPosition = new Vector3D();
             //setup the view
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //setup the camera for optimal rendering
             this._view.camera.projection.far = 5000;
 
             //setup controller to be used on the camera
-            this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
+            this._cameraController = new HoverController(this._view.camera, null, 45, 20, 2000, 5);
 
             //setup the help text
             /*
@@ -73,33 +96,37 @@ var examples;
             addChild(text);
             */
             //setup the lights for the scene
-            this._light = new away.lights.DirectionalLight(-0.5, -1, -1);
+            this._light = new DirectionalLight(-0.5, -1, -1);
             this._light.ambient = 0.4;
-            this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+            this._lightPicker = new StaticLightPicker([this._light]);
             this._view.scene.addChild(this._light);
 
             //setup listeners on AssetLibrary
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
+                return _this.onAssetComplete(event);
+            });
+            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+                return _this.onResourceComplete(event);
+            });
 
             //load perilith knight textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight1.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight2.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight3.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight4.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight1.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight2.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight3.png"));
+            AssetLibrary.load(new URLRequest("assets/pknight4.png"));
 
             //load floor texture
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
 
             //load perelith knight data
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/pknight.md2"), null, null, new away.parsers.MD2Parser());
+            AssetLibrary.load(new URLRequest("assets/pknight.md2"), null, null, new MD2Parser());
 
             //create a global shadow map method
-            this._shadowMapMethod = new away.materials.ShadowFilteredMethod(this._light);
+            this._shadowMapMethod = new ShadowFilteredMethod(this._light);
             this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material
-            this._floorMaterial = new away.materials.TextureMaterial();
+            this._floorMaterial = new TextureMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
@@ -107,7 +134,7 @@ var examples;
             this._floorMaterial.repeat = true;
 
             for (var i = 0; i < this._pKnightTextures.length; i++) {
-                var knightMaterial = new away.materials.TextureMaterial();
+                var knightMaterial = new TextureMaterial();
 
                 //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
                 //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
@@ -120,7 +147,8 @@ var examples;
             }
 
             //setup the floor
-            this._floor = new away.entities.Mesh(new away.primitives.PlaneGeometry(5000, 5000), this._floorMaterial);
+            this._floor = new PrimitivePlanePrefab(5000, 5000).getNewObject();
+            this._floor.material = this._floorMaterial;
             this._floor.geometry.scaleUV(5, 5);
 
             //setup the scene
@@ -153,7 +181,7 @@ var examples;
             };
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
         }
         /**
@@ -183,17 +211,17 @@ var examples;
             var asset = event.asset;
 
             switch (asset.assetType) {
-                case away.library.AssetType.MESH:
+                case AssetType.MESH:
                     this._mesh = event.asset;
 
                     //adjust the mesh
                     this._mesh.y = 120;
-                    this._mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
+                    this._mesh.transform.scale = new Vector3D(5, 5, 5);
 
                     this._meshInitialised = true;
 
                     break;
-                case away.library.AssetType.ANIMATION_SET:
+                case AssetType.ANIMATION_SET:
                     this._animationSet = event.asset;
                     this._animationSetInitialised = true;
                     break;
@@ -217,7 +245,7 @@ var examples;
                         this._view.scene.addChild(clone);
 
                         //create animator
-                        var vertexAnimator = new away.animators.VertexAnimator(this._animationSet);
+                        var vertexAnimator = new VertexAnimator(this._animationSet);
 
                         //play specified state
                         vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random() * this._animationSet.animationNames.length)], null, Math.random() * 1000);
@@ -263,22 +291,22 @@ var examples;
         */
         Intermediate_PerelithKnight.prototype.onKeyDown = function (event) {
             switch (event.keyCode) {
-                case 38:
-                case 87:
-                case 90:
+                case Keyboard.UP:
+                case Keyboard.W:
+                case Keyboard.Z:
                     this._keyUp = true;
                     break;
-                case 40:
-                case 83:
+                case Keyboard.DOWN:
+                case Keyboard.S:
                     this._keyDown = true;
                     break;
-                case 37:
-                case 65:
-                case 81:
+                case Keyboard.LEFT:
+                case Keyboard.A:
+                case Keyboard.Q:
                     this._keyLeft = true;
                     break;
-                case 39:
-                case 68:
+                case Keyboard.RIGHT:
+                case Keyboard.D:
                     this._keyRight = true;
                     break;
             }
@@ -289,22 +317,22 @@ var examples;
         */
         Intermediate_PerelithKnight.prototype.onKeyUp = function (event) {
             switch (event.keyCode) {
-                case 38:
-                case 87:
-                case 90:
+                case Keyboard.UP:
+                case Keyboard.W:
+                case Keyboard.Z:
                     this._keyUp = false;
                     break;
-                case 40:
-                case 83:
+                case Keyboard.DOWN:
+                case Keyboard.S:
                     this._keyDown = false;
                     break;
-                case 37:
-                case 65:
-                case 81:
+                case Keyboard.LEFT:
+                case Keyboard.A:
+                case Keyboard.Q:
                     this._keyLeft = false;
                     break;
-                case 39:
-                case 68:
+                case Keyboard.RIGHT:
+                case Keyboard.D:
                     this._keyRight = false;
                     break;
             }

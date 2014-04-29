@@ -39,22 +39,39 @@
 
 module examples
 {
+	import View							= away.containers.View;
+	import Mesh							= away.entities.Mesh;
+	import Skybox						= away.entities.Skybox;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import ColorMaterial				= away.materials.ColorMaterial;
+	import EffectEnvMapMethod			= away.materials.EffectEnvMapMethod;
+	import SkyboxMaterial				= away.materials.SkyboxMaterial;
+	import AssetLoaderContext			= away.net.AssetLoaderContext;
+	import URLRequest					= away.net.URLRequest;
+	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
+	import PerspectiveProjection		= away.projections.PerspectiveProjection;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ImageCubeTexture				= away.textures.ImageCubeTexture;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
+
     export class Basic_SkyBox
     {
 
         //engine variables
-        private _view:away.containers.View;
+        private _view:View;
 
         //material objects
-        private _cubeTexture:away.textures.ImageCubeTexture;
-        private _torusMaterial:away.materials.ColorMaterial;
+        private _cubeTexture:ImageCubeTexture;
+        private _torusMaterial:ColorMaterial;
 
         //scene objects
-        private _skyBox:away.entities.Skybox;
-        private _torus:away.entities.Mesh;
+        private _skyBox:Skybox;
+        private _torus:Mesh;
 
         //navigation variables
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
         private _time:number = 0;
         private _mouseX:number;
         private _mouseY:number;
@@ -84,13 +101,13 @@ module examples
         private initEngine():void
         {
             //setup the view
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //setup the camera
             this._view.camera.z = -600;
             this._view.camera.y = 0;
-            this._view.camera.lookAt(new away.geom.Vector3D());
-            this._view.camera.projection = new away.projections.PerspectiveProjection(90);
+            this._view.camera.lookAt(new Vector3D());
+            this._view.camera.projection = new PerspectiveProjection(90);
 			this._view.backgroundColor = 0xFFFF00;
             this._mouseX = window.innerWidth/2;
         }
@@ -101,7 +118,7 @@ module examples
         private initMaterials():void
         {
             //setup the torus material
-            this._torusMaterial = new away.materials.ColorMaterial(0xFFFFFF, 1);
+            this._torusMaterial = new ColorMaterial(0xFFFFFF, 1);
             this._torusMaterial.specular = 0.5;
             this._torusMaterial.ambient = 0.25;
             this._torusMaterial.ambientColor = 0x111199;
@@ -113,7 +130,8 @@ module examples
          */
         private initObjects():void
         {
-            this._torus = new away.entities.Mesh(new away.primitives.TorusGeometry(150, 60, 40, 20), this._torusMaterial);
+            this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
+			this._torus.material = this._torusMaterial;
             this._view.scene.addChild(this._torus);
         }
 
@@ -122,23 +140,23 @@ module examples
          */
         private initListeners():void
         {
-            document.onmousemove = (event) => this.onMouseMove(event);
+            document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //environment texture
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/skybox/snow_texture.cube"), assetLoaderContext);
+            AssetLibrary.load(new URLRequest("assets/skybox/snow_texture.cube"), assetLoaderContext);
         }
 
 
@@ -159,17 +177,17 @@ module examples
         /**
          * Listener function for resource complete event on asset library
          */
-        private onResourceComplete (event:away.events.LoaderEvent)
+        private onResourceComplete(event:LoaderEvent)
         {
             switch( event.url )
             {
                 case 'assets/skybox/snow_texture.cube':
-                    this._cubeTexture = <away.textures.ImageCubeTexture> event.assets[ 0 ];
+                    this._cubeTexture = <ImageCubeTexture> event.assets[0];
 
-                    this._skyBox = new away.entities.Skybox(this._cubeTexture);
+                    this._skyBox = new Skybox(new SkyboxMaterial(this._cubeTexture));
                     this._view.scene.addChild(this._skyBox);
 
-                    this._torusMaterial.addMethod(new away.materials.EffectEnvMapMethod(this._cubeTexture, 1));
+                    this._torusMaterial.addMethod(new EffectEnvMapMethod(this._cubeTexture, 1));
 
                     break;
             }
@@ -178,7 +196,7 @@ module examples
         /**
          * Mouse move listener for navigation
          */
-        private onMouseMove(event)
+        private onMouseMove(event:MouseEvent)
         {
             this._mouseX = event.clientX;
             this._mouseY = event.clientY;
@@ -187,7 +205,7 @@ module examples
         /**
          * window listener for resize events
          */
-        private onResize(event = null):void
+        private onResize(event:UIEvent = null):void
         {
             this._view.y         = 0;
             this._view.x         = 0;
@@ -197,7 +215,7 @@ module examples
     }
 }
 
-window.onload = function ()
+window.onload = function()
 {
     new examples.Basic_SkyBox();
 }

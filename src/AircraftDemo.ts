@@ -18,7 +18,7 @@ module examples
         private _timer              : away.utils.RequestAnimationFrame;
 		
         //{ sea
-        private _seaGeom			: away.primitives.PlaneGeometry;
+        private _seaGeom			: away.prefabs.PrimitivePlanePrefab;
         private _seaMesh			: away.entities.Mesh;
         private _seaNormalTexture	: away.textures.ImageTexture;
         private _seaInitialized		: boolean = false;
@@ -145,10 +145,12 @@ module examples
 			this._seaMaterial.gloss           = 100;
 			this._seaMaterial.specular        = 1;
 			
-			this._seaGeom = new away.primitives.PlaneGeometry( 50000, 50000, 1, 1, true, false );
-			this._seaGeom.scaleUV( 100, 100 );
-			this._seaMesh = new away.entities.Mesh( this._seaGeom, this._seaMaterial );
-            //this._view.scene.addChild( new away.primitives.SkyBox( this._skyboxCubeTexture ));
+			this._seaGeom = new away.prefabs.PrimitivePlanePrefab( 50000, 50000, 1, 1, true, false );
+			this._seaMesh = <away.entities.Mesh> this._seaGeom.getNewObject();
+			this._seaGeom.geometry.scaleUV( 100, 100 );
+			this._seaMesh.subMeshes[0].uvTransform = new away.geom.UVTransform();
+			this._seaMesh.material = this._seaMaterial;
+            this._view.scene.addChild( new away.entities.Skybox( new away.materials.SkyboxMaterial(this._skyboxCubeTexture) ));
 			this._view.scene.addChild( this._seaMesh );
         }
 		

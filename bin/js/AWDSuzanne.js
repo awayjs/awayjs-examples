@@ -127,6 +127,7 @@ var examples;
 
                         mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
                         mesh.pickingCollider = new away.pick.JSPickingCollider();
+
                         mesh.addEventListener(away.events.MouseEvent.MOUSE_OVER, function (event) {
                             return _this.onMouseOver(event);
                         });

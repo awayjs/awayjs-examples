@@ -40,7 +40,7 @@ var examples;
     var View = away.containers.View;
     var FirstPersonController = away.controllers.FirstPersonController;
     var Geometry = away.base.Geometry;
-    var SubMesh = away.base.SubMesh;
+
     var BlendMode = away.base.BlendMode;
     var Mesh = away.entities.Mesh;
     var Skybox = away.entities.Skybox;
@@ -48,6 +48,7 @@ var examples;
     var AssetEvent = away.events.AssetEvent;
     var ProgressEvent = away.events.ProgressEvent;
     var LoaderEvent = away.events.LoaderEvent;
+    var UVTransform = away.geom.UVTransform;
     var Vector3D = away.geom.Vector3D;
     var AssetType = away.library.AssetType;
     var DirectionalLight = away.lights.DirectionalLight;
@@ -56,6 +57,7 @@ var examples;
     //	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
     var DirectionalShadowMapper = away.lights.DirectionalShadowMapper;
     var AWDParser = away.parsers.AWDParser;
+    var SkyboxMaterial = away.materials.SkyboxMaterial;
     var TextureMaterial = away.materials.TextureMaterial;
     var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
@@ -66,7 +68,7 @@ var examples;
     var URLLoader = away.net.URLLoader;
     var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
     var URLRequest = away.net.URLRequest;
-    var PlaneGeometry = away.primitives.PlaneGeometry;
+    var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
     var ImageCubeTexture = away.textures.ImageCubeTexture;
     var ImageTexture = away.textures.ImageTexture;
@@ -210,16 +212,18 @@ var examples;
         */
         Advanced_MultiPassSponzaDemo.prototype.initObjects = function () {
             //create skybox
-            this._view.scene.addChild(new Skybox(this._skyMap));
+            this._view.scene.addChild(new Skybox(new SkyboxMaterial(this._skyMap)));
 
             //create flame meshes
-            this._flameGeometry = new PlaneGeometry(40, 80, 1, 1, false, true);
+            this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
             var flameVO;
             var len = this._flameData.length;
             for (var i = 0; i < len; i++) {
                 flameVO = this._flameData[i];
-                var mesh = flameVO.mesh = new Mesh(this._flameGeometry, this._flameMaterial);
+                var mesh = flameVO.mesh = this._flameGeometry.getNewObject();
+                mesh.material = this._flameMaterial;
                 mesh.transform.position = flameVO.position;
+                mesh.subMeshes[0].uvTransform = new UVTransform();
                 mesh.subMeshes[0].uvTransform.scaleU = 1 / 16;
                 this._view.scene.addChild(mesh);
                 mesh.addChild(flameVO.light);

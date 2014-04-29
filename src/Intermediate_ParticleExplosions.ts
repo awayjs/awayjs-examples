@@ -64,7 +64,7 @@ module examples
 	import PointLight					= away.lights.PointLight;
 	import ColorMaterial				= away.materials.ColorMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import PlaneGeometry				= away.primitives.PlaneGeometry;
+	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer              = away.render.DefaultRenderer;
 	import ParticleGeometryHelper		= away.tools.ParticleGeometryHelper;
 	import Cast							= away.utils.Cast;
@@ -259,12 +259,12 @@ module examples
 			var num:number /*uint*/ = this.colorPoints.length;
 			
 			//setup the base geometry for one particle
-			var plane:PlaneGeometry = new PlaneGeometry(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
+			var plane:PrimitivePlanePrefab = new PrimitivePlanePrefab(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
 			
 			//combine them into a list
 			var colorGeometrySet:Array<Geometry> = new Array<Geometry>();
 			for (i = 0; i < num; i++)
-				colorGeometrySet.push(plane);
+				colorGeometrySet.push(plane.geometry);
 			
 			//generate the particle geometries
 			this.colorGeometry = ParticleGeometryHelper.generateGeometry(colorGeometrySet);

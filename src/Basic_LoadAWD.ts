@@ -40,28 +40,42 @@
 
 module examples
 {
+	import View							= away.containers.View;
+	import HoverController				= away.controllers.HoverController;
+	import Loader						= away.containers.Loader;
+	import Mesh							= away.entities.Mesh;
+	import AssetEvent					= away.events.AssetEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import DirectionalLight				= away.lights.DirectionalLight;
+	import StaticLightPicker			= away.materials.StaticLightPicker;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import URLRequest					= away.net.URLRequest;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class Basic_LoadAWD
     {
         //engine variables
-        private _view:away.containers.View;
+        private _view:View;
 
         //light objects
-        private _light:away.lights.DirectionalLight;
-        private _lightPicker:away.materials.StaticLightPicker;
-        private _direction:away.geom.Vector3D;
+        private _light:DirectionalLight;
+        private _lightPicker:StaticLightPicker;
 
         //scene objects
-        private _suzanne:away.entities.Mesh;
+        private _suzanne:Mesh;
 
         //navigation variables
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
         private _time:number = 0;
 
         /**
          * Constructor
          */
-            constructor()
+		constructor()
         {
             this.init();
         }
@@ -83,7 +97,7 @@ module examples
          */
         private initEngine():void
         {
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //set the background of the view to something suitable
             this._view.backgroundColor = 0x1e2125;
@@ -98,17 +112,17 @@ module examples
         private initLights():void
         {
             //create the light for the scene
-            this._light = new away.lights.DirectionalLight();
+            this._light = new DirectionalLight();
             this._light.color = 0x683019;
-            this._light.direction = new away.geom.Vector3D(1, 0, 0);
+            this._light.direction = new Vector3D(1, 0, 0);
             this._light.ambient = 0.5;
             this._light.ambientColor = 0x30353b;
             this._light.diffuse = 2.8;
             this._light.specular = 1.8;
             this._view.scene.addChild(this._light);
 
-            //create the lightppicker for the material
-            this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+            //create the light picker for the material
+            this._lightPicker = new StaticLightPicker([this._light]);
         }
 
         /**
@@ -123,7 +137,6 @@ module examples
          */
         private initObjects():void
         {
-            this._view.scene.addChild(new away.entities.Mesh(new away.primitives.SphereGeometry(0)))
         }
 
         /**
@@ -131,18 +144,17 @@ module examples
          */
         private initListeners():void
         {
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
+            AssetLibrary.enableParser(away.parsers.AWDParser);
 
-            away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, (event:away.events.AssetEvent) => this.onAssetComplete(event));
-
-            away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
+            AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+            AssetLibrary.load(new URLRequest('assets/suzanne.awd'));
         }
 
         /**
@@ -161,31 +173,23 @@ module examples
         /**
          * Listener function for asset complete event on loader
          */
-        private onAssetComplete (event:away.events.AssetEvent)
+        private onAssetComplete(event:AssetEvent)
         {
-            var asset:away.library.IAsset = event.asset;
+            var asset:IAsset = event.asset;
 
             switch (asset.assetType)
             {
-                case away.library.AssetType.MESH :
-                    var mesh:away.entities.Mesh = <away.entities.Mesh> asset;
+                case AssetType.MESH :
+                    var mesh:Mesh = <Mesh> asset;
                     mesh.y = -300;
-                    mesh.transform.scale = new away.geom.Vector3D(900, 900, 900);
+                    mesh.transform.scale = new Vector3D(900, 900, 900);
 
                     this._suzanne = mesh;
                     this._view.scene.addChild(mesh);
-
                     break;
-
-                case away.library.AssetType.GEOMETRY:
-
-                    break;
-
-                case away.library.AssetType.MATERIAL:
-                    //*
-                    var material:away.materials.TextureMaterial = <away.materials.TextureMaterial> asset;
+                case AssetType.MATERIAL:
+                    var material:TextureMaterial = <TextureMaterial> asset;
                     material.lightPicker = this._lightPicker;
-
                     break;
             }
         }
@@ -193,12 +197,12 @@ module examples
         /**
          * stage listener for resize events
          */
-        private onResize(event = null):void
+        private onResize(event:UIEvent = null):void
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
     }
 }

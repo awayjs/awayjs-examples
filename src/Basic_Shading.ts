@@ -39,34 +39,58 @@
 
 module examples
 {
+	import Scene						= away.containers.Scene;
+	import View							= away.containers.View;
+	import HoverController				= away.controllers.HoverController;
+	import Loader						= away.containers.Loader;
+	import Camera						= away.entities.Camera;
+	import Mesh							= away.entities.Mesh;
+	import AssetEvent					= away.events.AssetEvent;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import DirectionalLight				= away.lights.DirectionalLight;
+	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
+	import StaticLightPicker			= away.materials.StaticLightPicker;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import URLRequest					= away.net.URLRequest;
+	import PrimitiveCubePrefab			= away.prefabs.PrimitiveCubePrefab;
+	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
+	import PrimitiveSpherePrefab		= away.prefabs.PrimitiveSpherePrefab;
+	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import Texture2DBase				= away.textures.Texture2DBase;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class Basic_Shading
     {
         //engine variables
-        private _scene:away.containers.Scene;
-        private _camera:away.entities.Camera;
-        private _view:away.containers.View;
-        private _cameraController:away.controllers.HoverController;
+        private _scene:Scene;
+        private _camera:Camera;
+        private _view:View;
+        private _cameraController:HoverController;
 
         //material objects
-        private _planeMaterial:away.materials.TextureMaterial;
-        private _sphereMaterial:away.materials.TextureMaterial;
-        private _cubeMaterial:away.materials.TextureMaterial;
-        private _torusMaterial:away.materials.TextureMaterial;
+        private _planeMaterial:TextureMaterial;
+        private _sphereMaterial:TextureMaterial;
+        private _cubeMaterial:TextureMaterial;
+        private _torusMaterial:TextureMaterial;
 
         //light objects
-        private _light1:away.lights.DirectionalLight;
-        private _light2:away.lights.DirectionalLight;
-        private _lightPicker:away.materials.StaticLightPicker;
+        private _light1:DirectionalLight;
+        private _light2:DirectionalLight;
+        private _lightPicker:StaticLightPicker;
 
         //scene objects
-        private _plane:away.entities.Mesh;
-        private _sphere:away.entities.Mesh;
-        private _cube:away.entities.Mesh;
-        private _torus:away.entities.Mesh;
+        private _plane:Mesh;
+        private _sphere:Mesh;
+        private _cube:Mesh;
+        private _torus:Mesh;
 
         //navigation variables
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
         private _time:number = 0;
         private _move:boolean = false;
         private _lastPanAngle:number;
@@ -99,17 +123,16 @@ module examples
          */
         private initEngine():void
         {
-            this._scene = new away.containers.Scene();
+            this._scene = new Scene();
 
-            this._camera = new away.entities.Camera();
+            this._camera = new Camera();
 
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
-            //this._view.antiAlias = 4;
+            this._view = new View(new DefaultRenderer());
             this._view.scene = this._scene;
             this._view.camera = this._camera;
 
             //setup controller to be used on the camera
-            this._cameraController = new away.controllers.HoverController(this._camera);
+            this._cameraController = new HoverController(this._camera);
             this._cameraController.distance = 1000;
             this._cameraController.minTiltAngle = 0;
             this._cameraController.maxTiltAngle = 90;
@@ -122,22 +145,22 @@ module examples
          */
         private initLights():void
         {
-            this._light1 = new away.lights.DirectionalLight();
-            this._light1.direction = new away.geom.Vector3D(0, -1, 0);
+            this._light1 = new DirectionalLight();
+            this._light1.direction = new Vector3D(0, -1, 0);
             this._light1.ambient = 0.1;
             this._light1.diffuse = 0.7;
 
             this._scene.addChild(this._light1);
 
-            this._light2 = new away.lights.DirectionalLight();
-            this._light2.direction = new away.geom.Vector3D(0, -1, 0);
+            this._light2 = new DirectionalLight();
+            this._light2.direction = new Vector3D(0, -1, 0);
             this._light2.color = 0x00FFFF;
             this._light2.ambient = 0.1;
             this._light2.diffuse = 0.7;
 
             this._scene.addChild(this._light2);
 
-            this._lightPicker = new away.materials.StaticLightPicker([this._light1, this._light2]);
+            this._lightPicker = new StaticLightPicker([this._light1, this._light2]);
         }
 
         /**
@@ -145,19 +168,19 @@ module examples
          */
         private initMaterials():void
         {
-            this._planeMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+            this._planeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._planeMaterial.lightPicker = this._lightPicker;
             this._planeMaterial.repeat = true;
             this._planeMaterial.mipmap = false;
 
-            this._sphereMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+            this._sphereMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._sphereMaterial.lightPicker = this._lightPicker;
 
-            this._cubeMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+            this._cubeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._cubeMaterial.lightPicker = this._lightPicker;
             this._cubeMaterial.mipmap = false;
 
-            this._torusMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+            this._torusMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._torusMaterial.lightPicker = this._lightPicker;
             this._torusMaterial.repeat = true;
         }
@@ -167,27 +190,31 @@ module examples
          */
         private initObjects():void
         {
-            this._plane = new away.entities.Mesh(new away.primitives.PlaneGeometry(1000, 1000), this._planeMaterial);
+            this._plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
+			this._plane.material = this._planeMaterial;
             this._plane.geometry.scaleUV(2, 2);
             this._plane.y = -20;
 
             this._scene.addChild(this._plane);
 
-            this._sphere = new away.entities.Mesh(new away.primitives.SphereGeometry(150, 40, 20), this._sphereMaterial);
+            this._sphere = <Mesh> new PrimitiveSpherePrefab(150, 40, 20).getNewObject();
+			this._sphere.material = this._sphereMaterial;
             this._sphere.x = 300;
             this._sphere.y = 160;
             this._sphere.z = 300;
 
             this._scene.addChild(this._sphere);
 
-            this._cube = new away.entities.Mesh(new away.primitives.CubeGeometry(200, 200, 200, 1, 1, 1, false), this._cubeMaterial);
+            this._cube = <Mesh> new PrimitiveCubePrefab(200, 200, 200, 1, 1, 1, false).getNewObject();
+			this._cube.material = this._cubeMaterial;
             this._cube.x = 300;
             this._cube.y = 160;
             this._cube.z = -250;
 
             this._scene.addChild(this._cube);
 
-            this._torus = new away.entities.Mesh(new away.primitives.TorusGeometry(150, 60, 40, 20), this._torusMaterial);
+            this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
+			this._torus.material = this._torusMaterial;
             this._torus.geometry.scaleUV(10, 5);
             this._torus.x = -250;
             this._torus.y = 160;
@@ -201,37 +228,37 @@ module examples
          */
         private initListeners():void
         {
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
-            document.onmousedown = (event) => this.onMouseDown(event);
-            document.onmouseup = (event) => this.onMouseUp(event);
-	        document.onmousemove = (event) => this.onMouseMove(event);
-	        document.onmousewheel= (event) => this.onMouseWheel(event);
+            document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+            document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+	        document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+	        document.onmousewheel= (event:MouseWheelEvent) => this.onMouseWheel(event);
 
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
             //plane textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_diffuse.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_normal.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/floor_specular.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_normal.jpg"));
+            AssetLibrary.load(new URLRequest("assets/floor_specular.jpg"));
 
             //sphere textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/beachball_diffuse.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/beachball_specular.jpg"));
+            AssetLibrary.load(new URLRequest("assets/beachball_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/beachball_specular.jpg"));
 
             //cube textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/trinket_diffuse.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/trinket_normal.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/trinket_specular.jpg"));
+            AssetLibrary.load(new URLRequest("assets/trinket_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/trinket_normal.jpg"));
+            AssetLibrary.load(new URLRequest("assets/trinket_specular.jpg"));
 
             //torus textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/weave_diffuse.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/weave_normal.jpg"));
+            AssetLibrary.load(new URLRequest("assets/weave_diffuse.jpg"));
+            AssetLibrary.load(new URLRequest("assets/weave_normal.jpg"));
         }
 
         /**
@@ -241,7 +268,7 @@ module examples
         {
             this._time += dt;
 
-            this._light1.direction = new away.geom.Vector3D(Math.sin(this._time/10000)*150000, -1000, Math.cos(this._time/10000)*150000);
+            this._light1.direction = new Vector3D(Math.sin(this._time/10000)*150000, -1000, Math.cos(this._time/10000)*150000);
 
             this._view.render();
         }
@@ -249,14 +276,13 @@ module examples
         /**
          * Listener function for resource complete event on asset library
          */
-        private onResourceComplete (event:away.events.LoaderEvent)
+        private onResourceComplete(event:LoaderEvent)
         {
-            var assets:away.library.IAsset[] = event.assets;
+            var assets:Array<IAsset> = event.assets;
             var length:number = assets.length;
 
-            for ( var c : number = 0 ; c < length ; c ++ )
-            {
-                var asset:away.library.IAsset = assets[c];
+            for (var c:number = 0; c < length; c ++) {
+                var asset:IAsset = assets[c];
 
                 console.log(asset.name, event.url);
 
@@ -264,40 +290,40 @@ module examples
                 {
                     //plane textures
                     case "assets/floor_diffuse.jpg" :
-                        this._planeMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._planeMaterial.texture = <Texture2DBase> asset;
                         break;
                     case "assets/floor_normal.jpg" :
-                        this._planeMaterial.normalMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._planeMaterial.normalMap = <Texture2DBase> asset;
                         break;
                     case "assets/floor_specular.jpg" :
-                        this._planeMaterial.specularMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._planeMaterial.specularMap = <Texture2DBase> asset;
                         break;
 
                     //sphere textures
                     case "assets/beachball_diffuse.jpg" :
-                        this._sphereMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._sphereMaterial.texture = <Texture2DBase> asset;
                         break;
                     case "assets/beachball_specular.jpg" :
-                        this._sphereMaterial.specularMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._sphereMaterial.specularMap = <Texture2DBase> asset;
                         break;
 
                     //cube textures
                     case "assets/trinket_diffuse.jpg" :
-                        this._cubeMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._cubeMaterial.texture = <Texture2DBase> asset;
                         break;
                     case "assets/trinket_normal.jpg" :
-                        this._cubeMaterial.normalMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._cubeMaterial.normalMap = <Texture2DBase> asset;
                         break;
                     case "assets/trinket_specular.jpg" :
-                        this._cubeMaterial.specularMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._cubeMaterial.specularMap = <Texture2DBase> asset;
                         break;
 
                     //torus textures
                     case "assets/weave_diffuse.jpg" :
-                        this._torusMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._torusMaterial.texture = <Texture2DBase> asset;
                         break;
                     case "assets/weave_normal.jpg" :
-                        this._torusMaterial.normalMap = this._torusMaterial.specularMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._torusMaterial.normalMap = this._torusMaterial.specularMap = <Texture2DBase> asset;
                         break;
                 }
             }
@@ -306,7 +332,7 @@ module examples
         /**
          * Mouse down listener for navigation
          */
-        private onMouseDown(event):void
+        private onMouseDown(event:MouseEvent):void
         {
             this._lastPanAngle = this._cameraController.panAngle;
             this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -318,7 +344,7 @@ module examples
         /**
          * Mouse up listener for navigation
          */
-        private onMouseUp(event):void
+        private onMouseUp(event:MouseEvent):void
         {
             this._move = false;
         }
@@ -326,7 +352,7 @@ module examples
         /**
          * Mouse move listener for navigation
          */
-	    private onMouseMove(event)
+	    private onMouseMove(event:MouseEvent)
 	    {
 		    if (this._move) {
 			    this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -337,27 +363,25 @@ module examples
         /**
          * Mouse wheel listener for navigation
          */
-	    private onMouseWheel(event)
+	    private onMouseWheel(event:MouseWheelEvent)
 	    {
-		    if (event.wheelDelta > 0 )
-		    {
-			    this._cameraController.distance += 20;
-		    }
-		    else
-		    {
-			    this._cameraController.distance -= 20;
-		    }
+		    this._cameraController.distance -= event.wheelDelta;
+
+			if (this._cameraController.distance < 100)
+				this._cameraController.distance = 100;
+			else if (this._cameraController.distance > 2000)
+				this._cameraController.distance = 2000;
 	    }
 
         /**
          * window listener for resize events
          */
-        private onResize(event = null):void
+        private onResize(event:UIEvent = null):void
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
     }
 }

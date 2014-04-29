@@ -52,7 +52,7 @@ module examples
 	import View								= away.containers.View;
 	import FirstPersonController			= away.controllers.FirstPersonController;
 	import Geometry							= away.base.Geometry;
-	import SubMesh							= away.base.SubMesh;
+	import ISubMesh							= away.base.ISubMesh;
 	import BlendMode						= away.base.BlendMode;
 	import Mesh								= away.entities.Mesh;
 	import Skybox							= away.entities.Skybox;
@@ -60,6 +60,7 @@ module examples
 	import AssetEvent						= away.events.AssetEvent;
 	import ProgressEvent					= away.events.ProgressEvent;
 	import LoaderEvent						= away.events.LoaderEvent;
+	import UVTransform						= away.geom.UVTransform;
 	import Vector3D							= away.geom.Vector3D;
 	import AssetType						= away.library.AssetType;
 	import DirectionalLight					= away.lights.DirectionalLight;
@@ -67,6 +68,7 @@ module examples
 //	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
 	import DirectionalShadowMapper			= away.lights.DirectionalShadowMapper;
 	import AWDParser						= away.parsers.AWDParser;
+	import SkyboxMaterial					= away.materials.SkyboxMaterial;
 	import TextureMaterial					= away.materials.TextureMaterial;
 	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
 	import StaticLightPicker				= away.materials.StaticLightPicker;
@@ -77,7 +79,7 @@ module examples
 	import URLLoader						= away.net.URLLoader;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import URLRequest						= away.net.URLRequest;
-	import PlaneGeometry					= away.primitives.PlaneGeometry;
+	import PrimitivePlanePrefab				= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer					= away.render.DefaultRenderer;
 	import ImageCubeTexture					= away.textures.ImageCubeTexture;
 	import ImageTexture						= away.textures.ImageTexture;
@@ -152,7 +154,7 @@ module examples
 		
 		//scene variables
 		private _meshes:Array<Mesh> = new Array<Mesh>();
-		private _flameGeometry:PlaneGeometry;
+		private _flameGeometry:PrimitivePlanePrefab;
 				
 		//rotation variables
 		private _move:boolean = false;
@@ -272,16 +274,18 @@ module examples
         private initObjects()
 		{
 			//create skybox
-			this._view.scene.addChild(new Skybox(this._skyMap));
+			this._view.scene.addChild(new Skybox(new SkyboxMaterial(this._skyMap)));
 			
 			//create flame meshes
-			this._flameGeometry = new PlaneGeometry(40, 80, 1, 1, false, true);
+			this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
 			var flameVO:FlameVO;
 			var len:number = this._flameData.length;
 			for (var i:number = 0; i < len; i++) {
 				flameVO = this._flameData[i];
-				var mesh : Mesh = flameVO.mesh = new Mesh(this._flameGeometry, this._flameMaterial);
+				var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGeometry.getNewObject();
+				mesh.material = this._flameMaterial;
 				mesh.transform.position = flameVO.position;
+				mesh.subMeshes[0].uvTransform = new UVTransform()
 				mesh.subMeshes[0].uvTransform.scaleU = 1/16;
 				this._view.scene.addChild(mesh);
 				mesh.addChild(flameVO.light);
@@ -791,7 +795,7 @@ module examples
 				if (!mesh)
 					continue;
 				
-				var subMesh : SubMesh = mesh.subMeshes[0];
+				var subMesh:ISubMesh = mesh.subMeshes[0];
 				subMesh.uvTransform.offsetU += 1/16;
 				subMesh.uvTransform.offsetU %= 1;
 				mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;

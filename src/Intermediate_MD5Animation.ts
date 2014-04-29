@@ -58,6 +58,7 @@ module examples
 	import AnimationStateEvent                  = away.events.AnimationStateEvent;
     import AssetEvent                           = away.events.AssetEvent;
     import LoaderEvent                          = away.events.LoaderEvent;
+	import UVTransform                          = away.geom.UVTransform;
 	import AssetLibrary                         = away.library.AssetLibrary;
 	import AssetType                            = away.library.AssetType;
 	import PointLight                           = away.lights.PointLight;
@@ -65,8 +66,9 @@ module examples
 	import NearDirectionalShadowMapper          = away.lights.NearDirectionalShadowMapper;
 	import MD5AnimParser                        = away.parsers.MD5AnimParser;
     import MD5MeshParser                        = away.parsers.MD5MeshParser;
-	import PlaneGeometry                        = away.primitives.PlaneGeometry;
+	import PrimitivePlanePrefab                 = away.prefabs.PrimitivePlanePrefab;
     import EffectFogMethod                      = away.materials.EffectFogMethod;
+	import SkyboxMaterial                       = away.materials.SkyboxMaterial;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
     import TextureMaterial                      = away.materials.TextureMaterial;
     import ShadowSoftMethod                  	= away.materials.ShadowSoftMethod;
@@ -281,9 +283,13 @@ module examples
 		private initObjects():void
 		{
 			//create light billboards
-            var redSprite:Billboard = new Billboard(this.redLightMaterial, 200, 200);
+            var redSprite:Billboard = new Billboard(this.redLightMaterial);
+			redSprite.width = 200;
+			redSprite.height = 200;
             redSprite.castsShadows = false;
-            var blueSprite:Billboard = new Billboard(this.blueLightMaterial, 200, 200);
+            var blueSprite:Billboard = new Billboard(this.blueLightMaterial);
+			blueSprite.width = 200;
+			blueSprite.height = 200;
             blueSprite.castsShadows = false;
             this.redLight.addChild(redSprite);
             this.blueLight.addChild(blueSprite);
@@ -292,7 +298,8 @@ module examples
 			AssetLibrary.enableParser(MD5AnimParser);
 
 			//create a rocky ground plane
-            this.ground = new Mesh(new PlaneGeometry(50000, 50000, 1, 1), this.groundMaterial);
+            this.ground = <Mesh> new PrimitivePlanePrefab(50000, 50000, 1, 1).getNewObject();
+			this.ground.material = this.groundMaterial;
             this.ground.geometry.scaleUV(200, 200);
             this.ground.castsShadows = false;
             this.scene.addChild(this.ground);
@@ -405,6 +412,7 @@ module examples
                 this.mesh.subMeshes[1].material = this.mesh.subMeshes[2].material = this.mesh.subMeshes[3].material = this.gobMaterial;
                 this.mesh.castsShadows = true;
                 this.mesh.rotationY = 180;
+				this.mesh.subMeshes[1].uvTransform = this.mesh.subMeshes[2].uvTransform = this.mesh.subMeshes[3].uvTransform = new UVTransform();
                 this.scene.addChild(this.mesh);
 
 				//add our lookat object to the mesh
@@ -423,7 +431,7 @@ module examples
                 case 'assets/skybox/grimnight_texture.cube':
                     this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
-                    this.skyBox = new Skybox(this.cubeTexture);
+                    this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
                     this.scene.addChild(this.skyBox);
                     break;
 

@@ -40,27 +40,48 @@
 
 module examples
 {
+	import View							= away.containers.View;
+	import HoverController				= away.controllers.HoverController;
+	import Loader						= away.containers.Loader;
+	import Mesh							= away.entities.Mesh;
+	import AssetEvent					= away.events.AssetEvent;
+	import LoaderEvent					= away.events.LoaderEvent;
+	import Vector3D						= away.geom.Vector3D;
+	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetType					= away.library.AssetType;
+	import IAsset						= away.library.IAsset;
+	import DirectionalLight				= away.lights.DirectionalLight;
+	import ShadowSoftMethod				= away.materials.ShadowSoftMethod;
+	import StaticLightPicker			= away.materials.StaticLightPicker;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import AssetLoaderContext			= away.net.AssetLoaderContext;
+	import Max3DSParser					= away.parsers.Max3DSParser;
+	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import Texture2DBase				= away.textures.Texture2DBase;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
     export class Basic_Load3DS
     {
         //engine variables
-        private _view:away.containers.View;
-        private _cameraController:away.controllers.HoverController;
+        private _view:View;
+        private _cameraController:HoverController;
 
         //material objects
-        private _groundMaterial:away.materials.TextureMaterial;
+        private _groundMaterial:TextureMaterial;
 
         //light objects
-        private _light:away.lights.DirectionalLight;
-        private _lightPicker:away.materials.StaticLightPicker;
-        private _direction:away.geom.Vector3D;
+        private _light:DirectionalLight;
+        private _lightPicker:StaticLightPicker;
+        private _direction:Vector3D;
 
         //scene objects
-        private _loader:away.containers.Loader;
-        private _ground:away.entities.Mesh;
+        private _loader:Loader;
+        private _plane:PrimitivePlanePrefab;
+		private _ground:Mesh;
 
         //navigation variables
-        private _timer:away.utils.RequestAnimationFrame;
+        private _timer:RequestAnimationFrame;
         private _time:number = 0;
         private _move:boolean = false;
         private _lastPanAngle:number;
@@ -93,13 +114,13 @@ module examples
          */
         private initEngine():void
         {
-            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
 
             //setup the camera for optimal shadow rendering
             this._view.camera.projection.far = 2100;
 
             //setup controller to be used on the camera
-            this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
+            this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
         }
 
         /**
@@ -107,9 +128,9 @@ module examples
          */
         private initLights():void
         {
-            this._light = new away.lights.DirectionalLight(-1, -1, 1);
-            this._direction = new away.geom.Vector3D(-1, -1, 1);
-            this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+            this._light = new DirectionalLight(-1, -1, 1);
+            this._direction = new Vector3D(-1, -1, 1);
+            this._lightPicker = new StaticLightPicker([this._light]);
             this._view.scene.addChild(this._light);
         }
 
@@ -118,14 +139,11 @@ module examples
          */
         private initMaterials():void
         {
-            this._groundMaterial = new away.materials.TextureMaterial();
-            this._groundMaterial.shadowMethod = new away.materials.ShadowSoftMethod(this._light , 10 , 5 );
+            this._groundMaterial = new TextureMaterial();
+            this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
             this._groundMaterial.specular = 0;
-            this._ground = new away.entities.Mesh(new away.primitives.PlaneGeometry(1000, 1000), this._groundMaterial);
-            this._ground.castsShadows =false;
-            this._view.scene.addChild(this._ground);
         }
 
         /**
@@ -137,6 +155,12 @@ module examples
             this._loader.transform.scale = new away.geom.Vector3D(300, 300, 300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);
+
+			this._plane = new PrimitivePlanePrefab(1000, 1000)
+			this._ground = <Mesh> this._plane.getNewObject();
+			this._ground.material = this._groundMaterial;
+			this._ground.castsShadows = false;
+			this._view.scene.addChild(this._ground);
         }
 
         /**
@@ -144,25 +168,25 @@ module examples
          */
         private initListeners():void
         {
-            window.onresize  = (event) => this.onResize(event);
+            window.onresize  = (event:UIEvent) => this.onResize(event);
 
-            document.onmousedown = (event) => this.onMouseDown(event);
-            document.onmouseup = (event) => this.onMouseUp(event);
-            document.onmousemove = (event) => this.onMouseMove(event);
+            document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+            document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+            document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
             this.onResize();
 
-            this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
             //setup the url map for textures in the 3ds file
-            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
 
-            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
-            this._loader.load(new away.net.URLRequest("assets/soldier_ant.3ds"), assetLoaderContext, null, new away.parsers.Max3DSParser(false));
+            this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+            this._loader.load(new away.net.URLRequest("assets/soldier_ant.3ds"), assetLoaderContext, null, new Max3DSParser(false));
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            away.library.AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/CoarseRedSand.jpg"));
         }
 
@@ -183,19 +207,19 @@ module examples
         /**
          * Listener function for asset complete event on loader
          */
-        private onAssetComplete (event:away.events.AssetEvent)
+        private onAssetComplete(event:AssetEvent)
         {
-            var asset:away.library.IAsset = event.asset;
+            var asset:IAsset = event.asset;
 
             switch (asset.assetType)
             {
-                case away.library.AssetType.MESH :
-                    var mesh:away.entities.Mesh = <away.entities.Mesh> event.asset;
+                case AssetType.MESH :
+                    var mesh:Mesh = <Mesh> event.asset;
                     mesh.castsShadows = true;
                     break;
-                case away.library.AssetType.MATERIAL :
-                    var material:away.materials.TextureMaterial = <away.materials.TextureMaterial> event.asset;
-                    material.shadowMethod = new away.materials.ShadowSoftMethod(this._light , 10 , 5 );
+                case AssetType.MATERIAL :
+                    var material:TextureMaterial = <TextureMaterial> event.asset;
+                    material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
                     material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
@@ -210,22 +234,20 @@ module examples
         /**
          * Listener function for resource complete event on asset library
          */
-        private onResourceComplete (event:away.events.LoaderEvent)
+        private onResourceComplete (event:LoaderEvent)
         {
-            var assets:away.library.IAsset[] = event.assets;
+            var assets:Array<IAsset> = event.assets;
             var length:number = assets.length;
 
-            for ( var c : number = 0 ; c < length ; c ++ )
-            {
+            for (var c:number = 0; c < length; c ++) {
                 var asset:away.library.IAsset = assets[c];
 
                 console.log(asset.name, event.url);
 
-                switch (event.url)
-                {
+                switch (event.url) {
                     //plane textures
                     case "assets/CoarseRedSand.jpg" :
-                        this._groundMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._groundMaterial.texture = <Texture2DBase> asset;
                         break;
                 }
             }
@@ -234,7 +256,7 @@ module examples
         /**
          * Mouse down listener for navigation
          */
-        private onMouseDown(event):void
+        private onMouseDown(event:MouseEvent):void
         {
             this._lastPanAngle = this._cameraController.panAngle;
             this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -246,12 +268,12 @@ module examples
         /**
          * Mouse up listener for navigation
          */
-        private onMouseUp(event):void
+        private onMouseUp(event:MouseEvent):void
         {
             this._move = false;
         }
 
-        private onMouseMove(event)
+        private onMouseMove(event:MouseEvent)
         {
             if (this._move) {
                 this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -262,12 +284,12 @@ module examples
         /**
          * stage listener for resize events
          */
-        private onResize(event = null):void
+        private onResize(event:UIEvent = null):void
         {
-            this._view.y         = 0;
-            this._view.x         = 0;
-            this._view.width     = window.innerWidth;
-            this._view.height    = window.innerHeight;
+            this._view.y = 0;
+            this._view.x = 0;
+            this._view.width = window.innerWidth;
+            this._view.height = window.innerHeight;
         }
     }
 }
