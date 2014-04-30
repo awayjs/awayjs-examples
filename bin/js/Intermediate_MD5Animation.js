@@ -31,21 +31,19 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var CrossfadeTransition = away.animators.CrossfadeTransition;
-    var Skeleton = away.animators.Skeleton;
-    var SkeletonAnimationSet = away.animators.SkeletonAnimationSet;
+
     var SkeletonAnimator = away.animators.SkeletonAnimator;
-    var SkeletonClipNode = away.animators.SkeletonClipNode;
+
     var DisplayObjectContainer = away.containers.DisplayObjectContainer;
-    var Scene = away.containers.Scene;
+
     var View = away.containers.View;
     var LookAtController = away.controllers.LookAtController;
     var Billboard = away.entities.Billboard;
-    var Camera = away.entities.Camera;
-    var Mesh = away.entities.Mesh;
+
     var Skybox = away.entities.Skybox;
     var AnimationStateEvent = away.events.AnimationStateEvent;
     var AssetEvent = away.events.AssetEvent;
-    var LoaderEvent = away.events.LoaderEvent;
+
     var UVTransform = away.geom.UVTransform;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
@@ -63,11 +61,8 @@ var examples;
     var ShadowNearMethod = away.materials.ShadowNearMethod;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var ImageCubeTexture = away.textures.ImageCubeTexture;
-    var ImageTexture = away.textures.ImageTexture;
+
     var Keyboard = away.ui.Keyboard;
-    var Cast = away.utils.Cast;
-    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Intermediate_MD5Animation = (function () {
         /**

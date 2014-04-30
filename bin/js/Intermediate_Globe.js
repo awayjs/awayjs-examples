@@ -38,10 +38,10 @@ var examples;
     var BlendMode = away.base.BlendMode;
     var OrientationMode = away.base.OrientationMode;
     var AlignmentMode = away.base.AlignmentMode;
-    var Mesh = away.entities.Mesh;
+
     var Billboard = away.entities.Billboard;
     var Skybox = away.entities.Skybox;
-    var LoaderEvent = away.events.LoaderEvent;
+
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
     var Point = away.geom.Point;
@@ -49,24 +49,18 @@ var examples;
     var DiffuseCompositeMethod = away.materials.DiffuseCompositeMethod;
     var SpecularCompositeMethod = away.materials.SpecularCompositeMethod;
     var ColorMaterial = away.materials.ColorMaterial;
-    var DiffuseBasicMethod = away.materials.DiffuseBasicMethod;
-    var SpecularBasicMethod = away.materials.SpecularBasicMethod;
-    var MethodVO = away.materials.MethodVO;
+
     var SkyboxMaterial = away.materials.SkyboxMaterial;
     var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
     var SpecularPhongMethod = away.materials.SpecularPhongMethod;
-    var ShaderRegisterElement = away.materials.ShaderRegisterElement;
-    var ShaderRegisterCache = away.materials.ShaderRegisterCache;
-    var ShaderRegisterData = away.materials.ShaderRegisterData;
+
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
     var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var ImageCubeTexture = away.textures.ImageCubeTexture;
-    var ImageTexture = away.textures.ImageTexture;
+
     var BitmapTexture = away.textures.BitmapTexture;
     var Cast = away.utils.Cast;
-    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Intermediate_Globe = (function () {
         /**

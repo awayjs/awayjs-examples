@@ -36,9 +36,7 @@ var examples;
     var ParticleVelocityNode = away.animators.ParticleVelocityNode;
     var ParticleColorNode = away.animators.ParticleColorNode;
     var ParticleAnimator = away.animators.ParticleAnimator;
-    var ParticleProperties = away.animators.ParticleProperties;
-    var Geometry = away.base.Geometry;
-    var ParticleGeometry = away.base.ParticleGeometry;
+
     var Scene = away.containers.Scene;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
@@ -55,8 +53,7 @@ var examples;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
     var ParticleGeometryHelper = away.tools.ParticleGeometryHelper;
-    var Cast = away.utils.Cast;
-    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+
     var Timer = away.utils.Timer;
 
     var Basic_Fire = (function () {

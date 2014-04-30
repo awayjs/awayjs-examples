@@ -26,8 +26,6 @@ THE SOFTWARE.
 */
 var examples;
 (function (examples) {
-    var SkeletonAnimator = away.animators.SkeletonAnimator;
-    var SkeletonClipNode = away.animators.SkeletonClipNode;
     var CrossfadeTransition = away.animators.CrossfadeTransition;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
@@ -42,7 +40,6 @@ var examples;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
     var Keyboard = away.ui.Keyboard;
-    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Intermediate_AWDViewer = (function () {
         /**
@@ -95,7 +92,7 @@ var examples;
             var loader = new Loader();
             loader.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
-            loader.load(new URLRequest("assets/shambler_new.awd"));
+            loader.load(new URLRequest("assets/shambler.awd"));
 
             this._view.scene.addChild(loader);
         };

@@ -54,14 +54,12 @@ var examples;
     var DirectionalLight = away.lights.DirectionalLight;
     var PointLight = away.lights.PointLight;
 
-    //	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
-    var DirectionalShadowMapper = away.lights.DirectionalShadowMapper;
     var AWDParser = away.parsers.AWDParser;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
     var TextureMaterial = away.materials.TextureMaterial;
     var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var ShadowCascadeMethod = away.materials.ShadowCascadeMethod;
+
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var EffectFogMethod = away.materials.EffectFogMethod;
     var AssetLoaderContext = away.net.AssetLoaderContext;
@@ -70,7 +68,7 @@ var examples;
     var URLRequest = away.net.URLRequest;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var ImageCubeTexture = away.textures.ImageCubeTexture;
+
     var ImageTexture = away.textures.ImageTexture;
     var SpecularBitmapTexture = away.textures.SpecularBitmapTexture;
     var Merge = away.commands.Merge;

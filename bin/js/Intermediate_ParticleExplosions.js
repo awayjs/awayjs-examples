@@ -35,20 +35,19 @@ var examples;
     var ParticleBillboardNode = away.animators.ParticleBillboardNode;
     var ParticleInitialColorNode = away.animators.ParticleInitialColorNode;
     var ParticlePositionNode = away.animators.ParticlePositionNode;
-    var ParticleProperties = away.animators.ParticleProperties;
+
     var ParticlePropertiesMode = away.animators.ParticlePropertiesMode;
-    var Geometry = away.base.Geometry;
-    var ParticleGeometry = away.base.ParticleGeometry;
+
     var Scene = away.containers.Scene;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
-    var BitmapData = away.base.BitmapData;
+
     var Camera = away.entities.Camera;
     var Mesh = away.entities.Mesh;
-    var LoaderEvent = away.events.LoaderEvent;
+
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
-    var AssetLibrary = away.library.AssetLibrary;
+
     var PointLight = away.lights.PointLight;
     var ColorMaterial = away.materials.ColorMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
@@ -56,7 +55,6 @@ var examples;
     var DefaultRenderer = away.render.DefaultRenderer;
     var ParticleGeometryHelper = away.tools.ParticleGeometryHelper;
     var Cast = away.utils.Cast;
-    var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Intermediate_ParticleExplosions = (function () {
         /**

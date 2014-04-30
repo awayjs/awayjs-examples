@@ -2,25 +2,23 @@
 var examples;
 (function (examples) {
     var DisplayObjectContainer = away.containers.DisplayObjectContainer;
-    var Scene = away.containers.Scene;
+
     var View = away.containers.View;
-    var Mesh = away.entities.Mesh;
+
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
 
     var DirectionalLight = away.lights.DirectionalLight;
-    var ColorMaterial = away.materials.ColorMaterial;
+
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
-    var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
-    var AssetLoader = away.net.AssetLoader;
-    var AssetLoaderToken = away.net.AssetLoaderToken;
+
     var URLRequest = away.net.URLRequest;
     var OBJParser = away.parsers.OBJParser;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var ImageTexture = away.textures.ImageTexture;
+
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var ObjChiefTestDay = (function () {

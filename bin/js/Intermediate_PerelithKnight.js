@@ -29,11 +29,10 @@ THE SOFTWARE.
 */
 var examples;
 (function (examples) {
-    var VertexAnimationSet = away.animators.VertexAnimationSet;
     var VertexAnimator = away.animators.VertexAnimator;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
-    var Mesh = away.entities.Mesh;
+
     var AssetEvent = away.events.AssetEvent;
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
@@ -48,7 +47,7 @@ var examples;
     var TextureMaterial = away.materials.TextureMaterial;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var Texture2DBase = away.textures.Texture2DBase;
+
     var Keyboard = away.ui.Keyboard;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
@@ -367,7 +366,7 @@ var examples;
         * Mouse wheel listener for navigation
         */
         Intermediate_PerelithKnight.prototype.onMouseWheel = function (event) {
-            this._cameraController.distance -= event.wheelDelta * 5;
+            this._cameraController.distance -= event.wheelDelta;
 
             if (this._cameraController.distance < 100)
                 this._cameraController.distance = 100;

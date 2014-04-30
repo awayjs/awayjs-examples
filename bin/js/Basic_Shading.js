@@ -30,14 +30,12 @@ var examples;
     var Scene = away.containers.Scene;
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
-    var Loader = away.containers.Loader;
+
     var Camera = away.entities.Camera;
-    var Mesh = away.entities.Mesh;
-    var AssetEvent = away.events.AssetEvent;
+
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
-    var AssetType = away.library.AssetType;
 
     var DirectionalLight = away.lights.DirectionalLight;
     var DefaultMaterialManager = away.materials.DefaultMaterialManager;
@@ -49,7 +47,7 @@ var examples;
     var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
     var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var Texture2DBase = away.textures.Texture2DBase;
+
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Basic_Shading = (function () {

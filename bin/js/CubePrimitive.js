@@ -2,9 +2,9 @@
 var examples;
 (function (examples) {
     var BlendMode = away.base.BlendMode;
-    var Scene = away.containers.Scene;
+
     var View = away.containers.View;
-    var Mesh = away.entities.Mesh;
+
     var Vector3D = away.geom.Vector3D;
     var DirectionalLight = away.lights.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;

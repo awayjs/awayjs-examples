@@ -2,7 +2,6 @@
 var examples;
 (function (examples) {
     var ColorMaterial = away.materials.ColorMaterial;
-    var TextureMaterial = away.materials.TextureMaterial;
 
     var AWDSuzanne = (function () {
         function AWDSuzanne() {

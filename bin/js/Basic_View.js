@@ -29,20 +29,18 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var View = away.containers.View;
-    var Mesh = away.entities.Mesh;
-    var Skybox = away.entities.Skybox;
+
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
-    var AssetType = away.library.AssetType;
 
     var TextureMaterial = away.materials.TextureMaterial;
-    var AssetLoaderContext = away.net.AssetLoaderContext;
+
     var URLRequest = away.net.URLRequest;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
-    var PerspectiveProjection = away.projections.PerspectiveProjection;
+
     var DefaultRenderer = away.render.DefaultRenderer;
-    var Texture2DBase = away.textures.Texture2DBase;
+
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Basic_View = (function () {

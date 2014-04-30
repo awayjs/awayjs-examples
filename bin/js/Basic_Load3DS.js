@@ -30,12 +30,11 @@ var examples;
 (function (examples) {
     var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
-    var Loader = away.containers.Loader;
-    var Mesh = away.entities.Mesh;
+
     var AssetEvent = away.events.AssetEvent;
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
-    var AssetLibrary = away.library.AssetLibrary;
+
     var AssetType = away.library.AssetType;
 
     var DirectionalLight = away.lights.DirectionalLight;
@@ -46,7 +45,7 @@ var examples;
     var Max3DSParser = away.parsers.Max3DSParser;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var Texture2DBase = away.textures.Texture2DBase;
+
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Basic_Load3DS = (function () {
