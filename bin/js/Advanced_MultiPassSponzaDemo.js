@@ -1,4 +1,4 @@
-///<reference path="../libs/away3d.next.d.ts" />
+///<reference path="../libs/stagegl-renderer.next.d.ts" />
 /*
 Crytek Sponza demo using multipass materials in Away3D
 Demonstrates:
@@ -605,7 +605,7 @@ var examples;
                     //					multiMaterial.shadowMethod = this._cascadeMethod;
                     multiMaterial.shadowMethod = this._baseShadowMethod;
                     multiMaterial.addMethod(this._fogMethod);
-                    multiMaterial.mipmap = false;
+                    multiMaterial.mipmap = true;
                     multiMaterial.repeat = true;
                     multiMaterial.specular = 2;
 
