@@ -1,4 +1,4 @@
-///<reference path="../libs/away3d.next.d.ts" />
+///<reference path="../libs/stagegl-renderer.next.d.ts" />
 /*
 3ds file loading example in Away3d
 Demonstrates:

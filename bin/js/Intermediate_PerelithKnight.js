@@ -1,4 +1,4 @@
-///<reference path="../libs/away3d.next.d.ts" />
+///<reference path="../libs/stagegl-renderer.next.d.ts" />
 /*
 Vertex animation example in Away3d using the MD2 format
 Demonstrates:

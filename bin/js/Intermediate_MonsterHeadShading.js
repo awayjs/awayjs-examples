@@ -1,4 +1,4 @@
-﻿///<reference path="../libs/away3d.next.d.ts" />
+﻿///<reference path="../libs/stagegl-renderer.next.d.ts" />
 /*
 Monster Head example in Away3d
 Demonstrates:
