@@ -1291,7 +1291,7 @@ declare module away.parsers {
 declare module away.library {
     interface IAsset extends events.IEventDispatcher {
         name: string;
-        id: string;
+        id: number;
         assetNamespace: string;
         assetType: string;
         assetFullPath: string[];
@@ -1351,7 +1351,7 @@ declare module away.library {
         /**
         * A unique id for the asset, used to identify assets in an associative array
         */
-        public id : string;
+        public id : number;
         public name : string;
         public dispose(): void;
         public assetNamespace : string;
@@ -1823,369 +1823,6 @@ declare module away.library {
     }
 }
 declare class AssetLibrarySingletonEnforcer {
-}
-declare module away.gl {
-    class ContextGLClearMask {
-        static COLOR: number;
-        static DEPTH: number;
-        static STENCIL: number;
-        static ALL: number;
-    }
-}
-declare module away.gl {
-    class VertexBuffer {
-        private _gl;
-        private _numVertices;
-        private _data32PerVertex;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
-        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
-        public numVertices : number;
-        public data32PerVertex : number;
-        public glBuffer : WebGLBuffer;
-        public dispose(): void;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class VertexData {
-        private _onVerticesUpdatedDelegate;
-        private _subGeometry;
-        private _dataType;
-        private _dataDirty;
-        public invalid: boolean[];
-        public buffers: VertexBuffer[];
-        public stageGLs: base.StageGL[];
-        public data: number[];
-        public dataPerVertex: number;
-        constructor(subGeometry: base.SubGeometryBase, dataType: string);
-        public updateData(originalIndices?: number[], indexMappings?: number[]): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @param dataPerVertex
-        * @private
-        */
-        private setData(data);
-        /**
-        * //TODO
-        *
-        * @param event
-        * @private
-        */
-        private _onVerticesUpdated(event);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class VertexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(subGeometry: base.SubGeometryBase, indexData: IndexData, dataType: string): VertexData;
-        static disposeItem(subGeometry: base.SubGeometryBase, level: number, dataType: string): void;
-        public disposeData(subGeometry: base.SubGeometryBase): void;
-    }
-}
-declare module away.gl {
-    class IndexBuffer {
-        private _gl;
-        private _numIndices;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numIndices: number);
-        public uploadFromArray(data: number[], startOffset: number, count: number): void;
-        public dispose(): void;
-        public numIndices : number;
-        public glBuffer : WebGLBuffer;
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class IndexData {
-        private static LIMIT_VERTS;
-        private static LIMIT_INDICES;
-        private _dataDirty;
-        public invalid: boolean[];
-        public stageGLs: base.StageGL[];
-        public buffers: IndexBuffer[];
-        public data: number[];
-        public indexMappings: number[];
-        public originalIndices: number[];
-        public offset: number;
-        public level: number;
-        constructor(level: number);
-        public updateData(offset: number, indices: number[], numVertices: number): void;
-        public invalidateData(): void;
-        public dispose(): void;
-        /**
-        * @private
-        */
-        private disposeBuffers();
-        /**
-        * @private
-        */
-        private invalidateBuffers();
-        /**
-        *
-        * @param data
-        * @private
-        */
-        private setData(data);
-    }
-}
-/**
-* @module away.base
-*/
-declare module away.gl {
-    /**
-    *
-    */
-    class IndexDataPool {
-        private static _pool;
-        constructor();
-        static getItem(id: string, level: number): IndexData;
-        static disposeItem(id: string, level: number): void;
-        public disposeData(id: string): void;
-    }
-}
-declare module away.gl {
-    class Program {
-        private _gl;
-        private _program;
-        private _vertexShader;
-        private _fragmentShader;
-        constructor(gl: WebGLRenderingContext);
-        public upload(vertexProgram: string, fragmentProgram: string): any;
-        public dispose(): void;
-        public focusProgram(): void;
-        public glProgram : WebGLProgram;
-    }
-}
-declare module away.gl {
-    class SamplerState {
-        public wrap: number;
-        public filter: number;
-        public mipfilter: number;
-    }
-}
-declare module away.gl {
-    class ContextGLTextureFormat {
-        static BGRA: string;
-        static BGRA_PACKED: string;
-        static BGR_PACKED: string;
-        static COMPRESSED: string;
-        static COMPRESSED_ALPHA: string;
-    }
-}
-declare module away.gl {
-    class TextureBase {
-        public textureType: string;
-        public _gl: WebGLRenderingContext;
-        constructor(gl: WebGLRenderingContext);
-        public dispose(): void;
-    }
-}
-declare module away.gl {
-    class Texture extends TextureBase {
-        public textureType: string;
-        private _width;
-        private _height;
-        private _frameBuffer;
-        private _glTexture;
-        constructor(gl: WebGLRenderingContext, width: number, height: number);
-        public dispose(): void;
-        public width : number;
-        public height : number;
-        public frameBuffer : WebGLFramebuffer;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
-        public uploadFromBitmapData(data: base.BitmapData, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(data: base.BitmapData): void;
-        public generateMipmaps(): void;
-    }
-}
-declare module away.gl {
-    class CubeTexture extends TextureBase {
-        public textureType: string;
-        private _texture;
-        private _size;
-        constructor(gl: WebGLRenderingContext, size: number);
-        public dispose(): void;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
-        public uploadFromBitmapData(data: base.BitmapData, side: number, miplevel?: number): void;
-        public uploadCompressedTextureFromByteArray(data: utils.ByteArray, byteArrayOffset: number, async?: boolean): void;
-        public size : number;
-        public glTexture : WebGLTexture;
-    }
-}
-declare module away.gl {
-    class ContextGLTriangleFace {
-        static BACK: string;
-        static FRONT: string;
-        static FRONT_AND_BACK: string;
-        static NONE: string;
-    }
-}
-declare module away.gl {
-    class ContextGLVertexBufferFormat {
-        static BYTES_4: string;
-        static FLOAT_1: string;
-        static FLOAT_2: string;
-        static FLOAT_3: string;
-        static FLOAT_4: string;
-    }
-}
-declare module away.gl {
-    class ContextGLProgramType {
-        static FRAGMENT: string;
-        static VERTEX: string;
-    }
-}
-declare module away.gl {
-    class ContextGLBlendFactor {
-        static DESTINATION_ALPHA: string;
-        static DESTINATION_COLOR: string;
-        static ONE: string;
-        static ONE_MINUS_DESTINATION_ALPHA: string;
-        static ONE_MINUS_DESTINATION_COLOR: string;
-        static ONE_MINUS_SOURCE_ALPHA: string;
-        static ONE_MINUS_SOURCE_COLOR: string;
-        static SOURCE_ALPHA: string;
-        static SOURCE_COLOR: string;
-        static ZERO: string;
-    }
-}
-declare module away.gl {
-    class ContextGLCompareMode {
-        static ALWAYS: string;
-        static EQUAL: string;
-        static GREATER: string;
-        static GREATER_EQUAL: string;
-        static LESS: string;
-        static LESS_EQUAL: string;
-        static NEVER: string;
-        static NOT_EQUAL: string;
-    }
-}
-declare module away.gl {
-    class ContextGLMipFilter {
-        static MIPLINEAR: string;
-        static MIPNEAREST: string;
-        static MIPNONE: string;
-    }
-}
-declare module away.gl {
-    class ContextGLProfile {
-        static BASELINE: string;
-        static BASELINE_CONSTRAINED: string;
-        static BASELINE_EXTENDED: string;
-    }
-}
-declare module away.gl {
-    class ContextGLStencilAction {
-        static DECREMENT_SATURATE: string;
-        static DECREMENT_WRAP: string;
-        static INCREMENT_SATURATE: string;
-        static INCREMENT_WRAP: string;
-        static INVERT: string;
-        static KEEP: string;
-        static SET: string;
-        static ZERO: string;
-    }
-}
-declare module away.gl {
-    class ContextGLTextureFilter {
-        static LINEAR: string;
-        static NEAREST: string;
-    }
-}
-declare module away.gl {
-    class ContextGLWrapMode {
-        static CLAMP: string;
-        static REPEAT: string;
-    }
-}
-declare module away.gl {
-    class ContextGL {
-        private _drawing;
-        private _blendEnabled;
-        private _blendSourceFactor;
-        private _blendDestinationFactor;
-        private _currentWrap;
-        private _currentFilter;
-        private _currentMipFilter;
-        private _indexBufferList;
-        private _vertexBufferList;
-        private _textureList;
-        private _programList;
-        private _samplerStates;
-        static MAX_SAMPLERS: number;
-        public _gl: WebGLRenderingContext;
-        public _currentProgram: Program;
-        constructor(canvas: HTMLCanvasElement);
-        public gl(): WebGLRenderingContext;
-        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
-        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
-        public createCubeTexture(size: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): CubeTexture;
-        public createIndexBuffer(numIndices: number): IndexBuffer;
-        public createProgram(): Program;
-        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): Texture;
-        public createVertexBuffer(numVertices: number, data32PerVertex: number): VertexBuffer;
-        public dispose(): void;
-        public drawToBitmapData(destination: base.BitmapData): void;
-        public drawTriangles(indexBuffer: IndexBuffer, firstIndex?: number, numTriangles?: number): void;
-        public present(): void;
-        public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
-        public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
-        public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
-        public setDepthTest(depthMask: boolean, passCompareMode: string): void;
-        public setProgram(program: Program): void;
-        private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
-        static modulo: number;
-        public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
-        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
-        public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
-        public setScissorRectangle(rectangle: geom.Rectangle): void;
-        public setTextureAt(sampler: number, texture: TextureBase): void;
-        public setGLSLTextureAt(locationName: string, texture: TextureBase, textureIndex: number): void;
-        public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
-        public setVertexBufferAt(index: number, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setGLSLVertexBufferAt(locationName: any, buffer: VertexBuffer, bufferOffset?: number, format?: string): void;
-        public setRenderToTexture(target: TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
-        public setRenderToBackBuffer(): void;
-        private updateBlendStatus();
-    }
-}
-declare module away.gl {
-    class AGLSLContextGL extends ContextGL {
-        constructor(canvas: HTMLCanvasElement);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: geom.Matrix3D, transposedMatrix?: boolean): void;
-    }
 }
 /**
 * A class that provides constant values for visual blend mode effects. These
@@ -4631,6 +4268,35 @@ declare module away.base {
 */
 declare module away.base {
     /**
+    *
+    * @class away.base.IStage
+    */
+    interface IStage {
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateRenderTexture(index: number, texture: textures.RenderTexture): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateTexture(index: number, texture: textures.Texture2DBase): any;
+        /**
+        *
+        * @param index
+        * @param texture
+        */
+        activateCubeTexture(index: number, texture: textures.CubeTextureBase): any;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.base {
+    /**
     * ISubMeshClass is an interface for the constructable class definition SubMesh that is used to
     * create apply a marterial to a SubGeometry class
     *
@@ -5271,161 +4937,6 @@ declare module away.base {
         static REPEAT: string;
     }
 }
-declare module away.base {
-    /**
-    * StageGL provides a proxy class to handle the creation and attachment of the ContextGL
-    * (and in turn the back buffer) it uses. StageGL should never be created directly,
-    * but requested through StageGLManager.
-    *
-    * @see away.managers.StageGLManager
-    *
-    * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
-    * along with the context, instead of scattered throughout the framework
-    */
-    class StageGL extends events.EventDispatcher {
-        private _contextGL;
-        private _canvas;
-        private _width;
-        private _height;
-        private _x;
-        private _y;
-        public _iStageGLIndex: number;
-        private _usesSoftwareRendering;
-        private _profile;
-        private _activeProgram;
-        private _stageGLManager;
-        private _antiAlias;
-        private _enableDepthAndStencil;
-        private _contextRequested;
-        private _renderTarget;
-        private _renderSurfaceSelector;
-        private _scissorRect;
-        private _color;
-        private _backBufferDirty;
-        private _viewPort;
-        private _enterFrame;
-        private _exitFrame;
-        private _viewportUpdated;
-        private _viewportDirty;
-        private _bufferClear;
-        private _initialised;
-        constructor(canvas: HTMLCanvasElement, stageGLIndex: number, stageGLManager: managers.StageGLManager, forceSoftware?: boolean, profile?: string);
-        /**
-        * Requests a ContextGL object to attach to the managed gl canvas.
-        */
-        public requestContext(aglslContext?: boolean, forceSoftware?: boolean, profile?: string): void;
-        /**
-        * The width of the gl canvas
-        */
-        public width : number;
-        /**
-        * The height of the gl canvas
-        */
-        public height : number;
-        /**
-        * The x position of the gl canvas
-        */
-        public x : number;
-        /**
-        * The y position of the gl canvas
-        */
-        public y : number;
-        public visible : boolean;
-        public canvas : HTMLCanvasElement;
-        /**
-        * The ContextGL object associated with the given gl canvas object.
-        */
-        public contextGL : gl.ContextGL;
-        private notifyViewportUpdated();
-        private notifyEnterFrame();
-        private notifyExitFrame();
-        public profile : string;
-        /**
-        * Disposes the StageGLProxy object, freeing the ContextGL attached to the StageGL.
-        */
-        public dispose(): void;
-        /**
-        * Configures the back buffer associated with the StageGL object.
-        * @param backBufferWidth The width of the backbuffer.
-        * @param backBufferHeight The height of the backbuffer.
-        * @param antiAlias The amount of anti-aliasing to use.
-        * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
-        */
-        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
-        public enableDepthAndStencil : boolean;
-        public renderTarget : gl.TextureBase;
-        public renderSurfaceSelector : number;
-        public setRenderTarget(target: gl.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
-        public clear(): void;
-        public present(): void;
-        public addEventListener(type: string, listener: Function): void;
-        /**
-        * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
-        * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
-        *
-        * @param type The type of event.
-        * @param listener The listener object to remove.
-        * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
-        */
-        public removeEventListener(type: string, listener: Function): void;
-        public scissorRect : geom.Rectangle;
-        /**
-        * The index of the StageGL which is managed by this instance of StageGLProxy.
-        */
-        public stageGLIndex : number;
-        /**
-        * Indicates whether the StageGL managed by this proxy is running in software mode.
-        * Remember to wait for the CONTEXTGL_CREATED event before checking this property,
-        * as only then will it be guaranteed to be accurate.
-        */
-        public usesSoftwareRendering : boolean;
-        /**
-        * The antiAliasing of the StageGL.
-        */
-        public antiAlias : number;
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : geom.Rectangle;
-        /**
-        * The background color of the StageGL.
-        */
-        public color : number;
-        /**
-        * The freshly cleared state of the backbuffer before any rendering
-        */
-        public bufferClear : boolean;
-        /**
-        * Assigns an attribute stream
-        *
-        * @param index The attribute stream index for the vertex shader
-        * @param buffer
-        * @param offset
-        * @param stride
-        * @param format
-        */
-        public activateBuffer(index: number, buffer: gl.VertexData, offset: number, format: string): void;
-        public disposeVertexData(buffer: gl.VertexData): void;
-        /**
-        * Retrieves the VertexBuffer object that contains triangle indices.
-        * @param context The ContextGL for which we request the buffer
-        * @return The VertexBuffer object that contains triangle indices.
-        */
-        public getIndexBuffer(buffer: gl.IndexData): gl.IndexBuffer;
-        public disposeIndexData(buffer: gl.IndexData): void;
-        /**
-        * Frees the ContextGL associated with this StageGLProxy.
-        */
-        private freeContextGL();
-        /**
-        * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
-        * Typically the proxy.ENTER_FRAME listener would render the layers for this StageGL instance.
-        */
-        private onEnterFrame(event);
-        public recoverFromDisposal(): boolean;
-        public clearDepthBuffer(): void;
-    }
-}
 /**
 * Defines codes for culling algorithms that determine which triangles not to
 * render when drawing triangle paths.
@@ -5869,6 +5380,27 @@ declare module away.pool {
     }
 }
 /**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * ITextureData is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a texture
+    *
+    * @class away.pool.ITextureData
+    */
+    interface ITextureData {
+        /**
+        *
+        */
+        dispose(): any;
+        /**
+        *
+        */
+        invalidate(): any;
+    }
+}
+/**
 * @module away.data
 */
 declare module away.pool {
@@ -5963,6 +5495,18 @@ declare module away.pool {
     class CSSLineSegmentRenderable extends CSSRenderableBase {
         static id: string;
         constructor(pool: RenderablePool, lineSegment: entities.LineSegment);
+    }
+}
+/**
+* @module away.data
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.CSSSkyboxRenderable
+    */
+    class CSSSkyboxRenderable extends CSSRenderableBase {
+        static id: string;
+        constructor(pool: RenderablePool, skyBox: entities.Skybox);
     }
 }
 /**
@@ -13139,116 +12683,6 @@ declare module away.managers {
         private updateColliders(event);
     }
 }
-declare module away.managers {
-    class RTTBufferManager extends events.EventDispatcher {
-        private static _instances;
-        private _renderToTextureVertexBuffer;
-        private _renderToScreenVertexBuffer;
-        private _indexBuffer;
-        private _stageGL;
-        private _viewWidth;
-        private _viewHeight;
-        private _textureWidth;
-        private _textureHeight;
-        private _renderToTextureRect;
-        private _buffersInvalid;
-        private _textureRatioX;
-        private _textureRatioY;
-        constructor(se: SingletonEnforcer, stageGL: base.StageGL);
-        static getInstance(stageGL: base.StageGL): RTTBufferManager;
-        private static getRTTBufferManagerFromStageGL(stageGL);
-        private static deleteRTTBufferManager(stageGL);
-        public textureRatioX : number;
-        public textureRatioY : number;
-        public viewWidth : number;
-        public viewHeight : number;
-        public renderToTextureVertexBuffer : gl.VertexBuffer;
-        public renderToScreenVertexBuffer : gl.VertexBuffer;
-        public indexBuffer : gl.IndexBuffer;
-        public renderToTextureRect : geom.Rectangle;
-        public textureWidth : number;
-        public textureHeight : number;
-        public dispose(): void;
-        private updateRTTBuffers();
-    }
-}
-declare class RTTBufferManagerVO {
-    public stage3d: away.base.StageGL;
-    public rttbfm: away.managers.RTTBufferManager;
-}
-declare class SingletonEnforcer {
-}
-declare module away.managers {
-    /**
-    * The StageGLManager class provides a multiton object that handles management for StageGL objects. StageGL objects
-    * should not be requested directly, but are exposed by a StageGLProxy.
-    *
-    * @see away.base.StageGLProxy
-    */
-    class StageGLManager extends events.EventDispatcher {
-        private static STAGEGL_MAX_QUANTITY;
-        private _stageGLs;
-        private static _instance;
-        private static _numStageGLs;
-        private _onContextCreatedDelegate;
-        /**
-        * Creates a new StageGLManager class.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @private
-        */
-        constructor(StageGLManagerSingletonEnforcer: StageGLManagerSingletonEnforcer);
-        /**
-        * Gets a StageGLManager instance for the given Stage object.
-        * @param stage The Stage object that contains the StageGL objects to be managed.
-        * @return The StageGLManager instance for the given Stage object.
-        */
-        static getInstance(): StageGLManager;
-        /**
-        * Requests the StageGL for the given index.
-        *
-        * @param index The index of the requested StageGL.
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The StageGL for the given index.
-        */
-        public getStageGLAt(index: number, forceSoftware?: boolean, profile?: string): base.StageGL;
-        /**
-        * Removes a StageGL from the manager.
-        * @param stageGL
-        * @private
-        */
-        public iRemoveStageGL(stageGL: base.StageGL): void;
-        /**
-        * Get the next available stageGL. An error is thrown if there are no StageGLProxies available
-        * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
-        * @param profile The compatibility profile, an enumeration of ContextGLProfile
-        * @return The allocated stageGL
-        */
-        public getFreeStageGL(forceSoftware?: boolean, profile?: string): base.StageGL;
-        /**
-        * Checks if a new stageGL can be created and managed by the class.
-        * @return true if there is one slot free for a new stageGL
-        */
-        public hasFreeStageGL : boolean;
-        /**
-        * Returns the amount of stageGL objects that can be created and managed by the class
-        * @return the amount of free slots
-        */
-        public numSlotsFree : number;
-        /**
-        * Returns the amount of StageGL objects currently managed by the class.
-        * @return the amount of slots used
-        */
-        public numSlotsUsed : number;
-        /**
-        * The maximum amount of StageGL objects that can be managed by the class
-        */
-        public numSlotsTotal : number;
-        private onContextCreated(e);
-    }
-}
-declare class StageGLManagerSingletonEnforcer {
-}
 /**
 * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
 * files. Use the <code>load()</code> method to initiate loading. The loaded
@@ -14266,7 +13700,6 @@ declare module away.materials {
     * @class away.materials.IMaterial
     */
     interface IMaterial extends library.IAsset {
-        id: string;
         /**
         *
         */
@@ -14453,6 +13886,458 @@ declare module away.prefabs {
         public _iValidate(): void;
     }
 }
+declare module away.prefabs {
+    /**
+    * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
+    */
+    class PrimitivePrefabBase extends PrefabBase {
+        public _geomDirty: boolean;
+        public _uvDirty: boolean;
+        private _material;
+        private _geometry;
+        private _subGeometry;
+        private _geometryType;
+        private _geometryTypeDirty;
+        /**
+        *
+        */
+        public assetType : string;
+        /**
+        *
+        */
+        public geometryType : string;
+        public geometry : base.Geometry;
+        /**
+        * The material with which to render the primitive.
+        */
+        public material : materials.IMaterial;
+        /**
+        * Creates a new PrimitivePrefabBase object.
+        *
+        * @param material The material with which to render the object
+        */
+        constructor(material?: materials.IMaterial, geometryType?: string);
+        /**
+        * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
+        * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
+        * should be triggered by the invalidateUVs method (and in turn by updateUVs).
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * Invalidates the primitive's geometry type, causing it to be updated when requested.
+        */
+        public invalidateGeometryType(): void;
+        /**
+        * Invalidates the primitive's geometry, causing it to be updated when requested.
+        */
+        public _pInvalidateGeometry(): void;
+        /**
+        * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
+        */
+        public _pInvalidateUVs(): void;
+        /**
+        * Updates the subgeometry when invalid.
+        */
+        private updateGeometryType();
+        /**
+        * Updates the geometry when invalid.
+        */
+        private updateGeometry();
+        /**
+        * Updates the uv coordinates when invalid.
+        */
+        private updateUVs();
+        public _iValidate(): void;
+        public _pCreateObject(): base.DisplayObject;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A UV Cylinder primitive mesh.
+    */
+    class PrimitiveTorusPrefab extends PrimitivePrefabBase implements library.IAsset {
+        private _radius;
+        private _tubeRadius;
+        private _segmentsR;
+        private _segmentsT;
+        private _yUp;
+        private _numVertices;
+        /**
+        * The radius of the torus.
+        */
+        public radius : number;
+        /**
+        * The radius of the inner tube of the torus.
+        */
+        public tubeRadius : number;
+        /**
+        * Defines the number of horizontal segments that make up the torus. Defaults to 16.
+        */
+        public segmentsR : number;
+        /**
+        * Defines the number of vertical segments that make up the torus. Defaults to 8.
+        */
+        public segmentsT : number;
+        /**
+        * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        public yUp : boolean;
+        /**
+        * Creates a new <code>Torus</code> object.
+        * @param radius The radius of the torus.
+        * @param tuebRadius The radius of the inner tube of the torus.
+        * @param segmentsR Defines the number of horizontal segments that make up the torus.
+        * @param segmentsT Defines the number of vertical segments that make up the torus.
+        * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, tubeRadius?: number, segmentsR?: number, segmentsT?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A Cube primitive prefab.
+    */
+    class PrimitiveCubePrefab extends PrimitivePrefabBase implements library.IAsset {
+        private _width;
+        private _height;
+        private _depth;
+        private _tile6;
+        private _segmentsW;
+        private _segmentsH;
+        private _segmentsD;
+        /**
+        * Creates a new Cube object.
+        * @param width The size of the cube along its X-axis.
+        * @param height The size of the cube along its Y-axis.
+        * @param depth The size of the cube along its Z-axis.
+        * @param segmentsW The number of segments that make up the cube along the X-axis.
+        * @param segmentsH The number of segments that make up the cube along the Y-axis.
+        * @param segmentsD The number of segments that make up the cube along the Z-axis.
+        * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
+        */
+        constructor(width?: number, height?: number, depth?: number, segmentsW?: number, segmentsH?: number, segmentsD?: number, tile6?: boolean);
+        /**
+        * The size of the cube along its X-axis.
+        */
+        public width : number;
+        /**
+        * The size of the cube along its Y-axis.
+        */
+        public height : number;
+        /**
+        * The size of the cube along its Z-axis.
+        */
+        public depth : number;
+        /**
+        * The type of uv mapping to use. When false, the entire image is mapped on each face.
+        * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
+        * Reading the tiles from left to right, top to bottom they represent the faces of the
+        * cube in the following order: bottom, top, back, left, front, right. This creates
+        * several shared edges (between the top, front, left and right faces) which simplifies
+        * texture painting.
+        */
+        public tile6 : boolean;
+        /**
+        * The number of segments that make up the cube along the X-axis. Defaults to 1.
+        */
+        public segmentsW : number;
+        /**
+        * The number of segments that make up the cube along the Y-axis. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        * The number of segments that make up the cube along the Z-axis. Defaults to 1.
+        */
+        public segmentsD : number;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A Plane primitive mesh.
+    */
+    class PrimitivePlanePrefab extends PrimitivePrefabBase implements library.IAsset {
+        private _segmentsW;
+        private _segmentsH;
+        private _yUp;
+        private _width;
+        private _height;
+        private _doubleSided;
+        /**
+        * Creates a new Plane object.
+        * @param width The width of the plane.
+        * @param height The height of the plane.
+        * @param segmentsW The number of segments that make up the plane along the X-axis.
+        * @param segmentsH The number of segments that make up the plane along the Y or Z-axis.
+        * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
+        * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
+        */
+        constructor(width?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean, doubleSided?: boolean);
+        /**
+        * The number of segments that make up the plane along the X-axis. Defaults to 1.
+        */
+        public segmentsW : number;
+        /**
+        * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
+        * false, respectively. Defaults to 1.
+        */
+        public segmentsH : number;
+        /**
+        *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
+        */
+        public yUp : boolean;
+        /**
+        * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
+        */
+        public doubleSided : boolean;
+        /**
+        * The width of the plane.
+        */
+        public width : number;
+        /**
+        * The height of the plane.
+        */
+        public height : number;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A Capsule primitive mesh.
+    */
+    class PrimitiveCapsulePrefab extends PrimitivePrefabBase implements library.IAsset {
+        private _radius;
+        private _height;
+        private _segmentsW;
+        private _segmentsH;
+        private _yUp;
+        private _numVertices;
+        /**
+        * The radius of the capsule.
+        */
+        public radius : number;
+        /**
+        * The height of the capsule.
+        */
+        public height : number;
+        /**
+        * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
+        */
+        public segmentsH : number;
+        /**
+        * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        public yUp : boolean;
+        /**
+        * Creates a new Capsule object.
+        * @param radius The radius of the capsule.
+        * @param height The height of the capsule.
+        * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+        * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A Cylinder primitive mesh.
+    */
+    class PrimitiveCylinderPrefab extends PrimitivePrefabBase implements library.IAsset {
+        public _pBottomRadius: number;
+        public _pSegmentsW: number;
+        public _pSegmentsH: number;
+        private _topRadius;
+        private _height;
+        private _topClosed;
+        private _bottomClosed;
+        private _surfaceClosed;
+        private _yUp;
+        private _numVertices;
+        /**
+        * The radius of the top end of the cylinder.
+        */
+        public topRadius : number;
+        /**
+        * The radius of the bottom end of the cylinder.
+        */
+        public bottomRadius : number;
+        /**
+        * The radius of the top end of the cylinder.
+        */
+        public height : number;
+        /**
+        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        */
+        public segmentsW : number;
+        public setSegmentsW(value: number): void;
+        /**
+        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        */
+        public segmentsH : number;
+        public setSegmentsH(value: number): void;
+        /**
+        * Defines whether the top end of the cylinder is closed (true) or open.
+        */
+        public topClosed : boolean;
+        /**
+        * Defines whether the bottom end of the cylinder is closed (true) or open.
+        */
+        public bottomClosed : boolean;
+        /**
+        * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        public yUp : boolean;
+        /**
+        * Creates a new Cylinder object.
+        * @param topRadius The radius of the top end of the cylinder.
+        * @param bottomRadius The radius of the bottom end of the cylinder
+        * @param height The radius of the bottom end of the cylinder
+        * @param segmentsW Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        * @param topClosed Defines whether the top end of the cylinder is closed (true) or open.
+        * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
+        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, topClosed?: boolean, bottomClosed?: boolean, surfaceClosed?: boolean, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
+declare module away.prefabs {
+    /**
+    * A UV Cone primitive mesh.
+    */
+    class PrimitiveConePrefab extends PrimitiveCylinderPrefab implements library.IAsset {
+        /**
+        * The radius of the bottom end of the cone.
+        */
+        public radius : number;
+        /**
+        * Creates a new Cone object.
+        * @param radius The radius of the bottom end of the cone
+        * @param height The height of the cone
+        * @param segmentsW Defines the number of horizontal segments that make up the cone. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
+        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, closed?: boolean, yUp?: boolean);
+    }
+}
+declare module away.prefabs {
+    /**
+    * A UV RegularPolygon primitive mesh.
+    */
+    class PrimitivePolygonPrefab extends PrimitiveCylinderPrefab implements library.IAsset {
+        /**
+        * The radius of the regular polygon.
+        */
+        public radius : number;
+        /**
+        * The number of sides of the regular polygon.
+        */
+        public sides : number;
+        /**
+        * The number of subdivisions from the edge to the center of the regular polygon.
+        */
+        public subdivisions : number;
+        /**
+        * Creates a new RegularPolygon disc object.
+        * @param radius The radius of the regular polygon
+        * @param sides Defines the number of sides of the regular polygon.
+        * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, sides?: number, yUp?: boolean);
+    }
+}
+declare module away.prefabs {
+    /**
+    * A UV Sphere primitive mesh.
+    */
+    class PrimitiveSpherePrefab extends PrimitivePrefabBase implements library.IAsset {
+        private _radius;
+        private _segmentsW;
+        private _segmentsH;
+        private _yUp;
+        /**
+        * The radius of the sphere.
+        */
+        public radius : number;
+        /**
+        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        */
+        public segmentsW : number;
+        /**
+        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        */
+        public segmentsH : number;
+        /**
+        * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        public yUp : boolean;
+        /**
+        * Creates a new Sphere object.
+        *
+        * @param radius The radius of the sphere.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere.
+        * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
+        constructor(radius?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
+        /**
+        * @inheritDoc
+        */
+        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
+    }
+}
 declare module away.animators {
     /**
     * Provides an abstract base class for nodes in an animation blend tree.
@@ -14555,19 +14440,21 @@ declare module away.animators {
     }
 }
 declare module away.textures {
+    /**
+    *
+    */
     class TextureProxyBase extends library.NamedAssetBase implements library.IAsset {
+        public _pSize: number;
         public _pFormat: string;
-        public _pHasMipmaps: boolean;
-        private _textures;
-        private _dirty;
-        public _pWidth: number;
-        public _pHeight: number;
-        constructor();
+        private _hasMipmaps;
+        private _generateMipmaps;
+        private _textureData;
         /**
         *
-        * @returns {boolean}
         */
-        public hasMipMaps : boolean;
+        constructor(generateMipmaps?: boolean);
+        public size : number;
+        public hasMipmaps : boolean;
         /**
         *
         * @returns {string}
@@ -14575,33 +14462,19 @@ declare module away.textures {
         public format : string;
         /**
         *
+        * @returns {boolean}
+        */
+        public generateMipmaps : boolean;
+        /**
+        *
         * @returns {string}
         */
         public assetType : string;
         /**
         *
-        * @returns {number}
+        * @param stage
         */
-        public width : number;
-        /**
-        *
-        * @returns {number}
-        */
-        public height : number;
-        public getTextureForStageGL(stageGL: base.StageGL): gl.TextureBase;
-        /**
-        *
-        * @param texture
-        * @private
-        */
-        public pUploadContent(texture: gl.TextureBase): void;
-        /**
-        *
-        * @param width
-        * @param height
-        * @private
-        */
-        public pSetSize(width: number, height: number): void;
+        public activateTextureForStage(index: number, stage: base.IStage): void;
         /**
         *
         */
@@ -14610,97 +14483,21 @@ declare module away.textures {
         *
         * @private
         */
-        public pInvalidateSize(): void;
-        /**
-        *
-        * @param context
-        * @private
-        */
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
+        public invalidateSize(): void;
         /**
         * @inheritDoc
         */
         public dispose(): void;
+        public _iAddTextureData(textureData: pool.ITextureData): pool.ITextureData;
+        public _iRemoveTextureData(textureData: pool.ITextureData): pool.ITextureData;
     }
 }
 declare module away.textures {
     class Texture2DBase extends TextureProxyBase {
-        constructor();
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class CubeTextureBase extends TextureProxyBase {
-        constructor();
-        public size : number;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class ATFData {
-        static TYPE_NORMAL: number;
-        static TYPE_CUBE: number;
-        public type: number;
-        public format: string;
-        public width: number;
-        public height: number;
-        public numTextures: number;
-        public data: utils.ByteArray;
-        /** Create a new instance by parsing the given byte array. */
-        constructor(data: utils.ByteArray);
-    }
-}
-declare module away.textures {
-    class ATFCubeTexture extends CubeTextureBase {
-        private _atfData;
-        constructor(byteArray: utils.ByteArray);
-        public atfData : ATFData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class ATFTexture extends Texture2DBase {
-        private _atfData;
-        constructor(byteArray: utils.ByteArray);
-        public atfData : ATFData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
-    }
-}
-declare module away.textures {
-    class ImageTexture extends Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
-        private _htmlImageElement;
-        private _generateMipmaps;
-        private _mipMapHolder;
-        constructor(htmlImageElement: HTMLImageElement, generateMipmaps?: boolean);
-        public htmlImageElement : HTMLImageElement;
-        public pUploadContent(texture: gl.TextureBase): void;
-        private getMipMapHolder();
-        private freeMipMapHolder();
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class BitmapTexture extends Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
-        private _bitmapData;
-        private _mipMapHolder;
-        private _generateMipmaps;
-        constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
-        public bitmapData : base.BitmapData;
-        public pUploadContent(texture: gl.TextureBase): void;
-        private getMipMapHolder();
-        private freeMipMapHolder();
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class RenderTexture extends Texture2DBase {
-        constructor(width: number, height: number);
+        private _mipmapData;
+        private _mipmapDataDirty;
+        public _pWidth: number;
+        public _pHeight: number;
         /**
         *
         * @returns {number}
@@ -14711,15 +14508,113 @@ declare module away.textures {
         * @returns {number}
         */
         public height : number;
-        public pUploadContent(texture: gl.TextureBase): void;
-        public pCreateTexture(context: gl.ContextGL): gl.TextureBase;
+        public size : number;
+        constructor(generateMipmaps?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidateContent(): void;
+        /**
+        *
+        * @param width
+        * @param height
+        * @private
+        */
+        public _pSetSize(width: number, height: number): void;
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(): base.BitmapData[];
+        public _iGetTextureData(): any;
+    }
+}
+declare module away.textures {
+    class CubeTextureBase extends TextureProxyBase {
+        public _mipmapDataArray: base.BitmapData[][];
+        public _mipmapDataDirtyArray: boolean[];
+        constructor(generateMipmaps?: boolean);
+        /**
+        *
+        * @param width
+        * @param height
+        * @private
+        */
+        public _pSetSize(size: number): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        *
+        */
+        public invalidateContent(): void;
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
+        public _iGetMipmapData(side: number): base.BitmapData[];
+        public _iGetTextureData(side: number): any;
+    }
+}
+declare module away.textures {
+    class ImageTexture extends Texture2DBase {
+        private _htmlImageElement;
+        /**
+        *
+        * @param htmlImageElement
+        * @param generateMipmaps
+        */
+        constructor(htmlImageElement: HTMLImageElement, generateMipmaps?: boolean);
+        /**
+        *
+        */
+        public htmlImageElement : HTMLImageElement;
+        public _iGetTextureData(): HTMLImageElement;
+    }
+}
+declare module away.textures {
+    class BitmapTexture extends Texture2DBase {
+        public _bitmapData: base.BitmapData;
+        /**
+        *
+        * @returns {away.base.BitmapData}
+        */
+        public bitmapData : base.BitmapData;
+        constructor(bitmapData: base.BitmapData, generateMipmaps?: boolean);
+        public dispose(): void;
+        public _iGetTextureData(): base.BitmapData;
+    }
+}
+declare module away.textures {
+    class RenderTexture extends Texture2DBase {
+        /**
+        *
+        * @returns {number}
+        */
+        public width : number;
+        /**
+        *
+        * @returns {number}
+        */
+        public height : number;
+        constructor(width: number, height: number);
+        /**
+        *
+        * @param stage
+        */
+        public activateTextureForStage(index: number, stage: base.IStage): void;
     }
 }
 declare module away.textures {
     class ImageCubeTexture extends CubeTextureBase {
-        private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement);
+        private _htmlImageElements;
         /**
         * The texture on the cube's right face.
         */
@@ -14744,15 +14639,14 @@ declare module away.textures {
         * The texture on the cube's near face.
         */
         public negativeZ : HTMLImageElement;
-        private testSize(value);
-        public pUploadContent(texture: gl.TextureBase): void;
+        constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement, generateMipmaps?: boolean);
+        private _testSize(value);
+        public _iGetTextureData(side: number): HTMLImageElement;
     }
 }
 declare module away.textures {
     class BitmapCubeTexture extends CubeTextureBase {
         private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData);
         /**
         * The texture on the cube's right face.
         */
@@ -14777,8 +14671,15 @@ declare module away.textures {
         * The texture on the cube's near face.
         */
         public negativeZ : base.BitmapData;
-        private testSize(value);
-        public pUploadContent(texture: gl.TextureBase): void;
+        constructor(posX: base.BitmapData, negX: base.BitmapData, posY: base.BitmapData, negY: base.BitmapData, posZ: base.BitmapData, negZ: base.BitmapData, generateMipmaps?: boolean);
+        /**
+        *
+        * @param value
+        * @private
+        */
+        private _testSize(value);
+        public dispose(): void;
+        public _iGetTextureData(side: number): base.BitmapData;
     }
 }
 declare module away.textures {
@@ -14786,25 +14687,22 @@ declare module away.textures {
     * MipmapGenerator is a helper class that uploads BitmapData to a Texture including mipmap levels.
     */
     class MipmapGenerator {
+        private static _mipMaps;
+        private static _mipMapUses;
         private static _matrix;
         private static _rect;
         private static _source;
         /**
         * Uploads a BitmapData with mip maps to a target Texture object.
-        * @param source
+        * @param source The source to upload.
         * @param target The target Texture to upload to.
         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
-        static generateHTMLImageElementMipMaps(source: HTMLImageElement, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
-        /**
-        * Uploads a BitmapData with mip maps to a target Texture object.
-        * @param source The source BitmapData to upload.
-        * @param target The target Texture to upload to.
-        * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
-        * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
-        */
-        static generateMipMaps(source: base.BitmapData, target: gl.TextureBase, mipmap?: base.BitmapData, alpha?: boolean, side?: number): void;
+        static generateMipMaps(source: HTMLImageElement, output?: base.BitmapData[], alpha?: boolean): any;
+        static generateMipMaps(source: base.BitmapData, output?: base.BitmapData[], alpha?: boolean): any;
+        private static _getMipmapHolder(mipMapHolder, newW, newH);
+        static freeMipMapHolder(mipMapHolder: base.BitmapData): void;
     }
 }
 declare module away.textures {
@@ -14814,201 +14712,15 @@ declare module away.textures {
     class SpecularBitmapTexture extends BitmapTexture {
         private _specularMap;
         private _glossMap;
-        constructor(specularMap?: base.BitmapData, glossMap?: base.BitmapData);
+        constructor(specularMap?: base.BitmapData, glossMap?: base.BitmapData, generateMipmaps?: boolean);
         public specularMap : base.BitmapData;
         public glossMap : base.BitmapData;
-        private testSize();
-        public pUploadContent(texture: gl.TextureBase): void;
-        public dispose(): void;
-    }
-}
-declare module aglsl {
-    class Sampler {
-        public lodbias: number;
-        public dim: number;
-        public readmode: number;
-        public special: number;
-        public wrap: number;
-        public mipmap: number;
-        public filter: number;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Token {
-        public dest: Destination;
-        public opcode: number;
-        public a: Destination;
-        public b: Destination;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Header {
-        public progid: number;
-        public version: number;
-        public type: string;
-        constructor();
-    }
-}
-declare module aglsl {
-    class OpLUT {
-        public s: string;
-        public flags: number;
-        public dest: boolean;
-        public a: boolean;
-        public b: boolean;
-        public matrixwidth: number;
-        public matrixheight: number;
-        public ndwm: boolean;
-        public scalar: boolean;
-        public dm: boolean;
-        public lod: boolean;
-        constructor(s: string, flags: number, dest: boolean, a: boolean, b: boolean, matrixwidth: number, matrixheight: number, ndwm: boolean, scaler: boolean, dm: boolean, lod: boolean);
-    }
-}
-declare module aglsl {
-    class Description {
-        public regread: any[];
-        public regwrite: any[];
-        public hasindirect: boolean;
-        public writedepth: boolean;
-        public hasmatrix: boolean;
-        public samplers: any[];
-        public tokens: Token[];
-        public header: Header;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Destination {
-        public mask: number;
-        public regnum: number;
-        public regtype: number;
-        public dim: number;
-        constructor();
-    }
-}
-declare module aglsl {
-    class ContextGL {
-        public enableErrorChecking: boolean;
-        public resources: any[];
-        public driverInfo: string;
-        static maxvertexconstants: number;
-        static maxfragconstants: number;
-        static maxtemp: number;
-        static maxstreams: number;
-        static maxtextures: number;
-        static defaultsampler: Sampler;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Mapping {
-        static agal2glsllut: OpLUT[];
-    }
-}
-declare module aglsl.assembler {
-    class Opcode {
-        public dest: string;
-        public a: FS;
-        public b: FS;
-        public opcode: number;
-        public flags: Flags;
-        constructor(dest: string, aformat: string, asize: number, bformat: string, bsize: number, opcode: number, simple: boolean, horizontal: boolean, fragonly: boolean, matrix: boolean);
-    }
-    class FS {
-        public format: string;
-        public size: number;
-    }
-    class Flags {
-        public simple: boolean;
-        public horizontal: boolean;
-        public fragonly: boolean;
-        public matrix: boolean;
-    }
-}
-declare module aglsl.assembler {
-    class OpcodeMap {
-        private static _map;
-        static map : Object[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class Part {
-        public name: string;
-        public version: number;
-        public data: away.utils.ByteArray;
-        constructor(name?: string, version?: number);
-    }
-}
-declare module aglsl.assembler {
-    class Reg {
-        public code: number;
-        public desc: string;
-        constructor(code: number, desc: string);
-    }
-    class RegMap {
-        private static _map;
-        static map : any[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class Sampler {
-        public shift: number;
-        public mask: number;
-        public value: number;
-        constructor(shift: number, mask: number, value: number);
-    }
-    class SamplerMap {
-        private static _map;
-        static map : Object[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class AGALMiniAssembler {
-        public r: Object;
-        public cur: Part;
-        constructor();
-        public assemble(source: string, ext_part?: any, ext_version?: any): Object;
-        private processLine(line, linenr);
-        public emitHeader(pr: Part): void;
-        public emitOpcode(pr: Part, opcode: any): void;
-        public emitZeroDword(pr: Part): void;
-        public emitZeroQword(pr: any): void;
-        public emitDest(pr: any, token: any, opdest: any): boolean;
-        public stringToMask(s: string): number;
-        public stringToSwizzle(s: any): number;
-        public emitSampler(pr: Part, token: any, opsrc: any, opts: any): boolean;
-        public emitSource(pr: any, token: any, opsrc: any): boolean;
-        public addHeader(partname: any, version: any): void;
-    }
-}
-declare module aglsl {
-    class AGALTokenizer {
-        constructor();
-        public decribeAGALByteArray(bytes: away.utils.ByteArray): Description;
-        public readReg(s: any, mh: any, desc: any, bytes: any): void;
-    }
-}
-declare module aglsl {
-    class AGLSLParser {
-        public parse(desc: Description): string;
-        public regtostring(regtype: number, regnum: number, desc: Description, tag: any): string;
-        public sourcetostring(s: any, subline: any, dwm: any, isscalar: any, desc: any, tag: any): string;
-    }
-}
-declare module aglsl {
-    class AGLSLCompiler {
-        public glsl: string;
-        public compile(programType: string, source: string): string;
+        private _testSize();
+        public _iGetTextureData(): base.BitmapData;
     }
 }
 declare module away {
-    class AwayJS extends events.EventDispatcher {
+    class AwayJSCore extends events.EventDispatcher {
         constructor();
     }
 }

@@ -1,5 +1,6 @@
 /// <reference path="../libs/ref/js.d.ts" />
-/// <reference path="../libs/awayjs.next.d.ts" />
+/// <reference path="../libs/awayjs-core.next.d.ts" />
+/// <reference path="../libs/stagegl-context.next.d.ts" />
 declare module away.errors {
     class AnimationSetError extends Error {
         constructor(message: string);
@@ -186,11 +187,11 @@ declare module away.pool {
         /**
         *
         */
-        public getIndexData(): gl.IndexData;
+        public getIndexData(): IndexData;
         /**
         *
         */
-        public getVertexData(dataType: string): gl.VertexData;
+        public getVertexData(dataType: string): VertexData;
         /**
         *
         */
@@ -342,6 +343,38 @@ declare module away.pool {
 */
 declare module away.pool {
     /**
+    * @class away.pool.SkyboxRenderable
+    */
+    class SkyboxRenderable extends RenderableBase {
+        /**
+        *
+        */
+        static id: string;
+        /**
+        *
+        */
+        private static _geometry;
+        /**
+        * //TODO
+        *
+        * @param pool
+        * @param skybox
+        */
+        constructor(pool: RenderablePool, skybox: entities.Skybox);
+        /**
+        * //TODO
+        *
+        * @returns {away.base.TriangleSubGeometry}
+        * @private
+        */
+        public _pGetSubGeometry(): base.TriangleSubGeometry;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
     * @class away.pool.TriangleSubMeshRenderable
     */
     class TriangleSubMeshRenderable extends RenderableBase {
@@ -379,38 +412,6 @@ declare module away.pool {
         * @protected
         */
         public _pGetOverflowRenderable(pool: RenderablePool, materialOwner: base.IMaterialOwner, level: number, indexOffset: number): RenderableBase;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.SkyboxRenderable
-    */
-    class SkyboxRenderable extends RenderableBase {
-        /**
-        *
-        */
-        static id: string;
-        /**
-        *
-        */
-        private static _geometry;
-        /**
-        * //TODO
-        *
-        * @param pool
-        * @param skybox
-        */
-        constructor(pool: RenderablePool, skybox: entities.Skybox);
-        /**
-        * //TODO
-        *
-        * @returns {away.base.TriangleSubGeometry}
-        * @private
-        */
-        public _pGetSubGeometry(): base.TriangleSubGeometry;
     }
 }
 /**
@@ -780,11 +781,8 @@ declare module away.render {
         private _backgroundB;
         private _backgroundAlpha;
         public _shareContext: boolean;
-        public _pRenderTarget: gl.TextureBase;
-        public _pRenderTargetSurface: number;
         public _width: number;
         public _height: number;
-        private _renderToTexture;
         public textureRatioX: number;
         public textureRatioY: number;
         private _snapshotBitmapData;
@@ -835,9 +833,8 @@ declare module away.render {
         /**
         * Creates a new RendererBase object.
         */
-        constructor(renderToTexture?: boolean);
+        constructor();
         public _iCreateEntityCollector(): traverse.ICollector;
-        public iRenderToTexture : boolean;
         /**
         * The background color's red component, used when clearing.
         *
@@ -878,7 +875,7 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public _iRender(entityCollector: traverse.ICollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public _iRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         public pCollectRenderables(entityCollector: traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
@@ -887,14 +884,13 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public pExecuteRender(entityCollector: traverse.ICollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public pExecuteRender(entityCollector: traverse.ICollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         public queueSnapshot(bmd: base.BitmapData): void;
-        public pExecuteRenderToTexturePass(entityCollector: traverse.ICollector): void;
         /**
         * Performs the actual drawing of geometry to the target.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         */
-        public pDraw(entityCollector: traverse.ICollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.ICollector, target: textures.TextureProxyBase): void;
         /**
         * Assign the context once retrieved
         */
@@ -966,12 +962,12 @@ declare module away.render {
         */
         constructor(renderBlended?: boolean, distanceBased?: boolean);
         public disableColor : boolean;
-        public iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: gl.TextureBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
+        public iRenderCascades(entityCollector: traverse.ShadowCasterCollector, target: textures.TextureProxyBase, numCascades: number, scissorRects: geom.Rectangle[], cameras: entities.Camera[]): void;
         private drawCascadeRenderables(renderable, camera, cullPlanes);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.EntityCollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -1000,7 +996,7 @@ declare module away.render {
         private _pDepthRenderer;
         private _skyboxProjection;
         public _pFilter3DRenderer: Filter3DRenderer;
-        public _pDepthRender: gl.Texture;
+        public _pDepthRender: textures.TextureProxyBase;
         private _forceSoftware;
         private _profile;
         private _antiAlias;
@@ -1022,12 +1018,12 @@ declare module away.render {
         */
         constructor(forceSoftware?: boolean, profile?: string);
         public render(entityCollector: traverse.ICollector): void;
-        public pExecuteRender(entityCollector: traverse.EntityCollector, target?: gl.TextureBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
+        public pExecuteRender(entityCollector: traverse.EntityCollector, target?: textures.TextureProxyBase, scissorRect?: geom.Rectangle, surfaceSelector?: number): void;
         private updateLights(entityCollector);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: traverse.EntityCollector, target: gl.TextureBase): void;
+        public pDraw(entityCollector: traverse.EntityCollector, target: textures.TextureProxyBase): void;
         /**
         * Draw the skybox if present.
         * @param entityCollector The EntityCollector containing all potentially visible information.
@@ -1270,7 +1266,7 @@ declare module away.lights {
         public pCreateDepthTexture(): textures.TextureProxyBase;
         public iRenderDepthMap(stageGL: base.StageGL, entityCollector: traverse.EntityCollector, renderer: render.DepthRenderer): void;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
         public _pSetDepthMapSize(value: any): void;
     }
 }
@@ -1284,7 +1280,7 @@ declare module away.lights {
         private addCamera(rotationX, rotationY, rotationZ);
         public pCreateDepthTexture(): textures.TextureProxyBase;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.DepthRenderer): void;
     }
 }
 declare module away.lights {
@@ -1303,7 +1299,7 @@ declare module away.lights {
         public lightOffset : number;
         public iDepthProjection : geom.Matrix3D;
         public depth : number;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.TextureProxyBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
         public pUpdateCullPlanes(viewCamera: entities.Camera): void;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
         public pUpdateProjectionFromFrustumCorners(viewCamera: entities.Camera, corners: number[], matrix: geom.Matrix3D): void;
@@ -1329,7 +1325,7 @@ declare module away.lights {
         public _pSetDepthMapSize(value: number): void;
         private invalidateScissorRects();
         public numCascades : number;
-        public pDrawDepthMap(target: gl.TextureBase, scene: containers.Scene, renderer: render.DepthRenderer): void;
+        public pDrawDepthMap(target: textures.RenderTexture, scene: containers.Scene, renderer: render.DepthRenderer): void;
         private updateScissorRects();
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
         private updateProjectionPartition(matrix, splitRatio, texOffsetX, texOffsetY);
@@ -1350,29 +1346,6 @@ declare module away.lights {
         public coverageRatio : number;
         public pUpdateDepthProjection(viewCamera: entities.Camera): void;
     }
-}
-declare module away.managers {
-    class AGALProgramCache {
-        private static _instances;
-        private _stageGL;
-        private _program3Ds;
-        private _ids;
-        private _usages;
-        private _keys;
-        private _onContextGLDisposedDelegate;
-        private static _currentId;
-        constructor(stageGL: base.StageGL, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
-        static getInstance(stageGL: base.StageGL): AGALProgramCache;
-        static getInstanceFromIndex(index: number): AGALProgramCache;
-        private static onContextGLDisposed(event);
-        public dispose(): void;
-        public setProgram(pass: materials.MaterialPassBase, vertexCode: string, fragmentCode: string): void;
-        public freeProgram(programId: number): void;
-        private destroyProgram(key);
-        private getKey(vertexCode, fragmentCode);
-    }
-}
-declare class AGALProgramCacheSingletonEnforcer {
 }
 declare module away.materials {
     /**
@@ -2207,7 +2180,7 @@ declare module away.materials {
         * @param stage3DProxy The Stage3DProxy object currently used for rendering.
         * @return A list of depth map textures for all supported lights.
         */
-        public _iGetDepthMap(renderable: pool.RenderableBase, stageGL: base.StageGL): gl.Texture;
+        public _iGetDepthMap(renderable: pool.RenderableBase): textures.RenderTexture;
         /**
         * Retrieves the depth map projection maps for all lights.
         * @param renderable The renderable for which to retrieve the projection maps.
@@ -6442,458 +6415,6 @@ declare module away.materials {
         public cubeMap : textures.CubeTextureBase;
     }
 }
-declare module away.prefabs {
-    /**
-    * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
-    */
-    class PrimitivePrefabBase extends PrefabBase {
-        public _geomDirty: boolean;
-        public _uvDirty: boolean;
-        private _material;
-        private _geometry;
-        private _subGeometry;
-        private _geometryType;
-        private _geometryTypeDirty;
-        /**
-        *
-        */
-        public assetType : string;
-        /**
-        *
-        */
-        public geometryType : string;
-        public geometry : base.Geometry;
-        /**
-        * The material with which to render the primitive.
-        */
-        public material : materials.IMaterial;
-        /**
-        * Creates a new PrimitivePrefabBase object.
-        *
-        * @param material The material with which to render the object
-        */
-        constructor(material?: materials.IMaterial, geometryType?: string);
-        /**
-        * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
-        * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
-        * should be triggered by the invalidateUVs method (and in turn by updateUVs).
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * Invalidates the primitive's geometry type, causing it to be updated when requested.
-        */
-        public invalidateGeometryType(): void;
-        /**
-        * Invalidates the primitive's geometry, causing it to be updated when requested.
-        */
-        public _pInvalidateGeometry(): void;
-        /**
-        * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
-        */
-        public _pInvalidateUVs(): void;
-        /**
-        * Updates the subgeometry when invalid.
-        */
-        private updateGeometryType();
-        /**
-        * Updates the geometry when invalid.
-        */
-        private updateGeometry();
-        /**
-        * Updates the uv coordinates when invalid.
-        */
-        private updateUVs();
-        public _iValidate(): void;
-        public _pCreateObject(): base.DisplayObject;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A UV Cylinder primitive mesh.
-    */
-    class PrimitiveTorusPrefab extends PrimitivePrefabBase implements library.IAsset {
-        private _radius;
-        private _tubeRadius;
-        private _segmentsR;
-        private _segmentsT;
-        private _yUp;
-        private _numVertices;
-        /**
-        * The radius of the torus.
-        */
-        public radius : number;
-        /**
-        * The radius of the inner tube of the torus.
-        */
-        public tubeRadius : number;
-        /**
-        * Defines the number of horizontal segments that make up the torus. Defaults to 16.
-        */
-        public segmentsR : number;
-        /**
-        * Defines the number of vertical segments that make up the torus. Defaults to 8.
-        */
-        public segmentsT : number;
-        /**
-        * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        public yUp : boolean;
-        /**
-        * Creates a new <code>Torus</code> object.
-        * @param radius The radius of the torus.
-        * @param tuebRadius The radius of the inner tube of the torus.
-        * @param segmentsR Defines the number of horizontal segments that make up the torus.
-        * @param segmentsT Defines the number of vertical segments that make up the torus.
-        * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, tubeRadius?: number, segmentsR?: number, segmentsT?: number, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A Cube primitive prefab.
-    */
-    class PrimitiveCubePrefab extends PrimitivePrefabBase implements library.IAsset {
-        private _width;
-        private _height;
-        private _depth;
-        private _tile6;
-        private _segmentsW;
-        private _segmentsH;
-        private _segmentsD;
-        /**
-        * Creates a new Cube object.
-        * @param width The size of the cube along its X-axis.
-        * @param height The size of the cube along its Y-axis.
-        * @param depth The size of the cube along its Z-axis.
-        * @param segmentsW The number of segments that make up the cube along the X-axis.
-        * @param segmentsH The number of segments that make up the cube along the Y-axis.
-        * @param segmentsD The number of segments that make up the cube along the Z-axis.
-        * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
-        */
-        constructor(width?: number, height?: number, depth?: number, segmentsW?: number, segmentsH?: number, segmentsD?: number, tile6?: boolean);
-        /**
-        * The size of the cube along its X-axis.
-        */
-        public width : number;
-        /**
-        * The size of the cube along its Y-axis.
-        */
-        public height : number;
-        /**
-        * The size of the cube along its Z-axis.
-        */
-        public depth : number;
-        /**
-        * The type of uv mapping to use. When false, the entire image is mapped on each face.
-        * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
-        * Reading the tiles from left to right, top to bottom they represent the faces of the
-        * cube in the following order: bottom, top, back, left, front, right. This creates
-        * several shared edges (between the top, front, left and right faces) which simplifies
-        * texture painting.
-        */
-        public tile6 : boolean;
-        /**
-        * The number of segments that make up the cube along the X-axis. Defaults to 1.
-        */
-        public segmentsW : number;
-        /**
-        * The number of segments that make up the cube along the Y-axis. Defaults to 1.
-        */
-        public segmentsH : number;
-        /**
-        * The number of segments that make up the cube along the Z-axis. Defaults to 1.
-        */
-        public segmentsD : number;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A Plane primitive mesh.
-    */
-    class PrimitivePlanePrefab extends PrimitivePrefabBase implements library.IAsset {
-        private _segmentsW;
-        private _segmentsH;
-        private _yUp;
-        private _width;
-        private _height;
-        private _doubleSided;
-        /**
-        * Creates a new Plane object.
-        * @param width The width of the plane.
-        * @param height The height of the plane.
-        * @param segmentsW The number of segments that make up the plane along the X-axis.
-        * @param segmentsH The number of segments that make up the plane along the Y or Z-axis.
-        * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
-        * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
-        */
-        constructor(width?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean, doubleSided?: boolean);
-        /**
-        * The number of segments that make up the plane along the X-axis. Defaults to 1.
-        */
-        public segmentsW : number;
-        /**
-        * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
-        * false, respectively. Defaults to 1.
-        */
-        public segmentsH : number;
-        /**
-        *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
-        */
-        public yUp : boolean;
-        /**
-        * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
-        */
-        public doubleSided : boolean;
-        /**
-        * The width of the plane.
-        */
-        public width : number;
-        /**
-        * The height of the plane.
-        */
-        public height : number;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A Capsule primitive mesh.
-    */
-    class PrimitiveCapsulePrefab extends PrimitivePrefabBase implements library.IAsset {
-        private _radius;
-        private _height;
-        private _segmentsW;
-        private _segmentsH;
-        private _yUp;
-        private _numVertices;
-        /**
-        * The radius of the capsule.
-        */
-        public radius : number;
-        /**
-        * The height of the capsule.
-        */
-        public height : number;
-        /**
-        * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
-        */
-        public segmentsW : number;
-        /**
-        * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
-        */
-        public segmentsH : number;
-        /**
-        * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        public yUp : boolean;
-        /**
-        * Creates a new Capsule object.
-        * @param radius The radius of the capsule.
-        * @param height The height of the capsule.
-        * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
-        * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
-        * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A Cylinder primitive mesh.
-    */
-    class PrimitiveCylinderPrefab extends PrimitivePrefabBase implements library.IAsset {
-        public _pBottomRadius: number;
-        public _pSegmentsW: number;
-        public _pSegmentsH: number;
-        private _topRadius;
-        private _height;
-        private _topClosed;
-        private _bottomClosed;
-        private _surfaceClosed;
-        private _yUp;
-        private _numVertices;
-        /**
-        * The radius of the top end of the cylinder.
-        */
-        public topRadius : number;
-        /**
-        * The radius of the bottom end of the cylinder.
-        */
-        public bottomRadius : number;
-        /**
-        * The radius of the top end of the cylinder.
-        */
-        public height : number;
-        /**
-        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
-        */
-        public segmentsW : number;
-        public setSegmentsW(value: number): void;
-        /**
-        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
-        */
-        public segmentsH : number;
-        public setSegmentsH(value: number): void;
-        /**
-        * Defines whether the top end of the cylinder is closed (true) or open.
-        */
-        public topClosed : boolean;
-        /**
-        * Defines whether the bottom end of the cylinder is closed (true) or open.
-        */
-        public bottomClosed : boolean;
-        /**
-        * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        public yUp : boolean;
-        /**
-        * Creates a new Cylinder object.
-        * @param topRadius The radius of the top end of the cylinder.
-        * @param bottomRadius The radius of the bottom end of the cylinder
-        * @param height The radius of the bottom end of the cylinder
-        * @param segmentsW Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
-        * @param segmentsH Defines the number of vertical segments that make up the cylinder. Defaults to 1.
-        * @param topClosed Defines whether the top end of the cylinder is closed (true) or open.
-        * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
-        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, topClosed?: boolean, bottomClosed?: boolean, surfaceClosed?: boolean, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
-declare module away.prefabs {
-    /**
-    * A UV Cone primitive mesh.
-    */
-    class PrimitiveConePrefab extends PrimitiveCylinderPrefab implements library.IAsset {
-        /**
-        * The radius of the bottom end of the cone.
-        */
-        public radius : number;
-        /**
-        * Creates a new Cone object.
-        * @param radius The radius of the bottom end of the cone
-        * @param height The height of the cone
-        * @param segmentsW Defines the number of horizontal segments that make up the cone. Defaults to 16.
-        * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
-        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, closed?: boolean, yUp?: boolean);
-    }
-}
-declare module away.prefabs {
-    /**
-    * A UV RegularPolygon primitive mesh.
-    */
-    class PrimitivePolygonPrefab extends PrimitiveCylinderPrefab implements library.IAsset {
-        /**
-        * The radius of the regular polygon.
-        */
-        public radius : number;
-        /**
-        * The number of sides of the regular polygon.
-        */
-        public sides : number;
-        /**
-        * The number of subdivisions from the edge to the center of the regular polygon.
-        */
-        public subdivisions : number;
-        /**
-        * Creates a new RegularPolygon disc object.
-        * @param radius The radius of the regular polygon
-        * @param sides Defines the number of sides of the regular polygon.
-        * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, sides?: number, yUp?: boolean);
-    }
-}
-declare module away.prefabs {
-    /**
-    * A UV Sphere primitive mesh.
-    */
-    class PrimitiveSpherePrefab extends PrimitivePrefabBase implements library.IAsset {
-        private _radius;
-        private _segmentsW;
-        private _segmentsH;
-        private _yUp;
-        /**
-        * The radius of the sphere.
-        */
-        public radius : number;
-        /**
-        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
-        */
-        public segmentsW : number;
-        /**
-        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
-        */
-        public segmentsH : number;
-        /**
-        * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        public yUp : boolean;
-        /**
-        * Creates a new Sphere object.
-        *
-        * @param radius The radius of the sphere.
-        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
-        * @param segmentsH Defines the number of vertical segments that make up the sphere.
-        * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
-        */
-        constructor(radius?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
-        /**
-        * @inheritDoc
-        */
-        public _pBuildGeometry(target: base.SubGeometryBase, geometryType: string): void;
-        /**
-        * @inheritDoc
-        */
-        public _pBuildUVs(target: base.SubGeometryBase, geometryType: string): void;
-    }
-}
 declare module away.utils {
     class PerspectiveMatrix3D extends geom.Matrix3D {
         constructor(v?: number[]);
@@ -10918,7 +10439,7 @@ declare module away.tools {
     }
 }
 declare module away {
-    class Away3D extends events.EventDispatcher {
+    class StageGLRenderer extends events.EventDispatcher {
         constructor();
     }
 }
