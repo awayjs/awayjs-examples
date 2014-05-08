@@ -427,7 +427,7 @@ var examples;
 
             //create bitmap texture in dictionary
             if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-                this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image, true);
+                this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
 
             while (this._n++ < this._loadingTextureStrings.length - 1)
                 if (this._loadingTextureStrings[this._n])
@@ -605,7 +605,6 @@ var examples;
                     //					multiMaterial.shadowMethod = this._cascadeMethod;
                     multiMaterial.shadowMethod = this._baseShadowMethod;
                     multiMaterial.addMethod(this._fogMethod);
-                    multiMaterial.mipmap = true;
                     multiMaterial.repeat = true;
                     multiMaterial.specular = 2;
 

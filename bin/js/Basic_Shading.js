@@ -120,18 +120,17 @@ var examples;
             this._planeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._planeMaterial.lightPicker = this._lightPicker;
             this._planeMaterial.repeat = true;
-            this._planeMaterial.mipmap = false;
 
             this._sphereMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._sphereMaterial.lightPicker = this._lightPicker;
 
             this._cubeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._cubeMaterial.lightPicker = this._lightPicker;
-            this._cubeMaterial.mipmap = false;
 
             this._torusMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
             this._torusMaterial.lightPicker = this._lightPicker;
             this._torusMaterial.repeat = true;
+            this._torusMaterial.mipmap = true;
         };
 
         /**
@@ -274,9 +273,11 @@ var examples;
 
                     case "assets/weave_diffuse.jpg":
                         this._torusMaterial.texture = asset;
+                        this._torusMaterial.texture.generateMipmaps = true;
                         break;
                     case "assets/weave_normal.jpg":
                         this._torusMaterial.normalMap = this._torusMaterial.specularMap = asset;
+                        this._torusMaterial.normalMap.generateMipmaps = true;
                         break;
                 }
             }
