@@ -78,7 +78,7 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new View(new DefaultRenderer());
+            this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
 
             //setup the camera
             this._view.camera.z = -600;
