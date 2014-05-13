@@ -389,7 +389,7 @@ var examples;
             this.view.width = window.innerWidth;
             this.view.height = window.innerHeight;
         };
-        Intermediate_ParticleExplosions.PARTICLE_SIZE = 1;
+        Intermediate_ParticleExplosions.PARTICLE_SIZE = 2;
         Intermediate_ParticleExplosions.NUM_ANIMATORS = 4;
         return Intermediate_ParticleExplosions;
     })();
