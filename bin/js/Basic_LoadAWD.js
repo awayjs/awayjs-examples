@@ -29,9 +29,7 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var View = away.containers.View;
-    var HoverController = away.controllers.HoverController;
-    var Loader = away.containers.Loader;
-    var Mesh = away.entities.Mesh;
+
     var AssetEvent = away.events.AssetEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
@@ -39,7 +37,7 @@ var examples;
 
     var DirectionalLight = away.lights.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
+
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;

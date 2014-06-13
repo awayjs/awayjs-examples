@@ -2,21 +2,20 @@
 
 module examples
 {
-	import ColorMaterial			 = away.materials.ColorMaterial;
-	import TextureMaterial			 = away.materials.TextureMaterial;
+	import TriangleMaterial			 = away.materials.TriangleMaterial;
 
 	export class AWDSuzanne {
 
 		private _view:away.containers.View;
-		private _token:away.net.AssetLoaderToken;
+		private _token:away.library.AssetLoaderToken;
 		private _timer:away.utils.RequestAnimationFrame;
 		private _suzane:away.entities.Mesh;
 		private _light:away.lights.DirectionalLight;
 		private _lightPicker:away.materials.StaticLightPicker;
 		private _lookAtPosition:away.geom.Vector3D = new away.geom.Vector3D ();
 		private _cameraIncrement:number = 0;
-		private _mouseOverMaterial:ColorMaterial = new ColorMaterial(0xFF0000);
-		private _mouseOutMaterial:TextureMaterial;
+		private _mouseOverMaterial:TriangleMaterial = new TriangleMaterial(0xFF0000);
+		private _mouseOutMaterial:TriangleMaterial;
 
 		constructor ()
 		{
@@ -50,7 +49,7 @@ module examples
 			away.library.AssetLibrary.enableParser (away.parsers.AWDParser);
 
 			this._token = away.library.AssetLibrary.load (new away.net.URLRequest ('assets/suzanne.awd'));
-			this._token.addEventListener (away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
+			this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, (event:away.events.LoaderEvent) => this.onResourceComplete(event));
 
 		}
 
@@ -111,7 +110,7 @@ module examples
 		public onResourceComplete (e:away.events.LoaderEvent)
 		{
 
-			var loader:away.net.AssetLoader = <away.net.AssetLoader> e.target;
+			var loader:away.library.AssetLoader = <away.library.AssetLoader> e.target;
 			var numAssets:number = loader.baseDependency.assets.length;
 
 			for (var i:number = 0; i < numAssets; ++i)
@@ -125,9 +124,9 @@ module examples
 						var mesh:away.entities.Mesh = <away.entities.Mesh> asset;
 
 						this._suzane = mesh;
-						(<away.materials.TextureMaterial> this._suzane.material).lightPicker = this._lightPicker;
+						(<TriangleMaterial> this._suzane.material).lightPicker = this._lightPicker;
 						this._suzane.y = -100;
-						this._mouseOutMaterial = <TextureMaterial> this._suzane.material;
+						this._mouseOutMaterial = <TriangleMaterial> this._suzane.material;
 
 						for (var c:number = 0; c < 80; c++)
 						{

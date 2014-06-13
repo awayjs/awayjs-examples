@@ -62,6 +62,7 @@ module examples
 	import LoaderEvent						= away.events.LoaderEvent;
 	import UVTransform						= away.geom.UVTransform;
 	import Vector3D							= away.geom.Vector3D;
+	import AssetLoaderContext				= away.library.AssetLoaderContext;
 	import AssetType						= away.library.AssetType;
 	import DirectionalLight					= away.lights.DirectionalLight;
 	import PointLight						= away.lights.PointLight;
@@ -69,13 +70,12 @@ module examples
 	import DirectionalShadowMapper			= away.lights.DirectionalShadowMapper;
 	import AWDParser						= away.parsers.AWDParser;
 	import SkyboxMaterial					= away.materials.SkyboxMaterial;
-	import TextureMaterial					= away.materials.TextureMaterial;
-	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
+	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import StaticLightPicker				= away.materials.StaticLightPicker;
 	import ShadowCascadeMethod				= away.materials.ShadowCascadeMethod;
 	import ShadowSoftMethod					= away.materials.ShadowSoftMethod;
 	import EffectFogMethod					= away.materials.EffectFogMethod;
-	import AssetLoaderContext				= away.net.AssetLoaderContext;
 	import URLLoader						= away.net.URLLoader;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import URLRequest						= away.net.URLRequest;
@@ -145,7 +145,7 @@ module examples
 		
 		//material variables
 		private _skyMap:ImageCubeTexture;
-		private _flameMaterial:TextureMaterial;
+		private _flameMaterial:TriangleMaterial;
 		private _numTextures:number /*uint*/ = 0;
 		private _currentTexture:number /*uint*/ = 0;
 		private _loadingTextureStrings:Array<string>;
@@ -627,12 +627,12 @@ module examples
 				var specularTextureName:string;
 				
 //				//store single pass materials for use later
-//				var singleMaterial:TextureMaterial = this._singleMaterialDictionary[name];
+//				var singleMaterial:TriangleMaterial = this._singleMaterialDictionary[name];
 //
 //				if (!singleMaterial) {
 //
 //					//create singlepass material
-//					singleMaterial = new TextureMaterial(this._textureDictionary[textureName]);
+//					singleMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
 //
 //					singleMaterial.name = name;
 //					singleMaterial.lightPicker = this._lightPicker;
@@ -660,17 +660,18 @@ module examples
 //				}
 
 				//store multi pass materials for use later
-				var multiMaterial:TextureMultiPassMaterial = this._multiMaterialDictionary[name];
-				
+				var multiMaterial:TriangleMaterial = this._multiMaterialDictionary[name];
+
 				if (!multiMaterial) {
 					
 					//create multipass material
-					multiMaterial = new TextureMultiPassMaterial(this._textureDictionary[textureName]);
+					multiMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+					multiMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
 					multiMaterial.name = name;
 					multiMaterial.lightPicker = this._lightPicker;
 //					multiMaterial.shadowMethod = this._cascadeMethod;
 					multiMaterial.shadowMethod = this._baseShadowMethod;
-					multiMaterial.addMethod(this._fogMethod);
+					multiMaterial.addEffectMethod(this._fogMethod);
 					multiMaterial.repeat = true;
 					multiMaterial.specular = 2;
 					
@@ -721,7 +722,7 @@ module examples
 			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onExtraResourceComplete));
 
 			//setup the url map for textures in the cubemap file
-			var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
+			var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
 			assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
 			//environment texture
@@ -743,7 +744,7 @@ module examples
 					this._skyMap = <ImageCubeTexture> event.assets[ 0 ];
 					break;
 				case "assets/fire.png" :
-					this._flameMaterial = new TextureMaterial(<ImageTexture> event.assets[ 0 ]);
+					this._flameMaterial = new TriangleMaterial(<ImageTexture> event.assets[ 0 ]);
 					this._flameMaterial.blendMode = BlendMode.ADD;
 					this._flameMaterial.animateUVs = true;
 					break;

@@ -50,19 +50,19 @@ var examples;
     var LoaderEvent = away.events.LoaderEvent;
     var UVTransform = away.geom.UVTransform;
     var Vector3D = away.geom.Vector3D;
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
     var DirectionalLight = away.lights.DirectionalLight;
     var PointLight = away.lights.PointLight;
 
     var AWDParser = away.parsers.AWDParser;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
-    var TextureMaterial = away.materials.TextureMaterial;
-    var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
 
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var EffectFogMethod = away.materials.EffectFogMethod;
-    var AssetLoaderContext = away.net.AssetLoaderContext;
     var URLLoader = away.net.URLLoader;
     var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
     var URLRequest = away.net.URLRequest;
@@ -562,12 +562,12 @@ var examples;
                 var specularTextureName;
 
                 //				//store single pass materials for use later
-                //				var singleMaterial:TextureMaterial = this._singleMaterialDictionary[name];
+                //				var singleMaterial:TriangleMaterial = this._singleMaterialDictionary[name];
                 //
                 //				if (!singleMaterial) {
                 //
                 //					//create singlepass material
-                //					singleMaterial = new TextureMaterial(this._textureDictionary[textureName]);
+                //					singleMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
                 //
                 //					singleMaterial.name = name;
                 //					singleMaterial.lightPicker = this._lightPicker;
@@ -598,13 +598,14 @@ var examples;
 
                 if (!multiMaterial) {
                     //create multipass material
-                    multiMaterial = new TextureMultiPassMaterial(this._textureDictionary[textureName]);
+                    multiMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+                    multiMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
                     multiMaterial.name = name;
                     multiMaterial.lightPicker = this._lightPicker;
 
                     //					multiMaterial.shadowMethod = this._cascadeMethod;
                     multiMaterial.shadowMethod = this._baseShadowMethod;
-                    multiMaterial.addMethod(this._fogMethod);
+                    multiMaterial.addEffectMethod(this._fogMethod);
                     multiMaterial.repeat = true;
                     multiMaterial.specular = 2;
 
@@ -653,7 +654,7 @@ var examples;
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onExtraResourceComplete));
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //environment texture
@@ -673,7 +674,7 @@ var examples;
                     this._skyMap = event.assets[0];
                     break;
                 case "assets/fire.png":
-                    this._flameMaterial = new TextureMaterial(event.assets[0]);
+                    this._flameMaterial = new TriangleMaterial(event.assets[0]);
                     this._flameMaterial.blendMode = BlendMode.ADD;
                     this._flameMaterial.animateUVs = true;
                     break;

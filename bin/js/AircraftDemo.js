@@ -84,7 +84,7 @@ var examples;
             var _this = this;
             this._f14Initialized = true;
 
-            var f14Material = new away.materials.TextureMaterial(this._seaNormalTexture, true, true, false);
+            var f14Material = new away.materials.TriangleMaterial(this._seaNormalTexture, true, true, false);
             f14Material.lightPicker = this._lightPicker;
 
             this._view.scene.addChild(this._f14Geom);
@@ -99,7 +99,7 @@ var examples;
         };
 
         AircraftDemo.prototype.initSea = function () {
-            this._seaMaterial = new away.materials.TextureMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
+            this._seaMaterial = new away.materials.TriangleMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
             this._waterMethod = new away.materials.NormalSimpleWaterMethod(this._seaNormalTexture, this._seaNormalTexture);
             var fresnelMethod = new away.materials.SpecularFresnelMethod();
             fresnelMethod.normalReflectance = .3;
@@ -109,7 +109,7 @@ var examples;
             this._seaMaterial.repeat = true;
             this._seaMaterial.animateUVs = true;
             this._seaMaterial.normalMethod = this._waterMethod;
-            this._seaMaterial.addMethod(new away.materials.EffectEnvMapMethod(this._skyboxCubeTexture));
+            this._seaMaterial.addEffectMethod(new away.materials.EffectEnvMapMethod(this._skyboxCubeTexture));
             this._seaMaterial.specularMethod = fresnelMethod;
             this._seaMaterial.gloss = 100;
             this._seaMaterial.specular = 1;

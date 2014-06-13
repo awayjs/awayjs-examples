@@ -68,7 +68,7 @@ var examples;
         */
         TorusPrimitive.prototype.initMaterial = function (image) {
             this._texture = new away.textures.ImageTexture(image, false); // Create a texture
-            this._material = new away.materials.TextureMaterial(this._texture, true, true, false); // Create a material
+            this._material = new away.materials.TriangleMaterial(this._texture, true, true, false); // Create a material
             this._material.lightPicker = this._lightPicker; // assign the lights to the material
         };
 

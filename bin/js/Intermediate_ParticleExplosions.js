@@ -49,7 +49,7 @@ var examples;
     var Vector3D = away.geom.Vector3D;
 
     var PointLight = away.lights.PointLight;
-    var ColorMaterial = away.materials.ColorMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -122,7 +122,7 @@ var examples;
         */
         Intermediate_ParticleExplosions.prototype.initMaterials = function () {
             //setup the particle material
-            this.colorMaterial = new ColorMaterial(0xFFFFFF);
+            this.colorMaterial = new TriangleMaterial(0xFFFFFF);
             this.colorMaterial.bothSides = true;
             this.colorMaterial.lightPicker = this.lightPicker;
         };

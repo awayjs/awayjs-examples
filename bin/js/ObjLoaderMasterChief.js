@@ -8,13 +8,12 @@ var examples;
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
+
     var AssetType = away.library.AssetType;
 
     var DirectionalLight = away.lights.DirectionalLight;
-
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
-
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var URLRequest = away.net.URLRequest;
     var OBJParser = away.parsers.OBJParser;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -122,10 +121,10 @@ var examples;
                         break;
                     case AssetType.TEXTURE:
                         if (event.url == 'assets/masterchief_base.png') {
-                            this.mat = new TextureMaterial(d, true, true, false);
+                            this.mat = new TriangleMaterial(d, true, true, false);
                             this.mat.lightPicker = new StaticLightPicker([this.light]);
                         } else if (event.url == 'assets/stone_tx.jpg') {
-                            this.terrainMaterial = new TextureMaterial(d, true, true, false);
+                            this.terrainMaterial = new TriangleMaterial(d, true, true, false);
                             this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                         }
 

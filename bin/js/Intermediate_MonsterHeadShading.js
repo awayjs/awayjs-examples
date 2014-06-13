@@ -42,17 +42,18 @@ var examples;
     var ProgressEvent = away.events.ProgressEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
     var DirectionalLight = away.lights.DirectionalLight;
     var PointLight = away.lights.PointLight;
 
     var AWDParser = away.parsers.AWDParser;
     var DiffuseGradientMethod = away.materials.DiffuseGradientMethod;
-    var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
-    var AssetLoaderContext = away.net.AssetLoaderContext;
     var URLLoader = away.net.URLLoader;
     var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
     var URLRequest = away.net.URLRequest;
@@ -322,7 +323,8 @@ var examples;
             AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 
             //setup custom multipass material
-            this._headMaterial = new TextureMultiPassMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+            this._headMaterial = new TriangleMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+            this._headMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
             this._headMaterial.mipmap = false;
             this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
             this._headMaterial.lightPicker = this._lightPicker;

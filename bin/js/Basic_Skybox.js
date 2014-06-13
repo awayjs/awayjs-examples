@@ -28,22 +28,20 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var View = away.containers.View;
-    var Mesh = away.entities.Mesh;
+
     var Skybox = away.entities.Skybox;
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
-    var AssetType = away.library.AssetType;
-
-    var ColorMaterial = away.materials.ColorMaterial;
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var EffectEnvMapMethod = away.materials.EffectEnvMapMethod;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
-    var AssetLoaderContext = away.net.AssetLoaderContext;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var URLRequest = away.net.URLRequest;
     var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
     var PerspectiveProjection = away.projections.PerspectiveProjection;
     var DefaultRenderer = away.render.DefaultRenderer;
-    var ImageCubeTexture = away.textures.ImageCubeTexture;
+
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
     var Basic_SkyBox = (function () {
@@ -85,7 +83,7 @@ var examples;
         */
         Basic_SkyBox.prototype.initMaterials = function () {
             //setup the torus material
-            this._torusMaterial = new ColorMaterial(0xFFFFFF, 1);
+            this._torusMaterial = new TriangleMaterial(0xFFFFFF, 1);
             this._torusMaterial.specular = 0.5;
             this._torusMaterial.ambient = 0.25;
             this._torusMaterial.ambientColor = 0x111199;
@@ -155,7 +153,7 @@ var examples;
                     this._skyBox = new Skybox(new SkyboxMaterial(this._cubeTexture));
                     this._view.scene.addChild(this._skyBox);
 
-                    this._torusMaterial.addMethod(new EffectEnvMapMethod(this._cubeTexture, 1));
+                    this._torusMaterial.addEffectMethod(new EffectEnvMapMethod(this._cubeTexture, 1));
 
                     break;
             }

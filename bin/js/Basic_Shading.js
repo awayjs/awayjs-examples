@@ -40,7 +40,7 @@ var examples;
     var DirectionalLight = away.lights.DirectionalLight;
     var DefaultMaterialManager = away.materials.DefaultMaterialManager;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var URLRequest = away.net.URLRequest;
     var PrimitiveCubePrefab = away.prefabs.PrimitiveCubePrefab;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
@@ -117,17 +117,17 @@ var examples;
         * Initialise the materials
         */
         Basic_Shading.prototype.initMaterials = function () {
-            this._planeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._planeMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._planeMaterial.lightPicker = this._lightPicker;
             this._planeMaterial.repeat = true;
 
-            this._sphereMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._sphereMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._sphereMaterial.lightPicker = this._lightPicker;
 
-            this._cubeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._cubeMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._cubeMaterial.lightPicker = this._lightPicker;
 
-            this._torusMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._torusMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._torusMaterial.lightPicker = this._lightPicker;
             this._torusMaterial.repeat = true;
             this._torusMaterial.mipmap = true;

@@ -47,8 +47,8 @@ var examples;
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
     var DirectionalLight = away.lights.DirectionalLight;
-    var TextureMaterial = away.materials.TextureMaterial;
-    var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -121,13 +121,14 @@ var examples;
         * Initialise the materials
         */
         Basic_Fire.prototype.initMaterials = function () {
-            this.planeMaterial = new TextureMultiPassMaterial();
+            this.planeMaterial = new TriangleMaterial();
+            this.planeMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
             this.planeMaterial.lightPicker = this.lightPicker;
             this.planeMaterial.repeat = true;
             this.planeMaterial.mipmap = false;
             this.planeMaterial.specular = 10;
 
-            this.particleMaterial = new TextureMaterial();
+            this.particleMaterial = new TriangleMaterial();
             this.particleMaterial.blendMode = BlendMode.ADD;
         };
 

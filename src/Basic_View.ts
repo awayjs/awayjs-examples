@@ -46,10 +46,10 @@ module examples
 	import LoaderEvent					= away.events.LoaderEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import TextureMaterial				= away.materials.TextureMaterial;
-	import AssetLoaderContext			= away.net.AssetLoaderContext;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
@@ -64,7 +64,7 @@ module examples
         private _view:View;
 
         //material objects
-        private _planeMaterial:TextureMaterial;
+        private _planeMaterial:TriangleMaterial;
 
         //scene objects
         private _plane:Mesh;
@@ -86,7 +86,7 @@ module examples
             this._view.camera.lookAt(new Vector3D());
 
             //setup the materials
-            this._planeMaterial = new TextureMaterial();
+            this._planeMaterial = new TriangleMaterial();
 
             //setup the scene
             this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();

@@ -34,8 +34,7 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
 
-    var TextureMaterial = away.materials.TextureMaterial;
-
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var URLRequest = away.net.URLRequest;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
 
@@ -58,7 +57,7 @@ var examples;
             this._view.camera.lookAt(new Vector3D());
 
             //setup the materials
-            this._planeMaterial = new TextureMaterial();
+            this._planeMaterial = new TriangleMaterial();
 
             //setup the scene
             this._plane = new PrimitivePlanePrefab(700, 700).getNewObject();

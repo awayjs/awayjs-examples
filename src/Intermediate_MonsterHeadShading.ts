@@ -54,17 +54,18 @@ module examples
 	import ProgressEvent				= away.events.ProgressEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import AssetType					= away.library.AssetType;
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import PointLight					= away.lights.PointLight;
 	import DirectionalShadowMapper		= away.lights.DirectionalShadowMapper;
 	import AWDParser					= away.parsers.AWDParser;
 	import DiffuseGradientMethod		= away.materials.DiffuseGradientMethod;
-	import TextureMultiPassMaterial		= away.materials.TextureMultiPassMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMaterialMode			= away.materials.TriangleMaterialMode;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import SpecularFresnelMethod		= away.materials.SpecularFresnelMethod;
 	import ShadowSoftMethod				= away.materials.ShadowSoftMethod;
-	import AssetLoaderContext			= away.net.AssetLoaderContext;
 	import URLLoader					= away.net.URLLoader;
 	import URLLoaderDataFormat			= away.net.URLLoaderDataFormat;
 	import URLRequest					= away.net.URLRequest;
@@ -88,7 +89,7 @@ module examples
 		private _cameraController:HoverController;
 		
 		//material objects
-		private _headMaterial:TextureMultiPassMaterial;
+		private _headMaterial:TriangleMaterial;
 		private _softShadowMethod:ShadowSoftMethod;
 		private _fresnelMethod:SpecularFresnelMethod;
 		//private _diffuseMethod:BasicDiffuseMethod;
@@ -218,12 +219,11 @@ module examples
 		 */
 		private initListeners()
 		{
-			window.onresize  = (event) => this.onResize(event);
+			window.onresize  = (event:UIEvent) => this.onResize(event);
 
-			document.onmousedown = (event) => this.onMouseDown(event);
-			document.onmouseup = (event) => this.onMouseUp(event);
-			document.onmousemove = (event) => this.onMouseMove(event);
-
+			document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+			document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+			document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
 			this.onResize();
 
@@ -233,7 +233,6 @@ module examples
 			this.onBitmapCompleteDelegate = (event) => this.onBitmapComplete(event);
 			this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
 			this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
-
 
 			this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this.timer.start();
@@ -377,7 +376,8 @@ module examples
 			AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 			
 			//setup custom multipass material
-			this._headMaterial = new TextureMultiPassMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+			this._headMaterial = new TriangleMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+			this._headMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
 			this._headMaterial.mipmap = false;
 			this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
 			this._headMaterial.lightPicker = this._lightPicker;
@@ -426,7 +426,7 @@ module examples
 		/**
 		 * Mouse down listener for navigation
 		 */
-		private onMouseDown(event)
+		private onMouseDown(event:MouseEvent)
 		{
 			this._lastPanAngle = this._cameraController.panAngle;
 			this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -438,7 +438,7 @@ module examples
 		/**
 		 * Mouse up listener for navigation
 		 */
-		private onMouseUp(event)
+		private onMouseUp(event:MouseEvent)
 		{
 			this._move = false;
 		}
@@ -446,7 +446,7 @@ module examples
 		/**
 		 * Mouse move listener for mouseLock
 		 */
-		private onMouseMove(event)
+		private onMouseMove(event:MouseEvent)
 		{
 			if (this._move) {
 				this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -457,12 +457,12 @@ module examples
 		/**
 		 * window listener for resize events
 		 */
-		private onResize(event = null)
+		private onResize(event:UIEvent = null)
 		{
-			this._view.y         = 0;
-			this._view.x         = 0;
-			this._view.width     = window.innerWidth;
-			this._view.height    = window.innerHeight;
+			this._view.y = 0;
+			this._view.x = 0;
+			this._view.width = window.innerWidth;
+			this._view.height = window.innerHeight;
 		}
 	}
 }

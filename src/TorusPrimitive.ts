@@ -11,7 +11,7 @@ module examples
 		private _raf:away.utils.RequestAnimationFrame;
 		private _image:HTMLImageElement;
 		private _texture:away.textures.ImageTexture;
-		private _material:away.materials.TextureMaterial;
+		private _material:away.materials.TriangleMaterial;
 		private _light:away.lights.DirectionalLight;
 		private _lightPicker:away.materials.StaticLightPicker
 
@@ -79,7 +79,7 @@ module examples
 		private initMaterial (image:HTMLImageElement):void
 		{
 			this._texture = new away.textures.ImageTexture (image, false); // Create a texture
-			this._material = new away.materials.TextureMaterial (this._texture, true, true, false); // Create a material
+			this._material = new away.materials.TriangleMaterial (this._texture, true, true, false); // Create a material
 			this._material.lightPicker = this._lightPicker; // assign the lights to the material
 		}
 

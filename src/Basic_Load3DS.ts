@@ -48,13 +48,13 @@ module examples
 	import LoaderEvent					= away.events.LoaderEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import ShadowSoftMethod				= away.materials.ShadowSoftMethod;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
-	import AssetLoaderContext			= away.net.AssetLoaderContext;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import Max3DSParser					= away.parsers.Max3DSParser;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
@@ -68,7 +68,7 @@ module examples
         private _cameraController:HoverController;
 
         //material objects
-        private _groundMaterial:TextureMaterial;
+        private _groundMaterial:TriangleMaterial;
 
         //light objects
         private _light:DirectionalLight;
@@ -139,7 +139,7 @@ module examples
          */
         private initMaterials():void
         {
-            this._groundMaterial = new TextureMaterial();
+            this._groundMaterial = new TriangleMaterial();
             this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
@@ -218,7 +218,7 @@ module examples
                     mesh.castsShadows = true;
                     break;
                 case AssetType.MATERIAL :
-                    var material:TextureMaterial = <TextureMaterial> event.asset;
+                    var material:TriangleMaterial = <TriangleMaterial> event.asset;
                     material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
                     material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;

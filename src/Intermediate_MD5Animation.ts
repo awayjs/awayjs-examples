@@ -60,6 +60,7 @@ module examples
     import LoaderEvent                          = away.events.LoaderEvent;
 	import UVTransform                          = away.geom.UVTransform;
 	import AssetLibrary                         = away.library.AssetLibrary;
+	import AssetLoaderContext					= away.library.AssetLoaderContext;
 	import AssetType                            = away.library.AssetType;
 	import PointLight                           = away.lights.PointLight;
     import DirectionalLight                     = away.lights.DirectionalLight;
@@ -70,7 +71,7 @@ module examples
     import EffectFogMethod                      = away.materials.EffectFogMethod;
 	import SkyboxMaterial                       = away.materials.SkyboxMaterial;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
-    import TextureMaterial                      = away.materials.TextureMaterial;
+    import TriangleMaterial                     = away.materials.TriangleMaterial;
     import ShadowSoftMethod                  	= away.materials.ShadowSoftMethod;
     import ShadowNearMethod                  	= away.materials.ShadowNearMethod;
     import URLRequest                           = away.net.URLRequest;
@@ -121,11 +122,11 @@ module examples
 		private count:number = 0;
 
 		//material objects
-		private redLightMaterial:TextureMaterial;
-		private blueLightMaterial:TextureMaterial;
-		private groundMaterial:TextureMaterial;
-		private bodyMaterial:TextureMaterial;
-        private gobMaterial:TextureMaterial;
+		private redLightMaterial:TriangleMaterial;
+		private blueLightMaterial:TriangleMaterial;
+		private groundMaterial:TriangleMaterial;
+		private bodyMaterial:TriangleMaterial;
+        private gobMaterial:TriangleMaterial;
 		private cubeTexture:ImageCubeTexture;
 
 		//scene objects
@@ -241,38 +242,38 @@ module examples
 		private initMaterials():void
 		{
 			//red light material
-            this.redLightMaterial = new TextureMaterial();
+            this.redLightMaterial = new TriangleMaterial();
             this.redLightMaterial.alphaBlending = true;
-            this.redLightMaterial.addMethod(this.fogMethod);
+            this.redLightMaterial.addEffectMethod(this.fogMethod);
 
 			//blue light material
-            this.blueLightMaterial = new TextureMaterial();
+            this.blueLightMaterial = new TriangleMaterial();
             this.blueLightMaterial.alphaBlending = true;
-            this.blueLightMaterial.addMethod(this.fogMethod);
+            this.blueLightMaterial.addEffectMethod(this.fogMethod);
 
 			//ground material
-            this.groundMaterial = new TextureMaterial();
+            this.groundMaterial = new TriangleMaterial();
             this.groundMaterial.smooth = true;
             this.groundMaterial.repeat = true;
             this.groundMaterial.lightPicker = this.lightPicker;
             this.groundMaterial.shadowMethod = this.shadowMapMethod;
-            this.groundMaterial.addMethod(this.fogMethod);
+            this.groundMaterial.addEffectMethod(this.fogMethod);
 
 			//body material
-            this.bodyMaterial = new TextureMaterial();
+            this.bodyMaterial = new TriangleMaterial();
             this.bodyMaterial.gloss = 20;
             this.bodyMaterial.specular = 1.5;
-            this.bodyMaterial.addMethod(this.fogMethod);
+            this.bodyMaterial.addEffectMethod(this.fogMethod);
             this.bodyMaterial.lightPicker = this.lightPicker;
             this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 
             //gob material
-            this.gobMaterial = new TextureMaterial();
+            this.gobMaterial = new TriangleMaterial();
             this.gobMaterial.alphaBlending = true;
             this.gobMaterial.smooth = true;
             this.gobMaterial.repeat = true;
             this.gobMaterial.animateUVs = true;
-            this.gobMaterial.addMethod(this.fogMethod);
+            this.gobMaterial.addEffectMethod(this.fogMethod);
             this.gobMaterial.lightPicker = this.lightPicker;
             this.gobMaterial.shadowMethod = this.shadowMapMethod;
 		}
@@ -320,7 +321,7 @@ module examples
             this._timer.start();
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //load hellknight mesh

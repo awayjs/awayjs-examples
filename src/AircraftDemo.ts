@@ -22,7 +22,7 @@ module examples
         private _seaMesh			: away.entities.Mesh;
         private _seaNormalTexture	: away.textures.ImageTexture;
         private _seaInitialized		: boolean = false;
-        private _seaMaterial        : away.materials.TextureMaterial;
+        private _seaMaterial        : away.materials.TriangleMaterial;
         //}
 		
         //{ f14
@@ -59,7 +59,7 @@ module examples
 		
         private loadAsset( path: string ):void
         {
-            var token:away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
+            var token:away.library.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
             token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete) );
         }
 		
@@ -116,7 +116,7 @@ module examples
         {
 			this._f14Initialized = true;
 			
-			var f14Material: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+			var f14Material: away.materials.TriangleMaterial = new away.materials.TriangleMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 			f14Material.lightPicker = this._lightPicker;
 			
 			this._view.scene.addChild( this._f14Geom );
@@ -130,7 +130,7 @@ module examples
 
         private initSea():void
         {
-			this._seaMaterial                                       = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+			this._seaMaterial                                       = new away.materials.TriangleMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 			this._waterMethod                                       = new away.materials.NormalSimpleWaterMethod( this._seaNormalTexture, this._seaNormalTexture );
 			var fresnelMethod:away.materials.SpecularFresnelMethod  = new away.materials.SpecularFresnelMethod();
 			fresnelMethod.normalReflectance                         = .3;
@@ -140,7 +140,7 @@ module examples
 			this._seaMaterial.repeat          = true;
 			this._seaMaterial.animateUVs      = true;
 			this._seaMaterial.normalMethod    = this._waterMethod ;
-			this._seaMaterial.addMethod( new away.materials.EffectEnvMapMethod( this._skyboxCubeTexture ) );
+			this._seaMaterial.addEffectMethod( new away.materials.EffectEnvMapMethod( this._skyboxCubeTexture ) );
 			this._seaMaterial.specularMethod  = fresnelMethod;
 			this._seaMaterial.gloss           = 100;
 			this._seaMaterial.specular        = 1;
@@ -156,7 +156,7 @@ module examples
 		
         public onResourceComplete ( e: away.events.LoaderEvent )
         {
-            var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
+            var loader			: away.library.AssetLoader   	= <away.library.AssetLoader> e.target;
             var numAssets		: number 						= loader.baseDependency.assets.length;
             var i				: number						= 0;
 			

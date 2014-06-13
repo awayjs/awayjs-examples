@@ -9,15 +9,13 @@ module examples
 	import LoaderEvent					= away.events.LoaderEvent;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
+	import AssetLoader					= away.library.AssetLoader;
+	import AssetLoaderToken				= away.library.AssetLoaderToken;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
 	import DirectionalLight				= away.lights.DirectionalLight;
-	import ColorMaterial				= away.materials.ColorMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
-	import TextureMultiPassMaterial		= away.materials.TextureMultiPassMaterial;
-	import AssetLoader					= away.net.AssetLoader;
-	import AssetLoaderToken				= away.net.AssetLoaderToken;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import OBJParser					= away.parsers.OBJParser;
 	import DefaultRenderer				= away.render.DefaultRenderer;
@@ -30,9 +28,9 @@ module examples
 		private view:View;
 		private raf:RequestAnimationFrame;
 		private meshes:Array<Mesh> = new Array<Mesh>();
-		private mat:TextureMaterial;
+		private mat:TriangleMaterial;
 
-		private terrainMaterial:TextureMaterial;
+		private terrainMaterial:TriangleMaterial;
 
 		private light:DirectionalLight;
 
@@ -132,10 +130,10 @@ module examples
 						break;
 					case AssetType.TEXTURE :
 						if (event.url == 'assets/masterchief_base.png' ) {
-							this.mat = new TextureMaterial( <ImageTexture> d, true, true, false );
+							this.mat = new TriangleMaterial( <ImageTexture> d, true, true, false );
 							this.mat.lightPicker = new StaticLightPicker([this.light]);
 						} else if (event.url == 'assets/stone_tx.jpg') {
-							this.terrainMaterial = new TextureMaterial(<ImageTexture> d, true, true, false);
+							this.terrainMaterial = new TriangleMaterial(<ImageTexture> d, true, true, false);
 							this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 						}
 

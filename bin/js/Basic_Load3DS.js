@@ -35,13 +35,13 @@ var examples;
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
 
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
 
     var DirectionalLight = away.lights.DirectionalLight;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
-    var AssetLoaderContext = away.net.AssetLoaderContext;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var Max3DSParser = away.parsers.Max3DSParser;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -95,7 +95,7 @@ var examples;
         * Initialise the materials
         */
         Basic_Load3DS.prototype.initMaterials = function () {
-            this._groundMaterial = new TextureMaterial();
+            this._groundMaterial = new TriangleMaterial();
             this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;

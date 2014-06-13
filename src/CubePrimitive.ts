@@ -9,7 +9,7 @@ module examples
 	import Vector3D						= away.geom.Vector3D;
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLLoader					= away.net.URLLoader;
 	import URLLoaderDataFormat			= away.net.URLLoaderDataFormat;
 	import URLRequest					= away.net.URLRequest;
@@ -132,7 +132,7 @@ module examples
 		private imageCompleteHandler(event:Event)
 		{
 			var ts:ImageTexture = new ImageTexture(this._image, false);
-			var matTx:TextureMaterial = new TextureMaterial (ts, true, true, false);
+			var matTx:TriangleMaterial = new TriangleMaterial (ts, true, true, false);
 			matTx.blendMode = BlendMode.ADD;
 			matTx.bothSides = true;
 			matTx.lightPicker = this._lightPicker;

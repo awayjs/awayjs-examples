@@ -1,14 +1,14 @@
 ///<reference path="../libs/stagegl-renderer.next.d.ts" />
 var examples;
 (function (examples) {
-    var ColorMaterial = away.materials.ColorMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
 
     var AWDSuzanne = (function () {
         function AWDSuzanne() {
             var _this = this;
             this._lookAtPosition = new away.geom.Vector3D();
             this._cameraIncrement = 0;
-            this._mouseOverMaterial = new ColorMaterial(0xFF0000);
+            this._mouseOverMaterial = new TriangleMaterial(0xFF0000);
             this.initView();
             this.loadAssets();
             this.initLights();

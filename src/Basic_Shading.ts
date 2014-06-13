@@ -54,7 +54,7 @@ module examples
 	import DirectionalLight				= away.lights.DirectionalLight;
 	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TextureMaterial				= away.materials.TextureMaterial;
+	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import PrimitiveCubePrefab			= away.prefabs.PrimitiveCubePrefab;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
@@ -73,10 +73,10 @@ module examples
         private _cameraController:HoverController;
 
         //material objects
-        private _planeMaterial:TextureMaterial;
-        private _sphereMaterial:TextureMaterial;
-        private _cubeMaterial:TextureMaterial;
-        private _torusMaterial:TextureMaterial;
+        private _planeMaterial:TriangleMaterial;
+        private _sphereMaterial:TriangleMaterial;
+        private _cubeMaterial:TriangleMaterial;
+        private _torusMaterial:TriangleMaterial;
 
         //light objects
         private _light1:DirectionalLight;
@@ -168,17 +168,17 @@ module examples
          */
         private initMaterials():void
         {
-            this._planeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._planeMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._planeMaterial.lightPicker = this._lightPicker;
             this._planeMaterial.repeat = true;
 
-            this._sphereMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._sphereMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._sphereMaterial.lightPicker = this._lightPicker;
 
-            this._cubeMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._cubeMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._cubeMaterial.lightPicker = this._lightPicker;
 
-            this._torusMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
+            this._torusMaterial = new TriangleMaterial(DefaultMaterialManager.getDefaultTexture());
             this._torusMaterial.lightPicker = this._lightPicker;
             this._torusMaterial.repeat = true;
 			this._torusMaterial.mipmap = true;

@@ -46,6 +46,7 @@ var examples;
 
     var UVTransform = away.geom.UVTransform;
     var AssetLibrary = away.library.AssetLibrary;
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
     var PointLight = away.lights.PointLight;
     var DirectionalLight = away.lights.DirectionalLight;
@@ -56,7 +57,7 @@ var examples;
     var EffectFogMethod = away.materials.EffectFogMethod;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var ShadowNearMethod = away.materials.ShadowNearMethod;
     var URLRequest = away.net.URLRequest;
@@ -166,38 +167,38 @@ var examples;
         */
         Intermediate_MD5Animation.prototype.initMaterials = function () {
             //red light material
-            this.redLightMaterial = new TextureMaterial();
+            this.redLightMaterial = new TriangleMaterial();
             this.redLightMaterial.alphaBlending = true;
-            this.redLightMaterial.addMethod(this.fogMethod);
+            this.redLightMaterial.addEffectMethod(this.fogMethod);
 
             //blue light material
-            this.blueLightMaterial = new TextureMaterial();
+            this.blueLightMaterial = new TriangleMaterial();
             this.blueLightMaterial.alphaBlending = true;
-            this.blueLightMaterial.addMethod(this.fogMethod);
+            this.blueLightMaterial.addEffectMethod(this.fogMethod);
 
             //ground material
-            this.groundMaterial = new TextureMaterial();
+            this.groundMaterial = new TriangleMaterial();
             this.groundMaterial.smooth = true;
             this.groundMaterial.repeat = true;
             this.groundMaterial.lightPicker = this.lightPicker;
             this.groundMaterial.shadowMethod = this.shadowMapMethod;
-            this.groundMaterial.addMethod(this.fogMethod);
+            this.groundMaterial.addEffectMethod(this.fogMethod);
 
             //body material
-            this.bodyMaterial = new TextureMaterial();
+            this.bodyMaterial = new TriangleMaterial();
             this.bodyMaterial.gloss = 20;
             this.bodyMaterial.specular = 1.5;
-            this.bodyMaterial.addMethod(this.fogMethod);
+            this.bodyMaterial.addEffectMethod(this.fogMethod);
             this.bodyMaterial.lightPicker = this.lightPicker;
             this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 
             //gob material
-            this.gobMaterial = new TextureMaterial();
+            this.gobMaterial = new TriangleMaterial();
             this.gobMaterial.alphaBlending = true;
             this.gobMaterial.smooth = true;
             this.gobMaterial.repeat = true;
             this.gobMaterial.animateUVs = true;
-            this.gobMaterial.addMethod(this.fogMethod);
+            this.gobMaterial.addEffectMethod(this.fogMethod);
             this.gobMaterial.lightPicker = this.lightPicker;
             this.gobMaterial.shadowMethod = this.shadowMapMethod;
         };
@@ -250,7 +251,7 @@ var examples;
             this._timer.start();
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //load hellknight mesh

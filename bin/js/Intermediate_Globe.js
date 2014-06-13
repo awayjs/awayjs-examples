@@ -46,16 +46,17 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var Point = away.geom.Point;
     var PointLight = away.lights.PointLight;
+    var AssetLibrary = away.library.AssetLibrary;
+    var AssetLoaderContext = away.library.AssetLoaderContext;
     var DiffuseCompositeMethod = away.materials.DiffuseCompositeMethod;
     var SpecularCompositeMethod = away.materials.SpecularCompositeMethod;
-    var ColorMaterial = away.materials.ColorMaterial;
 
     var SkyboxMaterial = away.materials.SkyboxMaterial;
     var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
     var SpecularPhongMethod = away.materials.SpecularPhongMethod;
 
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TextureMaterial = away.materials.TextureMaterial;
+    var TriangleMaterial = away.materials.TriangleMaterial;
     var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
 
@@ -148,10 +149,10 @@ var examples;
             specular.fresnelPower = 1;
             specular.normalReflectance = 0.1;
 
-            this.sunMaterial = new TextureMaterial();
+            this.sunMaterial = new TriangleMaterial();
             this.sunMaterial.blendMode = BlendMode.ADD;
 
-            this.groundMaterial = new TextureMaterial();
+            this.groundMaterial = new TriangleMaterial();
             this.groundMaterial.specularMethod = specular;
             this.groundMaterial.lightPicker = this.lightPicker;
             this.groundMaterial.gloss = 5;
@@ -159,7 +160,7 @@ var examples;
             this.groundMaterial.ambientColor = 0xFFFFFF;
             this.groundMaterial.ambient = 1;
 
-            this.cloudMaterial = new TextureMaterial();
+            this.cloudMaterial = new TriangleMaterial();
             this.cloudMaterial.alphaBlending = true;
             this.cloudMaterial.lightPicker = this.lightPicker;
             this.cloudMaterial.specular = 0;
@@ -169,7 +170,7 @@ var examples;
             this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
             this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
-            this.atmosphereMaterial = new ColorMaterial(0x1671cc);
+            this.atmosphereMaterial = new TriangleMaterial(0x1671cc);
             this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
             this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
             this.atmosphereMaterial.blendMode = BlendMode.ADD;
@@ -267,32 +268,32 @@ var examples;
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+            AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.net.AssetLoaderContext();
+            var assetLoaderContext = new AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
 
             //environment texture
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/skybox/space_texture.cube"), assetLoaderContext);
+            AssetLibrary.load(new away.net.URLRequest("assets/skybox/space_texture.cube"), assetLoaderContext);
 
             //globe textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/globe/cloud_combined_2048.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/globe/earth_specular_2048.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/globe/EarthNormal.png"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/globe/land_lights_16384.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/globe/land_ocean_ice_2048_match.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/globe/cloud_combined_2048.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/globe/earth_specular_2048.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/globe/EarthNormal.png"));
+            AssetLibrary.load(new away.net.URLRequest("assets/globe/land_lights_16384.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/globe/land_ocean_ice_2048_match.jpg"));
 
             //flare textures
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare2.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare3.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare4.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare6.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare7.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare8.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare10.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare11.jpg"));
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare12.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare2.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare3.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare4.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare6.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare7.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare8.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare10.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare11.jpg"));
+            AssetLibrary.load(new away.net.URLRequest("assets/lensflare/flare12.jpg"));
         };
 
         /**
@@ -530,7 +531,7 @@ var AlignmentMode = away.base.AlignmentMode;
 var Billboard = away.entities.Billboard;
 var Point = away.geom.Point;
 var Vector3D = away.geom.Vector3D;
-var TextureMaterial = away.materials.TextureMaterial;
+var TriangleMaterial = away.materials.TriangleMaterial;
 var BitmapTexture = away.textures.BitmapTexture;
 var Cast = away.utils.Cast;
 
@@ -543,7 +544,7 @@ var FlareObject = (function () {
         var bd = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-        var billboardMaterial = new TextureMaterial(new BitmapTexture(bd, false));
+        var billboardMaterial = new TriangleMaterial(new BitmapTexture(bd, false));
         billboardMaterial.alpha = opacity / 100;
         billboardMaterial.alphaBlending = true;
 
