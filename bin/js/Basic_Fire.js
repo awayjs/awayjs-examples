@@ -46,7 +46,7 @@ var examples;
     var TimerEvent = away.events.TimerEvent;
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var TriangleMaterial = away.materials.TriangleMaterial;
     var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
@@ -386,7 +386,7 @@ var examples;
 
 var ParticleAnimator = away.animators.ParticleAnimator;
 var Mesh = away.entities.Mesh;
-var PointLight = away.lights.PointLight;
+var PointLight = away.entities.PointLight;
 
 /**
 * Data class for the fire objects

@@ -53,7 +53,7 @@ module examples
 	import AssetLibrary				= away.library.AssetLibrary;
 	import AssetType				= away.library.AssetType;
 	import IAsset					= away.library.IAsset;
-	import DirectionalLight			= away.lights.DirectionalLight;
+	import DirectionalLight			= away.entities.DirectionalLight;
 	import MD2Parser				= away.parsers.MD2Parser;
 	import PrimitivePlanePrefab		= away.prefabs.PrimitivePlanePrefab;
 	import ShadowFilteredMethod		= away.materials.ShadowFilteredMethod;

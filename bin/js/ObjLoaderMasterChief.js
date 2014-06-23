@@ -11,7 +11,7 @@ var examples;
 
     var AssetType = away.library.AssetType;
 
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TriangleMaterial = away.materials.TriangleMaterial;
     var URLRequest = away.net.URLRequest;

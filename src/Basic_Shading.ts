@@ -6,7 +6,7 @@
 
  Demonstrates:
 
- How to create multiple lightsources in a scene.
+ How to create multiple entitiesources in a scene.
  How to apply specular maps, normals maps and diffuse texture maps to a material.
 
  Code by Rob Bateman
@@ -51,7 +51,7 @@ module examples
 	import AssetLibrary					= away.library.AssetLibrary;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
@@ -141,7 +141,7 @@ module examples
         }
 
         /**
-         * Initialise the lights
+         * Initialise the entities
          */
         private initLights():void
         {

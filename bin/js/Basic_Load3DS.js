@@ -38,7 +38,7 @@ var examples;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
 
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TriangleMaterial = away.materials.TriangleMaterial;

@@ -62,9 +62,9 @@ module examples
 	import AssetLibrary                         = away.library.AssetLibrary;
 	import AssetLoaderContext					= away.library.AssetLoaderContext;
 	import AssetType                            = away.library.AssetType;
-	import PointLight                           = away.lights.PointLight;
-    import DirectionalLight                     = away.lights.DirectionalLight;
-	import NearDirectionalShadowMapper          = away.lights.NearDirectionalShadowMapper;
+	import PointLight                           = away.entities.PointLight;
+    import DirectionalLight                     = away.entities.DirectionalLight;
+	import NearDirectionalShadowMapper          = away.materials.NearDirectionalShadowMapper;
 	import MD5AnimParser                        = away.parsers.MD5AnimParser;
     import MD5MeshParser                        = away.parsers.MD5MeshParser;
 	import PrimitivePlanePrefab                 = away.prefabs.PrimitivePlanePrefab;
@@ -198,7 +198,7 @@ module examples
 //		}
 
 		/**
-		 * Initialise the lights
+		 * Initialise the entities
 		 */
 		private initLights():void
 		{
@@ -436,7 +436,7 @@ module examples
                     this.scene.addChild(this.skyBox);
                     break;
 
-                //lights textures
+                //entities textures
                 case "assets/redlight.png" :
                     this.redLightMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;

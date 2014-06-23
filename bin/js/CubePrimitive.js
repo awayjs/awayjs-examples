@@ -6,7 +6,7 @@ var examples;
     var View = away.containers.View;
 
     var Vector3D = away.geom.Vector3D;
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TriangleMaterial = away.materials.TriangleMaterial;
     var URLLoader = away.net.URLLoader;

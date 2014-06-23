@@ -64,10 +64,10 @@ module examples
 	import Vector3D							= away.geom.Vector3D;
 	import AssetLoaderContext				= away.library.AssetLoaderContext;
 	import AssetType						= away.library.AssetType;
-	import DirectionalLight					= away.lights.DirectionalLight;
-	import PointLight						= away.lights.PointLight;
-//	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
-	import DirectionalShadowMapper			= away.lights.DirectionalShadowMapper;
+	import DirectionalLight					= away.entities.DirectionalLight;
+	import PointLight						= away.entities.PointLight;
+//	import CascadeShadowMapper				= away.entities.CascadeShadowMapper;
+	import DirectionalShadowMapper			= away.materials.DirectionalShadowMapper;
 	import AWDParser						= away.parsers.AWDParser;
 	import SkyboxMaterial					= away.materials.SkyboxMaterial;
 	import TriangleMaterial					= away.materials.TriangleMaterial;
@@ -900,7 +900,7 @@ module examples
 
 import Mesh					= away.entities.Mesh;
 import Vector3D				= away.geom.Vector3D;
-import PointLight			= away.lights.PointLight;
+import PointLight			= away.entities.PointLight;
 
 
 /**

@@ -2,7 +2,7 @@
 /*
 Shading example in Away3d
 Demonstrates:
-How to create multiple lightsources in a scene.
+How to create multiple entitiesources in a scene.
 How to apply specular maps, normals maps and diffuse texture maps to a material.
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -37,7 +37,7 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
 
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var DefaultMaterialManager = away.materials.DefaultMaterialManager;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TriangleMaterial = away.materials.TriangleMaterial;
@@ -92,7 +92,7 @@ var examples;
         };
 
         /**
-        * Initialise the lights
+        * Initialise the entities
         */
         Basic_Shading.prototype.initLights = function () {
             this._light1 = new DirectionalLight();

@@ -47,7 +47,7 @@ var examples;
         *
         */
         AWDSuzanne.prototype.initLights = function () {
-            this._light = new away.lights.DirectionalLight();
+            this._light = new away.entities.DirectionalLight();
             this._light.color = 0x683019;
             this._light.direction = new away.geom.Vector3D(1, 0, 0);
             this._light.ambient = 0.1;

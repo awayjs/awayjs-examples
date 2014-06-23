@@ -35,7 +35,7 @@ var examples;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
 
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
 
     var URLRequest = away.net.URLRequest;
@@ -75,7 +75,7 @@ var examples;
         };
 
         /**
-        * Initialise the lights
+        * Initialise the entities
         */
         Basic_LoadAWD.prototype.initLights = function () {
             //create the light for the scene

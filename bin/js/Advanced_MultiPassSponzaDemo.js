@@ -52,8 +52,8 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
-    var DirectionalLight = away.lights.DirectionalLight;
-    var PointLight = away.lights.PointLight;
+    var DirectionalLight = away.entities.DirectionalLight;
+    var PointLight = away.entities.PointLight;
 
     var AWDParser = away.parsers.AWDParser;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
@@ -823,7 +823,7 @@ var examples;
 
 var Mesh = away.entities.Mesh;
 var Vector3D = away.geom.Vector3D;
-var PointLight = away.lights.PointLight;
+var PointLight = away.entities.PointLight;
 
 /**
 * Data class for the Flame objects

@@ -56,9 +56,9 @@ module examples
 	import AssetLibrary					= away.library.AssetLibrary;
 	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import AssetType					= away.library.AssetType;
-	import DirectionalLight				= away.lights.DirectionalLight;
-	import PointLight					= away.lights.PointLight;
-	import DirectionalShadowMapper		= away.lights.DirectionalShadowMapper;
+	import DirectionalLight				= away.entities.DirectionalLight;
+	import PointLight					= away.entities.PointLight;
+	import DirectionalShadowMapper		= away.materials.DirectionalShadowMapper;
 	import AWDParser					= away.parsers.AWDParser;
 	import DiffuseGradientMethod		= away.materials.DiffuseGradientMethod;
 	import TriangleMaterial				= away.materials.TriangleMaterial;

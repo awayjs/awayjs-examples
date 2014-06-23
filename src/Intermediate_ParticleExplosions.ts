@@ -61,7 +61,7 @@ module examples
 	import ColorTransform				= away.geom.ColorTransform;
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
-	import PointLight					= away.lights.PointLight;
+	import PointLight					= away.entities.PointLight;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;

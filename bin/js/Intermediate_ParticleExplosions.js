@@ -48,7 +48,7 @@ var examples;
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
 
-    var PointLight = away.lights.PointLight;
+    var PointLight = away.entities.PointLight;
     var TriangleMaterial = away.materials.TriangleMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;

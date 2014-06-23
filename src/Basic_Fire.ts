@@ -60,7 +60,7 @@ module examples
 	import TimerEvent							= away.events.TimerEvent;
 	import ColorTransform						= away.geom.ColorTransform;
 	import Vector3D								= away.geom.Vector3D;
-	import DirectionalLight						= away.lights.DirectionalLight;
+	import DirectionalLight						= away.entities.DirectionalLight;
 	import TriangleMaterial						= away.materials.TriangleMaterial;
 	import TriangleMaterialMode					= away.materials.TriangleMaterialMode;
 	import StaticLightPicker					= away.materials.StaticLightPicker;
@@ -443,7 +443,7 @@ module examples
 
 import ParticleAnimator		= away.animators.ParticleAnimator;
 import Mesh					= away.entities.Mesh;
-import PointLight			= away.lights.PointLight;
+import PointLight			= away.entities.PointLight;
 
 /**
  * Data class for the fire objects

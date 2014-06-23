@@ -57,7 +57,7 @@ module examples
     import ColorTransform               = away.geom.ColorTransform;
     import Vector3D                     = away.geom.Vector3D;
     import Point                        = away.geom.Point;
-    import PointLight                   = away.lights.PointLight;
+    import PointLight                   = away.entities.PointLight;
 	import AssetLibrary					= away.library.AssetLibrary;
 	import AssetLoaderContext			= away.library.AssetLoaderContext;
     import DiffuseCompositeMethod       = away.materials.DiffuseCompositeMethod;

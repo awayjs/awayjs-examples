@@ -49,7 +49,7 @@ module examples
 	import AssetLibrary					= away.library.AssetLibrary;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLRequest					= away.net.URLRequest;
@@ -107,7 +107,7 @@ module examples
         }
 
         /**
-         * Initialise the lights
+         * Initialise the entities
          */
         private initLights():void
         {

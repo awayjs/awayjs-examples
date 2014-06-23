@@ -10,7 +10,7 @@ module examples
 		private _token:away.library.AssetLoaderToken;
 		private _timer:away.utils.RequestAnimationFrame;
 		private _suzane:away.entities.Mesh;
-		private _light:away.lights.DirectionalLight;
+		private _light:away.entities.DirectionalLight;
 		private _lightPicker:away.materials.StaticLightPicker;
 		private _lookAtPosition:away.geom.Vector3D = new away.geom.Vector3D ();
 		private _cameraIncrement:number = 0;
@@ -58,7 +58,7 @@ module examples
 		 */
 		private initLights ():void
 		{
-			this._light = new away.lights.DirectionalLight ();
+			this._light = new away.entities.DirectionalLight ();
 			this._light.color = 0x683019;
 			this._light.direction = new away.geom.Vector3D (1, 0, 0);
 			this._light.ambient = 0.1;

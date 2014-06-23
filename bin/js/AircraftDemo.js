@@ -68,7 +68,7 @@ var examples;
         };
 
         AircraftDemo.prototype.initLights = function () {
-            var light = new away.lights.DirectionalLight();
+            var light = new away.entities.DirectionalLight();
             light.color = 0x974523;
             light.direction = new away.geom.Vector3D(-300, -300, -5000);
             light.ambient = 1;

@@ -45,7 +45,7 @@ var examples;
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
     var Point = away.geom.Point;
-    var PointLight = away.lights.PointLight;
+    var PointLight = away.entities.PointLight;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var DiffuseCompositeMethod = away.materials.DiffuseCompositeMethod;

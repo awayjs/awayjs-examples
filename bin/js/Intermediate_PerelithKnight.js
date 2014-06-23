@@ -39,7 +39,7 @@ var examples;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
 
-    var DirectionalLight = away.lights.DirectionalLight;
+    var DirectionalLight = away.entities.DirectionalLight;
     var MD2Parser = away.parsers.MD2Parser;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var ShadowFilteredMethod = away.materials.ShadowFilteredMethod;

@@ -44,8 +44,8 @@ var examples;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
-    var DirectionalLight = away.lights.DirectionalLight;
-    var PointLight = away.lights.PointLight;
+    var DirectionalLight = away.entities.DirectionalLight;
+    var PointLight = away.entities.PointLight;
 
     var AWDParser = away.parsers.AWDParser;
     var DiffuseGradientMethod = away.materials.DiffuseGradientMethod;

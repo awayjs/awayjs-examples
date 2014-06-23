@@ -41,6 +41,7 @@
 module examples
 {
 	import View							= away.containers.View;
+	import ContextMode					= away.display.ContextMode;
 	import Mesh							= away.entities.Mesh;
 	import Skybox						= away.entities.Skybox;
 	import LoaderEvent					= away.events.LoaderEvent;
@@ -54,6 +55,7 @@ module examples
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
 	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ContextGLProfile				= away.stagegl.ContextGLProfile;
 	import Texture2DBase				= away.textures.Texture2DBase;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 
@@ -78,7 +80,7 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
 
             //setup the camera
             this._view.camera.z = -600;

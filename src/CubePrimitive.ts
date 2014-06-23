@@ -7,7 +7,7 @@ module examples
 	import View							= away.containers.View;
 	import Mesh							= away.entities.Mesh;
 	import Vector3D						= away.geom.Vector3D;
-	import DirectionalLight				= away.lights.DirectionalLight;
+	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TriangleMaterial				= away.materials.TriangleMaterial;
 	import URLLoader					= away.net.URLLoader;

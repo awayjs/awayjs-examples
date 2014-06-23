@@ -100,7 +100,7 @@ module examples
 		
         private initLights():void
         {
-            var light:away.lights.DirectionalLight = new away.lights.DirectionalLight();
+            var light:away.entities.DirectionalLight = new away.entities.DirectionalLight();
             light.color						= 0x974523;
             light.direction					= new away.geom.Vector3D( -300, -300, -5000 );
             light.ambient					= 1;

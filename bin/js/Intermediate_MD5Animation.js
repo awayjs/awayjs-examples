@@ -48,9 +48,9 @@ var examples;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var AssetType = away.library.AssetType;
-    var PointLight = away.lights.PointLight;
-    var DirectionalLight = away.lights.DirectionalLight;
-    var NearDirectionalShadowMapper = away.lights.NearDirectionalShadowMapper;
+    var PointLight = away.entities.PointLight;
+    var DirectionalLight = away.entities.DirectionalLight;
+    var NearDirectionalShadowMapper = away.materials.NearDirectionalShadowMapper;
     var MD5AnimParser = away.parsers.MD5AnimParser;
     var MD5MeshParser = away.parsers.MD5MeshParser;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
@@ -126,7 +126,7 @@ var examples;
         //			addChild(text);
         //		}
         /**
-        * Initialise the lights
+        * Initialise the entities
         */
         Intermediate_MD5Animation.prototype.initLights = function () {
             //create a light for shadows that mimics the sun's position in the skybox

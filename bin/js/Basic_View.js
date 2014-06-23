@@ -29,6 +29,7 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var View = away.containers.View;
+    var ContextMode = away.display.ContextMode;
 
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
@@ -39,6 +40,7 @@ var examples;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
 
     var DefaultRenderer = away.render.DefaultRenderer;
+    var ContextGLProfile = away.stagegl.ContextGLProfile;
 
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
@@ -49,7 +51,7 @@ var examples;
         function Basic_View() {
             var _this = this;
             //setup the view
-            this._view = new View(new DefaultRenderer(false, away.stagegl.ContextGLProfile.BASELINE, away.stagegl.ContextGLMode.FLASH));
+            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
 
             //setup the camera
             this._view.camera.z = -600;
