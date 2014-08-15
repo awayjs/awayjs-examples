@@ -57,7 +57,7 @@ var examples;
     var EffectFogMethod = away.materials.EffectFogMethod;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var ShadowNearMethod = away.materials.ShadowNearMethod;
     var URLRequest = away.net.URLRequest;
@@ -167,17 +167,17 @@ var examples;
         */
         Intermediate_MD5Animation.prototype.initMaterials = function () {
             //red light material
-            this.redLightMaterial = new TriangleMaterial();
+            this.redLightMaterial = new TriangleMethodMaterial();
             this.redLightMaterial.alphaBlending = true;
             this.redLightMaterial.addEffectMethod(this.fogMethod);
 
             //blue light material
-            this.blueLightMaterial = new TriangleMaterial();
+            this.blueLightMaterial = new TriangleMethodMaterial();
             this.blueLightMaterial.alphaBlending = true;
             this.blueLightMaterial.addEffectMethod(this.fogMethod);
 
             //ground material
-            this.groundMaterial = new TriangleMaterial();
+            this.groundMaterial = new TriangleMethodMaterial();
             this.groundMaterial.smooth = true;
             this.groundMaterial.repeat = true;
             this.groundMaterial.lightPicker = this.lightPicker;
@@ -185,7 +185,7 @@ var examples;
             this.groundMaterial.addEffectMethod(this.fogMethod);
 
             //body material
-            this.bodyMaterial = new TriangleMaterial();
+            this.bodyMaterial = new TriangleMethodMaterial();
             this.bodyMaterial.gloss = 20;
             this.bodyMaterial.specular = 1.5;
             this.bodyMaterial.addEffectMethod(this.fogMethod);
@@ -193,7 +193,7 @@ var examples;
             this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 
             //gob material
-            this.gobMaterial = new TriangleMaterial();
+            this.gobMaterial = new TriangleMethodMaterial();
             this.gobMaterial.alphaBlending = true;
             this.gobMaterial.smooth = true;
             this.gobMaterial.repeat = true;
@@ -357,7 +357,7 @@ var examples;
                     this.cubeTexture = event.assets[0];
 
                     this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
-                    this.scene.addChild(this.skyBox);
+
                     break;
 
                 case "assets/redlight.png":

@@ -36,7 +36,7 @@ var examples;
     var AssetLoaderContext = away.library.AssetLoaderContext;
     var EffectEnvMapMethod = away.materials.EffectEnvMapMethod;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLRequest = away.net.URLRequest;
     var PrimitiveTorusPrefab = away.prefabs.PrimitiveTorusPrefab;
     var PerspectiveProjection = away.projections.PerspectiveProjection;
@@ -83,10 +83,10 @@ var examples;
         */
         Basic_SkyBox.prototype.initMaterials = function () {
             //setup the torus material
-            this._torusMaterial = new TriangleMaterial(0xFFFFFF, 1);
+            this._torusMaterial = new TriangleMethodMaterial(0xFFFFFF, 1);
             this._torusMaterial.specular = 0.5;
             this._torusMaterial.ambient = 0.25;
-            this._torusMaterial.ambientColor = 0x111199;
+            this._torusMaterial.color = 0x111199;
             this._torusMaterial.ambient = 1;
         };
 

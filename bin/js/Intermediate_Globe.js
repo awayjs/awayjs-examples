@@ -56,7 +56,7 @@ var examples;
     var SpecularPhongMethod = away.materials.SpecularPhongMethod;
 
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var PrimitiveSpherePrefab = away.prefabs.PrimitiveSpherePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
 
@@ -149,54 +149,55 @@ var examples;
             specular.fresnelPower = 1;
             specular.normalReflectance = 0.1;
 
-            this.sunMaterial = new TriangleMaterial();
+            this.sunMaterial = new TriangleMethodMaterial();
             this.sunMaterial.blendMode = BlendMode.ADD;
 
-            this.groundMaterial = new TriangleMaterial();
+            this.groundMaterial = new TriangleMethodMaterial();
             this.groundMaterial.specularMethod = specular;
             this.groundMaterial.lightPicker = this.lightPicker;
             this.groundMaterial.gloss = 5;
             this.groundMaterial.specular = 1;
-            this.groundMaterial.ambientColor = 0xFFFFFF;
             this.groundMaterial.ambient = 1;
+            this.groundMaterial.diffuseMethod.multiply = false;
 
-            this.cloudMaterial = new TriangleMaterial();
+            this.cloudMaterial = new TriangleMethodMaterial();
             this.cloudMaterial.alphaBlending = true;
             this.cloudMaterial.lightPicker = this.lightPicker;
-            this.cloudMaterial.specular = 0;
             this.cloudMaterial.ambientColor = 0x1b2048;
+            this.cloudMaterial.specular = 0;
             this.cloudMaterial.ambient = 1;
 
             this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
             this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
-            this.atmosphereMaterial = new TriangleMaterial(0x1671cc);
+            this.atmosphereMaterial = new TriangleMethodMaterial();
             this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
             this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
             this.atmosphereMaterial.blendMode = BlendMode.ADD;
             this.atmosphereMaterial.lightPicker = this.lightPicker;
             this.atmosphereMaterial.specular = 0.5;
             this.atmosphereMaterial.gloss = 5;
-            this.atmosphereMaterial.ambientColor = 0x0;
+            this.atmosphereMaterial.ambientColor = 0;
+            this.atmosphereMaterial.diffuseColor = 0x1671cc;
             this.atmosphereMaterial.ambient = 1;
         };
 
-        Intermediate_Globe.prototype.modulateDiffuseMethod = function (vo, t, regCache, sharedRegisters) {
+        Intermediate_Globe.prototype.modulateDiffuseMethod = function (shaderObject, methodVO, targetReg, regCache, sharedRegisters) {
             var viewDirFragmentReg = sharedRegisters.viewDirFragment;
             var normalFragmentReg = sharedRegisters.normalFragment;
 
-            var code = "dp3 " + t + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" + "mul " + t + ".w, " + t + ".w, " + t + ".w\n";
+            var code = "dp3 " + targetReg + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" + "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".w\n";
 
             return code;
         };
 
-        Intermediate_Globe.prototype.modulateSpecularMethod = function (vo, t, regCache, sharedRegisters) {
+        Intermediate_Globe.prototype.modulateSpecularMethod = function (shaderObject, methodVO, targetReg, regCache, sharedRegisters) {
             var viewDirFragmentReg = sharedRegisters.viewDirFragment;
             var normalFragmentReg = sharedRegisters.normalFragment;
             var temp = regCache.getFreeFragmentSingleTemp();
             regCache.addFragmentTempUsages(temp, 1);
 
-            var code = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" + "neg " + temp + ", " + temp + "\n" + "mul " + t + ".w, " + t + ".w, " + temp + "\n";
+            var code = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" + "neg " + temp + ", " + temp + "\n" + "mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n";
 
             regCache.removeFragmentTempUsage(temp);
 
@@ -373,10 +374,10 @@ var examples;
                     this.groundMaterial.normalMap = event.assets[0];
                     break;
                 case "assets/globe/land_lights_16384.jpg":
-                    this.groundMaterial.ambientTexture = event.assets[0];
+                    this.groundMaterial.texture = event.assets[0];
                     break;
                 case "assets/globe/land_ocean_ice_2048_match.jpg":
-                    this.groundMaterial.texture = event.assets[0];
+                    this.groundMaterial.diffuseTexture = event.assets[0];
                     break;
 
                 case "assets/lensflare/flare2.jpg":
@@ -531,7 +532,7 @@ var AlignmentMode = away.base.AlignmentMode;
 var Billboard = away.entities.Billboard;
 var Point = away.geom.Point;
 var Vector3D = away.geom.Vector3D;
-var TriangleMaterial = away.materials.TriangleMaterial;
+var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
 var BitmapTexture = away.textures.BitmapTexture;
 var Cast = away.utils.Cast;
 
@@ -544,7 +545,7 @@ var FlareObject = (function () {
         var bd = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-        var billboardMaterial = new TriangleMaterial(new BitmapTexture(bd, false));
+        var billboardMaterial = new TriangleMethodMaterial(new BitmapTexture(bd, false));
         billboardMaterial.alpha = opacity / 100;
         billboardMaterial.alphaBlending = true;
 

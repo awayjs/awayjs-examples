@@ -62,7 +62,7 @@ module examples
 	import Vector3D						= away.geom.Vector3D;
 	import AssetLibrary					= away.library.AssetLibrary;
 	import PointLight					= away.entities.PointLight;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial				= away.materials.TriangleMethodMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer              = away.render.DefaultRenderer;
@@ -98,7 +98,7 @@ module examples
 		private colorSafariSeparation:number /*int*/;
 		
 		//material objects
-		private colorMaterial:TriangleMaterial;
+		private colorMaterial:TriangleMethodMaterial;
 		
 		//particle objects
 		private colorGeometry:ParticleGeometry;
@@ -184,7 +184,7 @@ module examples
 		private initMaterials():void
 		{
 			//setup the particle material
-			this.colorMaterial = new TriangleMaterial(0xFFFFFF);
+			this.colorMaterial = new TriangleMethodMaterial(0xFFFFFF);
 			this.colorMaterial.bothSides = true;
 			this.colorMaterial.lightPicker = this.lightPicker;
 		}

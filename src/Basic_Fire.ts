@@ -61,7 +61,7 @@ module examples
 	import ColorTransform						= away.geom.ColorTransform;
 	import Vector3D								= away.geom.Vector3D;
 	import DirectionalLight						= away.entities.DirectionalLight;
-	import TriangleMaterial						= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial				= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode					= away.materials.TriangleMaterialMode;
 	import StaticLightPicker					= away.materials.StaticLightPicker;
 	import PrimitivePlanePrefab					= away.prefabs.PrimitivePlanePrefab;
@@ -82,8 +82,8 @@ module examples
 		private cameraController:HoverController;
 		
 		//material objects
-		private planeMaterial:TriangleMaterial;
-		private particleMaterial:TriangleMaterial;
+		private planeMaterial:TriangleMethodMaterial;
+		private particleMaterial:TriangleMethodMaterial;
 		
 		//light objects
 		private directionalLight:DirectionalLight;
@@ -173,14 +173,14 @@ module examples
 		 */
 		private initMaterials():void
 		{
-			this.planeMaterial = new TriangleMaterial();
+			this.planeMaterial = new TriangleMethodMaterial();
 			this.planeMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
 			this.planeMaterial.lightPicker = this.lightPicker;
 			this.planeMaterial.repeat = true;
 			this.planeMaterial.mipmap = false;
 			this.planeMaterial.specular = 10;
 
-			this.particleMaterial = new TriangleMaterial();
+			this.particleMaterial = new TriangleMethodMaterial();
 			this.particleMaterial.blendMode = BlendMode.ADD;
 		}
 		

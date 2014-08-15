@@ -22,7 +22,7 @@ module examples
         private _seaMesh			: away.entities.Mesh;
         private _seaNormalTexture	: away.textures.ImageTexture;
         private _seaInitialized		: boolean = false;
-        private _seaMaterial        : away.materials.TriangleMaterial;
+        private _seaMaterial        : away.materials.TriangleMethodMaterial;
         //}
 		
         //{ f14
@@ -116,7 +116,7 @@ module examples
         {
 			this._f14Initialized = true;
 			
-			var f14Material: away.materials.TriangleMaterial = new away.materials.TriangleMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+			var f14Material: away.materials.TriangleMethodMaterial = new away.materials.TriangleMethodMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 			f14Material.lightPicker = this._lightPicker;
 			
 			this._view.scene.addChild( this._f14Geom );
@@ -130,7 +130,7 @@ module examples
 
         private initSea():void
         {
-			this._seaMaterial                                       = new away.materials.TriangleMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+			this._seaMaterial                                       = new away.materials.TriangleMethodMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 			this._waterMethod                                       = new away.materials.NormalSimpleWaterMethod( this._seaNormalTexture, this._seaNormalTexture );
 			var fresnelMethod:away.materials.SpecularFresnelMethod  = new away.materials.SpecularFresnelMethod();
 			fresnelMethod.normalReflectance                         = .3;

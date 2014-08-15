@@ -13,7 +13,7 @@ module examples
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import URLLoader					= away.net.URLLoader;
 	import URLLoaderDataFormat			= away.net.URLLoaderDataFormat;
 	import URLRequest					= away.net.URLRequest;
@@ -31,7 +31,7 @@ module examples
 		private _raf:RequestAnimationFrame;
 		private _image:HTMLImageElement;
 		private _texture:ImageTexture;
-		private _material:TriangleMaterial;
+		private _material:TriangleMethodMaterial;
 		private _light:DirectionalLight;
 		private _lightPicker:StaticLightPicker;
 
@@ -100,7 +100,7 @@ module examples
 		private initMaterial(image:HTMLImageElement)
 		{
 			this._texture = new ImageTexture(image, false); // Create a texture
-			this._material = new TriangleMaterial (this._texture, true, true, false); // Create a material
+			this._material = new TriangleMethodMaterial (this._texture, true, true, false); // Create a material
 			this._material.lightPicker = this._lightPicker; // assign the lights to the material
 		}
 

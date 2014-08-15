@@ -15,7 +15,7 @@ module examples
 	import IAsset						= away.library.IAsset;
 	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import OBJParser					= away.parsers.OBJParser;
 	import DefaultRenderer				= away.render.DefaultRenderer;
@@ -28,9 +28,9 @@ module examples
 		private view:View;
 		private raf:RequestAnimationFrame;
 		private meshes:Array<Mesh> = new Array<Mesh>();
-		private mat:TriangleMaterial;
+		private mat:TriangleMethodMaterial;
 
-		private terrainMaterial:TriangleMaterial;
+		private terrainMaterial:TriangleMethodMaterial;
 
 		private light:DirectionalLight;
 
@@ -130,10 +130,10 @@ module examples
 						break;
 					case AssetType.TEXTURE :
 						if (event.url == 'assets/masterchief_base.png' ) {
-							this.mat = new TriangleMaterial( <ImageTexture> d, true, true, false );
+							this.mat = new TriangleMethodMaterial( <ImageTexture> d, true, true, false );
 							this.mat.lightPicker = new StaticLightPicker([this.light]);
 						} else if (event.url == 'assets/stone_tx.jpg') {
-							this.terrainMaterial = new TriangleMaterial(<ImageTexture> d, true, true, false);
+							this.terrainMaterial = new TriangleMethodMaterial(<ImageTexture> d, true, true, false);
 							this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 						}
 

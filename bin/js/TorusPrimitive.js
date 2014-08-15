@@ -5,7 +5,7 @@ var examples;
     var DirectionalLight = away.entities.DirectionalLight;
 
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLLoader = away.net.URLLoader;
     var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
     var URLRequest = away.net.URLRequest;
@@ -82,7 +82,7 @@ var examples;
         */
         TorusPrimitive.prototype.initMaterial = function (image) {
             this._texture = new ImageTexture(image, false); // Create a texture
-            this._material = new TriangleMaterial(this._texture, true, true, false); // Create a material
+            this._material = new TriangleMethodMaterial(this._texture, true, true, false); // Create a material
             this._material.lightPicker = this._lightPicker; // assign the lights to the material
         };
 

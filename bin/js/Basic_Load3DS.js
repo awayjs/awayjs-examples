@@ -41,7 +41,7 @@ var examples;
     var DirectionalLight = away.entities.DirectionalLight;
     var ShadowSoftMethod = away.materials.ShadowSoftMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var Max3DSParser = away.parsers.Max3DSParser;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -95,7 +95,7 @@ var examples;
         * Initialise the materials
         */
         Basic_Load3DS.prototype.initMaterials = function () {
-            this._groundMaterial = new TriangleMaterial();
+            this._groundMaterial = new TriangleMethodMaterial();
             this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
@@ -188,7 +188,7 @@ var examples;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
-                    material.ambientColor = 0x303040;
+                    material.color = 0x303040;
                     material.ambient = 1;
 
                     break;

@@ -58,7 +58,7 @@ module examples
 	import PrimitivePlanePrefab		= away.prefabs.PrimitivePlanePrefab;
 	import ShadowFilteredMethod		= away.materials.ShadowFilteredMethod;
 	import StaticLightPicker		= away.materials.StaticLightPicker;
-	import TriangleMaterial          = away.materials.TriangleMaterial;
+	import TriangleMethodMaterial   = away.materials.TriangleMethodMaterial;
 	import URLRequest				= away.net.URLRequest;
 	import DefaultRenderer			= away.render.DefaultRenderer;
 	import Texture2DBase			= away.textures.Texture2DBase;
@@ -74,7 +74,7 @@ module examples
 
         //array of materials for random sampling
         private _pKnightTextures:Array<string> = new Array<string>("assets/pknight1.png", "assets/pknight2.png", "assets/pknight3.png", "assets/pknight4.png");
-        private _pKnightMaterials:Array<TriangleMaterial> = new Array<TriangleMaterial>();
+        private _pKnightMaterials:Array<TriangleMethodMaterial> = new Array<TriangleMethodMaterial>();
 
         //engine variables
         private _view:View;
@@ -88,7 +88,7 @@ module examples
         private _lightPicker:StaticLightPicker;
 
         //material objects
-        private _floorMaterial:TriangleMaterial;
+        private _floorMaterial:TriangleMethodMaterial;
         private _shadowMapMethod:ShadowFilteredMethod;
 
         //scene objects
@@ -171,7 +171,7 @@ module examples
             this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material
-            this._floorMaterial = new TriangleMaterial();
+            this._floorMaterial = new TriangleMethodMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
@@ -180,7 +180,7 @@ module examples
 
             //setup knight materials
             for (var i:number /*uint*/  = 0; i < this._pKnightTextures.length; i++) {
-                var knightMaterial:TriangleMaterial = new TriangleMaterial();
+                var knightMaterial:TriangleMethodMaterial = new TriangleMethodMaterial();
                 //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
                 //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
                 knightMaterial.lightPicker = this._lightPicker;

@@ -71,7 +71,7 @@ module examples
     import EffectFogMethod                      = away.materials.EffectFogMethod;
 	import SkyboxMaterial                       = away.materials.SkyboxMaterial;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
-    import TriangleMaterial                     = away.materials.TriangleMaterial;
+    import TriangleMethodMaterial               = away.materials.TriangleMethodMaterial;
     import ShadowSoftMethod                  	= away.materials.ShadowSoftMethod;
     import ShadowNearMethod                  	= away.materials.ShadowNearMethod;
     import URLRequest                           = away.net.URLRequest;
@@ -122,11 +122,11 @@ module examples
 		private count:number = 0;
 
 		//material objects
-		private redLightMaterial:TriangleMaterial;
-		private blueLightMaterial:TriangleMaterial;
-		private groundMaterial:TriangleMaterial;
-		private bodyMaterial:TriangleMaterial;
-        private gobMaterial:TriangleMaterial;
+		private redLightMaterial:TriangleMethodMaterial;
+		private blueLightMaterial:TriangleMethodMaterial;
+		private groundMaterial:TriangleMethodMaterial;
+		private bodyMaterial:TriangleMethodMaterial;
+        private gobMaterial:TriangleMethodMaterial;
 		private cubeTexture:ImageCubeTexture;
 
 		//scene objects
@@ -242,17 +242,17 @@ module examples
 		private initMaterials():void
 		{
 			//red light material
-            this.redLightMaterial = new TriangleMaterial();
+            this.redLightMaterial = new TriangleMethodMaterial();
             this.redLightMaterial.alphaBlending = true;
             this.redLightMaterial.addEffectMethod(this.fogMethod);
 
 			//blue light material
-            this.blueLightMaterial = new TriangleMaterial();
+            this.blueLightMaterial = new TriangleMethodMaterial();
             this.blueLightMaterial.alphaBlending = true;
             this.blueLightMaterial.addEffectMethod(this.fogMethod);
 
 			//ground material
-            this.groundMaterial = new TriangleMaterial();
+            this.groundMaterial = new TriangleMethodMaterial();
             this.groundMaterial.smooth = true;
             this.groundMaterial.repeat = true;
             this.groundMaterial.lightPicker = this.lightPicker;
@@ -260,7 +260,7 @@ module examples
             this.groundMaterial.addEffectMethod(this.fogMethod);
 
 			//body material
-            this.bodyMaterial = new TriangleMaterial();
+            this.bodyMaterial = new TriangleMethodMaterial();
             this.bodyMaterial.gloss = 20;
             this.bodyMaterial.specular = 1.5;
             this.bodyMaterial.addEffectMethod(this.fogMethod);
@@ -268,7 +268,7 @@ module examples
             this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 
             //gob material
-            this.gobMaterial = new TriangleMaterial();
+            this.gobMaterial = new TriangleMethodMaterial();
             this.gobMaterial.alphaBlending = true;
             this.gobMaterial.smooth = true;
             this.gobMaterial.repeat = true;
@@ -433,7 +433,7 @@ module examples
                     this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
                     this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
-                    this.scene.addChild(this.skyBox);
+                    //this.scene.addChild(this.skyBox);
                     break;
 
                 //entities textures

@@ -44,7 +44,7 @@ var examples;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
     var ShadowFilteredMethod = away.materials.ShadowFilteredMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
 
@@ -125,7 +125,7 @@ var examples;
             this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material
-            this._floorMaterial = new TriangleMaterial();
+            this._floorMaterial = new TriangleMethodMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
@@ -133,7 +133,7 @@ var examples;
             this._floorMaterial.repeat = true;
 
             for (var i = 0; i < this._pKnightTextures.length; i++) {
-                var knightMaterial = new TriangleMaterial();
+                var knightMaterial = new TriangleMethodMaterial();
 
                 //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
                 //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));

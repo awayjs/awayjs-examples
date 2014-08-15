@@ -8,7 +8,7 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var DirectionalLight = away.entities.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLLoader = away.net.URLLoader;
     var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
     var URLRequest = away.net.URLRequest;
@@ -118,7 +118,7 @@ var examples;
         */
         CubePrimitive.prototype.imageCompleteHandler = function (event) {
             var ts = new ImageTexture(this._image, false);
-            var matTx = new TriangleMaterial(ts, true, true, false);
+            var matTx = new TriangleMethodMaterial(ts, true, true, false);
             matTx.blendMode = BlendMode.ADD;
             matTx.bothSides = true;
             matTx.lightPicker = this._lightPicker;

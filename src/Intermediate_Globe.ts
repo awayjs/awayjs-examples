@@ -68,11 +68,12 @@ module examples
 	import SkyboxMaterial               = away.materials.SkyboxMaterial;
     import SpecularFresnelMethod        = away.materials.SpecularFresnelMethod;
     import SpecularPhongMethod          = away.materials.SpecularPhongMethod;
+	import ShaderObjectBase				= away.materials.ShaderObjectBase;
     import ShaderRegisterElement        = away.materials.ShaderRegisterElement;
     import ShaderRegisterCache          = away.materials.ShaderRegisterCache;
     import ShaderRegisterData           = away.materials.ShaderRegisterData;
     import StaticLightPicker            = away.materials.StaticLightPicker;
-    import TriangleMaterial             = away.materials.TriangleMaterial;
+    import TriangleMethodMaterial       = away.materials.TriangleMethodMaterial;
     import PrimitiveSpherePrefab        = away.prefabs.PrimitiveSpherePrefab;
 	import DefaultRenderer              = away.render.DefaultRenderer;
     import ImageCubeTexture  			= away.textures.ImageCubeTexture;
@@ -90,10 +91,10 @@ module examples
         private cameraController:HoverController;
 
         //material objects
-        private sunMaterial:TriangleMaterial;
-        private groundMaterial:TriangleMaterial;
-        private cloudMaterial:TriangleMaterial;
-        private atmosphereMaterial:TriangleMaterial;
+        private sunMaterial:TriangleMethodMaterial;
+        private groundMaterial:TriangleMethodMaterial;
+        private cloudMaterial:TriangleMethodMaterial;
+        private atmosphereMaterial:TriangleMethodMaterial;
         private atmosphereDiffuseMethod:DiffuseBasicMethod;
         private atmosphereSpecularMethod:SpecularBasicMethod;
         private cubeTexture:ImageCubeTexture;
@@ -211,50 +212,51 @@ module examples
             specular.fresnelPower = 1;
             specular.normalReflectance = 0.1;
 
-            this.sunMaterial = new TriangleMaterial();
+            this.sunMaterial = new TriangleMethodMaterial();
             this.sunMaterial.blendMode = BlendMode.ADD;
 
-            this.groundMaterial = new TriangleMaterial();
+            this.groundMaterial = new TriangleMethodMaterial();
             this.groundMaterial.specularMethod = specular;
             this.groundMaterial.lightPicker = this.lightPicker;
             this.groundMaterial.gloss = 5;
             this.groundMaterial.specular = 1;
-            this.groundMaterial.ambientColor = 0xFFFFFF;
             this.groundMaterial.ambient = 1;
+			this.groundMaterial.diffuseMethod.multiply = false;
 
-            this.cloudMaterial = new TriangleMaterial();
+            this.cloudMaterial = new TriangleMethodMaterial();
             this.cloudMaterial.alphaBlending = true;
             this.cloudMaterial.lightPicker = this.lightPicker;
+			this.cloudMaterial.ambientColor = 0x1b2048;
             this.cloudMaterial.specular = 0;
-            this.cloudMaterial.ambientColor = 0x1b2048;
             this.cloudMaterial.ambient = 1;
 
             this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
             this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
-            this.atmosphereMaterial = new TriangleMaterial(0x1671cc);
+            this.atmosphereMaterial = new TriangleMethodMaterial();
             this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
             this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
             this.atmosphereMaterial.blendMode = BlendMode.ADD;
             this.atmosphereMaterial.lightPicker = this.lightPicker;
             this.atmosphereMaterial.specular = 0.5;
             this.atmosphereMaterial.gloss = 5;
-            this.atmosphereMaterial.ambientColor = 0x0;
+            this.atmosphereMaterial.ambientColor = 0;
+			this.atmosphereMaterial.diffuseColor = 0x1671cc;
             this.atmosphereMaterial.ambient = 1;
         }
 
-        private modulateDiffuseMethod(vo : MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+        private modulateDiffuseMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
         {
             var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
             var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
 
-            var code:string = "dp3 " + t + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
-                "mul " + t + ".w, " + t + ".w, " + t + ".w\n";
+            var code:string = "dp3 " + targetReg + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
+                "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".w\n";
 
             return code;
         }
 
-        private modulateSpecularMethod(vo : MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+        private modulateSpecularMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
         {
             var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
             var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
@@ -263,7 +265,7 @@ module examples
 
             var code:string = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
                 "neg " + temp + ", " + temp + "\n" +
-                "mul " + t + ".w, " + t + ".w, " + temp + "\n";
+                "mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n";
 
             regCache.removeFragmentTempUsage(temp);
 
@@ -438,10 +440,10 @@ module examples
                     this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/globe/land_lights_16384.jpg" :
-                    this.groundMaterial.ambientTexture = <ImageTexture> event.assets[ 0 ];
+                    this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/globe/land_ocean_ice_2048_match.jpg" :
-                    this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
+                    this.groundMaterial.diffuseTexture = <ImageTexture> event.assets[ 0 ];
                     break;
 
                 //flare textures
@@ -602,7 +604,7 @@ import AlignmentMode                = away.base.AlignmentMode;
 import Billboard                    = away.entities.Billboard;
 import Point                        = away.geom.Point;
 import Vector3D						= away.geom.Vector3D;
-import TriangleMaterial             = away.materials.TriangleMaterial;
+import TriangleMethodMaterial             = away.materials.TriangleMethodMaterial;
 import BitmapTexture                = away.textures.BitmapTexture;
 import Cast                         = away.utils.Cast;
 
@@ -626,7 +628,7 @@ class FlareObject
         var bd:BitmapData = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-        var billboardMaterial:TriangleMaterial = new TriangleMaterial(new BitmapTexture(bd, false));
+        var billboardMaterial:TriangleMethodMaterial = new TriangleMethodMaterial(new BitmapTexture(bd, false));
         billboardMaterial.alpha = opacity/100;
         billboardMaterial.alphaBlending = true;
         //billboardMaterial.blendMode = BlendMode.LAYER;

@@ -2,7 +2,7 @@
 
 module examples
 {
-	import TriangleMaterial			 = away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			 = away.materials.TriangleMethodMaterial;
 
 	export class AWDSuzanne {
 
@@ -14,8 +14,8 @@ module examples
 		private _lightPicker:away.materials.StaticLightPicker;
 		private _lookAtPosition:away.geom.Vector3D = new away.geom.Vector3D ();
 		private _cameraIncrement:number = 0;
-		private _mouseOverMaterial:TriangleMaterial = new TriangleMaterial(0xFF0000);
-		private _mouseOutMaterial:TriangleMaterial;
+		private _mouseOverMaterial:TriangleMethodMaterial = new TriangleMethodMaterial(0xFF0000);
+		private _mouseOutMaterial:TriangleMethodMaterial;
 
 		constructor ()
 		{
@@ -124,9 +124,9 @@ module examples
 						var mesh:away.entities.Mesh = <away.entities.Mesh> asset;
 
 						this._suzane = mesh;
-						(<TriangleMaterial> this._suzane.material).lightPicker = this._lightPicker;
+						(<TriangleMethodMaterial> this._suzane.material).lightPicker = this._lightPicker;
 						this._suzane.y = -100;
-						this._mouseOutMaterial = <TriangleMaterial> this._suzane.material;
+						this._mouseOutMaterial = <TriangleMethodMaterial> this._suzane.material;
 
 						for (var c:number = 0; c < 80; c++)
 						{

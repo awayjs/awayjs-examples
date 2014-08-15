@@ -51,7 +51,7 @@ module examples
 	import IAsset						= away.library.IAsset;
 	import DirectionalLight				= away.entities.DirectionalLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import DefaultRenderer				= away.render.DefaultRenderer;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
@@ -188,7 +188,7 @@ module examples
                     this._view.scene.addChild(mesh);
                     break;
                 case AssetType.MATERIAL:
-                    var material:TriangleMaterial = <TriangleMaterial> asset;
+                    var material:TriangleMethodMaterial = <TriangleMethodMaterial> asset;
                     material.lightPicker = this._lightPicker;
                     break;
             }

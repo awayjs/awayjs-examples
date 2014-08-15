@@ -13,7 +13,7 @@ var examples;
 
     var DirectionalLight = away.entities.DirectionalLight;
     var StaticLightPicker = away.materials.StaticLightPicker;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLRequest = away.net.URLRequest;
     var OBJParser = away.parsers.OBJParser;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -121,10 +121,10 @@ var examples;
                         break;
                     case AssetType.TEXTURE:
                         if (event.url == 'assets/masterchief_base.png') {
-                            this.mat = new TriangleMaterial(d, true, true, false);
+                            this.mat = new TriangleMethodMaterial(d, true, true, false);
                             this.mat.lightPicker = new StaticLightPicker([this.light]);
                         } else if (event.url == 'assets/stone_tx.jpg') {
-                            this.terrainMaterial = new TriangleMaterial(d, true, true, false);
+                            this.terrainMaterial = new TriangleMethodMaterial(d, true, true, false);
                             this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                         }
 

@@ -50,7 +50,7 @@ module examples
 	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import AssetType					= away.library.AssetType;
 	import IAsset						= away.library.IAsset;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
@@ -66,7 +66,7 @@ module examples
         private _view:View;
 
         //material objects
-        private _planeMaterial:TriangleMaterial;
+        private _planeMaterial:TriangleMethodMaterial;
 
         //scene objects
         private _plane:Mesh;
@@ -80,7 +80,7 @@ module examples
         constructor()
         {
             //setup the view
-            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
+            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE));
 
             //setup the camera
             this._view.camera.z = -600;
@@ -88,7 +88,7 @@ module examples
             this._view.camera.lookAt(new Vector3D());
 
             //setup the materials
-            this._planeMaterial = new TriangleMaterial();
+            this._planeMaterial = new TriangleMethodMaterial();
 
             //setup the scene
             this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();

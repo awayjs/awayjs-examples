@@ -48,7 +48,7 @@ module examples
 	import AssetLoaderContext			= away.library.AssetLoaderContext;
 	import EffectEnvMapMethod			= away.materials.EffectEnvMapMethod;
 	import SkyboxMaterial				= away.materials.SkyboxMaterial;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import URLRequest					= away.net.URLRequest;
 	import PrimitiveTorusPrefab			= away.prefabs.PrimitiveTorusPrefab;
 	import PerspectiveProjection		= away.projections.PerspectiveProjection;
@@ -64,7 +64,7 @@ module examples
 
         //material objects
         private _cubeTexture:ImageCubeTexture;
-        private _torusMaterial:TriangleMaterial;
+        private _torusMaterial:TriangleMethodMaterial;
 
         //scene objects
         private _skyBox:Skybox;
@@ -118,10 +118,10 @@ module examples
         private initMaterials():void
         {
             //setup the torus material
-            this._torusMaterial = new TriangleMaterial(0xFFFFFF, 1);
+            this._torusMaterial = new TriangleMethodMaterial(0xFFFFFF, 1);
             this._torusMaterial.specular = 0.5;
             this._torusMaterial.ambient = 0.25;
-            this._torusMaterial.ambientColor = 0x111199;
+            this._torusMaterial.color = 0x111199;
             this._torusMaterial.ambient = 1;
         }
 

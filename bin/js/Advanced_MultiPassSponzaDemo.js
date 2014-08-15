@@ -57,7 +57,7 @@ var examples;
 
     var AWDParser = away.parsers.AWDParser;
     var SkyboxMaterial = away.materials.SkyboxMaterial;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
 
@@ -562,12 +562,12 @@ var examples;
                 var specularTextureName;
 
                 //				//store single pass materials for use later
-                //				var singleMaterial:TriangleMaterial = this._singleMaterialDictionary[name];
+                //				var singleMaterial:TriangleMethodMaterial = this._singleMaterialDictionary[name];
                 //
                 //				if (!singleMaterial) {
                 //
                 //					//create singlepass material
-                //					singleMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+                //					singleMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
                 //
                 //					singleMaterial.name = name;
                 //					singleMaterial.lightPicker = this._lightPicker;
@@ -598,7 +598,7 @@ var examples;
 
                 if (!multiMaterial) {
                     //create multipass material
-                    multiMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+                    multiMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
                     multiMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
                     multiMaterial.name = name;
                     multiMaterial.lightPicker = this._lightPicker;
@@ -674,7 +674,7 @@ var examples;
                     this._skyMap = event.assets[0];
                     break;
                 case "assets/fire.png":
-                    this._flameMaterial = new TriangleMaterial(event.assets[0]);
+                    this._flameMaterial = new TriangleMethodMaterial(event.assets[0]);
                     this._flameMaterial.blendMode = BlendMode.ADD;
                     this._flameMaterial.animateUVs = true;
                     break;

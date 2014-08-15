@@ -48,8 +48,8 @@ var examples;
     var PointLight = away.entities.PointLight;
 
     var AWDParser = away.parsers.AWDParser;
-    var DiffuseGradientMethod = away.materials.DiffuseGradientMethod;
-    var TriangleMaterial = away.materials.TriangleMaterial;
+
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var TriangleMaterialMode = away.materials.TriangleMaterialMode;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var SpecularFresnelMethod = away.materials.SpecularFresnelMethod;
@@ -323,7 +323,7 @@ var examples;
             AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 
             //setup custom multipass material
-            this._headMaterial = new TriangleMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+            this._headMaterial = new TriangleMethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
             this._headMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
             this._headMaterial.mipmap = false;
             this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
@@ -331,7 +331,7 @@ var examples;
             this._headMaterial.ambientColor = 0x303040;
 
             // create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
-            this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 30);
+            this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
             this._softShadowMethod.range = this._shadowRange; // the sample radius defines the softness of the shadows
             this._softShadowMethod.epsilon = .1;
             this._headMaterial.shadowMethod = this._softShadowMethod;
@@ -361,8 +361,6 @@ var examples;
         Intermediate_MonsterHeadShading.prototype.onExtraResourceComplete = function (event) {
             switch (event.url) {
                 case "assets/diffuseGradient.jpg":
-                    // very low-cost and crude subsurface scattering for diffuse shading
-                    this._headMaterial.diffuseMethod = new DiffuseGradientMethod(event.assets[0]);
                     break;
             }
         };

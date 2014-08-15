@@ -70,7 +70,7 @@ module examples
 	import DirectionalShadowMapper			= away.materials.DirectionalShadowMapper;
 	import AWDParser						= away.parsers.AWDParser;
 	import SkyboxMaterial					= away.materials.SkyboxMaterial;
-	import TriangleMaterial					= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial			= away.materials.TriangleMethodMaterial;
 	import TriangleMaterialMode				= away.materials.TriangleMaterialMode;
 	import StaticLightPicker				= away.materials.StaticLightPicker;
 	import ShadowCascadeMethod				= away.materials.ShadowCascadeMethod;
@@ -145,7 +145,7 @@ module examples
 		
 		//material variables
 		private _skyMap:ImageCubeTexture;
-		private _flameMaterial:TriangleMaterial;
+		private _flameMaterial:TriangleMethodMaterial;
 		private _numTextures:number /*uint*/ = 0;
 		private _currentTexture:number /*uint*/ = 0;
 		private _loadingTextureStrings:Array<string>;
@@ -627,12 +627,12 @@ module examples
 				var specularTextureName:string;
 				
 //				//store single pass materials for use later
-//				var singleMaterial:TriangleMaterial = this._singleMaterialDictionary[name];
+//				var singleMaterial:TriangleMethodMaterial = this._singleMaterialDictionary[name];
 //
 //				if (!singleMaterial) {
 //
 //					//create singlepass material
-//					singleMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+//					singleMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
 //
 //					singleMaterial.name = name;
 //					singleMaterial.lightPicker = this._lightPicker;
@@ -660,12 +660,12 @@ module examples
 //				}
 
 				//store multi pass materials for use later
-				var multiMaterial:TriangleMaterial = this._multiMaterialDictionary[name];
+				var multiMaterial:TriangleMethodMaterial = this._multiMaterialDictionary[name];
 
 				if (!multiMaterial) {
 					
 					//create multipass material
-					multiMaterial = new TriangleMaterial(this._textureDictionary[textureName]);
+					multiMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
 					multiMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
 					multiMaterial.name = name;
 					multiMaterial.lightPicker = this._lightPicker;
@@ -744,7 +744,7 @@ module examples
 					this._skyMap = <ImageCubeTexture> event.assets[ 0 ];
 					break;
 				case "assets/fire.png" :
-					this._flameMaterial = new TriangleMaterial(<ImageTexture> event.assets[ 0 ]);
+					this._flameMaterial = new TriangleMethodMaterial(<ImageTexture> event.assets[ 0 ]);
 					this._flameMaterial.blendMode = BlendMode.ADD;
 					this._flameMaterial.animateUVs = true;
 					break;

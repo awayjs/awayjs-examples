@@ -29,13 +29,12 @@ THE SOFTWARE.
 var examples;
 (function (examples) {
     var View = away.containers.View;
-    var ContextMode = away.display.ContextMode;
 
     var LoaderEvent = away.events.LoaderEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
 
-    var TriangleMaterial = away.materials.TriangleMaterial;
+    var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
     var URLRequest = away.net.URLRequest;
     var PrimitivePlanePrefab = away.prefabs.PrimitivePlanePrefab;
 
@@ -51,7 +50,7 @@ var examples;
         function Basic_View() {
             var _this = this;
             //setup the view
-            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE, ContextMode.FLASH));
+            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE));
 
             //setup the camera
             this._view.camera.z = -600;
@@ -59,7 +58,7 @@ var examples;
             this._view.camera.lookAt(new Vector3D());
 
             //setup the materials
-            this._planeMaterial = new TriangleMaterial();
+            this._planeMaterial = new TriangleMethodMaterial();
 
             //setup the scene
             this._plane = new PrimitivePlanePrefab(700, 700).getNewObject();

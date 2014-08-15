@@ -54,7 +54,7 @@ module examples
 	import DirectionalLight				= away.entities.DirectionalLight;
 	import ShadowSoftMethod				= away.materials.ShadowSoftMethod;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import TriangleMaterial				= away.materials.TriangleMaterial;
+	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
 	import Max3DSParser					= away.parsers.Max3DSParser;
 	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
 	import DefaultRenderer				= away.render.DefaultRenderer;
@@ -68,7 +68,7 @@ module examples
         private _cameraController:HoverController;
 
         //material objects
-        private _groundMaterial:TriangleMaterial;
+        private _groundMaterial:TriangleMethodMaterial;
 
         //light objects
         private _light:DirectionalLight;
@@ -139,7 +139,7 @@ module examples
          */
         private initMaterials():void
         {
-            this._groundMaterial = new TriangleMaterial();
+            this._groundMaterial = new TriangleMethodMaterial();
             this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
@@ -218,13 +218,13 @@ module examples
                     mesh.castsShadows = true;
                     break;
                 case AssetType.MATERIAL :
-                    var material:TriangleMaterial = <TriangleMaterial> event.asset;
+                    var material:TriangleMethodMaterial = <TriangleMethodMaterial> event.asset;
                     material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
                     material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
-                    material.ambientColor = 0x303040;
+                    material.color = 0x303040;
                     material.ambient = 1;
 
                     break;
