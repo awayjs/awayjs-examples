@@ -1,4 +1,4 @@
-///<reference path="../libs/stagegl-renderer.next.d.ts" />
+///<reference path="../libs/stagegl-extensions.next.d.ts" />
 /*
 Basic 3D scene example in Away3D
 Demonstrates:

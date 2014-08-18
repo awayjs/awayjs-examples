@@ -1,4 +1,4 @@
-///<reference path="../libs/stagegl-renderer.next.d.ts" />
+///<reference path="../libs/stagegl-extensions.next.d.ts" />
 /*
 Crytek Sponza demo using multipass materials in Away3D
 Demonstrates:

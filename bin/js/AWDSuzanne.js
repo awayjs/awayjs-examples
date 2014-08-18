@@ -1,4 +1,4 @@
-///<reference path="../libs/stagegl-renderer.next.d.ts" />
+///<reference path="../libs/stagegl-extensions.next.d.ts" />
 var examples;
 (function (examples) {
     var TriangleMethodMaterial = away.materials.TriangleMethodMaterial;
