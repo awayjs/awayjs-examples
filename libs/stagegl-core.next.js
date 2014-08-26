@@ -2046,19 +2046,6 @@ var away;
             /**
             *
             */
-            MaterialData.prototype.invalidatePasses = function () {
-                if (this._passes != null) {
-                    var len = this._passes.length;
-                    for (var i = 0; i < len; i++)
-                        this._passes[i].invalidate();
-                }
-
-                this.invalidateMaterial();
-            };
-
-            /**
-            *
-            */
             MaterialData.prototype.invalidateAnimation = function () {
                 this.invalidAnimation = true;
             };
@@ -5219,7 +5206,6 @@ var away;
                 this.secondaryUVDependencies = 0;
                 this.globalPosDependencies = 0;
                 this.tangentDependencies = 0;
-                this.usesSeparateMVP = false;
                 this.usesGlobalPosFragment = false;
                 this.usesFragmentAnimation = false;
                 this.usesTangentSpace = false;
@@ -6318,7 +6304,7 @@ var away;
                 this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
 
                 //compile the world-space position if required
-                if (this._pShaderObject.globalPosDependencies > 0 || this._pMaterialPass.forceSeparateMVP)
+                if (this._pShaderObject.globalPosDependencies > 0)
                     this.compileGlobalPositionCode();
 
                 //Calculate the (possibly animated) UV coordinates.
@@ -8988,7 +8974,9 @@ var away;
             };
 
             MaterialPassBase.prototype._iIncludeDependencies = function (shaderObject) {
-                shaderObject.usesSeparateMVP = this._forceSeparateMVP;
+                if (this._forceSeparateMVP)
+                    shaderObject.globalPosDependencies++;
+
                 shaderObject.outputsNormals = this._pOutputsNormals(shaderObject);
                 shaderObject.outputsTangentNormals = shaderObject.outputsNormals && this._pOutputsTangentNormals(shaderObject);
                 shaderObject.usesTangentSpace = shaderObject.outputsTangentNormals && this._pUsesTangentSpace(shaderObject);
@@ -10500,7 +10488,7 @@ var away;
                 var code = "";
 
                 //get the projection coordinates
-                var position = (shaderObject.globalPosDependencies > 0 || shaderObject.usesSeparateMVP) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
+                var position = (shaderObject.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.localPosition;
 
                 //reserving vertex constants for projection matrix
                 var viewMatrixReg = registerCache.getFreeVertexConstant();

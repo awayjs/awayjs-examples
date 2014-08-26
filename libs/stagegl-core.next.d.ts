@@ -610,10 +610,6 @@ declare module away.pool {
         /**
         *
         */
-        public invalidatePasses(): void;
-        /**
-        *
-        */
         public invalidateAnimation(): void;
     }
 }
@@ -1607,10 +1603,6 @@ declare module away.materials {
         *
         */
         public outputsNormals: boolean;
-        /**
-        *
-        */
-        public usesSeparateMVP: boolean;
         /**
         * Indicates whether or not normal calculations are expected in tangent space. This is only the case if no world-space
         * dependencies exist.
