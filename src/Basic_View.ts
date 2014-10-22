@@ -1,161 +1,154 @@
-///<reference path="../libs/stagegl-extensions.next.d.ts" />
-
 /*
 
- Basic 3D scene example in Away3D
+Basic 3D scene example in Away3D
 
- Demonstrates:
+Demonstrates:
 
- How to setup a view and add 3D objects.
- How to apply materials to a 3D object and dynamically load textures
- How to create a frame tick that updates the contents of the scene
+How to setup a view and add 3D objects.
+How to apply materials to a 3D object and dynamically load textures
+How to create a frame tick that updates the contents of the scene
 
- Code by Rob Bateman
- rob@infiniteturtles.co.uk
- http://www.infiniteturtles.co.uk
+Code by Rob Bateman
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
 
- This code is distributed under the MIT License
+This code is distributed under the MIT License
 
- Copyright (c) The Away Foundation http://www.theawayfoundation.org
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the “Software”), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
- */
+*/
 
-module examples
+import View							= require("awayjs-core/lib/containers/View");
+import ContextMode					= require("awayjs-core/lib/core/display/ContextMode");
+import Mesh							= require("awayjs-core/lib/entities/Mesh");
+import Skybox						= require("awayjs-core/lib/entities/Skybox");
+import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
+import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
+import AssetLoaderContext			= require("awayjs-core/lib/core/library/AssetLoaderContext");
+import AssetType					= require("awayjs-core/lib/core/library/AssetType");
+import IAsset						= require("awayjs-core/lib/core/library/IAsset");
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
+import PrimitivePlanePrefab			= require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
+import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
+import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
+import ContextGLProfile				= require("awayjs-stagegl/lib/core/stagegl/ContextGLProfile");
+import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
+import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+class Basic_View
 {
-	import View							= away.containers.View;
-	import ContextMode					= away.display.ContextMode;
-	import Mesh							= away.entities.Mesh;
-	import Skybox						= away.entities.Skybox;
-	import LoaderEvent					= away.events.LoaderEvent;
-	import Vector3D						= away.geom.Vector3D;
-	import AssetLibrary					= away.library.AssetLibrary;
-	import AssetLoaderContext			= away.library.AssetLoaderContext;
-	import AssetType					= away.library.AssetType;
-	import IAsset						= away.library.IAsset;
-	import TriangleMethodMaterial		= away.materials.TriangleMethodMaterial;
-	import URLRequest					= away.net.URLRequest;
-	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
-	import PerspectiveProjection		= away.projections.PerspectiveProjection;
-	import DefaultRenderer				= away.render.DefaultRenderer;
-	import ContextGLProfile				= away.stagegl.ContextGLProfile;
-	import Texture2DBase				= away.textures.Texture2DBase;
-	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
+	//engine variables
+	private _view:View;
 
+	//material objects
+	private _planeMaterial:TriangleMethodMaterial;
 
-	export class Basic_View
-    {
-        //engine variables
-        private _view:View;
+	//scene objects
+	private _plane:Mesh;
 
-        //material objects
-        private _planeMaterial:TriangleMethodMaterial;
+	//tick for frame update
+	private _timer:RequestAnimationFrame;
 
-        //scene objects
-        private _plane:Mesh;
+	/**
+	 * Constructor
+	 */
+	constructor()
+	{
+		//setup the view
+		this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE));
 
-        //tick for frame update
-        private _timer:RequestAnimationFrame;
+		//setup the camera
+		this._view.camera.z = -600;
+		this._view.camera.y = 500;
+		this._view.camera.lookAt(new Vector3D());
 
-        /**
-         * Constructor
-         */
-        constructor()
-        {
-            //setup the view
-            this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE));
+		//setup the materials
+		this._planeMaterial = new TriangleMethodMaterial();
 
-            //setup the camera
-            this._view.camera.z = -600;
-            this._view.camera.y = 500;
-            this._view.camera.lookAt(new Vector3D());
+		//setup the scene
+		this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();
+		this._plane.material = this._planeMaterial;
+		this._view.scene.addChild(this._plane);
 
-            //setup the materials
-            this._planeMaterial = new TriangleMethodMaterial();
+		//setup the render loop
+		window.onresize  = (event:UIEvent) => this.onResize(event);
 
-            //setup the scene
-            this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();
-			this._plane.material = this._planeMaterial;
-            this._view.scene.addChild(this._plane);
+		this.onResize();
 
-            //setup the render loop
-            window.onresize  = (event:UIEvent) => this.onResize(event);
+		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+		this._timer.start();
 
-            this.onResize();
+		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
-            this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
-            this._timer.start();
+		//plane textures
+		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
+	}
 
-            AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+	/**
+	 * render loop
+	 */
+	private onEnterFrame(dt:number):void
+	{
+		this._plane.rotationY += 1;
 
-            //plane textures
-            AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
-        }
+		this._view.render();
+	}
 
-        /**
-         * render loop
-         */
-        private onEnterFrame(dt:number):void
-        {
-            this._plane.rotationY += 1;
+	/**
+	 * Listener function for resource complete event on asset library
+	 */
+	private onResourceComplete (event:LoaderEvent)
+	{
+		var assets:Array<IAsset> = event.assets;
+		var length:number = assets.length;
 
-            this._view.render();
-        }
+		for (var c:number = 0; c < length; c++) {
+			var asset:IAsset = assets[c];
 
-        /**
-         * Listener function for resource complete event on asset library
-         */
-        private onResourceComplete (event:LoaderEvent)
-        {
-            var assets:Array<IAsset> = event.assets;
-            var length:number = assets.length;
+			console.log(asset.name, event.url);
 
-            for (var c:number = 0; c < length; c++) {
-                var asset:IAsset = assets[c];
+			switch (event.url) {
+				//plane textures
+				case "assets/floor_diffuse.jpg" :
+					this._planeMaterial.texture = <Texture2DBase> asset;
+					break;
+			}
+		}
+	}
 
-                console.log(asset.name, event.url);
-
-                switch (event.url) {
-                    //plane textures
-                    case "assets/floor_diffuse.jpg" :
-                        this._planeMaterial.texture = <Texture2DBase> asset;
-                        break;
-                }
-            }
-        }
-
-        /**
-         * stage listener for resize events
-         */
-        private onResize(event:UIEvent = null):void
-        {
-            this._view.y = 0;
-            this._view.x = 0;
-            this._view.width = window.innerWidth;
-            this._view.height = window.innerHeight;
-        }
-    }
+	/**
+	 * stage listener for resize events
+	 */
+	private onResize(event:UIEvent = null):void
+	{
+		this._view.y = 0;
+		this._view.x = 0;
+		this._view.width = window.innerWidth;
+		this._view.height = window.innerHeight;
+	}
 }
 
-
-window.onload = function ()
+window.onload = function()
 {
-    new examples.Basic_View();
+	new Basic_View();
 }

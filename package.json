@@ -1,14 +1,27 @@
 {
-	"name": "",
-	"version": "0.1.0",
-	"description": "Away3D examples build scripts",
-	"url": "http://www.away3d.com",
-	"devDependencies": {
-		"grunt" : "0.4.1",
-		"grunt-contrib-watch":"*",
-		"grunt-shell":"*",
-		"grunt-ts" : "latest",
-		"typescript" : "latest"
-
-	}
+  "name": "awayjs-examples",
+  "version": "0.1.0",
+  "description": "AwayJS examples",
+  "url": "http://www.away3d.com",
+  "dependencies": {
+    "awayjs-core": "^0.1.0",
+    "awayjs-stagegl": "^0.1.0",
+    "awayjs-renderergl": "^0.1.0"
+  },
+  "devDependencies": {
+    "browserify": "^5.12.0",
+    "exorcist": "^0.1.6",
+    "glob": "^4.0.6",
+    "gulp": "^3.8.8",
+    "gulp-changed": "^1.0.0",
+    "gulp-concat": "^2.4.1",
+    "gulp-sourcemaps": "git://github.com/rob-bateman/gulp-sourcemaps.git",
+    "gulp-typescript": "^2.0.0",
+    "path": "^0.4.9",
+    "uglify-js": "~2.3.5",
+    "vinyl-map": "^1.0.1",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^1.0.6",
+    "yargs": "^1.3.2"
+  }
 }

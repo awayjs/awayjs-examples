@@ -1,6 +1,4 @@
-﻿///<reference path="../libs/stagegl-extensions.next.d.ts" />
-
-/*
+﻿/*
 
 Particle explosions in Away3D using the Adobe AIR and Adobe Flash Player logos
 
@@ -39,431 +37,434 @@ THE SOFTWARE.
 
 */
 
-module examples
+import Scene						= require("awayjs-core/lib/containers/Scene");
+import View							= require("awayjs-core/lib/containers/View");
+import HoverController				= require("awayjs-core/lib/controllers/HoverController");
+import Camera						= require("awayjs-core/lib/entities/Camera");
+import Mesh							= require("awayjs-core/lib/entities/Mesh");
+import PointLight					= require("awayjs-core/lib/entities/PointLight");
+import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
+import BitmapData					= require("awayjs-core/lib/core/base/BitmapData");
+import Geometry						= require("awayjs-core/lib/core/base/Geometry");
+import ColorTransform				= require("awayjs-core/lib/core/geom/ColorTransform");
+import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
+import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
+import StaticLightPicker			= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
+import DirectionalShadowMapper		= require("awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper");
+import PrimitivePlanePrefab			= require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
+import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
+import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
+import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
+import SpecularBitmapTexture		= require("awayjs-core/lib/textures/SpecularBitmapTexture");
+import Cast							= require("awayjs-core/lib/utils/Cast");
+import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import ParticleGeometry				= require("awayjs-renderergl/lib/core/base/ParticleGeometry");
+import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
+import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
+import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
+import ParticlePropertiesMode		= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
+import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
+import ParticleBezierCurveNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode");
+import ParticleInitialColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode");
+import ParticlePositionNode			= require("awayjs-renderergl/lib/animators/nodes/ParticlePositionNode");
+import ParticleGeometryHelper		= require("awayjs-renderergl/lib/tools/helpers/ParticleGeometryHelper");
+
+class Intermediate_ParticleExplosions
 {
-	import ParticleAnimationSet			= away.animators.ParticleAnimationSet;
-	import ParticleAnimator				= away.animators.ParticleAnimator;
-	import ParticleBezierCurveNode		= away.animators.ParticleBezierCurveNode;
-	import ParticleBillboardNode		= away.animators.ParticleBillboardNode;
-	import ParticleInitialColorNode		= away.animators.ParticleInitialColorNode;
-	import ParticlePositionNode			= away.animators.ParticlePositionNode;
-	import ParticleProperties			= away.animators.ParticleProperties;
-	import ParticlePropertiesMode		= away.animators.ParticlePropertiesMode;
-	import Geometry						= away.base.Geometry;
-	import ParticleGeometry				= away.base.ParticleGeometry;
-	import Scene						= away.containers.Scene;
-	import View							= away.containers.View;
-	import HoverController				= away.controllers.HoverController;
-	import BitmapData					= away.base.BitmapData;
-	import Camera						= away.entities.Camera;
-	import Mesh							= away.entities.Mesh;
-	import LoaderEvent					= away.events.LoaderEvent;
-	import ColorTransform				= away.geom.ColorTransform;
-	import Vector3D						= away.geom.Vector3D;
-	import AssetLibrary					= away.library.AssetLibrary;
-	import PointLight					= away.entities.PointLight;
-	import TriangleMethodMaterial				= away.materials.TriangleMethodMaterial;
-	import StaticLightPicker			= away.materials.StaticLightPicker;
-	import PrimitivePlanePrefab			= away.prefabs.PrimitivePlanePrefab;
-	import DefaultRenderer              = away.render.DefaultRenderer;
-	import ParticleGeometryHelper		= away.tools.ParticleGeometryHelper;
-	import Cast							= away.utils.Cast;
-	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
-
-	export class Intermediate_ParticleExplosions
+	private static PARTICLE_SIZE:number /*uint*/ = 2;
+	private static NUM_ANIMATORS:number /*uint*/ = 4;
+	
+	//engine variables
+	private scene:Scene;
+	private camera:Camera;
+	private view:View;
+	private cameraController:HoverController;
+	
+	//light variables
+	private greenLight:PointLight;
+	private blueLight:PointLight;
+	private lightPicker:StaticLightPicker;
+	
+	//data variables
+	private chromeBitmapData:BitmapData;
+	private firefoxBitmapData:BitmapData;
+	private ieBitmapData:BitmapData;
+	private safariBitmapData:BitmapData;
+	private colorValues:Array<Vector3D> = new Array<Vector3D>();
+	private colorPoints:Array<Vector3D> = new Array<Vector3D>();
+	private colorChromeSeparation:number /*int*/;
+	private colorFirefoxSeparation:number /*int*/;
+	private colorSafariSeparation:number /*int*/;
+	
+	//material objects
+	private colorMaterial:TriangleMethodMaterial;
+	
+	//particle objects
+	private colorGeometry:ParticleGeometry;
+	private colorAnimationSet:ParticleAnimationSet;
+	
+	//scene objects
+	private colorParticleMesh:Mesh;
+	private colorAnimators:Array<ParticleAnimator>;
+	
+	//navigation variables
+	private timer:RequestAnimationFrame;
+	private time:number = 0;
+	private angle:number = 0;
+	private move:Boolean = false;
+	private lastPanAngle:number;
+	private lastTiltAngle:number;
+	private lastMouseX:number;
+	private lastMouseY:number;
+	
+	/**
+	 * Constructor
+	 */
+	constructor()
 	{
-		private static PARTICLE_SIZE:number /*uint*/ = 2;
-		private static NUM_ANIMATORS:number /*uint*/ = 4;
-		
-		//engine variables
-		private scene:Scene;
-		private camera:Camera;
-		private view:View;
-		private cameraController:HoverController;
-		
-		//light variables
-		private greenLight:PointLight;
-		private blueLight:PointLight;
-		private lightPicker:StaticLightPicker;
-		
-		//data variables
-		private chromeBitmapData:BitmapData;
-		private firefoxBitmapData:BitmapData;
-		private ieBitmapData:BitmapData;
-		private safariBitmapData:BitmapData;
-		private colorValues:Array<Vector3D> = new Array<Vector3D>();
-		private colorPoints:Array<Vector3D> = new Array<Vector3D>();
-		private colorChromeSeparation:number /*int*/;
-		private colorFirefoxSeparation:number /*int*/;
-		private colorSafariSeparation:number /*int*/;
-		
-		//material objects
-		private colorMaterial:TriangleMethodMaterial;
-		
-		//particle objects
-		private colorGeometry:ParticleGeometry;
-		private colorAnimationSet:ParticleAnimationSet;
-		
-		//scene objects
-		private colorParticleMesh:Mesh;
-		private colorAnimators:Array<ParticleAnimator>;
-		
-		//navigation variables
-		private timer:RequestAnimationFrame;
-		private time:number = 0;
-		private angle:number = 0;
-		private move:Boolean = false;
-		private lastPanAngle:number;
-		private lastTiltAngle:number;
-		private lastMouseX:number;
-		private lastMouseY:number;
-		
-		/**
-		 * Constructor
-		 */
-		constructor()
-		{
-			this.init();
-		}
-		
-		/**
-		 * Global initialise function
-		 */
-		private init():void
-		{
-			this.initEngine();
-			this.initLights();
-			this.initMaterials();
-			this.initListeners();
-		}
-		
-		/**
-		 * Initialise the engine
-		 */
-		private initEngine():void
-		{
-			this.scene = new Scene();
+		this.init();
+	}
+	
+	/**
+	 * Global initialise function
+	 */
+	private init():void
+	{
+		this.initEngine();
+		this.initLights();
+		this.initMaterials();
+		this.initListeners();
+	}
+	
+	/**
+	 * Initialise the engine
+	 */
+	private initEngine():void
+	{
+		this.scene = new Scene();
 
-			this.camera = new Camera();
+		this.camera = new Camera();
 
-			this.view = new View(new DefaultRenderer(), this.scene, this.camera);
-			
-			//setup controller to be used on the camera
-			this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);
-		}
+		this.view = new View(new DefaultRenderer(), this.scene, this.camera);
 		
-		/**
-		 * Initialise the lights
-		 */
-		private initLights():void
-		{
-			//create a green point light
-			this.greenLight = new PointLight();
-			this.greenLight.color = 0x00FF00;
-			this.greenLight.ambient = 1;
-			this.greenLight.fallOff = 600;
-			this.greenLight.radius = 100;
-			this.greenLight.specular = 2;
-			this.scene.addChild(this.greenLight);
-			
-			//create a red pointlight
-			this.blueLight = new PointLight();
-			this.blueLight.color = 0x0000FF;
-			this.blueLight.fallOff = 600;
-			this.blueLight.radius = 100;
-			this.blueLight.specular = 2;
-			this.scene.addChild(this.blueLight);
-			
-			//create a lightpicker for the green and red light
-			this.lightPicker = new StaticLightPicker([this.greenLight, this.blueLight]);
-		}
+		//setup controller to be used on the camera
+		this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);
+	}
+	
+	/**
+	 * Initialise the lights
+	 */
+	private initLights():void
+	{
+		//create a green point light
+		this.greenLight = new PointLight();
+		this.greenLight.color = 0x00FF00;
+		this.greenLight.ambient = 1;
+		this.greenLight.fallOff = 600;
+		this.greenLight.radius = 100;
+		this.greenLight.specular = 2;
+		this.scene.addChild(this.greenLight);
 		
-		/**
-		 * Initialise the materials
-		 */
-		private initMaterials():void
-		{
-			//setup the particle material
-			this.colorMaterial = new TriangleMethodMaterial(0xFFFFFF);
-			this.colorMaterial.bothSides = true;
-			this.colorMaterial.lightPicker = this.lightPicker;
-		}
+		//create a red pointlight
+		this.blueLight = new PointLight();
+		this.blueLight.color = 0x0000FF;
+		this.blueLight.fallOff = 600;
+		this.blueLight.radius = 100;
+		this.blueLight.specular = 2;
+		this.scene.addChild(this.blueLight);
 		
-		/**
-		 * Initialise the particles
-		 */
-		private initParticles():void
-		{
-			var i:number /*int*/;
-			var j:number /*int*/;
-			var point:Vector3D;
-			var rgb:Vector3D;
-			var color:number /*uint*/
+		//create a lightpicker for the green and red light
+		this.lightPicker = new StaticLightPicker([this.greenLight, this.blueLight]);
+	}
+	
+	/**
+	 * Initialise the materials
+	 */
+	private initMaterials():void
+	{
+		//setup the particle material
+		this.colorMaterial = new TriangleMethodMaterial(0xFFFFFF);
+		this.colorMaterial.bothSides = true;
+		this.colorMaterial.lightPicker = this.lightPicker;
+	}
+	
+	/**
+	 * Initialise the particles
+	 */
+	private initParticles():void
+	{
+		var i:number /*int*/;
+		var j:number /*int*/;
+		var point:Vector3D;
+		var rgb:Vector3D;
+		var color:number /*uint*/
 
-			for (i = 0; i < this.chromeBitmapData.width; i++) {
-				for (j = 0; j < this.chromeBitmapData.height; j++) {
-					point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.chromeBitmapData.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.chromeBitmapData.height / 2));
-					color = this.chromeBitmapData.getPixel(i, j);
-					if (((color >> 24) & 0xff) > 0xb0) {
-						this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
-						this.colorPoints.push(point);
-					}
+		for (i = 0; i < this.chromeBitmapData.width; i++) {
+			for (j = 0; j < this.chromeBitmapData.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.chromeBitmapData.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.chromeBitmapData.height / 2));
+				color = this.chromeBitmapData.getPixel(i, j);
+				if (((color >> 24) & 0xff) > 0xb0) {
+					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
+					this.colorPoints.push(point);
 				}
 			}
-			
-			//define where one logo stops and another starts
-			this.colorChromeSeparation = this.colorPoints.length;
-
-			
-			for (i = 0; i < this.firefoxBitmapData.width; i++) {
-				for (j = 0; j < this.firefoxBitmapData.height; j++) {
-					point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.firefoxBitmapData.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.firefoxBitmapData.height / 2));
-					color = this.firefoxBitmapData.getPixel(i, j);
-					if (((color >> 24) & 0xff) > 0xb0) {
-						this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
-						this.colorPoints.push(point);
-					}
-				}
-			}
-
-			//define where one logo stops and another starts
-			this.colorFirefoxSeparation = this.colorPoints.length;
-
-
-			for (i = 0; i < this.safariBitmapData.width; i++) {
-				for (j = 0; j < this.safariBitmapData.height; j++) {
-					point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.safariBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.safariBitmapData.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-					color = this.safariBitmapData.getPixel(i, j);
-					if (((color >> 24) & 0xff) > 0xb0) {
-						this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
-						this.colorPoints.push(point);
-					}
-				}
-			}
-
-			//define where one logo stops and another starts
-			this.colorSafariSeparation = this.colorPoints.length;
-
-
-			for (i = 0; i < this.ieBitmapData.width; i++) {
-				for (j = 0; j < this.ieBitmapData.height; j++) {
-					point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.ieBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.ieBitmapData.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-					color = this.ieBitmapData.getPixel(i, j);
-					if (((color >> 24) & 0xff) > 0xb0) {
-						this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
-						this.colorPoints.push(point);
-					}
-				}
-			}
-
-			var num:number /*uint*/ = this.colorPoints.length;
-			
-			//setup the base geometry for one particle
-			var plane:PrimitivePlanePrefab = new PrimitivePlanePrefab(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
-			
-			//combine them into a list
-			var colorGeometrySet:Array<Geometry> = new Array<Geometry>();
-			for (i = 0; i < num; i++)
-				colorGeometrySet.push(plane.geometry);
-			
-			//generate the particle geometries
-			this.colorGeometry = ParticleGeometryHelper.generateGeometry(colorGeometrySet);
-
-			//define the particle animations and init function
-			this.colorAnimationSet = new ParticleAnimationSet();
-			this.colorAnimationSet.addAnimation(new ParticleBillboardNode());
-			this.colorAnimationSet.addAnimation(new ParticleBezierCurveNode(ParticlePropertiesMode.LOCAL_STATIC));
-			this.colorAnimationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL_STATIC));
-			this.colorAnimationSet.addAnimation(new ParticleInitialColorNode(ParticlePropertiesMode.LOCAL_STATIC, true, false, new ColorTransform(0, 1, 0, 1)));
-			this.colorAnimationSet.initParticleFunc = this.iniColorParticleFunc;
-			this.colorAnimationSet.initParticleScope = this;
 		}
 		
-		/**
-		 * Initialise the scene objects
-		 */
-		private initObjects():void
-		{
-			//initialise animators vectors
-			this.colorAnimators = new Array<ParticleAnimator>(Intermediate_ParticleExplosions.NUM_ANIMATORS);
-			
-			//create the particle mesh
-			this.colorParticleMesh = new Mesh(this.colorGeometry, this.colorMaterial);
-			
-			var i:number /*uint*/ = 0;
-			for (i=0; i<Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {
-				//clone the particle mesh
-				this.colorParticleMesh = <Mesh> this.colorParticleMesh.clone();
-				this.colorParticleMesh.rotationY = 45*(i-1);
-				this.scene.addChild(this.colorParticleMesh);
+		//define where one logo stops and another starts
+		this.colorChromeSeparation = this.colorPoints.length;
 
-				//create and start the particle animator
-				this.colorAnimators[i] = new ParticleAnimator(this.colorAnimationSet);
-				this.colorParticleMesh.animator = this.colorAnimators[i];
-				this.scene.addChild(this.colorParticleMesh);
+		
+		for (i = 0; i < this.firefoxBitmapData.width; i++) {
+			for (j = 0; j < this.firefoxBitmapData.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.firefoxBitmapData.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.firefoxBitmapData.height / 2));
+				color = this.firefoxBitmapData.getPixel(i, j);
+				if (((color >> 24) & 0xff) > 0xb0) {
+					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
+					this.colorPoints.push(point);
+				}
 			}
 		}
+
+		//define where one logo stops and another starts
+		this.colorFirefoxSeparation = this.colorPoints.length;
+
+
+		for (i = 0; i < this.safariBitmapData.width; i++) {
+			for (j = 0; j < this.safariBitmapData.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.safariBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.safariBitmapData.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
+				color = this.safariBitmapData.getPixel(i, j);
+				if (((color >> 24) & 0xff) > 0xb0) {
+					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
+					this.colorPoints.push(point);
+				}
+			}
+		}
+
+		//define where one logo stops and another starts
+		this.colorSafariSeparation = this.colorPoints.length;
+
+
+		for (i = 0; i < this.ieBitmapData.width; i++) {
+			for (j = 0; j < this.ieBitmapData.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.ieBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.ieBitmapData.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
+				color = this.ieBitmapData.getPixel(i, j);
+				if (((color >> 24) & 0xff) > 0xb0) {
+					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
+					this.colorPoints.push(point);
+				}
+			}
+		}
+
+		var num:number /*uint*/ = this.colorPoints.length;
 		
-		/**
-		 * Initialise the listeners
-		 */
-		private initListeners():void
-		{
-			window.onresize  = (event) => this.onResize(event);
+		//setup the base geometry for one particle
+		var plane:PrimitivePlanePrefab = new PrimitivePlanePrefab(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
+		
+		//combine them into a list
+		var colorGeometrySet:Array<Geometry> = new Array<Geometry>();
+		for (i = 0; i < num; i++)
+			colorGeometrySet.push(plane.geometry);
+		
+		//generate the particle geometries
+		this.colorGeometry = ParticleGeometryHelper.generateGeometry(colorGeometrySet);
 
-			document.onmousedown = (event) => this.onMouseDown(event);
-			document.onmouseup = (event) => this.onMouseUp(event);
-			document.onmousemove = (event) => this.onMouseMove(event);
+		//define the particle animations and init function
+		this.colorAnimationSet = new ParticleAnimationSet();
+		this.colorAnimationSet.addAnimation(new ParticleBillboardNode());
+		this.colorAnimationSet.addAnimation(new ParticleBezierCurveNode(ParticlePropertiesMode.LOCAL_STATIC));
+		this.colorAnimationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL_STATIC));
+		this.colorAnimationSet.addAnimation(new ParticleInitialColorNode(ParticlePropertiesMode.LOCAL_STATIC, true, false, new ColorTransform(0, 1, 0, 1)));
+		this.colorAnimationSet.initParticleFunc = this.iniColorParticleFunc;
+		this.colorAnimationSet.initParticleScope = this;
+	}
+	
+	/**
+	 * Initialise the scene objects
+	 */
+	private initObjects():void
+	{
+		//initialise animators vectors
+		this.colorAnimators = new Array<ParticleAnimator>(Intermediate_ParticleExplosions.NUM_ANIMATORS);
+		
+		//create the particle mesh
+		this.colorParticleMesh = new Mesh(this.colorGeometry, this.colorMaterial);
+		
+		var i:number /*uint*/ = 0;
+		for (i=0; i<Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {
+			//clone the particle mesh
+			this.colorParticleMesh = <Mesh> this.colorParticleMesh.clone();
+			this.colorParticleMesh.rotationY = 45*(i-1);
+			this.scene.addChild(this.colorParticleMesh);
+
+			//create and start the particle animator
+			this.colorAnimators[i] = new ParticleAnimator(this.colorAnimationSet);
+			this.colorParticleMesh.animator = this.colorAnimators[i];
+			this.scene.addChild(this.colorParticleMesh);
+		}
+	}
+	
+	/**
+	 * Initialise the listeners
+	 */
+	private initListeners():void
+	{
+		window.onresize = (event:UIEvent) => this.onResize(event);
+
+		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
 
 
-			this.onResize();
+		this.onResize();
 
 
-			this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
-			this.timer.start();
+		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
+		this.timer.start();
 
-			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
+		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+
+		//image textures
+		AssetLibrary.load(new URLRequest("assets/firefox.png"));
+		AssetLibrary.load(new URLRequest("assets/chrome.png"));
+		AssetLibrary.load(new URLRequest("assets/safari.png"));
+		AssetLibrary.load(new URLRequest("assets/ie.png"));
+	}
+	
+	/**
+	 * Initialiser for particle properties
+	 */
+	private iniColorParticleFunc(properties:ParticleProperties):void
+	{
+		properties.startTime = 0;
+		properties.duration = 1;
+		var degree1:number = Math.random() * Math.PI * 2;
+		var degree2:number = Math.random() * Math.PI * 2;
+		var r:number = 500;
+
+		if (properties.index < this.colorChromeSeparation)
+			properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(300*Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
+		else if (properties.index < this.colorFirefoxSeparation)
+			properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(-300*Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
+		else if (properties.index < this.colorSafariSeparation)
+			properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0, 300*Intermediate_ParticleExplosions.PARTICLE_SIZE);
+		else
+			properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0,-300*Intermediate_ParticleExplosions.PARTICLE_SIZE);
+
+		var rgb:Vector3D = this.colorValues[properties.index];
+		properties[ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM] = new ColorTransform(rgb.x, rgb.y, rgb.z, 1);
+
+		properties[ParticleBezierCurveNode.BEZIER_CONTROL_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
+		properties[ParticlePositionNode.POSITION_VECTOR3D] = this.colorPoints[properties.index];
+	}
+
+	/**
+	 * Navigation and render loop
+	 */
+	private onEnterFrame(dt:number):void
+	{
+		this.time += dt;
+
+		//update the camera position
+		this.cameraController.panAngle += 0.2;
+		
+		//update the particle animator playhead positions
+		var i:number /*uint*/;
+		var time:number /*uint*/;
+
+		if (this.colorAnimators) {
+			for (i=0; i<this.colorAnimators.length; i++) {
+				time = 1000*(Math.sin(this.time/5000 + Math.PI*i/4) + 1);
+				this.colorAnimators[i].update(time);
+			}
+		}
+
+		//update the light positions
+		this.angle += Math.PI / 180;
+		this.greenLight.x = Math.sin(this.angle) * 600;
+		this.greenLight.z = Math.cos(this.angle) * 600;
+		this.blueLight.x = Math.sin(this.angle + Math.PI) * 600;
+		this.blueLight.z = Math.cos(this.angle + Math.PI) * 600;
+
+		this.view.render();
+	}
+
+	/**
+	 * Listener function for resource complete event on asset library
+	 */
+	private onResourceComplete(event:LoaderEvent)
+	{
+		switch (event.url) {
 
 			//image textures
-			away.library.AssetLibrary.load(new away.net.URLRequest("assets/firefox.png"));
-			away.library.AssetLibrary.load(new away.net.URLRequest("assets/chrome.png"));
-			away.library.AssetLibrary.load(new away.net.URLRequest("assets/safari.png"));
-			away.library.AssetLibrary.load(new away.net.URLRequest("assets/ie.png"));
-		}
-		
-		/**
-		 * Initialiser for particle properties
-		 */
-		private iniColorParticleFunc(properties:ParticleProperties):void
-		{
-			properties.startTime = 0;
-			properties.duration = 1;
-			var degree1:number = Math.random() * Math.PI * 2;
-			var degree2:number = Math.random() * Math.PI * 2;
-			var r:number = 500;
+			case "assets/firefox.png" :
+				this.firefoxBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				break;
+			case "assets/chrome.png" :
+				this.chromeBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				break;
+			case "assets/ie.png" :
+				this.ieBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				break;
+			case "assets/safari.png" :
+				this.safariBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				break;
 
-			if (properties.index < this.colorChromeSeparation)
-				properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(300*Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
-			else if (properties.index < this.colorFirefoxSeparation)
-				properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(-300*Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
-			else if (properties.index < this.colorSafariSeparation)
-				properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0, 300*Intermediate_ParticleExplosions.PARTICLE_SIZE);
-			else
-				properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0,-300*Intermediate_ParticleExplosions.PARTICLE_SIZE);
-
-			var rgb:Vector3D = this.colorValues[properties.index];
-			properties[ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM] = new ColorTransform(rgb.x, rgb.y, rgb.z, 1);
-
-			properties[ParticleBezierCurveNode.BEZIER_CONTROL_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
-			properties[ParticlePositionNode.POSITION_VECTOR3D] = this.colorPoints[properties.index];
 		}
 
-		/**
-		 * Navigation and render loop
-		 */
-		private onEnterFrame(dt:number):void
-		{
-			this.time += dt;
-
-			//update the camera position
-			this.cameraController.panAngle += 0.2;
-			
-			//update the particle animator playhead positions
-			var i:number /*uint*/;
-			var time:number /*uint*/;
-
-			if (this.colorAnimators) {
-				for (i=0; i<this.colorAnimators.length; i++) {
-					time = 1000*(Math.sin(this.time/5000 + Math.PI*i/4) + 1);
-					this.colorAnimators[i].update(time);
-				}
-			}
-
-			//update the light positions
-			this.angle += Math.PI / 180;
-			this.greenLight.x = Math.sin(this.angle) * 600;
-			this.greenLight.z = Math.cos(this.angle) * 600;
-			this.blueLight.x = Math.sin(this.angle + Math.PI) * 600;
-			this.blueLight.z = Math.cos(this.angle + Math.PI) * 600;
-
-			this.view.render();
+		if (this.firefoxBitmapData != null && this.chromeBitmapData != null && this.safariBitmapData != null && this.ieBitmapData != null) {
+			this.initParticles();
+			this.initObjects();
 		}
+	}
 
-		/**
-		 * Listener function for resource complete event on asset library
-		 */
-		private onResourceComplete (event:LoaderEvent)
-		{
-			switch( event.url )
-			{
+	/**
+	 * Mouse down listener for navigation
+	 */
+	private onMouseDown(event:MouseEvent):void
+	{
+		this.lastPanAngle = this.cameraController.panAngle;
+		this.lastTiltAngle = this.cameraController.tiltAngle;
+		this.lastMouseX = event.clientX;
+		this.lastMouseY = event.clientY;
+		this.move = true;
+	}
 
-				//image textures
-				case "assets/firefox.png" :
-					this.firefoxBitmapData = Cast.bitmapData(event.assets[ 0 ]);
-					break;
-				case "assets/chrome.png" :
-					this.chromeBitmapData = Cast.bitmapData(event.assets[ 0 ]);
-					break;
-				case "assets/ie.png" :
-					this.ieBitmapData = Cast.bitmapData(event.assets[ 0 ]);
-					break;
-				case "assets/safari.png" :
-					this.safariBitmapData = Cast.bitmapData(event.assets[ 0 ]);
-					break;
+	/**
+	 * Mouse up listener for navigation
+	 */
+	private onMouseUp(event:MouseEvent):void
+	{
+		this.move = false;
+	}
 
-			}
-
-			if (this.firefoxBitmapData != null && this.chromeBitmapData != null && this.safariBitmapData != null && this.ieBitmapData != null) {
-				this.initParticles();
-				this.initObjects();
-			}
+	/**
+	 * Mouse move listener for mouseLock
+	 */
+	private onMouseMove(event:MouseEvent):void
+	{
+		if (this.move) {
+			this.cameraController.panAngle = 0.3*(event.clientX - this.lastMouseX) + this.lastPanAngle;
+			this.cameraController.tiltAngle = 0.3*(event.clientY - this.lastMouseY) + this.lastTiltAngle;
 		}
+	}
 
-		/**
-		 * Mouse down listener for navigation
-		 */
-		private onMouseDown(event):void
-		{
-			this.lastPanAngle = this.cameraController.panAngle;
-			this.lastTiltAngle = this.cameraController.tiltAngle;
-			this.lastMouseX = event.clientX;
-			this.lastMouseY = event.clientY;
-			this.move = true;
-		}
-
-		/**
-		 * Mouse up listener for navigation
-		 */
-		private onMouseUp(event):void
-		{
-			this.move = false;
-		}
-
-		/**
-		 * Mouse move listener for mouseLock
-		 */
-		private onMouseMove(event):void
-		{
-			if (this.move) {
-				this.cameraController.panAngle = 0.3*(event.clientX - this.lastMouseX) + this.lastPanAngle;
-				this.cameraController.tiltAngle = 0.3*(event.clientY - this.lastMouseY) + this.lastTiltAngle;
-			}
-		}
-
-		/**
-		 * window listener for resize events
-		 */
-		private onResize(event = null):void
-		{
-			this.view.y         = 0;
-			this.view.x         = 0;
-			this.view.width     = window.innerWidth;
-			this.view.height    = window.innerHeight;
-		}
+	/**
+	 * window listener for resize events
+	 */
+	private onResize(event:UIEvent = null):void
+	{
+		this.view.y = 0;
+		this.view.x = 0;
+		this.view.width = window.innerWidth;
+		this.view.height = window.innerHeight;
 	}
 }
 
 window.onload = function ()
 {
-	new examples.Intermediate_ParticleExplosions();
+	new Intermediate_ParticleExplosions();
 }
