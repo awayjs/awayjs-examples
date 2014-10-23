@@ -34,8 +34,7 @@ gulp.task('compile', function() {
 });
 
 gulp.task('watch', ['package', 'tests'], function() {
-    gulp.watch('./lib/**/*.ts', ['package']);
-    gulp.watch('./tests/**/*.ts', ['tests']);
+    gulp.watch('./src/*.ts', ['package']);
 });
 
 gulp.task('package', ['compile'], function(){
@@ -50,23 +49,29 @@ gulp.task('package', ['compile'], function(){
         .pipe(gulp.dest('./bin/js/'));
 });
 
-gulp.task('test', function () {
 
-    var tsProject = typescript.createProject({
-        declarationFiles: true,
-        noExternalResolve: false,
-        target: 'ES5',
-        module: 'commonjs',
-        sourceRoot: '../../../'
+gulp.task('package-lib', function(callback){
+    var b = browserify({
+        debug: true,
+        paths: ['../']
     });
 
-    console.log('./src/' + argv.file + '.ts');
-    var tsResult = gulp.src(['./src/' + argv.file + '.ts'])
-        //.pipe(changed('./tests', {extension:'.js', hasChanged: changed.compareLastModifiedTime}))
-        .pipe(sourcemaps.init())
-        .pipe(typescript(tsProject));
+    glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
+        files.forEach(function (file) {
+            b.external(file);
+        });
+    });
 
-    return tsResult.js
-        .pipe(sourcemaps.write({includeContent:false}))
-        .pipe(gulp.dest('./tests'));
+    glob('./lib/**/*.js', {}, function (error, files) {
+
+        files.forEach(function (file) {
+            b.require(file, {expose:path.relative('../', file.slice(0,-3))});
+        });
+
+        b.bundle()
+            .pipe(exorcist('./build/awayjs-renderergl.js.map'))
+            .pipe(source('awayjs-renderergl.js'))
+            .pipe(gulp.dest('./build'))
+            .on('end', callback);
+    });
 });
