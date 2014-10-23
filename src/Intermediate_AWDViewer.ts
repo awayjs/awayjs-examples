@@ -34,18 +34,20 @@ THE SOFTWARE.
 
 */
 
-import Loader						= require("awayjs-core/lib/containers/Loader");
-import View							= require("awayjs-core/lib/containers/View");
-import HoverController				= require("awayjs-core/lib/controllers/HoverController");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetType					= require("awayjs-core/lib/core/library/AssetType");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import Keyboard						= require("awayjs-core/lib/core/ui/Keyboard");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetType					= require("awayjs-core/lib/library/AssetType");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
+import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import Loader						= require("awayjs-display/lib/containers/Loader");
+import View							= require("awayjs-display/lib/containers/View");
+import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
 
 import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
 import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");

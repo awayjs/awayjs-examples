@@ -39,34 +39,36 @@ THE SOFTWARE.
 
 */
 
-import Scene						= require("awayjs-core/lib/containers/Scene");
-import View							= require("awayjs-core/lib/containers/View");
-import HoverController				= require("awayjs-core/lib/controllers/HoverController");
-import Camera						= require("awayjs-core/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-core/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import PointLight					= require("awayjs-core/lib/entities/PointLight");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ProgressEvent				= require("awayjs-core/lib/events/ProgressEvent");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/core/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/core/library/AssetType");
-import URLLoader					= require("awayjs-core/lib/core/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import StaticLightPicker			= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-import DirectionalShadowMapper		= require("awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import AssetType					= require("awayjs-core/lib/library/AssetType");
+import URLLoader					= require("awayjs-core/lib/net/URLLoader");
+import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import SpecularBitmapTexture		= require("awayjs-core/lib/textures/SpecularBitmapTexture");
-import Cast							= require("awayjs-core/lib/utils/Cast");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import Scene						= require("awayjs-display/lib/containers/Scene");
+import View							= require("awayjs-display/lib/containers/View");
+import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
+import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+import Cast							= require("awayjs-display/lib/utils/Cast");
+
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
 
 import DiffuseGradientMethod		= require("awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod");
 import SpecularFresnelMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");

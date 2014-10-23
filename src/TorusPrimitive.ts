@@ -1,22 +1,24 @@
-import View							= require("awayjs-core/lib/containers/View");
-import DirectionalLight				= require("awayjs-core/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import Skybox						= require("awayjs-core/lib/entities/Skybox");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import URLLoader					= require("awayjs-core/lib/core/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import URLLoader					= require("awayjs-core/lib/net/URLLoader");
+import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import PrimitiveTorusPrefab			= require("awayjs-core/lib/prefabs/PrimitiveTorusPrefab");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import StaticLightPicker			= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import View							= require("awayjs-display/lib/containers/View");
+import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
 
 class TorusPrimitive
 {

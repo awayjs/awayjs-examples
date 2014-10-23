@@ -45,48 +45,52 @@ THE SOFTWARE.
 
 */
 
-import Loader							= require("awayjs-core/lib/containers/Loader");
-import View								= require("awayjs-core/lib/containers/View");
-import FirstPersonController			= require("awayjs-core/lib/controllers/FirstPersonController");
-import Geometry							= require("awayjs-core/lib/core/base/Geometry");
-import ISubMesh							= require("awayjs-core/lib/core/base/ISubMesh");
-import BlendMode						= require("awayjs-core/lib/core/base/BlendMode");
-import Mesh								= require("awayjs-core/lib/entities/Mesh");
-import Skybox							= require("awayjs-core/lib/entities/Skybox");
 import Event							= require("awayjs-core/lib/events/Event");
 import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
 import ProgressEvent					= require("awayjs-core/lib/events/ProgressEvent");
 import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
-import UVTransform						= require("awayjs-core/lib/core/geom/UVTransform");
-import Vector3D							= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary						= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetLoaderContext				= require("awayjs-core/lib/core/library/AssetLoaderContext");
-import AssetType						= require("awayjs-core/lib/core/library/AssetType");
-import DirectionalLight					= require("awayjs-core/lib/entities/DirectionalLight");
-import PointLight						= require("awayjs-core/lib/entities/PointLight");
-//	import CascadeShadowMapper				= require("awayjs-core/lib/entities/CascadeShadowMapper");
-import DirectionalShadowMapper			= require("awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper");
+import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
+import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
+import AssetLoaderContext				= require("awayjs-core/lib/library/AssetLoaderContext");
+import AssetType						= require("awayjs-core/lib/library/AssetType");
+import URLLoader						= require("awayjs-core/lib/net/URLLoader");
+import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
+import URLRequest						= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
-import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
-import SkyboxMaterial					= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import StaticLightPicker				= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-import ShadowCascadeMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowCascadeMethod");
-import ShadowSoftMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
-import EffectFogMethod					= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
-import URLLoader						= require("awayjs-core/lib/core/net/URLLoader");
-import URLLoaderDataFormat				= require("awayjs-core/lib/core/net/URLLoaderDataFormat");
-import URLRequest						= require("awayjs-core/lib/core/net/URLRequest");
-import PrimitivePlanePrefab				= require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
-import DefaultRenderer					= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import ImageCubeTexture					= require("awayjs-core/lib/textures/ImageCubeTexture");
 import ImageTexture						= require("awayjs-core/lib/textures/ImageTexture");
 import SpecularBitmapTexture			= require("awayjs-core/lib/textures/SpecularBitmapTexture");
-import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
-import Keyboard							= require("awayjs-core/lib/core/ui/Keyboard");
-import Cast								= require("awayjs-core/lib/utils/Cast");
+import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import Loader							= require("awayjs-display/lib/containers/Loader");
+import View								= require("awayjs-display/lib/containers/View");
+import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
+import Geometry							= require("awayjs-display/lib/base/Geometry");
+import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
+import BlendMode						= require("awayjs-display/lib/base/BlendMode");
+import Mesh								= require("awayjs-display/lib/entities/Mesh");
+import Skybox							= require("awayjs-display/lib/entities/Skybox");
+import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
+import PointLight						= require("awayjs-display/lib/entities/PointLight");
+//	import CascadeShadowMapper				= require("awayjs-display/lib/entities/CascadeShadowMapper");
+import DirectionalShadowMapper			= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Cast								= require("awayjs-display/lib/utils/Cast");
+
+import SkyboxMaterial					= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
+import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
+import DefaultRenderer					= require("awayjs-stagegl/lib/render/DefaultRenderer");
+
+import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
+import ShadowCascadeMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowCascadeMethod");
+import ShadowSoftMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
+import EffectFogMethod					= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
+import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
+
 
 class Advanced_MultiPassSponzaDemo
 {

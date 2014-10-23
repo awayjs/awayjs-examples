@@ -36,38 +36,40 @@ THE SOFTWARE.
 
 */
 
-import DisplayObjectContainer		= require("awayjs-core/lib/containers/DisplayObjectContainer");
-import Scene						= require("awayjs-core/lib/containers/Scene");
-import Loader						= require("awayjs-core/lib/containers/Loader");
-import View							= require("awayjs-core/lib/containers/View");
-import HoverController				= require("awayjs-core/lib/controllers/HoverController");
-import BitmapData					= require("awayjs-core/lib/core/base/BitmapData");
-import BitmapDataChannel			= require("awayjs-core/lib/core/base/BitmapDataChannel");
-import BlendMode					= require("awayjs-core/lib/core/base/BlendMode");
-import OrientationMode				= require("awayjs-core/lib/core/base/OrientationMode");
-import AlignmentMode				= require("awayjs-core/lib/core/base/AlignmentMode");
-import Camera						= require("awayjs-core/lib/entities/Camera");
-import Billboard					= require("awayjs-core/lib/entities/Billboard");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import PointLight					= require("awayjs-core/lib/entities/PointLight");
-import Skybox						= require("awayjs-core/lib/entities/Skybox");
+import BitmapData					= require("awayjs-core/lib/base/BitmapData");
+import BitmapDataChannel			= require("awayjs-core/lib/base/BitmapDataChannel");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ColorTransform				= require("awayjs-core/lib/core/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import Point						= require("awayjs-core/lib/core/geom/Point");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/core/library/AssetLoaderContext");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import SkyboxMaterial				= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import StaticLightPicker			= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-import PrimitiveSpherePrefab		= require("awayjs-core/lib/prefabs/PrimitiveSpherePrefab");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
+import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import Point						= require("awayjs-core/lib/geom/Point");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
-import Cast							= require("awayjs-core/lib/utils/Cast");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
+import Scene						= require("awayjs-display/lib/containers/Scene");
+import Loader						= require("awayjs-display/lib/containers/Loader");
+import View							= require("awayjs-display/lib/containers/View");
+import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+import BlendMode					= require("awayjs-display/lib/base/BlendMode");
+import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
+import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+import Billboard					= require("awayjs-display/lib/entities/Billboard");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+import Cast							= require("awayjs-display/lib/utils/Cast");
+
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+import SkyboxMaterial				= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
 
 import DiffuseCompositeMethod		= require("awayjs-renderergl/lib/materials/methods/DiffuseCompositeMethod");
 import SpecularCompositeMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularCompositeMethod");

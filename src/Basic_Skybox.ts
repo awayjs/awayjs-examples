@@ -35,21 +35,23 @@ THE SOFTWARE.
 
 */
 
-import View							= require("awayjs-core/lib/containers/View");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import Skybox						= require("awayjs-core/lib/entities/Skybox");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/core/library/AssetLoaderContext");
-import SkyboxMaterial				= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import PrimitiveTorusPrefab			= require("awayjs-core/lib/prefabs/PrimitiveTorusPrefab");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import View							= require("awayjs-display/lib/containers/View");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+
+import SkyboxMaterial				= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
 
 import EffectEnvMapMethod			= require("awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod");
 

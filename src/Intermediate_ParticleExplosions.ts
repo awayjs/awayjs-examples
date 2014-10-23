@@ -37,32 +37,34 @@ THE SOFTWARE.
 
 */
 
-import Scene						= require("awayjs-core/lib/containers/Scene");
-import View							= require("awayjs-core/lib/containers/View");
-import HoverController				= require("awayjs-core/lib/controllers/HoverController");
-import Camera						= require("awayjs-core/lib/entities/Camera");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import PointLight					= require("awayjs-core/lib/entities/PointLight");
+import BitmapData					= require("awayjs-core/lib/base/BitmapData");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import BitmapData					= require("awayjs-core/lib/core/base/BitmapData");
-import Geometry						= require("awayjs-core/lib/core/base/Geometry");
-import ColorTransform				= require("awayjs-core/lib/core/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import StaticLightPicker			= require("awayjs-core/lib/materials/lightpickers/StaticLightPicker");
-import DirectionalShadowMapper		= require("awayjs-core/lib/materials/shadowmappers/DirectionalShadowMapper");
-import PrimitivePlanePrefab			= require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
+import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import SpecularBitmapTexture		= require("awayjs-core/lib/textures/SpecularBitmapTexture");
-import Cast							= require("awayjs-core/lib/utils/Cast");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import ParticleGeometry				= require("awayjs-renderergl/lib/core/base/ParticleGeometry");
+import Scene						= require("awayjs-display/lib/containers/Scene");
+import View							= require("awayjs-display/lib/containers/View");
+import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+import Camera						= require("awayjs-display/lib/entities/Camera");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Geometry						= require("awayjs-display/lib/base/Geometry");
+import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Cast							= require("awayjs-display/lib/utils/Cast");
+
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+
+import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");

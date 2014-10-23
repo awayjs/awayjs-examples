@@ -36,24 +36,26 @@ THE SOFTWARE.
 
 */
 
-import View							= require("awayjs-core/lib/containers/View");
-import ContextMode					= require("awayjs-core/lib/core/display/ContextMode");
-import Mesh							= require("awayjs-core/lib/entities/Mesh");
-import Skybox						= require("awayjs-core/lib/entities/Skybox");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/core/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/core/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/core/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/core/library/AssetType");
-import IAsset						= require("awayjs-core/lib/core/library/IAsset");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import URLRequest					= require("awayjs-core/lib/core/net/URLRequest");
-import PrimitivePlanePrefab			= require("awayjs-core/lib/prefabs/PrimitivePlanePrefab");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import AssetType					= require("awayjs-core/lib/library/AssetType");
+import IAsset						= require("awayjs-core/lib/library/IAsset");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import DefaultRenderer				= require("awayjs-stagegl/lib/core/render/DefaultRenderer");
-import ContextGLProfile				= require("awayjs-stagegl/lib/core/stagegl/ContextGLProfile");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+
+import View							= require("awayjs-display/lib/containers/View");
+import ContextMode					= require("awayjs-display/lib/display/ContextMode");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+
+import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
+import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
 
 class Basic_View
 {
