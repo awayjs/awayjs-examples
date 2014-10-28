@@ -7,8 +7,11 @@ var path = require('path');
 var browserify  = require('browserify');
 var source = require('vinyl-source-stream');
 var map = require('vinyl-map');
+var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var unpathify = require('unpathify');
 
 var typescript = require('gulp-typescript');
 var argv = require('yargs').argv;
@@ -22,7 +25,6 @@ gulp.task('compile', function() {
         sourceRoot: './src'
     });
 
-    console.log('./src/' + argv.file + '.ts');
     var tsResult = gulp.src(['./src/' + argv.file + '.ts', './node_modules/awayjs-**/build/*.d.ts'])
         //.pipe(changed('./tests', {extension:'.js', hasChanged: changed.compareLastModifiedTime}))
         .pipe(sourcemaps.init())
@@ -44,11 +46,20 @@ gulp.task('package', ['compile'], function(){
     });
 
     return b.bundle()
+        //.pipe(unpathify())
         .pipe(exorcist('./bin/js/' + argv.file + '.js.map'))
         .pipe(source(argv.file + '.js'))
         .pipe(gulp.dest('./bin/js/'));
 });
 
+gulp.task('package-min', ['package'], function(callback){
+    return gulp.src('./bin/js/' + argv.file + '.js')
+        .pipe(sourcemaps.init({loadMaps:true}))
+        .pipe(uglify({compress:false}))
+        .pipe(sourcemaps.write({sourceRoot:'./'}))
+        .pipe(transform(function() { return exorcist('./bin/js/' + argv.file + '.js.map'); }))
+        .pipe(gulp.dest('./bin/js/'));
+});
 
 gulp.task('package-lib', function(callback){
     var b = browserify({
