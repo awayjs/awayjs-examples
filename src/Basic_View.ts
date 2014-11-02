@@ -54,8 +54,9 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
 import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 class Basic_View
 {

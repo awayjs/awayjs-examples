@@ -65,10 +65,6 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-
 import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
@@ -78,6 +74,9 @@ import ParticleScaleNode			= require("awayjs-renderergl/lib/animators/nodes/Part
 import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode");
 import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 import ParticleGeometryHelper		= require("awayjs-renderergl/lib/tools/helpers/ParticleGeometryHelper");
 
 class Basic_Fire

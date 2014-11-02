@@ -66,14 +66,13 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
 import DiffuseGradientMethod		= require("awayjs-renderergl/lib/materials/methods/DiffuseGradientMethod");
 import SpecularFresnelMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");
 import ShadowSoftMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
 import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 class Intermediate_MonsterHeadShading
 {

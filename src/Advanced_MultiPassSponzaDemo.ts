@@ -80,17 +80,16 @@ import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers
 import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Cast								= require("awayjs-display/lib/utils/Cast");
 
-import SkyboxMaterial					= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial			= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-stagegl/lib/materials/TriangleMaterialMode");
-import DefaultRenderer					= require("awayjs-stagegl/lib/render/DefaultRenderer");
-
-import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
+import SkyboxMaterial					= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
+import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
 import ShadowCascadeMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowCascadeMethod");
 import ShadowSoftMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
 import EffectFogMethod					= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
 import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
+import DefaultRenderer					= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
+import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
 
 class Advanced_MultiPassSponzaDemo
 {

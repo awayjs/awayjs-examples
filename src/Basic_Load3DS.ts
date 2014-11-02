@@ -55,11 +55,11 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import ShadowSoftMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
 
 import Max3DSParser					= require("awayjs-renderergl/lib/parsers/Max3DSParser");
-import ShadowSoftMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
 
 class Basic_Load3DS
 {

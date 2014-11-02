@@ -17,8 +17,8 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 
 class CubePrimitive
 {

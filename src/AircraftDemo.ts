@@ -23,13 +23,12 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
-import SkyboxMaterial       		= require("awayjs-stagegl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-stagegl/lib/materials/TriangleMethodMaterial");
-import DefaultRenderer				= require("awayjs-stagegl/lib/render/DefaultRenderer");
-
+import SkyboxMaterial       		= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
+import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
 import EffectEnvMapMethod   		= require("awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod");
 import NormalSimpleWaterMethod		= require("awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod");
 import SpecularFresnelMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");
+import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
 import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
 import OBJParser					= require("awayjs-renderergl/lib/parsers/OBJParser");
 
