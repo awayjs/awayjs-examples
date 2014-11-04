@@ -1,9 +1,6 @@
-# Build and Release Folders
 bin-debug/
 bin-release/
 out/
-
-# Project property files
 .actionScriptProperties
 .flexProperties
 .settings/
@@ -12,3 +9,4 @@ out/
 .DS_Store
 *.iml
 output.txt
+node_modules
