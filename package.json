@@ -5,9 +5,11 @@
   "url": "http://www.away3d.com",
   "dependencies": {
     "awayjs-core": "^0.2.0",
-    "awayjs-display": "^0.2.0",
-    "awayjs-stagegl": "^0.4.0",
-    "awayjs-renderergl": "^0.3.0"
+    "awayjs-display": "^0.3.0",
+    "awayjs-stagegl": "^0.5.1",
+    "awayjs-renderergl": "^0.6.0",
+    "awayjs-methodmaterials": "^0.1.0",
+    "awayjs-parsers": "^0.1.0"
   },
   "devDependencies": {
     "browserify": "^5.12.0",

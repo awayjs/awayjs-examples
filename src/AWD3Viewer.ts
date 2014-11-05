@@ -34,29 +34,31 @@ THE SOFTWARE.
 
 */
 
-import AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
-import AssetType = require("awayjs-core/lib/library/AssetType");
-import AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-import URLRequest = require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D = require("awayjs-core/lib/geom/Vector3D");
-import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
-import Keyboard = require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import AssetType					= require("awayjs-core/lib/library/AssetType");
+import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
+import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
+import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
+import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
+import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View = require("awayjs-display/lib/containers/View");
-import Mesh = require("awayjs-display/lib/entities/Mesh");
-import Container = require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Geometry = require("awayjs-display/lib/base/Geometry");
-import HoverController = require("awayjs-display/lib/controllers/HoverController");
-import Loader = require("awayjs-display/lib/containers/Loader");
-import TimeLine = require("awayjs-display/lib/entities/TimeLine");
-import PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+import View							= require("awayjs-display/lib/containers/View");
+import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
+import Geometry						= require("awayjs-display/lib/base/Geometry");
+import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+import Loader						= require("awayjs-display/lib/containers/Loader");
+import TimeLine						= require("awayjs-display/lib/entities/TimeLine");
+import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
-import AWDParser = require("awayjs-renderergl/lib/parsers/AWDParser");
-import DefaultRenderer = require("awayjs-renderergl/lib/render/DefaultRenderer");
-import ColorMaterial = require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
-import TriangleMethodMaterial = require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ColorMaterial				= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+
+import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class AWD3Viewer
 {

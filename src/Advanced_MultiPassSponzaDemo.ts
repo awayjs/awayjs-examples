@@ -81,15 +81,16 @@ import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePl
 import Cast								= require("awayjs-display/lib/utils/Cast");
 
 import SkyboxMaterial					= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial			= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
-import ShadowCascadeMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowCascadeMethod");
-import ShadowSoftMethod					= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
-import EffectFogMethod					= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
 import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
-import DefaultRenderer					= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import AWDParser						= require("awayjs-renderergl/lib/parsers/AWDParser");
+import TriangleMethodMaterial			= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import TriangleMaterialMode				= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+import ShadowCascadeMethod				= require("awayjs-methodmaterials/lib/methods/ShadowCascadeMethod");
+import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
+
+import AWDParser						= require("awayjs-parsers/lib/AWDParser");
 
 class Advanced_MultiPassSponzaDemo
 {

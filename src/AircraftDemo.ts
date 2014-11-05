@@ -24,13 +24,15 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
 import SkyboxMaterial       		= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import EffectEnvMapMethod   		= require("awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod");
-import NormalSimpleWaterMethod		= require("awayjs-renderergl/lib/materials/methods/NormalSimpleWaterMethod");
-import SpecularFresnelMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
-import OBJParser					= require("awayjs-renderergl/lib/parsers/OBJParser");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import EffectEnvMapMethod   		= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
+import NormalSimpleWaterMethod		= require("awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod");
+import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
+
+import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import OBJParser					= require("awayjs-parsers/lib/OBJParser");
 
 class AircraftDemo
 {

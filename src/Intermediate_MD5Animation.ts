@@ -73,13 +73,16 @@ import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/Skel
 import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
 import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationStateEvent");
 import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import EffectFogMethod				= require("awayjs-renderergl/lib/materials/methods/EffectFogMethod");
-import ShadowNearMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowNearMethod");
-import ShadowSoftMethod				= require("awayjs-renderergl/lib/materials/methods/ShadowSoftMethod");
-import MD5AnimParser				= require("awayjs-renderergl/lib/parsers/MD5AnimParser");
-import MD5MeshParser				= require("awayjs-renderergl/lib/parsers/MD5MeshParser");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import EffectFogMethod				= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
+import ShadowNearMethod				= require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
+import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+
+import MD5AnimParser				= require("awayjs-parsers/lib/MD5AnimParser");
+import MD5MeshParser				= require("awayjs-parsers/lib/MD5MeshParser");
 
 class Intermediate_MD5Animation
 {

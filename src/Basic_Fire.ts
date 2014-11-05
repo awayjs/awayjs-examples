@@ -74,10 +74,12 @@ import ParticleScaleNode			= require("awayjs-renderergl/lib/animators/nodes/Part
 import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode");
 import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/tools/helpers/ParticleGeometryHelper");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
 
 class Basic_Fire
 {

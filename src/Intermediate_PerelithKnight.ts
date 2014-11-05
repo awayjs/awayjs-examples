@@ -59,10 +59,13 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 
 import VertexAnimationSet			= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
 import VertexAnimator				= require("awayjs-renderergl/lib/animators/VertexAnimator");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import ShadowFilteredMethod			= require("awayjs-renderergl/lib/materials/methods/ShadowFilteredMethod");
-import MD2Parser					= require("awayjs-renderergl/lib/parsers/MD2Parser");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import ShadowFilteredMethod			= require("awayjs-methodmaterials/lib/methods/ShadowFilteredMethod");
+
+import MD2Parser					= require("awayjs-parsers/lib/MD2Parser");
 
 class Intermediate_PerelithKnight
 {
