@@ -87,4 +87,30 @@ gulp.task('package-all', function(){
             });
         });
     });
-})
+});
+
+gulp.task('package-lib', function(callback){
+    var b = browserify({
+        debug: true,
+        paths: ['../']
+    });
+
+    glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
+        files.forEach(function (file) {
+            b.external(file);
+        });
+    });
+
+    glob('./lib/**/*.js', {}, function (error, files) {
+
+        files.forEach(function (file) {
+            b.require(file, {expose:path.relative('../', file.slice(0,-3))});
+        });
+
+        b.bundle()
+            .pipe(exorcist('./build/awayjs-renderergl.js.map'))
+            .pipe(source('awayjs-renderergl.js'))
+            .pipe(gulp.dest('./build'))
+            .on('end', callback);
+    });
+});

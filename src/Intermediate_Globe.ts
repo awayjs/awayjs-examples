@@ -67,20 +67,21 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import MethodVO						= require("awayjs-renderergl/lib/compilation/MethodVO");
+import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
 import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import MethodVO						= require("awayjs-renderergl/lib/materials/compilation/MethodVO");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/materials/compilation/ShaderObjectBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterElement");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/materials/compilation/ShaderRegisterData");
-import DiffuseCompositeMethod		= require("awayjs-renderergl/lib/materials/methods/DiffuseCompositeMethod");
-import SpecularCompositeMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularCompositeMethod");
-import DiffuseBasicMethod			= require("awayjs-renderergl/lib/materials/methods/DiffuseBasicMethod");
-import SpecularBasicMethod			= require("awayjs-renderergl/lib/materials/methods/SpecularBasicMethod");
-import SpecularFresnelMethod		= require("awayjs-renderergl/lib/materials/methods/SpecularFresnelMethod");
-import SpecularPhongMethod			= require("awayjs-renderergl/lib/materials/methods/SpecularPhongMethod");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import DiffuseCompositeMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
+import SpecularCompositeMethod		= require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
+import DiffuseBasicMethod			= require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
+import SpecularBasicMethod			= require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
+import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
+import SpecularPhongMethod			= require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
 
 class Intermediate_Globe
 {

@@ -50,9 +50,11 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
 import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import EffectEnvMapMethod			= require("awayjs-renderergl/lib/materials/methods/EffectEnvMapMethod");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import EffectEnvMapMethod			= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
 
 class Basic_SkyBox
 {

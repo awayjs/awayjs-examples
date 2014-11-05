@@ -57,10 +57,14 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/materials/utils/DefaultMaterialManager");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultMaterialManager		= require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+
+/**
+ *
+ */
 class Basic_Shading
 {
 	//engine variables

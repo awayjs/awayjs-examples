@@ -51,10 +51,11 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+
+import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class Basic_LoadAWD
 {

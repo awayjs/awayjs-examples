@@ -69,10 +69,12 @@ import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/P
 import ParticleBezierCurveNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode");
 import ParticleInitialColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode");
 import ParticlePositionNode			= require("awayjs-renderergl/lib/animators/nodes/ParticlePositionNode");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-renderergl/lib/materials/TriangleMaterialMode");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/tools/helpers/ParticleGeometryHelper");
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
+
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import TriangleMaterialMode			= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
 
 class Intermediate_ParticleExplosions
 {

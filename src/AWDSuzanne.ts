@@ -17,11 +17,11 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/render/DefaultRenderer");
-import TriangleMethodMaterial		= require("awayjs-renderergl/lib/materials/TriangleMethodMaterial");
-
+import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
-import AWDParser					= require("awayjs-renderergl/lib/parsers/AWDParser");
+
+import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class AWDSuzanne
 {
