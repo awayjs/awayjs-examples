@@ -40,7 +40,7 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
+import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -106,7 +106,7 @@ class AWD3Viewer
     this._view.backgroundColor = 0xffffff;
 
     //create custom lens
-    this._view.camera.projection = new PerspectiveProjection(120);
+    this._view.camera.projection = new OrthographicOffCenterProjection(0, 550, -400, 0);
     this._view.camera.projection.far = 500000;
     this._view.camera.projection.near = 0.1;
 
@@ -142,7 +142,7 @@ class AWD3Viewer
     newmesh2.material=matTx;
     this._view.scene.addChild(newmesh2);
     console.log("LOADET A Geom name = ")*/;
-    loader.load(new URLRequest("assets/test.awd"));
+    loader.load(new URLRequest("assets/AWD3/ScareCrow_old.awd"));
     // console.log("START LOADING");
     //this._view.scene.addChild(loader);
   }
