@@ -19,7 +19,8 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class CubePrimitive
 {
@@ -48,7 +49,7 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 		this._view.backgroundColor = 0x000000;
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;
@@ -134,7 +135,7 @@ class CubePrimitive
 	private imageCompleteHandler(event:Event)
 	{
 		var ts:ImageTexture = new ImageTexture(this._image, false);
-		var matTx:TriangleMethodMaterial = new TriangleMethodMaterial(ts, true, true, false);
+		var matTx:MethodMaterial = new MethodMaterial(ts, true, true, false);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
 		matTx.lightPicker = this._lightPicker;

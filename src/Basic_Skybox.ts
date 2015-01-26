@@ -49,11 +49,10 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
-import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
-
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import EffectEnvMapMethod			= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
 
 class Basic_SkyBox
@@ -63,7 +62,7 @@ class Basic_SkyBox
 
 	//material objects
 	private _cubeTexture:ImageCubeTexture;
-	private _torusMaterial:TriangleMethodMaterial;
+	private _torusMaterial:MethodMaterial;
 
 	//scene objects
 	private _skyBox:Skybox;
@@ -100,7 +99,7 @@ class Basic_SkyBox
 	private initEngine():void
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 
 		//setup the camera
 		this._view.camera.z = -600;
@@ -117,7 +116,7 @@ class Basic_SkyBox
 	private initMaterials():void
 	{
 		//setup the torus material
-		this._torusMaterial = new TriangleMethodMaterial(0xFFFFFF, 1);
+		this._torusMaterial = new MethodMaterial(0xFFFFFF, 1);
 		this._torusMaterial.specular = 0.5;
 		this._torusMaterial.ambient = 0.25;
 		this._torusMaterial.color = 0x111199;
@@ -183,7 +182,7 @@ class Basic_SkyBox
 			case 'assets/skybox/snow_texture.cube':
 				this._cubeTexture = <ImageCubeTexture> event.assets[0];
 
-				this._skyBox = new Skybox(new SkyboxMaterial(this._cubeTexture));
+				this._skyBox = new Skybox(this._cubeTexture);
 				this._view.scene.addChild(this._skyBox);
 
 				this._torusMaterial.addEffectMethod(new EffectEnvMapMethod(this._cubeTexture, 1));

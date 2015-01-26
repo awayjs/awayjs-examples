@@ -73,8 +73,9 @@ import ParticlePositionNode			= require("awayjs-renderergl/lib/animators/nodes/P
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class Intermediate_ParticleExplosions
 {
@@ -104,7 +105,7 @@ class Intermediate_ParticleExplosions
 	private colorSafariSeparation:number /*int*/;
 	
 	//material objects
-	private colorMaterial:TriangleMethodMaterial;
+	private colorMaterial:MethodMaterial;
 	
 	//particle objects
 	private colorGeometry:ParticleGeometry;
@@ -152,7 +153,7 @@ class Intermediate_ParticleExplosions
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(), this.scene, this.camera);
+		this.view = new View(new DefaultRenderer(MethodRendererPool), this.scene, this.camera);
 		
 		//setup controller to be used on the camera
 		this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);
@@ -190,7 +191,7 @@ class Intermediate_ParticleExplosions
 	private initMaterials():void
 	{
 		//setup the particle material
-		this.colorMaterial = new TriangleMethodMaterial(0xFFFFFF);
+		this.colorMaterial = new MethodMaterial(0xFFFFFF);
 		this.colorMaterial.bothSides = true;
 		this.colorMaterial.lightPicker = this.lightPicker;
 	}

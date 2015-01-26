@@ -62,7 +62,8 @@ import VertexAnimator				= require("awayjs-renderergl/lib/animators/VertexAnimat
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowFilteredMethod			= require("awayjs-methodmaterials/lib/methods/ShadowFilteredMethod");
 
 import MD2Parser					= require("awayjs-parsers/lib/MD2Parser");
@@ -70,13 +71,13 @@ import MD2Parser					= require("awayjs-parsers/lib/MD2Parser");
 class Intermediate_PerelithKnight
 {
 
-    private _meshInitialised            : boolean = false;
-    private _animationSetInitialised    : boolean = false;
-    private _sceneInitialised           : boolean = false;
+    private _meshInitialised:boolean = false;
+    private _animationSetInitialised:boolean = false;
+    private _sceneInitialised:boolean = false;
 
     //array of materials for random sampling
     private _pKnightTextures:Array<string> = new Array<string>("assets/pknight1.png", "assets/pknight2.png", "assets/pknight3.png", "assets/pknight4.png");
-    private _pKnightMaterials:Array<TriangleMethodMaterial> = new Array<TriangleMethodMaterial>();
+    private _pKnightMaterials:Array<MethodMaterial> = new Array<MethodMaterial>();
 
     //engine variables
     private _view:View;
@@ -90,7 +91,7 @@ class Intermediate_PerelithKnight
     private _lightPicker:StaticLightPicker;
 
     //material objects
-    private _floorMaterial:TriangleMethodMaterial;
+    private _floorMaterial:MethodMaterial;
     private _shadowMapMethod:ShadowFilteredMethod;
 
     //scene objects
@@ -118,7 +119,7 @@ class Intermediate_PerelithKnight
     constructor()
     {
         //setup the view
-        this._view = new View(new DefaultRenderer());
+        this._view = new View(new DefaultRenderer(MethodRendererPool));
 
         //setup the camera for optimal rendering
         this._view.camera.projection.far = 5000;
@@ -173,7 +174,7 @@ class Intermediate_PerelithKnight
         this._shadowMapMethod.epsilon = 0.2;
 
         //setup floor material
-        this._floorMaterial = new TriangleMethodMaterial();
+        this._floorMaterial = new MethodMaterial();
         this._floorMaterial.lightPicker = this._lightPicker;
         this._floorMaterial.specular = 0;
         this._floorMaterial.ambient = 1;
@@ -182,7 +183,7 @@ class Intermediate_PerelithKnight
 
         //setup knight materials
         for (var i:number /*uint*/  = 0; i < this._pKnightTextures.length; i++) {
-            var knightMaterial:TriangleMethodMaterial = new TriangleMethodMaterial();
+            var knightMaterial:MethodMaterial = new MethodMaterial();
             //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
             //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
             knightMaterial.lightPicker = this._lightPicker;

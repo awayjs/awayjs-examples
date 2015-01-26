@@ -23,10 +23,10 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
-import SkyboxMaterial       		= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import EffectEnvMapMethod   		= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
 import NormalSimpleWaterMethod		= require("awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod");
 import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
@@ -54,7 +54,7 @@ class AircraftDemo
     private _seaMesh:Mesh;
     private _seaNormalTexture:ImageTexture;
     private _seaInitialized:boolean = false;
-    private _seaMaterial:TriangleMethodMaterial;
+    private _seaMaterial:MethodMaterial;
     //}
     
     //{ f14
@@ -107,7 +107,7 @@ class AircraftDemo
 
     private initView():void
     {
-        this._view = new View(new DefaultRenderer());
+        this._view = new View(new DefaultRenderer(MethodRendererPool));
         this._view.camera.z	= -500;
         this._view.camera.y	= 250;
         this._view.camera.rotationX	= 20;
@@ -145,7 +145,7 @@ class AircraftDemo
     {
         this._f14Initialized = true;
         
-        var f14Material: TriangleMethodMaterial = new TriangleMethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
+        var f14Material: MethodMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
         f14Material.lightPicker = this._lightPicker;
         
         this._view.scene.addChild(this._f14Geom);
@@ -159,7 +159,7 @@ class AircraftDemo
 
     private initSea():void
     {
-        this._seaMaterial = new TriangleMethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
+        this._seaMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
         this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, this._seaNormalTexture);
         var fresnelMethod:SpecularFresnelMethod  = new SpecularFresnelMethod();
         fresnelMethod.normalReflectance = .3;
@@ -179,7 +179,7 @@ class AircraftDemo
         this._seaGeom.geometry.scaleUV( 100, 100 );
         this._seaMesh.subMeshes[0].uvTransform = new UVTransform();
         this._seaMesh.material = this._seaMaterial;
-        this._view.scene.addChild( new Skybox( new SkyboxMaterial(this._skyboxCubeTexture) ));
+        this._view.scene.addChild( new Skybox(this._skyboxCubeTexture));
         this._view.scene.addChild( this._seaMesh );
     }
     

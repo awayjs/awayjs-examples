@@ -75,8 +75,9 @@ import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/P
 import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
+import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
@@ -92,8 +93,8 @@ class Basic_Fire
 	private cameraController:HoverController;
 
 	//material objects
-	private planeMaterial:TriangleMethodMaterial;
-	private particleMaterial:TriangleMethodMaterial;
+	private planeMaterial:MethodMaterial;
+	private particleMaterial:MethodMaterial;
 
 	//light objects
 	private directionalLight:DirectionalLight;
@@ -147,7 +148,7 @@ class Basic_Fire
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View(new DefaultRenderer(MethodRendererPool));
 		//this.view.antiAlias = 4;
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
@@ -183,14 +184,14 @@ class Basic_Fire
 	 */
 	private initMaterials():void
 	{
-		this.planeMaterial = new TriangleMethodMaterial();
-		this.planeMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
+		this.planeMaterial = new MethodMaterial();
+		this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
 		this.planeMaterial.lightPicker = this.lightPicker;
 		this.planeMaterial.repeat = true;
 		this.planeMaterial.mipmap = false;
 		this.planeMaterial.specular = 10;
 
-		this.particleMaterial = new TriangleMethodMaterial();
+		this.particleMaterial = new MethodMaterial();
 		this.particleMaterial.blendMode = BlendMode.ADD;
 	}
 

@@ -53,7 +53,8 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
@@ -98,7 +99,7 @@ class Basic_LoadAWD
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 
 		//set the background of the view to something suitable
 		this._view.backgroundColor = 0x1e2125;
@@ -189,7 +190,7 @@ class Basic_LoadAWD
 				this._view.scene.addChild(mesh);
 				break;
 			case AssetType.MATERIAL:
-				var material:TriangleMethodMaterial = <TriangleMethodMaterial> asset;
+				var material:MethodMaterial = <MethodMaterial> asset;
 				material.lightPicker = this._lightPicker;
 				break;
 		}

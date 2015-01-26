@@ -19,7 +19,8 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class TorusPrimitive
 {
@@ -29,7 +30,7 @@ class TorusPrimitive
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
 	private _texture:ImageTexture;
-	private _material:TriangleMethodMaterial;
+	private _material:MethodMaterial;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
 
@@ -51,7 +52,7 @@ class TorusPrimitive
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer());// Create the Away3D View
+		this._view = new View(new DefaultRenderer(MethodRendererPool));// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 	}
 
@@ -96,7 +97,7 @@ class TorusPrimitive
 	{
 		this._texture = new ImageTexture(image, false);
 
-		this._material = new TriangleMethodMaterial (this._texture, true, true, false);
+		this._material = new MethodMaterial (this._texture, true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}
 

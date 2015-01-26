@@ -80,12 +80,12 @@ import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers
 import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Cast								= require("awayjs-display/lib/utils/Cast");
 
-import SkyboxMaterial					= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial			= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
-import TriangleMaterialMode				= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+import MethodMaterial					= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodMaterialMode				= require("awayjs-methodmaterials/lib/MethodMaterialMode");
+import MethodRendererPool				= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowCascadeMethod				= require("awayjs-methodmaterials/lib/methods/ShadowCascadeMethod");
 import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
@@ -147,7 +147,7 @@ class Advanced_MultiPassSponzaDemo
 	
 	//material variables
 	private _skyMap:ImageCubeTexture;
-	private _flameMaterial:TriangleMethodMaterial;
+	private _flameMaterial:MethodMaterial;
 	private _numTextures:number /*uint*/ = 0;
 	private _currentTexture:number /*uint*/ = 0;
 	private _loadingTextureStrings:Array<string>;
@@ -218,7 +218,7 @@ class Advanced_MultiPassSponzaDemo
 	private initEngine()
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 		this._view.camera.y = 150;
 		this._view.camera.z = 0;
 		
@@ -276,7 +276,7 @@ class Advanced_MultiPassSponzaDemo
 	private initObjects()
 	{
 		//create skybox
-		this._view.scene.addChild(new Skybox(new SkyboxMaterial(this._skyMap)));
+		this._view.scene.addChild(new Skybox(this._skyMap));
 		
 		//create flame meshes
 		this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
@@ -629,12 +629,12 @@ class Advanced_MultiPassSponzaDemo
 			var specularTextureName:string;
 			
 //				//store single pass materials for use later
-//				var singleMaterial:TriangleMethodMaterial = this._singleMaterialDictionary[name];
+//				var singleMaterial:MethodMaterial = this._singleMaterialDictionary[name];
 //
 //				if (!singleMaterial) {
 //
 //					//create singlepass material
-//					singleMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
+//					singleMaterial = new MethodMaterial(this._textureDictionary[textureName]);
 //
 //					singleMaterial.name = name;
 //					singleMaterial.lightPicker = this._lightPicker;
@@ -662,13 +662,13 @@ class Advanced_MultiPassSponzaDemo
 //				}
 
 			//store multi pass materials for use later
-			var multiMaterial:TriangleMethodMaterial = this._multiMaterialDictionary[name];
+			var multiMaterial:MethodMaterial = this._multiMaterialDictionary[name];
 
 			if (!multiMaterial) {
 				
 				//create multipass material
-				multiMaterial = new TriangleMethodMaterial(this._textureDictionary[textureName]);
-				multiMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
+				multiMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+				multiMaterial.mode = MethodMaterialMode.MULTI_PASS;
 				multiMaterial.name = name;
 				multiMaterial.lightPicker = this._lightPicker;
 //					multiMaterial.shadowMethod = this._cascadeMethod;
@@ -746,7 +746,7 @@ class Advanced_MultiPassSponzaDemo
 				this._skyMap = <ImageCubeTexture> event.assets[ 0 ];
 				break;
 			case "assets/fire.png" :
-				this._flameMaterial = new TriangleMethodMaterial(<ImageTexture> event.assets[ 0 ]);
+				this._flameMaterial = new MethodMaterial(<ImageTexture> event.assets[ 0 ]);
 				this._flameMaterial.blendMode = BlendMode.ADD;
 				this._flameMaterial.animateUVs = true;
 				break;

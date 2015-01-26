@@ -57,7 +57,8 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 
 import Max3DSParser					= require("awayjs-parsers/lib/Max3DSParser");
@@ -69,7 +70,7 @@ class Basic_Load3DS
 	private _cameraController:HoverController;
 
 	//material objects
-	private _groundMaterial:TriangleMethodMaterial;
+	private _groundMaterial:MethodMaterial;
 
 	//light objects
 	private _light:DirectionalLight;
@@ -115,7 +116,7 @@ class Basic_Load3DS
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 
 		//setup the camera for optimal shadow rendering
 		this._view.camera.projection.far = 2100;
@@ -140,7 +141,7 @@ class Basic_Load3DS
 	 */
 	private initMaterials():void
 	{
-		this._groundMaterial = new TriangleMethodMaterial();
+		this._groundMaterial = new MethodMaterial();
 		this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 		this._groundMaterial.shadowMethod.epsilon = 0.2;
 		this._groundMaterial.lightPicker = this._lightPicker;
@@ -219,7 +220,7 @@ class Basic_Load3DS
 				mesh.castsShadows = true;
 				break;
 			case AssetType.MATERIAL :
-				var material:TriangleMethodMaterial = <TriangleMethodMaterial> event.asset;
+				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 				material.shadowMethod.epsilon = 0.2;
 				material.lightPicker = this._lightPicker;

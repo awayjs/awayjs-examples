@@ -20,12 +20,14 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class AWDSuzanne
 {
 
+	private _renderer:DefaultRenderer;
 	private _view:View;
 	private _token:AssetLoaderToken;
 	private _timer:RequestAnimationFrame;
@@ -34,8 +36,8 @@ class AWDSuzanne
 	private _lightPicker:StaticLightPicker;
 	private _lookAtPosition:Vector3D = new Vector3D ();
 	private _cameraIncrement:number = 0;
-	private _mouseOverMaterial:TriangleMethodMaterial = new TriangleMethodMaterial(0xFF0000);
-	private _mouseOutMaterial:TriangleMethodMaterial;
+	private _mouseOverMaterial:MethodMaterial = new MethodMaterial(0xFF0000);
+	private _mouseOutMaterial:MethodMaterial;
 
 	constructor()
 	{
@@ -53,7 +55,8 @@ class AWDSuzanne
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._renderer = new DefaultRenderer(MethodRendererPool)
+		this._view = new View(this._renderer);
 		this._view.camera.projection.far = 6000;
 		this._view.forceMouseMove = true;
 	}
@@ -137,9 +140,9 @@ class AWDSuzanne
 					var mesh:Mesh = <Mesh> asset;
 
 					this._suzane = mesh;
-					(<TriangleMethodMaterial> this._suzane.material).lightPicker = this._lightPicker;
+					(<MethodMaterial> this._suzane.material).lightPicker = this._lightPicker;
 					this._suzane.y = -100;
-					this._mouseOutMaterial = <TriangleMethodMaterial> this._suzane.material;
+					this._mouseOutMaterial = <MethodMaterial> this._suzane.material;
 
 					for (var c:number = 0; c < 80; c++) {
 
@@ -156,7 +159,7 @@ class AWDSuzanne
 					}
 
 					mesh.transform.scale = new Vector3D(500, 500, 500);
-					mesh.pickingCollider = new JSPickingCollider();
+					mesh.pickingCollider = new JSPickingCollider(this._renderer.stage);
 
 					mesh.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					mesh.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));

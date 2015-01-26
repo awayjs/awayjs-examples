@@ -57,7 +57,8 @@ import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile")
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class Basic_View
 {
@@ -65,7 +66,7 @@ class Basic_View
 	private _view:View;
 
 	//material objects
-	private _planeMaterial:TriangleMethodMaterial;
+	private _planeMaterial:MethodMaterial;
 
 	//scene objects
 	private _plane:Mesh;
@@ -79,7 +80,7 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer(false, ContextGLProfile.BASELINE));
+		this._view = new View(new DefaultRenderer(MethodRendererPool));
 
 		//setup the camera
 		this._view.camera.z = -600;
@@ -87,7 +88,7 @@ class Basic_View
 		this._view.camera.lookAt(new Vector3D());
 
 		//setup the materials
-		this._planeMaterial = new TriangleMethodMaterial();
+		this._planeMaterial = new MethodMaterial();
 
 		//setup the scene
 		this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();

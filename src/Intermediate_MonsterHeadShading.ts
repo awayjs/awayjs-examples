@@ -68,8 +68,9 @@ import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
-import TriangleMaterialMode			= require("awayjs-methodmaterials/lib/TriangleMaterialMode");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
+import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 import DiffuseGradientMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseGradientMethod");
 import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
@@ -89,7 +90,7 @@ class Intermediate_MonsterHeadShading
 	private _cameraController:HoverController;
 
 	//material objects
-	private _headMaterial:TriangleMethodMaterial;
+	private _headMaterial:MethodMaterial;
 	private _softShadowMethod:ShadowSoftMethod;
 	private _fresnelMethod:SpecularFresnelMethod;
 	//private _diffuseMethod:BasicDiffuseMethod;
@@ -166,7 +167,7 @@ class Intermediate_MonsterHeadShading
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
 
-		this._view = new View(new DefaultRenderer(), this._scene, this._camera);
+		this._view = new View(new DefaultRenderer(MethodRendererPool), this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
@@ -376,8 +377,8 @@ class Intermediate_MonsterHeadShading
 		AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
 
 		//setup custom multipass material
-		this._headMaterial = new TriangleMethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
-		this._headMaterial.materialMode = TriangleMaterialMode.MULTI_PASS;
+		this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+		this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
 		this._headMaterial.mipmap = false;
 		this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
 		this._headMaterial.lightPicker = this._lightPicker;

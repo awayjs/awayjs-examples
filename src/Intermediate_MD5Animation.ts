@@ -72,11 +72,11 @@ import Skeleton						= require("awayjs-renderergl/lib/animators/data/Skeleton");
 import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
 import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
 import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import EffectFogMethod				= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
 import ShadowNearMethod				= require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
@@ -124,11 +124,11 @@ class Intermediate_MD5Animation
 	private count:number = 0;
 
 	//material objects
-	private redLightMaterial:TriangleMethodMaterial;
-	private blueLightMaterial:TriangleMethodMaterial;
-	private groundMaterial:TriangleMethodMaterial;
-	private bodyMaterial:TriangleMethodMaterial;
-	private gobMaterial:TriangleMethodMaterial;
+	private redLightMaterial:MethodMaterial;
+	private blueLightMaterial:MethodMaterial;
+	private groundMaterial:MethodMaterial;
+	private bodyMaterial:MethodMaterial;
+	private gobMaterial:MethodMaterial;
 	private cubeTexture:ImageCubeTexture;
 
 	//scene objects
@@ -166,7 +166,7 @@ class Intermediate_MD5Animation
 	 */
 	private initEngine():void
 	{
-		this.view = new View(new DefaultRenderer());
+		this.view = new View(new DefaultRenderer(MethodRendererPool));
 		this.scene = this.view.scene;
 		this.camera = this.view.camera;
 
@@ -244,17 +244,17 @@ class Intermediate_MD5Animation
 	private initMaterials():void
 	{
 		//red light material
-		this.redLightMaterial = new TriangleMethodMaterial();
+		this.redLightMaterial = new MethodMaterial();
 		this.redLightMaterial.alphaBlending = true;
 		this.redLightMaterial.addEffectMethod(this.fogMethod);
 
 		//blue light material
-		this.blueLightMaterial = new TriangleMethodMaterial();
+		this.blueLightMaterial = new MethodMaterial();
 		this.blueLightMaterial.alphaBlending = true;
 		this.blueLightMaterial.addEffectMethod(this.fogMethod);
 
 		//ground material
-		this.groundMaterial = new TriangleMethodMaterial();
+		this.groundMaterial = new MethodMaterial();
 		this.groundMaterial.smooth = true;
 		this.groundMaterial.repeat = true;
 		this.groundMaterial.lightPicker = this.lightPicker;
@@ -262,7 +262,7 @@ class Intermediate_MD5Animation
 		this.groundMaterial.addEffectMethod(this.fogMethod);
 
 		//body material
-		this.bodyMaterial = new TriangleMethodMaterial();
+		this.bodyMaterial = new MethodMaterial();
 		this.bodyMaterial.gloss = 20;
 		this.bodyMaterial.specular = 1.5;
 		this.bodyMaterial.addEffectMethod(this.fogMethod);
@@ -270,7 +270,7 @@ class Intermediate_MD5Animation
 		this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 
 		//gob material
-		this.gobMaterial = new TriangleMethodMaterial();
+		this.gobMaterial = new MethodMaterial();
 		this.gobMaterial.alphaBlending = true;
 		this.gobMaterial.smooth = true;
 		this.gobMaterial.repeat = true;
@@ -434,8 +434,8 @@ class Intermediate_MD5Animation
 			case 'assets/skybox/grimnight_texture.cube':
 				this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
-				this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
-				//this.scene.addChild(this.skyBox);
+				this.skyBox = new Skybox(this.cubeTexture);
+				this.scene.addChild(this.skyBox);
 				break;
 
 			//entities textures

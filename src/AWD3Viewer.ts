@@ -51,12 +51,13 @@ import Geometry						= require("awayjs-display/lib/base/Geometry");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import TimeLine						= require("awayjs-display/lib/entities/TimeLine");
+import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ColorMaterial				= require("awayjs-renderergl/lib/materials/TriangleBasicMaterial");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
@@ -102,7 +103,7 @@ class AWD3Viewer
   private initEngine(): void
   {
     //create the view
-    this._view = new View(new DefaultRenderer());
+    this._view = new View(new DefaultRenderer(MethodRendererPool));
     this._view.backgroundColor = 0xffffff;
 
     //create custom lens
@@ -137,7 +138,7 @@ class AWD3Viewer
     var newmesh2:Mesh=< Mesh>_cube.getNewObject();
     // newmesh2.material=new ColorMaterial(0xff0000, 1.0);
     //newmesh2.material.bothSides=true;
-    var matTx:TriangleMethodMaterial = new TriangleMethodMaterial (0xFF0000);
+    var matTx:MethodMaterial = new MethodMaterial (0xFF0000);
     matTx.bothSides = true;
     newmesh2.material=matTx;
     this._view.scene.addChild(newmesh2);
@@ -172,7 +173,7 @@ class AWD3Viewer
   {
     if(event.asset.assetType == AssetType.GEOMETRY) {
       //var newmesh:Mesh=new Mesh(<Geometry>event.asset);
-      //var matTx:TriangleMethodMaterial = new TriangleMethodMaterial (0xFF0000);
+      //var matTx:MethodMaterial = new MethodMaterial (0xFF0000);
       //matTx.bothSides=true;
       //newmesh.material=matTx;
       /// this._view.scene.addChild(newmesh);

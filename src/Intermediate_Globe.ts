@@ -68,14 +68,14 @@ import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSph
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import MethodVO						= require("awayjs-renderergl/lib/compilation/MethodVO");
 import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
 import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
 import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
-import SkyboxMaterial				= require("awayjs-renderergl/lib/materials/SkyboxMaterial");
 
-import TriangleMethodMaterial		= require("awayjs-methodmaterials/lib/TriangleMethodMaterial");
+import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
+import MethodVO						= require("awayjs-methodmaterials/lib/data/MethodVO");
 import DiffuseCompositeMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
 import SpecularCompositeMethod		= require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
 import DiffuseBasicMethod			= require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
@@ -92,10 +92,10 @@ class Intermediate_Globe
 	private cameraController:HoverController;
 
 	//material objects
-	private sunMaterial:TriangleMethodMaterial;
-	private groundMaterial:TriangleMethodMaterial;
-	private cloudMaterial:TriangleMethodMaterial;
-	private atmosphereMaterial:TriangleMethodMaterial;
+	private sunMaterial:MethodMaterial;
+	private groundMaterial:MethodMaterial;
+	private cloudMaterial:MethodMaterial;
+	private atmosphereMaterial:MethodMaterial;
 	private atmosphereDiffuseMethod:DiffuseBasicMethod;
 	private atmosphereSpecularMethod:SpecularBasicMethod;
 	private cubeTexture:ImageCubeTexture;
@@ -159,7 +159,7 @@ class Intermediate_Globe
 		this.camera = new Camera();
 		this.camera.projection.far = 100000;
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View(new DefaultRenderer(MethodRendererPool));
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
 
@@ -213,10 +213,10 @@ class Intermediate_Globe
 		specular.fresnelPower = 1;
 		specular.normalReflectance = 0.1;
 
-		this.sunMaterial = new TriangleMethodMaterial();
+		this.sunMaterial = new MethodMaterial();
 		this.sunMaterial.blendMode = BlendMode.ADD;
 
-		this.groundMaterial = new TriangleMethodMaterial();
+		this.groundMaterial = new MethodMaterial();
 		this.groundMaterial.specularMethod = specular;
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.gloss = 5;
@@ -224,7 +224,7 @@ class Intermediate_Globe
 		this.groundMaterial.ambient = 1;
 		this.groundMaterial.diffuseMethod.multiply = false;
 
-		this.cloudMaterial = new TriangleMethodMaterial();
+		this.cloudMaterial = new MethodMaterial();
 		this.cloudMaterial.alphaBlending = true;
 		this.cloudMaterial.lightPicker = this.lightPicker;
 		this.cloudMaterial.ambientColor = 0x1b2048;
@@ -234,7 +234,7 @@ class Intermediate_Globe
 		this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
 		this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
 
-		this.atmosphereMaterial = new TriangleMethodMaterial();
+		this.atmosphereMaterial = new MethodMaterial();
 		this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
 		this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
 		this.atmosphereMaterial.blendMode = BlendMode.ADD;
@@ -420,7 +420,7 @@ class Intermediate_Globe
 			case 'assets/skybox/space_texture.cube':
 				this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
-				this.skyBox = new Skybox(new SkyboxMaterial(this.cubeTexture));
+				this.skyBox = new Skybox(this.cubeTexture);
 				this.scene.addChild(this.skyBox);
 				break;
 
@@ -614,7 +614,7 @@ class FlareObject
 		var bd:BitmapData = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-		var billboardMaterial:TriangleMethodMaterial = new TriangleMethodMaterial(new BitmapTexture(bd, false));
+		var billboardMaterial:MethodMaterial = new MethodMaterial(new BitmapTexture(bd, false));
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;
