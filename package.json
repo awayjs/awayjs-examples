@@ -9,8 +9,8 @@
     "awayjs-stagegl": "^0.6.0",
     "awayjs-renderergl": "^0.7.4",
     "awayjs-methodmaterials": "^0.2.4",
-    "awayjs-parsers": "^0.1.4",
-    "awayjs-player": "^0.0.1"
+    "awayjs-parsers": "^0.2.0",
+    "awayjs-player": "^0.0.2"
   },
   "devDependencies": {
     "browserify": "^5.12.0",
