@@ -4,13 +4,13 @@
   "description": "AwayJS examples",
   "url": "http://www.away3d.com",
   "dependencies": {
-    "awayjs-core": "^0.2.6",
-    "awayjs-display": "^0.5.0",
-    "awayjs-stagegl": "^0.6.0",
-    "awayjs-renderergl": "^0.7.4",
-    "awayjs-methodmaterials": "^0.2.4",
-    "awayjs-parsers": "^0.2.0",
-    "awayjs-player": "^0.0.2"
+    "awayjs-core": "^0.3.1",
+    "awayjs-display": "^0.6.0",
+    "awayjs-stagegl": "^0.7.0",
+    "awayjs-renderergl": "^0.7.5",
+    "awayjs-methodmaterials": "^0.2.5",
+    "awayjs-parsers": "^0.2.1",
+    "awayjs-player": "^0.0.3"
   },
   "devDependencies": {
     "browserify": "^5.12.0",
