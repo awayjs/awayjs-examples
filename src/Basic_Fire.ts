@@ -37,6 +37,7 @@ THE SOFTWARE.
 
 */
 
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
@@ -59,7 +60,6 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import Geometry						= require("awayjs-display/lib/base/Geometry");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");

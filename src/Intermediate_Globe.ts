@@ -35,9 +35,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-
 import BitmapData					= require("awayjs-core/lib/base/BitmapData");
 import BitmapDataChannel			= require("awayjs-core/lib/base/BitmapDataChannel");
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -55,7 +55,6 @@ import Scene						= require("awayjs-display/lib/containers/Scene");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -429,12 +428,12 @@ class Intermediate_Globe
 				var cloudBitmapData:BitmapData = new BitmapData(2048, 1024, true, 0xFFFFFFFF);
 				cloudBitmapData.copyChannel(Cast.bitmapData(event.assets[ 0 ]), cloudBitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-				this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData, false); //TODO: fix mipmaps for bitmapdata textures
+				this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
 				var specBitmapData:BitmapData = Cast.bitmapData(event.assets[ 0 ]);
 				specBitmapData.colorTransform(specBitmapData.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMap = new BitmapTexture(specBitmapData, false); //TODO: fix mipmaps for bitmapdata textures
+				this.groundMaterial.specularMap = new BitmapTexture(specBitmapData);
 				break;
 			case "assets/globe/EarthNormal.png" :
 				this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
@@ -614,7 +613,7 @@ class FlareObject
 		var bd:BitmapData = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-		var billboardMaterial:MethodMaterial = new MethodMaterial(new BitmapTexture(bd, false));
+		var billboardMaterial:MethodMaterial = new MethodMaterial(new BitmapTexture(bd));
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;

@@ -1,3 +1,4 @@
+import BlendMode					= require("awayjs-core/lib/base/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
@@ -12,7 +13,6 @@ import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import BlendMode					= require("awayjs-display/lib/base/BlendMode");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");

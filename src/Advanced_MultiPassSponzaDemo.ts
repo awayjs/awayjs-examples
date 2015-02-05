@@ -45,6 +45,7 @@ THE SOFTWARE.
 
 */
 
+import BlendMode						= require("awayjs-core/lib/base/BlendMode");
 import Event							= require("awayjs-core/lib/events/Event");
 import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
 import ProgressEvent					= require("awayjs-core/lib/events/ProgressEvent");
@@ -69,7 +70,6 @@ import View								= require("awayjs-display/lib/containers/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
 import Geometry							= require("awayjs-display/lib/base/Geometry");
 import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
-import BlendMode						= require("awayjs-display/lib/base/BlendMode");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import Skybox							= require("awayjs-display/lib/entities/Skybox");
 import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
@@ -123,7 +123,7 @@ class Advanced_MultiPassSponzaDemo
 	private poleMeshes:Array<Mesh> = new Array<Mesh>();
 	private colMeshes:Array<Mesh> = new Array<Mesh>();
 	
-	//engien variables
+	//engien variablesf
 	private _view:View;
 	private _cameraController:FirstPersonController;
 	
@@ -675,6 +675,7 @@ class Advanced_MultiPassSponzaDemo
 				multiMaterial.shadowMethod = this._baseShadowMethod;
 				multiMaterial.addEffectMethod(this._fogMethod);
 				multiMaterial.repeat = true;
+				multiMaterial.mipmap = true;
 				multiMaterial.specular = 2;
 				
 				
@@ -691,7 +692,7 @@ class Advanced_MultiPassSponzaDemo
 				specularTextureName = this._specularTextureStrings[textureIndex];
 				if (specularTextureName)
 					multiMaterial.specularMap = this._textureDictionary[specularTextureName];
-				
+
 				//add to material dictionary
 				this._multiMaterialDictionary[name] = multiMaterial;
 			}
