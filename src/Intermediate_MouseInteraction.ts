@@ -36,8 +36,6 @@ THE SOFTWARE.
 */
 
 import BitmapData					= require("awayjs-core/lib/base/BitmapData");
-import BoundingSphere				= require("awayjs-core/lib/bounds/BoundingSphere");
-import BoundingVolumeBase			= require("awayjs-core/lib/bounds/BoundingVolumeBase");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
@@ -53,6 +51,7 @@ import Scene						= require("awayjs-display/lib/containers/Scene");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
+import BoundsType					= require("awayjs-display/lib/bounds/BoundsType");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import LineSegment					= require("awayjs-display/lib/entities/LineSegment");
@@ -290,8 +289,8 @@ class Intermediate_MouseInteraction
 			var object:Mesh = this.createSimpleObject();
 
 			// Random orientation.
-			object.rotationX = 360*Math.random();
-			object.rotationY = 360*Math.random();
+			//object.rotationX = 360*Math.random();
+			//object.rotationY = 360*Math.random();
 			object.rotationZ = 360*Math.random();
 
 			// Random position.
@@ -308,7 +307,7 @@ class Intermediate_MouseInteraction
 	{
 
 		var mesh:Mesh;
-		var bounds:BoundingVolumeBase;
+		var boundsType:string;
 
 		// Chose a random mesh.
 		var randGeometry:number = Math.random();
@@ -317,7 +316,7 @@ class Intermediate_MouseInteraction
 		}
 		else if( randGeometry > 0.5 ) {
 			mesh = <Mesh> this._spherePrefab.getNewObject();
-			bounds = new BoundingSphere(); // better on spherical meshes with bound picking colliders
+			boundsType = BoundsType.SPHERE; // better on spherical meshes with bound picking colliders
 		}
 		else if( randGeometry > 0.25 ) {
 			mesh = <Mesh> this._cylinderPrefab.getNewObject();
@@ -327,8 +326,8 @@ class Intermediate_MouseInteraction
 			mesh = <Mesh> this._torusPrefab.getNewObject();
 		}
 
-		if (bounds)
-			mesh.bounds = bounds;
+		if (boundsType)
+			mesh.boundsType = boundsType;
 
 		// Randomly decide if the mesh has a triangle collider.
 		var usesTriangleCollider:boolean = Math.random() > 0.5;
@@ -531,7 +530,7 @@ class Intermediate_MouseInteraction
 	private onMeshMouseOver(event:AwayMouseEvent):void
 	{
 		var mesh:Mesh = <Mesh> event.object;
-		mesh.boundsVisible = true;
+		mesh.debugVisible = true;
 		if( mesh != this._head ) mesh.material = this._whiteMaterial;
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
 		this.onMeshMouseMove(event);
@@ -543,7 +542,7 @@ class Intermediate_MouseInteraction
 	private onMeshMouseOut(event:AwayMouseEvent):void
 	{
 		var mesh:Mesh = <Mesh> event.object;
-		mesh.boundsVisible = false;
+		mesh.debugVisible = false;
 		if( mesh != this._head ) this.choseMeshMaterial( mesh );
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
 		this._pickingPositionTracer.transform.position = new Vector3D();

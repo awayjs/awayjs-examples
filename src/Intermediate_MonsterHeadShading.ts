@@ -335,7 +335,7 @@ class Intermediate_MonsterHeadShading
 
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._textureStrings[this._n]])
-			this._textureDictionary[this._textureStrings[this._n]] = (this._n == 1)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image, true);
+			this._textureDictionary[this._textureStrings[this._n]] = (this._n == 1)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
 
 		this._n++;
 

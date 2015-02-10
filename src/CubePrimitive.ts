@@ -134,7 +134,7 @@ class CubePrimitive
 	 */
 	private imageCompleteHandler(event:Event)
 	{
-		var ts:ImageTexture = new ImageTexture(this._image, false);
+		var ts:ImageTexture = new ImageTexture(this._image);
 		var matTx:MethodMaterial = new MethodMaterial(ts, true, true, false);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

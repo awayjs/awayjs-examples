@@ -210,7 +210,7 @@ class Intermediate_ParticleExplosions
 		for (i = 0; i < this.chromeBitmapData.width; i++) {
 			for (j = 0; j < this.chromeBitmapData.height; j++) {
 				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.chromeBitmapData.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.chromeBitmapData.height / 2));
-				color = this.chromeBitmapData.getPixel(i, j);
+				color = this.chromeBitmapData.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -225,7 +225,7 @@ class Intermediate_ParticleExplosions
 		for (i = 0; i < this.firefoxBitmapData.width; i++) {
 			for (j = 0; j < this.firefoxBitmapData.height; j++) {
 				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.firefoxBitmapData.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.firefoxBitmapData.height / 2));
-				color = this.firefoxBitmapData.getPixel(i, j);
+				color = this.firefoxBitmapData.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -240,7 +240,7 @@ class Intermediate_ParticleExplosions
 		for (i = 0; i < this.safariBitmapData.width; i++) {
 			for (j = 0; j < this.safariBitmapData.height; j++) {
 				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.safariBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.safariBitmapData.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-				color = this.safariBitmapData.getPixel(i, j);
+				color = this.safariBitmapData.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -255,7 +255,7 @@ class Intermediate_ParticleExplosions
 		for (i = 0; i < this.ieBitmapData.width; i++) {
 			for (j = 0; j < this.ieBitmapData.height; j++) {
 				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.ieBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.ieBitmapData.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-				color = this.ieBitmapData.getPixel(i, j);
+				color = this.ieBitmapData.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);

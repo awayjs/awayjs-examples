@@ -95,9 +95,9 @@ class TorusPrimitive
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._texture = new ImageTexture(image, false);
+		this._texture = new ImageTexture(image);
 
-		this._material = new MethodMaterial (this._texture, true, true, false);
+		this._material = new MethodMaterial(this._texture, true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}
 
