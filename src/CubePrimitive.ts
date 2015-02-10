@@ -158,7 +158,13 @@ class CubePrimitive
 		this._mesh.rotationY += 1;
 		this._mesh2.rotationX += 0.4;
 		this._mesh2.rotationY += 0.4;
+
 		this._view.render();
+
+        if (this._view.scene.contains(this._mesh)) {
+            this._view.scene.removeChild(this._mesh);
+            this._view.scene.removeChild(this._mesh2);
+        }
 	}
 
 	/**
