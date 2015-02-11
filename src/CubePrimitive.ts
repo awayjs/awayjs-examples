@@ -145,8 +145,7 @@ class CubePrimitive
 
 		this._view.scene.addChild(this._mesh);
 		this._view.scene.addChild(this._mesh2);
-
-	}
+    }
 
 	/**
 	 *

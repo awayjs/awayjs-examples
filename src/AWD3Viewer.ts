@@ -173,6 +173,7 @@ class AWD3Viewer
   {
     if(event.asset.assetType == AssetType.TIMELINE) {
       this._rootTimeLine = <MovieClip> event.asset;
+      this._rootTimeLine.init(); // we want to start all timelines for now...
     }
   }
 
@@ -183,8 +184,7 @@ class AWD3Viewer
     if (this._rootTimeLine) {
       //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
       this._view.scene.addChild(this._rootTimeLine);
-      // autoplay like in Flash
-      //this._rootTimeLine.play();
+      this._rootTimeLine.play();
     }
   }
 
@@ -196,7 +196,6 @@ class AWD3Viewer
 
     //update camera controler
     this._cameraController.update();
-
     if (this._rootTimeLine != undefined) {
       //console.log("RENDER = ");
       this._rootTimeLine.update(dt);
