@@ -145,8 +145,7 @@ class CubePrimitive
 
 		this._view.scene.addChild(this._mesh);
 		this._view.scene.addChild(this._mesh2);
-
-	}
+    }
 
 	/**
 	 *
@@ -160,11 +159,6 @@ class CubePrimitive
 		this._mesh2.rotationY += 0.4;
 
 		this._view.render();
-
-        if (this._view.scene.contains(this._mesh)) {
-            this._view.scene.removeChild(this._mesh);
-            this._view.scene.removeChild(this._mesh2);
-        }
 	}
 
 	/**

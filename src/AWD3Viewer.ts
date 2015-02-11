@@ -50,7 +50,6 @@ import Container					= require("awayjs-display/lib/containers/DisplayObjectConta
 import Geometry						= require("awayjs-display/lib/base/Geometry");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
-import TimeLine						= require("awayjs-display/lib/entities/TimeLine");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
@@ -60,6 +59,7 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import MovieClip					= require("awayjs-player/lib/fl/display/MovieClip");
 
 class AWD3Viewer
 {
@@ -67,7 +67,7 @@ class AWD3Viewer
   private _view: View;
   private _cameraController: HoverController;
 
-  private _rootTimeLine: TimeLine;
+  private _rootTimeLine: MovieClip;
 
   private _timer: RequestAnimationFrame;
   private _time: number = 0;
@@ -171,24 +171,9 @@ class AWD3Viewer
    */
   private onAssetComplete(event: AssetEvent): void
   {
-    if(event.asset.assetType == AssetType.GEOMETRY) {
-      //var newmesh:Mesh=new Mesh(<Geometry>event.asset);
-      //var matTx:MethodMaterial = new MethodMaterial (0xFF0000);
-      //matTx.bothSides=true;
-      //newmesh.material=matTx;
-      /// this._view.scene.addChild(newmesh);
-      //var _cube:PrimitiveCubePrefab = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-      //var newmesh2:Mesh=< Mesh>_cube.getNewObject();
-      //this._view.scene.addChild(newmesh2);
-      //console.log("LOADET A Geom name = ");
-    }
-
     if(event.asset.assetType == AssetType.TIMELINE) {
-      this._rootTimeLine = <TimeLine> event.asset;
-      this._rootTimeLine.start(); // we want to start all timelines for now...
-      //this._rootTimeLine.gotoAndStop(0);
-      //this._view.scene.addChild(this._rootTimeLine);
-      //console.log("LOADET A TimeLine name = " + this._rootTimeLine.name);
+      this._rootTimeLine = <MovieClip> event.asset;
+      this._rootTimeLine.init(); // we want to start all timelines for now...
     }
   }
 
@@ -197,9 +182,9 @@ class AWD3Viewer
    */
   private onRessourceComplete(event: LoaderEvent): void {
     if (this._rootTimeLine) {
-      console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
-      this._rootTimeLine.start();
+      //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
       this._view.scene.addChild(this._rootTimeLine);
+      this._rootTimeLine.play();
     }
   }
 
