@@ -1,20 +1,15 @@
-
-var concat = require('gulp-concat');
 var gulp = require('gulp');
-var changed = require('gulp-changed');
 var glob = require('glob');
 var path = require('path');
 var browserify  = require('browserify');
 var source = require('vinyl-source-stream');
-var map = require('vinyl-map');
 var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var unpathify = require('unpathify');
+var argv = require('yargs').argv;
 
 var typescript = require('gulp-typescript');
-var argv = require('yargs').argv;
 
 function _compile(filename) {
     console.log('compile ' + filename);
@@ -26,8 +21,7 @@ function _compile(filename) {
         sourceRoot: './src'
     });
 
-    var tsResult = gulp.src(['./src/' + filename + '.ts', './node_modules/awayjs-**/build/*.d.ts'])
-        //.pipe(changed('./tests', {extension:'.js', hasChanged: changed.compareLastModifiedTime}))
+    var tsResult = gulp.src(['./src/' + argv.file + '.ts', './node_modules/awayjs-**/build/*.d.ts'])
         .pipe(sourcemaps.init())
         .pipe(typescript(tsProject));
 
@@ -36,18 +30,25 @@ function _compile(filename) {
         .pipe(gulp.dest('./src'));
 }
 
-function _package(filename) {
+function _package(filename, callback) {
     console.log('package ' + filename);
     var b = browserify({
         debug: true,
         entries: './src/' + filename + '.js'
     });
 
-    return b.bundle()
-        //.pipe(unpathify())
-        .pipe(exorcist('./bin/js/' + filename + '.js.map'))
-        .pipe(source(filename + '.js'))
-        .pipe(gulp.dest('./bin/js/'));
+    glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
+
+        files.forEach(function (file) {
+            b.external(file, {expose:path.relative('./node_modules/', file.slice(0,-3))});
+        });
+
+        b.bundle()
+            .pipe(exorcist('./bin/js/' + filename + '.js.map'))
+            .pipe(source(filename + '.js'))
+            .pipe(gulp.dest('./bin/js'))
+            .on('end', callback);
+    });
 }
 
 function _minify(filename) {
@@ -64,11 +65,11 @@ gulp.task('compile', function() {
     return _compile(argv.file);
 });
 
-gulp.task('package', ['compile'], function(){
-    return _package(argv.file);
+gulp.task('package', ['compile'], function(callback){
+    return _package(argv.file, callback);
 });
 
-gulp.task('package-min', ['package'], function(callback){
+gulp.task('package-min', ['package'], function(){
     return _minify(argv.file);
 });
 
@@ -80,37 +81,43 @@ gulp.task('package-all', function(){
 
             _compile(filename)
                 .on('end', function() {
-                _package(filename)
-                    .on('end', function() {
+                    _package(filename, function() {
                         _minify(filename);
-                    })
-            });
+                    });
+                });
         });
     });
 });
 
-gulp.task('package-lib', function(callback){
+gulp.task('package-awayjs', function(callback){
     var b = browserify({
         debug: true,
         paths: ['../']
     });
 
     glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
-        files.forEach(function (file) {
-            b.external(file);
-        });
-    });
-
-    glob('./lib/**/*.js', {}, function (error, files) {
 
         files.forEach(function (file) {
-            b.require(file, {expose:path.relative('../', file.slice(0,-3))});
+            b.require(file, {expose:path.relative('./node_modules/', file.slice(0,-3))});
         });
 
         b.bundle()
-            .pipe(exorcist('./build/awayjs-renderergl.js.map'))
-            .pipe(source('awayjs-renderergl.js'))
-            .pipe(gulp.dest('./build'))
+            .pipe(exorcist('./bin/js/awayjs-dist-require.js.map'))
+            .pipe(source('awayjs-dist-require.js'))
+            .pipe(gulp.dest('./bin/js'))
             .on('end', callback);
     });
+});
+
+gulp.task('package-awayjs-min', ['package-awayjs'], function(callback){
+    return gulp.src('./bin/js/awayjs-dist-require.js')
+        .pipe(sourcemaps.init({loadMaps:true}))
+        .pipe(uglify({compress:false}))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./bin/js'));
+});
+
+
+gulp.task('watch', ['package'], function() {
+    gulp.watch('./src/**.ts', ['package']);
 });
