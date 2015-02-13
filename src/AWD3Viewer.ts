@@ -144,6 +144,8 @@ class AWD3Viewer
     this._view.scene.addChild(newmesh2);
     console.log("LOADET A Geom name = ")*/;
     loader.load(new URLRequest("assets/AWD3/ScareCrow_old.awd"));
+    //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
+    //loader.load(new URLRequest("assets/AWD3/Simple_shape_new.awd"));
     // console.log("START LOADING");
     //this._view.scene.addChild(loader);
   }
