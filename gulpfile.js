@@ -11,7 +11,7 @@ var argv = require('yargs').argv;
 
 var typescript = require('gulp-typescript');
 
-function _compile(filename) {
+function _compile(filename, callback) {
     console.log('compile ' + filename);
     var tsProject = typescript.createProject({
         declarationFiles: true,
@@ -25,9 +25,10 @@ function _compile(filename) {
         .pipe(sourcemaps.init())
         .pipe(typescript(tsProject));
 
-    return tsResult.js
+    tsResult.js
         .pipe(sourcemaps.write({sourceRoot: './'}))
-        .pipe(gulp.dest('./src'));
+        .pipe(gulp.dest('./src'))
+        .on('end', callback);
 }
 
 function _package(filename, callback) {
@@ -58,15 +59,15 @@ function _minify(filename) {
         .pipe(uglify({compress:false}))
         .pipe(sourcemaps.write({sourceRoot:'./'}))
         .pipe(transform(function() { return exorcist('./bin/js/' + filename + '.js.map'); }))
-        .pipe(gulp.dest('./bin/js/'));
+        .pipe(gulp.dest('./bin/js/'))
 }
 
-gulp.task('compile', function() {
-    return _compile(argv.file);
+gulp.task('compile', function(callback) {
+    _compile(argv.file, callback);
 });
 
 gulp.task('package', ['compile'], function(callback){
-    return _package(argv.file, callback);
+    _package(argv.file, callback);
 });
 
 gulp.task('package-min', ['package'], function(){
@@ -76,11 +77,10 @@ gulp.task('package-min', ['package'], function(){
 gulp.task('package-all', function(){
     glob('./src/*.ts', {}, function (error, files) {
 
-        return files.forEach(function (file) {
+        return files.forEach(function (file, index) {
             var filename = path.basename(file, '.ts');
 
-            _compile(filename)
-                .on('end', function() {
+            _compile(filename, function() {
                     _package(filename, function() {
                         _minify(filename);
                     });
