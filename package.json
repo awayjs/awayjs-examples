@@ -1,6 +1,6 @@
 {
   "name": "awayjs-examples",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "AwayJS examples",
   "url": "http://www.away3d.com",
   "dependencies": {
@@ -9,7 +9,7 @@
     "awayjs-stagegl": "^0.7.1",
     "awayjs-renderergl": "^0.7.6",
     "awayjs-methodmaterials": "^0.2.6",
-    "awayjs-parsers": "^0.4.1",
+    "awayjs-parsers": "^0.4.2",
     "awayjs-player": "^0.3.0"
   },
   "devDependencies": {
