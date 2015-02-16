@@ -103,22 +103,12 @@ var AWD3Viewer = (function () {
         var loader = new Loader();
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
-        /*
-        var _cube:PrimitiveCubePrefab = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-        var newmesh2:Mesh=< Mesh>_cube.getNewObject();
-        // newmesh2.material=new ColorMaterial(0xff0000, 1.0);
-        //newmesh2.material.bothSides=true;
-        var matTx:MethodMaterial = new MethodMaterial (0xFF0000);
-        matTx.bothSides = true;
-        newmesh2.material=matTx;
-        this._view.scene.addChild(newmesh2);
-        console.log("LOADET A Geom name = ")*/
-        loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
+        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+        loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
         //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Simple_shape_new.awd"));
-        // console.log("START LOADING");
-        //this._view.scene.addChild(loader);
+        //loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
     };
     /**
      * Initialise the listeners
