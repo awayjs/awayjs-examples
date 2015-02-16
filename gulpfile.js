@@ -41,7 +41,7 @@ function _package(filename, callback) {
     glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
 
         files.forEach(function (file) {
-            b.external(file, {expose:path.relative('./node_modules/', file.slice(0,-3))});
+            b.external(file, {expose:(path.relative('./node_modules/', file.slice(0,-3))).replace(/\\/gi, "/")});
         });
 
         b.bundle()
@@ -98,7 +98,7 @@ gulp.task('package-awayjs', function(callback){
     glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
 
         files.forEach(function (file) {
-            b.require(file, {expose:path.relative('./node_modules/', file.slice(0,-3))});
+            b.require(file, {expose:(path.relative('./node_modules/', file.slice(0,-3))).replace(/\\/gi, "/")});
         });
 
         b.bundle()
