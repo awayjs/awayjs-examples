@@ -30295,6 +30295,24 @@ var RenderableMergeSort = (function () {
 module.exports = RenderableMergeSort;
 
 
+},{}],"awayjs-display/lib/sort/RenderableNullSort":[function(require,module,exports){
+/**
+ * @class away.sort.NullSort
+ */
+var RenderableNullSort = (function () {
+    function RenderableNullSort() {
+    }
+    RenderableNullSort.prototype.sortBlendedRenderables = function (head) {
+        return head;
+    };
+    RenderableNullSort.prototype.sortOpaqueRenderables = function (head) {
+        return head;
+    };
+    return RenderableNullSort;
+})();
+module.exports = RenderableNullSort;
+
+
 },{}],"awayjs-display/lib/text/AntiAliasType":[function(require,module,exports){
 /**
  * The AntiAliasType class provides values for anti-aliasing in the
@@ -38112,6 +38130,7 @@ var TimelineKeyFrame = require("awayjs-player/lib/fl/timeline/TimelineKeyFrame")
 var AddChildCommand = require("awayjs-player/lib/fl/timeline/commands/AddChildCommand");
 var UpdatePropertyCommand = require("awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand");
 var RemoveChildCommand = require("awayjs-player/lib/fl/timeline/commands/RemoveChildCommand");
+var ApplyAS2DepthsCommand = require("awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand");
 /**
  * AWDParser provides a parser for the AWD data type.
  */
@@ -38606,6 +38625,7 @@ var AWDParser = (function (_super) {
             }
             var numCommands = this._newBlockBytes.readUnsignedShort();
             var commandString = "\n      Commands " + numCommands;
+            var hasDepthChanges = false;
             for (j = 0; j < numCommands; j++) {
                 var objectID;
                 var resourceID;
@@ -38707,6 +38727,8 @@ var AWDParser = (function (_super) {
                         // depth must be positive to be valid
                         if (depth >= 0) {
                             commandString += "\n                Depth = " + depth;
+                            frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "__AS2Depth", depth));
+                            hasDepthChanges = true;
                         }
                         // mask must be positive to be valid. i think only add-commands will have this value.
                         // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
@@ -38733,6 +38755,11 @@ var AWDParser = (function (_super) {
                         commandString += "\n       - Unknown Command Type = " + commandType;
                         break;
                 }
+            }
+            if (hasDepthChanges) {
+                // only want to do this once after all children's depth values are updated
+                frame.addConstructCommand(new ApplyAS2DepthsCommand());
+                hasDepthChanges = false;
             }
             var length_code = this._newBlockBytes.readUnsignedInt();
             if (length_code > 0) {
@@ -40627,7 +40654,7 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-player/lib/fl/factories/AS2SceneGraphFactory":undefined,"awayjs-player/lib/fl/timeline/TimelineKeyFrame":undefined,"awayjs-player/lib/fl/timeline/commands/AddChildCommand":undefined,"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":undefined,"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/managers/DefaultMaterialManager":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/base/TriangleSubGeometry":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-player/lib/fl/factories/AS2SceneGraphFactory":undefined,"awayjs-player/lib/fl/timeline/TimelineKeyFrame":undefined,"awayjs-player/lib/fl/timeline/commands/AddChildCommand":undefined,"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":undefined,"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":undefined,"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined,"awayjs-renderergl/lib/managers/DefaultMaterialManager":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -44043,6 +44070,7 @@ var MovieClip = (function (_super) {
      * should be called right before the call to away3d-render.
      */
     MovieClip.prototype.update = function (timeDelta) {
+        //this.logHierarchy();
         // TODO: Implement proper elastic racetrack logic
         var frameMarker = 1000 / this._fps;
         // right now, just advance frame once time marker has been reached
@@ -44056,7 +44084,7 @@ var MovieClip = (function (_super) {
      * Add a new TimelineFrame.
      */
     MovieClip.prototype.addFrame = function (newFrame) {
-        var endFrame = (newFrame.startTime + newFrame.duration) / 1000 * this._fps;
+        var endFrame = Math.ceil((newFrame.startTime + newFrame.duration) / 1000 * this._fps);
         if (this._totalFrames < endFrame)
             this._totalFrames = endFrame;
         this._keyFrames.push(newFrame);
@@ -44071,7 +44099,6 @@ var MovieClip = (function (_super) {
      * Returns the child ID for this MovieClip
      */
     MovieClip.prototype.registerPotentialChild = function (prototype) {
-        console.log(prototype);
         var id = this._potentialChildren.length;
         this._potentialChildren[id] = prototype.clone();
         return id;
@@ -44165,6 +44192,26 @@ var MovieClip = (function (_super) {
                 keyFrame.update(this, this._time);
         }
     };
+    // DEBUG CODE:
+    MovieClip.prototype.logHierarchy = function (depth) {
+        if (depth === void 0) { depth = 0; }
+        this.printHierarchyName(depth, this);
+        var len = this.numChildren;
+        for (var i = 0; i < len; i++) {
+            var child = this.getChildAt(i);
+            if (child instanceof MovieClip)
+                child.logHierarchy(depth + 1);
+            else
+                this.printHierarchyName(depth + 1, child);
+        }
+    };
+    MovieClip.prototype.printHierarchyName = function (depth, target) {
+        var str = "";
+        for (var i = 0; i < depth; ++i)
+            str += "--";
+        str += " " + target.name;
+        console.log(str);
+    };
     return MovieClip;
 })(DisplayObjectContainer);
 module.exports = MovieClip;
@@ -44190,7 +44237,68 @@ module.exports = AS2SceneGraphFactory;
 
 
 
-},{}],"awayjs-player/lib/fl/timeline/InterpolationObject":[function(require,module,exports){
+},{}],"awayjs-player/lib/fl/partition/Partition2DNode":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var NodeBase = require("awayjs-display/lib/partition/NodeBase");
+var Partition2DNode = (function (_super) {
+    __extends(Partition2DNode, _super);
+    function Partition2DNode(root) {
+        _super.call(this);
+        this._root = root;
+    }
+    Partition2DNode.prototype.acceptTraverser = function (traverser) {
+        if (traverser.enterNode(this)) {
+            this.traverseSceneGraph(this._root, traverser);
+        }
+    };
+    // pass any so we can convert to IEntity. Sigh, TypeScript.
+    Partition2DNode.prototype.traverseSceneGraph = function (displayObject, traverser) {
+        // typechecking is nasty, but we have little choice:
+        if (displayObject instanceof DisplayObjectContainer)
+            this.traverseChildren(displayObject, traverser);
+        // (typechecking an interface doesn't work, ie instanceof IEntity is impossible)
+        if (displayObject._iCollectRenderables) {
+            var entity = (displayObject);
+            console.log(entity);
+            traverser.applyEntity(entity);
+        }
+    };
+    Partition2DNode.prototype.traverseChildren = function (container, traverser) {
+        var len = container.numChildren;
+        for (var i = 0; i < len; ++i)
+            this.traverseSceneGraph(container.getChildAt(i), traverser);
+    };
+    return Partition2DNode;
+})(NodeBase);
+module.exports = Partition2DNode;
+
+
+},{"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/partition/NodeBase":undefined}],"awayjs-player/lib/fl/partition/Partition2D":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Partition = require("awayjs-display/lib/partition/Partition");
+var Partition2DNode = require("awayjs-player/lib/fl/partition/Partition2DNode");
+var Partition2D = (function (_super) {
+    __extends(Partition2D, _super);
+    function Partition2D(root) {
+        _super.call(this, new Partition2DNode(root));
+    }
+    return Partition2D;
+})(Partition);
+module.exports = Partition2D;
+
+
+},{"awayjs-display/lib/partition/Partition":undefined,"awayjs-player/lib/fl/partition/Partition2DNode":undefined}],"awayjs-player/lib/fl/timeline/InterpolationObject":[function(require,module,exports){
 /**
  * TimeLineObject represents a unique object that is (or will be) used by a TimeLine.
  *  A TimeLineObject basically consists of an objID, and an IAsset.
@@ -44330,6 +44438,30 @@ var AddChildCommand = (function () {
     return AddChildCommand;
 })();
 module.exports = AddChildCommand;
+
+
+},{}],"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":[function(require,module,exports){
+// We're using a specific command so we don't need to manage an AS2-like "depth" property, which has no meaning in Away3D's display hierarchy
+// This implementation itself is a hack, tho, but it works.
+var ApplyAS2DepthsCommand = (function () {
+    function ApplyAS2DepthsCommand() {
+    }
+    ApplyAS2DepthsCommand.prototype.execute = function (sourceMovieClip, time) {
+        var childrenArray = sourceMovieClip["_children"];
+        childrenArray.sort(this.sortChildrenByDepth);
+    };
+    ApplyAS2DepthsCommand.prototype.sortChildrenByDepth = function (a, b) {
+        var da = (a["__AS2Depth"]);
+        var db = (b["__AS2Depth"]);
+        if (da === undefined)
+            da = 0;
+        if (db === undefined)
+            db = 0;
+        return db - da;
+    };
+    return ApplyAS2DepthsCommand;
+})();
+module.exports = ApplyAS2DepthsCommand;
 
 
 },{}],"awayjs-player/lib/fl/timeline/commands/FrameCommand":[function(require,module,exports){

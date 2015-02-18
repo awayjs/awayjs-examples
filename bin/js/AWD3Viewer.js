@@ -43,9 +43,11 @@ var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicPr
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/containers/View");
 var Loader = require("awayjs-display/lib/containers/Loader");
+var RenderableNullSort = require("awayjs-display/lib/sort/RenderableNullSort");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodRendererPool = require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var Partition2D = require("awayjs-player/lib/fl/partition/Partition2D");
 var AWD3Viewer = (function () {
     /**
      * Constructor
@@ -68,6 +70,7 @@ var AWD3Viewer = (function () {
     AWD3Viewer.prototype.initEngine = function () {
         //create the view
         this._view = new View(new DefaultRenderer(MethodRendererPool));
+        this._view.renderer.renderableSorter = new RenderableNullSort();
         this._view.backgroundColor = 0xffffff;
         this._view.camera.projection = new OrthographicProjection(500);
         this._view.camera.projection.far = 500000;
@@ -131,6 +134,7 @@ var AWD3Viewer = (function () {
     AWD3Viewer.prototype.onAssetComplete = function (event) {
         if (event.asset.assetType == AssetType.TIMELINE) {
             this._rootTimeLine = event.asset;
+            this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
         }
     };
     /**
@@ -224,7 +228,7 @@ window.onload = function () {
 };
 
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-methodmaterials/lib/pool/MethodRendererPool":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/sort/RenderableNullSort":undefined,"awayjs-methodmaterials/lib/pool/MethodRendererPool":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
 
 
 //# sourceMappingURL=AWD3Viewer.js.map

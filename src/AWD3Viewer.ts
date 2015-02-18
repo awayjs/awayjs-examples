@@ -52,6 +52,7 @@ import Geometry						= require("awayjs-display/lib/base/Geometry");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import RenderableNullSort			= require("awayjs-display/lib/sort/RenderableNullSort");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -60,13 +61,13 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import Partition2D					= require("awayjs-player/lib/fl/partition/Partition2D");
 import MovieClip					= require("awayjs-player/lib/fl/display/MovieClip");
 
 class AWD3Viewer
 {
   //engine variables
   private _view: View;
-  private _cameraController: HoverController;
 
   private _rootTimeLine: MovieClip;
 
@@ -74,8 +75,6 @@ class AWD3Viewer
   private _time: number = 0;
 
   //navigation
-  private _lastPanAngle: number;
-  private _lastTiltAngle: number;
   private _lastMouseX: number;
   private _lastMouseY: number;
   private _move: boolean;
@@ -105,6 +104,7 @@ class AWD3Viewer
   {
     //create the view
     this._view = new View(new DefaultRenderer(MethodRendererPool));
+    this._view.renderer.renderableSorter = new RenderableNullSort();
     this._view.backgroundColor = 0xffffff;
 
       this._view.camera.projection = new OrthographicProjection(500);
@@ -180,6 +180,7 @@ class AWD3Viewer
   {
     if(event.asset.assetType == AssetType.TIMELINE) {
       this._rootTimeLine = <MovieClip> event.asset;
+        this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
     }
   }
 
