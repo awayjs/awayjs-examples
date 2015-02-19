@@ -26,7 +26,7 @@ import Geometry                      = require("awayjs-display/lib/base/Geometry
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import CurveBasicMethod				= require("awayjs-methodmaterials/lib/methods/CurveBasicMethod");
+//import CurveBasicMethod				= require("awayjs-methodmaterials/lib/methods/CurveBasicMethod");
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
@@ -71,7 +71,7 @@ class CurveDemo
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));// Create the Away3D View
+		this._view = new View(new DefaultRenderer());// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 
 
