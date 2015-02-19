@@ -9,7 +9,7 @@
     "awayjs-stagegl": "^0.7.1",
     "awayjs-renderergl": "^0.7.7",
     "awayjs-methodmaterials": "^0.2.6",
-    "awayjs-parsers": "^0.4.2",
+    "awayjs-parsers": "^0.4.4",
     "awayjs-player": "^0.4.0"
   },
   "devDependencies": {
