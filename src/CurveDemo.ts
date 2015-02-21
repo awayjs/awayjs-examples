@@ -26,13 +26,14 @@ import Geometry                      = require("awayjs-display/lib/base/Geometry
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
+//import CurveBasicMethod				= require("awayjs-methodmaterials/lib/methods/CurveBasicMethod");
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class CurveDemo
 {
 	private _view:View;
-    private _cameraController:HoverController;
+	private _cameraController:HoverController;
 	private _torus:PrimitiveTorusPrefab;
 	private _mesh:Mesh;
 	private _raf:RequestAnimationFrame;
@@ -42,12 +43,12 @@ class CurveDemo
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
 
-    //navigation
-    private _lastPanAngle:number;
-    private _lastTiltAngle:number;
-    private _lastMouseX:number;
-    private _lastMouseY:number;
-    private _move:boolean;
+	//navigation
+	private _lastPanAngle:number;
+	private _lastTiltAngle:number;
+	private _lastMouseX:number;
+	private _lastMouseY:number;
+	private _move:boolean;
 
 	constructor ()
 	{
@@ -70,64 +71,64 @@ class CurveDemo
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));// Create the Away3D View
+		this._view = new View(new DefaultRenderer());// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 
 
-        //setup controller to be used on the camera
-        this._cameraController = new HoverController(this._view.camera, null, 0, 0, -150, 10, 90);
-        this._cameraController.lookAtPosition = new Vector3D(0, 0, 0);
-        this._cameraController.tiltAngle = 0;
-        this._cameraController.panAngle = 0;
-        this._cameraController.minTiltAngle = -60;
-        this._cameraController.maxTiltAngle = 60;
-        this._cameraController.autoUpdate = false;
+		//setup controller to be used on the camera
+		this._cameraController = new HoverController(this._view.camera, null, 0, 0, -150, 10, 90);
+		this._cameraController.lookAtPosition = new Vector3D(0, 0, 0);
+		this._cameraController.tiltAngle = 0;
+		this._cameraController.panAngle = 0;
+		this._cameraController.minTiltAngle = -60;
+		this._cameraController.maxTiltAngle = 60;
+		this._cameraController.autoUpdate = false;
 
-        document.onmousedown = (event) => this.onMouseDown(event);
-        document.onmouseup = (event) => this.onMouseUp(event);
-        document.onmousemove = (event) => this.onMouseMove(event);
-        document.onmousewheel = (event) => this.onMouseWheel(event);
+		document.onmousedown = (event) => this.onMouseDown(event);
+		document.onmouseup = (event) => this.onMouseUp(event);
+		document.onmousemove = (event) => this.onMouseMove(event);
+		document.onmousewheel = (event) => this.onMouseWheel(event);
 	}
-    /**
-     * Mouse down listener for navigation
-     */
-    private onMouseDown(event):void
-    {
-        this._lastPanAngle = this._cameraController.panAngle;
-        this._lastTiltAngle = this._cameraController.tiltAngle;
-        this._lastMouseX = event.clientX;
-        this._lastMouseY = event.clientY;
-        this._move = true;
-    }
+	/**
+	 * Mouse down listener for navigation
+	 */
+	private onMouseDown(event):void
+	{
+		this._lastPanAngle = this._cameraController.panAngle;
+		this._lastTiltAngle = this._cameraController.tiltAngle;
+		this._lastMouseX = event.clientX;
+		this._lastMouseY = event.clientY;
+		this._move = true;
+	}
 
-    /**
-     * Mouse up listener for navigation
-     */
-    private onMouseUp(event):void
-    {
-        this._move = false;
-    }
+	/**
+	 * Mouse up listener for navigation
+	 */
+	private onMouseUp(event):void
+	{
+		this._move = false;
+	}
 
-    private onMouseMove(event)
-    {
-        if (this._move) {
-            this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
-            this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
-        }
-    }
+	private onMouseMove(event)
+	{
+		if (this._move) {
+			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+			this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
+		}
+	}
 
-    /**
-     * Mouse wheel listener for navigation
-     */
-    private onMouseWheel(event):void
-    {
-        this._cameraController.distance -= event.wheelDelta * 5;
+	/**
+	 * Mouse wheel listener for navigation
+	 */
+	private onMouseWheel(event):void
+	{
+		this._cameraController.distance -= event.wheelDelta * 5;
 
-        if (this._cameraController.distance < 100)
-            this._cameraController.distance = 100;
-        else if (this._cameraController.distance > 2000)
-            this._cameraController.distance = 2000;
-    }
+		if (this._cameraController.distance < 100)
+			this._cameraController.distance = 100;
+		else if (this._cameraController.distance > 2000)
+			this._cameraController.distance = 2000;
+	}
 	/**
 	 *
 	 */
@@ -186,42 +187,42 @@ class CurveDemo
 		//this._view.scene.addChild(this._mesh);
 
 
-        //geom
-        /*
-        var vertices:Array<number> = new Array<number>();
-        vertices.push(-300,-50,1);
-        vertices.push(-200,50,1);
-        vertices.push(-100,-50,1);
-        vertices.push(-100,-50,-1);
-        vertices.push(0,50,-1);
-        vertices.push(100,-50,-1);
-        vertices.push(100,-50,1);
-        vertices.push(200,50,1);
-        vertices.push(300,-50,1);
-        var indices:Array<number> = new Array<number>();
-        indices.push(0,1,2);
-        indices.push(3,4,5);
-        indices.push(6,7,8);
-        var curves:Array<number> = new Array<number>();
-        curves.push(0.5,1);
-        curves.push(0.5,1);
-        curves.push(0.5,1);
-        curves.push(0,0);
-        curves.push(0.5,0);
-        curves.push(1,1);
-        curves.push(0,0);
-        curves.push(0.5,0);
-        curves.push(1,1);
-        var uvs:Array<number> = new Array<number>();
-        uvs.push(0,0);
-        uvs.push(0.5,1);
-        uvs.push(1,0);
-        uvs.push(0,0);
-        uvs.push(0.5,1);
-        uvs.push(1,0);
-        uvs.push(0,0);
-        uvs.push(0.5,1);
-        uvs.push(1,0);
+		//geom
+		/*
+		var vertices:Array<number> = new Array<number>();
+		vertices.push(-300,-50,1);
+		vertices.push(-200,50,1);
+		vertices.push(-100,-50,1);
+		vertices.push(-100,-50,-1);
+		vertices.push(0,50,-1);
+		vertices.push(100,-50,-1);
+		vertices.push(100,-50,1);
+		vertices.push(200,50,1);
+		vertices.push(300,-50,1);
+		var indices:Array<number> = new Array<number>();
+		indices.push(0,1,2);
+		indices.push(3,4,5);
+		indices.push(6,7,8);
+		var curves:Array<number> = new Array<number>();
+		curves.push(0.5,1);
+		curves.push(0.5,1);
+		curves.push(0.5,1);
+		curves.push(0,0);
+		curves.push(0.5,0);
+		curves.push(1,1);
+		curves.push(0,0);
+		curves.push(0.5,0);
+		curves.push(1,1);
+		var uvs:Array<number> = new Array<number>();
+		uvs.push(0,0);
+		uvs.push(0.5,1);
+		uvs.push(1,0);
+		uvs.push(0,0);
+		uvs.push(0.5,1);
+		uvs.push(1,0);
+		uvs.push(0,0);
+		uvs.push(0.5,1);
+		uvs.push(1,0);
 */
 
         var vertices:Array<number> = new Array<number>();
@@ -237,11 +238,11 @@ class CurveDemo
         curveSubGeometry.updateIndices(indices);
         curveSubGeometry.updateCurves(curves);
 
-        var geom:Geometry = new Geometry();
-        geom.addSubGeometry(curveSubGeometry);
-        var curveMesh:Mesh = new Mesh(geom);
+		var geom:Geometry = new Geometry();
+		geom.addSubGeometry(curveSubGeometry);
+		var curveMesh:Mesh = new Mesh(geom);
 
-        //var curveSubMesh:CurveSubMesh = new CurveSubMesh(curveSubGeometry, curveMesh);
+		//var curveSubMesh:CurveSubMesh = new CurveSubMesh(curveSubGeometry, curveMesh);
 
         var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF);//
         curveMaterial.preserveAlpha = true;
@@ -251,7 +252,7 @@ class CurveDemo
         curveMesh.material = curveMaterial;//this._material;
         this._view.scene.addChild(curveMesh);
 
-        this._view.camera.z += 750;
+		this._view.camera.z += 750;
 	}
 
 	/**
