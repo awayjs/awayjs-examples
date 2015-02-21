@@ -6,10 +6,14 @@ var source = require('vinyl-source-stream');
 var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
+var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var argv = require('yargs').argv;
-
 var typescript = require('gulp-typescript');
+var watchify = require('watchify');
+var package = require('./package.json');
+var livereload = require('gulp-livereload');
+var tsify = require('tsify');
 
 function _compile(filename, callback) {
     console.log('compile ' + filename);
@@ -41,7 +45,7 @@ function _package(filename, callback) {
     glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
 
         files.forEach(function (file) {
-            b.external(file, {expose:(path.relative('./node_modules/', file.slice(0,-3))).replace(/\\/gi, "/")});
+            b.external(file, {expose:unixStylePath(path.relative('./node_modules/', file.slice(0,-3)))});
         });
 
         b.bundle()
@@ -58,7 +62,9 @@ function _minify(filename) {
         .pipe(sourcemaps.init({loadMaps:true}))
         .pipe(uglify({compress:false}))
         .pipe(sourcemaps.write({sourceRoot:'./'}))
-        .pipe(transform(function() { return exorcist('./bin/js/' + filename + '.js.map'); }))
+        .pipe(transform(function() {
+            return exorcist('./bin/js/' + filename + '.js.map');
+        }))
         .pipe(gulp.dest('./bin/js/'))
 }
 
@@ -89,6 +95,7 @@ gulp.task('package-all', function(){
     });
 });
 
+
 gulp.task('package-awayjs', function(callback){
     var b = browserify({
         debug: true,
@@ -98,7 +105,7 @@ gulp.task('package-awayjs', function(callback){
     glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
 
         files.forEach(function (file) {
-            b.require(file, {expose:(path.relative('./node_modules/', file.slice(0,-3))).replace(/\\/gi, "/")});
+            b.require(file, {expose:unixStylePath(path.relative('./node_modules/', file.slice(0,-3)))});
         });
 
         b.bundle()
@@ -113,11 +120,92 @@ gulp.task('package-awayjs-min', ['package-awayjs'], function(callback){
     return gulp.src('./bin/js/awayjs-dist-require.js')
         .pipe(sourcemaps.init({loadMaps:true}))
         .pipe(uglify({compress:false}))
-        .pipe(sourcemaps.write('./'))
+        .pipe(sourcemaps.write())
+        .pipe(transform(function() {
+            return exorcist('./bin/js/' + filename + '.js.map');
+        }))
         .pipe(gulp.dest('./bin/js'));
 });
 
+gulp.task('watch', ['package-awayjs-watch'], function(){
 
-gulp.task('watch', ['package'], function() {
-    gulp.watch('./src/**.ts', ['package']);
+    //Start live reload server
+    livereload.listen();
 });
+
+gulp.task('package-awayjs-watch', function(callback){
+    var b = browserify({
+        debug: true,
+        paths: ['../'],
+        cache:{},
+        packageCache:{},
+        fullPaths:true
+    });
+
+    glob('./node_modules/awayjs-**/lib/**/*.js', {}, function (error, files) {
+
+        files.forEach(function (file) {
+            b.require(file, {expose:unixStylePath(path.relative('./node_modules/', file.slice(0,-3)))});
+        });
+
+        b = watchify(b);
+        b.on('update', function(){
+            bundleShare(b, 'awayjs-dist-require.js');
+        });
+
+        bundleShare(b, 'awayjs-dist-require.js')
+            .on('end', callback);
+    })
+});
+
+
+gulp.task('watch-fast', ['package-awayjs-fast'], function() {
+    gulp.watch('./node_modules/awayjs-**/build/**/*.js', ['package-awayjs-fast']);
+});
+
+gulp.task('package-awayjs-fast', function(){
+    //extract awayjs dependencies from package.json
+    var awayjsDependencies = [];
+    Object.keys(package.dependencies).forEach(function (key) {
+        awayjsDependencies.push('./node_modules/' + key + '/build/' + key + ((argv.min)? '.min.js' : '.js'));
+    })
+
+    if (argv.maps)
+        return gulp.src(awayjsDependencies)
+            .pipe(sourcemaps.init({loadMaps:true}))
+            .pipe(concat('awayjs-dist-require.js'))
+            .pipe(sourcemaps.write({sourceRoot:'./'}))
+            .pipe(transform(function() { return exorcist('./bin/js/awayjs-dist-require.js.map'); }))
+            .pipe(gulp.dest('./bin/js/'));
+
+    return gulp.src(awayjsDependencies)
+        .pipe(concat('awayjs-dist-require.js'))
+        .pipe(gulp.dest('./bin/js/'));
+});
+
+
+//
+//
+//gulp.task('package-tsify', function(){
+//    console.log('package ' + argv.file);
+//    var b = browserify({debug: true})
+//        .add('./src/' + argv.file + '.ts')
+//        .plugin('tsify', { target: 'ES5' });
+//
+//    return b.bundle()
+//        //.pipe(unpathify())
+//        .pipe(exorcist('./bin/js/' + argv.file + '.js.map'))
+//        .pipe(source(argv.file + '.js'))
+//        .pipe(gulp.dest('./bin/js/'));
+//});
+
+function bundleShare(b, file) {
+    return b.bundle()
+        .pipe(source(file))
+        .pipe(gulp.dest('./bin/js'))
+        .pipe(livereload());
+}
+
+function unixStylePath(filePath) {
+    return filePath.split(path.sep).join('/');
+}
