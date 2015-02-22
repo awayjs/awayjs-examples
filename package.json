@@ -10,7 +10,7 @@
     "awayjs-renderergl": "^0.7.8",
     "awayjs-methodmaterials": "^0.2.7",
     "awayjs-player": "^0.4.0",
-    "awayjs-parsers": "^0.4.5"
+    "awayjs-parsers": "^0.4.6"
   },
   "devDependencies": {
     "browserify": "^8.1.3",
