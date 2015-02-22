@@ -1,39 +1,39 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*
 
-AWD3 file loading example in AwayJS
+ AWD3 file loading example in AwayJS
 
-Demonstrates:
+ Demonstrates:
 
-How to use the Loader object to load an embedded internal awd model.
+ How to use the Loader object to load an embedded internal awd model.
 
-Code by Rob Bateman
-rob@infiniteturtles.co.uk
-http://www.infiniteturtles.co.uk
+ Code by Rob Bateman
+ rob@infiniteturtles.co.uk
+ http://www.infiniteturtles.co.uk
 
-This code is distributed under the MIT License
+ This code is distributed under the MIT License
 
-Copyright (c) The Away Foundation http://www.theawayfoundation.org
+ Copyright (c) The Away Foundation http://www.theawayfoundation.org
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the “Software”), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
 
-*/
+ */
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
@@ -43,9 +43,7 @@ var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicPr
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/containers/View");
 var Loader = require("awayjs-display/lib/containers/Loader");
-var RenderableNullSort = require("awayjs-display/lib/sort/RenderableNullSort");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
-var MethodRendererPool = require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
 var Partition2D = require("awayjs-player/lib/fl/partition/Partition2D");
 var AWD3Viewer = (function () {
@@ -69,8 +67,8 @@ var AWD3Viewer = (function () {
      */
     AWD3Viewer.prototype.initEngine = function () {
         //create the view
-        this._view = new View(new DefaultRenderer(MethodRendererPool));
-        this._view.renderer.renderableSorter = new RenderableNullSort();
+        this._view = new View(new DefaultRenderer());
+        //this._view.renderer.renderableSorter = new RenderableNullSort();
         this._view.backgroundColor = 0xffffff;
         this._view.camera.projection = new OrthographicProjection(500);
         this._view.camera.projection.far = 500000;
@@ -86,15 +84,15 @@ var AWD3Viewer = (function () {
         //  this._view.camera.projection.far = 500000;
         //  this._view.camera.projection.near = 0.1;
         /*
-            //setup controller to be used on the camera
-            this._cameraController = new HoverController(this._view.camera, null, 0, 0, 300, 10, 90);
-            this._cameraController.lookAtPosition = new Vector3D(0, 50, 0);
-            this._cameraController.tiltAngle = 0;
-            this._cameraController.panAngle = 0;
-            this._cameraController.minTiltAngle = 5;
-            this._cameraController.maxTiltAngle = 60;
-            this._cameraController.autoUpdate = false;
-        */
+         //setup controller to be used on the camera
+         this._cameraController = new HoverController(this._view.camera, null, 0, 0, 300, 10, 90);
+         this._cameraController.lookAtPosition = new Vector3D(0, 50, 0);
+         this._cameraController.tiltAngle = 0;
+         this._cameraController.panAngle = 0;
+         this._cameraController.minTiltAngle = 5;
+         this._cameraController.maxTiltAngle = 60;
+         this._cameraController.autoUpdate = false;
+         */
     };
     /**
      * Initialise the scene objects
@@ -173,8 +171,8 @@ var AWD3Viewer = (function () {
     };
     AWD3Viewer.prototype.onMouseDown = function (event) {
         /*  this._lastPanAngle = this._cameraController.panAngle;
-          this._lastTiltAngle = this._cameraController.tiltAngle;
-          this._move = true;*/
+         this._lastTiltAngle = this._cameraController.tiltAngle;
+         this._move = true;*/
         this._lastMouseX = event.clientX;
         this._lastMouseY = event.clientY;
         this._move = true;
@@ -206,11 +204,11 @@ var AWD3Viewer = (function () {
     };
     AWD3Viewer.prototype.onMouseWheel = function (event) {
         /* this._cameraController.distance -= event.wheelDelta * 5;
-     
+
          if (this._cameraController.distance < 100) {
-           this._cameraController.distance = 100;
+         this._cameraController.distance = 100;
          } else if (this._cameraController.distance > 2000) {
-           this._cameraController.distance = 2000;
+         this._cameraController.distance = 2000;
          }
          */
     };
@@ -228,7 +226,7 @@ window.onload = function () {
 };
 
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/sort/RenderableNullSort":undefined,"awayjs-methodmaterials/lib/pool/MethodRendererPool":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
 
 
 //# sourceMappingURL=AWD3Viewer.js.map
