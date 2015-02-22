@@ -12543,9 +12543,7 @@ var CurveSubGeometry = (function (_super) {
         this._positionsDirty = true;
         this._curvesDirty = true;
         this._faceNormalsDirty = true;
-        this._faceTangentsDirty = true;
         this._vertexNormalsDirty = true;
-        this._vertexTangentsDirty = true;
         this._uvsDirty = true;
         this._secondaryUVsDirty = true;
         this._jointIndicesDirty = true;
@@ -12636,12 +12634,12 @@ var CurveSubGeometry = (function (_super) {
          * in cases where UV data is explicitly defined or the material does not require UV data.
          */
         get: function () {
-            return false; //this._autoDeriveUVs;
+            return this._autoDeriveUVs;
         },
         set: function (value) {
-            //if (this._autoDeriveUVs == value)
-            return;
-            //this._autoDeriveUVs = value;
+            if (this._autoDeriveUVs == value)
+                return;
+            this._autoDeriveUVs = value;
             if (value)
                 this.notifyUVsUpdate();
         },
@@ -12802,7 +12800,7 @@ var CurveSubGeometry = (function (_super) {
         if (true) {
             if ((this._curves == null || values == null) && (this._curves != null || values != null)) {
                 if (this._concatenateArrays)
-                    true; //"do nothing";
+                    this._pNotifyVerticesUpdate();
                 else
                     this._pStrideOffsetDirty = true;
             }
@@ -12895,7 +12893,6 @@ var CurveSubGeometry = (function (_super) {
         this._uvs = null;
         this._faceNormals = null;
         this._faceWeights = null;
-        this._faceTangents = null;
     };
     /**
      * Updates the face indices of the CurveSubGeometry.
@@ -32892,7 +32889,147 @@ var AmbientEnvMapMethod = (function (_super) {
 module.exports = AmbientEnvMapMethod;
 
 
-},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
+},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/CurveBasicMethod":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+var ShadingMethodBase = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+/**
+ * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
+ */
+var CurveBasicMethod = (function (_super) {
+    __extends(CurveBasicMethod, _super);
+    /**
+     * Creates a new AmbientBasicMethod object.
+     */
+    function CurveBasicMethod() {
+        _super.call(this);
+        this._color = 0xffffff;
+        this._alpha = 1;
+        this._colorR = 1;
+        this._colorG = 1;
+        this._colorB = 1;
+        this._ambient = 1;
+    }
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iInitVO = function (shaderObject, methodVO) {
+        methodVO.needsUV = true; // Boolean(shaderObject.texture != null);
+    };
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iInitConstants = function (shaderObject, methodVO) {
+        if (!methodVO.needsUV) {
+            this._color = shaderObject.color;
+            this.updateColor();
+        }
+    };
+    Object.defineProperty(CurveBasicMethod.prototype, "ambient", {
+        /**
+         * The strength of the ambient reflection of the surface.
+         */
+        get: function () {
+            return this._ambient;
+        },
+        set: function (value) {
+            if (this._ambient == value)
+                return;
+            this._ambient = value;
+            this.updateColor();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveBasicMethod.prototype, "alpha", {
+        /**
+         * The alpha component of the surface.
+         */
+        get: function () {
+            return this._alpha;
+        },
+        set: function (value) {
+            if (this._alpha == value)
+                return;
+            this._alpha = value;
+            this.updateColor();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.copyFrom = function (method) {
+        var m = method;
+        var b = m;
+    };
+    /**
+     * @inheritDoc
+     */
+    /*
+    public iGeVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string {
+        var code:string = "";
+        code = "mov " + sharedRegisters.uvVarying + " " + registerCache.uv +  " \n";
+    }*/
+    CurveBasicMethod.prototype.iGetFragmentCode = function (shaderObject, methodVO, targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var ambientInputRegister;
+        if (methodVO.needsUV) {
+            ambientInputRegister = registerCache.getFreeTextureReg();
+            methodVO.texturesIndex = ambientInputRegister.index;
+            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, ambientInputRegister, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, false);
+            if (shaderObject.alphaThreshold > 0) {
+                var cutOffReg = registerCache.getFreeFragmentConstant();
+                methodVO.fragmentConstantsIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else {
+            ambientInputRegister = registerCache.getFreeFragmentConstant();
+            methodVO.fragmentConstantsIndex = ambientInputRegister.index * 4;
+            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
+        }
+        code = "mov " + targetReg + ", " + sharedRegisters.uvVarying + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
+        if (methodVO.needsUV) {
+            stage.activateTexture(methodVO.texturesIndex, shaderObject.texture, shaderObject.repeatTextures, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
+            if (shaderObject.alphaThreshold > 0)
+                shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = shaderObject.alphaThreshold;
+        }
+        else {
+            var index = methodVO.fragmentConstantsIndex;
+            var data = shaderObject.fragmentConstantData;
+            data[index] = this._colorR;
+            data[index + 1] = this._colorG;
+            data[index + 2] = this._colorB;
+            data[index + 3] = this._alpha;
+        }
+    };
+    /**
+     * Updates the ambient color data used by the render state.
+     */
+    CurveBasicMethod.prototype.updateColor = function () {
+        this._colorR = ((this._color >> 16) & 0xff) / 0xff * this._ambient;
+        this._colorG = ((this._color >> 8) & 0xff) / 0xff * this._ambient;
+        this._colorB = (this._color & 0xff) / 0xff * this._ambient;
+    };
+    return CurveBasicMethod;
+})(ShadingMethodBase);
+module.exports = CurveBasicMethod;
+
+
+},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57048,7 +57185,7 @@ var BasicMaterialPass = (function (_super) {
             code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
         }
         if (this.preserveAlpha) {
-            code += "mov " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
+            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
             regCache.removeFragmentTempUsage(alphaReg);
         }
         return code;
@@ -58408,19 +58545,21 @@ var CurveSubMeshRenderable = (function (_super) {
         if (shaderObject.projectionDependencies > 0) {
             sharedRegisters.projectionFragment = registerCache.getFreeVarying();
             var temp = registerCache.getFreeVertexVectorTemp();
-            code += "m44 " + temp + ", " + position + ".xyw, " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov op, " + temp + "\n";
+            code += "m44 " + temp + ", " + position + ".xyw, " + viewMatrixReg + "\n" + "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" + "mov v2 va1 \n" + "mov op, " + temp + "\n";
         }
         else {
             code += "mov v2 va1 \n";
             code += "m44 op, " + position + ".xyw, " + viewMatrixReg + "\n";
         }
+        console.log("vertex");
+        console.log(code);
         return code;
     };
     /**
      * @inheritDoc
      */
     CurveSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var uv = "v2"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
+        var curve = "v2"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
         var pos = sharedRegisters.localPositionVarying;
         var out = sharedRegisters.shadedTarget; //registerCache.fragmentOutputRegister.toString();
         var free = registerCache.getFreeFragmentVectorTemp();
@@ -58428,9 +58567,9 @@ var CurveSubMeshRenderable = (function (_super) {
         var less = free + ".y"; //registerCache.getFreeFragmentSingleTemp().toString();
         var half = free + ".z"; //registerCache.getFreeFragmentSingleTemp().toString();
         var code = "";
-        code += "mov " + d + " " + uv + ".x\n";
+        code += "mov " + d + " " + curve + ".x\n";
         code += "mul " + d + " " + d + " " + d + "\n";
-        code += "sub " + d + " " + d + " " + uv + ".y\n";
+        code += "sub " + d + " " + d + " " + curve + ".y\n";
         // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
         // code += "mul "+ d + " " + d + " " + less + "\n";
         //code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
@@ -58442,6 +58581,8 @@ var CurveSubMeshRenderable = (function (_super) {
         // code += "kil " + less + "\n";
         //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
         code += "mov " + out + ".w " + less + "\n";
+        console.log("fragment");
+        console.log(code);
         return code;
     };
     /**
@@ -58472,7 +58613,7 @@ var CurveSubMeshRenderable = (function (_super) {
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 0, shader.vertexConstantData, shader.numUsedVertexConstants);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, shader.fragmentConstantData, shader.numUsedFragmentConstants);
         this._stage.activateBuffer(0, this.getVertexData(CurveSubGeometry.POSITION_DATA), this.getVertexOffset(CurveSubGeometry.POSITION_DATA), CurveSubGeometry.POSITION_FORMAT);
-        this._stage.activateBuffer(1, this.getVertexData(CurveSubGeometry.CURVE_DATA), this.getVertexOffset(CurveSubGeometry.CURVE_DATA), CurveSubGeometry.POSITION_FORMAT);
+        this._stage.activateBuffer(1, this.getVertexData(CurveSubGeometry.CURVE_DATA), this.getVertexOffset(CurveSubGeometry.CURVE_DATA), CurveSubGeometry.CURVE_FORMAT);
         this._stage.context.drawTriangles(this._stage.getIndexBuffer(this.getIndexData()), 0, this.numTriangles);
     };
     /**
@@ -58492,7 +58633,7 @@ var CurveSubMeshRenderable = (function (_super) {
      *
      */
     CurveSubMeshRenderable.id = "curvesubmesh";
-    CurveSubMeshRenderable.vertexAttributesOffset = 1;
+    CurveSubMeshRenderable.vertexAttributesOffset = 2;
     return CurveSubMeshRenderable;
 })(RenderableBase);
 module.exports = CurveSubMeshRenderable;
