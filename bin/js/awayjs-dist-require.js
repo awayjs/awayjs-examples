@@ -32906,7 +32906,147 @@ var AmbientEnvMapMethod = (function (_super) {
 module.exports = AmbientEnvMapMethod;
 
 
-},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
+},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/CurveBasicMethod":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
+var ShadingMethodBase = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+/**
+ * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
+ */
+var CurveBasicMethod = (function (_super) {
+    __extends(CurveBasicMethod, _super);
+    /**
+     * Creates a new AmbientBasicMethod object.
+     */
+    function CurveBasicMethod() {
+        _super.call(this);
+        this._color = 0xffffff;
+        this._alpha = 1;
+        this._colorR = 1;
+        this._colorG = 1;
+        this._colorB = 1;
+        this._ambient = 1;
+    }
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iInitVO = function (shaderObject, methodVO) {
+        methodVO.needsUV = true; // Boolean(shaderObject.texture != null);
+    };
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iInitConstants = function (shaderObject, methodVO) {
+        if (!methodVO.needsUV) {
+            this._color = shaderObject.color;
+            this.updateColor();
+        }
+    };
+    Object.defineProperty(CurveBasicMethod.prototype, "ambient", {
+        /**
+         * The strength of the ambient reflection of the surface.
+         */
+        get: function () {
+            return this._ambient;
+        },
+        set: function (value) {
+            if (this._ambient == value)
+                return;
+            this._ambient = value;
+            this.updateColor();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveBasicMethod.prototype, "alpha", {
+        /**
+         * The alpha component of the surface.
+         */
+        get: function () {
+            return this._alpha;
+        },
+        set: function (value) {
+            if (this._alpha == value)
+                return;
+            this._alpha = value;
+            this.updateColor();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.copyFrom = function (method) {
+        var m = method;
+        var b = m;
+    };
+    /**
+     * @inheritDoc
+     */
+    /*
+    public iGeVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string {
+        var code:string = "";
+        code = "mov " + sharedRegisters.uvVarying + " " + registerCache.uv +  " \n";
+    }*/
+    CurveBasicMethod.prototype.iGetFragmentCode = function (shaderObject, methodVO, targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var ambientInputRegister;
+        if (methodVO.needsUV) {
+            ambientInputRegister = registerCache.getFreeTextureReg();
+            methodVO.texturesIndex = ambientInputRegister.index;
+            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, ambientInputRegister, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, false);
+            if (shaderObject.alphaThreshold > 0) {
+                var cutOffReg = registerCache.getFreeFragmentConstant();
+                methodVO.fragmentConstantsIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else {
+            ambientInputRegister = registerCache.getFreeFragmentConstant();
+            methodVO.fragmentConstantsIndex = ambientInputRegister.index * 4;
+            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
+        }
+        code = "mov " + targetReg + ", " + sharedRegisters.uvVarying + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    CurveBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
+        if (methodVO.needsUV) {
+            stage.activateTexture(methodVO.texturesIndex, shaderObject.texture, shaderObject.repeatTextures, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
+            if (shaderObject.alphaThreshold > 0)
+                shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = shaderObject.alphaThreshold;
+        }
+        else {
+            var index = methodVO.fragmentConstantsIndex;
+            var data = shaderObject.fragmentConstantData;
+            data[index] = this._colorR;
+            data[index + 1] = this._colorG;
+            data[index + 2] = this._colorB;
+            data[index + 3] = this._alpha;
+        }
+    };
+    /**
+     * Updates the ambient color data used by the render state.
+     */
+    CurveBasicMethod.prototype.updateColor = function () {
+        this._colorR = ((this._color >> 16) & 0xff) / 0xff * this._ambient;
+        this._colorG = ((this._color >> 8) & 0xff) / 0xff * this._ambient;
+        this._colorB = (this._color & 0xff) / 0xff * this._ambient;
+    };
+    return CurveBasicMethod;
+})(ShadingMethodBase);
+module.exports = CurveBasicMethod;
+
+
+},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -38877,8 +39017,6 @@ var SpecularCelMethod = require("awayjs-methodmaterials/lib/methods/SpecularCelM
 var SpecularPhongMethod = require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
 var ShadowNearMethod = require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
-var CurveMaterial = require("awayjs-display/lib/materials/CurveMaterial");
 var AS2SceneGraphFactory = require("awayjs-player/lib/fl/factories/AS2SceneGraphFactory");
 var TimelineKeyFrame = require("awayjs-player/lib/fl/timeline/TimelineKeyFrame");
 var AddChildCommand = require("awayjs-player/lib/fl/timeline/commands/AddChildCommand");
@@ -38898,7 +39036,7 @@ var AWDParser = (function (_super) {
     function AWDParser() {
         _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
         //set to "true" to have some console.logs in the Console
-        this._debug = true;
+        this._debug = false;
         this._startedParsing = false;
         this._texture_users = {};
         this._parsed_header = false;
@@ -39457,10 +39595,6 @@ var AWDParser = (function (_super) {
                             var thisMatrix = new Matrix3D();
                             // todo set rotation + scale from matrix 2x3 to matrix3d
                             thisMatrix.position = new Vector3D(matrix_2d[4], matrix_2d[5], 0);
-                            thisMatrix.rawData[0] = matrix_2d[0];
-                            thisMatrix.rawData[1] = matrix_2d[1];
-                            thisMatrix.rawData[4] = matrix_2d[2];
-                            thisMatrix.rawData[5] = matrix_2d[3];
                             frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "_iMatrix3D", thisMatrix));
                             commandString += "\n                transformArray = " + matrix_2d;
                         }
@@ -39550,7 +39684,7 @@ var AWDParser = (function (_super) {
         // Loop through sub meshes
         var subs_parsed = 0;
         while (subs_parsed < num_subs) {
-            var is_curve_geom = false;
+            var is_2d_geom = false;
             var i;
             var sm_len, sm_end;
             var w_indices;
@@ -39560,6 +39694,9 @@ var AWDParser = (function (_super) {
             var subProps = this.parseProperties({ 1: this._geoNrType, 2: this._geoNrType });
             while (this._newBlockBytes.position < sm_end) {
                 var idx = 0;
+                var uv_idx = 0;
+                var n_idx = 0;
+                var t_idx = 0;
                 var str_ftype, str_type, str_len, str_end;
                 // Type, field type, length
                 str_type = this._newBlockBytes.readUnsignedByte();
@@ -39615,71 +39752,109 @@ var AWDParser = (function (_super) {
                     this._newBlockBytes.position = str_end;
                 }
                 else if (str_type == 10) {
-                    is_curve_geom = true;
-                    var idx_pos = 0;
-                    var idx_curves = 0;
-                    var idx_uvs = 0;
-                    var positions = new Array();
-                    var curveData = new Array();
+                    var x, y, z;
+                    var type;
+                    var r, g, b, a;
+                    var u, v;
+                    var verts = new Array();
                     var uvs = new Array();
+                    var normals = new Array();
+                    var tangents = new Array();
                     while (this._newBlockBytes.position < str_end) {
-                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // x
-                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // y
-                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // type
-                        curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 1
-                        curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 2
-                        uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
-                        uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
+                        x = this.readNumber(this._accuracyGeo);
+                        y = this.readNumber(this._accuracyGeo);
+                        z = -0.1 * subs_parsed;
+                        //z = subs_parsed;
+                        //z = (blockID*0.001) + subs_parsed
+                        type = this.readNumber(this._accuracyGeo);
+                        u = this.readNumber(this._accuracyGeo);
+                        v = this.readNumber(this._accuracyGeo);
+                        /* r = this.readNumber(this._accuracyGeo);
+                         g = this.readNumber(this._accuracyGeo);
+                         b = this.readNumber(this._accuracyGeo);
+                         a = this.readNumber(this._accuracyGeo);*/
+                        // while this is true, be parse the vertex-data, so it can be rendered as "normal" 3d-geometry
+                        if (true) {
+                            uvs[idx] = 0.0;
+                            normals[idx] = 0.0;
+                            verts[idx++] = x;
+                            uvs[idx] = 0.0;
+                            normals[idx] = 0.0;
+                            verts[idx++] = y;
+                            normals[idx] = 1.0;
+                            verts[idx++] = z;
+                        }
+                        else {
+                            // parse and set-data, so the 3d-geometry contains all data (but is no longer valid for normal 3d-render)
+                            // away3d-vertexdata    |   awayJS-shape-data
+                            // -----------------------------------------------------------------------
+                            // pos.x                |   pos.x
+                            // pos.y                |   pos.y
+                            // pos.z                |   pos.z (for now we just use this as depth (set each subgeo to its own depth))
+                            // normal.x             |   curve-type (0:notCurved, 1: convex, 2:concave)
+                            // normal.y             |   alpha
+                            // normal.z             |   not used
+                            // uv.u                 |   curve.u
+                            // uv.v                 |   curve.v
+                            // tangent.x            |   red
+                            // tangent.y            |   green
+                            // tangent.z            |   blue
+                            verts[idx++] = x;
+                            //uv2[idx] = x;
+                            verts[idx++] = y;
+                            //uv2[idx] = y;
+                            verts[idx++] = z;
+                            uvs[uv_idx++] = u;
+                            uvs[uv_idx++] = v;
+                            normals[n_idx++] = type;
+                            normals[n_idx++] = a;
+                            normals[n_idx++] = 0;
+                            // trace("r=" + r + " g=" + g + " b=" + b + " a=" + a);
+                            tangents[t_idx++] = r;
+                            tangents[t_idx++] = g;
+                            tangents[t_idx++] = b;
+                        }
                     }
+                }
+                else if (str_type == 11) {
+                    this._newBlockBytes.position = str_end;
                 }
                 else {
                     this._newBlockBytes.position = str_end;
                 }
             }
             this.parseUserAttributes(); // Ignore sub-mesh attributes for now
-            if (is_curve_geom) {
-                var curve_sub_geom = new CurveSubGeometry(true);
-                curve_sub_geom.updateIndices(indices);
-                curve_sub_geom.updatePositions(positions);
-                curve_sub_geom.updateCurves(curveData);
-                curve_sub_geom.updateUVs(uvs);
-                geom.addSubGeometry(curve_sub_geom);
-                if (this._debug)
-                    console.log("Parsed a CurveSubGeometry");
+            var sub_geom;
+            sub_geom = new TriangleSubGeometry(true);
+            if (weights)
+                sub_geom.jointsPerVertex = weights.length / (verts.length / 3);
+            if (normals)
+                sub_geom.autoDeriveNormals = false;
+            if (uvs)
+                sub_geom.autoDeriveUVs = false;
+            sub_geom.autoDeriveNormals = false;
+            // when rendering as "normal" 3d-geometry, we need to autoDerive tangents
+            if (true) {
+                sub_geom.autoDeriveTangents = true;
             }
-            else {
-                var triangle_sub_geom = new TriangleSubGeometry(true);
-                if (weights)
-                    triangle_sub_geom.jointsPerVertex = weights.length / (verts.length / 3);
-                if (normals)
-                    triangle_sub_geom.autoDeriveNormals = false;
-                if (uvs)
-                    triangle_sub_geom.autoDeriveUVs = false;
-                triangle_sub_geom.autoDeriveNormals = false;
-                if (true) {
-                    triangle_sub_geom.autoDeriveTangents = true;
-                }
-                triangle_sub_geom.updateIndices(indices);
-                triangle_sub_geom.updatePositions(verts);
-                triangle_sub_geom.updateVertexNormals(normals);
-                triangle_sub_geom.updateUVs(uvs);
-                triangle_sub_geom.updateVertexTangents(null);
-                triangle_sub_geom.updateJointWeights(weights);
-                triangle_sub_geom.updateJointIndices(w_indices);
-                var scaleU = subProps.get(1, 1);
-                var scaleV = subProps.get(2, 1);
-                var setSubUVs = false; //this should remain false atm, because in AwayBuilder the uv is only scaled by the geometry
-                if ((geoScaleU != scaleU) || (geoScaleV != scaleV)) {
-                    setSubUVs = true;
-                    scaleU = geoScaleU / scaleU;
-                    scaleV = geoScaleV / scaleV;
-                }
-                if (setSubUVs)
-                    triangle_sub_geom.scaleUV(scaleU, scaleV);
-                geom.addSubGeometry(triangle_sub_geom);
-                if (this._debug)
-                    console.log("Parsed a TriangleSubGeometry");
+            sub_geom.updateIndices(indices);
+            sub_geom.updatePositions(verts);
+            sub_geom.updateVertexNormals(normals);
+            sub_geom.updateUVs(uvs);
+            sub_geom.updateVertexTangents(null);
+            sub_geom.updateJointWeights(weights);
+            sub_geom.updateJointIndices(w_indices);
+            var scaleU = subProps.get(1, 1);
+            var scaleV = subProps.get(2, 1);
+            var setSubUVs = false; //this should remain false atm, because in AwayBuilder the uv is only scaled by the geometry
+            if ((geoScaleU != scaleU) || (geoScaleV != scaleV)) {
+                setSubUVs = true;
+                scaleU = geoScaleU / scaleU;
+                scaleV = geoScaleV / scaleV;
             }
+            if (setSubUVs)
+                sub_geom.scaleUV(scaleU, scaleV);
+            geom.addSubGeometry(sub_geom);
             // TODO: Somehow map in-sub to out-sub indices to enable look-up
             // when creating meshes (and their material assignments.)
             subs_parsed++;
@@ -39690,7 +39865,7 @@ var AWDParser = (function (_super) {
         this._pFinalizeAsset(geom, name);
         this._blocks[blockID].data = geom;
         if (this._debug) {
-            console.log("Parsed a TriangleGeometry: Name = " + name);
+            console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
         }
     };
     //Block ID = 11
@@ -40336,31 +40511,12 @@ var AWDParser = (function (_super) {
                 }
             }
         }
-        else if ((type >= 3) && (type <= 7)) {
-            // if this is a curve material, we create it, finalize it, assign it to block-cache and return and return.
-            var color = props.get(1, 0xcccccc);
+        else if (type == 3) {
+            var color = props.get(1, 0xcccccc); //TODO temporarily swapped so that diffuse color goes to ambient
             debugString += color;
-            var diffuseTexture;
-            var diffuseTex_addr = props.get(2, 0);
-            returnedArray = this.getAssetByID(diffuseTex_addr, [AssetType.TEXTURE]);
-            if ((!returnedArray[0]) && (diffuseTex_addr != 0)) {
-                this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + diffuseTex_addr + " ) for this MethodMaterial");
-                diffuseTexture = DefaultMaterialManager.getDefaultTexture();
-            }
-            if (returnedArray[0])
-                diffuseTexture = returnedArray[1];
-            var curve_mat = new CurveMaterial(diffuseTexture);
-            //debugString+= " alpha = "+props.get(10, 1.0)+" ";
-            debugString += " texture = " + diffuseTex_addr + " ";
-            curve_mat.bothSides = true;
-            curve_mat.preserveAlpha = true;
-            curve_mat.alphaBlending = true;
-            curve_mat.extra = this.parseUserAttributes();
-            this._pFinalizeAsset(curve_mat, name);
-            this._blocks[blockID].data = curve_mat;
-            if (this._debug)
-                console.log(debugString);
-            return;
+            mat = new MethodMaterial(color, props.get(10, 1.0));
+            debugString += "alpha = " + props.get(10, 1.0) + " ";
+            mat.bothSides = true;
         }
         mat.extra = this.parseUserAttributes();
         this._pFinalizeAsset(mat, name);
@@ -41380,7 +41536,7 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/fl/factories/AS2SceneGraphFactory":"awayjs-player/lib/fl/factories/AS2SceneGraphFactory","awayjs-player/lib/fl/timeline/TimelineKeyFrame":"awayjs-player/lib/fl/timeline/TimelineKeyFrame","awayjs-player/lib/fl/timeline/commands/AddChildCommand":"awayjs-player/lib/fl/timeline/commands/AddChildCommand","awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand","awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/fl/factories/AS2SceneGraphFactory":"awayjs-player/lib/fl/factories/AS2SceneGraphFactory","awayjs-player/lib/fl/timeline/TimelineKeyFrame":"awayjs-player/lib/fl/timeline/TimelineKeyFrame","awayjs-player/lib/fl/timeline/commands/AddChildCommand":"awayjs-player/lib/fl/timeline/commands/AddChildCommand","awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand","awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58369,7 +58525,7 @@ var CurveSubMeshRenderable = (function (_super) {
         if (level === void 0) { level = 0; }
         if (indexOffset === void 0) { indexOffset = 0; }
         _super.call(this, pool, subMesh.parentMesh, subMesh, subMesh.material, stage, level, indexOffset);
-        this._constants = new Array(0, 0, 0, 0);
+        this._constants = new Array(0, 1, 2, 0.5);
         this.subMesh = subMesh;
     }
     /**
@@ -58418,29 +58574,111 @@ var CurveSubMeshRenderable = (function (_super) {
      * @inheritDoc
      */
     CurveSubMeshRenderable._iGetFragmentCode = function (shaderObject, registerCache, sharedRegisters) {
-        var curve = "v2"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
+        var sd = shaderObject._stage.context.standardDerivatives;
+        var curve = "v2";
+        var curveX = "v2.x"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
+        var curveY = "v2.y"; //sharedRegisters.uvVarying //shaderObject.uvTarget;
         var pos = sharedRegisters.localPositionVarying;
         var out = sharedRegisters.shadedTarget; //registerCache.fragmentOutputRegister.toString();
+        //get some free registers
         var free = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free, 1);
+        var free1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free1, 1);
+        var free2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(free2, 1);
+        //distance from curve
         var d = free + ".x"; //registerCache.getFreeFragmentConstant().toString();
         var less = free + ".y"; //registerCache.getFreeFragmentSingleTemp().toString();
         var half = free + ".z"; //registerCache.getFreeFragmentSingleTemp().toString();
+        var px = free + ".xy";
+        var pxx = free + ".x";
+        var pxy = free + ".x";
+        var py = free1 + ".xy";
+        var pyx = free1 + ".x";
+        var pyy = free1 + ".y";
+        var fx = free2 + ".x";
+        var fy = free2 + ".y";
+        var len = free2 + ".z";
+        var dist = "fc7.z";
         var code = "";
-        code += "mov " + d + " " + curve + ".x\n";
-        code += "mul " + d + " " + d + " " + d + "\n";
-        code += "sub " + d + " " + d + " " + curve + ".y\n";
+        //derivatives
+        code += "ddx " + px + " " + curve + "\n";
+        code += "ddy " + py + " " + curve + "\n";
+        code += "mul " + fx + " " + curveX + " " + pxx + "\n";
+        code += "mul " + fx + " " + fx + " " + dist + "\n";
+        code += "sub " + fx + " " + fx + " " + pxy + "\n";
+        code += "mul " + fy + " " + curveY + " " + pyx + "\n";
+        code += "mul " + fy + " " + fy + " " + dist + "\n";
+        code += "sub " + fy + " " + fy + " " + pyy + "\n";
+        //len
+        code += "mul " + fx + " " + fx + " " + fx + "\n";
+        code += "mul " + fy + " " + fy + " " + fy + "\n";
+        code += "add " + len + " " + fx + " " + fy + "\n";
+        code += "sqt " + len + " " + len + "\n";
+        //distance
+        code += "mul " + d + " " + curveX + " " + curveX + "\n";
+        code += "sub " + d + " " + d + " " + curveY + "\n";
+        //flip
+        code += "mul " + d + " " + d + " " + pos + ".z " + "\n";
+        //code += "abs "+ d + " " + d + "\n";
+        code += "div " + d + " " + d + " " + len + "\n";
+        /*
+
+        //AA
+        code += "mul " + dx + " " + dx + " " + dx+"\n";
+        code += "mul " + dy + " " + dy + " " + dy+"\n";
+        code += "add " + t + " " + dx + " " +  dy+"\n";
+        code += "sqt " + t + " " + t+"\n";
+        */
+        code += "sub " + d + " fc7.w " + d + "\n";
+        //code += "add " + t + " " + t + " " +  t+"\n";
+        //
+        //	code += "add " + d + " " + d + " " + " fc7.x\n";
         // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
         // code += "mul "+ d + " " + d + " " + less + "\n";
         //code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
-        code += "mul " + d + " " + d + " " + pos + ".z " + "\n";
-        code += "mov " + half + " fc7.x\n";
-        code += "slt " + less + " " + d + " " + half + "\n";
-        code += "mul " + d + " " + d + " " + less + "\n";
-        code += "abs " + d + " " + d + "\n";
+        /*
+        code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
+        code += "mov "+ half + " fc7.x\n";
+        code += "slt "+ less + " " + d + " " + half + "\n";
+        code += "mul "+ d + " " + d + " " + less + "\n";
+        code += "abs "+ d + " " + d + "\n";*/
+        //code += "ddx " + d + " " + curve + ".x\n";
         // code += "kil " + less + "\n";
         //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
-        code += "mov " + out + ".w " + less + "\n";
+        code += "mov " + out + ".w " + d + "\n";
         return code;
+        /*
+        var curve:String = "v2";//sharedRegisters.uvVarying //shaderObject.uvTarget;
+        var pos:ShaderRegisterElement = sharedRegisters.localPositionVarying;
+        var out:ShaderRegisterElement = sharedRegisters.shadedTarget;//registerCache.fragmentOutputRegister.toString();
+
+        var free:ShaderRegisterElement = registerCache.getFreeFragmentVectorTemp();
+        var d:String = free + ".x";//registerCache.getFreeFragmentConstant().toString();
+        var less:String = free + ".y";//registerCache.getFreeFragmentSingleTemp().toString();
+        var half:String = free + ".z";//registerCache.getFreeFragmentSingleTemp().toString();
+
+        var code:string = "";
+        code += "mov " + d + " " + curve + ".x\n";
+        code += "mul " + d + " " + d + " " + d+"\n";
+        code += "sub " + d + " " + d + " " + curve+".y\n";
+
+             // code += "mov "+ out + " " + sharedRegisters.uvVarying+"\n";
+
+       // code += "mul "+ d + " " + d + " " + less + "\n";
+        //code += "sub "+ d + " " + d + " " + pos + ".z " + "\n";
+        code += "mul "+ d + " " + d + " " + pos + ".z " + "\n";
+        code += "mov "+ half + " fc7.x\n";
+        code += "slt "+ less + " " + d + " " + half + "\n";
+        code += "mul "+ d + " " + d + " " + less + "\n";
+        code += "abs "+ d + " " + d + "\n";
+        code += "ddx " + d + " " + curve + ".x\n";
+       // code += "kil " + less + "\n";
+      //  code += "sub "+ less + " " + less + " " + pos + ".z " + "\n";
+
+        code += "mov " + out + ".w " + less + "\n";
+        return code;*/
     };
     /**
      * @inheritDoc
@@ -60238,10 +60476,13 @@ var AGLSLParser = (function () {
         }
         //if ( desc.hasmatrix ) 
         //    header += "vec4 tmp_matrix;\n";
+        var derivatives = false;
         // start body of code
         body += "void main() {\n";
         for (var i = 0; i < desc.tokens.length; i++) {
             var lutentry = Mapping.agal2glsllut[desc.tokens[i].opcode];
+            if (lutentry.s.indexOf("dFdx") != -1 || lutentry.s.indexOf("dFdy") != -1)
+                derivatives = true;
             if (!lutentry) {
                 throw "Opcode not valid or not implemented yet: ";
             }
@@ -60331,12 +60572,17 @@ var AGLSLParser = (function () {
         if (desc.header.type == "vertex") {
             body += "  gl_Position = vec4(outpos.x, outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
         }
+        //flag based switch
+        if (derivatives && desc.header.type == "fragment") {
+            header = "#extension GL_OES_standard_derivatives : enable\n" + header;
+        }
         // clamp fragment depth
         if (desc.writedepth) {
             body += "  gl_FragDepth = clamp(tmp_FragDepth,0.0,1.0);\n";
         }
         // close main
         body += "}\n";
+        console.log(header + body);
         return header + body;
     };
     AGLSLParser.prototype.regtostring = function (regtype, regnum, desc, tag) {
@@ -60502,7 +60748,7 @@ var Mapping = (function () {
         new OpLUT("%dest = %cast(dot(vec4(%a),vec4(%b)));\n", null, true, true, true, 4, 4, true, null, null, null),
         new OpLUT("%dest = %cast(dot(vec4(%a),vec4(%b)));\n", null, true, true, true, 4, 3, true, null, null, null),
         new OpLUT("%dest = %cast(dFdx(%a));\n", 0, true, true, false, null, null, null, null, null, null),
-        new OpLUT("%dest = %cast(dFdx(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+        new OpLUT("%dest = %cast(dFdy(%a));\n", 0, true, true, false, null, null, null, null, null, null),
         new OpLUT("if (float(%a)==float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
         new OpLUT("if (float(%a)!=float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
         new OpLUT("if (float(%a)>=float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
@@ -60889,40 +61135,42 @@ var OpcodeMap = (function () {
         get: function () {
             if (!OpcodeMap._map) {
                 OpcodeMap._map = new Array();
-                OpcodeMap._map['mov'] = new Opcode("vector", "vector", 4, "none", 0, 0x00, true, null, null, null);
-                OpcodeMap._map['add'] = new Opcode("vector", "vector", 4, "vector", 4, 0x01, true, null, null, null);
-                OpcodeMap._map['sub'] = new Opcode("vector", "vector", 4, "vector", 4, 0x02, true, null, null, null);
-                OpcodeMap._map['mul'] = new Opcode("vector", "vector", 4, "vector", 4, 0x03, true, null, null, null);
-                OpcodeMap._map['div'] = new Opcode("vector", "vector", 4, "vector", 4, 0x04, true, null, null, null);
-                OpcodeMap._map['rcp'] = new Opcode("vector", "vector", 4, "none", 0, 0x05, true, null, null, null);
-                OpcodeMap._map['min'] = new Opcode("vector", "vector", 4, "vector", 4, 0x06, true, null, null, null);
-                OpcodeMap._map['max'] = new Opcode("vector", "vector", 4, "vector", 4, 0x07, true, null, null, null);
-                OpcodeMap._map['frc'] = new Opcode("vector", "vector", 4, "none", 0, 0x08, true, null, null, null);
-                OpcodeMap._map['sqt'] = new Opcode("vector", "vector", 4, "none", 0, 0x09, true, null, null, null);
-                OpcodeMap._map['rsq'] = new Opcode("vector", "vector", 4, "none", 0, 0x0a, true, null, null, null);
-                OpcodeMap._map['pow'] = new Opcode("vector", "vector", 4, "vector", 4, 0x0b, true, null, null, null);
-                OpcodeMap._map['log'] = new Opcode("vector", "vector", 4, "none", 0, 0x0c, true, null, null, null);
-                OpcodeMap._map['exp'] = new Opcode("vector", "vector", 4, "none", 0, 0x0d, true, null, null, null);
-                OpcodeMap._map['nrm'] = new Opcode("vector", "vector", 4, "none", 0, 0x0e, true, null, null, null);
-                OpcodeMap._map['sin'] = new Opcode("vector", "vector", 4, "none", 0, 0x0f, true, null, null, null);
-                OpcodeMap._map['cos'] = new Opcode("vector", "vector", 4, "none", 0, 0x10, true, null, null, null);
-                OpcodeMap._map['crs'] = new Opcode("vector", "vector", 4, "vector", 4, 0x11, true, true, null, null);
-                OpcodeMap._map['dp3'] = new Opcode("vector", "vector", 4, "vector", 4, 0x12, true, true, null, null);
-                OpcodeMap._map['dp4'] = new Opcode("vector", "vector", 4, "vector", 4, 0x13, true, true, null, null);
-                OpcodeMap._map['abs'] = new Opcode("vector", "vector", 4, "none", 0, 0x14, true, null, null, null);
-                OpcodeMap._map['neg'] = new Opcode("vector", "vector", 4, "none", 0, 0x15, true, null, null, null);
-                OpcodeMap._map['sat'] = new Opcode("vector", "vector", 4, "none", 0, 0x16, true, null, null, null);
-                OpcodeMap._map['ted'] = new Opcode("vector", "vector", 4, "sampler", 1, 0x26, true, null, true, null);
-                OpcodeMap._map['kil'] = new Opcode("none", "scalar", 1, "none", 0, 0x27, true, null, true, null);
-                OpcodeMap._map['tex'] = new Opcode("vector", "vector", 4, "sampler", 1, 0x28, true, null, true, null);
-                OpcodeMap._map['m33'] = new Opcode("vector", "matrix", 3, "vector", 3, 0x17, true, null, null, true);
-                OpcodeMap._map['m44'] = new Opcode("vector", "matrix", 4, "vector", 4, 0x18, true, null, null, true);
-                OpcodeMap._map['m43'] = new Opcode("vector", "matrix", 3, "vector", 4, 0x19, true, null, null, true);
-                OpcodeMap._map['sge'] = new Opcode("vector", "vector", 4, "vector", 4, 0x29, true, null, null, null);
-                OpcodeMap._map['slt'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2a, true, null, null, null);
-                OpcodeMap._map['sgn'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2b, true, null, null, null);
-                OpcodeMap._map['seq'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2c, true, null, null, null);
-                OpcodeMap._map['sne'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2d, true, null, null, null);
+                OpcodeMap._map['mov'] = new Opcode("vector", "vector", 4, "none", 0, 0x00, true, null, null, null); //0
+                OpcodeMap._map['add'] = new Opcode("vector", "vector", 4, "vector", 4, 0x01, true, null, null, null); //1
+                OpcodeMap._map['sub'] = new Opcode("vector", "vector", 4, "vector", 4, 0x02, true, null, null, null); //2
+                OpcodeMap._map['mul'] = new Opcode("vector", "vector", 4, "vector", 4, 0x03, true, null, null, null); //3
+                OpcodeMap._map['div'] = new Opcode("vector", "vector", 4, "vector", 4, 0x04, true, null, null, null); //4
+                OpcodeMap._map['rcp'] = new Opcode("vector", "vector", 4, "none", 0, 0x05, true, null, null, null); //5
+                OpcodeMap._map['min'] = new Opcode("vector", "vector", 4, "vector", 4, 0x06, true, null, null, null); //6
+                OpcodeMap._map['max'] = new Opcode("vector", "vector", 4, "vector", 4, 0x07, true, null, null, null); //7
+                OpcodeMap._map['frc'] = new Opcode("vector", "vector", 4, "none", 0, 0x08, true, null, null, null); //8
+                OpcodeMap._map['sqt'] = new Opcode("vector", "vector", 4, "none", 0, 0x09, true, null, null, null); //9
+                OpcodeMap._map['rsq'] = new Opcode("vector", "vector", 4, "none", 0, 0x0a, true, null, null, null); //10
+                OpcodeMap._map['pow'] = new Opcode("vector", "vector", 4, "vector", 4, 0x0b, true, null, null, null); //11
+                OpcodeMap._map['log'] = new Opcode("vector", "vector", 4, "none", 0, 0x0c, true, null, null, null); //12
+                OpcodeMap._map['exp'] = new Opcode("vector", "vector", 4, "none", 0, 0x0d, true, null, null, null); //13
+                OpcodeMap._map['nrm'] = new Opcode("vector", "vector", 4, "none", 0, 0x0e, true, null, null, null); //14
+                OpcodeMap._map['sin'] = new Opcode("vector", "vector", 4, "none", 0, 0x0f, true, null, null, null); //15
+                OpcodeMap._map['cos'] = new Opcode("vector", "vector", 4, "none", 0, 0x10, true, null, null, null); //16
+                OpcodeMap._map['crs'] = new Opcode("vector", "vector", 4, "vector", 4, 0x11, true, true, null, null); //17
+                OpcodeMap._map['dp3'] = new Opcode("vector", "vector", 4, "vector", 4, 0x12, true, true, null, null); //18
+                OpcodeMap._map['dp4'] = new Opcode("vector", "vector", 4, "vector", 4, 0x13, true, true, null, null); //19
+                OpcodeMap._map['abs'] = new Opcode("vector", "vector", 4, "none", 0, 0x14, true, null, null, null); //20
+                OpcodeMap._map['neg'] = new Opcode("vector", "vector", 4, "none", 0, 0x15, true, null, null, null); //21
+                OpcodeMap._map['sat'] = new Opcode("vector", "vector", 4, "none", 0, 0x16, true, null, null, null); //22
+                OpcodeMap._map['ted'] = new Opcode("vector", "vector", 4, "sampler", 1, 0x26, true, null, true, null); //38
+                OpcodeMap._map['kil'] = new Opcode("none", "scalar", 1, "none", 0, 0x27, true, null, true, null); //39
+                OpcodeMap._map['tex'] = new Opcode("vector", "vector", 4, "sampler", 1, 0x28, true, null, true, null); //40
+                OpcodeMap._map['m33'] = new Opcode("vector", "matrix", 3, "vector", 3, 0x17, true, null, null, true); //23
+                OpcodeMap._map['m44'] = new Opcode("vector", "matrix", 4, "vector", 4, 0x18, true, null, null, true); //24
+                OpcodeMap._map['m43'] = new Opcode("vector", "matrix", 3, "vector", 4, 0x19, true, null, null, true); //25
+                OpcodeMap._map['ddx'] = new Opcode("vector", "vector", 4, "none", 0, 0x1a, true, null, true, null); //26
+                OpcodeMap._map['ddy'] = new Opcode("vector", "vector", 4, "none", 0, 0x1b, true, null, true, null); //27
+                OpcodeMap._map['sge'] = new Opcode("vector", "vector", 4, "vector", 4, 0x29, true, null, null, null); //41
+                OpcodeMap._map['slt'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2a, true, null, null, null); //42
+                OpcodeMap._map['sgn'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2b, true, null, null, null); //43
+                OpcodeMap._map['seq'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2c, true, null, null, null); //44
+                OpcodeMap._map['sne'] = new Opcode("vector", "vector", 4, "vector", 4, 0x2d, true, null, null, null); //45
             }
             return OpcodeMap._map;
         },
@@ -61692,6 +61940,12 @@ var ContextWebGL = (function () {
         }
         if (this._gl) {
             //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
+            if (this._gl.getExtension("OES_standard_derivatives")) {
+                this._standardDerivatives = true;
+            }
+            else {
+                this._standardDerivatives = false;
+            }
             //setup shortcut dictionaries
             this._blendFactorDictionary[ContextGLBlendFactor.ONE] = this._gl.ONE;
             this._blendFactorDictionary[ContextGLBlendFactor.DESTINATION_ALPHA] = this._gl.DST_ALPHA;
@@ -61756,6 +62010,13 @@ var ContextWebGL = (function () {
     Object.defineProperty(ContextWebGL.prototype, "container", {
         get: function () {
             return this._container;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ContextWebGL.prototype, "standardDerivatives", {
+        get: function () {
+            return this._standardDerivatives;
         },
         enumerable: true,
         configurable: true
