@@ -73,7 +73,7 @@ var CurveDemo = (function () {
      * Mouse wheel listener for navigation
      */
     CurveDemo.prototype.onMouseWheel = function (event) {
-        this._cameraController.distance -= event.wheelDelta * 5;
+        this._cameraController.distance -= event.wheelDelta * 2;
         if (this._cameraController.distance < 100)
             this._cameraController.distance = 100;
         else if (this._cameraController.distance > 2000)
@@ -144,14 +144,28 @@ var CurveDemo = (function () {
         vertices.push(100, -50, 1);
         vertices.push(200, 50, 1);
         vertices.push(300, -50, 1);
+        vertices.push(-100, 20, -1);
+        vertices.push(-150, 40, -1);
+        vertices.push(-100, 60, -1);
+        vertices.push(100, 20, 1);
+        vertices.push(50, 40, 1);
+        vertices.push(100, 60, 1);
         var indices = new Array();
         indices.push(0, 1, 2);
         indices.push(3, 4, 5);
         indices.push(6, 7, 8);
+        indices.push(9, 10, 11);
+        indices.push(12, 13, 14);
         var curves = new Array();
         curves.push(0.5, 1);
         curves.push(0.5, 1);
         curves.push(0.5, 1);
+        curves.push(0, 0);
+        curves.push(0.5, 0);
+        curves.push(1, 1);
+        curves.push(0, 0);
+        curves.push(0.5, 0);
+        curves.push(1, 1);
         curves.push(0, 0);
         curves.push(0.5, 0);
         curves.push(1, 1);
