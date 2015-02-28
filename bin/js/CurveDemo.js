@@ -157,9 +157,9 @@ var CurveDemo = (function () {
         indices.push(9, 10, 11);
         indices.push(12, 13, 14);
         var curves = new Array();
-        curves.push(0.5, 1);
-        curves.push(0.5, 1);
-        curves.push(0.5, 1);
+        curves.push(2, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
         curves.push(0, 0);
         curves.push(0.5, 0);
         curves.push(1, 1);
@@ -189,7 +189,7 @@ var CurveDemo = (function () {
     CurveDemo.prototype.addTexturedTris = function () {
         var vertices = new Array();
         vertices.push(-300, -50 - 100, 1);
-        vertices.push(-200, 50 - 100, 1);
+        vertices.push(-200, 50 - 100, 0);
         vertices.push(-100, -50 - 100, 1);
         vertices.push(-100, -50 - 100, -1);
         vertices.push(0, 50 - 100, -1);
@@ -202,9 +202,9 @@ var CurveDemo = (function () {
         indices.push(3, 4, 5);
         indices.push(6, 7, 8);
         var curves = new Array();
-        curves.push(0.5, 1);
-        curves.push(0.5, 1);
-        curves.push(0.5, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
+        curves.push(2, 0);
         curves.push(0, 0);
         curves.push(0.5, 0);
         curves.push(1, 1);
