@@ -33,7 +33,7 @@ var CurveDemo = (function () {
     CurveDemo.prototype.initView = function () {
         var _this = this;
         this._view = new View(new DefaultRenderer()); // Create the Away3D View
-        this._view.backgroundColor = 0x001122; // Change the background color to black
+        this._view.backgroundColor = 0x224466; // Change the background color to black
         //setup controller to be used on the camera
         this._cameraController = new HoverController(this._view.camera, null, 0, 0, -150, 10, 90);
         this._cameraController.lookAtPosition = new Vector3D(0, 0, 0);
@@ -87,7 +87,7 @@ var CurveDemo = (function () {
         var imgLoader = new URLLoader();
         imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
         imgLoader.addEventListener(AwayEvent.COMPLETE, function (event) { return _this.urlCompleteHandler(event); });
-        imgLoader.load(new URLRequest("assets/chrome.png"));
+        imgLoader.load(new URLRequest("assets/alpha.png"));
     };
     /**
      *
@@ -150,12 +150,44 @@ var CurveDemo = (function () {
         vertices.push(100, 20, 1);
         vertices.push(50, 40, 1);
         vertices.push(100, 60, 1);
+        vertices.push(0, 0 + 50, 1);
+        vertices.push(50, 0 + 50, 1);
+        vertices.push(0, -50 + 50, 1);
+        vertices.push(0, 0 + 50, 1);
+        vertices.push(0, -50 + 50, 1);
+        vertices.push(-50, 0 + 50, 1);
+        vertices.push(0, 0 + 50, 1);
+        vertices.push(-50, 0 + 50, 1);
+        vertices.push(0, 50 + 50, 1);
+        vertices.push(0, 0 + 50, 1);
+        vertices.push(0, 50 + 50, 1);
+        vertices.push(50, 0 + 50, 1);
+        vertices.push(0, 0 + 150, 1);
+        vertices.push(50, 0 + 150, 1);
+        vertices.push(0, -50 + 150, 1);
+        vertices.push(0, 0 + 150, 1);
+        vertices.push(0, -50 + 150, 1);
+        vertices.push(-50, 0 + 150, 1);
+        vertices.push(0, 0 + 150, 1);
+        vertices.push(-50, 0 + 150, 1);
+        vertices.push(0, 50 + 150, 1);
+        vertices.push(0, 0 + 150, 1);
+        vertices.push(0, 50 + 150, 1);
+        vertices.push(50, 0 + 150, 1);
         var indices = new Array();
         indices.push(0, 1, 2);
         indices.push(3, 4, 5);
         indices.push(6, 7, 8);
         indices.push(9, 10, 11);
         indices.push(12, 13, 14);
+        indices.push(15, 16, 17);
+        indices.push(18, 19, 20);
+        indices.push(21, 22, 23);
+        indices.push(24, 25, 26);
+        indices.push(27, 28, 29);
+        indices.push(30, 31, 32);
+        indices.push(33, 34, 35);
+        indices.push(36, 37, 38);
         var curves = new Array();
         curves.push(2, 1);
         curves.push(2, 0);
@@ -172,6 +204,30 @@ var CurveDemo = (function () {
         curves.push(0, 0);
         curves.push(0.5, 0);
         curves.push(1, 1);
+        curves.push(2, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
+        curves.push(2, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
+        curves.push(2, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
+        curves.push(2, 1);
+        curves.push(2, 0);
+        curves.push(2, 0);
+        curves.push(2, 1);
+        curves.push(3, 1);
+        curves.push(4, 1);
+        curves.push(2, 1);
+        curves.push(3, 1);
+        curves.push(4, 1);
+        curves.push(2, 1);
+        curves.push(3, 1);
+        curves.push(4, 1);
+        curves.push(2, 1);
+        curves.push(3, 1);
+        curves.push(4, 1);
         var curveSubGeometry = new CurveSubGeometry(true);
         curveSubGeometry.autoDeriveUVs = false;
         curveSubGeometry.updatePositions(vertices);
@@ -189,7 +245,7 @@ var CurveDemo = (function () {
     CurveDemo.prototype.addTexturedTris = function () {
         var vertices = new Array();
         vertices.push(-300, -50 - 100, 1);
-        vertices.push(-200, 50 - 100, 0);
+        vertices.push(-200, 50 - 100, 1);
         vertices.push(-100, -50 - 100, 1);
         vertices.push(-100, -50 - 100, -1);
         vertices.push(0, 50 - 100, -1);
@@ -202,9 +258,9 @@ var CurveDemo = (function () {
         indices.push(3, 4, 5);
         indices.push(6, 7, 8);
         var curves = new Array();
-        curves.push(2, 0);
-        curves.push(2, 0);
-        curves.push(2, 0);
+        curves.push(2, 1);
+        curves.push(3, 1);
+        curves.push(4, 1);
         curves.push(0, 0);
         curves.push(0.5, 0);
         curves.push(1, 1);
