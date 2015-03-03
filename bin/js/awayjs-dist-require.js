@@ -7276,6 +7276,7 @@ var AssetType = (function () {
     AssetType.CAMERA = 'camera';
     AssetType.CONTAINER = 'container';
     AssetType.EFFECTS_METHOD = 'effectsMethod';
+    AssetType.FONT = 'font';
     AssetType.GEOMETRY = 'geometry';
     AssetType.LINE_SEGMENT = 'lineSegment';
     AssetType.LIGHT = 'light';
@@ -7291,6 +7292,8 @@ var AssetType = (function () {
     AssetType.SKELETON_POSE = 'skeletonPose';
     AssetType.SKYBOX = 'skybox';
     AssetType.STATE_TRANSITION = 'stateTransition';
+    AssetType.TEXTFIELD = 'textfield';
+    AssetType.TEXTFORMAT = 'textformat';
     AssetType.TEXTURE = 'texture';
     AssetType.TEXTURE_PROJECTOR = 'textureProjector';
     AssetType.TIMELINE = 'timeline';
@@ -31094,7 +31097,75 @@ var AntiAliasType = (function () {
 module.exports = AntiAliasType;
 
 
-},{}],"awayjs-display/lib/text/GridFitType":[function(require,module,exports){
+},{}],"awayjs-display/lib/text/Font":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var FontTable = require("awayjs-display/lib/text/TesselatedFontTable");
+/**
+ * SubMeshBase wraps a TriangleSubGeometry as a scene graph instantiation. A SubMeshBase is owned by a Mesh object.
+ *
+ *
+ * @see away.base.TriangleSubGeometry
+ * @see away.entities.Mesh
+ *
+ * @class away.base.SubMeshBase
+ */
+var Font = (function (_super) {
+    __extends(Font, _super);
+    //TODO test shader picking
+    //		public get shaderPickingDetails():boolean
+    //		{
+    //
+    //			return this.sourceEntity.shaderPickingDetails;
+    //		}
+    /**
+     * Creates a new TesselatedFont object
+     */
+    function Font() {
+        _super.call(this);
+        this._font_styles = new Array();
+    }
+    Object.defineProperty(Font.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return AssetType.FONT;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    Font.prototype.dispose = function () {
+    };
+    /**
+     *Get a font-table for a specific name, or create one if it does not exists.
+     */
+    Font.prototype.get_font_table = function (style_name) {
+        var len = this._font_styles.length;
+        for (var i = 0; i < len; ++i) {
+            if (this._font_styles[i].name == style_name)
+                return this._font_styles[i];
+        }
+        var font_style = new FontTable();
+        font_style.name = style_name;
+        this._font_styles.push(font_style);
+        return font_style;
+    };
+    return Font;
+})(NamedAssetBase);
+module.exports = Font;
+
+
+},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/text/TesselatedFontTable":"awayjs-display/lib/text/TesselatedFontTable"}],"awayjs-display/lib/text/GridFitType":[function(require,module,exports){
 /**
  * The GridFitType class defines values for grid fitting in the TextField class.
  */
@@ -31132,7 +31203,73 @@ var GridFitType = (function () {
 module.exports = GridFitType;
 
 
-},{}],"awayjs-display/lib/text/TextFieldAutoSize":[function(require,module,exports){
+},{}],"awayjs-display/lib/text/TesselatedFontTable":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+/**
+ * SubMeshBase wraps a TriangleSubGeometry as a scene graph instantiation. A SubMeshBase is owned by a Mesh object.
+ *
+ *
+ * @see away.base.TriangleSubGeometry
+ * @see away.entities.Mesh
+ *
+ * @class away.base.SubMeshBase
+ */
+var TesselatedFontTable = (function (_super) {
+    __extends(TesselatedFontTable, _super);
+    //TODO test shader picking
+    //		public get shaderPickingDetails():boolean
+    //		{
+    //
+    //			return this.sourceEntity.shaderPickingDetails;
+    //		}
+    /**
+     * Creates a new TesselatedFont object
+     */
+    function TesselatedFontTable() {
+        _super.call(this);
+        this._font_chars = new Array();
+        this._font_chars_dic = new Object();
+    }
+    /**
+     *
+     */
+    TesselatedFontTable.prototype.dispose = function () {
+    };
+    TesselatedFontTable.prototype.get_font_chars = function () {
+        return this._font_chars;
+    };
+    TesselatedFontTable.prototype.get_font_em_size = function () {
+        return this._font_em_size;
+    };
+    TesselatedFontTable.prototype.set_font_em_size = function (font_em_size) {
+        this._font_em_size = font_em_size;
+    };
+    /**
+     *
+     */
+    TesselatedFontTable.prototype.get_subgeo_for_char = function (char) {
+        return this._font_chars_dic[char];
+    };
+    /**
+     *
+     */
+    TesselatedFontTable.prototype.set_subgeo_for_char = function (char, subgeo) {
+        subgeo.name = char;
+        this._font_chars.push(subgeo);
+        this._font_chars_dic[char] = subgeo;
+    };
+    return TesselatedFontTable;
+})(NamedAssetBase);
+module.exports = TesselatedFontTable;
+
+
+},{"awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase"}],"awayjs-display/lib/text/TextFieldAutoSize":[function(require,module,exports){
 /**
  * The TextFieldAutoSize class is an enumeration of constant values used in
  * setting the <code>autoSize</code> property of the TextField class.
@@ -32906,147 +33043,7 @@ var AmbientEnvMapMethod = (function (_super) {
 module.exports = AmbientEnvMapMethod;
 
 
-},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/CurveBasicMethod":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ShaderCompilerHelper = require("awayjs-renderergl/lib/utils/ShaderCompilerHelper");
-var ShadingMethodBase = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
-/**
- * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
- */
-var CurveBasicMethod = (function (_super) {
-    __extends(CurveBasicMethod, _super);
-    /**
-     * Creates a new AmbientBasicMethod object.
-     */
-    function CurveBasicMethod() {
-        _super.call(this);
-        this._color = 0xffffff;
-        this._alpha = 1;
-        this._colorR = 1;
-        this._colorG = 1;
-        this._colorB = 1;
-        this._ambient = 1;
-    }
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iInitVO = function (shaderObject, methodVO) {
-        methodVO.needsUV = true; // Boolean(shaderObject.texture != null);
-    };
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iInitConstants = function (shaderObject, methodVO) {
-        if (!methodVO.needsUV) {
-            this._color = shaderObject.color;
-            this.updateColor();
-        }
-    };
-    Object.defineProperty(CurveBasicMethod.prototype, "ambient", {
-        /**
-         * The strength of the ambient reflection of the surface.
-         */
-        get: function () {
-            return this._ambient;
-        },
-        set: function (value) {
-            if (this._ambient == value)
-                return;
-            this._ambient = value;
-            this.updateColor();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveBasicMethod.prototype, "alpha", {
-        /**
-         * The alpha component of the surface.
-         */
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            if (this._alpha == value)
-                return;
-            this._alpha = value;
-            this.updateColor();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.copyFrom = function (method) {
-        var m = method;
-        var b = m;
-    };
-    /**
-     * @inheritDoc
-     */
-    /*
-    public iGeVertexCode(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string {
-        var code:string = "";
-        code = "mov " + sharedRegisters.uvVarying + " " + registerCache.uv +  " \n";
-    }*/
-    CurveBasicMethod.prototype.iGetFragmentCode = function (shaderObject, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var ambientInputRegister;
-        if (methodVO.needsUV) {
-            ambientInputRegister = registerCache.getFreeTextureReg();
-            methodVO.texturesIndex = ambientInputRegister.index;
-            code += ShaderCompilerHelper.getTex2DSampleCode(targetReg, sharedRegisters, ambientInputRegister, shaderObject.texture, shaderObject.useSmoothTextures, shaderObject.repeatTextures, false);
-            if (shaderObject.alphaThreshold > 0) {
-                var cutOffReg = registerCache.getFreeFragmentConstant();
-                methodVO.fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else {
-            ambientInputRegister = registerCache.getFreeFragmentConstant();
-            methodVO.fragmentConstantsIndex = ambientInputRegister.index * 4;
-            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
-        }
-        code = "mov " + targetReg + ", " + sharedRegisters.uvVarying + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iActivate = function (shaderObject, methodVO, stage) {
-        if (methodVO.needsUV) {
-            stage.activateTexture(methodVO.texturesIndex, shaderObject.texture, shaderObject.repeatTextures, shaderObject.useSmoothTextures, shaderObject.useMipmapping);
-            if (shaderObject.alphaThreshold > 0)
-                shaderObject.fragmentConstantData[methodVO.fragmentConstantsIndex] = shaderObject.alphaThreshold;
-        }
-        else {
-            var index = methodVO.fragmentConstantsIndex;
-            var data = shaderObject.fragmentConstantData;
-            data[index] = this._colorR;
-            data[index + 1] = this._colorG;
-            data[index + 2] = this._colorB;
-            data[index + 3] = this._alpha;
-        }
-    };
-    /**
-     * Updates the ambient color data used by the render state.
-     */
-    CurveBasicMethod.prototype.updateColor = function () {
-        this._colorR = ((this._color >> 16) & 0xff) / 0xff * this._ambient;
-        this._colorG = ((this._color >> 8) & 0xff) / 0xff * this._ambient;
-        this._colorB = (this._color & 0xff) / 0xff * this._ambient;
-    };
-    return CurveBasicMethod;
-})(ShadingMethodBase);
-module.exports = CurveBasicMethod;
-
-
-},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
+},{"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-renderergl/lib/utils/ShaderCompilerHelper":"awayjs-renderergl/lib/utils/ShaderCompilerHelper"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -38968,6 +38965,7 @@ var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
 var PointLight = require("awayjs-display/lib/entities/PointLight");
 var Camera = require("awayjs-display/lib/entities/Camera");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Billboard = require("awayjs-display/lib/entities/Billboard");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var CubeMapShadowMapper = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
@@ -39017,12 +39015,16 @@ var SpecularCelMethod = require("awayjs-methodmaterials/lib/methods/SpecularCelM
 var SpecularPhongMethod = require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
 var ShadowNearMethod = require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+var CurveMaterial = require("awayjs-display/lib/materials/CurveMaterial");
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var AS2SceneGraphFactory = require("awayjs-player/lib/fl/factories/AS2SceneGraphFactory");
 var TimelineKeyFrame = require("awayjs-player/lib/fl/timeline/TimelineKeyFrame");
 var AddChildCommand = require("awayjs-player/lib/fl/timeline/commands/AddChildCommand");
 var UpdatePropertyCommand = require("awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand");
 var RemoveChildCommand = require("awayjs-player/lib/fl/timeline/commands/RemoveChildCommand");
 var ApplyAS2DepthsCommand = require("awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand");
+var Font = require("awayjs-display/lib/text/Font");
 /**
  * AWDParser provides a parser for the AWD data type.
  */
@@ -39036,7 +39038,7 @@ var AWDParser = (function (_super) {
     function AWDParser() {
         _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
         //set to "true" to have some console.logs in the Console
-        this._debug = false;
+        this._debug = true;
         this._startedParsing = false;
         this._texture_users = {};
         this._parsed_header = false;
@@ -39306,13 +39308,32 @@ var AWDParser = (function (_super) {
             // probably should contain some info about the type of animation
             var factory = new AS2SceneGraphFactory();
             switch (type) {
+                case 24:
+                    this.parseMeshLibraryBlock(this._cur_block_id);
+                    isParsed = true;
+                    break;
+                case 25:
+                    this.parseBillBoardLibraryBlock(this._cur_block_id);
+                    isParsed = true;
+                    break;
                 case 44:
                     this.parseAudioBlock(this._cur_block_id, factory);
                     isParsed = true;
                     break;
-                case 4:
                 case 133:
                     this.parseTimeLine(this._cur_block_id, factory);
+                    isParsed = true;
+                    break;
+                case 134:
+                    this.paresTextField(this._cur_block_id);
+                    isParsed = true;
+                    break;
+                case 135:
+                    this.parseTesselatedFont(this._cur_block_id);
+                    isParsed = true;
+                    break;
+                case 136:
+                    this.parseTextFormat(this._cur_block_id);
                     isParsed = true;
                     break;
             }
@@ -39449,6 +39470,155 @@ var AWDParser = (function (_super) {
         this._newBlockBytes = null;
     };
     //--Parser Blocks---------------------------------------------------------------------------
+    AWDParser.prototype.parseTesselatedFont = function (blockID) {
+        this._blocks[blockID].name = this.parseVarStr();
+        //console.log("Font name = "+this._blocks[blockID].name);
+        var font_style_cnt = this._newBlockBytes.readUnsignedInt();
+        //console.log("Font font_style_cnt = "+font_style_cnt);
+        var new_font = new Font();
+        for (var i = 0; i < font_style_cnt; ++i) {
+            var font_style_name = this.parseVarStr();
+            //console.log("Font font_style_name = "+font_style_name);
+            var new_font_style = new_font.get_font_table(font_style_name);
+            new_font_style.set_font_em_size(this._newBlockBytes.readUnsignedInt());
+            //console.log("Font new_font_style.font_em_size = "+new_font_style.get_font_em_size);
+            var font_style_char_cnt = this._newBlockBytes.readUnsignedInt();
+            for (var i = 0; i < font_style_char_cnt; ++i) {
+                var font_style_char = this._newBlockBytes.readUnsignedInt();
+                //console.log("Font font_style_char = "+font_style_char);
+                // todo: this is basically a simplified version of the subgeom-parsing done in parseTriangleGeometry. Make a parseSubGeom() instead (?)
+                var sm_len = this._newBlockBytes.readUnsignedInt();
+                var sm_end = this._newBlockBytes.position + sm_len;
+                while (this._newBlockBytes.position < sm_end) {
+                    var idx = 0;
+                    var str_ftype, str_type, str_len, str_end;
+                    // Type, field type, length
+                    str_type = this._newBlockBytes.readUnsignedByte();
+                    str_ftype = this._newBlockBytes.readUnsignedByte();
+                    str_len = this._newBlockBytes.readUnsignedInt();
+                    str_end = this._newBlockBytes.position + str_len;
+                    if (str_type == 2) {
+                        var indices = new Array();
+                        while (this._newBlockBytes.position < str_end) {
+                            indices[idx++] = this._newBlockBytes.readUnsignedShort();
+                        }
+                    }
+                    else if (str_type == 10) {
+                        var idx_pos = 0;
+                        var idx_curves = 0;
+                        var idx_uvs = 0;
+                        var positions = new Array();
+                        var curveData = new Array();
+                        var uvs = new Array();
+                        while (this._newBlockBytes.position < str_end) {
+                            positions[idx_pos++] = this.readNumber(this._accuracyGeo); // x
+                            positions[idx_pos++] = this.readNumber(this._accuracyGeo); // y
+                            positions[idx_pos++] = this.readNumber(this._accuracyGeo); // type
+                            curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 1
+                            curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 2
+                            uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
+                            uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
+                        }
+                    }
+                    else {
+                        this._newBlockBytes.position = str_end;
+                    }
+                }
+                //this.parseProperties(null);// no attributes for font-table subgeos
+                var curve_sub_geom = new CurveSubGeometry(true);
+                curve_sub_geom.updateIndices(indices);
+                curve_sub_geom.updatePositions(positions);
+                curve_sub_geom.updateCurves(curveData);
+                curve_sub_geom.updateUVs(uvs);
+                new_font_style.set_subgeo_for_char(font_style_char.toString(), curve_sub_geom);
+            }
+        }
+        this.parseProperties(null);
+        this.parseUserAttributes();
+        this._pFinalizeAsset(new_font, name);
+        this._blocks[blockID].data = new_font;
+    };
+    AWDParser.prototype.parseTextFormat = function (blockID) {
+        this._blocks[blockID].name = this.parseVarStr();
+    };
+    AWDParser.prototype.paresTextField = function (blockID) {
+        this._blocks[blockID].name = this.parseVarStr();
+    };
+    // Block ID = 25
+    AWDParser.prototype.parseBillBoardLibraryBlock = function (blockID) {
+        var name = this.parseVarStr();
+        var data_id = this._newBlockBytes.readUnsignedInt();
+        var mat;
+        var returnedArrayMaterial = this.getAssetByID(data_id, [AssetType.MATERIAL]);
+        if (returnedArrayMaterial[0]) {
+            mat = returnedArrayMaterial[1];
+        }
+        else {
+            this._blocks[blockID].addError("Could not find a Material for this Billboard. A empty material is created!");
+            mat = new BasicMaterial();
+        }
+        mat.bothSides = true;
+        var billboard = new Billboard(mat);
+        // todo: optional matrix etc can be put in properties.
+        this.parseProperties(null);
+        billboard.extra = this.parseUserAttributes();
+        this._pFinalizeAsset(billboard, name);
+        this._blocks[blockID].data = billboard;
+        if (this._debug) {
+            console.log("Parsed a Library-Billboard: Name = '" + name + "| Material-Name = " + mat.name);
+        }
+    };
+    // Block ID = 24
+    AWDParser.prototype.parseMeshLibraryBlock = function (blockID) {
+        var num_materials;
+        var materials_parsed;
+        var name = this.parseVarStr();
+        var data_id = this._newBlockBytes.readUnsignedInt();
+        var geom;
+        var returnedArrayGeometry = this.getAssetByID(data_id, [AssetType.GEOMETRY]);
+        if (returnedArrayGeometry[0]) {
+            geom = returnedArrayGeometry[1];
+        }
+        else {
+            this._blocks[blockID].addError("Could not find a Geometry for this Mesh. A empty Geometry is created!");
+            geom = new Geometry();
+        }
+        this._blocks[blockID].geoID = data_id;
+        var materials = new Array();
+        num_materials = this._newBlockBytes.readUnsignedShort();
+        var materialNames = new Array();
+        materials_parsed = 0;
+        var returnedArrayMaterial;
+        while (materials_parsed < num_materials) {
+            var mat_id;
+            mat_id = this._newBlockBytes.readUnsignedInt();
+            returnedArrayMaterial = this.getAssetByID(mat_id, [AssetType.MATERIAL]);
+            if ((!returnedArrayMaterial[0]) && (mat_id > 0)) {
+                this._blocks[blockID].addError("Could not find Material Nr " + materials_parsed + " (ID = " + mat_id + " ) for this Mesh");
+            }
+            var m = returnedArrayMaterial[1];
+            materials.push(m);
+            materialNames.push(m.name);
+            materials_parsed++;
+        }
+        var mesh = new Mesh(geom, null);
+        if (materials.length >= 1 && mesh.subMeshes.length == 1) {
+            mesh.material = materials[0];
+        }
+        else if (materials.length > 1) {
+            var i;
+            for (i = 0; i < mesh.subMeshes.length; i++) {
+                mesh.subMeshes[i].material = materials[Math.min(materials.length - 1, i)];
+            }
+        }
+        this.parseProperties(null);
+        mesh.extra = this.parseUserAttributes();
+        this._pFinalizeAsset(mesh, name);
+        this._blocks[blockID].data = mesh;
+        if (this._debug) {
+            console.log("Parsed a Library-Mesh: Name = '" + name + "| Geometry-Name = " + geom.name + " | SubMeshes = " + mesh.subMeshes.length + " | Mat-Names = " + materialNames.toString());
+        }
+    };
     AWDParser.prototype.parseAudioBlock = function (blockID, factory) {
         //var asset:Audio;todo create asset for audio
         this._blocks[blockID].name = this.parseVarStr();
@@ -39507,6 +39677,7 @@ var AWDParser = (function (_super) {
             frame.setFrameTime(totalDuration, frameDuration);
             totalDuration += frameDuration;
             //console.log("duration = " + frameDuration);
+            traceString += "duration = " + frameDuration;
             var numLabels = this._newBlockBytes.readUnsignedShort();
             for (j = 0; j < numLabels; j++) {
                 var labelType = this._newBlockBytes.readUnsignedByte();
@@ -39516,60 +39687,44 @@ var AWDParser = (function (_super) {
                 traceString += "\n     label = " + label + " - labelType = " + labelType;
             }
             var numCommands = this._newBlockBytes.readUnsignedShort();
-            var commandString = "\n      Commands " + numCommands;
+            traceString += "\n      Commands " + numCommands;
             var hasDepthChanges = false;
+            var commandString = "";
             for (j = 0; j < numCommands; j++) {
                 var objectID;
                 var resourceID;
                 var commandType = this._newBlockBytes.readUnsignedShort();
                 switch (commandType) {
                     case 1:
-                    case 2:
                     case 3:
+                        var valid_command = false;
                         objectID = this._newBlockBytes.readUnsignedInt();
                         var instanceID = 0; // must be set in folling conditions:
                         if (commandType == 1) {
                             // this commands looks for a object by awd-id and puts it into the timeline
                             resourceID = this._newBlockBytes.readUnsignedInt();
-                            var newChild;
-                            var numFills = this._newBlockBytes.readUnsignedShort();
-                            commandString += "\n                number of fills = " + numFills;
+                            var instanceName = this.parseVarStr();
                             // sound is added to timeline with dedicated Command, as it is no display-object (has no matrix etc)
                             // check if a Geometry can be found at the resourceID (AWD-ID)
-                            var returnedArray = this.getAssetByID(resourceID, [AssetType.GEOMETRY]);
-                            if (returnedArray[0]) {
-                                var geom = returnedArray[1];
-                                newChild = new Mesh(geom);
-                                for (k = 0; k < numFills; k++) {
-                                    var returnedArray2 = this.getAssetByID(this._newBlockBytes.readUnsignedInt(), [AssetType.MATERIAL]);
-                                    if (returnedArray2[0] && newChild.subMeshes.length > k)
-                                        newChild.subMeshes[k].material = returnedArray2[1];
+                            var cmd_asset = this._blocks[resourceID].data;
+                            if (cmd_asset != null) {
+                                instanceID = timeLineContainer.registerPotentialChild(cmd_asset);
+                                objectIDMap[objectID] = instanceID;
+                                frame.addConstructCommand(new AddChildCommand(instanceID));
+                                if (instanceName.length) {
+                                    frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "name", instanceName));
+                                    commandString += "\n                instanceName = " + instanceName;
                                 }
+                                valid_command = true;
+                                commandString += "\n      - Add new Resource = " + resourceID + " as object_id = " + objectID;
                             }
                             else {
-                                for (k = 0; k < numFills; k++)
-                                    this._newBlockBytes.readUnsignedInt();
-                                var returnedArray = this.getAssetByID(resourceID, [AssetType.TIMELINE]);
-                                if (returnedArray[0])
-                                    newChild = returnedArray[1];
+                                commandString += "\n      - ERROR - object_id = " + objectID + " - NO DISPLAY_OBJECT AT ID = " + resourceID;
                             }
-                            instanceID = timeLineContainer.registerPotentialChild(newChild);
-                            objectIDMap[objectID] = instanceID;
-                            frame.addConstructCommand(new AddChildCommand(instanceID));
-                            var instanceName = this.parseVarStr();
-                            if (instanceName.length) {
-                                frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "name", instanceName));
-                                commandString += "\n                instanceName = " + instanceName;
-                            }
-                            commandString += "\n      - Add new Resource = " + resourceID + " as object_id = " + objectID;
                         }
-                        else if (commandType == 2) {
-                            // this commands looks for a object by global string identifier and puts it into the timeline
-                            // this is not used yet, but might be useful to do things like text-localization
-                            var global_ressource_id = this.parseVarStr();
-                        }
-                        else {
+                        else if (commandType == 3) {
                             instanceID = objectIDMap[objectID];
+                            valid_command = true;
                             commandString += "\n      - Update object_id = " + objectID;
                         }
                         // read the command properties
@@ -39580,52 +39735,66 @@ var AWDParser = (function (_super) {
                         // 5: visibilty (uint8)
                         // 6: depth (uint32)
                         // 7: mask (uint32)
-                        var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._propsNrType, 4: AWDParser.UINT8, 5: AWDParser.UINT8, 6: AWDParser.UINT32, 7: AWDParser.UINT32 });
-                        var matrix_2d = props.get(1, []);
-                        //var matrix_3d:Float32Array = props.get(2, []);
-                        var colortransform = props.get(3, []);
-                        var blendmode = props.get(4, -1);
-                        var visibilty = props.get(5, -1);
-                        var depth = props.get(6, -1);
-                        var mask = props.get(7, -1);
-                        // todo: handle filters
-                        //matrix2d must provide 6 values to be valid
-                        commandString += "\n                transformArray = " + matrix_2d.length;
-                        if (matrix_2d.length == 6) {
-                            var thisMatrix = new Matrix3D();
-                            // todo set rotation + scale from matrix 2x3 to matrix3d
-                            thisMatrix.position = new Vector3D(matrix_2d[4], matrix_2d[5], 0);
-                            frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "_iMatrix3D", thisMatrix));
-                            commandString += "\n                transformArray = " + matrix_2d;
-                        }
-                        //matrix2d must provide 20 values to be valid
-                        if (colortransform.length == 20) {
-                            // TODO: set ColorTransform on objectProps
-                            commandString += "\n                colorMatrix = " + colortransform;
-                        }
-                        // blendmode must be positive to be valid
-                        if (blendmode >= 0) {
-                            var blendmode_string = this.blendModeDic[blendmode];
-                            // TODO: set Blendmode on objectProps
-                            commandString += "\n                BlendMode = " + blendmode_string;
-                        }
-                        // visibilty must be positive to be valid
-                        if (visibilty >= 0) {
-                            if (visibilty == 0)
-                                frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "visible", false));
-                            else
-                                frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "visible", true));
-                        }
-                        // depth must be positive to be valid
-                        if (depth >= 0) {
-                            commandString += "\n                Depth = " + depth;
-                            frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "__AS2Depth", depth));
-                            hasDepthChanges = true;
-                        }
-                        // mask must be positive to be valid. i think only add-commands will have this value.
-                        // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
-                        if (mask >= 0) {
-                            commandString += "\n                Mask-up to obj-id: " + mask;
+                        var props = this.parseProperties({
+                            1: this._matrixNrType,
+                            2: this._matrixNrType,
+                            3: this._propsNrType,
+                            4: AWDParser.UINT8,
+                            5: AWDParser.UINT8,
+                            6: AWDParser.UINT32,
+                            7: AWDParser.UINT32
+                        });
+                        if (valid_command) {
+                            var matrix_2d = props.get(1, []);
+                            //var matrix_3d:Float32Array = props.get(2, []);
+                            var colortransform = props.get(3, []);
+                            var blendmode = props.get(4, -1);
+                            var visibilty = props.get(5, -1);
+                            var depth = props.get(6, -1);
+                            var mask = props.get(7, -1);
+                            // todo: handle filters
+                            //matrix2d must provide 6 values to be valid
+                            commandString += "\n                transformArray = " + matrix_2d.length;
+                            if (matrix_2d.length == 6) {
+                                var thisMatrix = new Matrix3D();
+                                thisMatrix.position = new Vector3D(matrix_2d[4], matrix_2d[5], 0);
+                                // todo is this correct for 2d -> 3d scale and rotation. (i doubt it)
+                                thisMatrix.rawData[0] = matrix_2d[0];
+                                thisMatrix.rawData[1] = matrix_2d[1];
+                                thisMatrix.rawData[4] = matrix_2d[2];
+                                thisMatrix.rawData[5] = matrix_2d[3];
+                                frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "_iMatrix3D", thisMatrix));
+                                commandString += "\n                transformArray = " + matrix_2d;
+                            }
+                            //matrix2d must provide 20 values to be valid
+                            if (colortransform.length == 20) {
+                                // TODO: set ColorTransform on objectProps
+                                commandString += "\n                colorMatrix = " + colortransform;
+                            }
+                            // blendmode must be positive to be valid
+                            if (blendmode >= 0) {
+                                var blendmode_string = this.blendModeDic[blendmode];
+                                // TODO: set Blendmode on objectProps
+                                commandString += "\n                BlendMode = " + blendmode_string;
+                            }
+                            // visibilty must be positive to be valid
+                            if (visibilty >= 0) {
+                                if (visibilty == 0)
+                                    frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "visible", false));
+                                else
+                                    frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "visible", true));
+                            }
+                            // depth must be positive to be valid
+                            if (depth >= 0) {
+                                commandString += "\n                Depth = " + depth;
+                                frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "__AS2Depth", depth));
+                                hasDepthChanges = true;
+                            }
+                            // mask must be positive to be valid. i think only add-commands will have this value.
+                            // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
+                            if (mask >= 0) {
+                                commandString += "\n                Mask-up to obj-id: " + mask;
+                            }
                         }
                         break;
                     case 4:
@@ -39663,7 +39832,7 @@ var AWDParser = (function (_super) {
             traceString += commandString;
             //trace("length_code = "+length_code+" frame_code = "+frame_code);
             this._newBlockBytes.readUnsignedInt(); // user attributes - skip for now
-            //console.log(traceString);
+            console.log(traceString);
             timeLineContainer.addFrame(frame);
         }
         this._pFinalizeAsset(timeLineContainer, name);
@@ -39684,7 +39853,7 @@ var AWDParser = (function (_super) {
         // Loop through sub meshes
         var subs_parsed = 0;
         while (subs_parsed < num_subs) {
-            var is_2d_geom = false;
+            var is_curve_geom = false;
             var i;
             var sm_len, sm_end;
             var w_indices;
@@ -39694,9 +39863,6 @@ var AWDParser = (function (_super) {
             var subProps = this.parseProperties({ 1: this._geoNrType, 2: this._geoNrType });
             while (this._newBlockBytes.position < sm_end) {
                 var idx = 0;
-                var uv_idx = 0;
-                var n_idx = 0;
-                var t_idx = 0;
                 var str_ftype, str_type, str_len, str_end;
                 // Type, field type, length
                 str_type = this._newBlockBytes.readUnsignedByte();
@@ -39752,109 +39918,71 @@ var AWDParser = (function (_super) {
                     this._newBlockBytes.position = str_end;
                 }
                 else if (str_type == 10) {
-                    var x, y, z;
-                    var type;
-                    var r, g, b, a;
-                    var u, v;
-                    var verts = new Array();
+                    is_curve_geom = true;
+                    var idx_pos = 0;
+                    var idx_curves = 0;
+                    var idx_uvs = 0;
+                    var positions = new Array();
+                    var curveData = new Array();
                     var uvs = new Array();
-                    var normals = new Array();
-                    var tangents = new Array();
                     while (this._newBlockBytes.position < str_end) {
-                        x = this.readNumber(this._accuracyGeo);
-                        y = this.readNumber(this._accuracyGeo);
-                        z = -0.1 * subs_parsed;
-                        //z = subs_parsed;
-                        //z = (blockID*0.001) + subs_parsed
-                        type = this.readNumber(this._accuracyGeo);
-                        u = this.readNumber(this._accuracyGeo);
-                        v = this.readNumber(this._accuracyGeo);
-                        /* r = this.readNumber(this._accuracyGeo);
-                         g = this.readNumber(this._accuracyGeo);
-                         b = this.readNumber(this._accuracyGeo);
-                         a = this.readNumber(this._accuracyGeo);*/
-                        // while this is true, be parse the vertex-data, so it can be rendered as "normal" 3d-geometry
-                        if (true) {
-                            uvs[idx] = 0.0;
-                            normals[idx] = 0.0;
-                            verts[idx++] = x;
-                            uvs[idx] = 0.0;
-                            normals[idx] = 0.0;
-                            verts[idx++] = y;
-                            normals[idx] = 1.0;
-                            verts[idx++] = z;
-                        }
-                        else {
-                            // parse and set-data, so the 3d-geometry contains all data (but is no longer valid for normal 3d-render)
-                            // away3d-vertexdata    |   awayJS-shape-data
-                            // -----------------------------------------------------------------------
-                            // pos.x                |   pos.x
-                            // pos.y                |   pos.y
-                            // pos.z                |   pos.z (for now we just use this as depth (set each subgeo to its own depth))
-                            // normal.x             |   curve-type (0:notCurved, 1: convex, 2:concave)
-                            // normal.y             |   alpha
-                            // normal.z             |   not used
-                            // uv.u                 |   curve.u
-                            // uv.v                 |   curve.v
-                            // tangent.x            |   red
-                            // tangent.y            |   green
-                            // tangent.z            |   blue
-                            verts[idx++] = x;
-                            //uv2[idx] = x;
-                            verts[idx++] = y;
-                            //uv2[idx] = y;
-                            verts[idx++] = z;
-                            uvs[uv_idx++] = u;
-                            uvs[uv_idx++] = v;
-                            normals[n_idx++] = type;
-                            normals[n_idx++] = a;
-                            normals[n_idx++] = 0;
-                            // trace("r=" + r + " g=" + g + " b=" + b + " a=" + a);
-                            tangents[t_idx++] = r;
-                            tangents[t_idx++] = g;
-                            tangents[t_idx++] = b;
-                        }
+                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // x
+                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // y
+                        positions[idx_pos++] = this.readNumber(this._accuracyGeo); // type
+                        curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 1
+                        curveData[idx_curves++] = this.readNumber(this._accuracyGeo); // curve value 2
+                        uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
+                        uvs[idx_uvs++] = this.readNumber(this._accuracyGeo); // curve value 1
                     }
-                }
-                else if (str_type == 11) {
-                    this._newBlockBytes.position = str_end;
                 }
                 else {
                     this._newBlockBytes.position = str_end;
                 }
             }
             this.parseUserAttributes(); // Ignore sub-mesh attributes for now
-            var sub_geom;
-            sub_geom = new TriangleSubGeometry(true);
-            if (weights)
-                sub_geom.jointsPerVertex = weights.length / (verts.length / 3);
-            if (normals)
-                sub_geom.autoDeriveNormals = false;
-            if (uvs)
-                sub_geom.autoDeriveUVs = false;
-            sub_geom.autoDeriveNormals = false;
-            // when rendering as "normal" 3d-geometry, we need to autoDerive tangents
-            if (true) {
-                sub_geom.autoDeriveTangents = true;
+            if (is_curve_geom) {
+                var curve_sub_geom = new CurveSubGeometry(true);
+                curve_sub_geom.updateIndices(indices);
+                curve_sub_geom.updatePositions(positions);
+                curve_sub_geom.updateCurves(curveData);
+                curve_sub_geom.updateUVs(uvs);
+                geom.addSubGeometry(curve_sub_geom);
+                if (this._debug)
+                    console.log("Parsed a CurveSubGeometry");
             }
-            sub_geom.updateIndices(indices);
-            sub_geom.updatePositions(verts);
-            sub_geom.updateVertexNormals(normals);
-            sub_geom.updateUVs(uvs);
-            sub_geom.updateVertexTangents(null);
-            sub_geom.updateJointWeights(weights);
-            sub_geom.updateJointIndices(w_indices);
-            var scaleU = subProps.get(1, 1);
-            var scaleV = subProps.get(2, 1);
-            var setSubUVs = false; //this should remain false atm, because in AwayBuilder the uv is only scaled by the geometry
-            if ((geoScaleU != scaleU) || (geoScaleV != scaleV)) {
-                setSubUVs = true;
-                scaleU = geoScaleU / scaleU;
-                scaleV = geoScaleV / scaleV;
+            else {
+                var triangle_sub_geom = new TriangleSubGeometry(true);
+                if (weights)
+                    triangle_sub_geom.jointsPerVertex = weights.length / (verts.length / 3);
+                if (normals)
+                    triangle_sub_geom.autoDeriveNormals = false;
+                if (uvs)
+                    triangle_sub_geom.autoDeriveUVs = false;
+                triangle_sub_geom.autoDeriveNormals = false;
+                if (true) {
+                    triangle_sub_geom.autoDeriveTangents = true;
+                }
+                triangle_sub_geom.updateIndices(indices);
+                triangle_sub_geom.updatePositions(verts);
+                triangle_sub_geom.updateVertexNormals(normals);
+                triangle_sub_geom.updateUVs(uvs);
+                triangle_sub_geom.updateVertexTangents(null);
+                triangle_sub_geom.updateJointWeights(weights);
+                triangle_sub_geom.updateJointIndices(w_indices);
+                var scaleU = subProps.get(1, 1);
+                var scaleV = subProps.get(2, 1);
+                var setSubUVs = false; //this should remain false atm, because in AwayBuilder the uv is only scaled by the geometry
+                if ((geoScaleU != scaleU) || (geoScaleV != scaleV)) {
+                    setSubUVs = true;
+                    scaleU = geoScaleU / scaleU;
+                    scaleV = geoScaleV / scaleV;
+                }
+                if (setSubUVs)
+                    triangle_sub_geom.scaleUV(scaleU, scaleV);
+                geom.addSubGeometry(triangle_sub_geom);
+                if (this._debug)
+                    console.log("Parsed a TriangleSubGeometry");
             }
-            if (setSubUVs)
-                sub_geom.scaleUV(scaleU, scaleV);
-            geom.addSubGeometry(sub_geom);
             // TODO: Somehow map in-sub to out-sub indices to enable look-up
             // when creating meshes (and their material assignments.)
             subs_parsed++;
@@ -39865,7 +39993,7 @@ var AWDParser = (function (_super) {
         this._pFinalizeAsset(geom, name);
         this._blocks[blockID].data = geom;
         if (this._debug) {
-            console.log("Parsed a TriangleGeometry: Name = " + name + "| Id = " + sub_geom.id);
+            console.log("Parsed a TriangleGeometry: Name = " + name);
         }
     };
     //Block ID = 11
@@ -40511,12 +40639,31 @@ var AWDParser = (function (_super) {
                 }
             }
         }
-        else if (type == 3) {
-            var color = props.get(1, 0xcccccc); //TODO temporarily swapped so that diffuse color goes to ambient
+        else if ((type >= 3) && (type <= 7)) {
+            // if this is a curve material, we create it, finalize it, assign it to block-cache and return and return.
+            var color = props.get(1, 0xcccccc);
             debugString += color;
-            mat = new MethodMaterial(color, props.get(10, 1.0));
-            debugString += "alpha = " + props.get(10, 1.0) + " ";
-            mat.bothSides = true;
+            var diffuseTexture;
+            var diffuseTex_addr = props.get(2, 0);
+            returnedArray = this.getAssetByID(diffuseTex_addr, [AssetType.TEXTURE]);
+            if ((!returnedArray[0]) && (diffuseTex_addr != 0)) {
+                this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + diffuseTex_addr + " ) for this MethodMaterial");
+                diffuseTexture = DefaultMaterialManager.getDefaultTexture();
+            }
+            if (returnedArray[0])
+                diffuseTexture = returnedArray[1];
+            var curve_mat = new CurveMaterial(diffuseTexture);
+            //debugString+= " alpha = "+props.get(10, 1.0)+" ";
+            debugString += " texture = " + diffuseTex_addr + " ";
+            curve_mat.bothSides = true;
+            curve_mat.preserveAlpha = true;
+            curve_mat.alphaBlending = true;
+            curve_mat.extra = this.parseUserAttributes();
+            this._pFinalizeAsset(curve_mat, name);
+            this._blocks[blockID].data = curve_mat;
+            if (this._debug)
+                console.log(debugString);
+            return;
         }
         mat.extra = this.parseUserAttributes();
         this._pFinalizeAsset(mat, name);
@@ -41536,7 +41683,7 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/fl/factories/AS2SceneGraphFactory":"awayjs-player/lib/fl/factories/AS2SceneGraphFactory","awayjs-player/lib/fl/timeline/TimelineKeyFrame":"awayjs-player/lib/fl/timeline/TimelineKeyFrame","awayjs-player/lib/fl/timeline/commands/AddChildCommand":"awayjs-player/lib/fl/timeline/commands/AddChildCommand","awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand","awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-display/lib/text/Font":"awayjs-display/lib/text/Font","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/fl/factories/AS2SceneGraphFactory":"awayjs-player/lib/fl/factories/AS2SceneGraphFactory","awayjs-player/lib/fl/timeline/TimelineKeyFrame":"awayjs-player/lib/fl/timeline/TimelineKeyFrame","awayjs-player/lib/fl/timeline/commands/AddChildCommand":"awayjs-player/lib/fl/timeline/commands/AddChildCommand","awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand","awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

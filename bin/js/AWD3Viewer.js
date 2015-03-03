@@ -1,3 +1,294 @@
-(function e(t,i,o){function r(n,a){if(!i[n]){if(!t[n]){var h=typeof require=="function"&&require;if(!a&&h)return h(n,!0);if(s)return s(n,!0);var c=new Error("Cannot find module '"+n+"'");throw c.code="MODULE_NOT_FOUND",c}var l=i[n]={exports:{}};t[n][0].call(l.exports,function(e){var i=t[n][1][e];return r(i?i:e)},l,l.exports,e,t,i,o)}return i[n].exports}var s=typeof require=="function"&&require;for(var n=0;n<o.length;n++)r(o[n]);return r})({1:[function(e,t,i){var o=e("awayjs-core/lib/library/AssetLibrary");var r=e("awayjs-core/lib/library/AssetType");var s=e("awayjs-core/lib/events/AssetEvent");var n=e("awayjs-core/lib/net/URLRequest");var a=e("awayjs-core/lib/events/LoaderEvent");var h=e("awayjs-core/lib/projections/OrthographicProjection");var c=e("awayjs-core/lib/utils/RequestAnimationFrame");var l=e("awayjs-display/lib/containers/View");var _=e("awayjs-display/lib/controllers/HoverController");var p=e("awayjs-display/lib/containers/Loader");var u=e("awayjs-renderergl/lib/DefaultRenderer");var d=e("awayjs-parsers/lib/AWDParser");var f=e("awayjs-player/lib/fl/partition/Partition2D");var y=e("awayjs-core/lib/projections/CoordinateSystem");var v=e("awayjs-core/lib/projections/PerspectiveProjection");var w=e("awayjs-display/lib/entities/Camera");var j=function(){function e(){this._time=0;this.init()}e.prototype.init=function(){this.initEngine();this.initObjects();this.initListeners()};e.prototype.initEngine=function(){this._view=new l(new u);this._view.backgroundColor=16777215;this._stage_width=550;this._stage_height=400;this._isperspective=true;this._projection=new v;this._projection.coordinateSystem=y.RIGHT_HANDED;this._projection.focalLength=1e3;this._projection.preserveFocalLength=true;this._projection.originX=.5;this._projection.originY=.5;this._camera_perspective=new w;this._camera_perspective.projection=this._projection;this._hoverControl=new _(this._camera_perspective,null,180,0,1e3);this._ortho_projection=new h(500);this._ortho_projection.coordinateSystem=y.RIGHT_HANDED;this._ortho_projection.far=5e5;this._ortho_projection.near=.1;this._ortho_projection.originX=.5;this._ortho_projection.originY=.5;this._camera_ortho=new w;this._camera_ortho.projection=this._ortho_projection;this._view.camera=this._camera_perspective;this._camera_ortho.x=0;this._camera_ortho.y=0;this._camera_ortho.scaleY=-1;this._camera_ortho.z=0};e.prototype.initObjects=function(){var e=this;o.enableParser(d);var t=new p;t.addEventListener(s.ASSET_COMPLETE,function(t){return e.onAssetComplete(t)});t.addEventListener(a.RESOURCE_COMPLETE,function(t){return e.onRessourceComplete(t)});t.load(new n("assets/AWD3/ScareCrow.awd"))};e.prototype.initListeners=function(){var e=this;window.onresize=function(t){return e.onResize(t)};document.onkeydown=function(t){return e.onKeyDown(t)};document.onmousedown=function(t){return e.onMouseDown(t)};document.onmouseup=function(t){return e.onMouseUp(t)};document.onmousemove=function(t){return e.onMouseMove(t)};document.onmousewheel=function(t){return e.onMouseWheel(t)};this.onResize();this._timer=new c(this.onEnterFrame,this);this._timer.start()};e.prototype.onAssetComplete=function(e){if(e.asset.assetType==r.TIMELINE){this._rootTimeLine=e.asset;this._rootTimeLine.partition=new f(this._rootTimeLine)}};e.prototype.onRessourceComplete=function(e){if(this._rootTimeLine){this._view.scene.addChild(this._rootTimeLine);this._rootTimeLine.x=-this._stage_width/2;this._rootTimeLine.y=-this._stage_height/2}};e.prototype.onEnterFrame=function(e){this._time+=e;if(this._rootTimeLine!=undefined){this._rootTimeLine.update(e)}this._view.render()};e.prototype.onKeyDown=function(e){console.log("keycode = "+e.keyCode);if(e.keyCode==80){this._isperspective=true;this._view.camera=this._camera_perspective}if(e.keyCode==79){this._isperspective=false;this._view.camera=this._camera_ortho}if(e.keyCode==81){if(this._isperspective){this._hoverControl.distance+=5}else{this._ortho_projection.projectionHeight+=5}}else if(e.keyCode==87){if(this._isperspective){this._hoverControl.distance-=5}else{this._ortho_projection.projectionHeight-=5}}if(e.keyCode==65){if(this._isperspective){this._hoverControl.distance+=50}else{this._ortho_projection.projectionHeight+=50}}else if(e.keyCode==83){if(this._isperspective){this._hoverControl.distance-=50}else{this._ortho_projection.projectionHeight-=50}}};e.prototype.onMouseDown=function(e){this._lastPanAngle=this._hoverControl.panAngle;this._lastTiltAngle=this._hoverControl.tiltAngle;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY;this._move=true};e.prototype.onMouseUp=function(e){this._move=false};e.prototype.onMouseMove=function(e){if(this._move){if(this._isperspective){this._hoverControl.panAngle=.3*(e.clientX-this._lastMouseX)+this._lastPanAngle;this._hoverControl.tiltAngle=-.3*(e.clientY-this._lastMouseY)+this._lastTiltAngle}else{if(e.clientX>this._lastMouseX+10)this._camera_ortho.x-=10;else if(e.clientX>this._lastMouseX)this._camera_ortho.x--;else if(e.clientX<this._lastMouseX-10)this._camera_ortho.x+=10;else if(e.clientX<this._lastMouseX)this._camera_ortho.x++;if(e.clientY>this._lastMouseY+10)this._camera_ortho.y-=10;else if(e.clientY>this._lastMouseY)this._camera_ortho.y--;else if(e.clientY<this._lastMouseY-10)this._camera_ortho.y+=10;else if(e.clientY<this._lastMouseY)this._camera_ortho.y++;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY}}};e.prototype.onMouseWheel=function(e){if(this._isperspective){this._hoverControl.distance-=e.wheelDelta*5;if(this._hoverControl.distance<100){this._hoverControl.distance=100}}else{this._ortho_projection.projectionHeight-=e.wheelDelta*5;if(this._ortho_projection.projectionHeight<5){this._ortho_projection.projectionHeight=5}}};e.prototype.onResize=function(e){if(e===void 0){e=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};return e}();window.onload=function(){new j}},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*
+
+ AWD3 file loading example in AwayJS
+
+ Demonstrates:
+
+ How to use the Loader object to load an embedded internal awd model.
+
+ Code by Rob Bateman
+ rob@infiniteturtles.co.uk
+ http://www.infiniteturtles.co.uk
+
+ This code is distributed under the MIT License
+
+ Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the “Software”), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+
+ */
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicProjection");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var View = require("awayjs-display/lib/containers/View");
+var HoverController = require("awayjs-display/lib/controllers/HoverController");
+var Loader = require("awayjs-display/lib/containers/Loader");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var Partition2D = require("awayjs-player/lib/fl/partition/Partition2D");
+var CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
+var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
+var Camera = require("awayjs-display/lib/entities/Camera");
+var AWD3Viewer = (function () {
+    /**
+     * Constructor
+     */
+    function AWD3Viewer() {
+        this._time = 0;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    AWD3Viewer.prototype.init = function () {
+        this.initEngine();
+        this.initObjects();
+        this.initListeners();
+    };
+    /**
+     * Initialise the engine
+     */
+    AWD3Viewer.prototype.initEngine = function () {
+        //create the view
+        this._view = new View(new DefaultRenderer());
+        //this._view.renderer.renderableSorter = new RenderableNullSort();
+        this._view.backgroundColor = 0xffffff;
+        //for plugin preview-runtime:
+        //this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
+        this._stage_width = 550; //parseInt(document.getElementById("awdWidth").innerHTML);
+        this._stage_height = 400; //parseInt(document.getElementById("awdHeight").innerHTML);
+        this._isperspective = true;
+        this._projection = new PerspectiveProjection();
+        this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+        this._projection.focalLength = 1000;
+        this._projection.preserveFocalLength = true;
+        this._projection.originX = 0.5;
+        this._projection.originY = 0.5;
+        this._camera_perspective = new Camera();
+        this._camera_perspective.projection = this._projection;
+        //this._projection.far = 500000;
+        this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
+        this._ortho_projection = new OrthographicProjection(500);
+        this._ortho_projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+        this._ortho_projection.far = 500000;
+        this._ortho_projection.near = 0.1;
+        this._ortho_projection.originX = 0.5;
+        this._ortho_projection.originY = 0.5;
+        this._camera_ortho = new Camera();
+        this._camera_ortho.projection = this._ortho_projection;
+        this._view.camera = this._camera_perspective;
+        this._camera_ortho.x = 0;
+        this._camera_ortho.y = 0;
+        this._camera_ortho.scaleY = -1;
+        this._camera_ortho.z = 0;
+    };
+    /**
+     * Initialise the scene objects
+     */
+    AWD3Viewer.prototype.initObjects = function () {
+        var _this = this;
+        AssetLibrary.enableParser(AWDParser);
+        //kickoff asset loading
+        var loader = new Loader();
+        loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+        loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
+        //for plugin preview-runtime:
+        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+        loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+        //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
+        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Rectancle_blink_test.awd"));
+        //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
+        //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
+        //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+        //loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+    };
+    /**
+     * Initialise the listeners
+     */
+    AWD3Viewer.prototype.initListeners = function () {
+        var _this = this;
+        window.onresize = function (event) { return _this.onResize(event); };
+        document.onkeydown = function (event) { return _this.onKeyDown(event); };
+        document.onmousedown = function (event) { return _this.onMouseDown(event); };
+        document.onmouseup = function (event) { return _this.onMouseUp(event); };
+        document.onmousemove = function (event) { return _this.onMouseMove(event); };
+        document.onmousewheel = function (event) { return _this.onMouseWheel(event); };
+        this.onResize();
+        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this._timer.start();
+    };
+    /**
+     * loader listener for asset complete events
+     */
+    AWD3Viewer.prototype.onAssetComplete = function (event) {
+        if (event.asset.assetType == AssetType.TIMELINE) {
+            this._rootTimeLine = event.asset;
+            this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
+        }
+    };
+    /**
+     * loader listener for asset complete events
+     */
+    AWD3Viewer.prototype.onRessourceComplete = function (event) {
+        if (this._rootTimeLine) {
+            //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
+            this._view.scene.addChild(this._rootTimeLine);
+            this._rootTimeLine.x = -this._stage_width / 2;
+            this._rootTimeLine.y = -this._stage_height / 2;
+        }
+    };
+    /**
+     * Render loop
+     */
+    AWD3Viewer.prototype.onEnterFrame = function (dt) {
+        this._time += dt;
+        //update camera controler
+        // this._cameraController.update();
+        if (this._rootTimeLine != undefined) {
+            //console.log("RENDER = ");
+            this._rootTimeLine.update(dt);
+        }
+        //console.log("RENDER = ");
+        //update view
+        this._view.render();
+    };
+    AWD3Viewer.prototype.onKeyDown = function (event) {
+        console.log("keycode = " + event.keyCode);
+        if (event.keyCode == 80) {
+            this._isperspective = true;
+            this._view.camera = this._camera_perspective;
+        }
+        if (event.keyCode == 79) {
+            this._isperspective = false;
+            this._view.camera = this._camera_ortho;
+        }
+        if (event.keyCode == 81) {
+            if (this._isperspective) {
+                this._hoverControl.distance += 5;
+            }
+            else {
+                this._ortho_projection.projectionHeight += 5;
+            }
+        }
+        else if (event.keyCode == 87) {
+            if (this._isperspective) {
+                this._hoverControl.distance -= 5;
+            }
+            else {
+                this._ortho_projection.projectionHeight -= 5;
+            }
+        }
+        if (event.keyCode == 65) {
+            if (this._isperspective) {
+                this._hoverControl.distance += 50;
+            }
+            else {
+                this._ortho_projection.projectionHeight += 50;
+            }
+        }
+        else if (event.keyCode == 83) {
+            if (this._isperspective) {
+                this._hoverControl.distance -= 50;
+            }
+            else {
+                this._ortho_projection.projectionHeight -= 50;
+            }
+        }
+    };
+    AWD3Viewer.prototype.onMouseDown = function (event) {
+        this._lastPanAngle = this._hoverControl.panAngle;
+        this._lastTiltAngle = this._hoverControl.tiltAngle;
+        this._lastMouseX = event.clientX;
+        this._lastMouseY = event.clientY;
+        this._move = true;
+    };
+    AWD3Viewer.prototype.onMouseUp = function (event) {
+        this._move = false;
+    };
+    AWD3Viewer.prototype.onMouseMove = function (event) {
+        if (this._move) {
+            if (this._isperspective) {
+                this._hoverControl.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+                this._hoverControl.tiltAngle = -0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+            }
+            else {
+                if (event.clientX > (this._lastMouseX + 10))
+                    this._camera_ortho.x -= 10;
+                else if (event.clientX > this._lastMouseX)
+                    this._camera_ortho.x--;
+                else if (event.clientX < (this._lastMouseX - 10))
+                    this._camera_ortho.x += 10;
+                else if (event.clientX < this._lastMouseX)
+                    this._camera_ortho.x++;
+                if (event.clientY > (this._lastMouseY + 10))
+                    this._camera_ortho.y -= 10;
+                else if (event.clientY > this._lastMouseY)
+                    this._camera_ortho.y--;
+                else if (event.clientY < (this._lastMouseY - 10))
+                    this._camera_ortho.y += 10;
+                else if (event.clientY < this._lastMouseY)
+                    this._camera_ortho.y++;
+                this._lastMouseX = event.clientX;
+                this._lastMouseY = event.clientY;
+            }
+        }
+    };
+    AWD3Viewer.prototype.onMouseWheel = function (event) {
+        if (this._isperspective) {
+            this._hoverControl.distance -= event.wheelDelta * 5;
+            if (this._hoverControl.distance < 100) {
+                this._hoverControl.distance = 100;
+            }
+        }
+        else {
+            this._ortho_projection.projectionHeight -= event.wheelDelta * 5;
+            if (this._ortho_projection.projectionHeight < 5) {
+                this._ortho_projection.projectionHeight = 5;
+            }
+        }
+    };
+    AWD3Viewer.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    return AWD3Viewer;
+})();
+window.onload = function () {
+    new AWD3Viewer();
+};
+
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
+
 
 //# sourceMappingURL=AWD3Viewer.js.map
