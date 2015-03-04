@@ -45291,17 +45291,22 @@ var Partition2DNode = (function (_super) {
         // typechecking is nasty, but we have little choice:
         if (displayObject instanceof DisplayObjectContainer)
             this.traverseChildren(displayObject, traverser);
-        // (typechecking an interface doesn't work, ie instanceof IEntity is impossible)
+        // (typechecking an interface doesn't work, ie "displayObject instanceof IEntity" is impossible)
         if (displayObject._iCollectRenderables) {
             var entity = (displayObject);
-            console.log(entity);
-            traverser.applyEntity(entity);
+            entity["node2D"].acceptTraverser(traverser);
         }
     };
     Partition2DNode.prototype.traverseChildren = function (container, traverser) {
         var len = container.numChildren;
         for (var i = 0; i < len; ++i)
             this.traverseSceneGraph(container.getChildAt(i), traverser);
+    };
+    Partition2DNode.prototype.iAddNode = function (node) {
+        _super.prototype.iAddNode.call(this, node);
+        // HORRIBLE:
+        var entityNode = (node);
+        entityNode.entity["node2D"] = node;
     };
     return Partition2DNode;
 })(NodeBase);

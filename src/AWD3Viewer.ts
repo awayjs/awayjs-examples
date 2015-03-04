@@ -118,7 +118,7 @@ class AWD3Viewer
 	{
 		//create the view
 		this._view = new View(new DefaultRenderer());
-		//this._view.renderer.renderableSorter = new RenderableNullSort();
+		this._view.renderer.renderableSorter = new RenderableNullSort();
 		this._view.backgroundColor = 0xffffff;
 
 		//for plugin preview-runtime:
@@ -167,7 +167,7 @@ class AWD3Viewer
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
 		//loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
@@ -175,7 +175,7 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
 
 		//loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
 		//loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
