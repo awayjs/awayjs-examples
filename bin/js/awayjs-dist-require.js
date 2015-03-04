@@ -39018,12 +39018,12 @@ var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMet
 var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 var CurveMaterial = require("awayjs-display/lib/materials/CurveMaterial");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var AS2SceneGraphFactory = require("awayjs-player/lib/fl/factories/AS2SceneGraphFactory");
-var TimelineKeyFrame = require("awayjs-player/lib/fl/timeline/TimelineKeyFrame");
-var AddChildCommand = require("awayjs-player/lib/fl/timeline/commands/AddChildCommand");
-var UpdatePropertyCommand = require("awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand");
-var RemoveChildCommand = require("awayjs-player/lib/fl/timeline/commands/RemoveChildCommand");
-var ApplyAS2DepthsCommand = require("awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand");
+var AS2SceneGraphFactory = require("awayjs-player/lib/factories/AS2SceneGraphFactory");
+var TimelineKeyFrame = require("awayjs-player/lib/timeline/TimelineKeyFrame");
+var AddChildCommand = require("awayjs-player/lib/timeline/commands/AddChildCommand");
+var UpdatePropertyCommand = require("awayjs-player/lib/timeline/commands/UpdatePropertyCommand");
+var RemoveChildCommand = require("awayjs-player/lib/timeline/commands/RemoveChildCommand");
+var ApplyAS2DepthsCommand = require("awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand");
 var Font = require("awayjs-display/lib/text/Font");
 /**
  * AWDParser provides a parser for the AWD data type.
@@ -41683,7 +41683,7 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-display/lib/text/Font":"awayjs-display/lib/text/Font","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/fl/factories/AS2SceneGraphFactory":"awayjs-player/lib/fl/factories/AS2SceneGraphFactory","awayjs-player/lib/fl/timeline/TimelineKeyFrame":"awayjs-player/lib/fl/timeline/TimelineKeyFrame","awayjs-player/lib/fl/timeline/commands/AddChildCommand":"awayjs-player/lib/fl/timeline/commands/AddChildCommand","awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand","awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-display/lib/text/Font":"awayjs-display/lib/text/Font","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/factories/AS2SceneGraphFactory":"awayjs-player/lib/factories/AS2SceneGraphFactory","awayjs-player/lib/timeline/TimelineKeyFrame":"awayjs-player/lib/timeline/TimelineKeyFrame","awayjs-player/lib/timeline/commands/AddChildCommand":"awayjs-player/lib/timeline/commands/AddChildCommand","awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/timeline/commands/RemoveChildCommand":"awayjs-player/lib/timeline/commands/RemoveChildCommand","awayjs-player/lib/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -44807,14 +44807,14 @@ var Parsers = (function () {
 module.exports = Parsers;
 
 
-},{"awayjs-core/lib/library/AssetLoader":"awayjs-core/lib/library/AssetLoader","awayjs-parsers/lib/AWDParser":"awayjs-parsers/lib/AWDParser","awayjs-parsers/lib/MD2Parser":"awayjs-parsers/lib/MD2Parser","awayjs-parsers/lib/Max3DSParser":"awayjs-parsers/lib/Max3DSParser","awayjs-parsers/lib/OBJParser":"awayjs-parsers/lib/OBJParser"}],"awayjs-player/lib/fl/adapters/AS2MovieClipAdapter":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetLoader":"awayjs-core/lib/library/AssetLoader","awayjs-parsers/lib/AWDParser":"awayjs-parsers/lib/AWDParser","awayjs-parsers/lib/MD2Parser":"awayjs-parsers/lib/MD2Parser","awayjs-parsers/lib/Max3DSParser":"awayjs-parsers/lib/Max3DSParser","awayjs-parsers/lib/OBJParser":"awayjs-parsers/lib/OBJParser"}],"awayjs-player/lib/adapters/AS2MovieClipAdapter":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var AS2SymbolAdapter = require("awayjs-player/lib/fl/adapters/AS2SymbolAdapter");
+var AS2SymbolAdapter = require("awayjs-player/lib/adapters/AS2SymbolAdapter");
 var AS2MovieClipAdapter = (function (_super) {
     __extends(AS2MovieClipAdapter, _super);
     // translate to scripts:
@@ -44882,7 +44882,7 @@ var AS2MovieClipAdapter = (function (_super) {
 module.exports = AS2MovieClipAdapter;
 
 
-},{"awayjs-player/lib/fl/adapters/AS2SymbolAdapter":"awayjs-player/lib/fl/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/fl/adapters/AS2SymbolAdapter":[function(require,module,exports){
+},{"awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/adapters/AS2SymbolAdapter":[function(require,module,exports){
 var AS2SymbolAdapter = (function () {
     function AS2SymbolAdapter(adaptee) {
         this._adaptee = adaptee;
@@ -44960,11 +44960,11 @@ var AS2SymbolAdapter = (function () {
 module.exports = AS2SymbolAdapter;
 
 
-},{}],"awayjs-player/lib/fl/adapters/MovieClipAdapter":[function(require,module,exports){
+},{}],"awayjs-player/lib/adapters/MovieClipAdapter":[function(require,module,exports){
 
 
 
-},{}],"awayjs-player/lib/fl/adapters/SymbolAdapter":[function(require,module,exports){
+},{}],"awayjs-player/lib/adapters/SymbolAdapter":[function(require,module,exports){
 var SymbolAdapter = (function () {
     function SymbolAdapter(adaptee) {
         this.adaptee = adaptee;
@@ -45035,7 +45035,7 @@ var SymbolAdapter = (function () {
 module.exports = SymbolAdapter;
 
 
-},{}],"awayjs-player/lib/fl/display/MovieClip":[function(require,module,exports){
+},{}],"awayjs-player/lib/display/MovieClip":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -45246,9 +45246,9 @@ var MovieClip = (function (_super) {
 module.exports = MovieClip;
 
 
-},{"awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer"}],"awayjs-player/lib/fl/factories/AS2SceneGraphFactory":[function(require,module,exports){
-var AS2MovieClipAdapter = require("awayjs-player/lib/fl/adapters/AS2MovieClipAdapter");
-var MovieClip = require("awayjs-player/lib/fl/display/MovieClip");
+},{"awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer"}],"awayjs-player/lib/factories/AS2SceneGraphFactory":[function(require,module,exports){
+var AS2MovieClipAdapter = require("awayjs-player/lib/adapters/AS2MovieClipAdapter");
+var MovieClip = require("awayjs-player/lib/display/MovieClip");
 var AS2SceneGraphFactory = (function () {
     function AS2SceneGraphFactory() {
     }
@@ -45262,11 +45262,11 @@ var AS2SceneGraphFactory = (function () {
 module.exports = AS2SceneGraphFactory;
 
 
-},{"awayjs-player/lib/fl/adapters/AS2MovieClipAdapter":"awayjs-player/lib/fl/adapters/AS2MovieClipAdapter","awayjs-player/lib/fl/display/MovieClip":"awayjs-player/lib/fl/display/MovieClip"}],"awayjs-player/lib/fl/factories/TimelineSceneGraphFactory":[function(require,module,exports){
+},{"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/display/MovieClip":"awayjs-player/lib/display/MovieClip"}],"awayjs-player/lib/factories/TimelineSceneGraphFactory":[function(require,module,exports){
 
 
 
-},{}],"awayjs-player/lib/fl/partition/Partition2DNode":[function(require,module,exports){
+},{}],"awayjs-player/lib/partition/Partition2DNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -45313,7 +45313,7 @@ var Partition2DNode = (function (_super) {
 module.exports = Partition2DNode;
 
 
-},{"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/partition/NodeBase":"awayjs-display/lib/partition/NodeBase"}],"awayjs-player/lib/fl/partition/Partition2D":[function(require,module,exports){
+},{"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/partition/NodeBase":"awayjs-display/lib/partition/NodeBase"}],"awayjs-player/lib/partition/Partition2D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -45321,7 +45321,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Partition = require("awayjs-display/lib/partition/Partition");
-var Partition2DNode = require("awayjs-player/lib/fl/partition/Partition2DNode");
+var Partition2DNode = require("awayjs-player/lib/partition/Partition2DNode");
 var Partition2D = (function (_super) {
     __extends(Partition2D, _super);
     function Partition2D(root) {
@@ -45332,7 +45332,7 @@ var Partition2D = (function (_super) {
 module.exports = Partition2D;
 
 
-},{"awayjs-display/lib/partition/Partition":"awayjs-display/lib/partition/Partition","awayjs-player/lib/fl/partition/Partition2DNode":"awayjs-player/lib/fl/partition/Partition2DNode"}],"awayjs-player/lib/fl/timeline/InterpolationObject":[function(require,module,exports){
+},{"awayjs-display/lib/partition/Partition":"awayjs-display/lib/partition/Partition","awayjs-player/lib/partition/Partition2DNode":"awayjs-player/lib/partition/Partition2DNode"}],"awayjs-player/lib/timeline/InterpolationObject":[function(require,module,exports){
 /**
  * TimeLineObject represents a unique object that is (or will be) used by a TimeLine.
  *  A TimeLineObject basically consists of an objID, and an IAsset.
@@ -45372,7 +45372,7 @@ var InterpolationObject = (function () {
 module.exports = InterpolationObject;
 
 
-},{}],"awayjs-player/lib/fl/timeline/TimelineKeyFrame":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/TimelineKeyFrame":[function(require,module,exports){
 /**
  * TimelineFrame holds 3 list of FrameCommands
  *  - list1 _frameCommands should be  executed when playing the timeline (previous Frame was played)
@@ -45461,7 +45461,7 @@ var TimelineKeyFrame = (function () {
 module.exports = TimelineKeyFrame;
 
 
-},{}],"awayjs-player/lib/fl/timeline/commands/AddChildCommand":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/commands/AddChildCommand":[function(require,module,exports){
 var AddChildCommand = (function () {
     function AddChildCommand(childID) {
         this._childID = childID;
@@ -45474,7 +45474,7 @@ var AddChildCommand = (function () {
 module.exports = AddChildCommand;
 
 
-},{}],"awayjs-player/lib/fl/timeline/commands/ApplyAS2DepthsCommand":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":[function(require,module,exports){
 // We're using a specific command so we don't need to manage an AS2-like "depth" property, which has no meaning in Away3D's display hierarchy
 // This implementation itself is a hack, tho, but it works.
 var ApplyAS2DepthsCommand = (function () {
@@ -45498,11 +45498,11 @@ var ApplyAS2DepthsCommand = (function () {
 module.exports = ApplyAS2DepthsCommand;
 
 
-},{}],"awayjs-player/lib/fl/timeline/commands/FrameCommand":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/commands/FrameCommand":[function(require,module,exports){
 
 
 
-},{}],"awayjs-player/lib/fl/timeline/commands/RemoveChildCommand":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/commands/RemoveChildCommand":[function(require,module,exports){
 var RemoveChildCommand = (function () {
     function RemoveChildCommand(childID) {
         this._childID = childID;
@@ -45515,7 +45515,7 @@ var RemoveChildCommand = (function () {
 module.exports = RemoveChildCommand;
 
 
-},{}],"awayjs-player/lib/fl/timeline/commands/UpdatePropertyCommand":[function(require,module,exports){
+},{}],"awayjs-player/lib/timeline/commands/UpdatePropertyCommand":[function(require,module,exports){
 var UpdatePropertyCommand = (function () {
     // target can be MovieClip, its ColorTransform, and so on
     function UpdatePropertyCommand(targetID, propertyName, value) {

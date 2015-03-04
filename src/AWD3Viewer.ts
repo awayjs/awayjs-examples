@@ -61,8 +61,8 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
-import Partition2D					= require("awayjs-player/lib/fl/partition/Partition2D");
-import MovieClip					= require("awayjs-player/lib/fl/display/MovieClip");
+import Partition2D					= require("awayjs-player/lib/partition/Partition2D");
+import MovieClip					= require("awayjs-player/lib/display/MovieClip");
 
 import CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
 import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
