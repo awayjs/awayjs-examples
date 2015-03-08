@@ -1,4 +1,4 @@
-import BlendMode					= require("awayjs-core/lib/base/BlendMode");
+import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");

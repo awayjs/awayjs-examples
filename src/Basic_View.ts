@@ -48,12 +48,12 @@ import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
-import ContextMode					= require("awayjs-display/lib/display/ContextMode");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
 import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
+import ContextMode					= require("awayjs-stagegl/lib/base/ContextMode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 

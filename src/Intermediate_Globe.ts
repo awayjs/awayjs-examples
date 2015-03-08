@@ -35,9 +35,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import BitmapData					= require("awayjs-core/lib/base/BitmapData");
-import BitmapDataChannel			= require("awayjs-core/lib/base/BitmapDataChannel");
-import BlendMode					= require("awayjs-core/lib/base/BlendMode");
+import BitmapData					= require("awayjs-core/lib/data/BitmapData");
+import BitmapDataChannel			= require("awayjs-core/lib/data/BitmapDataChannel");
+import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");

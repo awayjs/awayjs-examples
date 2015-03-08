@@ -34,6 +34,7 @@
 
  */
 
+import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetType					= require("awayjs-core/lib/library/AssetType");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
@@ -48,7 +49,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Geometry						= require("awayjs-display/lib/base/Geometry");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");

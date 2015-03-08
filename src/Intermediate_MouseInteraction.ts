@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 */
 
-import BitmapData					= require("awayjs-core/lib/base/BitmapData");
+import BitmapData					= require("awayjs-core/lib/data/BitmapData");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");

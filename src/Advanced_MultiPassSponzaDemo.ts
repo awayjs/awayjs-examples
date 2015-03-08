@@ -45,7 +45,8 @@ THE SOFTWARE.
 
 */
 
-import BlendMode						= require("awayjs-core/lib/base/BlendMode");
+import BlendMode						= require("awayjs-core/lib/data/BlendMode");
+import Geometry							= require("awayjs-core/lib/data/Geometry");
 import Event							= require("awayjs-core/lib/events/Event");
 import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
 import ProgressEvent					= require("awayjs-core/lib/events/ProgressEvent");
@@ -68,7 +69,6 @@ import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimation
 import Loader							= require("awayjs-display/lib/containers/Loader");
 import View								= require("awayjs-display/lib/containers/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
-import Geometry							= require("awayjs-display/lib/base/Geometry");
 import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import Skybox							= require("awayjs-display/lib/entities/Skybox");
