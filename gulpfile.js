@@ -25,7 +25,7 @@ function _compile(filename, callback) {
         sourceRoot: './src'
     });
 
-    var tsResult = gulp.src(['./src/' + argv.file + '.ts', './node_modules/awayjs-**/build/*.d.ts'])
+    var tsResult = gulp.src(['./src/' + filename + '.ts', './node_modules/awayjs-**/build/*.d.ts'])
         .pipe(sourcemaps.init())
         .pipe(typescript(tsProject));
 
@@ -122,7 +122,7 @@ gulp.task('package-awayjs-min', ['package-awayjs'], function(callback){
         .pipe(uglify({compress:false}))
         .pipe(sourcemaps.write())
         .pipe(transform(function() {
-            return exorcist('./bin/js/' + filename + '.js.map');
+            return exorcist('./bin/js/awayjs-dist-require.js.map');
         }))
         .pipe(gulp.dest('./bin/js'));
 });
