@@ -47,7 +47,7 @@ var Loader = require("awayjs-display/lib/containers/Loader");
 var RenderableNullSort = require("awayjs-display/lib/sort/RenderableNullSort");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
-var Partition2D = require("awayjs-player/lib/fl/partition/Partition2D");
+var Partition2D = require("awayjs-player/lib/partition/Partition2D");
 var CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
 var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
 var Camera = require("awayjs-display/lib/entities/Camera");
@@ -289,7 +289,7 @@ window.onload = function () {
 };
 
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/sort/RenderableNullSort":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/fl/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/sort/RenderableNullSort":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/partition/Partition2D":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
 
 
 //# sourceMappingURL=AWD3Viewer.js.map

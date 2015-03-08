@@ -1,4 +1,4 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-core/lib/base/BitmapDataChannel":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-core/lib/data/BitmapDataChannel":[function(require,module,exports){
 var BitmapDataChannel = (function () {
     function BitmapDataChannel() {
     }
@@ -11,7 +11,7 @@ var BitmapDataChannel = (function () {
 module.exports = BitmapDataChannel;
 
 
-},{}],"awayjs-core/lib/base/BitmapData":[function(require,module,exports){
+},{}],"awayjs-core/lib/data/BitmapData":[function(require,module,exports){
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var ColorUtils = require("awayjs-core/lib/utils/ColorUtils");
 /**
@@ -713,7 +713,7 @@ var BitmapData = (function () {
 module.exports = BitmapData;
 
 
-},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/base/BlendMode":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/data/BlendMode":[function(require,module,exports){
 /**
  * A class that provides constant values for visual blend mode effects. These
  * constants are used in the following:
@@ -893,7 +893,2449 @@ var BlendMode = (function () {
 module.exports = BlendMode;
 
 
-},{}],"awayjs-core/lib/errors/AbstractMethodError":[function(require,module,exports){
+},{}],"awayjs-core/lib/data/CurveSubGeometry":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+/**
+ * @class away.base.CurveSubGeometry
+ */
+var CurveSubGeometry = (function (_super) {
+    __extends(CurveSubGeometry, _super);
+    /**
+     *
+     */
+    function CurveSubGeometry(concatenatedArrays) {
+        _super.call(this, concatenatedArrays);
+        this._positionsDirty = true;
+        this._curvesDirty = true;
+        this._faceNormalsDirty = true;
+        this._vertexNormalsDirty = true;
+        this._uvsDirty = true;
+        this._secondaryUVsDirty = true;
+        this._jointIndicesDirty = true;
+        this._jointWeightsDirty = true;
+        this._concatenateArrays = true;
+        this._autoDeriveNormals = false;
+        this._useFaceWeights = false;
+        this._autoDeriveUVs = false;
+        this._scaleU = 1;
+        this._scaleV = 1;
+    }
+    Object.defineProperty(CurveSubGeometry.prototype, "subGeometryType", {
+        get: function () {
+            return CurveSubGeometry.SUB_GEOMETRY_TYPE;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "scaleU", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleU;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "scaleV", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleV;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "useCondensedIndices", {
+        /**
+         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+         * by condensing the number of joint index values required per mesh. Only applicable to
+         * skeleton animations that utilise more than one mesh object. Defaults to false.
+         */
+        get: function () {
+            return this._useCondensedIndices;
+        },
+        set: function (value) {
+            if (this._useCondensedIndices == value)
+                return;
+            this._useCondensedIndices = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CurveSubGeometry.prototype._pUpdateStrideOffset = function () {
+        if (this._concatenateArrays) {
+            this._pOffset[CurveSubGeometry.VERTEX_DATA] = 0;
+            //always have positions
+            this._pOffset[CurveSubGeometry.POSITION_DATA] = 0;
+            var stride = 3;
+            if (this._curves != null) {
+                this._pOffset[CurveSubGeometry.CURVE_DATA] = stride;
+                stride += 2;
+            }
+            if (this._uvs != null) {
+                this._pOffset[CurveSubGeometry.UV_DATA] = stride;
+                stride += 2;
+            }
+            this._pStride[CurveSubGeometry.VERTEX_DATA] = stride;
+            this._pStride[CurveSubGeometry.POSITION_DATA] = stride;
+            this._pStride[CurveSubGeometry.CURVE_DATA] = stride;
+            this._pStride[CurveSubGeometry.UV_DATA] = stride;
+            var len = this._pNumVertices * stride;
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+        }
+        else {
+            this._pOffset[CurveSubGeometry.POSITION_DATA] = 0;
+            this._pOffset[CurveSubGeometry.CURVE_DATA] = 0;
+            this._pOffset[CurveSubGeometry.UV_DATA] = 0;
+            this._pStride[CurveSubGeometry.POSITION_DATA] = 3;
+            this._pStride[CurveSubGeometry.CURVE_DATA] = 2;
+            this._pStride[CurveSubGeometry.UV_DATA] = 2;
+        }
+        this._pStrideOffsetDirty = false;
+    };
+    Object.defineProperty(CurveSubGeometry.prototype, "autoDeriveUVs", {
+        /**
+         * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+         * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+         * in cases where UV data is explicitly defined or the material does not require UV data.
+         */
+        get: function () {
+            return this._autoDeriveUVs;
+        },
+        set: function (value) {
+            if (this._autoDeriveUVs == value)
+                return;
+            this._autoDeriveUVs = value;
+            if (value)
+                this.notifyUVsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "autoDeriveNormals", {
+        /**
+         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+         * explicitly.
+         */
+        get: function () {
+            return this._autoDeriveNormals;
+        },
+        //remove
+        set: function (value) {
+            if (this._autoDeriveNormals == value)
+                return;
+            this._autoDeriveNormals = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            if (this._curvesDirty)
+                this.updateCurves(this._curves);
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "positions", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            return this._positions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "curves", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._curvesDirty)
+                this.updateCurves(this._curves);
+            return this._curves;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "faceNormals", {
+        /**
+         * The raw data of the face normals, in the same order as the faces are listed in the index list.
+         */
+        get: function () {
+            if (this._faceNormalsDirty)
+                this.updateFaceNormals();
+            return this._faceNormals;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "uvs", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            return this._uvs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "useFaceWeights", {
+        /**
+         * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+         */
+        get: function () {
+            return this._useFaceWeights;
+        },
+        set: function (value) {
+            if (this._useFaceWeights == value)
+                return;
+            this._useFaceWeights = value;
+            this._faceNormalsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CurveSubGeometry.prototype, "condensedIndexLookUp", {
+        get: function () {
+            return this._condensedIndexLookUp;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CurveSubGeometry.prototype.getBoundingPositions = function () {
+        if (this._positionsDirty)
+            this.updatePositions(this._positions);
+        return this._positions;
+    };
+    /**
+     *
+     */
+    CurveSubGeometry.prototype.updatePositions = function (values) {
+        var i;
+        var index;
+        var stride;
+        var positions;
+        this._positions = values;
+        if (this._positions == null)
+            this._positions = new Array();
+        this._pNumVertices = this._positions.length / 3;
+        if (this._concatenateArrays) {
+            var len = this._pNumVertices * this.getStride(CurveSubGeometry.VERTEX_DATA);
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+            i = 0;
+            index = this.getOffset(CurveSubGeometry.POSITION_DATA);
+            stride = this.getStride(CurveSubGeometry.POSITION_DATA);
+            positions = this._pVertices;
+            while (i < values.length) {
+                positions[index] = values[i++];
+                positions[index + 1] = values[i++];
+                positions[index + 2] = values[i++];
+                index += stride;
+            }
+        }
+        this.pInvalidateBounds();
+        this.notifyPositionsUpdate();
+        this._positionsDirty = false;
+    };
+    /**
+     * Updates the vertex normals based on the geometry.
+     */
+    CurveSubGeometry.prototype.updateCurves = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var curves;
+        if (true) {
+            if ((this._curves == null || values == null) && (this._curves != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._curves = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(CurveSubGeometry.CURVE_DATA);
+                stride = this.getStride(CurveSubGeometry.CURVE_DATA);
+                curves = this._pVertices;
+                while (i < values.length) {
+                    curves[index] = values[i++];
+                    curves[index + 1] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        this.notifyCurvesUpdate();
+        this._curvesDirty = false;
+    };
+    /**
+     * Updates the uvs based on the geometry.
+     */
+    CurveSubGeometry.prototype.updateUVs = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        if (!this._autoDeriveUVs) {
+            if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._uvs = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(CurveSubGeometry.UV_DATA);
+                stride = this.getStride(CurveSubGeometry.UV_DATA);
+                uvs = this._pVertices;
+                while (i < values.length) {
+                    uvs[index] = values[i++];
+                    uvs[index + 1] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._uvs == null) {
+                this._uvs = new Array(this._positions.length * 2 / 3);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            offset = this.getOffset(CurveSubGeometry.UV_DATA);
+            stride = this.getStride(CurveSubGeometry.UV_DATA);
+            //autoderived uvs
+            uvs = this._concatenateArrays ? this._pVertices : this._uvs;
+            i = 0;
+            index = offset;
+            var uvIdx = 0;
+            //clear uv values
+            var lenV = uvs.length;
+            while (index < lenV) {
+                if (this._concatenateArrays) {
+                    this._uvs[i++] = uvs[index] = uvIdx * .5;
+                    this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                else {
+                    uvs[index] = uvIdx * .5;
+                    uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                if (++uvIdx == 3)
+                    uvIdx = 0;
+                index += stride;
+            }
+        }
+        this.notifyUVsUpdate();
+        this._uvsDirty = false;
+    };
+    /**
+     *
+     */
+    CurveSubGeometry.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._positions = null;
+        this._curves = null;
+        this._uvs = null;
+        this._faceNormals = null;
+        this._faceWeights = null;
+    };
+    /**
+     * Updates the face indices of the CurveSubGeometry.
+     *
+     * @param indices The face indices to upload.
+     */
+    CurveSubGeometry.prototype.updateIndices = function (indices) {
+        _super.prototype.updateIndices.call(this, indices);
+        this._faceNormalsDirty = true;
+        if (this._autoDeriveNormals)
+            this._vertexNormalsDirty = true;
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    CurveSubGeometry.prototype.clone = function () {
+        var clone = new CurveSubGeometry(this._concatenateArrays);
+        clone.updateIndices(this._pIndices.concat());
+        clone.updatePositions(this._positions.concat());
+        if (this._curves)
+            clone.updateCurves(this._curves.concat());
+        else
+            clone.updateCurves(null);
+        if (this._uvs && !this._autoDeriveUVs)
+            clone.updateUVs(this._uvs.concat());
+        else
+            clone.updateUVs(null);
+        return clone;
+    };
+    CurveSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        uvs = this._uvs;
+        var ratioU = scaleU / this._scaleU;
+        var ratioV = scaleV / this._scaleV;
+        this._scaleU = scaleU;
+        this._scaleV = scaleV;
+        var len = uvs.length;
+        offset = 0;
+        stride = 2;
+        index = offset;
+        while (index < len) {
+            uvs[index] *= ratioU;
+            uvs[index + 1] *= ratioV;
+            index += stride;
+        }
+        this.notifyUVsUpdate();
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    CurveSubGeometry.prototype.scale = function (scale) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var positions;
+        positions = this._positions;
+        var len = positions.length;
+        offset = 0;
+        stride = 3;
+        i = 0;
+        index = offset;
+        while (i < len) {
+            positions[index] *= scale;
+            positions[index + 1] *= scale;
+            positions[index + 2] *= scale;
+            i += 3;
+            index += stride;
+        }
+        this.notifyPositionsUpdate();
+    };
+    CurveSubGeometry.prototype.applyTransformation = function (transform) {
+        var positions;
+        if (this._concatenateArrays) {
+            positions = this._pVertices;
+        }
+        else {
+            positions = this._positions;
+        }
+        var len = this._positions.length / 3;
+        var i;
+        var i1;
+        var i2;
+        var vector = new Vector3D();
+        var invTranspose;
+        var vi0 = this.getOffset(CurveSubGeometry.POSITION_DATA);
+        var vStride = this.getStride(CurveSubGeometry.POSITION_DATA);
+        for (i = 0; i < len; ++i) {
+            i1 = vi0 + 1;
+            i2 = vi0 + 2;
+            // bake position
+            vector.x = positions[vi0];
+            vector.y = positions[i1];
+            vector.z = positions[i2];
+            vector = transform.transformVector(vector);
+            positions[vi0] = vector.x;
+            positions[i1] = vector.y;
+            positions[i2] = vector.z;
+            vi0 += vStride;
+        }
+        this.notifyPositionsUpdate();
+    };
+    /**
+     * Updates the normals for each face.
+     */
+    CurveSubGeometry.prototype.updateFaceNormals = function () {
+        var i = 0;
+        var j = 0;
+        var k = 0;
+        var index;
+        var offset;
+        var stride;
+        var x1, x2, x3;
+        var y1, y2, y3;
+        var z1, z2, z3;
+        var dx1, dy1, dz1;
+        var dx2, dy2, dz2;
+        var cx, cy, cz;
+        var d;
+        var positions = this._positions;
+        var len = this._pIndices.length;
+        if (this._faceNormals == null)
+            this._faceNormals = new Array(len);
+        if (this._useFaceWeights && this._faceWeights == null)
+            this._faceWeights = new Array(len / 3);
+        while (i < len) {
+            index = this._pIndices[i++] * 3;
+            x1 = positions[index];
+            y1 = positions[index + 1];
+            z1 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x2 = positions[index];
+            y2 = positions[index + 1];
+            z2 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x3 = positions[index];
+            y3 = positions[index + 1];
+            z3 = positions[index + 2];
+            dx1 = x3 - x1;
+            dy1 = y3 - y1;
+            dz1 = z3 - z1;
+            dx2 = x2 - x1;
+            dy2 = y2 - y1;
+            dz2 = z2 - z1;
+            cx = dz1 * dy2 - dy1 * dz2;
+            cy = dx1 * dz2 - dz1 * dx2;
+            cz = dy1 * dx2 - dx1 * dy2;
+            d = Math.sqrt(cx * cx + cy * cy + cz * cz);
+            // length of cross product = 2*triangle area
+            if (this._useFaceWeights) {
+                var w = d * 10000;
+                if (w < 1)
+                    w = 1;
+                this._faceWeights[k++] = w;
+            }
+            d = 1 / d;
+            this._faceNormals[j++] = cx * d;
+            this._faceNormals[j++] = cy * d;
+            this._faceNormals[j++] = cz * d;
+        }
+        this._faceNormalsDirty = false;
+    };
+    CurveSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+        this._pStrideOffsetDirty = true;
+        this.notifyPositionsUpdate();
+        this.notifyCurvesUpdate();
+        this.notifyUVsUpdate();
+    };
+    CurveSubGeometry.prototype.notifyPositionsUpdate = function () {
+        if (this._positionsDirty)
+            return;
+        this._positionsDirty = true;
+        if (!this._positionsUpdated)
+            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.POSITION_DATA);
+        this.dispatchEvent(this._positionsUpdated);
+    };
+    CurveSubGeometry.prototype.notifyCurvesUpdate = function () {
+        if (this._curvesDirty)
+            return;
+        this._curvesDirty = true;
+        if (!this._curvesUpdated)
+            this._curvesUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.CURVE_DATA);
+        this.dispatchEvent(this._curvesUpdated);
+    };
+    CurveSubGeometry.prototype.notifyUVsUpdate = function () {
+        if (this._uvsDirty)
+            return;
+        this._uvsDirty = true;
+        if (!this._uvsUpdated)
+            this._uvsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.UV_DATA);
+        this.dispatchEvent(this._uvsUpdated);
+    };
+    CurveSubGeometry.SUB_GEOMETRY_TYPE = "curve";
+    CurveSubGeometry.POSITION_DATA = "positions";
+    CurveSubGeometry.CURVE_DATA = "curves";
+    CurveSubGeometry.UV_DATA = "uvs";
+    //TODO - move these to StageGL
+    CurveSubGeometry.POSITION_FORMAT = "float3";
+    CurveSubGeometry.CURVE_FORMAT = "float2";
+    CurveSubGeometry.UV_FORMAT = "float2";
+    return CurveSubGeometry;
+})(SubGeometryBase);
+module.exports = CurveSubGeometry;
+
+
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/data/Geometry":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var GeometryEvent = require("awayjs-core/lib/events/GeometryEvent");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+/**
+ *
+ * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
+ * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+ * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
+ * the SubGeometries to its respective TriangleSubMesh objects.
+ *
+ *
+ *
+ * @see away.core.base.SubGeometry
+ * @see away.entities.Mesh
+ *
+ * @class Geometry
+ */
+var Geometry = (function (_super) {
+    __extends(Geometry, _super);
+    /**
+     * Creates a new Geometry object.
+     */
+    function Geometry() {
+        _super.call(this);
+        this._subGeometries = new Array();
+    }
+    Object.defineProperty(Geometry.prototype, "assetType", {
+        get: function () {
+            return AssetType.GEOMETRY;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Geometry.prototype, "subGeometries", {
+        /**
+         * A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
+         */
+        get: function () {
+            return this._subGeometries;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Geometry.prototype.getSubGeometries = function () {
+        return this._subGeometries;
+    };
+    Geometry.prototype.applyTransformation = function (transform) {
+        var len = this._subGeometries.length;
+        for (var i = 0; i < len; ++i)
+            this._subGeometries[i].applyTransformation(transform);
+    };
+    /**
+     * Adds a new TriangleSubGeometry object to the list.
+     * @param subGeometry The TriangleSubGeometry object to be added.
+     */
+    Geometry.prototype.addSubGeometry = function (subGeometry) {
+        this._subGeometries.push(subGeometry);
+        subGeometry.parentGeometry = this;
+        if (this.hasEventListener(GeometryEvent.SUB_GEOMETRY_ADDED))
+            this.dispatchEvent(new GeometryEvent(GeometryEvent.SUB_GEOMETRY_ADDED, subGeometry));
+        this.iInvalidateBounds(subGeometry);
+    };
+    /**
+     * Removes a new TriangleSubGeometry object from the list.
+     * @param subGeometry The TriangleSubGeometry object to be removed.
+     */
+    Geometry.prototype.removeSubGeometry = function (subGeometry) {
+        this._subGeometries.splice(this._subGeometries.indexOf(subGeometry), 1);
+        subGeometry.parentGeometry = null;
+        if (this.hasEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED))
+            this.dispatchEvent(new GeometryEvent(GeometryEvent.SUB_GEOMETRY_REMOVED, subGeometry));
+        this.iInvalidateBounds(subGeometry);
+    };
+    /**
+     * Clones the geometry.
+     * @return An exact duplicate of the current Geometry object.
+     */
+    Geometry.prototype.clone = function () {
+        var clone = new Geometry();
+        var len = this._subGeometries.length;
+        for (var i = 0; i < len; ++i)
+            clone.addSubGeometry(this._subGeometries[i].clone());
+        return clone;
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    Geometry.prototype.scale = function (scale) {
+        var numSubGeoms = this._subGeometries.length;
+        for (var i = 0; i < numSubGeoms; ++i)
+            this._subGeometries[i].scale(scale);
+    };
+    /**
+     * Clears all resources used by the Geometry object, including SubGeometries.
+     */
+    Geometry.prototype.dispose = function () {
+        var numSubGeoms = this._subGeometries.length;
+        for (var i = 0; i < numSubGeoms; ++i) {
+            var subGeom = this._subGeometries[0];
+            this.removeSubGeometry(subGeom);
+            subGeom.dispose();
+        }
+    };
+    /**
+     * Scales the uv coordinates (tiling)
+     * @param scaleU The amount by which to scale on the u axis. Default is 1;
+     * @param scaleV The amount by which to scale on the v axis. Default is 1;
+     */
+    Geometry.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var numSubGeoms = this._subGeometries.length;
+        for (var i = 0; i < numSubGeoms; ++i)
+            this._subGeometries[i].scaleUV(scaleU, scaleV);
+    };
+    Geometry.prototype.iInvalidateBounds = function (subGeom) {
+        if (this.hasEventListener(GeometryEvent.BOUNDS_INVALID))
+            this.dispatchEvent(new GeometryEvent(GeometryEvent.BOUNDS_INVALID, subGeom));
+    };
+    return Geometry;
+})(NamedAssetBase);
+module.exports = Geometry;
+
+
+},{"awayjs-core/lib/events/GeometryEvent":"awayjs-core/lib/events/GeometryEvent","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase"}],"awayjs-core/lib/data/LineSubGeometry":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+/**
+ * @class LineSubGeometry
+ */
+var LineSubGeometry = (function (_super) {
+    __extends(LineSubGeometry, _super);
+    /**
+     *
+     */
+    function LineSubGeometry() {
+        _super.call(this, true);
+        this._positionsDirty = true;
+        this._boundingPositionDirty = true;
+        this._thicknessDirty = true;
+        this._colorsDirty = true;
+    }
+    LineSubGeometry.prototype._pUpdateStrideOffset = function () {
+        this._pOffset[LineSubGeometry.VERTEX_DATA] = 0;
+        var stride = 0;
+        this._pOffset[LineSubGeometry.START_POSITION_DATA] = stride;
+        stride += 3;
+        this._pOffset[LineSubGeometry.END_POSITION_DATA] = stride;
+        stride += 3;
+        this._pOffset[LineSubGeometry.THICKNESS_DATA] = stride;
+        stride += 1;
+        this._pOffset[LineSubGeometry.COLOR_DATA] = stride;
+        stride += 4;
+        this._pStride[LineSubGeometry.VERTEX_DATA] = stride;
+        this._pStride[LineSubGeometry.START_POSITION_DATA] = stride;
+        this._pStride[LineSubGeometry.END_POSITION_DATA] = stride;
+        this._pStride[LineSubGeometry.THICKNESS_DATA] = stride;
+        this._pStride[LineSubGeometry.COLOR_DATA] = stride;
+        var len = this._pNumVertices * stride;
+        if (this._pVertices == null)
+            this._pVertices = new Array(len);
+        else if (this._pVertices.length != len)
+            this._pVertices.length = len;
+        this._pStrideOffsetDirty = false;
+    };
+    Object.defineProperty(LineSubGeometry.prototype, "subGeometryType", {
+        get: function () {
+            return LineSubGeometry.SUB_GEOMETRY_TYPE;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._startPositions, this._endPositions);
+            if (this._thicknessDirty)
+                this.updateThickness(this._thickness);
+            if (this._colorsDirty)
+                this.updateColors(this._startColors, this._endColors);
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "startPositions", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._startPositions, this._endPositions);
+            return this._startPositions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "endPositions", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._startPositions, this._endPositions);
+            return this._endPositions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "thickness", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._thicknessDirty)
+                this.updateThickness(this._thickness);
+            return this._thickness;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "startColors", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._colorsDirty)
+                this.updateColors(this._startColors, this._endColors);
+            return this._startColors;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "endColors", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._colorsDirty)
+                this.updateColors(this._startColors, this._endColors);
+            return this._endColors;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSubGeometry.prototype, "numSegments", {
+        /**
+         * The total amount of segments in the TriangleSubGeometry.
+         */
+        get: function () {
+            return this._numSegments;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    LineSubGeometry.prototype.getBoundingPositions = function () {
+        if (this._boundingPositionDirty)
+            this._boundingPositions = this.startPositions.concat(this.endPositions);
+        return this._boundingPositions;
+    };
+    /**
+     *
+     */
+    LineSubGeometry.prototype.updatePositions = function (startValues, endValues) {
+        var i;
+        var j;
+        var values;
+        var index;
+        var stride;
+        var positions;
+        var indices;
+        this._startPositions = startValues;
+        if (this._startPositions == null)
+            this._startPositions = new Array();
+        this._endPositions = endValues;
+        if (this._endPositions == null)
+            this._endPositions = new Array();
+        this._boundingPositionDirty = true;
+        this._numSegments = this._startPositions.length / 3;
+        this._pNumVertices = this._numSegments * 4;
+        var lenV = this._pNumVertices * this.getStride(LineSubGeometry.VERTEX_DATA);
+        if (this._pVertices == null)
+            this._pVertices = new Array(lenV);
+        else if (this._pVertices.length != lenV)
+            this._pVertices.length = lenV;
+        i = 0;
+        j = 0;
+        index = this.getOffset(LineSubGeometry.START_POSITION_DATA);
+        stride = this.getStride(LineSubGeometry.START_POSITION_DATA);
+        positions = this._pVertices;
+        indices = new Array();
+        while (i < startValues.length) {
+            values = (index / stride & 1) ? endValues : startValues;
+            positions[index] = values[i];
+            positions[index + 1] = values[i + 1];
+            positions[index + 2] = values[i + 2];
+            values = (index / stride & 1) ? startValues : endValues;
+            positions[index + 3] = values[i];
+            positions[index + 4] = values[i + 1];
+            positions[index + 5] = values[i + 2];
+            if (++j == 4) {
+                var o = index / stride - 3;
+                indices.push(o, o + 1, o + 2, o + 3, o + 2, o + 1);
+                j = 0;
+                i += 3;
+            }
+            index += stride;
+        }
+        this.updateIndices(indices);
+        this.pInvalidateBounds();
+        this.notifyPositionsUpdate();
+        this._positionsDirty = false;
+    };
+    /**
+     * Updates the thickness.
+     */
+    LineSubGeometry.prototype.updateThickness = function (values) {
+        var i;
+        var j;
+        var index;
+        var offset;
+        var stride;
+        var thickness;
+        this._thickness = values;
+        if (values != null) {
+            i = 0;
+            j = 0;
+            offset = this.getOffset(LineSubGeometry.THICKNESS_DATA);
+            stride = this.getStride(LineSubGeometry.THICKNESS_DATA);
+            thickness = this._pVertices;
+            index = offset;
+            while (i < values.length) {
+                thickness[index] = (Math.floor(0.5 * (index - offset) / stride + 0.5) & 1) ? -values[i] : values[i];
+                if (++j == 4) {
+                    j = 0;
+                    i++;
+                }
+                index += stride;
+            }
+        }
+        this.notifyThicknessUpdate();
+        this._thicknessDirty = false;
+    };
+    /**
+     *
+     */
+    LineSubGeometry.prototype.updateColors = function (startValues, endValues) {
+        var i;
+        var j;
+        var values;
+        var index;
+        var offset;
+        var stride;
+        var colors;
+        this._startColors = startValues;
+        this._endColors = endValues;
+        //default to white
+        if (this._startColors == null) {
+            this._startColors = new Array(this._numSegments * 4);
+            i = 0;
+            while (i < this._startColors.length)
+                this._startColors[i++] = 1;
+        }
+        if (this._endColors == null) {
+            this._endColors = new Array(this._numSegments * 4);
+            i = 0;
+            while (i < this._endColors.length)
+                this._endColors[i++] = 1;
+        }
+        i = 0;
+        j = 0;
+        offset = this.getOffset(LineSubGeometry.COLOR_DATA);
+        stride = this.getStride(LineSubGeometry.COLOR_DATA);
+        colors = this._pVertices;
+        index = offset;
+        while (i < this._startColors.length) {
+            values = ((index - offset) / stride & 1) ? this._endColors : this._startColors;
+            colors[index] = values[i];
+            colors[index + 1] = values[i + 1];
+            colors[index + 2] = values[i + 2];
+            colors[index + 3] = values[i + 3];
+            if (++j == 4) {
+                j = 0;
+                i += 4;
+            }
+            index += stride;
+        }
+        this.notifyColorsUpdate();
+        this._colorsDirty = false;
+    };
+    /**
+     *
+     */
+    LineSubGeometry.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._startPositions = null;
+        this._endPositions = null;
+        this._thickness = null;
+        this._startColors = null;
+        this._endColors = null;
+    };
+    /**
+     * @protected
+     */
+    LineSubGeometry.prototype.pInvalidateBounds = function () {
+        if (this.parentGeometry)
+            this.parentGeometry.iInvalidateBounds(this);
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    LineSubGeometry.prototype.clone = function () {
+        var clone = new LineSubGeometry();
+        clone.updateIndices(this._pIndices.concat());
+        clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
+        clone.updateThickness(this._thickness.concat());
+        clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
+        return clone;
+    };
+    LineSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+        this._pStrideOffsetDirty = true;
+        this.notifyPositionsUpdate();
+        this.notifyThicknessUpdate();
+        this.notifyColorsUpdate();
+    };
+    LineSubGeometry.prototype.notifyPositionsUpdate = function () {
+        if (this._positionsDirty)
+            return;
+        this._positionsDirty = true;
+        if (!this._positionsUpdated)
+            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
+        this.dispatchEvent(this._positionsUpdated);
+    };
+    LineSubGeometry.prototype.notifyThicknessUpdate = function () {
+        if (this._thicknessDirty)
+            return;
+        this._thicknessDirty = true;
+        if (!this._thicknessUpdated)
+            this._thicknessUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.THICKNESS_DATA);
+        this.dispatchEvent(this._thicknessUpdated);
+    };
+    LineSubGeometry.prototype.notifyColorsUpdate = function () {
+        if (this._colorsDirty)
+            return;
+        this._colorsDirty = true;
+        if (!this._colorUpdated)
+            this._colorUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.COLOR_DATA);
+        this.dispatchEvent(this._colorUpdated);
+    };
+    LineSubGeometry.SUB_GEOMETRY_TYPE = "line";
+    LineSubGeometry.VERTEX_DATA = "vertices";
+    LineSubGeometry.START_POSITION_DATA = "startPositions";
+    LineSubGeometry.END_POSITION_DATA = "endPositions";
+    LineSubGeometry.THICKNESS_DATA = "thickness";
+    LineSubGeometry.COLOR_DATA = "colors";
+    //TODO - move these to StageGL
+    LineSubGeometry.POSITION_FORMAT = "float3";
+    LineSubGeometry.COLOR_FORMAT = "float4";
+    LineSubGeometry.THICKNESS_FORMAT = "float1";
+    return LineSubGeometry;
+})(SubGeometryBase);
+module.exports = LineSubGeometry;
+
+
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent"}],"awayjs-core/lib/data/SubGeometryBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+/**
+ * @class away.base.TriangleSubGeometry
+ */
+var SubGeometryBase = (function (_super) {
+    __extends(SubGeometryBase, _super);
+    /**
+     *
+     */
+    function SubGeometryBase(concatenatedArrays) {
+        _super.call(this);
+        this._pStrideOffsetDirty = true;
+        this._pConcatenateArrays = true;
+        this._pStride = new Object();
+        this._pOffset = new Object();
+        this._pConcatenateArrays = concatenatedArrays;
+    }
+    SubGeometryBase.prototype._pUpdateStrideOffset = function () {
+        throw new AbstractMethodError();
+    };
+    Object.defineProperty(SubGeometryBase.prototype, "subGeometryType", {
+        get: function () {
+            throw new AbstractMethodError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "concatenateArrays", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pConcatenateArrays;
+        },
+        set: function (value) {
+            if (this._pConcatenateArrays == value)
+                return;
+            this._pConcatenateArrays = value;
+            this._pStrideOffsetDirty = true;
+            if (value)
+                this._pNotifyVerticesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "indices", {
+        /**
+         * The raw index data that define the faces.
+         */
+        get: function () {
+            return this._pIndices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            this.updateVertices();
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
+        /**
+         * The total amount of triangles in the TriangleSubGeometry.
+         */
+        get: function () {
+            return this._numTriangles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "numVertices", {
+        get: function () {
+            return this._pNumVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    SubGeometryBase.prototype.getStride = function (dataType) {
+        if (this._pStrideOffsetDirty)
+            this._pUpdateStrideOffset();
+        return this._pStride[dataType];
+    };
+    /**
+     *
+     */
+    SubGeometryBase.prototype.getOffset = function (dataType) {
+        if (this._pStrideOffsetDirty)
+            this._pUpdateStrideOffset();
+        return this._pOffset[dataType];
+    };
+    SubGeometryBase.prototype.updateVertices = function () {
+        throw new AbstractMethodError();
+    };
+    /**
+     *
+     */
+    SubGeometryBase.prototype.dispose = function () {
+        this._pIndices = null;
+        this._pVertices = null;
+    };
+    /**
+     * Updates the face indices of the TriangleSubGeometry.
+     *
+     * @param indices The face indices to upload.
+     */
+    SubGeometryBase.prototype.updateIndices = function (indices) {
+        this._pIndices = indices;
+        this._numIndices = indices.length;
+        this._numTriangles = this._numIndices / 3;
+        this.notifyIndicesUpdate();
+    };
+    /**
+     * @protected
+     */
+    SubGeometryBase.prototype.pInvalidateBounds = function () {
+        if (this.parentGeometry)
+            this.parentGeometry.iInvalidateBounds(this);
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    SubGeometryBase.prototype.clone = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.prototype.applyTransformation = function (transform) {
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    SubGeometryBase.prototype.scale = function (scale) {
+    };
+    SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+    };
+    SubGeometryBase.prototype.getBoundingPositions = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.prototype.notifyIndicesUpdate = function () {
+        if (!this._indicesUpdated)
+            this._indicesUpdated = new SubGeometryEvent(SubGeometryEvent.INDICES_UPDATED);
+        this.dispatchEvent(this._indicesUpdated);
+    };
+    SubGeometryBase.prototype._pNotifyVerticesUpdate = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.VERTEX_DATA = "vertices";
+    return SubGeometryBase;
+})(NamedAssetBase);
+module.exports = SubGeometryBase;
+
+
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase"}],"awayjs-core/lib/data/TriangleSubGeometry":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
+/**
+ * @class away.base.TriangleSubGeometry
+ */
+var TriangleSubGeometry = (function (_super) {
+    __extends(TriangleSubGeometry, _super);
+    /**
+     *
+     */
+    function TriangleSubGeometry(concatenatedArrays) {
+        _super.call(this, concatenatedArrays);
+        this._positionsDirty = true;
+        this._faceNormalsDirty = true;
+        this._faceTangentsDirty = true;
+        this._vertexNormalsDirty = true;
+        this._vertexTangentsDirty = true;
+        this._uvsDirty = true;
+        this._secondaryUVsDirty = true;
+        this._jointIndicesDirty = true;
+        this._jointWeightsDirty = true;
+        this._concatenateArrays = true;
+        this._autoDeriveNormals = true;
+        this._autoDeriveTangents = true;
+        this._autoDeriveUVs = false;
+        this._useFaceWeights = false;
+        this._scaleU = 1;
+        this._scaleV = 1;
+    }
+    Object.defineProperty(TriangleSubGeometry.prototype, "subGeometryType", {
+        get: function () {
+            return TriangleSubGeometry.SUB_GEOMETRY_TYPE;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "scaleU", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleU;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "scaleV", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleV;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "useCondensedIndices", {
+        /**
+         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+         * by condensing the number of joint index values required per mesh. Only applicable to
+         * skeleton animations that utilise more than one mesh object. Defaults to false.
+         */
+        get: function () {
+            return this._useCondensedIndices;
+        },
+        set: function (value) {
+            if (this._useCondensedIndices == value)
+                return;
+            this._useCondensedIndices = value;
+            this.notifyJointIndicesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TriangleSubGeometry.prototype._pUpdateStrideOffset = function () {
+        if (this._concatenateArrays) {
+            this._pOffset[TriangleSubGeometry.VERTEX_DATA] = 0;
+            //always have positions
+            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+            var stride = 3;
+            if (this._vertexNormals != null) {
+                this._pOffset[TriangleSubGeometry.NORMAL_DATA] = stride;
+                stride += 3;
+            }
+            if (this._vertexTangents != null) {
+                this._pOffset[TriangleSubGeometry.TANGENT_DATA] = stride;
+                stride += 3;
+            }
+            if (this._uvs != null) {
+                this._pOffset[TriangleSubGeometry.UV_DATA] = stride;
+                stride += 2;
+            }
+            if (this._secondaryUVs != null) {
+                this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+                stride += 2;
+            }
+            if (this._jointIndices != null) {
+                this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+                stride += this._jointsPerVertex;
+            }
+            if (this._jointWeights != null) {
+                this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+                stride += this._jointsPerVertex;
+            }
+            this._pStride[TriangleSubGeometry.VERTEX_DATA] = stride;
+            this._pStride[TriangleSubGeometry.POSITION_DATA] = stride;
+            this._pStride[TriangleSubGeometry.NORMAL_DATA] = stride;
+            this._pStride[TriangleSubGeometry.TANGENT_DATA] = stride;
+            this._pStride[TriangleSubGeometry.UV_DATA] = stride;
+            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+            var len = this._pNumVertices * stride;
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+        }
+        else {
+            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.NORMAL_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.TANGENT_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.UV_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = 0;
+            this._pStride[TriangleSubGeometry.POSITION_DATA] = 3;
+            this._pStride[TriangleSubGeometry.NORMAL_DATA] = 3;
+            this._pStride[TriangleSubGeometry.TANGENT_DATA] = 3;
+            this._pStride[TriangleSubGeometry.UV_DATA] = 2;
+            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = 2;
+            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = this._jointsPerVertex;
+            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = this._jointsPerVertex;
+        }
+        this._pStrideOffsetDirty = false;
+    };
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointsPerVertex", {
+        /**
+         *
+         */
+        get: function () {
+            return this._jointsPerVertex;
+        },
+        set: function (value) {
+            if (this._jointsPerVertex == value)
+                return;
+            this._jointsPerVertex = value;
+            this._pStrideOffsetDirty = true;
+            if (this._pConcatenateArrays)
+                this._pNotifyVerticesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveUVs", {
+        /**
+         * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+         * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+         * in cases where UV data is explicitly defined or the material does not require UV data.
+         */
+        get: function () {
+            return this._autoDeriveUVs;
+        },
+        set: function (value) {
+            if (this._autoDeriveUVs == value)
+                return;
+            this._autoDeriveUVs = value;
+            if (value)
+                this.notifyUVsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveNormals", {
+        /**
+         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+         * explicitly.
+         */
+        get: function () {
+            return this._autoDeriveNormals;
+        },
+        set: function (value) {
+            if (this._autoDeriveNormals == value)
+                return;
+            this._autoDeriveNormals = value;
+            if (value)
+                this.notifyNormalsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveTangents", {
+        /**
+         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+         * explicitly.
+         */
+        get: function () {
+            return this._autoDeriveTangents;
+        },
+        set: function (value) {
+            if (this._autoDeriveTangents == value)
+                return;
+            this._autoDeriveTangents = value;
+            if (value)
+                this.notifyTangentsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            if (this._vertexNormalsDirty)
+                this.updateVertexNormals(this._vertexNormals);
+            if (this._vertexTangentsDirty)
+                this.updateVertexTangents(this._vertexTangents);
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            if (this._secondaryUVsDirty)
+                this.updateSecondaryUVs(this._secondaryUVs);
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            if (this._jointWeightsDirty)
+                this.updateJointWeights(this._jointWeights);
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "positions", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            return this._positions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertexNormals", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._vertexNormalsDirty)
+                this.updateVertexNormals(this._vertexNormals);
+            return this._vertexNormals;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertexTangents", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._vertexTangentsDirty)
+                this.updateVertexTangents(this._vertexTangents);
+            return this._vertexTangents;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "faceNormals", {
+        /**
+         * The raw data of the face normals, in the same order as the faces are listed in the index list.
+         */
+        get: function () {
+            if (this._faceNormalsDirty)
+                this.updateFaceNormals();
+            return this._faceNormals;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "faceTangents", {
+        /**
+         * The raw data of the face tangets, in the same order as the faces are listed in the index list.
+         */
+        get: function () {
+            if (this._faceTangentsDirty)
+                this.updateFaceTangents();
+            return this._faceTangents;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "uvs", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            return this._uvs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "secondaryUVs", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._secondaryUVsDirty)
+                this.updateSecondaryUVs(this._secondaryUVs);
+            return this._secondaryUVs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointIndices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            if (this._useCondensedIndices)
+                return this._condensedJointIndices;
+            return this._jointIndices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointWeights", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._jointWeightsDirty)
+                this.updateJointWeights(this._jointWeights);
+            return this._jointWeights;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "useFaceWeights", {
+        /**
+         * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+         */
+        get: function () {
+            return this._useFaceWeights;
+        },
+        set: function (value) {
+            if (this._useFaceWeights == value)
+                return;
+            this._useFaceWeights = value;
+            if (this._autoDeriveNormals)
+                this.notifyNormalsUpdate();
+            if (this._autoDeriveTangents)
+                this.notifyTangentsUpdate();
+            this._faceNormalsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "numCondensedJoints", {
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            return this._numCondensedJoints;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "condensedIndexLookUp", {
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            return this._condensedIndexLookUp;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TriangleSubGeometry.prototype.getBoundingPositions = function () {
+        if (this._positionsDirty)
+            this.updatePositions(this._positions);
+        return this._positions;
+    };
+    /**
+     *
+     */
+    TriangleSubGeometry.prototype.updatePositions = function (values) {
+        var i;
+        var index;
+        var stride;
+        var positions;
+        this._positions = values;
+        if (this._positions == null)
+            this._positions = new Array();
+        this._pNumVertices = this._positions.length / 3;
+        if (this._concatenateArrays) {
+            var len = this._pNumVertices * this.getStride(TriangleSubGeometry.VERTEX_DATA);
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+            i = 0;
+            index = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+            stride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+            positions = this._pVertices;
+            while (i < values.length) {
+                positions[index] = values[i++];
+                positions[index + 1] = values[i++];
+                positions[index + 2] = values[i++];
+                index += stride;
+            }
+        }
+        if (this._autoDeriveNormals)
+            this.notifyNormalsUpdate();
+        if (this._autoDeriveTangents)
+            this.notifyTangentsUpdate();
+        if (this._autoDeriveUVs)
+            this.notifyUVsUpdate();
+        this.pInvalidateBounds();
+        this.notifyPositionsUpdate();
+        this._positionsDirty = false;
+    };
+    /**
+     * Updates the vertex normals based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateVertexNormals = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var normals;
+        if (!this._autoDeriveNormals) {
+            if ((this._vertexNormals == null || values == null) && (this._vertexNormals != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._vertexNormals = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+                stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+                normals = this._pVertices;
+                while (i < values.length) {
+                    normals[index] = values[i++];
+                    normals[index + 1] = values[i++];
+                    normals[index + 2] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._vertexNormals == null) {
+                this._vertexNormals = new Array(this._positions.length);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            if (this._faceNormalsDirty)
+                this.updateFaceNormals();
+            offset = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+            stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+            //autoderived normals
+            normals = this._concatenateArrays ? this._pVertices : this._vertexNormals;
+            var f1 = 0;
+            var f2 = 1;
+            var f3 = 2;
+            index = offset;
+            //clear normal values
+            var lenV = normals.length;
+            while (index < lenV) {
+                normals[index] = 0;
+                normals[index + 1] = 0;
+                normals[index + 2] = 0;
+                index += stride;
+            }
+            var k = 0;
+            var lenI = this._pIndices.length;
+            var weight;
+            i = 0;
+            while (i < lenI) {
+                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                f1 += 3;
+                f2 += 3;
+                f3 += 3;
+            }
+            i = 0;
+            index = offset;
+            while (index < lenV) {
+                var vx = normals[index];
+                var vy = normals[index + 1];
+                var vz = normals[index + 2];
+                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+                if (this._concatenateArrays) {
+                    this._vertexNormals[i++] = normals[index] = vx * d;
+                    this._vertexNormals[i++] = normals[index + 1] = vy * d;
+                    this._vertexNormals[i++] = normals[index + 2] = vz * d;
+                }
+                else {
+                    normals[index] = vx * d;
+                    normals[index + 1] = vy * d;
+                    normals[index + 2] = vz * d;
+                }
+                index += stride;
+            }
+        }
+        this.notifyNormalsUpdate();
+        this._vertexNormalsDirty = false;
+    };
+    /**
+     * Updates the vertex tangents based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateVertexTangents = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var tangents;
+        if (!this._autoDeriveTangents) {
+            if ((this._vertexTangents == null || values == null) && (this._vertexTangents != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._vertexTangents = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+                stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+                tangents = this._pVertices;
+                while (i < values.length) {
+                    tangents[index] = values[i++];
+                    tangents[index + 1] = values[i++];
+                    tangents[index + 2] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._vertexTangents == null) {
+                this._vertexTangents = new Array(this._positions.length);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            if (this._faceTangentsDirty)
+                this.updateFaceTangents();
+            offset = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+            stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+            //autoderived tangents
+            tangents = this._concatenateArrays ? this._pVertices : this._vertexTangents;
+            index = offset;
+            //clear tangent values
+            var lenV = tangents.length;
+            while (index < lenV) {
+                tangents[index] = 0;
+                tangents[index + 1] = 0;
+                tangents[index + 2] = 0;
+                index += stride;
+            }
+            var k = 0;
+            var weight;
+            var f1 = 0;
+            var f2 = 1;
+            var f3 = 2;
+            i = 0;
+            //collect face tangents
+            var lenI = this._pIndices.length;
+            while (i < lenI) {
+                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                f1 += 3;
+                f2 += 3;
+                f3 += 3;
+            }
+            i = 0;
+            index = offset;
+            while (index < lenV) {
+                var vx = tangents[index];
+                var vy = tangents[index + 1];
+                var vz = tangents[index + 2];
+                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+                if (this._concatenateArrays) {
+                    this._vertexTangents[i++] = tangents[index] = vx * d;
+                    this._vertexTangents[i++] = tangents[index + 1] = vy * d;
+                    this._vertexTangents[i++] = tangents[index + 2] = vz * d;
+                }
+                else {
+                    tangents[index] = vx * d;
+                    tangents[index + 1] = vy * d;
+                    tangents[index + 2] = vz * d;
+                }
+                index += stride;
+            }
+        }
+        this.notifyTangentsUpdate();
+        this._vertexTangentsDirty = false;
+    };
+    /**
+     * Updates the uvs based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateUVs = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        if (!this._autoDeriveUVs) {
+            if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._uvs = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.UV_DATA);
+                stride = this.getStride(TriangleSubGeometry.UV_DATA);
+                uvs = this._pVertices;
+                while (i < values.length) {
+                    uvs[index] = values[i++];
+                    uvs[index + 1] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._uvs == null) {
+                this._uvs = new Array(this._positions.length * 2 / 3);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            offset = this.getOffset(TriangleSubGeometry.UV_DATA);
+            stride = this.getStride(TriangleSubGeometry.UV_DATA);
+            //autoderived uvs
+            uvs = this._concatenateArrays ? this._pVertices : this._uvs;
+            i = 0;
+            index = offset;
+            var uvIdx = 0;
+            //clear uv values
+            var lenV = uvs.length;
+            while (index < lenV) {
+                if (this._concatenateArrays) {
+                    this._uvs[i++] = uvs[index] = uvIdx * .5;
+                    this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                else {
+                    uvs[index] = uvIdx * .5;
+                    uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                if (++uvIdx == 3)
+                    uvIdx = 0;
+                index += stride;
+            }
+        }
+        if (this._autoDeriveTangents)
+            this.notifyTangentsUpdate();
+        this.notifyUVsUpdate();
+        this._uvsDirty = false;
+    };
+    /**
+     * Updates the secondary uvs based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateSecondaryUVs = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        if (this._concatenateArrays && (this._secondaryUVs == null || values == null) && (this._secondaryUVs != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._secondaryUVs = values;
+        if (values != null && this._concatenateArrays) {
+            offset = this.getOffset(TriangleSubGeometry.SECONDARY_UV_DATA);
+            stride = this.getStride(TriangleSubGeometry.SECONDARY_UV_DATA);
+            i = 0;
+            index = offset;
+            uvs = this._pVertices;
+            while (i < values.length) {
+                uvs[index] = values[i++];
+                uvs[index + 1] = values[i++];
+                index += stride;
+            }
+        }
+        this.notifySecondaryUVsUpdate();
+        this._secondaryUVsDirty = false;
+    };
+    /**
+     * Updates the joint indices
+     */
+    TriangleSubGeometry.prototype.updateJointIndices = function (values) {
+        var i;
+        var j;
+        var index;
+        var offset;
+        var stride;
+        var jointIndices;
+        if (this._concatenateArrays && (this._jointIndices == null || values == null) && (this._jointIndices != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._jointIndices = values;
+        if (values != null) {
+            offset = this.getOffset(TriangleSubGeometry.JOINT_INDEX_DATA);
+            stride = this.getStride(TriangleSubGeometry.JOINT_INDEX_DATA);
+            if (this._useCondensedIndices) {
+                i = 0;
+                j = 0;
+                index = offset;
+                jointIndices = this._concatenateArrays ? this._pVertices : this._condensedJointIndices;
+                var oldIndex;
+                var newIndex = 0;
+                var dic = new Object();
+                if (!this._concatenateArrays)
+                    this._condensedJointIndices = new Array(values.length);
+                this._condensedIndexLookUp = new Array();
+                while (i < values.length) {
+                    for (j = 0; j < this._jointsPerVertex; j++) {
+                        oldIndex = values[i++];
+                        // if we encounter a new index, assign it a new condensed index
+                        if (dic[oldIndex] == undefined) {
+                            dic[oldIndex] = newIndex * 3; //3 required for the three vectors that store the matrix
+                            this._condensedIndexLookUp[newIndex++] = oldIndex;
+                        }
+                        jointIndices[index + j] = dic[oldIndex];
+                    }
+                    index += stride;
+                }
+                this._numCondensedJoints = newIndex;
+            }
+            else if (this._concatenateArrays) {
+                i = 0;
+                index = offset;
+                jointIndices = this._pVertices;
+                while (i < values.length) {
+                    j = 0;
+                    while (j < this._jointsPerVertex)
+                        jointIndices[index + j++] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        this.notifyJointIndicesUpdate();
+        this._jointIndicesDirty = false;
+    };
+    /**
+     * Updates the joint weights.
+     */
+    TriangleSubGeometry.prototype.updateJointWeights = function (values) {
+        var i;
+        var j;
+        var index;
+        var offset;
+        var stride;
+        var jointWeights;
+        if (this._concatenateArrays && (this._jointWeights == null || values == null) && (this._jointWeights != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._jointWeights = values;
+        if (values != null && this._concatenateArrays) {
+            offset = this.getOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+            stride = this.getStride(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+            i = 0;
+            index = offset;
+            jointWeights = this._pVertices;
+            while (i < values.length) {
+                j = 0;
+                while (j < this._jointsPerVertex)
+                    jointWeights[index + j++] = values[i++];
+                index += stride;
+            }
+        }
+        this.notifyJointWeightsUpdate();
+        this._jointWeightsDirty = false;
+    };
+    /**
+     *
+     */
+    TriangleSubGeometry.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._positions = null;
+        this._vertexNormals = null;
+        this._vertexTangents = null;
+        this._uvs = null;
+        this._secondaryUVs = null;
+        this._jointIndices = null;
+        this._jointWeights = null;
+        this._faceNormals = null;
+        this._faceWeights = null;
+        this._faceTangents = null;
+    };
+    /**
+     * Updates the face indices of the TriangleSubGeometry.
+     *
+     * @param indices The face indices to upload.
+     */
+    TriangleSubGeometry.prototype.updateIndices = function (indices) {
+        _super.prototype.updateIndices.call(this, indices);
+        this._faceNormalsDirty = true;
+        if (this._autoDeriveNormals)
+            this._vertexNormalsDirty = true;
+        if (this._autoDeriveTangents)
+            this._vertexTangentsDirty = true;
+        if (this._autoDeriveUVs)
+            this._uvsDirty = true;
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    TriangleSubGeometry.prototype.clone = function () {
+        var clone = new TriangleSubGeometry(this._concatenateArrays);
+        clone.updateIndices(this._pIndices.concat());
+        clone.updatePositions(this._positions.concat());
+        if (this._vertexNormals && !this._autoDeriveNormals)
+            clone.updateVertexNormals(this._vertexNormals.concat());
+        else
+            clone.updateVertexNormals(null);
+        if (this._uvs && !this._autoDeriveUVs)
+            clone.updateUVs(this._uvs.concat());
+        else
+            clone.updateUVs(null);
+        if (this._vertexTangents && !this._autoDeriveTangents)
+            clone.updateVertexTangents(this._vertexTangents.concat());
+        else
+            clone.updateVertexTangents(null);
+        if (this._secondaryUVs)
+            clone.updateSecondaryUVs(this._secondaryUVs.concat());
+        if (this._jointIndices) {
+            clone.jointsPerVertex = this._jointsPerVertex;
+            clone.updateJointIndices(this._jointIndices.concat());
+        }
+        if (this._jointWeights)
+            clone.updateJointWeights(this._jointWeights.concat());
+        return clone;
+    };
+    TriangleSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        uvs = this._uvs;
+        var ratioU = scaleU / this._scaleU;
+        var ratioV = scaleV / this._scaleV;
+        this._scaleU = scaleU;
+        this._scaleV = scaleV;
+        var len = uvs.length;
+        offset = 0;
+        stride = 2;
+        index = offset;
+        while (index < len) {
+            uvs[index] *= ratioU;
+            uvs[index + 1] *= ratioV;
+            index += stride;
+        }
+        this.notifyUVsUpdate();
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    TriangleSubGeometry.prototype.scale = function (scale) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var positions;
+        positions = this._positions;
+        var len = positions.length;
+        offset = 0;
+        stride = 3;
+        i = 0;
+        index = offset;
+        while (i < len) {
+            positions[index] *= scale;
+            positions[index + 1] *= scale;
+            positions[index + 2] *= scale;
+            i += 3;
+            index += stride;
+        }
+        this.notifyPositionsUpdate();
+    };
+    TriangleSubGeometry.prototype.applyTransformation = function (transform) {
+        var positions;
+        var normals;
+        var tangents;
+        if (this._concatenateArrays) {
+            positions = this._pVertices;
+            normals = this._pVertices;
+            tangents = this._pVertices;
+        }
+        else {
+            positions = this._positions;
+            normals = this._vertexNormals;
+            tangents = this._vertexTangents;
+        }
+        var len = this._positions.length / 3;
+        var i;
+        var i1;
+        var i2;
+        var vector = new Vector3D();
+        var bakeNormals = this._vertexNormals != null;
+        var bakeTangents = this._vertexTangents != null;
+        var invTranspose;
+        if (bakeNormals || bakeTangents) {
+            invTranspose = transform.clone();
+            invTranspose.invert();
+            invTranspose.transpose();
+        }
+        var vi0 = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+        var ni0 = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+        var ti0 = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+        var vStride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+        var nStride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+        var tStride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+        for (i = 0; i < len; ++i) {
+            i1 = vi0 + 1;
+            i2 = vi0 + 2;
+            // bake position
+            vector.x = positions[vi0];
+            vector.y = positions[i1];
+            vector.z = positions[i2];
+            vector = transform.transformVector(vector);
+            positions[vi0] = vector.x;
+            positions[i1] = vector.y;
+            positions[i2] = vector.z;
+            vi0 += vStride;
+            // bake normal
+            if (bakeNormals) {
+                i1 = ni0 + 1;
+                i2 = ni0 + 2;
+                vector.x = normals[ni0];
+                vector.y = normals[i1];
+                vector.z = normals[i2];
+                vector = invTranspose.deltaTransformVector(vector);
+                vector.normalize();
+                normals[ni0] = vector.x;
+                normals[i1] = vector.y;
+                normals[i2] = vector.z;
+                ni0 += nStride;
+            }
+            // bake tangent
+            if (bakeTangents) {
+                i1 = ti0 + 1;
+                i2 = ti0 + 2;
+                vector.x = tangents[ti0];
+                vector.y = tangents[i1];
+                vector.z = tangents[i2];
+                vector = invTranspose.deltaTransformVector(vector);
+                vector.normalize();
+                tangents[ti0] = vector.x;
+                tangents[i1] = vector.y;
+                tangents[i2] = vector.z;
+                ti0 += tStride;
+            }
+        }
+        this.notifyPositionsUpdate();
+        this.notifyNormalsUpdate();
+        this.notifyTangentsUpdate();
+    };
+    /**
+     * Updates the tangents for each face.
+     */
+    TriangleSubGeometry.prototype.updateFaceTangents = function () {
+        var i = 0;
+        var index1;
+        var index2;
+        var index3;
+        var vi;
+        var v0;
+        var dv1;
+        var dv2;
+        var denom;
+        var x0, y0, z0;
+        var dx1, dy1, dz1;
+        var dx2, dy2, dz2;
+        var cx, cy, cz;
+        var positions = this._positions;
+        var uvs = this._uvs;
+        var len = this._pIndices.length;
+        if (this._faceTangents == null)
+            this._faceTangents = new Array(len);
+        while (i < len) {
+            index1 = this._pIndices[i];
+            index2 = this._pIndices[i + 1];
+            index3 = this._pIndices[i + 2];
+            v0 = uvs[index1 * 2 + 1];
+            dv1 = uvs[index2 * 2 + 1] - v0;
+            dv2 = uvs[index3 * 2 + 1] - v0;
+            vi = index1 * 3;
+            x0 = positions[vi];
+            y0 = positions[vi + 1];
+            z0 = positions[vi + 2];
+            vi = index2 * 3;
+            dx1 = positions[vi] - x0;
+            dy1 = positions[vi + 1] - y0;
+            dz1 = positions[vi + 2] - z0;
+            vi = index3 * 3;
+            dx2 = positions[vi] - x0;
+            dy2 = positions[vi + 1] - y0;
+            dz2 = positions[vi + 2] - z0;
+            cx = dv2 * dx1 - dv1 * dx2;
+            cy = dv2 * dy1 - dv1 * dy2;
+            cz = dv2 * dz1 - dv1 * dz2;
+            denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
+            this._faceTangents[i++] = denom * cx;
+            this._faceTangents[i++] = denom * cy;
+            this._faceTangents[i++] = denom * cz;
+        }
+        this._faceTangentsDirty = false;
+    };
+    /**
+     * Updates the normals for each face.
+     */
+    TriangleSubGeometry.prototype.updateFaceNormals = function () {
+        var i = 0;
+        var j = 0;
+        var k = 0;
+        var index;
+        var offset;
+        var stride;
+        var x1, x2, x3;
+        var y1, y2, y3;
+        var z1, z2, z3;
+        var dx1, dy1, dz1;
+        var dx2, dy2, dz2;
+        var cx, cy, cz;
+        var d;
+        var positions = this._positions;
+        var len = this._pIndices.length;
+        if (this._faceNormals == null)
+            this._faceNormals = new Array(len);
+        if (this._useFaceWeights && this._faceWeights == null)
+            this._faceWeights = new Array(len / 3);
+        while (i < len) {
+            index = this._pIndices[i++] * 3;
+            x1 = positions[index];
+            y1 = positions[index + 1];
+            z1 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x2 = positions[index];
+            y2 = positions[index + 1];
+            z2 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x3 = positions[index];
+            y3 = positions[index + 1];
+            z3 = positions[index + 2];
+            dx1 = x3 - x1;
+            dy1 = y3 - y1;
+            dz1 = z3 - z1;
+            dx2 = x2 - x1;
+            dy2 = y2 - y1;
+            dz2 = z2 - z1;
+            cx = dz1 * dy2 - dy1 * dz2;
+            cy = dx1 * dz2 - dz1 * dx2;
+            cz = dy1 * dx2 - dx1 * dy2;
+            d = Math.sqrt(cx * cx + cy * cy + cz * cz);
+            // length of cross product = 2*triangle area
+            if (this._useFaceWeights) {
+                var w = d * 10000;
+                if (w < 1)
+                    w = 1;
+                this._faceWeights[k++] = w;
+            }
+            d = 1 / d;
+            this._faceNormals[j++] = cx * d;
+            this._faceNormals[j++] = cy * d;
+            this._faceNormals[j++] = cz * d;
+        }
+        this._faceNormalsDirty = false;
+    };
+    TriangleSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+        this._pStrideOffsetDirty = true;
+        this.notifyPositionsUpdate();
+        this.notifyNormalsUpdate();
+        this.notifyTangentsUpdate();
+        this.notifyUVsUpdate();
+        this.notifySecondaryUVsUpdate();
+        this.notifyJointIndicesUpdate();
+        this.notifyJointWeightsUpdate();
+    };
+    TriangleSubGeometry.prototype.notifyPositionsUpdate = function () {
+        if (this._positionsDirty)
+            return;
+        this._positionsDirty = true;
+        if (!this._positionsUpdated)
+            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
+        this.dispatchEvent(this._positionsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyNormalsUpdate = function () {
+        if (this._vertexNormalsDirty)
+            return;
+        this._vertexNormalsDirty = true;
+        if (!this._normalsUpdated)
+            this._normalsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.NORMAL_DATA);
+        this.dispatchEvent(this._normalsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyTangentsUpdate = function () {
+        if (this._vertexTangentsDirty)
+            return;
+        this._vertexTangentsDirty = true;
+        if (!this._tangentsUpdated)
+            this._tangentsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.TANGENT_DATA);
+        this.dispatchEvent(this._tangentsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyUVsUpdate = function () {
+        if (this._uvsDirty)
+            return;
+        this._uvsDirty = true;
+        if (!this._uvsUpdated)
+            this._uvsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.UV_DATA);
+        this.dispatchEvent(this._uvsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifySecondaryUVsUpdate = function () {
+        if (this._secondaryUVsDirty)
+            return;
+        this._secondaryUVsDirty = true;
+        if (!this._secondaryUVsUpdated)
+            this._secondaryUVsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.SECONDARY_UV_DATA);
+        this.dispatchEvent(this._secondaryUVsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyJointIndicesUpdate = function () {
+        if (this._jointIndicesDirty)
+            return;
+        this._jointIndicesDirty = true;
+        if (!this._jointIndicesUpdated)
+            this._jointIndicesUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_INDEX_DATA);
+        this.dispatchEvent(this._jointIndicesUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyJointWeightsUpdate = function () {
+        if (this._jointWeightsDirty)
+            return;
+        this._jointWeightsDirty = true;
+        if (!this._jointWeightsUpdated)
+            this._jointWeightsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_WEIGHT_DATA);
+        this.dispatchEvent(this._jointWeightsUpdated);
+    };
+    TriangleSubGeometry.SUB_GEOMETRY_TYPE = "triangle";
+    TriangleSubGeometry.POSITION_DATA = "positions";
+    TriangleSubGeometry.NORMAL_DATA = "vertexNormals";
+    TriangleSubGeometry.TANGENT_DATA = "vertexTangents";
+    TriangleSubGeometry.UV_DATA = "uvs";
+    TriangleSubGeometry.SECONDARY_UV_DATA = "secondaryUVs";
+    TriangleSubGeometry.JOINT_INDEX_DATA = "jointIndices";
+    TriangleSubGeometry.JOINT_WEIGHT_DATA = "jointWeights";
+    //TODO - move these to StageGL
+    TriangleSubGeometry.POSITION_FORMAT = "float3";
+    TriangleSubGeometry.NORMAL_FORMAT = "float3";
+    TriangleSubGeometry.TANGENT_FORMAT = "float3";
+    TriangleSubGeometry.UV_FORMAT = "float2";
+    TriangleSubGeometry.SECONDARY_UV_FORMAT = "float2";
+    return TriangleSubGeometry;
+})(SubGeometryBase);
+module.exports = TriangleSubGeometry;
+
+
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/errors/AbstractMethodError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1291,7 +3733,67 @@ var Event = (function () {
 module.exports = Event;
 
 
-},{}],"awayjs-core/lib/events/HTTPStatusEvent":[function(require,module,exports){
+},{}],"awayjs-core/lib/events/GeometryEvent":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+/**
+* Dispatched to notify changes in a geometry object's state.
+*
+* @class away.events.GeometryEvent
+* @see away3d.core.base.Geometry
+*/
+var GeometryEvent = (function (_super) {
+    __extends(GeometryEvent, _super);
+    /**
+     * Create a new GeometryEvent
+     * @param type The event type.
+     * @param subGeometry An optional TriangleSubGeometry object that is the subject of this event.
+     */
+    function GeometryEvent(type, subGeometry) {
+        if (subGeometry === void 0) { subGeometry = null; }
+        _super.call(this, type);
+        this._subGeometry = subGeometry;
+    }
+    Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
+        /**
+         * The TriangleSubGeometry object that is the subject of this event, if appropriate.
+         */
+        get: function () {
+            return this._subGeometry;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     * @return An exact duplicate of the current object.
+     */
+    GeometryEvent.prototype.clone = function () {
+        return new GeometryEvent(this.type, this._subGeometry);
+    };
+    /**
+     * Dispatched when a TriangleSubGeometry was added to the dispatching Geometry.
+     */
+    GeometryEvent.SUB_GEOMETRY_ADDED = "subGeometryAdded";
+    /**
+     * Dispatched when a TriangleSubGeometry was removed from the dispatching Geometry.
+     */
+    GeometryEvent.SUB_GEOMETRY_REMOVED = "subGeometryRemoved";
+    /**
+     *
+     */
+    GeometryEvent.BOUNDS_INVALID = "boundsInvalid";
+    return GeometryEvent;
+})(Event);
+module.exports = GeometryEvent;
+
+
+},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-core/lib/events/HTTPStatusEvent":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1502,6 +4004,63 @@ var ProjectionEvent = (function (_super) {
     return ProjectionEvent;
 })(Event);
 module.exports = ProjectionEvent;
+
+
+},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-core/lib/events/SubGeometryEvent":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+/**
+ * Dispatched to notify changes in a sub geometry object's state.
+ *
+ * @class away.events.SubGeometryEvent
+ * @see away.core.base.Geometry
+ */
+var SubGeometryEvent = (function (_super) {
+    __extends(SubGeometryEvent, _super);
+    /**
+     * Create a new GeometryEvent
+     * @param type The event type.
+     * @param dataType An optional data type of the vertex data being updated.
+     */
+    function SubGeometryEvent(type, dataType) {
+        if (dataType === void 0) { dataType = ""; }
+        _super.call(this, type);
+        this._dataType = dataType;
+    }
+    Object.defineProperty(SubGeometryEvent.prototype, "dataType", {
+        /**
+         * The data type of the vertex data.
+         */
+        get: function () {
+            return this._dataType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    SubGeometryEvent.prototype.clone = function () {
+        return new SubGeometryEvent(this.type, this._dataType);
+    };
+    /**
+     * Dispatched when a TriangleSubGeometry's index data has been updated.
+     */
+    SubGeometryEvent.INDICES_UPDATED = "indicesUpdated";
+    /**
+     * Dispatched when a TriangleSubGeometry's vertex data has been updated.
+     */
+    SubGeometryEvent.VERTICES_UPDATED = "verticesUpdated";
+    return SubGeometryEvent;
+})(Event);
+module.exports = SubGeometryEvent;
 
 
 },{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-core/lib/events/TimerEvent":[function(require,module,exports){
@@ -10327,7 +12886,7 @@ module.exports = ImageTexture;
 
 
 },{"awayjs-core/lib/errors/Error":"awayjs-core/lib/errors/Error","awayjs-core/lib/textures/Texture2DBase":"awayjs-core/lib/textures/Texture2DBase","awayjs-core/lib/utils/TextureUtils":"awayjs-core/lib/utils/TextureUtils"}],"awayjs-core/lib/textures/MipmapGenerator":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var Matrix = require("awayjs-core/lib/geom/Matrix");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 /**
@@ -10395,7 +12954,7 @@ var MipmapGenerator = (function () {
 module.exports = MipmapGenerator;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/geom/Matrix":"awayjs-core/lib/geom/Matrix","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle"}],"awayjs-core/lib/textures/RenderTexture":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/geom/Matrix":"awayjs-core/lib/geom/Matrix","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle"}],"awayjs-core/lib/textures/RenderTexture":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10461,8 +13020,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
-var BitmapDataChannel = require("awayjs-core/lib/base/BitmapDataChannel");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
+var BitmapDataChannel = require("awayjs-core/lib/data/BitmapDataChannel");
 var Point = require("awayjs-core/lib/geom/Point");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 /**
@@ -10538,7 +13097,7 @@ var SpecularBitmapTexture = (function (_super) {
 module.exports = SpecularBitmapTexture;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/base/BitmapDataChannel":"awayjs-core/lib/base/BitmapDataChannel","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture"}],"awayjs-core/lib/textures/Texture2DBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/data/BitmapDataChannel":"awayjs-core/lib/data/BitmapDataChannel","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture"}],"awayjs-core/lib/textures/Texture2DBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12277,9 +14836,8 @@ var TextureUtils = (function () {
     function TextureUtils() {
     }
     TextureUtils.isBitmapDataValid = function (bitmapData) {
-        if (bitmapData == null) {
+        if (bitmapData == null)
             return true;
-        }
         return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
     };
     TextureUtils.isHTMLImageElementValid = function (image) {
@@ -12327,9 +14885,8 @@ var Timer = (function (_super) {
         this._running = false;
         this._delay = delay;
         this._repeatCount = repeatCount;
-        if (isNaN(delay) || delay < 0) {
+        if (isNaN(delay) || delay < 0)
             throw new Error("Delay is negative or not a number");
-        }
     }
     Object.defineProperty(Timer.prototype, "currentCount", {
         get: function () {
@@ -12363,9 +14920,8 @@ var Timer = (function (_super) {
         configurable: true
     });
     Timer.prototype.reset = function () {
-        if (this._running) {
+        if (this._running)
             this.stop();
-        }
         this._currentCount = 0;
     };
     Object.defineProperty(Timer.prototype, "running", {
@@ -12491,623 +15047,7 @@ var AlignmentMode = (function () {
 module.exports = AlignmentMode;
 
 
-},{}],"awayjs-display/lib/base/CapsStyle":[function(require,module,exports){
-/**
- * The CapsStyle class is an enumeration of constant values that specify the
- * caps style to use in drawing lines. The constants are provided for use as
- * values in the <code>caps</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method. You can specify the
- * following three types of caps:
- */
-var CapsStyle = (function () {
-    function CapsStyle() {
-    }
-    /**
-     * Used to specify round caps in the <code>caps</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    CapsStyle.ROUND = "round";
-    /**
-     * Used to specify no caps in the <code>caps</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    CapsStyle.NONE = "none";
-    /**
-     * Used to specify square caps in the <code>caps</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    CapsStyle.SQUARE = "square";
-    return CapsStyle;
-})();
-module.exports = CapsStyle;
-
-
-},{}],"awayjs-display/lib/base/CurveSubGeometry":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
-/**
- * @class away.base.CurveSubGeometry
- */
-var CurveSubGeometry = (function (_super) {
-    __extends(CurveSubGeometry, _super);
-    /**
-     *
-     */
-    function CurveSubGeometry(concatenatedArrays) {
-        _super.call(this, concatenatedArrays);
-        this._positionsDirty = true;
-        this._curvesDirty = true;
-        this._faceNormalsDirty = true;
-        this._vertexNormalsDirty = true;
-        this._uvsDirty = true;
-        this._secondaryUVsDirty = true;
-        this._jointIndicesDirty = true;
-        this._jointWeightsDirty = true;
-        this._concatenateArrays = true;
-        this._autoDeriveNormals = false;
-        this._useFaceWeights = false;
-        this._autoDeriveUVs = false;
-        this._scaleU = 1;
-        this._scaleV = 1;
-        this._pSubMeshClass = CurveSubMesh;
-    }
-    Object.defineProperty(CurveSubGeometry.prototype, "scaleU", {
-        /**
-         *
-         */
-        get: function () {
-            return this._scaleU;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "scaleV", {
-        /**
-         *
-         */
-        get: function () {
-            return this._scaleV;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "useCondensedIndices", {
-        /**
-         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-         * by condensing the number of joint index values required per mesh. Only applicable to
-         * skeleton animations that utilise more than one mesh object. Defaults to false.
-         */
-        get: function () {
-            return this._useCondensedIndices;
-        },
-        set: function (value) {
-            if (this._useCondensedIndices == value)
-                return;
-            this._useCondensedIndices = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    CurveSubGeometry.prototype._pUpdateStrideOffset = function () {
-        if (this._concatenateArrays) {
-            this._pOffset[CurveSubGeometry.VERTEX_DATA] = 0;
-            //always have positions
-            this._pOffset[CurveSubGeometry.POSITION_DATA] = 0;
-            var stride = 3;
-            if (this._curves != null) {
-                this._pOffset[CurveSubGeometry.CURVE_DATA] = stride;
-                stride += 2;
-            }
-            if (this._uvs != null) {
-                this._pOffset[CurveSubGeometry.UV_DATA] = stride;
-                stride += 2;
-            }
-            this._pStride[CurveSubGeometry.VERTEX_DATA] = stride;
-            this._pStride[CurveSubGeometry.POSITION_DATA] = stride;
-            this._pStride[CurveSubGeometry.CURVE_DATA] = stride;
-            this._pStride[CurveSubGeometry.UV_DATA] = stride;
-            var len = this._pNumVertices * stride;
-            if (this._pVertices == null)
-                this._pVertices = new Array(len);
-            else if (this._pVertices.length != len)
-                this._pVertices.length = len;
-        }
-        else {
-            this._pOffset[CurveSubGeometry.POSITION_DATA] = 0;
-            this._pOffset[CurveSubGeometry.CURVE_DATA] = 0;
-            this._pOffset[CurveSubGeometry.UV_DATA] = 0;
-            this._pStride[CurveSubGeometry.POSITION_DATA] = 3;
-            this._pStride[CurveSubGeometry.CURVE_DATA] = 2;
-            this._pStride[CurveSubGeometry.UV_DATA] = 2;
-        }
-        this._pStrideOffsetDirty = false;
-    };
-    Object.defineProperty(CurveSubGeometry.prototype, "autoDeriveUVs", {
-        /**
-         * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
-         * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
-         * in cases where UV data is explicitly defined or the material does not require UV data.
-         */
-        get: function () {
-            return this._autoDeriveUVs;
-        },
-        set: function (value) {
-            if (this._autoDeriveUVs == value)
-                return;
-            this._autoDeriveUVs = value;
-            if (value)
-                this.notifyUVsUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "autoDeriveNormals", {
-        /**
-         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
-         * explicitly.
-         */
-        get: function () {
-            return this._autoDeriveNormals;
-        },
-        //remove
-        set: function (value) {
-            if (this._autoDeriveNormals == value)
-                return;
-            this._autoDeriveNormals = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "vertices", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._positions);
-            if (this._curvesDirty)
-                this.updateCurves(this._curves);
-            if (this._uvsDirty)
-                this.updateUVs(this._uvs);
-            return this._pVertices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "positions", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._positions);
-            return this._positions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "curves", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._curvesDirty)
-                this.updateCurves(this._curves);
-            return this._curves;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "faceNormals", {
-        /**
-         * The raw data of the face normals, in the same order as the faces are listed in the index list.
-         */
-        get: function () {
-            if (this._faceNormalsDirty)
-                this.updateFaceNormals();
-            return this._faceNormals;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "uvs", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._uvsDirty)
-                this.updateUVs(this._uvs);
-            return this._uvs;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "useFaceWeights", {
-        /**
-         * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
-         */
-        get: function () {
-            return this._useFaceWeights;
-        },
-        set: function (value) {
-            if (this._useFaceWeights == value)
-                return;
-            this._useFaceWeights = value;
-            this._faceNormalsDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveSubGeometry.prototype, "condensedIndexLookUp", {
-        get: function () {
-            return this._condensedIndexLookUp;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    CurveSubGeometry.prototype.getBoundingPositions = function () {
-        if (this._positionsDirty)
-            this.updatePositions(this._positions);
-        return this._positions;
-    };
-    /**
-     *
-     */
-    CurveSubGeometry.prototype.updatePositions = function (values) {
-        var i;
-        var index;
-        var stride;
-        var positions;
-        this._positions = values;
-        if (this._positions == null)
-            this._positions = new Array();
-        this._pNumVertices = this._positions.length / 3;
-        if (this._concatenateArrays) {
-            var len = this._pNumVertices * this.getStride(CurveSubGeometry.VERTEX_DATA);
-            if (this._pVertices == null)
-                this._pVertices = new Array(len);
-            else if (this._pVertices.length != len)
-                this._pVertices.length = len;
-            i = 0;
-            index = this.getOffset(CurveSubGeometry.POSITION_DATA);
-            stride = this.getStride(CurveSubGeometry.POSITION_DATA);
-            positions = this._pVertices;
-            while (i < values.length) {
-                positions[index] = values[i++];
-                positions[index + 1] = values[i++];
-                positions[index + 2] = values[i++];
-                index += stride;
-            }
-        }
-        this.pInvalidateBounds();
-        this.notifyPositionsUpdate();
-        this._positionsDirty = false;
-    };
-    /**
-     * Updates the vertex normals based on the geometry.
-     */
-    CurveSubGeometry.prototype.updateCurves = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var curves;
-        if (true) {
-            if ((this._curves == null || values == null) && (this._curves != null || values != null)) {
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            this._curves = values;
-            if (values != null && this._concatenateArrays) {
-                i = 0;
-                index = this.getOffset(CurveSubGeometry.CURVE_DATA);
-                stride = this.getStride(CurveSubGeometry.CURVE_DATA);
-                curves = this._pVertices;
-                while (i < values.length) {
-                    curves[index] = values[i++];
-                    curves[index + 1] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        this.notifyCurvesUpdate();
-        this._curvesDirty = false;
-    };
-    /**
-     * Updates the uvs based on the geometry.
-     */
-    CurveSubGeometry.prototype.updateUVs = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var uvs;
-        if (!this._autoDeriveUVs) {
-            if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            this._uvs = values;
-            if (values != null && this._concatenateArrays) {
-                i = 0;
-                index = this.getOffset(CurveSubGeometry.UV_DATA);
-                stride = this.getStride(CurveSubGeometry.UV_DATA);
-                uvs = this._pVertices;
-                while (i < values.length) {
-                    uvs[index] = values[i++];
-                    uvs[index + 1] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        else {
-            if (this._uvs == null) {
-                this._uvs = new Array(this._positions.length * 2 / 3);
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            offset = this.getOffset(CurveSubGeometry.UV_DATA);
-            stride = this.getStride(CurveSubGeometry.UV_DATA);
-            //autoderived uvs
-            uvs = this._concatenateArrays ? this._pVertices : this._uvs;
-            i = 0;
-            index = offset;
-            var uvIdx = 0;
-            //clear uv values
-            var lenV = uvs.length;
-            while (index < lenV) {
-                if (this._concatenateArrays) {
-                    this._uvs[i++] = uvs[index] = uvIdx * .5;
-                    this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
-                }
-                else {
-                    uvs[index] = uvIdx * .5;
-                    uvs[index + 1] = 1.0 - (uvIdx & 1);
-                }
-                if (++uvIdx == 3)
-                    uvIdx = 0;
-                index += stride;
-            }
-        }
-        this.notifyUVsUpdate();
-        this._uvsDirty = false;
-    };
-    /**
-     *
-     */
-    CurveSubGeometry.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this._positions = null;
-        this._curves = null;
-        this._uvs = null;
-        this._faceNormals = null;
-        this._faceWeights = null;
-    };
-    /**
-     * Updates the face indices of the CurveSubGeometry.
-     *
-     * @param indices The face indices to upload.
-     */
-    CurveSubGeometry.prototype.updateIndices = function (indices) {
-        _super.prototype.updateIndices.call(this, indices);
-        this._faceNormalsDirty = true;
-        if (this._autoDeriveNormals)
-            this._vertexNormalsDirty = true;
-    };
-    /**
-     * Clones the current object
-     * @return An exact duplicate of the current object.
-     */
-    CurveSubGeometry.prototype.clone = function () {
-        var clone = new CurveSubGeometry(this._concatenateArrays);
-        clone.updateIndices(this._pIndices.concat());
-        clone.updatePositions(this._positions.concat());
-        if (this._curves)
-            clone.updateCurves(this._curves.concat());
-        else
-            clone.updateCurves(null);
-        if (this._uvs && !this._autoDeriveUVs)
-            clone.updateUVs(this._uvs.concat());
-        else
-            clone.updateUVs(null);
-        return clone;
-    };
-    CurveSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-        var index;
-        var offset;
-        var stride;
-        var uvs;
-        uvs = this._uvs;
-        var ratioU = scaleU / this._scaleU;
-        var ratioV = scaleV / this._scaleV;
-        this._scaleU = scaleU;
-        this._scaleV = scaleV;
-        var len = uvs.length;
-        offset = 0;
-        stride = 2;
-        index = offset;
-        while (index < len) {
-            uvs[index] *= ratioU;
-            uvs[index + 1] *= ratioV;
-            index += stride;
-        }
-        this.notifyUVsUpdate();
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    CurveSubGeometry.prototype.scale = function (scale) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var positions;
-        positions = this._positions;
-        var len = positions.length;
-        offset = 0;
-        stride = 3;
-        i = 0;
-        index = offset;
-        while (i < len) {
-            positions[index] *= scale;
-            positions[index + 1] *= scale;
-            positions[index + 2] *= scale;
-            i += 3;
-            index += stride;
-        }
-        this.notifyPositionsUpdate();
-    };
-    CurveSubGeometry.prototype.applyTransformation = function (transform) {
-        var positions;
-        if (this._concatenateArrays) {
-            positions = this._pVertices;
-        }
-        else {
-            positions = this._positions;
-        }
-        var len = this._positions.length / 3;
-        var i;
-        var i1;
-        var i2;
-        var vector = new Vector3D();
-        var invTranspose;
-        var vi0 = this.getOffset(CurveSubGeometry.POSITION_DATA);
-        var vStride = this.getStride(CurveSubGeometry.POSITION_DATA);
-        for (i = 0; i < len; ++i) {
-            i1 = vi0 + 1;
-            i2 = vi0 + 2;
-            // bake position
-            vector.x = positions[vi0];
-            vector.y = positions[i1];
-            vector.z = positions[i2];
-            vector = transform.transformVector(vector);
-            positions[vi0] = vector.x;
-            positions[i1] = vector.y;
-            positions[i2] = vector.z;
-            vi0 += vStride;
-        }
-        this.notifyPositionsUpdate();
-    };
-    /**
-     * Updates the normals for each face.
-     */
-    CurveSubGeometry.prototype.updateFaceNormals = function () {
-        var i = 0;
-        var j = 0;
-        var k = 0;
-        var index;
-        var offset;
-        var stride;
-        var x1, x2, x3;
-        var y1, y2, y3;
-        var z1, z2, z3;
-        var dx1, dy1, dz1;
-        var dx2, dy2, dz2;
-        var cx, cy, cz;
-        var d;
-        var positions = this._positions;
-        var len = this._pIndices.length;
-        if (this._faceNormals == null)
-            this._faceNormals = new Array(len);
-        if (this._useFaceWeights && this._faceWeights == null)
-            this._faceWeights = new Array(len / 3);
-        while (i < len) {
-            index = this._pIndices[i++] * 3;
-            x1 = positions[index];
-            y1 = positions[index + 1];
-            z1 = positions[index + 2];
-            index = this._pIndices[i++] * 3;
-            x2 = positions[index];
-            y2 = positions[index + 1];
-            z2 = positions[index + 2];
-            index = this._pIndices[i++] * 3;
-            x3 = positions[index];
-            y3 = positions[index + 1];
-            z3 = positions[index + 2];
-            dx1 = x3 - x1;
-            dy1 = y3 - y1;
-            dz1 = z3 - z1;
-            dx2 = x2 - x1;
-            dy2 = y2 - y1;
-            dz2 = z2 - z1;
-            cx = dz1 * dy2 - dy1 * dz2;
-            cy = dx1 * dz2 - dz1 * dx2;
-            cz = dy1 * dx2 - dx1 * dy2;
-            d = Math.sqrt(cx * cx + cy * cy + cz * cz);
-            // length of cross product = 2*triangle area
-            if (this._useFaceWeights) {
-                var w = d * 10000;
-                if (w < 1)
-                    w = 1;
-                this._faceWeights[k++] = w;
-            }
-            d = 1 / d;
-            this._faceNormals[j++] = cx * d;
-            this._faceNormals[j++] = cy * d;
-            this._faceNormals[j++] = cz * d;
-        }
-        this._faceNormalsDirty = false;
-    };
-    CurveSubGeometry.prototype._pNotifyVerticesUpdate = function () {
-        this._pStrideOffsetDirty = true;
-        this.notifyPositionsUpdate();
-        this.notifyCurvesUpdate();
-        this.notifyUVsUpdate();
-    };
-    CurveSubGeometry.prototype.notifyPositionsUpdate = function () {
-        if (this._positionsDirty)
-            return;
-        this._positionsDirty = true;
-        if (!this._positionsUpdated)
-            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.POSITION_DATA);
-        this.dispatchEvent(this._positionsUpdated);
-    };
-    CurveSubGeometry.prototype.notifyCurvesUpdate = function () {
-        if (this._curvesDirty)
-            return;
-        this._curvesDirty = true;
-        if (!this._curvesUpdated)
-            this._curvesUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.CURVE_DATA);
-        this.dispatchEvent(this._curvesUpdated);
-    };
-    CurveSubGeometry.prototype.notifyUVsUpdate = function () {
-        if (this._uvsDirty)
-            return;
-        this._uvsDirty = true;
-        if (!this._uvsUpdated)
-            this._uvsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, CurveSubGeometry.UV_DATA);
-        this.dispatchEvent(this._uvsUpdated);
-    };
-    CurveSubGeometry.POSITION_DATA = "positions";
-    CurveSubGeometry.CURVE_DATA = "curves";
-    CurveSubGeometry.UV_DATA = "uvs";
-    //TODO - move these to StageGL
-    CurveSubGeometry.POSITION_FORMAT = "float3";
-    CurveSubGeometry.CURVE_FORMAT = "float2";
-    CurveSubGeometry.UV_FORMAT = "float2";
-    return CurveSubGeometry;
-})(SubGeometryBase);
-module.exports = CurveSubGeometry;
-
-
-},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/base/CurveSubMesh":"awayjs-display/lib/base/CurveSubMesh","awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent"}],"awayjs-display/lib/base/CurveSubMesh":[function(require,module,exports){
+},{}],"awayjs-display/lib/base/CurveSubMesh":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -15002,1013 +16942,7 @@ var DisplayObject = (function (_super) {
 module.exports = DisplayObject;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/geom/Box":"awayjs-core/lib/geom/Box","awayjs-core/lib/geom/MathConsts":"awayjs-core/lib/geom/MathConsts","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Sphere":"awayjs-core/lib/geom/Sphere","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","awayjs-display/lib/base/OrientationMode":"awayjs-display/lib/base/OrientationMode","awayjs-display/lib/base/Transform":"awayjs-display/lib/base/Transform","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/SceneEvent":"awayjs-display/lib/events/SceneEvent","awayjs-display/lib/pick/PickingCollisionVO":"awayjs-display/lib/pick/PickingCollisionVO"}],"awayjs-display/lib/base/Geometry":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AssetType = require("awayjs-core/lib/library/AssetType");
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
-var GeometryEvent = require("awayjs-display/lib/events/GeometryEvent");
-/**
- *
- * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
- * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
- * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
- * the SubGeometries to its respective TriangleSubMesh objects.
- *
- *
- *
- * @see away.core.base.SubGeometry
- * @see away.entities.Mesh
- *
- * @class Geometry
- */
-var Geometry = (function (_super) {
-    __extends(Geometry, _super);
-    /**
-     * Creates a new Geometry object.
-     */
-    function Geometry() {
-        _super.call(this);
-        this._subGeometries = new Array();
-    }
-    Object.defineProperty(Geometry.prototype, "assetType", {
-        get: function () {
-            return AssetType.GEOMETRY;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Geometry.prototype, "subGeometries", {
-        /**
-         * A collection of TriangleSubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
-         */
-        get: function () {
-            return this._subGeometries;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Geometry.prototype.getSubGeometries = function () {
-        return this._subGeometries;
-    };
-    Geometry.prototype.applyTransformation = function (transform) {
-        var len = this._subGeometries.length;
-        for (var i = 0; i < len; ++i)
-            this._subGeometries[i].applyTransformation(transform);
-    };
-    /**
-     * Adds a new TriangleSubGeometry object to the list.
-     * @param subGeometry The TriangleSubGeometry object to be added.
-     */
-    Geometry.prototype.addSubGeometry = function (subGeometry) {
-        this._subGeometries.push(subGeometry);
-        subGeometry.parentGeometry = this;
-        if (this.hasEventListener(GeometryEvent.SUB_GEOMETRY_ADDED))
-            this.dispatchEvent(new GeometryEvent(GeometryEvent.SUB_GEOMETRY_ADDED, subGeometry));
-        this.iInvalidateBounds(subGeometry);
-    };
-    /**
-     * Removes a new TriangleSubGeometry object from the list.
-     * @param subGeometry The TriangleSubGeometry object to be removed.
-     */
-    Geometry.prototype.removeSubGeometry = function (subGeometry) {
-        this._subGeometries.splice(this._subGeometries.indexOf(subGeometry), 1);
-        subGeometry.parentGeometry = null;
-        if (this.hasEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED))
-            this.dispatchEvent(new GeometryEvent(GeometryEvent.SUB_GEOMETRY_REMOVED, subGeometry));
-        this.iInvalidateBounds(subGeometry);
-    };
-    /**
-     * Clones the geometry.
-     * @return An exact duplicate of the current Geometry object.
-     */
-    Geometry.prototype.clone = function () {
-        var clone = new Geometry();
-        var len = this._subGeometries.length;
-        for (var i = 0; i < len; ++i)
-            clone.addSubGeometry(this._subGeometries[i].clone());
-        return clone;
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    Geometry.prototype.scale = function (scale) {
-        var numSubGeoms = this._subGeometries.length;
-        for (var i = 0; i < numSubGeoms; ++i)
-            this._subGeometries[i].scale(scale);
-    };
-    /**
-     * Clears all resources used by the Geometry object, including SubGeometries.
-     */
-    Geometry.prototype.dispose = function () {
-        var numSubGeoms = this._subGeometries.length;
-        for (var i = 0; i < numSubGeoms; ++i) {
-            var subGeom = this._subGeometries[0];
-            this.removeSubGeometry(subGeom);
-            subGeom.dispose();
-        }
-    };
-    /**
-     * Scales the uv coordinates (tiling)
-     * @param scaleU The amount by which to scale on the u axis. Default is 1;
-     * @param scaleV The amount by which to scale on the v axis. Default is 1;
-     */
-    Geometry.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-        var numSubGeoms = this._subGeometries.length;
-        for (var i = 0; i < numSubGeoms; ++i)
-            this._subGeometries[i].scaleUV(scaleU, scaleV);
-    };
-    Geometry.prototype.iInvalidateBounds = function (subGeom) {
-        if (this.hasEventListener(GeometryEvent.BOUNDS_INVALID))
-            this.dispatchEvent(new GeometryEvent(GeometryEvent.BOUNDS_INVALID, subGeom));
-    };
-    return Geometry;
-})(NamedAssetBase);
-module.exports = Geometry;
-
-
-},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/events/GeometryEvent":"awayjs-display/lib/events/GeometryEvent"}],"awayjs-display/lib/base/GradientType":[function(require,module,exports){
-/**
- * The GradientType class provides values for the <code>type</code> parameter
- * in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the flash.display.Graphics
- * class.
- */
-var GradientType = (function () {
-    function GradientType() {
-    }
-    /**
-     * Value used to specify a linear gradient fill.
-     */
-    GradientType.LINEAR = "linear";
-    /**
-     * Value used to specify a radial gradient fill.
-     */
-    GradientType.RADIAL = "radial";
-    return GradientType;
-})();
-module.exports = GradientType;
-
-
-},{}],"awayjs-display/lib/base/GraphicsPathWinding":[function(require,module,exports){
-/**
- * The GraphicsPathWinding class provides values for the
- * <code>flash.display.GraphicsPath.winding</code> property and the
- * <code>flash.display.Graphics.drawPath()</code> method to determine the
- * direction to draw a path. A clockwise path is positively wound, and a
- * counter-clockwise path is negatively wound:
- *
- * <p> When paths intersect or overlap, the winding direction determines the
- * rules for filling the areas created by the intersection or overlap:</p>
- */
-var GraphicsPathWinding = (function () {
-    function GraphicsPathWinding() {
-    }
-    GraphicsPathWinding.EVEN_ODD = "evenOdd";
-    GraphicsPathWinding.NON_ZERO = "nonZero";
-    return GraphicsPathWinding;
-})();
-module.exports = GraphicsPathWinding;
-
-
-},{}],"awayjs-display/lib/base/Graphics":[function(require,module,exports){
-/**
- * The Graphics class contains a set of methods that you can use to create a
- * vector shape. Display objects that support drawing include Sprite and Shape
- * objects. Each of these classes includes a <code>graphics</code> property
- * that is a Graphics object. The following are among those helper functions
- * provided for ease of use: <code>drawRect()</code>,
- * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
- * <code>drawEllipse()</code>.
- *
- * <p>You cannot create a Graphics object directly from ActionScript code. If
- * you call <code>new Graphics()</code>, an exception is thrown.</p>
- *
- * <p>The Graphics class is final; it cannot be subclassed.</p>
- */
-var Graphics = (function () {
-    function Graphics() {
-    }
-    /**
-     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
-     * tiled to fill the area. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called. </p>
-     *
-     * @param bitmap A transparent or opaque bitmap image that contains the bits
-     *               to be displayed.
-     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-     *               can use to define transformations on the bitmap. For
-     *               example, you can use the following matrix to rotate a bitmap
-     *               by 45 degrees(pi/4 radians):
-     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
-     *               pattern. If <code>false</code>, the bitmap image does not
-     *               repeat, and the edges of the bitmap are used for any fill
-     *               area that extends beyond the bitmap.
-     *
-     *               <p>For example, consider the following bitmap(a 20 x
-     *               20-pixel checkerboard pattern):</p>
-     *
-     *               <p>When <code>repeat</code> is set to <code>true</code>(as
-     *               in the following example), the bitmap fill repeats the
-     *               bitmap:</p>
-     *
-     *               <p>When <code>repeat</code> is set to <code>false</code>,
-     *               the bitmap fill uses the edge pixels for the fill area
-     *               outside the bitmap:</p>
-     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
-     *               by using a nearest-neighbor algorithm and look pixelated. If
-     *               <code>true</code>, upscaled bitmap images are rendered by
-     *               using a bilinear algorithm. Rendering by using the nearest
-     *               neighbor algorithm is faster.
-     */
-    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
-        if (matrix === void 0) { matrix = null; }
-        if (repeat === void 0) { repeat = true; }
-        if (smooth === void 0) { smooth = false; }
-    };
-    /**
-     * Specifies a simple one-color fill that subsequent calls to other Graphics
-     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
-     * when drawing. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called.</p>
-     *
-     * @param color The color of the fill(0xRRGGBB).
-     * @param alpha The alpha value of the fill(0.0 to 1.0).
-     */
-    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
-        if (alpha === void 0) { alpha = 1; }
-    };
-    /**
-     * Specifies a gradient fill used by subsequent calls to other Graphics
-     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
-     * the object. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called. </p>
-     *
-     * @param type                A value from the GradientType class that
-     *                            specifies which gradient type to use:
-     *                            <code>GradientType.LINEAR</code> or
-     *                            <code>GradientType.RADIAL</code>.
-     * @param colors              An array of RGB hexadecimal color values used
-     *                            in the gradient; for example, red is 0xFF0000,
-     *                            blue is 0x0000FF, and so on. You can specify
-     *                            up to 15 colors. For each color, specify a
-     *                            corresponding value in the alphas and ratios
-     *                            parameters.
-     * @param alphas              An array of alpha values for the corresponding
-     *                            colors in the colors array; valid values are 0
-     *                            to 1. If the value is less than 0, the default
-     *                            is 0. If the value is greater than 1, the
-     *                            default is 1.
-     * @param ratios              An array of color distribution ratios; valid
-     *                            values are 0-255. This value defines the
-     *                            percentage of the width where the color is
-     *                            sampled at 100%. The value 0 represents the
-     *                            left position in the gradient box, and 255
-     *                            represents the right position in the gradient
-     *                            box.
-     * @param matrix              A transformation matrix as defined by the
-     *                            flash.geom.Matrix class. The flash.geom.Matrix
-     *                            class includes a
-     *                            <code>createGradientBox()</code> method, which
-     *                            lets you conveniently set up the matrix for use
-     *                            with the <code>beginGradientFill()</code>
-     *                            method.
-     * @param spreadMethod        A value from the SpreadMethod class that
-     *                            specifies which spread method to use, either:
-     *                            <code>SpreadMethod.PAD</code>,
-     *                            <code>SpreadMethod.REFLECT</code>, or
-     *                            <code>SpreadMethod.REPEAT</code>.
-     *
-     *                            <p>For example, consider a simple linear
-     *                            gradient between two colors:</p>
-     *
-     *                            <p>This example uses
-     *                            <code>SpreadMethod.PAD</code> for the spread
-     *                            method, and the gradient fill looks like the
-     *                            following:</p>
-     *
-     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
-     *                            for the spread method, the gradient fill looks
-     *                            like the following:</p>
-     *
-     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
-     *                            for the spread method, the gradient fill looks
-     *                            like the following:</p>
-     * @param interpolationMethod A value from the InterpolationMethod class that
-     *                            specifies which value to use:
-     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
-     *                            <code>InterpolationMethod.RGB</code>
-     *
-     *                            <p>For example, consider a simple linear
-     *                            gradient between two colors(with the
-     *                            <code>spreadMethod</code> parameter set to
-     *                            <code>SpreadMethod.REFLECT</code>). The
-     *                            different interpolation methods affect the
-     *                            appearance as follows: </p>
-     * @param focalPointRatio     A number that controls the location of the
-     *                            focal point of the gradient. 0 means that the
-     *                            focal point is in the center. 1 means that the
-     *                            focal point is at one border of the gradient
-     *                            circle. -1 means that the focal point is at the
-     *                            other border of the gradient circle. A value
-     *                            less than -1 or greater than 1 is rounded to -1
-     *                            or 1. For example, the following example shows
-     *                            a <code>focalPointRatio</code> set to 0.75:
-     * @throws ArgumentError If the <code>type</code> parameter is not valid.
-     */
-    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-        if (matrix === void 0) { matrix = null; }
-        if (spreadMethod === void 0) { spreadMethod = "pad"; }
-        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
-        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-    };
-    /**
-     * Specifies a shader fill used by subsequent calls to other Graphics methods
-     * (such as <code>lineTo()</code> or <code>drawCircle()</code>) for the
-     * object. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called.</p>
-     *
-     * <p>Shader fills are not supported under GPU rendering; filled areas will
-     * be colored cyan.</p>
-     *
-     * @param shader The shader to use for the fill. This Shader instance is not
-     *               required to specify an image input. However, if an image
-     *               input is specified in the shader, the input must be provided
-     *               manually. To specify the input, set the <code>input</code>
-     *               property of the corresponding ShaderInput property of the
-     *               <code>Shader.data</code> property.
-     *
-     *               <p>When you pass a Shader instance as an argument the shader
-     *               is copied internally. The drawing fill operation uses that
-     *               internal copy, not a reference to the original shader. Any
-     *               changes made to the shader, such as changing a parameter
-     *               value, input, or bytecode, are not applied to the copied
-     *               shader that's used for the fill.</p>
-     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-     *               can use to define transformations on the shader. For
-     *               example, you can use the following matrix to rotate a shader
-     *               by 45 degrees(pi/4 radians):
-     *
-     *               <p>The coordinates received in the shader are based on the
-     *               matrix that is specified for the <code>matrix</code>
-     *               parameter. For a default(<code>null</code>) matrix, the
-     *               coordinates in the shader are local pixel coordinates which
-     *               can be used to sample an input.</p>
-     * @throws ArgumentError When the shader output type is not compatible with
-     *                       this operation(the shader must specify a
-     *                       <code>pixel3</code> or <code>pixel4</code> output).
-     * @throws ArgumentError When the shader specifies an image input that isn't
-     *                       provided.
-     * @throws ArgumentError When a ByteArray or Vector.<Number> instance is used
-     *                       as an input and the <code>width</code> and
-     *                       <code>height</code> properties aren't specified for
-     *                       the ShaderInput, or the specified values don't match
-     *                       the amount of data in the input object. See the
-     *                       <code>ShaderInput.input</code> property for more
-     *                       information.
-     */
-    //		public beginShaderFill(shader:Shader, matrix:Matrix = null)
-    //		{
-    //
-    //		}
-    /**
-     * Clears the graphics that were drawn to this Graphics object, and resets
-     * fill and line style settings.
-     *
-     */
-    Graphics.prototype.clear = function () {
-    };
-    /**
-     * Copies all of drawing commands from the source Graphics object into the
-     * calling Graphics object.
-     *
-     * @param sourceGraphics The Graphics object from which to copy the drawing
-     *                       commands.
-     */
-    Graphics.prototype.copyFrom = function (sourceGraphics) {
-    };
-    /**
-     * Draws a cubic Bezier curve from the current drawing position to the
-     * specified anchor point. Cubic Bezier curves consist of two anchor points
-     * and two control points. The curve interpolates the two anchor points and
-     * curves toward the two control points.
-     *
-     * The four points you use to draw a cubic Bezier curve with the
-     * <code>cubicCurveTo()</code> method are as follows:
-     *
-     * <ul>
-     *   <li>The current drawing position is the first anchor point. </li>
-     *   <li>The anchorX and anchorY parameters specify the second anchor point.
-     *   </li>
-     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
-     *   specify the first control point.</li>
-     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
-     *   specify the second control point.</li>
-     * </ul>
-     *
-     * If you call the <code>cubicCurveTo()</code> method before calling the
-     * <code>moveTo()</code> method, your curve starts at position (0, 0).
-     *
-     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
-     * the current drawing position to (<code>anchorX</code>,
-     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
-     * the current drawing position remains unchanged.
-     *
-     * If your movie clip contains content created with the Flash drawing tools,
-     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
-     * underneath that content.
-     *
-     * @param controlX1 Specifies the horizontal position of the first control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlY1 Specifies the vertical position of the first control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlX2 Specifies the horizontal position of the second control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlY2 Specifies the vertical position of the second control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param anchorX   Specifies the horizontal position of the anchor point
-     *                  relative to the registration point of the parent display
-     *                  object.
-     * @param anchorY   Specifies the vertical position of the anchor point
-     *                  relative to the registration point of the parent display
-     *                  object.
-     */
-    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
-    };
-    /**
-     * Draws a curve using the current line style from the current drawing
-     * position to(anchorX, anchorY) and using the control point that
-     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
-     * drawing position is then set to(<code>anchorX</code>,
-     * <code>anchorY</code>). If the movie clip in which you are drawing contains
-     * content created with the Flash drawing tools, calls to the
-     * <code>curveTo()</code> method are drawn underneath this content. If you
-     * call the <code>curveTo()</code> method before any calls to the
-     * <code>moveTo()</code> method, the default of the current drawing position
-     * is(0, 0). If any of the parameters are missing, this method fails and the
-     * current drawing position is not changed.
-     *
-     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
-     * consist of two anchor points and one control point. The curve interpolates
-     * the two anchor points and curves toward the control point. </p>
-     *
-     * @param controlX A number that specifies the horizontal position of the
-     *                 control point relative to the registration point of the
-     *                 parent display object.
-     * @param controlY A number that specifies the vertical position of the
-     *                 control point relative to the registration point of the
-     *                 parent display object.
-     * @param anchorX  A number that specifies the horizontal position of the
-     *                 next anchor point relative to the registration point of
-     *                 the parent display object.
-     * @param anchorY  A number that specifies the vertical position of the next
-     *                 anchor point relative to the registration point of the
-     *                 parent display object.
-     */
-    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-    };
-    /**
-     * Draws a circle. Set the line style, fill, or both before you call the
-     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
-     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method.
-     *
-     * @param x      The <i>x</i> location of the center of the circle relative
-     *               to the registration point of the parent display object(in
-     *               pixels).
-     * @param y      The <i>y</i> location of the center of the circle relative
-     *               to the registration point of the parent display object(in
-     *               pixels).
-     * @param radius The radius of the circle(in pixels).
-     */
-    Graphics.prototype.drawCircle = function (x, y, radius) {
-    };
-    /**
-     * Draws an ellipse. Set the line style, fill, or both before you call the
-     * <code>drawEllipse()</code> method, by calling the
-     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method.
-     *
-     * @param x      The <i>x</i> location of the top-left of the bounding-box of
-     *               the ellipse relative to the registration point of the parent
-     *               display object(in pixels).
-     * @param y      The <i>y</i> location of the top left of the bounding-box of
-     *               the ellipse relative to the registration point of the parent
-     *               display object(in pixels).
-     * @param width  The width of the ellipse(in pixels).
-     * @param height The height of the ellipse(in pixels).
-     */
-    Graphics.prototype.drawEllipse = function (x, y, width, height) {
-    };
-    /**
-     * Submits a series of IGraphicsData instances for drawing. This method
-     * accepts a Vector containing objects including paths, fills, and strokes
-     * that implement the IGraphicsData interface. A Vector of IGraphicsData
-     * instances can refer to a part of a shape, or a complex fully defined set
-     * of data for rendering a complete shape.
-     *
-     * <p> Graphics paths can contain other graphics paths. If the
-     * <code>graphicsData</code> Vector includes a path, that path and all its
-     * sub-paths are rendered during this operation. </p>
-     *
-     */
-    Graphics.prototype.drawGraphicsData = function (graphicsData) {
-    };
-    /**
-     * Submits a series of commands for drawing. The <code>drawPath()</code>
-     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
-     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
-     * single call. The <code>drawPath()</code> method parameters combine drawing
-     * commands with x- and y-coordinate value pairs and a drawing direction. The
-     * drawing commands are values from the GraphicsPathCommand class. The x- and
-     * y-coordinate value pairs are Numbers in an array where each pair defines a
-     * coordinate location. The drawing direction is a value from the
-     * GraphicsPathWinding class.
-     *
-     * <p> Generally, drawings render faster with <code>drawPath()</code> than
-     * with a series of individual <code>lineTo()</code> and
-     * <code>curveTo()</code> methods. </p>
-     *
-     * <p> The <code>drawPath()</code> method uses a uses a floating computation
-     * so rotation and scaling of shapes is more accurate and gives better
-     * results. However, curves submitted using the <code>drawPath()</code>
-     * method can have small sub-pixel alignment errors when used in conjunction
-     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
-     *
-     * <p> The <code>drawPath()</code> method also uses slightly different rules
-     * for filling and drawing lines. They are: </p>
-     *
-     * <ul>
-     *   <li>When a fill is applied to rendering a path:
-     * <ul>
-     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
-     * stroke rendering will still occur, consistent with the rules for strokes
-     * below.)</li>
-     *   <li>A sub-path that isn't closed(the end point is not equal to the
-     * begin point) is implicitly closed.</li>
-     * </ul>
-     * </li>
-     *   <li>When a stroke is applied to rendering a path:
-     * <ul>
-     *   <li>The sub-paths can be composed of any number of points.</li>
-     *   <li>The sub-path is never implicitly closed.</li>
-     * </ul>
-     * </li>
-     * </ul>
-     *
-     * @param winding Specifies the winding rule using a value defined in the
-     *                GraphicsPathWinding class.
-     */
-    Graphics.prototype.drawPath = function (commands, data, winding) {
-    };
-    /**
-     * Draws a rectangle. Set the line style, fill, or both before you call the
-     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
-     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method.
-     *
-     * @param x      A number indicating the horizontal position relative to the
-     *               registration point of the parent display object(in pixels).
-     * @param y      A number indicating the vertical position relative to the
-     *               registration point of the parent display object(in pixels).
-     * @param width  The width of the rectangle(in pixels).
-     * @param height The height of the rectangle(in pixels).
-     * @throws ArgumentError If the <code>width</code> or <code>height</code>
-     *                       parameters are not a number
-     *                      (<code>Number.NaN</code>).
-     */
-    Graphics.prototype.drawRect = function (x, y, width, height) {
-    };
-    /**
-     * Draws a rounded rectangle. Set the line style, fill, or both before you
-     * call the <code>drawRoundRect()</code> method, by calling the
-     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method.
-     *
-     * @param x             A number indicating the horizontal position relative
-     *                      to the registration point of the parent display
-     *                      object(in pixels).
-     * @param y             A number indicating the vertical position relative to
-     *                      the registration point of the parent display object
-     *                     (in pixels).
-     * @param width         The width of the round rectangle(in pixels).
-     * @param height        The height of the round rectangle(in pixels).
-     * @param ellipseWidth  The width of the ellipse used to draw the rounded
-     *                      corners(in pixels).
-     * @param ellipseHeight The height of the ellipse used to draw the rounded
-     *                      corners(in pixels). Optional; if no value is
-     *                      specified, the default value matches that provided
-     *                      for the <code>ellipseWidth</code> parameter.
-     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
-     *                       <code>ellipseWidth</code> or
-     *                       <code>ellipseHeight</code> parameters are not a
-     *                       number(<code>Number.NaN</code>).
-     */
-    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
-        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
-    };
-    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
-    /**
-     * Renders a set of triangles, typically to distort bitmaps and give them a
-     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
-     * either the current fill, or a bitmap fill, to the triangle faces using a
-     * set of(u,v) coordinates.
-     *
-     * <p> Any type of fill can be used, but if the fill has a transform matrix
-     * that transform matrix is ignored. </p>
-     *
-     * <p> A <code>uvtData</code> parameter improves texture mapping when a
-     * bitmap fill is used. </p>
-     *
-     * @param culling Specifies whether to render triangles that face in a
-     *                specified direction. This parameter prevents the rendering
-     *                of triangles that cannot be seen in the current view. This
-     *                parameter can be set to any value defined by the
-     *                TriangleCulling class.
-     */
-    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
-        if (indices === void 0) { indices = null; }
-        if (uvtData === void 0) { uvtData = null; }
-        if (culling === void 0) { culling = null; }
-    };
-    /**
-     * Applies a fill to the lines and curves that were added since the last call
-     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
-     * specified in the previous call to the <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method. If the current drawing position does not equal the previous
-     * position specified in a <code>moveTo()</code> method and a fill is
-     * defined, the path is closed with a line and then filled.
-     *
-     */
-    Graphics.prototype.endFill = function () {
-    };
-    /**
-     * Specifies a bitmap to use for the line stroke when drawing lines.
-     *
-     * <p>The bitmap line style is used for subsequent calls to Graphics methods
-     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-     * the <code>lineBitmapStyle()</code> method again with different parameters.
-     * </p>
-     *
-     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param bitmap The bitmap to use for the line stroke.
-     * @param matrix An optional transformation matrix as defined by the
-     *               flash.geom.Matrix class. The matrix can be used to scale or
-     *               otherwise manipulate the bitmap before applying it to the
-     *               line style.
-     * @param repeat Whether to repeat the bitmap in a tiled fashion.
-     * @param smooth Whether smoothing should be applied to the bitmap.
-     */
-    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
-        if (matrix === void 0) { matrix = null; }
-        if (repeat === void 0) { repeat = true; }
-        if (smooth === void 0) { smooth = false; }
-    };
-    /**
-     * Specifies a gradient to use for the stroke when drawing lines.
-     *
-     * <p>The gradient line style is used for subsequent calls to Graphics
-     * methods such as the <code>lineTo()</code> methods or the
-     * <code>drawCircle()</code> method. The line style remains in effect until
-     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
-     * methods, or the <code>lineGradientStyle()</code> method again with
-     * different parameters. </p>
-     *
-     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
-     * of drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param type                A value from the GradientType class that
-     *                            specifies which gradient type to use, either
-     *                            GradientType.LINEAR or GradientType.RADIAL.
-     * @param colors              An array of RGB hexadecimal color values used
-     *                            in the gradient; for example, red is 0xFF0000,
-     *                            blue is 0x0000FF, and so on. You can specify
-     *                            up to 15 colors. For each color, specify a
-     *                            corresponding value in the alphas and ratios
-     *                            parameters.
-     * @param alphas              An array of alpha values for the corresponding
-     *                            colors in the colors array; valid values are 0
-     *                            to 1. If the value is less than 0, the default
-     *                            is 0. If the value is greater than 1, the
-     *                            default is 1.
-     * @param ratios              An array of color distribution ratios; valid
-     *                            values are 0-255. This value defines the
-     *                            percentage of the width where the color is
-     *                            sampled at 100%. The value 0 represents the
-     *                            left position in the gradient box, and 255
-     *                            represents the right position in the gradient
-     *                            box.
-     * @param matrix              A transformation matrix as defined by the
-     *                            flash.geom.Matrix class. The flash.geom.Matrix
-     *                            class includes a
-     *                            <code>createGradientBox()</code> method, which
-     *                            lets you conveniently set up the matrix for use
-     *                            with the <code>lineGradientStyle()</code>
-     *                            method.
-     * @param spreadMethod        A value from the SpreadMethod class that
-     *                            specifies which spread method to use:
-     * @param interpolationMethod A value from the InterpolationMethod class that
-     *                            specifies which value to use. For example,
-     *                            consider a simple linear gradient between two
-     *                            colors(with the <code>spreadMethod</code>
-     *                            parameter set to
-     *                            <code>SpreadMethod.REFLECT</code>). The
-     *                            different interpolation methods affect the
-     *                            appearance as follows:
-     * @param focalPointRatio     A number that controls the location of the
-     *                            focal point of the gradient. The value 0 means
-     *                            the focal point is in the center. The value 1
-     *                            means the focal point is at one border of the
-     *                            gradient circle. The value -1 means that the
-     *                            focal point is at the other border of the
-     *                            gradient circle. Values less than -1 or greater
-     *                            than 1 are rounded to -1 or 1. The following
-     *                            image shows a gradient with a
-     *                            <code>focalPointRatio</code> of -0.75:
-     */
-    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-        if (matrix === void 0) { matrix = null; }
-        if (spreadMethod === void 0) { spreadMethod = null; }
-        if (interpolationMethod === void 0) { interpolationMethod = null; }
-        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-    };
-    /**
-     * Specifies a shader to use for the line stroke when drawing lines.
-     *
-     * <p>The shader line style is used for subsequent calls to Graphics methods
-     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-     * the <code>lineBitmapStyle()</code> method again with different parameters.
-     * </p>
-     *
-     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param shader The shader to use for the line stroke.
-     * @param matrix An optional transformation matrix as defined by the
-     *               flash.geom.Matrix class. The matrix can be used to scale or
-     *               otherwise manipulate the bitmap before applying it to the
-     *               line style.
-     */
-    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
-    //		{
-    //
-    //		}
-    /**
-     * Specifies a line style used for subsequent calls to Graphics methods such
-     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineGradientStyle()</code> method, the
-     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
-     * method with different parameters.
-     *
-     * <p>You can call the <code>lineStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within the path.</p>
-     *
-     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
-     * style back to <code>undefined</code>.</p>
-     *
-     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
-     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
-     *
-     * @param thickness    An integer that indicates the thickness of the line in
-     *                     points; valid values are 0-255. If a number is not
-     *                     specified, or if the parameter is undefined, a line is
-     *                     not drawn. If a value of less than 0 is passed, the
-     *                     default is 0. The value 0 indicates hairline
-     *                     thickness; the maximum thickness is 255. If a value
-     *                     greater than 255 is passed, the default is 255.
-     * @param color        A hexadecimal color value of the line; for example,
-     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
-     *                     value is not indicated, the default is 0x000000
-     *                    (black). Optional.
-     * @param alpha        A number that indicates the alpha value of the color
-     *                     of the line; valid values are 0 to 1. If a value is
-     *                     not indicated, the default is 1(solid). If the value
-     *                     is less than 0, the default is 0. If the value is
-     *                     greater than 1, the default is 1.
-     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
-     *                     specifies whether to hint strokes to full pixels. This
-     *                     affects both the position of anchors of a curve and
-     *                     the line stroke size itself. With
-     *                     <code>pixelHinting</code> set to <code>true</code>,
-     *                     line widths are adjusted to full pixel widths. With
-     *                     <code>pixelHinting</code> set to <code>false</code>,
-     *                     disjoints can appear for curves and straight lines.
-     *                     For example, the following illustrations show how
-     *                     Flash Player or Adobe AIR renders two rounded
-     *                     rectangles that are identical, except that the
-     *                     <code>pixelHinting</code> parameter used in the
-     *                     <code>lineStyle()</code> method is set differently
-     *                    (the images are scaled by 200%, to emphasize the
-     *                     difference):
-     *
-     *                     <p>If a value is not supplied, the line does not use
-     *                     pixel hinting.</p>
-     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
-     *                     LineScaleMode class that specifies which scale mode to
-     *                     use:
-     *                     <ul>
-     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
-     *                     scale the line thickness when the object is scaled
-     *                    (the default). </li>
-     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
-     *                     the line thickness. </li>
-     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
-     *                     scale the line thickness if the object is scaled
-     *                     vertically <i>only</i>. For example, consider the
-     *                     following circles, drawn with a one-pixel line, and
-     *                     each with the <code>scaleMode</code> parameter set to
-     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
-     *                     left is scaled vertically only, and the circle on the
-     *                     right is scaled both vertically and horizontally:
-     *                     </li>
-     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
-     *                     scale the line thickness if the object is scaled
-     *                     horizontally <i>only</i>. For example, consider the
-     *                     following circles, drawn with a one-pixel line, and
-     *                     each with the <code>scaleMode</code> parameter set to
-     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
-     *                     the left is scaled horizontally only, and the circle
-     *                     on the right is scaled both vertically and
-     *                     horizontally:   </li>
-     *                     </ul>
-     * @param caps        (Not supported in Flash Lite 4) A value from the
-     *                     CapsStyle class that specifies the type of caps at the
-     *                     end of lines. Valid values are:
-     *                     <code>CapsStyle.NONE</code>,
-     *                     <code>CapsStyle.ROUND</code>, and
-     *                     <code>CapsStyle.SQUARE</code>. If a value is not
-     *                     indicated, Flash uses round caps.
-     *
-     *                     <p>For example, the following illustrations show the
-     *                     different <code>capsStyle</code> settings. For each
-     *                     setting, the illustration shows a blue line with a
-     *                     thickness of 30(for which the <code>capsStyle</code>
-     *                     applies), and a superimposed black line with a
-     *                     thickness of 1(for which no <code>capsStyle</code>
-     *                     applies): </p>
-     * @param joints      (Not supported in Flash Lite 4) A value from the
-     *                     JointStyle class that specifies the type of joint
-     *                     appearance used at angles. Valid values are:
-     *                     <code>JointStyle.BEVEL</code>,
-     *                     <code>JointStyle.MITER</code>, and
-     *                     <code>JointStyle.ROUND</code>. If a value is not
-     *                     indicated, Flash uses round joints.
-     *
-     *                     <p>For example, the following illustrations show the
-     *                     different <code>joints</code> settings. For each
-     *                     setting, the illustration shows an angled blue line
-     *                     with a thickness of 30(for which the
-     *                     <code>jointStyle</code> applies), and a superimposed
-     *                     angled black line with a thickness of 1(for which no
-     *                     <code>jointStyle</code> applies): </p>
-     *
-     *                     <p><b>Note:</b> For <code>joints</code> set to
-     *                     <code>JointStyle.MITER</code>, you can use the
-     *                     <code>miterLimit</code> parameter to limit the length
-     *                     of the miter.</p>
-     * @param miterLimit  (Not supported in Flash Lite 4) A number that
-     *                     indicates the limit at which a miter is cut off. Valid
-     *                     values range from 1 to 255(and values outside that
-     *                     range are rounded to 1 or 255). This value is only
-     *                     used if the <code>jointStyle</code> is set to
-     *                     <code>"miter"</code>. The <code>miterLimit</code>
-     *                     value represents the length that a miter can extend
-     *                     beyond the point at which the lines meet to form a
-     *                     joint. The value expresses a factor of the line
-     *                     <code>thickness</code>. For example, with a
-     *                     <code>miterLimit</code> factor of 2.5 and a
-     *                     <code>thickness</code> of 10 pixels, the miter is cut
-     *                     off at 25 pixels.
-     *
-     *                     <p>For example, consider the following angled lines,
-     *                     each drawn with a <code>thickness</code> of 20, but
-     *                     with <code>miterLimit</code> set to 1, 2, and 4.
-     *                     Superimposed are black reference lines showing the
-     *                     meeting points of the joints:</p>
-     *
-     *                     <p>Notice that a given <code>miterLimit</code> value
-     *                     has a specific maximum angle for which the miter is
-     *                     cut off. The following table lists some examples:</p>
-     */
-    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit) {
-        if (thickness === void 0) { thickness = 0; }
-        if (color === void 0) { color = 0; }
-        if (alpha === void 0) { alpha = 1; }
-        if (pixelHinting === void 0) { pixelHinting = false; }
-        if (scaleMode === void 0) { scaleMode = null; }
-        if (caps === void 0) { caps = null; }
-        if (joints === void 0) { joints = null; }
-        if (miterLimit === void 0) { miterLimit = 3; }
-    };
-    /**
-     * Draws a line using the current line style from the current drawing
-     * position to(<code>x</code>, <code>y</code>); the current drawing position
-     * is then set to(<code>x</code>, <code>y</code>). If the display object in
-     * which you are drawing contains content that was created with the Flash
-     * drawing tools, calls to the <code>lineTo()</code> method are drawn
-     * underneath the content. If you call <code>lineTo()</code> before any calls
-     * to the <code>moveTo()</code> method, the default position for the current
-     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
-     * method fails and the current drawing position is not changed.
-     *
-     * @param x A number that indicates the horizontal position relative to the
-     *          registration point of the parent display object(in pixels).
-     * @param y A number that indicates the vertical position relative to the
-     *          registration point of the parent display object(in pixels).
-     */
-    Graphics.prototype.lineTo = function (x, y) {
-    };
-    /**
-     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
-     * any of the parameters are missing, this method fails and the current
-     * drawing position is not changed.
-     *
-     * @param x A number that indicates the horizontal position relative to the
-     *          registration point of the parent display object(in pixels).
-     * @param y A number that indicates the vertical position relative to the
-     *          registration point of the parent display object(in pixels).
-     */
-    Graphics.prototype.moveTo = function (x, y) {
-    };
-    return Graphics;
-})();
-module.exports = Graphics;
-
-
-},{}],"awayjs-display/lib/base/IBitmapDrawable":[function(require,module,exports){
-
-
-
-},{}],"awayjs-display/lib/base/IGraphicsData":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/geom/Box":"awayjs-core/lib/geom/Box","awayjs-core/lib/geom/MathConsts":"awayjs-core/lib/geom/MathConsts","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Sphere":"awayjs-core/lib/geom/Sphere","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","awayjs-display/lib/base/OrientationMode":"awayjs-display/lib/base/OrientationMode","awayjs-display/lib/base/Transform":"awayjs-display/lib/base/Transform","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/SceneEvent":"awayjs-display/lib/events/SceneEvent","awayjs-display/lib/pick/PickingCollisionVO":"awayjs-display/lib/pick/PickingCollisionVO"}],"awayjs-display/lib/base/IBitmapDrawable":[function(require,module,exports){
 
 
 
@@ -16030,80 +16964,6 @@ module.exports = Graphics;
 
 },{}],"awayjs-display/lib/base/ISubMesh":[function(require,module,exports){
 
-
-
-},{}],"awayjs-display/lib/base/InterpolationMethod":[function(require,module,exports){
-/**
- * The InterpolationMethod class provides values for the
- * <code>interpolationMethod</code> parameter in the
- * <code>Graphics.beginGradientFill()</code> and
- * <code>Graphics.lineGradientStyle()</code> methods. This parameter
- * determines the RGB space to use when rendering the gradient.
- */
-var InterpolationMethod = (function () {
-    function InterpolationMethod() {
-    }
-    /**
-     * Specifies that the RGB interpolation method should be used. This means
-     * that the gradient is rendered with exponential sRGB(standard RGB) space.
-     * The sRGB space is a W3C-endorsed standard that defines a non-linear
-     * conversion between red, green, and blue component values and the actual
-     * intensity of the visible component color.
-     *
-     * <p>For example, consider a simple linear gradient between two colors(with
-     * the <code>spreadMethod</code> parameter set to
-     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-     * affect the appearance as follows: </p>
-     */
-    InterpolationMethod.LINEAR_RGB = "linearRGB";
-    /**
-     * Specifies that the RGB interpolation method should be used. This means
-     * that the gradient is rendered with exponential sRGB(standard RGB) space.
-     * The sRGB space is a W3C-endorsed standard that defines a non-linear
-     * conversion between red, green, and blue component values and the actual
-     * intensity of the visible component color.
-     *
-     * <p>For example, consider a simple linear gradient between two colors(with
-     * the <code>spreadMethod</code> parameter set to
-     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-     * affect the appearance as follows: </p>
-     */
-    InterpolationMethod.RGB = "rgb";
-    return InterpolationMethod;
-})();
-module.exports = InterpolationMethod;
-
-
-},{}],"awayjs-display/lib/base/JointStyle":[function(require,module,exports){
-/**
- * The JointStyle class is an enumeration of constant values that specify the
- * joint style to use in drawing lines. These constants are provided for use
- * as values in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
- * three types of joints: miter, round, and bevel, as the following example
- * shows:
- */
-var JointStyle = (function () {
-    function JointStyle() {
-    }
-    /**
-     * Specifies beveled joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.BEVEL = "bevel";
-    /**
-     * Specifies mitered joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.MITER = "miter";
-    /**
-     * Specifies round joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.ROUND = "round";
-    return JointStyle;
-})();
-module.exports = JointStyle;
 
 
 },{}],"awayjs-display/lib/base/LightBase":[function(require,module,exports){
@@ -16276,396 +17136,7 @@ var LightBase = (function (_super) {
 module.exports = LightBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent"}],"awayjs-display/lib/base/LineScaleMode":[function(require,module,exports){
-/**
- * The LineScaleMode class provides values for the <code>scaleMode</code>
- * parameter in the <code>Graphics.lineStyle()</code> method.
- */
-var LineScaleMode = (function () {
-    function LineScaleMode() {
-    }
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line scales
-     * <i>only</i> vertically. For example, consider the following circles, drawn
-     * with a one-pixel line, and each with the <code>scaleMode</code> parameter
-     * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
-     * scaled only vertically, and the circle on the right is scaled both
-     * vertically and horizontally.
-     */
-    LineScaleMode.HORIZONTAL = "horizontal";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line never scales.
-     */
-    LineScaleMode.NONE = "none";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line always scales
-     * when the object is scaled(the default).
-     */
-    LineScaleMode.NORMAL = "normal";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line scales
-     * <i>only</i> horizontally. For example, consider the following circles,
-     * drawn with a one-pixel line, and each with the <code>scaleMode</code>
-     * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
-     * left is scaled only horizontally, and the circle on the right is scaled
-     * both vertically and horizontally.
-     */
-    LineScaleMode.VERTICAL = "vertical";
-    return LineScaleMode;
-})();
-module.exports = LineScaleMode;
-
-
-},{}],"awayjs-display/lib/base/LineSubGeometry":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
-/**
- * @class LineSubGeometry
- */
-var LineSubGeometry = (function (_super) {
-    __extends(LineSubGeometry, _super);
-    /**
-     *
-     */
-    function LineSubGeometry() {
-        _super.call(this, true);
-        this._positionsDirty = true;
-        this._boundingPositionDirty = true;
-        this._thicknessDirty = true;
-        this._colorsDirty = true;
-        this._pSubMeshClass = LineSubMesh;
-    }
-    LineSubGeometry.prototype._pUpdateStrideOffset = function () {
-        this._pOffset[LineSubGeometry.VERTEX_DATA] = 0;
-        var stride = 0;
-        this._pOffset[LineSubGeometry.START_POSITION_DATA] = stride;
-        stride += 3;
-        this._pOffset[LineSubGeometry.END_POSITION_DATA] = stride;
-        stride += 3;
-        this._pOffset[LineSubGeometry.THICKNESS_DATA] = stride;
-        stride += 1;
-        this._pOffset[LineSubGeometry.COLOR_DATA] = stride;
-        stride += 4;
-        this._pStride[LineSubGeometry.VERTEX_DATA] = stride;
-        this._pStride[LineSubGeometry.START_POSITION_DATA] = stride;
-        this._pStride[LineSubGeometry.END_POSITION_DATA] = stride;
-        this._pStride[LineSubGeometry.THICKNESS_DATA] = stride;
-        this._pStride[LineSubGeometry.COLOR_DATA] = stride;
-        var len = this._pNumVertices * stride;
-        if (this._pVertices == null)
-            this._pVertices = new Array(len);
-        else if (this._pVertices.length != len)
-            this._pVertices.length = len;
-        this._pStrideOffsetDirty = false;
-    };
-    Object.defineProperty(LineSubGeometry.prototype, "vertices", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._startPositions, this._endPositions);
-            if (this._thicknessDirty)
-                this.updateThickness(this._thickness);
-            if (this._colorsDirty)
-                this.updateColors(this._startColors, this._endColors);
-            return this._pVertices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "startPositions", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._startPositions, this._endPositions);
-            return this._startPositions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "endPositions", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._startPositions, this._endPositions);
-            return this._endPositions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "thickness", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._thicknessDirty)
-                this.updateThickness(this._thickness);
-            return this._thickness;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "startColors", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._colorsDirty)
-                this.updateColors(this._startColors, this._endColors);
-            return this._startColors;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "endColors", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._colorsDirty)
-                this.updateColors(this._startColors, this._endColors);
-            return this._endColors;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSubGeometry.prototype, "numSegments", {
-        /**
-         * The total amount of segments in the TriangleSubGeometry.
-         */
-        get: function () {
-            return this._numSegments;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    LineSubGeometry.prototype.getBoundingPositions = function () {
-        if (this._boundingPositionDirty)
-            this._boundingPositions = this.startPositions.concat(this.endPositions);
-        return this._boundingPositions;
-    };
-    /**
-     *
-     */
-    LineSubGeometry.prototype.updatePositions = function (startValues, endValues) {
-        var i;
-        var j;
-        var values;
-        var index;
-        var stride;
-        var positions;
-        var indices;
-        this._startPositions = startValues;
-        if (this._startPositions == null)
-            this._startPositions = new Array();
-        this._endPositions = endValues;
-        if (this._endPositions == null)
-            this._endPositions = new Array();
-        this._boundingPositionDirty = true;
-        this._numSegments = this._startPositions.length / 3;
-        this._pNumVertices = this._numSegments * 4;
-        var lenV = this._pNumVertices * this.getStride(LineSubGeometry.VERTEX_DATA);
-        if (this._pVertices == null)
-            this._pVertices = new Array(lenV);
-        else if (this._pVertices.length != lenV)
-            this._pVertices.length = lenV;
-        i = 0;
-        j = 0;
-        index = this.getOffset(LineSubGeometry.START_POSITION_DATA);
-        stride = this.getStride(LineSubGeometry.START_POSITION_DATA);
-        positions = this._pVertices;
-        indices = new Array();
-        while (i < startValues.length) {
-            values = (index / stride & 1) ? endValues : startValues;
-            positions[index] = values[i];
-            positions[index + 1] = values[i + 1];
-            positions[index + 2] = values[i + 2];
-            values = (index / stride & 1) ? startValues : endValues;
-            positions[index + 3] = values[i];
-            positions[index + 4] = values[i + 1];
-            positions[index + 5] = values[i + 2];
-            if (++j == 4) {
-                var o = index / stride - 3;
-                indices.push(o, o + 1, o + 2, o + 3, o + 2, o + 1);
-                j = 0;
-                i += 3;
-            }
-            index += stride;
-        }
-        this.updateIndices(indices);
-        this.pInvalidateBounds();
-        this.notifyPositionsUpdate();
-        this._positionsDirty = false;
-    };
-    /**
-     * Updates the thickness.
-     */
-    LineSubGeometry.prototype.updateThickness = function (values) {
-        var i;
-        var j;
-        var index;
-        var offset;
-        var stride;
-        var thickness;
-        this._thickness = values;
-        if (values != null) {
-            i = 0;
-            j = 0;
-            offset = this.getOffset(LineSubGeometry.THICKNESS_DATA);
-            stride = this.getStride(LineSubGeometry.THICKNESS_DATA);
-            thickness = this._pVertices;
-            index = offset;
-            while (i < values.length) {
-                thickness[index] = (Math.floor(0.5 * (index - offset) / stride + 0.5) & 1) ? -values[i] : values[i];
-                if (++j == 4) {
-                    j = 0;
-                    i++;
-                }
-                index += stride;
-            }
-        }
-        this.notifyThicknessUpdate();
-        this._thicknessDirty = false;
-    };
-    /**
-     *
-     */
-    LineSubGeometry.prototype.updateColors = function (startValues, endValues) {
-        var i;
-        var j;
-        var values;
-        var index;
-        var offset;
-        var stride;
-        var colors;
-        this._startColors = startValues;
-        this._endColors = endValues;
-        //default to white
-        if (this._startColors == null) {
-            this._startColors = new Array(this._numSegments * 4);
-            i = 0;
-            while (i < this._startColors.length)
-                this._startColors[i++] = 1;
-        }
-        if (this._endColors == null) {
-            this._endColors = new Array(this._numSegments * 4);
-            i = 0;
-            while (i < this._endColors.length)
-                this._endColors[i++] = 1;
-        }
-        i = 0;
-        j = 0;
-        offset = this.getOffset(LineSubGeometry.COLOR_DATA);
-        stride = this.getStride(LineSubGeometry.COLOR_DATA);
-        colors = this._pVertices;
-        index = offset;
-        while (i < this._startColors.length) {
-            values = ((index - offset) / stride & 1) ? this._endColors : this._startColors;
-            colors[index] = values[i];
-            colors[index + 1] = values[i + 1];
-            colors[index + 2] = values[i + 2];
-            colors[index + 3] = values[i + 3];
-            if (++j == 4) {
-                j = 0;
-                i += 4;
-            }
-            index += stride;
-        }
-        this.notifyColorsUpdate();
-        this._colorsDirty = false;
-    };
-    /**
-     *
-     */
-    LineSubGeometry.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this._startPositions = null;
-        this._endPositions = null;
-        this._thickness = null;
-        this._startColors = null;
-        this._endColors = null;
-    };
-    /**
-     * @protected
-     */
-    LineSubGeometry.prototype.pInvalidateBounds = function () {
-        if (this.parentGeometry)
-            this.parentGeometry.iInvalidateBounds(this);
-    };
-    /**
-     * Clones the current object
-     * @return An exact duplicate of the current object.
-     */
-    LineSubGeometry.prototype.clone = function () {
-        var clone = new LineSubGeometry();
-        clone.updateIndices(this._pIndices.concat());
-        clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
-        clone.updateThickness(this._thickness.concat());
-        clone.updatePositions(this._startPositions.concat(), this._endPositions.concat());
-        return clone;
-    };
-    LineSubGeometry.prototype._pNotifyVerticesUpdate = function () {
-        this._pStrideOffsetDirty = true;
-        this.notifyPositionsUpdate();
-        this.notifyThicknessUpdate();
-        this.notifyColorsUpdate();
-    };
-    LineSubGeometry.prototype.notifyPositionsUpdate = function () {
-        if (this._positionsDirty)
-            return;
-        this._positionsDirty = true;
-        if (!this._positionsUpdated)
-            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
-        this.dispatchEvent(this._positionsUpdated);
-    };
-    LineSubGeometry.prototype.notifyThicknessUpdate = function () {
-        if (this._thicknessDirty)
-            return;
-        this._thicknessDirty = true;
-        if (!this._thicknessUpdated)
-            this._thicknessUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.THICKNESS_DATA);
-        this.dispatchEvent(this._thicknessUpdated);
-    };
-    LineSubGeometry.prototype.notifyColorsUpdate = function () {
-        if (this._colorsDirty)
-            return;
-        this._colorsDirty = true;
-        if (!this._colorUpdated)
-            this._colorUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, LineSubGeometry.COLOR_DATA);
-        this.dispatchEvent(this._colorUpdated);
-    };
-    LineSubGeometry.VERTEX_DATA = "vertices";
-    LineSubGeometry.START_POSITION_DATA = "startPositions";
-    LineSubGeometry.END_POSITION_DATA = "endPositions";
-    LineSubGeometry.THICKNESS_DATA = "thickness";
-    LineSubGeometry.COLOR_DATA = "colors";
-    //TODO - move these to StageGL
-    LineSubGeometry.POSITION_FORMAT = "float3";
-    LineSubGeometry.COLOR_FORMAT = "float4";
-    LineSubGeometry.THICKNESS_FORMAT = "float1";
-    return LineSubGeometry;
-})(SubGeometryBase);
-module.exports = LineSubGeometry;
-
-
-},{"awayjs-display/lib/base/LineSubMesh":"awayjs-display/lib/base/LineSubMesh","awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent"}],"awayjs-display/lib/base/LineSubMesh":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent"}],"awayjs-display/lib/base/LineSubMesh":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -17006,243 +17477,7 @@ var OrientationMode = (function () {
 module.exports = OrientationMode;
 
 
-},{}],"awayjs-display/lib/base/PixelSnapping":[function(require,module,exports){
-/**
- * The PixelSnapping class is an enumeration of constant values for setting
- * the pixel snapping options by using the <code>pixelSnapping</code> property
- * of a Bitmap object.
- */
-var PixelSnapping = (function () {
-    function PixelSnapping() {
-    }
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that the bitmap image is always snapped to the
-     * nearest pixel, independent of any transformation.
-     */
-    PixelSnapping.ALWAYS = "always";
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that the bitmap image is snapped to the nearest
-     * pixel if it is drawn with no rotation or skew and it is drawn at a scale
-     * factor of 99.9% to 100.1%. If these conditions are satisfied, the image is
-     * drawn at 100% scale, snapped to the nearest pixel. Internally, this
-     * setting allows the image to be drawn as fast as possible by using the
-     * vector renderer.
-     */
-    PixelSnapping.AUTO = "auto";
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that no pixel snapping occurs.
-     */
-    PixelSnapping.NEVER = "never";
-    return PixelSnapping;
-})();
-module.exports = PixelSnapping;
-
-
-},{}],"awayjs-display/lib/base/SpreadMethod":[function(require,module,exports){
-/**
- * The SpreadMethod class provides values for the <code>spreadMethod</code>
- * parameter in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the Graphics class.
- *
- * <p>The following example shows the same gradient fill using various spread
- * methods:</p>
- */
-var SpreadMethod = (function () {
-    function SpreadMethod() {
-    }
-    /**
-     * Specifies that the gradient use the <i>pad</i> spread method.
-     */
-    SpreadMethod.PAD = "pad";
-    /**
-     * Specifies that the gradient use the <i>reflect</i> spread method.
-     */
-    SpreadMethod.REFLECT = "reflect";
-    /**
-     * Specifies that the gradient use the <i>repeat</i> spread method.
-     */
-    SpreadMethod.REPEAT = "repeat";
-    return SpreadMethod;
-})();
-module.exports = SpreadMethod;
-
-
-},{}],"awayjs-display/lib/base/SubGeometryBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
-/**
- * @class away.base.TriangleSubGeometry
- */
-var SubGeometryBase = (function (_super) {
-    __extends(SubGeometryBase, _super);
-    /**
-     *
-     */
-    function SubGeometryBase(concatenatedArrays) {
-        _super.call(this);
-        this._pStrideOffsetDirty = true;
-        this._pConcatenateArrays = true;
-        this._pStride = new Object();
-        this._pOffset = new Object();
-        this._pConcatenateArrays = concatenatedArrays;
-    }
-    SubGeometryBase.prototype._pUpdateStrideOffset = function () {
-        throw new AbstractMethodError();
-    };
-    Object.defineProperty(SubGeometryBase.prototype, "subMeshClass", {
-        get: function () {
-            return this._pSubMeshClass;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SubGeometryBase.prototype, "concatenateArrays", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pConcatenateArrays;
-        },
-        set: function (value) {
-            if (this._pConcatenateArrays == value)
-                return;
-            this._pConcatenateArrays = value;
-            this._pStrideOffsetDirty = true;
-            if (value)
-                this._pNotifyVerticesUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SubGeometryBase.prototype, "indices", {
-        /**
-         * The raw index data that define the faces.
-         */
-        get: function () {
-            return this._pIndices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SubGeometryBase.prototype, "vertices", {
-        /**
-         *
-         */
-        get: function () {
-            this.updateVertices();
-            return this._pVertices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
-        /**
-         * The total amount of triangles in the TriangleSubGeometry.
-         */
-        get: function () {
-            return this._numTriangles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SubGeometryBase.prototype, "numVertices", {
-        get: function () {
-            return this._pNumVertices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     */
-    SubGeometryBase.prototype.getStride = function (dataType) {
-        if (this._pStrideOffsetDirty)
-            this._pUpdateStrideOffset();
-        return this._pStride[dataType];
-    };
-    /**
-     *
-     */
-    SubGeometryBase.prototype.getOffset = function (dataType) {
-        if (this._pStrideOffsetDirty)
-            this._pUpdateStrideOffset();
-        return this._pOffset[dataType];
-    };
-    SubGeometryBase.prototype.updateVertices = function () {
-        throw new AbstractMethodError();
-    };
-    /**
-     *
-     */
-    SubGeometryBase.prototype.dispose = function () {
-        this._pIndices = null;
-        this._pVertices = null;
-    };
-    /**
-     * Updates the face indices of the TriangleSubGeometry.
-     *
-     * @param indices The face indices to upload.
-     */
-    SubGeometryBase.prototype.updateIndices = function (indices) {
-        this._pIndices = indices;
-        this._numIndices = indices.length;
-        this._numTriangles = this._numIndices / 3;
-        this.notifyIndicesUpdate();
-    };
-    /**
-     * @protected
-     */
-    SubGeometryBase.prototype.pInvalidateBounds = function () {
-        if (this.parentGeometry)
-            this.parentGeometry.iInvalidateBounds(this);
-    };
-    /**
-     * Clones the current object
-     * @return An exact duplicate of the current object.
-     */
-    SubGeometryBase.prototype.clone = function () {
-        throw new AbstractMethodError();
-    };
-    SubGeometryBase.prototype.applyTransformation = function (transform) {
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    SubGeometryBase.prototype.scale = function (scale) {
-    };
-    SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-    };
-    SubGeometryBase.prototype.getBoundingPositions = function () {
-        throw new AbstractMethodError();
-    };
-    SubGeometryBase.prototype.notifyIndicesUpdate = function () {
-        if (!this._indicesUpdated)
-            this._indicesUpdated = new SubGeometryEvent(SubGeometryEvent.INDICES_UPDATED);
-        this.dispatchEvent(this._indicesUpdated);
-    };
-    SubGeometryBase.prototype._pNotifyVerticesUpdate = function () {
-        throw new AbstractMethodError();
-    };
-    SubGeometryBase.VERTEX_DATA = "vertices";
-    return SubGeometryBase;
-})(NamedAssetBase);
-module.exports = SubGeometryBase;
-
-
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent"}],"awayjs-display/lib/base/SubMeshBase":[function(require,module,exports){
+},{}],"awayjs-display/lib/base/SubMeshBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -17692,1240 +17927,7 @@ var Transform = (function () {
 module.exports = Transform;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-display/lib/base/TriangleCulling":[function(require,module,exports){
-/**
- * Defines codes for culling algorithms that determine which triangles not to
- * render when drawing triangle paths.
- *
- * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
- * sign of a triangle's normal along the z-axis. The normal is a 3D vector
- * that is perpendicular to the surface of the triangle. </p>
- *
- * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
- * has a positive normal value. That is, its normal points in a positive
- * z-axis direction, away from the current view point. When the
- * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
- * positive normals are not rendered. Another term for this is backface
- * culling. </p>
- *
- * <p> A triangle whose vertices are arranged in a counter-clockwise order has
- * a negative normal value. That is, its normal points in a negative z-axis
- * direction, toward the current view point. When the
- * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
- * negative normals will not be rendered. </p>
- */
-var TriangleCulling = (function () {
-    function TriangleCulling() {
-    }
-    /**
-     * Specifies culling of all triangles facing toward the current view point.
-     */
-    TriangleCulling.NEGATIVE = "negative";
-    /**
-     * Specifies no culling. All triangles in the path are rendered.
-     */
-    TriangleCulling.NONE = "none";
-    /**
-     * Specifies culling of all triangles facing away from the current view
-     * point. This is also known as backface culling.
-     */
-    TriangleCulling.POSITIVE = "positive";
-    return TriangleCulling;
-})();
-module.exports = TriangleCulling;
-
-
-},{}],"awayjs-display/lib/base/TriangleSubGeometry":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
-/**
- * @class away.base.TriangleSubGeometry
- */
-var TriangleSubGeometry = (function (_super) {
-    __extends(TriangleSubGeometry, _super);
-    /**
-     *
-     */
-    function TriangleSubGeometry(concatenatedArrays) {
-        _super.call(this, concatenatedArrays);
-        this._positionsDirty = true;
-        this._faceNormalsDirty = true;
-        this._faceTangentsDirty = true;
-        this._vertexNormalsDirty = true;
-        this._vertexTangentsDirty = true;
-        this._uvsDirty = true;
-        this._secondaryUVsDirty = true;
-        this._jointIndicesDirty = true;
-        this._jointWeightsDirty = true;
-        this._concatenateArrays = true;
-        this._autoDeriveNormals = true;
-        this._autoDeriveTangents = true;
-        this._autoDeriveUVs = false;
-        this._useFaceWeights = false;
-        this._scaleU = 1;
-        this._scaleV = 1;
-        this._pSubMeshClass = TriangleSubMesh;
-    }
-    Object.defineProperty(TriangleSubGeometry.prototype, "scaleU", {
-        /**
-         *
-         */
-        get: function () {
-            return this._scaleU;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "scaleV", {
-        /**
-         *
-         */
-        get: function () {
-            return this._scaleV;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "useCondensedIndices", {
-        /**
-         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-         * by condensing the number of joint index values required per mesh. Only applicable to
-         * skeleton animations that utilise more than one mesh object. Defaults to false.
-         */
-        get: function () {
-            return this._useCondensedIndices;
-        },
-        set: function (value) {
-            if (this._useCondensedIndices == value)
-                return;
-            this._useCondensedIndices = value;
-            this.notifyJointIndicesUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TriangleSubGeometry.prototype._pUpdateStrideOffset = function () {
-        if (this._concatenateArrays) {
-            this._pOffset[TriangleSubGeometry.VERTEX_DATA] = 0;
-            //always have positions
-            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
-            var stride = 3;
-            if (this._vertexNormals != null) {
-                this._pOffset[TriangleSubGeometry.NORMAL_DATA] = stride;
-                stride += 3;
-            }
-            if (this._vertexTangents != null) {
-                this._pOffset[TriangleSubGeometry.TANGENT_DATA] = stride;
-                stride += 3;
-            }
-            if (this._uvs != null) {
-                this._pOffset[TriangleSubGeometry.UV_DATA] = stride;
-                stride += 2;
-            }
-            if (this._secondaryUVs != null) {
-                this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
-                stride += 2;
-            }
-            if (this._jointIndices != null) {
-                this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
-                stride += this._jointsPerVertex;
-            }
-            if (this._jointWeights != null) {
-                this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
-                stride += this._jointsPerVertex;
-            }
-            this._pStride[TriangleSubGeometry.VERTEX_DATA] = stride;
-            this._pStride[TriangleSubGeometry.POSITION_DATA] = stride;
-            this._pStride[TriangleSubGeometry.NORMAL_DATA] = stride;
-            this._pStride[TriangleSubGeometry.TANGENT_DATA] = stride;
-            this._pStride[TriangleSubGeometry.UV_DATA] = stride;
-            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
-            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
-            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
-            var len = this._pNumVertices * stride;
-            if (this._pVertices == null)
-                this._pVertices = new Array(len);
-            else if (this._pVertices.length != len)
-                this._pVertices.length = len;
-        }
-        else {
-            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.NORMAL_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.TANGENT_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.UV_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = 0;
-            this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = 0;
-            this._pStride[TriangleSubGeometry.POSITION_DATA] = 3;
-            this._pStride[TriangleSubGeometry.NORMAL_DATA] = 3;
-            this._pStride[TriangleSubGeometry.TANGENT_DATA] = 3;
-            this._pStride[TriangleSubGeometry.UV_DATA] = 2;
-            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = 2;
-            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = this._jointsPerVertex;
-            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = this._jointsPerVertex;
-        }
-        this._pStrideOffsetDirty = false;
-    };
-    Object.defineProperty(TriangleSubGeometry.prototype, "jointsPerVertex", {
-        /**
-         *
-         */
-        get: function () {
-            return this._jointsPerVertex;
-        },
-        set: function (value) {
-            if (this._jointsPerVertex == value)
-                return;
-            this._jointsPerVertex = value;
-            this._pStrideOffsetDirty = true;
-            if (this._pConcatenateArrays)
-                this._pNotifyVerticesUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveUVs", {
-        /**
-         * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
-         * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
-         * in cases where UV data is explicitly defined or the material does not require UV data.
-         */
-        get: function () {
-            return this._autoDeriveUVs;
-        },
-        set: function (value) {
-            if (this._autoDeriveUVs == value)
-                return;
-            this._autoDeriveUVs = value;
-            if (value)
-                this.notifyUVsUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveNormals", {
-        /**
-         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
-         * explicitly.
-         */
-        get: function () {
-            return this._autoDeriveNormals;
-        },
-        set: function (value) {
-            if (this._autoDeriveNormals == value)
-                return;
-            this._autoDeriveNormals = value;
-            if (value)
-                this.notifyNormalsUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveTangents", {
-        /**
-         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
-         * explicitly.
-         */
-        get: function () {
-            return this._autoDeriveTangents;
-        },
-        set: function (value) {
-            if (this._autoDeriveTangents == value)
-                return;
-            this._autoDeriveTangents = value;
-            if (value)
-                this.notifyTangentsUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "vertices", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._positions);
-            if (this._vertexNormalsDirty)
-                this.updateVertexNormals(this._vertexNormals);
-            if (this._vertexTangentsDirty)
-                this.updateVertexTangents(this._vertexTangents);
-            if (this._uvsDirty)
-                this.updateUVs(this._uvs);
-            if (this._secondaryUVsDirty)
-                this.updateSecondaryUVs(this._secondaryUVs);
-            if (this._jointIndicesDirty)
-                this.updateJointIndices(this._jointIndices);
-            if (this._jointWeightsDirty)
-                this.updateJointWeights(this._jointWeights);
-            return this._pVertices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "positions", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._positionsDirty)
-                this.updatePositions(this._positions);
-            return this._positions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "vertexNormals", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._vertexNormalsDirty)
-                this.updateVertexNormals(this._vertexNormals);
-            return this._vertexNormals;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "vertexTangents", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._vertexTangentsDirty)
-                this.updateVertexTangents(this._vertexTangents);
-            return this._vertexTangents;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "faceNormals", {
-        /**
-         * The raw data of the face normals, in the same order as the faces are listed in the index list.
-         */
-        get: function () {
-            if (this._faceNormalsDirty)
-                this.updateFaceNormals();
-            return this._faceNormals;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "faceTangents", {
-        /**
-         * The raw data of the face tangets, in the same order as the faces are listed in the index list.
-         */
-        get: function () {
-            if (this._faceTangentsDirty)
-                this.updateFaceTangents();
-            return this._faceTangents;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "uvs", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._uvsDirty)
-                this.updateUVs(this._uvs);
-            return this._uvs;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "secondaryUVs", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._secondaryUVsDirty)
-                this.updateSecondaryUVs(this._secondaryUVs);
-            return this._secondaryUVs;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "jointIndices", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._jointIndicesDirty)
-                this.updateJointIndices(this._jointIndices);
-            if (this._useCondensedIndices)
-                return this._condensedJointIndices;
-            return this._jointIndices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "jointWeights", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._jointWeightsDirty)
-                this.updateJointWeights(this._jointWeights);
-            return this._jointWeights;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "useFaceWeights", {
-        /**
-         * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
-         */
-        get: function () {
-            return this._useFaceWeights;
-        },
-        set: function (value) {
-            if (this._useFaceWeights == value)
-                return;
-            this._useFaceWeights = value;
-            if (this._autoDeriveNormals)
-                this.notifyNormalsUpdate();
-            if (this._autoDeriveTangents)
-                this.notifyTangentsUpdate();
-            this._faceNormalsDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "numCondensedJoints", {
-        get: function () {
-            if (this._jointIndicesDirty)
-                this.updateJointIndices(this._jointIndices);
-            return this._numCondensedJoints;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TriangleSubGeometry.prototype, "condensedIndexLookUp", {
-        get: function () {
-            if (this._jointIndicesDirty)
-                this.updateJointIndices(this._jointIndices);
-            return this._condensedIndexLookUp;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TriangleSubGeometry.prototype.getBoundingPositions = function () {
-        if (this._positionsDirty)
-            this.updatePositions(this._positions);
-        return this._positions;
-    };
-    /**
-     *
-     */
-    TriangleSubGeometry.prototype.updatePositions = function (values) {
-        var i;
-        var index;
-        var stride;
-        var positions;
-        this._positions = values;
-        if (this._positions == null)
-            this._positions = new Array();
-        this._pNumVertices = this._positions.length / 3;
-        if (this._concatenateArrays) {
-            var len = this._pNumVertices * this.getStride(TriangleSubGeometry.VERTEX_DATA);
-            if (this._pVertices == null)
-                this._pVertices = new Array(len);
-            else if (this._pVertices.length != len)
-                this._pVertices.length = len;
-            i = 0;
-            index = this.getOffset(TriangleSubGeometry.POSITION_DATA);
-            stride = this.getStride(TriangleSubGeometry.POSITION_DATA);
-            positions = this._pVertices;
-            while (i < values.length) {
-                positions[index] = values[i++];
-                positions[index + 1] = values[i++];
-                positions[index + 2] = values[i++];
-                index += stride;
-            }
-        }
-        if (this._autoDeriveNormals)
-            this.notifyNormalsUpdate();
-        if (this._autoDeriveTangents)
-            this.notifyTangentsUpdate();
-        if (this._autoDeriveUVs)
-            this.notifyUVsUpdate();
-        this.pInvalidateBounds();
-        this.notifyPositionsUpdate();
-        this._positionsDirty = false;
-    };
-    /**
-     * Updates the vertex normals based on the geometry.
-     */
-    TriangleSubGeometry.prototype.updateVertexNormals = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var normals;
-        if (!this._autoDeriveNormals) {
-            if ((this._vertexNormals == null || values == null) && (this._vertexNormals != null || values != null)) {
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            this._vertexNormals = values;
-            if (values != null && this._concatenateArrays) {
-                i = 0;
-                index = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
-                stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
-                normals = this._pVertices;
-                while (i < values.length) {
-                    normals[index] = values[i++];
-                    normals[index + 1] = values[i++];
-                    normals[index + 2] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        else {
-            if (this._vertexNormals == null) {
-                this._vertexNormals = new Array(this._positions.length);
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            if (this._faceNormalsDirty)
-                this.updateFaceNormals();
-            offset = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
-            stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
-            //autoderived normals
-            normals = this._concatenateArrays ? this._pVertices : this._vertexNormals;
-            var f1 = 0;
-            var f2 = 1;
-            var f3 = 2;
-            index = offset;
-            //clear normal values
-            var lenV = normals.length;
-            while (index < lenV) {
-                normals[index] = 0;
-                normals[index + 1] = 0;
-                normals[index + 2] = 0;
-                index += stride;
-            }
-            var k = 0;
-            var lenI = this._pIndices.length;
-            var weight;
-            i = 0;
-            while (i < lenI) {
-                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
-                index = offset + this._pIndices[i++] * stride;
-                normals[index] += this._faceNormals[f1] * weight;
-                normals[index + 1] += this._faceNormals[f2] * weight;
-                normals[index + 2] += this._faceNormals[f3] * weight;
-                index = offset + this._pIndices[i++] * stride;
-                normals[index] += this._faceNormals[f1] * weight;
-                normals[index + 1] += this._faceNormals[f2] * weight;
-                normals[index + 2] += this._faceNormals[f3] * weight;
-                index = offset + this._pIndices[i++] * stride;
-                normals[index] += this._faceNormals[f1] * weight;
-                normals[index + 1] += this._faceNormals[f2] * weight;
-                normals[index + 2] += this._faceNormals[f3] * weight;
-                f1 += 3;
-                f2 += 3;
-                f3 += 3;
-            }
-            i = 0;
-            index = offset;
-            while (index < lenV) {
-                var vx = normals[index];
-                var vy = normals[index + 1];
-                var vz = normals[index + 2];
-                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-                if (this._concatenateArrays) {
-                    this._vertexNormals[i++] = normals[index] = vx * d;
-                    this._vertexNormals[i++] = normals[index + 1] = vy * d;
-                    this._vertexNormals[i++] = normals[index + 2] = vz * d;
-                }
-                else {
-                    normals[index] = vx * d;
-                    normals[index + 1] = vy * d;
-                    normals[index + 2] = vz * d;
-                }
-                index += stride;
-            }
-        }
-        this.notifyNormalsUpdate();
-        this._vertexNormalsDirty = false;
-    };
-    /**
-     * Updates the vertex tangents based on the geometry.
-     */
-    TriangleSubGeometry.prototype.updateVertexTangents = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var tangents;
-        if (!this._autoDeriveTangents) {
-            if ((this._vertexTangents == null || values == null) && (this._vertexTangents != null || values != null)) {
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            this._vertexTangents = values;
-            if (values != null && this._concatenateArrays) {
-                i = 0;
-                index = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
-                stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
-                tangents = this._pVertices;
-                while (i < values.length) {
-                    tangents[index] = values[i++];
-                    tangents[index + 1] = values[i++];
-                    tangents[index + 2] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        else {
-            if (this._vertexTangents == null) {
-                this._vertexTangents = new Array(this._positions.length);
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            if (this._faceTangentsDirty)
-                this.updateFaceTangents();
-            offset = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
-            stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
-            //autoderived tangents
-            tangents = this._concatenateArrays ? this._pVertices : this._vertexTangents;
-            index = offset;
-            //clear tangent values
-            var lenV = tangents.length;
-            while (index < lenV) {
-                tangents[index] = 0;
-                tangents[index + 1] = 0;
-                tangents[index + 2] = 0;
-                index += stride;
-            }
-            var k = 0;
-            var weight;
-            var f1 = 0;
-            var f2 = 1;
-            var f3 = 2;
-            i = 0;
-            //collect face tangents
-            var lenI = this._pIndices.length;
-            while (i < lenI) {
-                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
-                index = offset + this._pIndices[i++] * stride;
-                tangents[index++] += this._faceTangents[f1] * weight;
-                tangents[index++] += this._faceTangents[f2] * weight;
-                tangents[index] += this._faceTangents[f3] * weight;
-                index = offset + this._pIndices[i++] * stride;
-                tangents[index++] += this._faceTangents[f1] * weight;
-                tangents[index++] += this._faceTangents[f2] * weight;
-                tangents[index] += this._faceTangents[f3] * weight;
-                index = offset + this._pIndices[i++] * stride;
-                tangents[index++] += this._faceTangents[f1] * weight;
-                tangents[index++] += this._faceTangents[f2] * weight;
-                tangents[index] += this._faceTangents[f3] * weight;
-                f1 += 3;
-                f2 += 3;
-                f3 += 3;
-            }
-            i = 0;
-            index = offset;
-            while (index < lenV) {
-                var vx = tangents[index];
-                var vy = tangents[index + 1];
-                var vz = tangents[index + 2];
-                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-                if (this._concatenateArrays) {
-                    this._vertexTangents[i++] = tangents[index] = vx * d;
-                    this._vertexTangents[i++] = tangents[index + 1] = vy * d;
-                    this._vertexTangents[i++] = tangents[index + 2] = vz * d;
-                }
-                else {
-                    tangents[index] = vx * d;
-                    tangents[index + 1] = vy * d;
-                    tangents[index + 2] = vz * d;
-                }
-                index += stride;
-            }
-        }
-        this.notifyTangentsUpdate();
-        this._vertexTangentsDirty = false;
-    };
-    /**
-     * Updates the uvs based on the geometry.
-     */
-    TriangleSubGeometry.prototype.updateUVs = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var uvs;
-        if (!this._autoDeriveUVs) {
-            if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            this._uvs = values;
-            if (values != null && this._concatenateArrays) {
-                i = 0;
-                index = this.getOffset(TriangleSubGeometry.UV_DATA);
-                stride = this.getStride(TriangleSubGeometry.UV_DATA);
-                uvs = this._pVertices;
-                while (i < values.length) {
-                    uvs[index] = values[i++];
-                    uvs[index + 1] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        else {
-            if (this._uvs == null) {
-                this._uvs = new Array(this._positions.length * 2 / 3);
-                if (this._concatenateArrays)
-                    this._pNotifyVerticesUpdate();
-                else
-                    this._pStrideOffsetDirty = true;
-            }
-            offset = this.getOffset(TriangleSubGeometry.UV_DATA);
-            stride = this.getStride(TriangleSubGeometry.UV_DATA);
-            //autoderived uvs
-            uvs = this._concatenateArrays ? this._pVertices : this._uvs;
-            i = 0;
-            index = offset;
-            var uvIdx = 0;
-            //clear uv values
-            var lenV = uvs.length;
-            while (index < lenV) {
-                if (this._concatenateArrays) {
-                    this._uvs[i++] = uvs[index] = uvIdx * .5;
-                    this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
-                }
-                else {
-                    uvs[index] = uvIdx * .5;
-                    uvs[index + 1] = 1.0 - (uvIdx & 1);
-                }
-                if (++uvIdx == 3)
-                    uvIdx = 0;
-                index += stride;
-            }
-        }
-        if (this._autoDeriveTangents)
-            this.notifyTangentsUpdate();
-        this.notifyUVsUpdate();
-        this._uvsDirty = false;
-    };
-    /**
-     * Updates the secondary uvs based on the geometry.
-     */
-    TriangleSubGeometry.prototype.updateSecondaryUVs = function (values) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var uvs;
-        if (this._concatenateArrays && (this._secondaryUVs == null || values == null) && (this._secondaryUVs != null || values != null))
-            this._pNotifyVerticesUpdate();
-        this._secondaryUVs = values;
-        if (values != null && this._concatenateArrays) {
-            offset = this.getOffset(TriangleSubGeometry.SECONDARY_UV_DATA);
-            stride = this.getStride(TriangleSubGeometry.SECONDARY_UV_DATA);
-            i = 0;
-            index = offset;
-            uvs = this._pVertices;
-            while (i < values.length) {
-                uvs[index] = values[i++];
-                uvs[index + 1] = values[i++];
-                index += stride;
-            }
-        }
-        this.notifySecondaryUVsUpdate();
-        this._secondaryUVsDirty = false;
-    };
-    /**
-     * Updates the joint indices
-     */
-    TriangleSubGeometry.prototype.updateJointIndices = function (values) {
-        var i;
-        var j;
-        var index;
-        var offset;
-        var stride;
-        var jointIndices;
-        if (this._concatenateArrays && (this._jointIndices == null || values == null) && (this._jointIndices != null || values != null))
-            this._pNotifyVerticesUpdate();
-        this._jointIndices = values;
-        if (values != null) {
-            offset = this.getOffset(TriangleSubGeometry.JOINT_INDEX_DATA);
-            stride = this.getStride(TriangleSubGeometry.JOINT_INDEX_DATA);
-            if (this._useCondensedIndices) {
-                i = 0;
-                j = 0;
-                index = offset;
-                jointIndices = this._concatenateArrays ? this._pVertices : this._condensedJointIndices;
-                var oldIndex;
-                var newIndex = 0;
-                var dic = new Object();
-                if (!this._concatenateArrays)
-                    this._condensedJointIndices = new Array(values.length);
-                this._condensedIndexLookUp = new Array();
-                while (i < values.length) {
-                    for (j = 0; j < this._jointsPerVertex; j++) {
-                        oldIndex = values[i++];
-                        // if we encounter a new index, assign it a new condensed index
-                        if (dic[oldIndex] == undefined) {
-                            dic[oldIndex] = newIndex * 3; //3 required for the three vectors that store the matrix
-                            this._condensedIndexLookUp[newIndex++] = oldIndex;
-                        }
-                        jointIndices[index + j] = dic[oldIndex];
-                    }
-                    index += stride;
-                }
-                this._numCondensedJoints = newIndex;
-            }
-            else if (this._concatenateArrays) {
-                i = 0;
-                index = offset;
-                jointIndices = this._pVertices;
-                while (i < values.length) {
-                    j = 0;
-                    while (j < this._jointsPerVertex)
-                        jointIndices[index + j++] = values[i++];
-                    index += stride;
-                }
-            }
-        }
-        this.notifyJointIndicesUpdate();
-        this._jointIndicesDirty = false;
-    };
-    /**
-     * Updates the joint weights.
-     */
-    TriangleSubGeometry.prototype.updateJointWeights = function (values) {
-        var i;
-        var j;
-        var index;
-        var offset;
-        var stride;
-        var jointWeights;
-        if (this._concatenateArrays && (this._jointWeights == null || values == null) && (this._jointWeights != null || values != null))
-            this._pNotifyVerticesUpdate();
-        this._jointWeights = values;
-        if (values != null && this._concatenateArrays) {
-            offset = this.getOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA);
-            stride = this.getStride(TriangleSubGeometry.JOINT_WEIGHT_DATA);
-            i = 0;
-            index = offset;
-            jointWeights = this._pVertices;
-            while (i < values.length) {
-                j = 0;
-                while (j < this._jointsPerVertex)
-                    jointWeights[index + j++] = values[i++];
-                index += stride;
-            }
-        }
-        this.notifyJointWeightsUpdate();
-        this._jointWeightsDirty = false;
-    };
-    /**
-     *
-     */
-    TriangleSubGeometry.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this._positions = null;
-        this._vertexNormals = null;
-        this._vertexTangents = null;
-        this._uvs = null;
-        this._secondaryUVs = null;
-        this._jointIndices = null;
-        this._jointWeights = null;
-        this._faceNormals = null;
-        this._faceWeights = null;
-        this._faceTangents = null;
-    };
-    /**
-     * Updates the face indices of the TriangleSubGeometry.
-     *
-     * @param indices The face indices to upload.
-     */
-    TriangleSubGeometry.prototype.updateIndices = function (indices) {
-        _super.prototype.updateIndices.call(this, indices);
-        this._faceNormalsDirty = true;
-        if (this._autoDeriveNormals)
-            this._vertexNormalsDirty = true;
-        if (this._autoDeriveTangents)
-            this._vertexTangentsDirty = true;
-        if (this._autoDeriveUVs)
-            this._uvsDirty = true;
-    };
-    /**
-     * Clones the current object
-     * @return An exact duplicate of the current object.
-     */
-    TriangleSubGeometry.prototype.clone = function () {
-        var clone = new TriangleSubGeometry(this._concatenateArrays);
-        clone.updateIndices(this._pIndices.concat());
-        clone.updatePositions(this._positions.concat());
-        if (this._vertexNormals && !this._autoDeriveNormals)
-            clone.updateVertexNormals(this._vertexNormals.concat());
-        else
-            clone.updateVertexNormals(null);
-        if (this._uvs && !this._autoDeriveUVs)
-            clone.updateUVs(this._uvs.concat());
-        else
-            clone.updateUVs(null);
-        if (this._vertexTangents && !this._autoDeriveTangents)
-            clone.updateVertexTangents(this._vertexTangents.concat());
-        else
-            clone.updateVertexTangents(null);
-        if (this._secondaryUVs)
-            clone.updateSecondaryUVs(this._secondaryUVs.concat());
-        if (this._jointIndices) {
-            clone.jointsPerVertex = this._jointsPerVertex;
-            clone.updateJointIndices(this._jointIndices.concat());
-        }
-        if (this._jointWeights)
-            clone.updateJointWeights(this._jointWeights.concat());
-        return clone;
-    };
-    TriangleSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-        var index;
-        var offset;
-        var stride;
-        var uvs;
-        uvs = this._uvs;
-        var ratioU = scaleU / this._scaleU;
-        var ratioV = scaleV / this._scaleV;
-        this._scaleU = scaleU;
-        this._scaleV = scaleV;
-        var len = uvs.length;
-        offset = 0;
-        stride = 2;
-        index = offset;
-        while (index < len) {
-            uvs[index] *= ratioU;
-            uvs[index + 1] *= ratioV;
-            index += stride;
-        }
-        this.notifyUVsUpdate();
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    TriangleSubGeometry.prototype.scale = function (scale) {
-        var i;
-        var index;
-        var offset;
-        var stride;
-        var positions;
-        positions = this._positions;
-        var len = positions.length;
-        offset = 0;
-        stride = 3;
-        i = 0;
-        index = offset;
-        while (i < len) {
-            positions[index] *= scale;
-            positions[index + 1] *= scale;
-            positions[index + 2] *= scale;
-            i += 3;
-            index += stride;
-        }
-        this.notifyPositionsUpdate();
-    };
-    TriangleSubGeometry.prototype.applyTransformation = function (transform) {
-        var positions;
-        var normals;
-        var tangents;
-        if (this._concatenateArrays) {
-            positions = this._pVertices;
-            normals = this._pVertices;
-            tangents = this._pVertices;
-        }
-        else {
-            positions = this._positions;
-            normals = this._vertexNormals;
-            tangents = this._vertexTangents;
-        }
-        var len = this._positions.length / 3;
-        var i;
-        var i1;
-        var i2;
-        var vector = new Vector3D();
-        var bakeNormals = this._vertexNormals != null;
-        var bakeTangents = this._vertexTangents != null;
-        var invTranspose;
-        if (bakeNormals || bakeTangents) {
-            invTranspose = transform.clone();
-            invTranspose.invert();
-            invTranspose.transpose();
-        }
-        var vi0 = this.getOffset(TriangleSubGeometry.POSITION_DATA);
-        var ni0 = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
-        var ti0 = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
-        var vStride = this.getStride(TriangleSubGeometry.POSITION_DATA);
-        var nStride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
-        var tStride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
-        for (i = 0; i < len; ++i) {
-            i1 = vi0 + 1;
-            i2 = vi0 + 2;
-            // bake position
-            vector.x = positions[vi0];
-            vector.y = positions[i1];
-            vector.z = positions[i2];
-            vector = transform.transformVector(vector);
-            positions[vi0] = vector.x;
-            positions[i1] = vector.y;
-            positions[i2] = vector.z;
-            vi0 += vStride;
-            // bake normal
-            if (bakeNormals) {
-                i1 = ni0 + 1;
-                i2 = ni0 + 2;
-                vector.x = normals[ni0];
-                vector.y = normals[i1];
-                vector.z = normals[i2];
-                vector = invTranspose.deltaTransformVector(vector);
-                vector.normalize();
-                normals[ni0] = vector.x;
-                normals[i1] = vector.y;
-                normals[i2] = vector.z;
-                ni0 += nStride;
-            }
-            // bake tangent
-            if (bakeTangents) {
-                i1 = ti0 + 1;
-                i2 = ti0 + 2;
-                vector.x = tangents[ti0];
-                vector.y = tangents[i1];
-                vector.z = tangents[i2];
-                vector = invTranspose.deltaTransformVector(vector);
-                vector.normalize();
-                tangents[ti0] = vector.x;
-                tangents[i1] = vector.y;
-                tangents[i2] = vector.z;
-                ti0 += tStride;
-            }
-        }
-        this.notifyPositionsUpdate();
-        this.notifyNormalsUpdate();
-        this.notifyTangentsUpdate();
-    };
-    /**
-     * Updates the tangents for each face.
-     */
-    TriangleSubGeometry.prototype.updateFaceTangents = function () {
-        var i = 0;
-        var index1;
-        var index2;
-        var index3;
-        var vi;
-        var v0;
-        var dv1;
-        var dv2;
-        var denom;
-        var x0, y0, z0;
-        var dx1, dy1, dz1;
-        var dx2, dy2, dz2;
-        var cx, cy, cz;
-        var positions = this._positions;
-        var uvs = this._uvs;
-        var len = this._pIndices.length;
-        if (this._faceTangents == null)
-            this._faceTangents = new Array(len);
-        while (i < len) {
-            index1 = this._pIndices[i];
-            index2 = this._pIndices[i + 1];
-            index3 = this._pIndices[i + 2];
-            v0 = uvs[index1 * 2 + 1];
-            dv1 = uvs[index2 * 2 + 1] - v0;
-            dv2 = uvs[index3 * 2 + 1] - v0;
-            vi = index1 * 3;
-            x0 = positions[vi];
-            y0 = positions[vi + 1];
-            z0 = positions[vi + 2];
-            vi = index2 * 3;
-            dx1 = positions[vi] - x0;
-            dy1 = positions[vi + 1] - y0;
-            dz1 = positions[vi + 2] - z0;
-            vi = index3 * 3;
-            dx2 = positions[vi] - x0;
-            dy2 = positions[vi + 1] - y0;
-            dz2 = positions[vi + 2] - z0;
-            cx = dv2 * dx1 - dv1 * dx2;
-            cy = dv2 * dy1 - dv1 * dy2;
-            cz = dv2 * dz1 - dv1 * dz2;
-            denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
-            this._faceTangents[i++] = denom * cx;
-            this._faceTangents[i++] = denom * cy;
-            this._faceTangents[i++] = denom * cz;
-        }
-        this._faceTangentsDirty = false;
-    };
-    /**
-     * Updates the normals for each face.
-     */
-    TriangleSubGeometry.prototype.updateFaceNormals = function () {
-        var i = 0;
-        var j = 0;
-        var k = 0;
-        var index;
-        var offset;
-        var stride;
-        var x1, x2, x3;
-        var y1, y2, y3;
-        var z1, z2, z3;
-        var dx1, dy1, dz1;
-        var dx2, dy2, dz2;
-        var cx, cy, cz;
-        var d;
-        var positions = this._positions;
-        var len = this._pIndices.length;
-        if (this._faceNormals == null)
-            this._faceNormals = new Array(len);
-        if (this._useFaceWeights && this._faceWeights == null)
-            this._faceWeights = new Array(len / 3);
-        while (i < len) {
-            index = this._pIndices[i++] * 3;
-            x1 = positions[index];
-            y1 = positions[index + 1];
-            z1 = positions[index + 2];
-            index = this._pIndices[i++] * 3;
-            x2 = positions[index];
-            y2 = positions[index + 1];
-            z2 = positions[index + 2];
-            index = this._pIndices[i++] * 3;
-            x3 = positions[index];
-            y3 = positions[index + 1];
-            z3 = positions[index + 2];
-            dx1 = x3 - x1;
-            dy1 = y3 - y1;
-            dz1 = z3 - z1;
-            dx2 = x2 - x1;
-            dy2 = y2 - y1;
-            dz2 = z2 - z1;
-            cx = dz1 * dy2 - dy1 * dz2;
-            cy = dx1 * dz2 - dz1 * dx2;
-            cz = dy1 * dx2 - dx1 * dy2;
-            d = Math.sqrt(cx * cx + cy * cy + cz * cz);
-            // length of cross product = 2*triangle area
-            if (this._useFaceWeights) {
-                var w = d * 10000;
-                if (w < 1)
-                    w = 1;
-                this._faceWeights[k++] = w;
-            }
-            d = 1 / d;
-            this._faceNormals[j++] = cx * d;
-            this._faceNormals[j++] = cy * d;
-            this._faceNormals[j++] = cz * d;
-        }
-        this._faceNormalsDirty = false;
-    };
-    TriangleSubGeometry.prototype._pNotifyVerticesUpdate = function () {
-        this._pStrideOffsetDirty = true;
-        this.notifyPositionsUpdate();
-        this.notifyNormalsUpdate();
-        this.notifyTangentsUpdate();
-        this.notifyUVsUpdate();
-        this.notifySecondaryUVsUpdate();
-        this.notifyJointIndicesUpdate();
-        this.notifyJointWeightsUpdate();
-    };
-    TriangleSubGeometry.prototype.notifyPositionsUpdate = function () {
-        if (this._positionsDirty)
-            return;
-        this._positionsDirty = true;
-        if (!this._positionsUpdated)
-            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
-        this.dispatchEvent(this._positionsUpdated);
-    };
-    TriangleSubGeometry.prototype.notifyNormalsUpdate = function () {
-        if (this._vertexNormalsDirty)
-            return;
-        this._vertexNormalsDirty = true;
-        if (!this._normalsUpdated)
-            this._normalsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.NORMAL_DATA);
-        this.dispatchEvent(this._normalsUpdated);
-    };
-    TriangleSubGeometry.prototype.notifyTangentsUpdate = function () {
-        if (this._vertexTangentsDirty)
-            return;
-        this._vertexTangentsDirty = true;
-        if (!this._tangentsUpdated)
-            this._tangentsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.TANGENT_DATA);
-        this.dispatchEvent(this._tangentsUpdated);
-    };
-    TriangleSubGeometry.prototype.notifyUVsUpdate = function () {
-        if (this._uvsDirty)
-            return;
-        this._uvsDirty = true;
-        if (!this._uvsUpdated)
-            this._uvsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.UV_DATA);
-        this.dispatchEvent(this._uvsUpdated);
-    };
-    TriangleSubGeometry.prototype.notifySecondaryUVsUpdate = function () {
-        if (this._secondaryUVsDirty)
-            return;
-        this._secondaryUVsDirty = true;
-        if (!this._secondaryUVsUpdated)
-            this._secondaryUVsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.SECONDARY_UV_DATA);
-        this.dispatchEvent(this._secondaryUVsUpdated);
-    };
-    TriangleSubGeometry.prototype.notifyJointIndicesUpdate = function () {
-        if (this._jointIndicesDirty)
-            return;
-        this._jointIndicesDirty = true;
-        if (!this._jointIndicesUpdated)
-            this._jointIndicesUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_INDEX_DATA);
-        this.dispatchEvent(this._jointIndicesUpdated);
-    };
-    TriangleSubGeometry.prototype.notifyJointWeightsUpdate = function () {
-        if (this._jointWeightsDirty)
-            return;
-        this._jointWeightsDirty = true;
-        if (!this._jointWeightsUpdated)
-            this._jointWeightsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_WEIGHT_DATA);
-        this.dispatchEvent(this._jointWeightsUpdated);
-    };
-    TriangleSubGeometry.POSITION_DATA = "positions";
-    TriangleSubGeometry.NORMAL_DATA = "vertexNormals";
-    TriangleSubGeometry.TANGENT_DATA = "vertexTangents";
-    TriangleSubGeometry.UV_DATA = "uvs";
-    TriangleSubGeometry.SECONDARY_UV_DATA = "secondaryUVs";
-    TriangleSubGeometry.JOINT_INDEX_DATA = "jointIndices";
-    TriangleSubGeometry.JOINT_WEIGHT_DATA = "jointWeights";
-    //TODO - move these to StageGL
-    TriangleSubGeometry.POSITION_FORMAT = "float3";
-    TriangleSubGeometry.NORMAL_FORMAT = "float3";
-    TriangleSubGeometry.TANGENT_FORMAT = "float3";
-    TriangleSubGeometry.UV_FORMAT = "float2";
-    TriangleSubGeometry.SECONDARY_UV_FORMAT = "float2";
-    return TriangleSubGeometry;
-})(SubGeometryBase);
-module.exports = TriangleSubGeometry;
-
-
-},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-display/lib/base/TriangleSubMesh":"awayjs-display/lib/base/TriangleSubMesh","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent"}],"awayjs-display/lib/base/TriangleSubMesh":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-display/lib/base/TriangleSubMesh":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -21733,21 +20735,1134 @@ var SpringController = (function (_super) {
 module.exports = SpringController;
 
 
-},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/display/ContextMode":[function(require,module,exports){
-var ContextMode = (function () {
-    function ContextMode() {
+},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/draw/CapsStyle":[function(require,module,exports){
+/**
+ * The CapsStyle class is an enumeration of constant values that specify the
+ * caps style to use in drawing lines. The constants are provided for use as
+ * values in the <code>caps</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method. You can specify the
+ * following three types of caps:
+ */
+var CapsStyle = (function () {
+    function CapsStyle() {
     }
-    ContextMode.AUTO = "auto";
-    ContextMode.WEBGL = "webgl";
-    ContextMode.FLASH = "flash";
-    ContextMode.NATIVE = "native";
-    return ContextMode;
+    /**
+     * Used to specify round caps in the <code>caps</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    CapsStyle.ROUND = "round";
+    /**
+     * Used to specify no caps in the <code>caps</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    CapsStyle.NONE = "none";
+    /**
+     * Used to specify square caps in the <code>caps</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    CapsStyle.SQUARE = "square";
+    return CapsStyle;
 })();
-module.exports = ContextMode;
+module.exports = CapsStyle;
 
 
-},{}],"awayjs-display/lib/display/IContext":[function(require,module,exports){
+},{}],"awayjs-display/lib/draw/GradientType":[function(require,module,exports){
+/**
+ * The GradientType class provides values for the <code>type</code> parameter
+ * in the <code>beginGradientFill()</code> and
+ * <code>lineGradientStyle()</code> methods of the flash.display.Graphics
+ * class.
+ */
+var GradientType = (function () {
+    function GradientType() {
+    }
+    /**
+     * Value used to specify a linear gradient fill.
+     */
+    GradientType.LINEAR = "linear";
+    /**
+     * Value used to specify a radial gradient fill.
+     */
+    GradientType.RADIAL = "radial";
+    return GradientType;
+})();
+module.exports = GradientType;
 
+
+},{}],"awayjs-display/lib/draw/GraphicsPathWinding":[function(require,module,exports){
+/**
+ * The GraphicsPathWinding class provides values for the
+ * <code>flash.display.GraphicsPath.winding</code> property and the
+ * <code>flash.display.Graphics.drawPath()</code> method to determine the
+ * direction to draw a path. A clockwise path is positively wound, and a
+ * counter-clockwise path is negatively wound:
+ *
+ * <p> When paths intersect or overlap, the winding direction determines the
+ * rules for filling the areas created by the intersection or overlap:</p>
+ */
+var GraphicsPathWinding = (function () {
+    function GraphicsPathWinding() {
+    }
+    GraphicsPathWinding.EVEN_ODD = "evenOdd";
+    GraphicsPathWinding.NON_ZERO = "nonZero";
+    return GraphicsPathWinding;
+})();
+module.exports = GraphicsPathWinding;
+
+
+},{}],"awayjs-display/lib/draw/Graphics":[function(require,module,exports){
+/**
+ * The Graphics class contains a set of methods that you can use to create a
+ * vector shape. Display objects that support drawing include Sprite and Shape
+ * objects. Each of these classes includes a <code>graphics</code> property
+ * that is a Graphics object. The following are among those helper functions
+ * provided for ease of use: <code>drawRect()</code>,
+ * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+ * <code>drawEllipse()</code>.
+ *
+ * <p>You cannot create a Graphics object directly from ActionScript code. If
+ * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ *
+ * <p>The Graphics class is final; it cannot be subclassed.</p>
+ */
+var Graphics = (function () {
+    function Graphics() {
+    }
+    /**
+     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
+     * tiled to fill the area. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called. </p>
+     *
+     * @param bitmap A transparent or opaque bitmap image that contains the bits
+     *               to be displayed.
+     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+     *               can use to define transformations on the bitmap. For
+     *               example, you can use the following matrix to rotate a bitmap
+     *               by 45 degrees(pi/4 radians):
+     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
+     *               pattern. If <code>false</code>, the bitmap image does not
+     *               repeat, and the edges of the bitmap are used for any fill
+     *               area that extends beyond the bitmap.
+     *
+     *               <p>For example, consider the following bitmap(a 20 x
+     *               20-pixel checkerboard pattern):</p>
+     *
+     *               <p>When <code>repeat</code> is set to <code>true</code>(as
+     *               in the following example), the bitmap fill repeats the
+     *               bitmap:</p>
+     *
+     *               <p>When <code>repeat</code> is set to <code>false</code>,
+     *               the bitmap fill uses the edge pixels for the fill area
+     *               outside the bitmap:</p>
+     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
+     *               by using a nearest-neighbor algorithm and look pixelated. If
+     *               <code>true</code>, upscaled bitmap images are rendered by
+     *               using a bilinear algorithm. Rendering by using the nearest
+     *               neighbor algorithm is faster.
+     */
+    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
+        if (matrix === void 0) { matrix = null; }
+        if (repeat === void 0) { repeat = true; }
+        if (smooth === void 0) { smooth = false; }
+    };
+    /**
+     * Specifies a simple one-color fill that subsequent calls to other Graphics
+     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
+     * when drawing. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called.</p>
+     *
+     * @param color The color of the fill(0xRRGGBB).
+     * @param alpha The alpha value of the fill(0.0 to 1.0).
+     */
+    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
+        if (alpha === void 0) { alpha = 1; }
+    };
+    /**
+     * Specifies a gradient fill used by subsequent calls to other Graphics
+     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
+     * the object. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called. </p>
+     *
+     * @param type                A value from the GradientType class that
+     *                            specifies which gradient type to use:
+     *                            <code>GradientType.LINEAR</code> or
+     *                            <code>GradientType.RADIAL</code>.
+     * @param colors              An array of RGB hexadecimal color values used
+     *                            in the gradient; for example, red is 0xFF0000,
+     *                            blue is 0x0000FF, and so on. You can specify
+     *                            up to 15 colors. For each color, specify a
+     *                            corresponding value in the alphas and ratios
+     *                            parameters.
+     * @param alphas              An array of alpha values for the corresponding
+     *                            colors in the colors array; valid values are 0
+     *                            to 1. If the value is less than 0, the default
+     *                            is 0. If the value is greater than 1, the
+     *                            default is 1.
+     * @param ratios              An array of color distribution ratios; valid
+     *                            values are 0-255. This value defines the
+     *                            percentage of the width where the color is
+     *                            sampled at 100%. The value 0 represents the
+     *                            left position in the gradient box, and 255
+     *                            represents the right position in the gradient
+     *                            box.
+     * @param matrix              A transformation matrix as defined by the
+     *                            flash.geom.Matrix class. The flash.geom.Matrix
+     *                            class includes a
+     *                            <code>createGradientBox()</code> method, which
+     *                            lets you conveniently set up the matrix for use
+     *                            with the <code>beginGradientFill()</code>
+     *                            method.
+     * @param spreadMethod        A value from the SpreadMethod class that
+     *                            specifies which spread method to use, either:
+     *                            <code>SpreadMethod.PAD</code>,
+     *                            <code>SpreadMethod.REFLECT</code>, or
+     *                            <code>SpreadMethod.REPEAT</code>.
+     *
+     *                            <p>For example, consider a simple linear
+     *                            gradient between two colors:</p>
+     *
+     *                            <p>This example uses
+     *                            <code>SpreadMethod.PAD</code> for the spread
+     *                            method, and the gradient fill looks like the
+     *                            following:</p>
+     *
+     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
+     *                            for the spread method, the gradient fill looks
+     *                            like the following:</p>
+     *
+     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
+     *                            for the spread method, the gradient fill looks
+     *                            like the following:</p>
+     * @param interpolationMethod A value from the InterpolationMethod class that
+     *                            specifies which value to use:
+     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
+     *                            <code>InterpolationMethod.RGB</code>
+     *
+     *                            <p>For example, consider a simple linear
+     *                            gradient between two colors(with the
+     *                            <code>spreadMethod</code> parameter set to
+     *                            <code>SpreadMethod.REFLECT</code>). The
+     *                            different interpolation methods affect the
+     *                            appearance as follows: </p>
+     * @param focalPointRatio     A number that controls the location of the
+     *                            focal point of the gradient. 0 means that the
+     *                            focal point is in the center. 1 means that the
+     *                            focal point is at one border of the gradient
+     *                            circle. -1 means that the focal point is at the
+     *                            other border of the gradient circle. A value
+     *                            less than -1 or greater than 1 is rounded to -1
+     *                            or 1. For example, the following example shows
+     *                            a <code>focalPointRatio</code> set to 0.75:
+     * @throws ArgumentError If the <code>type</code> parameter is not valid.
+     */
+    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+        if (matrix === void 0) { matrix = null; }
+        if (spreadMethod === void 0) { spreadMethod = "pad"; }
+        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
+        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+    };
+    /**
+     * Specifies a shader fill used by subsequent calls to other Graphics methods
+     * (such as <code>lineTo()</code> or <code>drawCircle()</code>) for the
+     * object. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called.</p>
+     *
+     * <p>Shader fills are not supported under GPU rendering; filled areas will
+     * be colored cyan.</p>
+     *
+     * @param shader The shader to use for the fill. This Shader instance is not
+     *               required to specify an image input. However, if an image
+     *               input is specified in the shader, the input must be provided
+     *               manually. To specify the input, set the <code>input</code>
+     *               property of the corresponding ShaderInput property of the
+     *               <code>Shader.data</code> property.
+     *
+     *               <p>When you pass a Shader instance as an argument the shader
+     *               is copied internally. The drawing fill operation uses that
+     *               internal copy, not a reference to the original shader. Any
+     *               changes made to the shader, such as changing a parameter
+     *               value, input, or bytecode, are not applied to the copied
+     *               shader that's used for the fill.</p>
+     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+     *               can use to define transformations on the shader. For
+     *               example, you can use the following matrix to rotate a shader
+     *               by 45 degrees(pi/4 radians):
+     *
+     *               <p>The coordinates received in the shader are based on the
+     *               matrix that is specified for the <code>matrix</code>
+     *               parameter. For a default(<code>null</code>) matrix, the
+     *               coordinates in the shader are local pixel coordinates which
+     *               can be used to sample an input.</p>
+     * @throws ArgumentError When the shader output type is not compatible with
+     *                       this operation(the shader must specify a
+     *                       <code>pixel3</code> or <code>pixel4</code> output).
+     * @throws ArgumentError When the shader specifies an image input that isn't
+     *                       provided.
+     * @throws ArgumentError When a ByteArray or Vector.<Number> instance is used
+     *                       as an input and the <code>width</code> and
+     *                       <code>height</code> properties aren't specified for
+     *                       the ShaderInput, or the specified values don't match
+     *                       the amount of data in the input object. See the
+     *                       <code>ShaderInput.input</code> property for more
+     *                       information.
+     */
+    //		public beginShaderFill(shader:Shader, matrix:Matrix = null)
+    //		{
+    //
+    //		}
+    /**
+     * Clears the graphics that were drawn to this Graphics object, and resets
+     * fill and line style settings.
+     *
+     */
+    Graphics.prototype.clear = function () {
+    };
+    /**
+     * Copies all of drawing commands from the source Graphics object into the
+     * calling Graphics object.
+     *
+     * @param sourceGraphics The Graphics object from which to copy the drawing
+     *                       commands.
+     */
+    Graphics.prototype.copyFrom = function (sourceGraphics) {
+    };
+    /**
+     * Draws a cubic Bezier curve from the current drawing position to the
+     * specified anchor point. Cubic Bezier curves consist of two anchor points
+     * and two control points. The curve interpolates the two anchor points and
+     * curves toward the two control points.
+     *
+     * The four points you use to draw a cubic Bezier curve with the
+     * <code>cubicCurveTo()</code> method are as follows:
+     *
+     * <ul>
+     *   <li>The current drawing position is the first anchor point. </li>
+     *   <li>The anchorX and anchorY parameters specify the second anchor point.
+     *   </li>
+     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
+     *   specify the first control point.</li>
+     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
+     *   specify the second control point.</li>
+     * </ul>
+     *
+     * If you call the <code>cubicCurveTo()</code> method before calling the
+     * <code>moveTo()</code> method, your curve starts at position (0, 0).
+     *
+     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
+     * the current drawing position to (<code>anchorX</code>,
+     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
+     * the current drawing position remains unchanged.
+     *
+     * If your movie clip contains content created with the Flash drawing tools,
+     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
+     * underneath that content.
+     *
+     * @param controlX1 Specifies the horizontal position of the first control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlY1 Specifies the vertical position of the first control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlX2 Specifies the horizontal position of the second control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlY2 Specifies the vertical position of the second control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param anchorX   Specifies the horizontal position of the anchor point
+     *                  relative to the registration point of the parent display
+     *                  object.
+     * @param anchorY   Specifies the vertical position of the anchor point
+     *                  relative to the registration point of the parent display
+     *                  object.
+     */
+    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
+    };
+    /**
+     * Draws a curve using the current line style from the current drawing
+     * position to(anchorX, anchorY) and using the control point that
+     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
+     * drawing position is then set to(<code>anchorX</code>,
+     * <code>anchorY</code>). If the movie clip in which you are drawing contains
+     * content created with the Flash drawing tools, calls to the
+     * <code>curveTo()</code> method are drawn underneath this content. If you
+     * call the <code>curveTo()</code> method before any calls to the
+     * <code>moveTo()</code> method, the default of the current drawing position
+     * is(0, 0). If any of the parameters are missing, this method fails and the
+     * current drawing position is not changed.
+     *
+     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
+     * consist of two anchor points and one control point. The curve interpolates
+     * the two anchor points and curves toward the control point. </p>
+     *
+     * @param controlX A number that specifies the horizontal position of the
+     *                 control point relative to the registration point of the
+     *                 parent display object.
+     * @param controlY A number that specifies the vertical position of the
+     *                 control point relative to the registration point of the
+     *                 parent display object.
+     * @param anchorX  A number that specifies the horizontal position of the
+     *                 next anchor point relative to the registration point of
+     *                 the parent display object.
+     * @param anchorY  A number that specifies the vertical position of the next
+     *                 anchor point relative to the registration point of the
+     *                 parent display object.
+     */
+    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+    };
+    /**
+     * Draws a circle. Set the line style, fill, or both before you call the
+     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
+     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method.
+     *
+     * @param x      The <i>x</i> location of the center of the circle relative
+     *               to the registration point of the parent display object(in
+     *               pixels).
+     * @param y      The <i>y</i> location of the center of the circle relative
+     *               to the registration point of the parent display object(in
+     *               pixels).
+     * @param radius The radius of the circle(in pixels).
+     */
+    Graphics.prototype.drawCircle = function (x, y, radius) {
+    };
+    /**
+     * Draws an ellipse. Set the line style, fill, or both before you call the
+     * <code>drawEllipse()</code> method, by calling the
+     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method.
+     *
+     * @param x      The <i>x</i> location of the top-left of the bounding-box of
+     *               the ellipse relative to the registration point of the parent
+     *               display object(in pixels).
+     * @param y      The <i>y</i> location of the top left of the bounding-box of
+     *               the ellipse relative to the registration point of the parent
+     *               display object(in pixels).
+     * @param width  The width of the ellipse(in pixels).
+     * @param height The height of the ellipse(in pixels).
+     */
+    Graphics.prototype.drawEllipse = function (x, y, width, height) {
+    };
+    /**
+     * Submits a series of IGraphicsData instances for drawing. This method
+     * accepts a Vector containing objects including paths, fills, and strokes
+     * that implement the IGraphicsData interface. A Vector of IGraphicsData
+     * instances can refer to a part of a shape, or a complex fully defined set
+     * of data for rendering a complete shape.
+     *
+     * <p> Graphics paths can contain other graphics paths. If the
+     * <code>graphicsData</code> Vector includes a path, that path and all its
+     * sub-paths are rendered during this operation. </p>
+     *
+     */
+    Graphics.prototype.drawGraphicsData = function (graphicsData) {
+    };
+    /**
+     * Submits a series of commands for drawing. The <code>drawPath()</code>
+     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
+     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
+     * single call. The <code>drawPath()</code> method parameters combine drawing
+     * commands with x- and y-coordinate value pairs and a drawing direction. The
+     * drawing commands are values from the GraphicsPathCommand class. The x- and
+     * y-coordinate value pairs are Numbers in an array where each pair defines a
+     * coordinate location. The drawing direction is a value from the
+     * GraphicsPathWinding class.
+     *
+     * <p> Generally, drawings render faster with <code>drawPath()</code> than
+     * with a series of individual <code>lineTo()</code> and
+     * <code>curveTo()</code> methods. </p>
+     *
+     * <p> The <code>drawPath()</code> method uses a uses a floating computation
+     * so rotation and scaling of shapes is more accurate and gives better
+     * results. However, curves submitted using the <code>drawPath()</code>
+     * method can have small sub-pixel alignment errors when used in conjunction
+     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
+     *
+     * <p> The <code>drawPath()</code> method also uses slightly different rules
+     * for filling and drawing lines. They are: </p>
+     *
+     * <ul>
+     *   <li>When a fill is applied to rendering a path:
+     * <ul>
+     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
+     * stroke rendering will still occur, consistent with the rules for strokes
+     * below.)</li>
+     *   <li>A sub-path that isn't closed(the end point is not equal to the
+     * begin point) is implicitly closed.</li>
+     * </ul>
+     * </li>
+     *   <li>When a stroke is applied to rendering a path:
+     * <ul>
+     *   <li>The sub-paths can be composed of any number of points.</li>
+     *   <li>The sub-path is never implicitly closed.</li>
+     * </ul>
+     * </li>
+     * </ul>
+     *
+     * @param winding Specifies the winding rule using a value defined in the
+     *                GraphicsPathWinding class.
+     */
+    Graphics.prototype.drawPath = function (commands, data, winding) {
+    };
+    /**
+     * Draws a rectangle. Set the line style, fill, or both before you call the
+     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
+     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method.
+     *
+     * @param x      A number indicating the horizontal position relative to the
+     *               registration point of the parent display object(in pixels).
+     * @param y      A number indicating the vertical position relative to the
+     *               registration point of the parent display object(in pixels).
+     * @param width  The width of the rectangle(in pixels).
+     * @param height The height of the rectangle(in pixels).
+     * @throws ArgumentError If the <code>width</code> or <code>height</code>
+     *                       parameters are not a number
+     *                      (<code>Number.NaN</code>).
+     */
+    Graphics.prototype.drawRect = function (x, y, width, height) {
+    };
+    /**
+     * Draws a rounded rectangle. Set the line style, fill, or both before you
+     * call the <code>drawRoundRect()</code> method, by calling the
+     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method.
+     *
+     * @param x             A number indicating the horizontal position relative
+     *                      to the registration point of the parent display
+     *                      object(in pixels).
+     * @param y             A number indicating the vertical position relative to
+     *                      the registration point of the parent display object
+     *                     (in pixels).
+     * @param width         The width of the round rectangle(in pixels).
+     * @param height        The height of the round rectangle(in pixels).
+     * @param ellipseWidth  The width of the ellipse used to draw the rounded
+     *                      corners(in pixels).
+     * @param ellipseHeight The height of the ellipse used to draw the rounded
+     *                      corners(in pixels). Optional; if no value is
+     *                      specified, the default value matches that provided
+     *                      for the <code>ellipseWidth</code> parameter.
+     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
+     *                       <code>ellipseWidth</code> or
+     *                       <code>ellipseHeight</code> parameters are not a
+     *                       number(<code>Number.NaN</code>).
+     */
+    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
+        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
+    };
+    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
+    /**
+     * Renders a set of triangles, typically to distort bitmaps and give them a
+     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
+     * either the current fill, or a bitmap fill, to the triangle faces using a
+     * set of(u,v) coordinates.
+     *
+     * <p> Any type of fill can be used, but if the fill has a transform matrix
+     * that transform matrix is ignored. </p>
+     *
+     * <p> A <code>uvtData</code> parameter improves texture mapping when a
+     * bitmap fill is used. </p>
+     *
+     * @param culling Specifies whether to render triangles that face in a
+     *                specified direction. This parameter prevents the rendering
+     *                of triangles that cannot be seen in the current view. This
+     *                parameter can be set to any value defined by the
+     *                TriangleCulling class.
+     */
+    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
+        if (indices === void 0) { indices = null; }
+        if (uvtData === void 0) { uvtData = null; }
+        if (culling === void 0) { culling = null; }
+    };
+    /**
+     * Applies a fill to the lines and curves that were added since the last call
+     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
+     * specified in the previous call to the <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method. If the current drawing position does not equal the previous
+     * position specified in a <code>moveTo()</code> method and a fill is
+     * defined, the path is closed with a line and then filled.
+     *
+     */
+    Graphics.prototype.endFill = function () {
+    };
+    /**
+     * Specifies a bitmap to use for the line stroke when drawing lines.
+     *
+     * <p>The bitmap line style is used for subsequent calls to Graphics methods
+     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+     * the <code>lineBitmapStyle()</code> method again with different parameters.
+     * </p>
+     *
+     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param bitmap The bitmap to use for the line stroke.
+     * @param matrix An optional transformation matrix as defined by the
+     *               flash.geom.Matrix class. The matrix can be used to scale or
+     *               otherwise manipulate the bitmap before applying it to the
+     *               line style.
+     * @param repeat Whether to repeat the bitmap in a tiled fashion.
+     * @param smooth Whether smoothing should be applied to the bitmap.
+     */
+    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
+        if (matrix === void 0) { matrix = null; }
+        if (repeat === void 0) { repeat = true; }
+        if (smooth === void 0) { smooth = false; }
+    };
+    /**
+     * Specifies a gradient to use for the stroke when drawing lines.
+     *
+     * <p>The gradient line style is used for subsequent calls to Graphics
+     * methods such as the <code>lineTo()</code> methods or the
+     * <code>drawCircle()</code> method. The line style remains in effect until
+     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
+     * methods, or the <code>lineGradientStyle()</code> method again with
+     * different parameters. </p>
+     *
+     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
+     * of drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param type                A value from the GradientType class that
+     *                            specifies which gradient type to use, either
+     *                            GradientType.LINEAR or GradientType.RADIAL.
+     * @param colors              An array of RGB hexadecimal color values used
+     *                            in the gradient; for example, red is 0xFF0000,
+     *                            blue is 0x0000FF, and so on. You can specify
+     *                            up to 15 colors. For each color, specify a
+     *                            corresponding value in the alphas and ratios
+     *                            parameters.
+     * @param alphas              An array of alpha values for the corresponding
+     *                            colors in the colors array; valid values are 0
+     *                            to 1. If the value is less than 0, the default
+     *                            is 0. If the value is greater than 1, the
+     *                            default is 1.
+     * @param ratios              An array of color distribution ratios; valid
+     *                            values are 0-255. This value defines the
+     *                            percentage of the width where the color is
+     *                            sampled at 100%. The value 0 represents the
+     *                            left position in the gradient box, and 255
+     *                            represents the right position in the gradient
+     *                            box.
+     * @param matrix              A transformation matrix as defined by the
+     *                            flash.geom.Matrix class. The flash.geom.Matrix
+     *                            class includes a
+     *                            <code>createGradientBox()</code> method, which
+     *                            lets you conveniently set up the matrix for use
+     *                            with the <code>lineGradientStyle()</code>
+     *                            method.
+     * @param spreadMethod        A value from the SpreadMethod class that
+     *                            specifies which spread method to use:
+     * @param interpolationMethod A value from the InterpolationMethod class that
+     *                            specifies which value to use. For example,
+     *                            consider a simple linear gradient between two
+     *                            colors(with the <code>spreadMethod</code>
+     *                            parameter set to
+     *                            <code>SpreadMethod.REFLECT</code>). The
+     *                            different interpolation methods affect the
+     *                            appearance as follows:
+     * @param focalPointRatio     A number that controls the location of the
+     *                            focal point of the gradient. The value 0 means
+     *                            the focal point is in the center. The value 1
+     *                            means the focal point is at one border of the
+     *                            gradient circle. The value -1 means that the
+     *                            focal point is at the other border of the
+     *                            gradient circle. Values less than -1 or greater
+     *                            than 1 are rounded to -1 or 1. The following
+     *                            image shows a gradient with a
+     *                            <code>focalPointRatio</code> of -0.75:
+     */
+    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+        if (matrix === void 0) { matrix = null; }
+        if (spreadMethod === void 0) { spreadMethod = null; }
+        if (interpolationMethod === void 0) { interpolationMethod = null; }
+        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+    };
+    /**
+     * Specifies a shader to use for the line stroke when drawing lines.
+     *
+     * <p>The shader line style is used for subsequent calls to Graphics methods
+     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+     * the <code>lineBitmapStyle()</code> method again with different parameters.
+     * </p>
+     *
+     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param shader The shader to use for the line stroke.
+     * @param matrix An optional transformation matrix as defined by the
+     *               flash.geom.Matrix class. The matrix can be used to scale or
+     *               otherwise manipulate the bitmap before applying it to the
+     *               line style.
+     */
+    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
+    //		{
+    //
+    //		}
+    /**
+     * Specifies a line style used for subsequent calls to Graphics methods such
+     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineGradientStyle()</code> method, the
+     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
+     * method with different parameters.
+     *
+     * <p>You can call the <code>lineStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within the path.</p>
+     *
+     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
+     * style back to <code>undefined</code>.</p>
+     *
+     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
+     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
+     *
+     * @param thickness    An integer that indicates the thickness of the line in
+     *                     points; valid values are 0-255. If a number is not
+     *                     specified, or if the parameter is undefined, a line is
+     *                     not drawn. If a value of less than 0 is passed, the
+     *                     default is 0. The value 0 indicates hairline
+     *                     thickness; the maximum thickness is 255. If a value
+     *                     greater than 255 is passed, the default is 255.
+     * @param color        A hexadecimal color value of the line; for example,
+     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
+     *                     value is not indicated, the default is 0x000000
+     *                    (black). Optional.
+     * @param alpha        A number that indicates the alpha value of the color
+     *                     of the line; valid values are 0 to 1. If a value is
+     *                     not indicated, the default is 1(solid). If the value
+     *                     is less than 0, the default is 0. If the value is
+     *                     greater than 1, the default is 1.
+     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+     *                     specifies whether to hint strokes to full pixels. This
+     *                     affects both the position of anchors of a curve and
+     *                     the line stroke size itself. With
+     *                     <code>pixelHinting</code> set to <code>true</code>,
+     *                     line widths are adjusted to full pixel widths. With
+     *                     <code>pixelHinting</code> set to <code>false</code>,
+     *                     disjoints can appear for curves and straight lines.
+     *                     For example, the following illustrations show how
+     *                     Flash Player or Adobe AIR renders two rounded
+     *                     rectangles that are identical, except that the
+     *                     <code>pixelHinting</code> parameter used in the
+     *                     <code>lineStyle()</code> method is set differently
+     *                    (the images are scaled by 200%, to emphasize the
+     *                     difference):
+     *
+     *                     <p>If a value is not supplied, the line does not use
+     *                     pixel hinting.</p>
+     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
+     *                     LineScaleMode class that specifies which scale mode to
+     *                     use:
+     *                     <ul>
+     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
+     *                     scale the line thickness when the object is scaled
+     *                    (the default). </li>
+     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
+     *                     the line thickness. </li>
+     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
+     *                     scale the line thickness if the object is scaled
+     *                     vertically <i>only</i>. For example, consider the
+     *                     following circles, drawn with a one-pixel line, and
+     *                     each with the <code>scaleMode</code> parameter set to
+     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
+     *                     left is scaled vertically only, and the circle on the
+     *                     right is scaled both vertically and horizontally:
+     *                     </li>
+     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
+     *                     scale the line thickness if the object is scaled
+     *                     horizontally <i>only</i>. For example, consider the
+     *                     following circles, drawn with a one-pixel line, and
+     *                     each with the <code>scaleMode</code> parameter set to
+     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
+     *                     the left is scaled horizontally only, and the circle
+     *                     on the right is scaled both vertically and
+     *                     horizontally:   </li>
+     *                     </ul>
+     * @param caps        (Not supported in Flash Lite 4) A value from the
+     *                     CapsStyle class that specifies the type of caps at the
+     *                     end of lines. Valid values are:
+     *                     <code>CapsStyle.NONE</code>,
+     *                     <code>CapsStyle.ROUND</code>, and
+     *                     <code>CapsStyle.SQUARE</code>. If a value is not
+     *                     indicated, Flash uses round caps.
+     *
+     *                     <p>For example, the following illustrations show the
+     *                     different <code>capsStyle</code> settings. For each
+     *                     setting, the illustration shows a blue line with a
+     *                     thickness of 30(for which the <code>capsStyle</code>
+     *                     applies), and a superimposed black line with a
+     *                     thickness of 1(for which no <code>capsStyle</code>
+     *                     applies): </p>
+     * @param joints      (Not supported in Flash Lite 4) A value from the
+     *                     JointStyle class that specifies the type of joint
+     *                     appearance used at angles. Valid values are:
+     *                     <code>JointStyle.BEVEL</code>,
+     *                     <code>JointStyle.MITER</code>, and
+     *                     <code>JointStyle.ROUND</code>. If a value is not
+     *                     indicated, Flash uses round joints.
+     *
+     *                     <p>For example, the following illustrations show the
+     *                     different <code>joints</code> settings. For each
+     *                     setting, the illustration shows an angled blue line
+     *                     with a thickness of 30(for which the
+     *                     <code>jointStyle</code> applies), and a superimposed
+     *                     angled black line with a thickness of 1(for which no
+     *                     <code>jointStyle</code> applies): </p>
+     *
+     *                     <p><b>Note:</b> For <code>joints</code> set to
+     *                     <code>JointStyle.MITER</code>, you can use the
+     *                     <code>miterLimit</code> parameter to limit the length
+     *                     of the miter.</p>
+     * @param miterLimit  (Not supported in Flash Lite 4) A number that
+     *                     indicates the limit at which a miter is cut off. Valid
+     *                     values range from 1 to 255(and values outside that
+     *                     range are rounded to 1 or 255). This value is only
+     *                     used if the <code>jointStyle</code> is set to
+     *                     <code>"miter"</code>. The <code>miterLimit</code>
+     *                     value represents the length that a miter can extend
+     *                     beyond the point at which the lines meet to form a
+     *                     joint. The value expresses a factor of the line
+     *                     <code>thickness</code>. For example, with a
+     *                     <code>miterLimit</code> factor of 2.5 and a
+     *                     <code>thickness</code> of 10 pixels, the miter is cut
+     *                     off at 25 pixels.
+     *
+     *                     <p>For example, consider the following angled lines,
+     *                     each drawn with a <code>thickness</code> of 20, but
+     *                     with <code>miterLimit</code> set to 1, 2, and 4.
+     *                     Superimposed are black reference lines showing the
+     *                     meeting points of the joints:</p>
+     *
+     *                     <p>Notice that a given <code>miterLimit</code> value
+     *                     has a specific maximum angle for which the miter is
+     *                     cut off. The following table lists some examples:</p>
+     */
+    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit) {
+        if (thickness === void 0) { thickness = 0; }
+        if (color === void 0) { color = 0; }
+        if (alpha === void 0) { alpha = 1; }
+        if (pixelHinting === void 0) { pixelHinting = false; }
+        if (scaleMode === void 0) { scaleMode = null; }
+        if (caps === void 0) { caps = null; }
+        if (joints === void 0) { joints = null; }
+        if (miterLimit === void 0) { miterLimit = 3; }
+    };
+    /**
+     * Draws a line using the current line style from the current drawing
+     * position to(<code>x</code>, <code>y</code>); the current drawing position
+     * is then set to(<code>x</code>, <code>y</code>). If the display object in
+     * which you are drawing contains content that was created with the Flash
+     * drawing tools, calls to the <code>lineTo()</code> method are drawn
+     * underneath the content. If you call <code>lineTo()</code> before any calls
+     * to the <code>moveTo()</code> method, the default position for the current
+     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
+     * method fails and the current drawing position is not changed.
+     *
+     * @param x A number that indicates the horizontal position relative to the
+     *          registration point of the parent display object(in pixels).
+     * @param y A number that indicates the vertical position relative to the
+     *          registration point of the parent display object(in pixels).
+     */
+    Graphics.prototype.lineTo = function (x, y) {
+    };
+    /**
+     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
+     * any of the parameters are missing, this method fails and the current
+     * drawing position is not changed.
+     *
+     * @param x A number that indicates the horizontal position relative to the
+     *          registration point of the parent display object(in pixels).
+     * @param y A number that indicates the vertical position relative to the
+     *          registration point of the parent display object(in pixels).
+     */
+    Graphics.prototype.moveTo = function (x, y) {
+    };
+    return Graphics;
+})();
+module.exports = Graphics;
+
+
+},{}],"awayjs-display/lib/draw/IGraphicsData":[function(require,module,exports){
+
+
+
+},{}],"awayjs-display/lib/draw/InterpolationMethod":[function(require,module,exports){
+/**
+ * The InterpolationMethod class provides values for the
+ * <code>interpolationMethod</code> parameter in the
+ * <code>Graphics.beginGradientFill()</code> and
+ * <code>Graphics.lineGradientStyle()</code> methods. This parameter
+ * determines the RGB space to use when rendering the gradient.
+ */
+var InterpolationMethod = (function () {
+    function InterpolationMethod() {
+    }
+    /**
+     * Specifies that the RGB interpolation method should be used. This means
+     * that the gradient is rendered with exponential sRGB(standard RGB) space.
+     * The sRGB space is a W3C-endorsed standard that defines a non-linear
+     * conversion between red, green, and blue component values and the actual
+     * intensity of the visible component color.
+     *
+     * <p>For example, consider a simple linear gradient between two colors(with
+     * the <code>spreadMethod</code> parameter set to
+     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
+     * affect the appearance as follows: </p>
+     */
+    InterpolationMethod.LINEAR_RGB = "linearRGB";
+    /**
+     * Specifies that the RGB interpolation method should be used. This means
+     * that the gradient is rendered with exponential sRGB(standard RGB) space.
+     * The sRGB space is a W3C-endorsed standard that defines a non-linear
+     * conversion between red, green, and blue component values and the actual
+     * intensity of the visible component color.
+     *
+     * <p>For example, consider a simple linear gradient between two colors(with
+     * the <code>spreadMethod</code> parameter set to
+     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
+     * affect the appearance as follows: </p>
+     */
+    InterpolationMethod.RGB = "rgb";
+    return InterpolationMethod;
+})();
+module.exports = InterpolationMethod;
+
+
+},{}],"awayjs-display/lib/draw/JointStyle":[function(require,module,exports){
+/**
+ * The JointStyle class is an enumeration of constant values that specify the
+ * joint style to use in drawing lines. These constants are provided for use
+ * as values in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
+ * three types of joints: miter, round, and bevel, as the following example
+ * shows:
+ */
+var JointStyle = (function () {
+    function JointStyle() {
+    }
+    /**
+     * Specifies beveled joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.BEVEL = "bevel";
+    /**
+     * Specifies mitered joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.MITER = "miter";
+    /**
+     * Specifies round joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.ROUND = "round";
+    return JointStyle;
+})();
+module.exports = JointStyle;
+
+
+},{}],"awayjs-display/lib/draw/LineScaleMode":[function(require,module,exports){
+/**
+ * The LineScaleMode class provides values for the <code>scaleMode</code>
+ * parameter in the <code>Graphics.lineStyle()</code> method.
+ */
+var LineScaleMode = (function () {
+    function LineScaleMode() {
+    }
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line scales
+     * <i>only</i> vertically. For example, consider the following circles, drawn
+     * with a one-pixel line, and each with the <code>scaleMode</code> parameter
+     * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
+     * scaled only vertically, and the circle on the right is scaled both
+     * vertically and horizontally.
+     */
+    LineScaleMode.HORIZONTAL = "horizontal";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line never scales.
+     */
+    LineScaleMode.NONE = "none";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line always scales
+     * when the object is scaled(the default).
+     */
+    LineScaleMode.NORMAL = "normal";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line scales
+     * <i>only</i> horizontally. For example, consider the following circles,
+     * drawn with a one-pixel line, and each with the <code>scaleMode</code>
+     * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
+     * left is scaled only horizontally, and the circle on the right is scaled
+     * both vertically and horizontally.
+     */
+    LineScaleMode.VERTICAL = "vertical";
+    return LineScaleMode;
+})();
+module.exports = LineScaleMode;
+
+
+},{}],"awayjs-display/lib/draw/PixelSnapping":[function(require,module,exports){
+/**
+ * The PixelSnapping class is an enumeration of constant values for setting
+ * the pixel snapping options by using the <code>pixelSnapping</code> property
+ * of a Bitmap object.
+ */
+var PixelSnapping = (function () {
+    function PixelSnapping() {
+    }
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that the bitmap image is always snapped to the
+     * nearest pixel, independent of any transformation.
+     */
+    PixelSnapping.ALWAYS = "always";
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that the bitmap image is snapped to the nearest
+     * pixel if it is drawn with no rotation or skew and it is drawn at a scale
+     * factor of 99.9% to 100.1%. If these conditions are satisfied, the image is
+     * drawn at 100% scale, snapped to the nearest pixel. Internally, this
+     * setting allows the image to be drawn as fast as possible by using the
+     * vector renderer.
+     */
+    PixelSnapping.AUTO = "auto";
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that no pixel snapping occurs.
+     */
+    PixelSnapping.NEVER = "never";
+    return PixelSnapping;
+})();
+module.exports = PixelSnapping;
+
+
+},{}],"awayjs-display/lib/draw/SpreadMethod":[function(require,module,exports){
+/**
+ * The SpreadMethod class provides values for the <code>spreadMethod</code>
+ * parameter in the <code>beginGradientFill()</code> and
+ * <code>lineGradientStyle()</code> methods of the Graphics class.
+ *
+ * <p>The following example shows the same gradient fill using various spread
+ * methods:</p>
+ */
+var SpreadMethod = (function () {
+    function SpreadMethod() {
+    }
+    /**
+     * Specifies that the gradient use the <i>pad</i> spread method.
+     */
+    SpreadMethod.PAD = "pad";
+    /**
+     * Specifies that the gradient use the <i>reflect</i> spread method.
+     */
+    SpreadMethod.REFLECT = "reflect";
+    /**
+     * Specifies that the gradient use the <i>repeat</i> spread method.
+     */
+    SpreadMethod.REPEAT = "repeat";
+    return SpreadMethod;
+})();
+module.exports = SpreadMethod;
+
+
+},{}],"awayjs-display/lib/draw/TriangleCulling":[function(require,module,exports){
+/**
+ * Defines codes for culling algorithms that determine which triangles not to
+ * render when drawing triangle paths.
+ *
+ * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
+ * sign of a triangle's normal along the z-axis. The normal is a 3D vector
+ * that is perpendicular to the surface of the triangle. </p>
+ *
+ * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
+ * has a positive normal value. That is, its normal points in a positive
+ * z-axis direction, away from the current view point. When the
+ * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
+ * positive normals are not rendered. Another term for this is backface
+ * culling. </p>
+ *
+ * <p> A triangle whose vertices are arranged in a counter-clockwise order has
+ * a negative normal value. That is, its normal points in a negative z-axis
+ * direction, toward the current view point. When the
+ * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
+ * negative normals will not be rendered. </p>
+ */
+var TriangleCulling = (function () {
+    function TriangleCulling() {
+    }
+    /**
+     * Specifies culling of all triangles facing toward the current view point.
+     */
+    TriangleCulling.NEGATIVE = "negative";
+    /**
+     * Specifies no culling. All triangles in the path are rendered.
+     */
+    TriangleCulling.NONE = "none";
+    /**
+     * Specifies culling of all triangles facing away from the current view
+     * point. This is also known as backface culling.
+     */
+    TriangleCulling.POSITIVE = "positive";
+    return TriangleCulling;
+})();
+module.exports = TriangleCulling;
 
 
 },{}],"awayjs-display/lib/entities/Billboard":[function(require,module,exports){
@@ -22607,11 +22722,12 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var GeometryEvent = require("awayjs-core/lib/events/GeometryEvent");
 var AssetType = require("awayjs-core/lib/library/AssetType");
-var Geometry = require("awayjs-display/lib/base/Geometry");
 var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var GeometryEvent = require("awayjs-display/lib/events/GeometryEvent");
+var SubMeshPool = require("awayjs-display/lib/pool/SubMeshPool");
 /**
  * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
  * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
@@ -23002,7 +23118,7 @@ var Mesh = (function (_super) {
      * @param subGeometry
      */
     Mesh.prototype.addSubMesh = function (subGeometry) {
-        var SubMeshClass = subGeometry.subMeshClass;
+        var SubMeshClass = SubMeshPool.getSubMeshClass(subGeometry);
         var subMesh = new SubMeshClass(subGeometry, this, null);
         var len = this._subMeshes.length;
         subMesh._iIndex = len;
@@ -23053,7 +23169,7 @@ var Mesh = (function (_super) {
 module.exports = Mesh;
 
 
-},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/GeometryEvent":"awayjs-display/lib/events/GeometryEvent"}],"awayjs-display/lib/entities/PointLight":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/events/GeometryEvent":"awayjs-core/lib/events/GeometryEvent","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/pool/SubMeshPool":"awayjs-display/lib/pool/SubMeshPool"}],"awayjs-display/lib/entities/PointLight":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -23219,7 +23335,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
 var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
@@ -23484,14 +23600,16 @@ var Skybox = (function (_super) {
 module.exports = Skybox;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType"}],"awayjs-display/lib/entities/TextField":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType"}],"awayjs-display/lib/entities/TextField":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 /**
  * The TextField class is used to create display objects for text display and
  * input. <ph outputclass="flexonly">You can use the TextField class to
@@ -23582,7 +23700,7 @@ var TextField = (function (_super) {
      * <p>The default size for a text field is 100 x 100 pixels.</p>
      */
     function TextField() {
-        _super.call(this);
+        _super.call(this, new Geometry());
         this._text = "";
     }
     Object.defineProperty(TextField.prototype, "bottomScrollV", {
@@ -23742,7 +23860,62 @@ var TextField = (function (_super) {
      *
      * @param newText The string to append to the existing text.
      */
-    TextField.prototype.appendText = function (newText) {
+    TextField.prototype.appendText = function (newText, newFormat) {
+        var indices = new Array();
+        var positions = new Array();
+        var curveData = new Array();
+        var uvs = new Array();
+        var char_scale = newFormat.size / newFormat.font_table.get_font_em_size();
+        var tri_idx_offset = 0;
+        var tri_cnt = 0;
+        var x_offset = 0;
+        var y_offset = 0;
+        for (var i = 0; i < newText.length; i++) {
+            var this_subGeom = newFormat.font_table.get_subgeo_for_char(newText.charCodeAt(i).toString());
+            if (this_subGeom != null) {
+                tri_cnt = 0;
+                var indices2 = this_subGeom.indices;
+                var positions2 = this_subGeom.positions;
+                var curveData2 = this_subGeom.curves;
+                for (var v = 0; v < indices2.length; v++) {
+                    indices.push(indices2[v] + tri_idx_offset);
+                    tri_cnt++;
+                }
+                tri_idx_offset += tri_cnt;
+                for (v = 0; v < positions2.length / 3; v++) {
+                    positions.push((positions2[v * 3] * char_scale) + x_offset);
+                    positions.push((positions2[v * 3 + 1] * char_scale * -1) + y_offset);
+                    positions.push(positions2[v * 3 + 2]);
+                    curveData.push(curveData2[v * 2]);
+                    curveData.push(curveData2[v * 2 + 1]);
+                    uvs.push(0.0);
+                    uvs.push(0.0);
+                }
+                x_offset += newFormat.font_table.get_font_em_size() * char_scale;
+                //xcount+=newFormat.font_table.get_font_em_size();
+                console.log(x_offset);
+            }
+        }
+        var curve_sub_geom = new CurveSubGeometry(true);
+        curve_sub_geom.updateIndices(indices);
+        curve_sub_geom.updatePositions(positions);
+        curve_sub_geom.updateCurves(curveData);
+        curve_sub_geom.updateUVs(uvs);
+        this.geometry.addSubGeometry(curve_sub_geom);
+        this.subMeshes[0].material = newFormat.material;
+    };
+    /**
+     * *tells the Textfield that a paragraph is defined completly.
+     * e.g. the textfield will start a new line for future added text.
+     */
+    TextField.prototype.closeParagraph = function () {
+        //TODO
+    };
+    /**
+     * *tells the Textfield that a paragraph is defined completly.
+     * e.g. the textfield will start a new line for future added text.
+     */
+    TextField.prototype.construct_geometry = function () {
         //TODO
     };
     /**
@@ -24051,11 +24224,11 @@ var TextField = (function (_super) {
         return false;
     };
     return TextField;
-})(DisplayObject);
+})(Mesh);
 module.exports = TextField;
 
 
-},{"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject"}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
+},{"awayjs-core/lib/data/CurveSubGeometry":"awayjs-core/lib/data/CurveSubGeometry","awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh"}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -24126,63 +24299,6 @@ var DisplayObjectEvent = (function (_super) {
     return DisplayObjectEvent;
 })(Event);
 module.exports = DisplayObjectEvent;
-
-
-},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-display/lib/events/GeometryEvent":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Event = require("awayjs-core/lib/events/Event");
-/**
-* Dispatched to notify changes in a geometry object's state.
-*
-* @class away.events.GeometryEvent
-* @see away3d.core.base.Geometry
-*/
-var GeometryEvent = (function (_super) {
-    __extends(GeometryEvent, _super);
-    /**
-     * Create a new GeometryEvent
-     * @param type The event type.
-     * @param subGeometry An optional TriangleSubGeometry object that is the subject of this event.
-     */
-    function GeometryEvent(type, subGeometry) {
-        if (subGeometry === void 0) { subGeometry = null; }
-        _super.call(this, type);
-        this._subGeometry = subGeometry;
-    }
-    Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
-        /**
-         * The TriangleSubGeometry object that is the subject of this event, if appropriate.
-         */
-        get: function () {
-            return this._subGeometry;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     * @return An exact duplicate of the current object.
-     */
-    GeometryEvent.prototype.clone = function () {
-        return new GeometryEvent(this.type, this._subGeometry);
-    };
-    /**
-     * Dispatched when a TriangleSubGeometry was added to the dispatching Geometry.
-     */
-    GeometryEvent.SUB_GEOMETRY_ADDED = "SubGeometryAdded";
-    /**
-     * Dispatched when a TriangleSubGeometry was removed from the dispatching Geometry.
-     */
-    GeometryEvent.SUB_GEOMETRY_REMOVED = "SubGeometryRemoved";
-    GeometryEvent.BOUNDS_INVALID = "BoundsInvalid";
-    return GeometryEvent;
-})(Event);
-module.exports = GeometryEvent;
 
 
 },{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-display/lib/events/LightEvent":[function(require,module,exports){
@@ -24513,87 +24629,8 @@ var SceneEvent = (function (_super) {
 module.exports = SceneEvent;
 
 
-},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-display/lib/events/StageEvent":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Event = require("awayjs-core/lib/events/Event");
-var StageEvent = (function (_super) {
-    __extends(StageEvent, _super);
-    function StageEvent(type) {
-        _super.call(this, type);
-    }
-    StageEvent.CONTEXT_CREATED = "contextCreated";
-    StageEvent.CONTEXT_DISPOSED = "contextDisposed";
-    StageEvent.CONTEXT_RECREATED = "contextRecreated";
-    StageEvent.VIEWPORT_UPDATED = "viewportUpdated";
-    return StageEvent;
-})(Event);
-module.exports = StageEvent;
-
-
-},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-display/lib/events/SubGeometryEvent":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Event = require("awayjs-core/lib/events/Event");
-/**
- * Dispatched to notify changes in a sub geometry object's state.
- *
- * @class away.events.SubGeometryEvent
- * @see away.core.base.Geometry
- */
-var SubGeometryEvent = (function (_super) {
-    __extends(SubGeometryEvent, _super);
-    /**
-     * Create a new GeometryEvent
-     * @param type The event type.
-     * @param dataType An optional data type of the vertex data being updated.
-     */
-    function SubGeometryEvent(type, dataType) {
-        if (dataType === void 0) { dataType = ""; }
-        _super.call(this, type);
-        this._dataType = dataType;
-    }
-    Object.defineProperty(SubGeometryEvent.prototype, "dataType", {
-        /**
-         * The data type of the vertex data.
-         */
-        get: function () {
-            return this._dataType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    SubGeometryEvent.prototype.clone = function () {
-        return new SubGeometryEvent(this.type, this._dataType);
-    };
-    /**
-     * Dispatched when a TriangleSubGeometry's index data has been updated.
-     */
-    SubGeometryEvent.INDICES_UPDATED = "indicesUpdated";
-    /**
-     * Dispatched when a TriangleSubGeometry's vertex data has been updated.
-     */
-    SubGeometryEvent.VERTICES_UPDATED = "verticesUpdated";
-    return SubGeometryEvent;
-})(Event);
-module.exports = SubGeometryEvent;
-
-
 },{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-display/lib/managers/DefaultMaterialManager":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
@@ -24654,7 +24691,7 @@ var DefaultMaterialManager = (function () {
 module.exports = DefaultMaterialManager;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial"}],"awayjs-display/lib/managers/MouseManager":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial"}],"awayjs-display/lib/managers/MouseManager":[function(require,module,exports){
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AwayMouseEvent = require("awayjs-display/lib/events/MouseEvent");
 /**
@@ -25129,7 +25166,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var Event = require("awayjs-core/lib/events/Event");
@@ -25658,7 +25695,7 @@ var MaterialBase = (function (_super) {
 module.exports = MaterialBase;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/events/MaterialEvent":"awayjs-display/lib/events/MaterialEvent","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent"}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/events/MaterialEvent":"awayjs-display/lib/events/MaterialEvent","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent"}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -27727,7 +27764,42 @@ module.exports = EntityNodePool;
 
 
 
-},{}],"awayjs-display/lib/prefabs/PrefabBase":[function(require,module,exports){
+},{}],"awayjs-display/lib/pool/SubMeshPool":[function(require,module,exports){
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
+var LineSubMesh = require("awayjs-display/lib/base/LineSubMesh");
+var TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
+var CurveSubMesh = require("awayjs-display/lib/base/CurveSubMesh");
+/**
+ * @class away.pool.SubMeshPool
+ */
+var SubMeshPool = (function () {
+    function SubMeshPool() {
+    }
+    /**
+     *
+     * @param subMeshClass
+     */
+    SubMeshPool.addSubMeshClass = function (subMeshClass, subGeometryType) {
+        SubMeshPool.subMeshClassPool[subGeometryType] = subMeshClass;
+        return subGeometryType;
+    };
+    /**
+     *
+     * @param subGeometry
+     */
+    SubMeshPool.getSubMeshClass = function (subGeometry) {
+        return SubMeshPool.subMeshClassPool[subGeometry.subGeometryType];
+    };
+    SubMeshPool.subMeshClassPool = new Object();
+    SubMeshPool.defaultSubMeshTypes = [SubMeshPool.addSubMeshClass(LineSubMesh, LineSubGeometry.SUB_GEOMETRY_TYPE), SubMeshPool.addSubMeshClass(TriangleSubMesh, TriangleSubGeometry.SUB_GEOMETRY_TYPE), SubMeshPool.addSubMeshClass(CurveSubMesh, CurveSubGeometry.SUB_GEOMETRY_TYPE)];
+    return SubMeshPool;
+})();
+module.exports = SubMeshPool;
+
+
+},{"awayjs-core/lib/data/CurveSubGeometry":"awayjs-core/lib/data/CurveSubGeometry","awayjs-core/lib/data/LineSubGeometry":"awayjs-core/lib/data/LineSubGeometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-display/lib/base/CurveSubMesh":"awayjs-display/lib/base/CurveSubMesh","awayjs-display/lib/base/LineSubMesh":"awayjs-display/lib/base/LineSubMesh","awayjs-display/lib/base/TriangleSubMesh":"awayjs-display/lib/base/TriangleSubMesh"}],"awayjs-display/lib/prefabs/PrefabBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -29621,9 +29693,9 @@ var __extends = this.__extends || function (d, b) {
 };
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var PrefabBase = require("awayjs-display/lib/prefabs/PrefabBase");
 /**
@@ -29785,7 +29857,7 @@ var PrimitivePrefabBase = (function (_super) {
 module.exports = PrimitivePrefabBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/LineSubGeometry":"awayjs-display/lib/base/LineSubGeometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/LineSubGeometry":"awayjs-core/lib/data/LineSubGeometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -31361,6 +31433,14 @@ module.exports = TextFormatAlign;
 
 
 },{}],"awayjs-display/lib/text/TextFormat":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AssetType = require("awayjs-core/lib/library/AssetType");
 /**
  * The TextFormat class represents character formatting information. Use the
  * TextFormat class to create specific text formatting for text fields. You
@@ -31387,7 +31467,8 @@ module.exports = TextFormatAlign;
  * <p>The default formatting for each property is also described in each
  * property description.</p>
  */
-var TextFormat = (function () {
+var TextFormat = (function (_super) {
+    __extends(TextFormat, _super);
     /**
      * Creates a TextFormat object with the specified properties. You can then
      * change the properties of the TextFormat object to change the formatting of
@@ -31427,7 +31508,7 @@ var TextFormat = (function () {
      * @param leading     A number that indicates the amount of leading vertical
      *                    space between lines.
      */
-    function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
+    function TextFormat(font, size, color, bold, italic, underline, url, link_target, align, leftMargin, rightMargin, indent, leading) {
         if (font === void 0) { font = "Times New Roman"; }
         if (size === void 0) { size = 12; }
         if (color === void 0) { color = 0x000000; }
@@ -31435,37 +31516,48 @@ var TextFormat = (function () {
         if (italic === void 0) { italic = false; }
         if (underline === void 0) { underline = false; }
         if (url === void 0) { url = ""; }
-        if (target === void 0) { target = ""; }
+        if (link_target === void 0) { link_target = ""; }
         if (align === void 0) { align = "left"; }
         if (leftMargin === void 0) { leftMargin = 0; }
         if (rightMargin === void 0) { rightMargin = 0; }
         if (indent === void 0) { indent = 0; }
         if (leading === void 0) { leading = 0; }
+        _super.call(this);
         /**
          * Specifies custom tab stops as an array of non-negative integers. Each tab
          * stop is specified in pixels. If custom tab stops are not specified
          * (<code>null</code>), the default tab stop is 4(average character width).
          */
         this.tabStops = new Array();
-        this.font = font;
+        this.font_name = font;
         this.size = size;
         this.bold = bold;
         this.italic = italic;
         this.underline = underline;
         this.url = url;
-        this.target = target;
+        this.link_target = link_target;
         this.align = align;
         this.leftMargin = leftMargin;
         this.rightMargin = rightMargin;
         this.indent = indent;
         this.leading = leading;
     }
+    Object.defineProperty(TextFormat.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return AssetType.TEXTFORMAT;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return TextFormat;
-})();
+})(NamedAssetBase);
 module.exports = TextFormat;
 
 
-},{}],"awayjs-display/lib/text/TextInteractionMode":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase"}],"awayjs-display/lib/text/TextInteractionMode":[function(require,module,exports){
 /**
  * A class that defines the Interactive mode of a text field object.
  *
@@ -31912,7 +32004,7 @@ module.exports = ShadowCasterCollector;
 
 
 },{"awayjs-display/lib/traverse/CollectorBase":"awayjs-display/lib/traverse/CollectorBase"}],"awayjs-display/lib/utils/Cast":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var ByteArray = require("awayjs-core/lib/utils/ByteArray");
 var CastError = require("awayjs-display/lib/errors/CastError");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
@@ -32190,7 +32282,7 @@ var Cast = (function () {
 module.exports = Cast;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/errors/CastError":"awayjs-display/lib/errors/CastError"}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/errors/CastError":"awayjs-display/lib/errors/CastError"}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
 var MethodMaterialMode = (function () {
     function MethodMaterialMode() {
     }
@@ -32555,7 +32647,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -32804,7 +32896,7 @@ var RenderMethodMaterialObject = (function (_super) {
 module.exports = RenderMethodMaterialObject;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/passes/MethodPass":"awayjs-methodmaterials/lib/passes/MethodPass","awayjs-methodmaterials/lib/passes/MethodPassMode":"awayjs-methodmaterials/lib/passes/MethodPassMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/passes/MethodPass":"awayjs-methodmaterials/lib/passes/MethodPass","awayjs-methodmaterials/lib/passes/MethodPassMode":"awayjs-methodmaterials/lib/passes/MethodPassMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
 /**
  * MethodVO contains data for a given shader object for the use within a single material.
  * This allows shader methods to be shared across materials while their non-public state differs.
@@ -36100,7 +36192,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var ShadowMethodBase = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
 /**
@@ -36330,7 +36422,7 @@ var ShadowDitheredMethod = (function (_super) {
 module.exports = ShadowDitheredMethod;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -38690,9 +38782,9 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 /**
@@ -38848,7 +38940,7 @@ var SingleObjectDepthPass = (function (_super) {
 module.exports = SingleObjectDepthPass;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-methodmaterials/lib/pool/MethodRenderablePool":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-methodmaterials/lib/pool/MethodRenderablePool":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -38942,7 +39034,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -38959,12 +39054,11 @@ var ImageCubeTexture = require("awayjs-core/lib/textures/ImageCubeTexture");
 var ImageTexture = require("awayjs-core/lib/textures/ImageTexture");
 var ByteArray = require("awayjs-core/lib/utils/ByteArray");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
 var PointLight = require("awayjs-display/lib/entities/PointLight");
 var Camera = require("awayjs-display/lib/entities/Camera");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
+var TextField = require("awayjs-display/lib/entities/TextField");
 var Billboard = require("awayjs-display/lib/entities/Billboard");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -39015,7 +39109,6 @@ var SpecularCelMethod = require("awayjs-methodmaterials/lib/methods/SpecularCelM
 var SpecularPhongMethod = require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
 var ShadowNearMethod = require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
 var CurveMaterial = require("awayjs-display/lib/materials/CurveMaterial");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var AS2SceneGraphFactory = require("awayjs-player/lib/factories/AS2SceneGraphFactory");
@@ -39025,6 +39118,7 @@ var UpdatePropertyCommand = require("awayjs-player/lib/timeline/commands/UpdateP
 var RemoveChildCommand = require("awayjs-player/lib/timeline/commands/RemoveChildCommand");
 var ApplyAS2DepthsCommand = require("awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand");
 var Font = require("awayjs-display/lib/text/Font");
+var TextFormat = require("awayjs-display/lib/text/TextFormat");
 /**
  * AWDParser provides a parser for the AWD data type.
  */
@@ -39471,7 +39565,8 @@ var AWDParser = (function (_super) {
     };
     //--Parser Blocks---------------------------------------------------------------------------
     AWDParser.prototype.parseTesselatedFont = function (blockID) {
-        this._blocks[blockID].name = this.parseVarStr();
+        var name = this.parseVarStr();
+        this._blocks[blockID].name = name;
         //console.log("Font name = "+this._blocks[blockID].name);
         var font_style_cnt = this._newBlockBytes.readUnsignedInt();
         //console.log("Font font_style_cnt = "+font_style_cnt);
@@ -39532,17 +39627,114 @@ var AWDParser = (function (_super) {
                 curve_sub_geom.updateUVs(uvs);
                 new_font_style.set_subgeo_for_char(font_style_char.toString(), curve_sub_geom);
             }
+            console.log("Parsed a font-table");
         }
+        //console.log("Parsed a font");
         this.parseProperties(null);
         this.parseUserAttributes();
         this._pFinalizeAsset(new_font, name);
         this._blocks[blockID].data = new_font;
+        if (this._debug) {
+            console.log("Parsed a font: Name = '" + name);
+        }
     };
     AWDParser.prototype.parseTextFormat = function (blockID) {
-        this._blocks[blockID].name = this.parseVarStr();
+        var name = this.parseVarStr();
+        this._blocks[blockID].name = name;
+        //console.log("this._blocks[blockID].name  '" + this._blocks[blockID].name );
+        var font_id = this._newBlockBytes.readUnsignedInt();
+        //console.log("font_id  '" + font_id);
+        var font_style_name = this.parseVarStr();
+        //console.log("font_style_name  '" + font_style_name);
+        var returnArrayFont = this.getAssetByID(font_id, [AssetType.FONT]);
+        var font;
+        if (returnArrayFont[0]) {
+            font = returnArrayFont[1];
+        }
+        else {
+            this._blocks[blockID].addError("Could not find a Font for this TextFormat. A empty Font is created!");
+            font = new Font();
+        }
+        var newTextFormat = new TextFormat();
+        newTextFormat.font_name = font.name;
+        var font_table = font.get_font_table(font_style_name);
+        if (font_table != null) {
+            newTextFormat.font_style = font_style_name;
+            newTextFormat.font_table = font_table;
+        }
+        var data_id = this._newBlockBytes.readUnsignedInt();
+        //console.log("mat  '" + data_id);
+        var mat;
+        var returnedArrayMaterial = this.getAssetByID(data_id, [AssetType.MATERIAL]);
+        if (returnedArrayMaterial[0]) {
+            mat = returnedArrayMaterial[1];
+        }
+        else {
+            this._blocks[blockID].addError("Could not find a Material for this TextFormat. Default Material will be used!");
+            mat = new BasicMaterial();
+        }
+        mat.bothSides = true;
+        var num_uv_values = this._newBlockBytes.readUnsignedByte();
+        for (var uvcnt = 0; uvcnt < num_uv_values; uvcnt++) {
+            var uv_value = this._newBlockBytes.readFloat();
+        }
+        var format_props = this.parseProperties({ 1: AWDParser.UINT16, 2: AWDParser.UINT16, 3: AWDParser.UINT8, 4: AWDParser.UINT8, 5: AWDParser.UINT8 });
+        newTextFormat.size = format_props.get(1, 12);
+        newTextFormat.letterSpacing = format_props.get(2, 0);
+        //newTextFormat.rotated = format_props.get(3,false);
+        newTextFormat.kerning = format_props.get(4, true);
+        //newTextFormat.baseline_shift = format_props.get(5,1);
+        newTextFormat.material = mat;
+        this.parseUserAttributes(); // textformat has no extra-properties
+        //newTextFormat.extra =
+        this._pFinalizeAsset(newTextFormat, name);
+        this._blocks[blockID].data = newTextFormat;
+        if (this._debug) {
+            console.log("Parsed a TextFormat: Name = '" + name + " font: " + font.name);
+        }
     };
     AWDParser.prototype.paresTextField = function (blockID) {
-        this._blocks[blockID].name = this.parseVarStr();
+        var name = this.parseVarStr();
+        this._blocks[blockID].name = name;
+        //console.log("name  '" + name);
+        var newTextField = new TextField();
+        var num_paragraphs = this._newBlockBytes.readUnsignedInt();
+        var complete_text = "";
+        for (var paracnt = 0; paracnt < num_paragraphs; paracnt++) {
+            var num_textruns = this._newBlockBytes.readUnsignedInt();
+            for (var textrun_cnt = 0; textrun_cnt < num_textruns; textrun_cnt++) {
+                var format_id = this._newBlockBytes.readUnsignedInt();
+                //console.log("format_id  '" + format_id);
+                var text_format;
+                var textFormatArray = this.getAssetByID(format_id, [AssetType.TEXTFORMAT]);
+                if (textFormatArray[0]) {
+                    text_format = textFormatArray[1];
+                }
+                else {
+                    this._blocks[blockID].addError("Could not find a Material for this Billboard. A empty material is created!");
+                    text_format = new TextFormat();
+                }
+                //console.log("text_format  '" + text_format.name);
+                var txt_length = this._newBlockBytes.readUnsignedInt();
+                //console.log("txt_length  '" + txt_length);
+                if (txt_length > 0) {
+                    var this_txt = this._newBlockBytes.readUTFBytes(txt_length);
+                    newTextField.appendText(this_txt, text_format);
+                    complete_text += this_txt;
+                }
+            }
+            newTextField.closeParagraph();
+        }
+        newTextField.construct_geometry();
+        // todo: optional matrix etc can be put in properties.
+        this.parseProperties(null);
+        newTextField.extra = this.parseUserAttributes();
+        //console.log("Parsed a TextField: Name = '" + name + "| text  = " + complete_text);
+        this._pFinalizeAsset(newTextField, name);
+        this._blocks[blockID].data = newTextField;
+        if (this._debug) {
+            console.log("Parsed a TextField: Name = '" + name + "| text  = " + complete_text);
+        }
     };
     // Block ID = 25
     AWDParser.prototype.parseBillBoardLibraryBlock = function (blockID) {
@@ -39751,7 +39943,7 @@ var AWDParser = (function (_super) {
                             var blendmode = props.get(4, -1);
                             var visibilty = props.get(5, -1);
                             var depth = props.get(6, -1);
-                            var mask = props.get(7, -1);
+                            var mask = props.get(7, []);
                             // todo: handle filters
                             //matrix2d must provide 6 values to be valid
                             commandString += "\n                transformArray = " + matrix_2d.length;
@@ -39792,8 +39984,15 @@ var AWDParser = (function (_super) {
                             }
                             // mask must be positive to be valid. i think only add-commands will have this value.
                             // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
-                            if (mask >= 0) {
-                                commandString += "\n                Mask-up to obj-id: " + mask;
+                            if (mask.length > 0) {
+                                if ((mask.length == 1) && (mask[0] < 0)) {
+                                    // TODO: this object is used as mask
+                                    commandString += "\n                obj is used as mask";
+                                }
+                                else {
+                                    // TODO: this object is masked by one or more objects defined by ids in mask-array
+                                    commandString += "\n                obj is masked by " + mask.length + " objects";
+                                }
                             }
                         }
                         break;
@@ -39958,7 +40157,7 @@ var AWDParser = (function (_super) {
                     triangle_sub_geom.autoDeriveNormals = false;
                 if (uvs)
                     triangle_sub_geom.autoDeriveUVs = false;
-                triangle_sub_geom.autoDeriveNormals = false;
+                //triangle_sub_geom.autoDeriveNormals = false;
                 if (true) {
                     triangle_sub_geom.autoDeriveTangents = true;
                 }
@@ -41683,20 +41882,20 @@ var BitFlags = (function () {
 module.exports = AWDParser;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-display/lib/text/Font":"awayjs-display/lib/text/Font","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/factories/AS2SceneGraphFactory":"awayjs-player/lib/factories/AS2SceneGraphFactory","awayjs-player/lib/timeline/TimelineKeyFrame":"awayjs-player/lib/timeline/TimelineKeyFrame","awayjs-player/lib/timeline/commands/AddChildCommand":"awayjs-player/lib/timeline/commands/AddChildCommand","awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/timeline/commands/RemoveChildCommand":"awayjs-player/lib/timeline/commands/RemoveChildCommand","awayjs-player/lib/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-core/lib/data/CurveSubGeometry":"awayjs-core/lib/data/CurveSubGeometry","awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/textures/BitmapCubeTexture":"awayjs-core/lib/textures/BitmapCubeTexture","awayjs-core/lib/textures/ImageCubeTexture":"awayjs-core/lib/textures/ImageCubeTexture","awayjs-core/lib/textures/ImageTexture":"awayjs-core/lib/textures/ImageTexture","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/entities/TextField":"awayjs-display/lib/entities/TextField","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/materials/CurveMaterial":"awayjs-display/lib/materials/CurveMaterial","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","awayjs-display/lib/prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","awayjs-display/lib/prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-display/lib/prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab","awayjs-display/lib/text/Font":"awayjs-display/lib/text/Font","awayjs-display/lib/text/TextFormat":"awayjs-display/lib/text/TextFormat","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","awayjs-methodmaterials/lib/methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","awayjs-methodmaterials/lib/methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","awayjs-methodmaterials/lib/methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","awayjs-methodmaterials/lib/methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","awayjs-methodmaterials/lib/methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","awayjs-methodmaterials/lib/methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","awayjs-methodmaterials/lib/methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","awayjs-methodmaterials/lib/methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod","awayjs-player/lib/factories/AS2SceneGraphFactory":"awayjs-player/lib/factories/AS2SceneGraphFactory","awayjs-player/lib/timeline/TimelineKeyFrame":"awayjs-player/lib/timeline/TimelineKeyFrame","awayjs-player/lib/timeline/commands/AddChildCommand":"awayjs-player/lib/timeline/commands/AddChildCommand","awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand","awayjs-player/lib/timeline/commands/RemoveChildCommand":"awayjs-player/lib/timeline/commands/RemoveChildCommand","awayjs-player/lib/timeline/commands/UpdatePropertyCommand":"awayjs-player/lib/timeline/commands/UpdatePropertyCommand","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var VertexClipNode = require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
 var VertexAnimationSet = require("awayjs-renderergl/lib/animators/VertexAnimationSet");
@@ -42074,7 +42273,7 @@ var MD2Parser = (function (_super) {
 module.exports = MD2Parser;
 
 
-},{"awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD5AnimParser":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-renderergl/lib/animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","awayjs-renderergl/lib/animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/MD5AnimParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -42602,13 +42801,13 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Quaternion = require("awayjs-core/lib/geom/Quaternion");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var SkeletonAnimationSet = require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 var Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
@@ -43145,13 +43344,15 @@ var MeshData = (function () {
 module.exports = MD5MeshParser;
 
 
-},{"awayjs-core/lib/geom/Quaternion":"awayjs-core/lib/geom/Quaternion","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint"}],"awayjs-parsers/lib/Max3DSParser":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Quaternion":"awayjs-core/lib/geom/Quaternion","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-renderergl/lib/animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","awayjs-renderergl/lib/animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","awayjs-renderergl/lib/animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint"}],"awayjs-parsers/lib/Max3DSParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AssetType = require("awayjs-core/lib/library/AssetType");
@@ -43160,8 +43361,6 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var DefaultMaterialManager = require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -43832,21 +44031,21 @@ var VertexVO = (function () {
 module.exports = Max3DSParser;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/OBJParser":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/OBJParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var Geometry = require("awayjs-display/lib/base/Geometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var DefaultMaterialManager = require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -44744,7 +44943,7 @@ var Vertex = (function () {
 module.exports = OBJParser;
 
 
-},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/Parsers":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-renderergl/lib/managers/DefaultMaterialManager":"awayjs-renderergl/lib/managers/DefaultMaterialManager"}],"awayjs-parsers/lib/Parsers":[function(require,module,exports){
 var AssetLoader = require("awayjs-core/lib/library/AssetLoader");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
 var Max3DSParser = require("awayjs-parsers/lib/Max3DSParser");
@@ -47080,8 +47279,8 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var JointPose = require("awayjs-renderergl/lib/animators/data/JointPose");
@@ -47607,7 +47806,7 @@ var SkeletonAnimator = (function (_super) {
 module.exports = SkeletonAnimator;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent","awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent","awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -47779,7 +47978,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var VertexDataPool = require("awayjs-stagegl/lib/pool/VertexDataPool");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
@@ -47917,7 +48116,7 @@ var VertexAnimator = (function (_super) {
 module.exports = VertexAnimator;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/pool/VertexDataPool":"awayjs-stagegl/lib/pool/VertexDataPool"}],"awayjs-renderergl/lib/animators/data/AnimationRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/pool/VertexDataPool":"awayjs-stagegl/lib/pool/VertexDataPool"}],"awayjs-renderergl/lib/animators/data/AnimationRegisterCache":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54043,7 +54242,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Geometry = require("awayjs-display/lib/base/Geometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
 /**
  * @class away.base.ParticleGeometry
  */
@@ -54057,7 +54256,7 @@ var ParticleGeometry = (function (_super) {
 module.exports = ParticleGeometry;
 
 
-},{"awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry"}],"awayjs-renderergl/lib/base/RendererBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry"}],"awayjs-renderergl/lib/base/RendererBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54071,7 +54270,7 @@ var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RenderableMergeSort = require("awayjs-display/lib/sort/RenderableMergeSort");
 var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
-var StageEvent = require("awayjs-display/lib/events/StageEvent");
+var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 var EntityCollector = require("awayjs-display/lib/traverse/EntityCollector");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
@@ -54735,7 +54934,7 @@ var RendererBase = (function (_super) {
 module.exports = RendererBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-display/lib/events/RendererEvent":"awayjs-display/lib/events/RendererEvent","awayjs-display/lib/events/StageEvent":"awayjs-display/lib/events/StageEvent","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-display/lib/sort/RenderableMergeSort":"awayjs-display/lib/sort/RenderableMergeSort","awayjs-display/lib/traverse/EntityCollector":"awayjs-display/lib/traverse/EntityCollector","awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/managers/StageManager":"awayjs-stagegl/lib/managers/StageManager"}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-display/lib/events/RendererEvent":"awayjs-display/lib/events/RendererEvent","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-display/lib/sort/RenderableMergeSort":"awayjs-display/lib/sort/RenderableMergeSort","awayjs-display/lib/traverse/EntityCollector":"awayjs-display/lib/traverse/EntityCollector","awayjs-renderergl/lib/pool/RendererPoolBase":"awayjs-renderergl/lib/pool/RendererPoolBase","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/events/StageEvent":"awayjs-stagegl/lib/events/StageEvent","awayjs-stagegl/lib/managers/StageManager":"awayjs-stagegl/lib/managers/StageManager"}],"awayjs-renderergl/lib/compilation/DepthRenderObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -54963,7 +55162,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var BasicMaterialPass = require("awayjs-renderergl/lib/passes/BasicMaterialPass");
 /**
@@ -54996,7 +55195,7 @@ var RenderBasicMaterialObject = (function (_super) {
 module.exports = RenderBasicMaterialObject;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/BasicMaterialPass":"awayjs-renderergl/lib/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/compilation/RenderObjectBase":[function(require,module,exports){
 var Event = require("awayjs-core/lib/events/Event");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 /**
@@ -56009,8 +56208,8 @@ module.exports = ShaderLightingObject;
 
 
 },{"awayjs-display/lib/materials/LightSources":"awayjs-display/lib/materials/LightSources","awayjs-renderergl/lib/compilation/ShaderLightingCompiler":"awayjs-renderergl/lib/compilation/ShaderLightingCompiler","awayjs-renderergl/lib/compilation/ShaderObjectBase":"awayjs-renderergl/lib/compilation/ShaderObjectBase","awayjs-stagegl/lib/base/ContextGLProfile":"awayjs-stagegl/lib/base/ContextGLProfile"}],"awayjs-renderergl/lib/compilation/ShaderObjectBase":[function(require,module,exports){
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 var ShaderCompilerBase = require("awayjs-renderergl/lib/compilation/ShaderCompilerBase");
 /**
@@ -56268,7 +56467,7 @@ var ShaderObjectBase = (function () {
 module.exports = ShaderObjectBase;
 
 
-},{"awayjs-display/lib/base/LineSubGeometry":"awayjs-display/lib/base/LineSubGeometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace"}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":"awayjs-core/lib/data/LineSubGeometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-renderergl/lib/compilation/ShaderCompilerBase":"awayjs-renderergl/lib/compilation/ShaderCompilerBase","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace"}],"awayjs-renderergl/lib/compilation/ShaderRegisterCache":[function(require,module,exports){
 var RegisterPool = require("awayjs-renderergl/lib/compilation/RegisterPool");
 var ShaderRegisterElement = require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
 /**
@@ -56616,7 +56815,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
 var SkyboxPass = require("awayjs-renderergl/lib/passes/SkyboxPass");
 /**
@@ -56647,7 +56846,7 @@ var SkyboxRenderObject = (function (_super) {
 module.exports = SkyboxRenderObject;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/SkyboxPass":"awayjs-renderergl/lib/passes/SkyboxPass"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-renderergl/lib/passes/SkyboxPass":"awayjs-renderergl/lib/passes/SkyboxPass"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57010,7 +57209,7 @@ module.exports = Filter3DTaskBase;
 
 
 },{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat"}],"awayjs-renderergl/lib/managers/DefaultMaterialManager":[function(require,module,exports){
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var AssetType = require("awayjs-core/lib/library/AssetType");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
@@ -57071,7 +57270,7 @@ var DefaultMaterialManager = (function () {
 module.exports = DefaultMaterialManager;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57581,7 +57780,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/base/BlendMode");
+var BlendMode = require("awayjs-core/lib/data/BlendMode");
 var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
 var Event = require("awayjs-core/lib/events/Event");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
@@ -57831,7 +58030,7 @@ var RenderPassBase = (function (_super) {
 module.exports = RenderPassBase;
 
 
-},{"awayjs-core/lib/base/BlendMode":"awayjs-core/lib/base/BlendMode","awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-renderergl/lib/passes/SkyboxPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57887,7 +58086,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var PickingColliderBase = require("awayjs-renderergl/lib/pick/PickingColliderBase");
 /**
  * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
@@ -58017,7 +58216,7 @@ var JSPickingCollider = (function (_super) {
 module.exports = JSPickingCollider;
 
 
-},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/pick/PickingColliderBase":"awayjs-renderergl/lib/pick/PickingColliderBase"}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-renderergl/lib/pick/PickingColliderBase":"awayjs-renderergl/lib/pick/PickingColliderBase"}],"awayjs-renderergl/lib/pick/PickingColliderBase":[function(require,module,exports){
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
@@ -58123,12 +58322,12 @@ module.exports = PickingColliderBase;
 
 },{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-renderergl/lib/pool/BillboardRenderable":"awayjs-renderergl/lib/pool/BillboardRenderable","awayjs-renderergl/lib/pool/RenderablePoolBase":"awayjs-renderergl/lib/pool/RenderablePoolBase","awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable"}],"awayjs-renderergl/lib/pick/ShaderPicker":[function(require,module,exports){
 var Debug = require("awayjs-core/lib/utils/Debug");
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Point = require("awayjs-core/lib/geom/Point");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var AGALMiniAssembler = require("awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
@@ -58537,7 +58736,7 @@ var ShaderPicker = (function () {
 module.exports = ShaderPicker;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/utils/Debug":"awayjs-core/lib/utils/Debug","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace"}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/utils/Debug":"awayjs-core/lib/utils/Debug","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace"}],"awayjs-renderergl/lib/pool/BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58545,7 +58744,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -58649,7 +58848,7 @@ var BillboardRenderable = (function (_super) {
 module.exports = BillboardRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/CurveSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58657,7 +58856,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+var CurveSubGeometry = require("awayjs-core/lib/data/CurveSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -58845,7 +59044,7 @@ var CurveSubMeshRenderable = (function (_super) {
 module.exports = CurveSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
+},{"awayjs-core/lib/data/CurveSubGeometry":"awayjs-core/lib/data/CurveSubGeometry","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/IRenderableClass":[function(require,module,exports){
 
 
 
@@ -58861,7 +59060,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -58989,7 +59188,7 @@ var LineSegmentRenderable = (function (_super) {
 module.exports = LineSegmentRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-display/lib/base/LineSubGeometry":"awayjs-display/lib/base/LineSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":"awayjs-core/lib/data/LineSubGeometry","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/LineSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58997,7 +59196,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var LineSubGeometry = require("awayjs-display/lib/base/LineSubGeometry");
+var LineSubGeometry = require("awayjs-core/lib/data/LineSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -59102,12 +59301,12 @@ var LineSubMeshRenderable = (function (_super) {
 module.exports = LineSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-display/lib/base/LineSubGeometry":"awayjs-display/lib/base/LineSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/LineSubGeometry":"awayjs-core/lib/data/LineSubGeometry","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/RenderableBase":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
 var IndexDataPool = require("awayjs-stagegl/lib/pool/IndexDataPool");
 var VertexDataPool = require("awayjs-stagegl/lib/pool/VertexDataPool");
 /**
@@ -59373,7 +59572,7 @@ var RenderableBase = (function () {
 module.exports = RenderableBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent","awayjs-stagegl/lib/pool/IndexDataPool":"awayjs-stagegl/lib/pool/IndexDataPool","awayjs-stagegl/lib/pool/VertexDataPool":"awayjs-stagegl/lib/pool/VertexDataPool"}],"awayjs-renderergl/lib/pool/RenderablePoolBase":[function(require,module,exports){
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-stagegl/lib/pool/IndexDataPool":"awayjs-stagegl/lib/pool/IndexDataPool","awayjs-stagegl/lib/pool/VertexDataPool":"awayjs-stagegl/lib/pool/VertexDataPool"}],"awayjs-renderergl/lib/pool/RenderablePoolBase":[function(require,module,exports){
 var RenderObjectPool = require("awayjs-renderergl/lib/compilation/RenderObjectPool");
 var RenderBasicMaterialObject = require("awayjs-renderergl/lib/compilation/RenderBasicMaterialObject");
 var SkyboxRenderObject = require("awayjs-renderergl/lib/compilation/SkyboxRenderObject");
@@ -59589,7 +59788,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
 /**
@@ -59659,7 +59858,7 @@ var SkyboxRenderable = (function (_super) {
 module.exports = SkyboxRenderable;
 
 
-},{"awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-renderergl/lib/pool/TriangleSubMeshRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -59667,7 +59866,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderableBase = require("awayjs-renderergl/lib/pool/RenderableBase");
@@ -59798,10 +59997,10 @@ var TriangleSubMeshRenderable = (function (_super) {
 module.exports = TriangleSubMeshRenderable;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-renderergl/lib/pool/RenderableBase":"awayjs-renderergl/lib/pool/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Geometry = require("awayjs-display/lib/base/Geometry");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var Geometry = require("awayjs-core/lib/data/Geometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>
@@ -60092,7 +60291,7 @@ var GeometryVO = (function () {
 module.exports = Merge;
 
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-display/lib/base/Geometry":"awayjs-display/lib/base/Geometry","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh"}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
+},{"awayjs-core/lib/data/Geometry":"awayjs-core/lib/data/Geometry","awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh"}],"awayjs-renderergl/lib/tools/data/ParticleGeometryTransform":[function(require,module,exports){
 /**
  * ...
  */
@@ -60137,7 +60336,7 @@ module.exports = ParticleGeometryTransform;
 },{}],"awayjs-renderergl/lib/utils/ParticleGeometryHelper":[function(require,module,exports){
 var Point = require("awayjs-core/lib/geom/Point");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
+var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var ParticleData = require("awayjs-renderergl/lib/animators/data/ParticleData");
 var ParticleGeometry = require("awayjs-renderergl/lib/base/ParticleGeometry");
 /**
@@ -60315,7 +60514,7 @@ var ParticleGeometryHelper = (function () {
 module.exports = ParticleGeometryHelper;
 
 
-},{"awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/base/TriangleSubGeometry":"awayjs-display/lib/base/TriangleSubGeometry","awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
+},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-renderergl/lib/animators/data/ParticleData":"awayjs-renderergl/lib/animators/data/ParticleData","awayjs-renderergl/lib/base/ParticleGeometry":"awayjs-renderergl/lib/base/ParticleGeometry"}],"awayjs-renderergl/lib/utils/PerspectiveMatrix3D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61681,6 +61880,19 @@ var ContextGLWrapMode = (function () {
 module.exports = ContextGLWrapMode;
 
 
+},{}],"awayjs-stagegl/lib/base/ContextMode":[function(require,module,exports){
+var ContextMode = (function () {
+    function ContextMode() {
+    }
+    ContextMode.AUTO = "auto";
+    ContextMode.WEBGL = "webgl";
+    ContextMode.FLASH = "flash";
+    ContextMode.NATIVE = "native";
+    return ContextMode;
+})();
+module.exports = ContextMode;
+
+
 },{}],"awayjs-stagegl/lib/base/ContextStage3D":[function(require,module,exports){
 var swfobject = require("awayjs-stagegl/lib/swfobject");
 var Sampler = require("awayjs-stagegl/lib/aglsl/Sampler");
@@ -62395,7 +62607,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var ByteArrayBase = require("awayjs-core/lib/utils/ByteArrayBase");
 var OpCodes = require("awayjs-stagegl/lib/base/OpCodes");
 var ResourceBaseFlash = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
@@ -62453,14 +62665,14 @@ var CubeTextureFlash = (function (_super) {
 module.exports = CubeTextureFlash;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/CubeTextureWebGL":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/CubeTextureWebGL":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var TextureBaseWebGL = require("awayjs-stagegl/lib/base/TextureBaseWebGL");
 var CubeTextureWebGL = (function (_super) {
     __extends(CubeTextureWebGL, _super);
@@ -62510,7 +62722,7 @@ var CubeTextureWebGL = (function (_super) {
 module.exports = CubeTextureWebGL;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/IContextGL":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/IContextGL":[function(require,module,exports){
 
 
 
@@ -62792,14 +63004,14 @@ var Event = require("awayjs-core/lib/events/Event");
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
 var CSS = require("awayjs-core/lib/utils/CSS");
-var ContextMode = require("awayjs-display/lib/display/ContextMode");
-var StageEvent = require("awayjs-display/lib/events/StageEvent");
+var ContextMode = require("awayjs-stagegl/lib/base/ContextMode");
 var ContextGLTextureFormat = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
 var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 var ContextGLWrapMode = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
 var ContextStage3D = require("awayjs-stagegl/lib/base/ContextStage3D");
 var ContextWebGL = require("awayjs-stagegl/lib/base/ContextWebGL");
+var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 var TextureDataPool = require("awayjs-stagegl/lib/pool/TextureDataPool");
 var ProgramDataPool = require("awayjs-stagegl/lib/pool/ProgramDataPool");
 /**
@@ -63420,7 +63632,7 @@ var Stage = (function (_super) {
 module.exports = Stage;
 
 
-},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-core/lib/utils/CSS":"awayjs-core/lib/utils/CSS","awayjs-display/lib/display/ContextMode":"awayjs-display/lib/display/ContextMode","awayjs-display/lib/events/StageEvent":"awayjs-display/lib/events/StageEvent","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","awayjs-stagegl/lib/base/ContextWebGL":"awayjs-stagegl/lib/base/ContextWebGL","awayjs-stagegl/lib/pool/ProgramDataPool":"awayjs-stagegl/lib/pool/ProgramDataPool","awayjs-stagegl/lib/pool/TextureDataPool":"awayjs-stagegl/lib/pool/TextureDataPool"}],"awayjs-stagegl/lib/base/TextureBaseWebGL":[function(require,module,exports){
+},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-core/lib/utils/CSS":"awayjs-core/lib/utils/CSS","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/ContextMode":"awayjs-stagegl/lib/base/ContextMode","awayjs-stagegl/lib/base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","awayjs-stagegl/lib/base/ContextWebGL":"awayjs-stagegl/lib/base/ContextWebGL","awayjs-stagegl/lib/events/StageEvent":"awayjs-stagegl/lib/events/StageEvent","awayjs-stagegl/lib/pool/ProgramDataPool":"awayjs-stagegl/lib/pool/ProgramDataPool","awayjs-stagegl/lib/pool/TextureDataPool":"awayjs-stagegl/lib/pool/TextureDataPool"}],"awayjs-stagegl/lib/base/TextureBaseWebGL":[function(require,module,exports){
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var TextureBaseWebGL = (function () {
     function TextureBaseWebGL(gl) {
@@ -63449,7 +63661,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var ByteArrayBase = require("awayjs-core/lib/utils/ByteArrayBase");
 var OpCodes = require("awayjs-stagegl/lib/base/OpCodes");
 var ResourceBaseFlash = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
@@ -63512,14 +63724,14 @@ var TextureFlash = (function (_super) {
 module.exports = TextureFlash;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/TextureWebGL":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/TextureWebGL":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/base/BitmapData");
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
 var TextureBaseWebGL = require("awayjs-stagegl/lib/base/TextureBaseWebGL");
 var TextureWebGL = (function (_super) {
     __extends(TextureWebGL, _super);
@@ -63599,7 +63811,7 @@ var TextureWebGL = (function (_super) {
 module.exports = TextureWebGL;
 
 
-},{"awayjs-core/lib/base/BitmapData":"awayjs-core/lib/base/BitmapData","awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/VertexBufferFlash":[function(require,module,exports){
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/VertexBufferFlash":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63691,7 +63903,29 @@ var VertexBufferWebGL = (function () {
 module.exports = VertexBufferWebGL;
 
 
-},{}],"awayjs-stagegl/lib/managers/StageManager":[function(require,module,exports){
+},{}],"awayjs-stagegl/lib/events/StageEvent":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+var StageEvent = (function (_super) {
+    __extends(StageEvent, _super);
+    function StageEvent(type) {
+        _super.call(this, type);
+    }
+    StageEvent.CONTEXT_CREATED = "contextCreated";
+    StageEvent.CONTEXT_DISPOSED = "contextDisposed";
+    StageEvent.CONTEXT_RECREATED = "contextRecreated";
+    StageEvent.VIEWPORT_UPDATED = "viewportUpdated";
+    return StageEvent;
+})(Event);
+module.exports = StageEvent;
+
+
+},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-stagegl/lib/managers/StageManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63700,8 +63934,8 @@ var __extends = this.__extends || function (d, b) {
 };
 var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
 var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
-var StageEvent = require("awayjs-display/lib/events/StageEvent");
 var Stage = require("awayjs-stagegl/lib/base/Stage");
+var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 /**
  * The StageManager class provides a multiton object that handles management for Stage objects.
  *
@@ -63838,7 +64072,7 @@ var StageManager = (function (_super) {
 module.exports = StageManager;
 
 
-},{"awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-display/lib/events/StageEvent":"awayjs-display/lib/events/StageEvent","awayjs-stagegl/lib/base/Stage":"awayjs-stagegl/lib/base/Stage"}],"awayjs-stagegl/lib/pool/IndexDataPool":[function(require,module,exports){
+},{"awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-stagegl/lib/base/Stage":"awayjs-stagegl/lib/base/Stage","awayjs-stagegl/lib/events/StageEvent":"awayjs-stagegl/lib/events/StageEvent"}],"awayjs-stagegl/lib/pool/IndexDataPool":[function(require,module,exports){
 var IndexData = require("awayjs-stagegl/lib/pool/IndexData");
 /**
  *
@@ -64131,7 +64365,7 @@ module.exports = TextureData;
 
 
 },{}],"awayjs-stagegl/lib/pool/VertexDataPool":[function(require,module,exports){
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
 var VertexData = require("awayjs-stagegl/lib/pool/VertexData");
 /**
  *
@@ -64172,9 +64406,9 @@ var VertexDataPool = (function () {
 module.exports = VertexDataPool;
 
 
-},{"awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-stagegl/lib/pool/VertexData":"awayjs-stagegl/lib/pool/VertexData"}],"awayjs-stagegl/lib/pool/VertexData":[function(require,module,exports){
-var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
-var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-stagegl/lib/pool/VertexData":"awayjs-stagegl/lib/pool/VertexData"}],"awayjs-stagegl/lib/pool/VertexData":[function(require,module,exports){
+var SubGeometryBase = require("awayjs-core/lib/data/SubGeometryBase");
+var SubGeometryEvent = require("awayjs-core/lib/events/SubGeometryEvent");
 /**
  *
  */
@@ -64274,7 +64508,7 @@ var VertexData = (function () {
 module.exports = VertexData;
 
 
-},{"awayjs-display/lib/base/SubGeometryBase":"awayjs-display/lib/base/SubGeometryBase","awayjs-display/lib/events/SubGeometryEvent":"awayjs-display/lib/events/SubGeometryEvent"}],"awayjs-stagegl/lib/swfobject":[function(require,module,exports){
+},{"awayjs-core/lib/data/SubGeometryBase":"awayjs-core/lib/data/SubGeometryBase","awayjs-core/lib/events/SubGeometryEvent":"awayjs-core/lib/events/SubGeometryEvent"}],"awayjs-stagegl/lib/swfobject":[function(require,module,exports){
 /*!	SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
