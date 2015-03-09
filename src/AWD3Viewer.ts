@@ -68,6 +68,9 @@ import CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem"
 import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
 import Camera = require("awayjs-display/lib/entities/Camera");
 
+import TextField						= require("awayjs-display/lib/entities/TextField");
+import TextFormat						= require("awayjs-display/lib/text/TextFormat");
+
 class AWD3Viewer
 {
 	//engine variables
@@ -167,7 +170,8 @@ class AWD3Viewer
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		//loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
 		//loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
@@ -176,6 +180,7 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
 
 	}
 
@@ -203,6 +208,13 @@ class AWD3Viewer
 	 */
 	private onAssetComplete(event: AssetEvent): void
 	{
+
+		if(event.asset.assetType == AssetType.TEXTFIELD) {
+			//var one_textfield:TextField=<TextField> event.asset;
+			//console.log("orginal textfield_text = "+one_textfield.text);
+			//one_textfield.text="new text";
+		}
+
 		if(event.asset.assetType == AssetType.TIMELINE) {
 			this._rootTimeLine = <MovieClip> event.asset;
 			this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
