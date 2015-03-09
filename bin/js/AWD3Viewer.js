@@ -116,7 +116,8 @@ var AWD3Viewer = (function () {
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
-        loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
         //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
         //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
@@ -125,6 +126,7 @@ var AWD3Viewer = (function () {
         //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
         //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
         //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+        loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
     };
     /**
      * Initialise the listeners
@@ -145,6 +147,8 @@ var AWD3Viewer = (function () {
      * loader listener for asset complete events
      */
     AWD3Viewer.prototype.onAssetComplete = function (event) {
+        if (event.asset.assetType == AssetType.TEXTFIELD) {
+        }
         if (event.asset.assetType == AssetType.TIMELINE) {
             this._rootTimeLine = event.asset;
             this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
