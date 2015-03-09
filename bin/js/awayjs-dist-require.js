@@ -1,4 +1,2305 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-core/lib/data/BitmapDataChannel":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Rectangle = require("awayjs-core/lib/geom/Rectangle");
+var ColorUtils = require("awayjs-core/lib/utils/ColorUtils");
+/**
+ * The BitmapData class lets you work with the data(pixels) of a Bitmap
+ * object. You can use the methods of the BitmapData class to create
+ * arbitrarily sized transparent or opaque bitmap images and manipulate them
+ * in various ways at runtime. You can also access the BitmapData for a bitmap
+ * image that you load with the <code>flash.Assets</code> or
+ * <code>flash.display.Loader</code> classes.
+ *
+ * <p>This class lets you separate bitmap rendering operations from the
+ * internal display updating routines of flash. By manipulating a
+ * BitmapData object directly, you can create complex images without incurring
+ * the per-frame overhead of constantly redrawing the content from vector
+ * data.</p>
+ *
+ * <p>The methods of the BitmapData class support effects that are not
+ * available through the filters available to non-bitmap display objects.</p>
+ *
+ * <p>A BitmapData object contains an array of pixel data. This data can
+ * represent either a fully opaque bitmap or a transparent bitmap that
+ * contains alpha channel data. Either type of BitmapData object is stored as
+ * a buffer of 32-bit integers. Each 32-bit integer determines the properties
+ * of a single pixel in the bitmap.</p>
+ *
+ * <p>Each 32-bit integer is a combination of four 8-bit channel values(from
+ * 0 to 255) that describe the alpha transparency and the red, green, and blue
+ * (ARGB) values of the pixel.(For ARGB values, the most significant byte
+ * represents the alpha channel value, followed by red, green, and blue.)</p>
+ *
+ * <p>The four channels(alpha, red, green, and blue) are represented as
+ * numbers when you use them with the <code>BitmapData.copyChannel()</code>
+ * method or the <code>DisplacementMapFilter.componentX</code> and
+ * <code>DisplacementMapFilter.componentY</code> properties, and these numbers
+ * are represented by the following constants in the BitmapDataChannel
+ * class:</p>
+ *
+ * <ul>
+ *   <li><code>BitmapDataChannel.ALPHA</code></li>
+ *   <li><code>BitmapDataChannel.RED</code></li>
+ *   <li><code>BitmapDataChannel.GREEN</code></li>
+ *   <li><code>BitmapDataChannel.BLUE</code></li>
+ * </ul>
+ *
+ * <p>You can attach BitmapData objects to a Bitmap object by using the
+ * <code>bitmapData</code> property of the Bitmap object.</p>
+ *
+ * <p>You can use a BitmapData object to fill a Graphics object by using the
+ * <code>Graphics.beginBitmapFill()</code> method.</p>
+ *
+ * <p>You can also use a BitmapData object to perform batch tile rendering
+ * using the <code>flash.display.Tilesheet</code> class.</p>
+ *
+ * <p>In Flash Player 10, the maximum size for a BitmapData object
+ * is 8,191 pixels in width or height, and the total number of pixels cannot
+ * exceed 16,777,215 pixels.(So, if a BitmapData object is 8,191 pixels wide,
+ * it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation
+ * is 2,880 pixels in height and 2,880 in width.</p>
+ */
+var BitmapData = (function () {
+    /**
+     * Creates a BitmapData object with a specified width and height. If you
+     * specify a value for the <code>fillColor</code> parameter, every pixel in
+     * the bitmap is set to that color.
+     *
+     * <p>By default, the bitmap is created as transparent, unless you pass
+     * the value <code>false</code> for the transparent parameter. After you
+     * create an opaque bitmap, you cannot change it to a transparent bitmap.
+     * Every pixel in an opaque bitmap uses only 24 bits of color channel
+     * information. If you define the bitmap as transparent, every pixel uses 32
+     * bits of color channel information, including an alpha transparency
+     * channel.</p>
+     *
+     * @param width       The width of the bitmap image in pixels.
+     * @param height      The height of the bitmap image in pixels.
+     * @param transparent Specifies whether the bitmap image supports per-pixel
+     *                    transparency. The default value is <code>true</code>
+     *                    (transparent). To create a fully transparent bitmap,
+     *                    set the value of the <code>transparent</code>
+     *                    parameter to <code>true</code> and the value of the
+     *                    <code>fillColor</code> parameter to 0x00000000(or to
+     *                    0). Setting the <code>transparent</code> property to
+     *                    <code>false</code> can result in minor improvements
+     *                    in rendering performance.
+     * @param fillColor   A 32-bit ARGB color value that you use to fill the
+     *                    bitmap image area. The default value is
+     *                    0xFFFFFFFF(solid white).
+     */
+    function BitmapData(width, height, transparent, fillColor) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = null; }
+        this._locked = false;
+        this._transparent = transparent;
+        this._imageCanvas = document.createElement("canvas");
+        this._imageCanvas.width = width;
+        this._imageCanvas.height = height;
+        this._context = this._imageCanvas.getContext("2d");
+        this._rect = new Rectangle(0, 0, width, height);
+        if (fillColor != null)
+            this.fillRect(this._rect, fillColor);
+    }
+    Object.defineProperty(BitmapData.prototype, "height", {
+        /**
+         * The height of the bitmap image in pixels.
+         */
+        get: function () {
+            return this._rect.height;
+        },
+        set: function (value) {
+            if (this._rect.height == value)
+                return;
+            this._rect.height = value;
+            if (this._locked)
+                this._context.putImageData(this._imageData, 0, 0);
+            this._imageCanvas.height = value;
+            if (this._locked)
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "rect", {
+        /**
+         * The rectangle that defines the size and location of the bitmap image. The
+         * top and left of the rectangle are 0; the width and height are equal to the
+         * width and height in pixels of the BitmapData object.
+         */
+        get: function () {
+            return this._rect;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "transparent", {
+        /**
+         * Defines whether the bitmap image supports per-pixel transparency. You can
+         * set this value only when you construct a BitmapData object by passing in
+         * <code>true</code> for the <code>transparent</code> parameter of the
+         * constructor. Then, after you create a BitmapData object, you can check
+         * whether it supports per-pixel transparency by determining if the value of
+         * the <code>transparent</code> property is <code>true</code>.
+         */
+        get: function () {
+            return this._transparent;
+        },
+        set: function (value) {
+            this._transparent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "width", {
+        /**
+         * The width of the bitmap image in pixels.
+         */
+        get: function () {
+            return this._rect.width;
+        },
+        set: function (value) {
+            if (this._rect.width == value)
+                return;
+            this._rect.width = value;
+            if (this._locked)
+                this._context.putImageData(this._imageData, 0, 0);
+            this._imageCanvas.width = value;
+            if (this._locked)
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Returns a new BitmapData object that is a clone of the original instance
+     * with an exact copy of the contained bitmap.
+     *
+     * @return A new BitmapData object that is identical to the original.
+     */
+    BitmapData.prototype.clone = function () {
+        var t = new BitmapData(this.width, this.height, this.transparent);
+        t.draw(this);
+        return t;
+    };
+    /**
+     * Adjusts the color values in a specified area of a bitmap image by using a
+     * <code>ColorTransform</code> object. If the rectangle matches the
+     * boundaries of the bitmap image, this method transforms the color values of
+     * the entire image.
+     *
+     * @param rect           A Rectangle object that defines the area of the
+     *                       image in which the ColorTransform object is applied.
+     * @param colorTransform A ColorTransform object that describes the color
+     *                       transformation values to apply.
+     */
+    BitmapData.prototype.colorTransform = function (rect, colorTransform) {
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var data = this._imageData.data;
+        var i /*uint*/, j /*uint*/, index /*uint*/;
+        for (i = 0; i < rect.width; ++i) {
+            for (j = 0; j < rect.height; ++j) {
+                index = (i + rect.x + (j + rect.y) * this.width) * 4;
+                data[index] = data[index] * colorTransform.redMultiplier + colorTransform.redOffset;
+                data[index + 1] = data[index + 1] * colorTransform.greenMultiplier + colorTransform.greenOffset;
+                data[index + 2] = data[index + 2] * colorTransform.blueMultiplier + colorTransform.blueOffset;
+                data[index + 3] = data[index + 3] * colorTransform.alphaMultiplier + colorTransform.alphaOffset;
+            }
+        }
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    /**
+     * Transfers data from one channel of another BitmapData object or the
+     * current BitmapData object into a channel of the current BitmapData object.
+     * All of the data in the other channels in the destination BitmapData object
+     * are preserved.
+     *
+     * <p>The source channel value and destination channel value can be one of
+     * following values: </p>
+     *
+     * <ul>
+     *   <li><code>BitmapDataChannel.RED</code></li>
+     *   <li><code>BitmapDataChannel.GREEN</code></li>
+     *   <li><code>BitmapDataChannel.BLUE</code></li>
+     *   <li><code>BitmapDataChannel.ALPHA</code></li>
+     * </ul>
+     *
+     * @param sourceBitmapData The input bitmap image to use. The source image
+     *                         can be a different BitmapData object or it can
+     *                         refer to the current BitmapData object.
+     * @param sourceRect       The source Rectangle object. To copy only channel
+     *                         data from a smaller area within the bitmap,
+     *                         specify a source rectangle that is smaller than
+     *                         the overall size of the BitmapData object.
+     * @param destPoint        The destination Point object that represents the
+     *                         upper-left corner of the rectangular area where
+     *                         the new channel data is placed. To copy only
+     *                         channel data from one area to a different area in
+     *                         the destination image, specify a point other than
+     *                        (0,0).
+     * @param sourceChannel    The source channel. Use a value from the
+     *                         BitmapDataChannel class
+     *                        (<code>BitmapDataChannel.RED</code>,
+     *                         <code>BitmapDataChannel.BLUE</code>,
+     *                         <code>BitmapDataChannel.GREEN</code>,
+     *                         <code>BitmapDataChannel.ALPHA</code>).
+     * @param destChannel      The destination channel. Use a value from the
+     *                         BitmapDataChannel class
+     *                        (<code>BitmapDataChannel.RED</code>,
+     *                         <code>BitmapDataChannel.BLUE</code>,
+     *                         <code>BitmapDataChannel.GREEN</code>,
+     *                         <code>BitmapDataChannel.ALPHA</code>).
+     * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
+     */
+    BitmapData.prototype.copyChannel = function (sourceBitmap, sourceRect, destPoint, sourceChannel, destChannel) {
+        var imageData = sourceBitmap.imageData;
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var sourceData = sourceBitmap.imageData.data;
+        var destData = this._imageData.data;
+        var sourceOffset = Math.round(Math.log(sourceChannel) / Math.log(2));
+        var destOffset = Math.round(Math.log(destChannel) / Math.log(2));
+        var i /*uint*/, j /*uint*/, sourceIndex /*uint*/, destIndex /*uint*/;
+        for (i = 0; i < sourceRect.width; ++i) {
+            for (j = 0; j < sourceRect.height; ++j) {
+                sourceIndex = (i + sourceRect.x + (j + sourceRect.y) * sourceBitmap.width) * 4;
+                destIndex = (i + destPoint.x + (j + destPoint.y) * this.width) * 4;
+                destData[destIndex + destOffset] = sourceData[sourceIndex + sourceOffset];
+            }
+        }
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    BitmapData.prototype.copyPixels = function (bmpd, sourceRect, destRect) {
+        if (this._locked) {
+            // If canvas is locked:
+            //
+            //      1) copy image data back to canvas
+            //      2) draw object
+            //      3) read _imageData back out
+            if (this._imageData)
+                this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+            this._copyPixels(bmpd, sourceRect, destRect);
+            if (this._imageData)
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        }
+        else {
+            this._copyPixels(bmpd, sourceRect, destRect);
+        }
+    };
+    /**
+     * Frees memory that is used to store the BitmapData object.
+     *
+     * <p>When the <code>dispose()</code> method is called on an image, the width
+     * and height of the image are set to 0. All subsequent calls to methods or
+     * properties of this BitmapData instance fail, and an exception is thrown.
+     * </p>
+     *
+     * <p><code>BitmapData.dispose()</code> releases the memory occupied by the
+     * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
+     * memory). After using <code>BitmapData.dispose()</code>, the BitmapData
+     * object is no longer usable and an exception may be thrown if
+     * you call functions on the BitmapData object. However,
+     * <code>BitmapData.dispose()</code> does not garbage collect the BitmapData
+     * object(approximately 128 bytes); the memory occupied by the actual
+     * BitmapData object is released at the time the BitmapData object is
+     * collected by the garbage collector.</p>
+     *
+     */
+    BitmapData.prototype.dispose = function () {
+        this._context = null;
+        this._imageCanvas = null;
+        this._imageData = null;
+        this._rect = null;
+        this._transparent = null;
+        this._locked = null;
+    };
+    BitmapData.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+        if (this._locked) {
+            // If canvas is locked:
+            //
+            //      1) copy image data back to canvas
+            //      2) draw object
+            //      3) read _imageData back out
+            this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+            this._draw(source, matrix, colorTransform, blendMode, clipRect, smoothing);
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        }
+        else {
+            this._draw(source, matrix, colorTransform, blendMode, clipRect, smoothing);
+        }
+    };
+    /**
+     * Fills a rectangular area of pixels with a specified ARGB color.
+     *
+     * @param rect  The rectangular area to fill.
+     * @param color The ARGB color value that fills the area. ARGB colors are
+     *              often specified in hexadecimal format; for example,
+     *              0xFF336699.
+     * @throws TypeError The rect is null.
+     */
+    BitmapData.prototype.fillRect = function (rect, color) {
+        if (this._locked) {
+            // If canvas is locked:
+            //
+            //      1) copy image data back to canvas
+            //      2) apply fill
+            //      3) read _imageData back out
+            if (this._imageData)
+                this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+            this._fillRect(rect, color);
+            if (this._imageData)
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        }
+        else {
+            this._fillRect(rect, color);
+        }
+    };
+    /**
+     * Returns an integer that represents an RGB pixel value from a BitmapData
+     * object at a specific point(<i>x</i>, <i>y</i>). The
+     * <code>getPixel()</code> method returns an unmultiplied pixel value. No
+     * alpha information is returned.
+     *
+     * <p>All pixels in a BitmapData object are stored as premultiplied color
+     * values. A premultiplied image pixel has the red, green, and blue color
+     * channel values already multiplied by the alpha data. For example, if the
+     * alpha value is 0, the values for the RGB channels are also 0, independent
+     * of their unmultiplied values. This loss of data can cause some problems
+     * when you perform operations. All BitmapData methods take and return
+     * unmultiplied values. The internal pixel representation is converted from
+     * premultiplied to unmultiplied before it is returned as a value. During a
+     * set operation, the pixel value is premultiplied before the raw image pixel
+     * is set.</p>
+     *
+     * @param x The <i>x</i> position of the pixel.
+     * @param y The <i>y</i> position of the pixel.
+     * @return A number that represents an RGB pixel value. If the(<i>x</i>,
+     *         <i>y</i>) coordinates are outside the bounds of the image, the
+     *         method returns 0.
+     */
+    BitmapData.prototype.getPixel = function (x, y) {
+        var r;
+        var g;
+        var b;
+        var a;
+        if (!this._locked) {
+            var pixelData = this._context.getImageData(x, y, 1, 1);
+            r = pixelData.data[0];
+            g = pixelData.data[1];
+            b = pixelData.data[2];
+            a = pixelData.data[3];
+        }
+        else {
+            var index = (x + y * this._imageCanvas.width) * 4;
+            r = this._imageData.data[index + 0];
+            g = this._imageData.data[index + 1];
+            b = this._imageData.data[index + 2];
+            a = this._imageData.data[index + 3];
+        }
+        //returns black if fully transparent
+        if (!a)
+            return 0x0;
+        return (r << 16) | (g << 8) | b;
+    };
+    /**
+     * Returns an ARGB color value that contains alpha channel data and RGB data.
+     * This method is similar to the <code>getPixel()</code> method, which
+     * returns an RGB color without alpha channel data.
+     *
+     * <p>All pixels in a BitmapData object are stored as premultiplied color
+     * values. A premultiplied image pixel has the red, green, and blue color
+     * channel values already multiplied by the alpha data. For example, if the
+     * alpha value is 0, the values for the RGB channels are also 0, independent
+     * of their unmultiplied values. This loss of data can cause some problems
+     * when you perform operations. All BitmapData methods take and return
+     * unmultiplied values. The internal pixel representation is converted from
+     * premultiplied to unmultiplied before it is returned as a value. During a
+     * set operation, the pixel value is premultiplied before the raw image pixel
+     * is set.</p>
+     *
+     * @param x The <i>x</i> position of the pixel.
+     * @param y The <i>y</i> position of the pixel.
+     * @return A number representing an ARGB pixel value. If the(<i>x</i>,
+     *         <i>y</i>) coordinates are outside the bounds of the image, 0 is
+     *         returned.
+     */
+    BitmapData.prototype.getPixel32 = function (x, y) {
+        var r;
+        var g;
+        var b;
+        var a;
+        if (!this._locked) {
+            var pixelData = this._context.getImageData(x, y, 1, 1);
+            r = pixelData.data[0];
+            g = pixelData.data[1];
+            b = pixelData.data[2];
+            a = pixelData.data[3];
+        }
+        else {
+            var index = (x + y * this._imageCanvas.width) * 4;
+            r = this._imageData.data[index + 0];
+            g = this._imageData.data[index + 1];
+            b = this._imageData.data[index + 2];
+            a = this._imageData.data[index + 3];
+        }
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    };
+    /**
+     * Locks an image so that any objects that reference the BitmapData object,
+     * such as Bitmap objects, are not updated when this BitmapData object
+     * changes. To improve performance, use this method along with the
+     * <code>unlock()</code> method before and after numerous calls to the
+     * <code>setPixel()</code> or <code>setPixel32()</code> method.
+     *
+     */
+    BitmapData.prototype.lock = function () {
+        if (this._locked)
+            return;
+        this._locked = true;
+        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+    };
+    /**
+     * Converts an Array into a rectangular region of pixel data. For each pixel,
+     * an Array element is read and written into the BitmapData pixel. The data
+     * in the Array is expected to be 32-bit ARGB pixel values.
+     *
+     * @param rect        Specifies the rectangular region of the BitmapData
+     *                    object.
+     * @param inputArray  An Array that consists of 32-bit unmultiplied pixel
+     *                    values to be used in the rectangular region.
+     * @throws RangeError The vector array is not large enough to read all the
+     *                    pixel data.
+     */
+    BitmapData.prototype.setArray = function (rect, inputArray) {
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var i /*uint*/, j /*uint*/, index /*uint*/, argb /*uint*/;
+        for (i = 0; i < rect.width; ++i) {
+            for (j = 0; j < rect.height; ++j) {
+                argb = ColorUtils.float32ColorToARGB(inputArray[i + j * rect.width]);
+                index = (i + rect.x + (j + rect.y) * this._imageCanvas.width) * 4;
+                this._imageData.data[index + 0] = argb[1];
+                this._imageData.data[index + 1] = argb[2];
+                this._imageData.data[index + 2] = argb[3];
+                this._imageData.data[index + 3] = argb[0];
+            }
+        }
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    /**
+     * Sets a single pixel of a BitmapData object. The current alpha channel
+     * value of the image pixel is preserved during this operation. The value of
+     * the RGB color parameter is treated as an unmultiplied color value.
+     *
+     * <p><b>Note:</b> To increase performance, when you use the
+     * <code>setPixel()</code> or <code>setPixel32()</code> method repeatedly,
+     * call the <code>lock()</code> method before you call the
+     * <code>setPixel()</code> or <code>setPixel32()</code> method, and then call
+     * the <code>unlock()</code> method when you have made all pixel changes.
+     * This process prevents objects that reference this BitmapData instance from
+     * updating until you finish making the pixel changes.</p>
+     *
+     * @param x     The <i>x</i> position of the pixel whose value changes.
+     * @param y     The <i>y</i> position of the pixel whose value changes.
+     * @param color The resulting RGB color for the pixel.
+     */
+    BitmapData.prototype.setPixel = function (x, y, color) {
+        var argb = ColorUtils.float32ColorToARGB(color);
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var index = (x + y * this._imageCanvas.width) * 4;
+        this._imageData.data[index + 0] = argb[1];
+        this._imageData.data[index + 1] = argb[2];
+        this._imageData.data[index + 2] = argb[3];
+        this._imageData.data[index + 3] = 255;
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    /**
+     * Sets the color and alpha transparency values of a single pixel of a
+     * BitmapData object. This method is similar to the <code>setPixel()</code>
+     * method; the main difference is that the <code>setPixel32()</code> method
+     * takes an ARGB color value that contains alpha channel information.
+     *
+     * <p>All pixels in a BitmapData object are stored as premultiplied color
+     * values. A premultiplied image pixel has the red, green, and blue color
+     * channel values already multiplied by the alpha data. For example, if the
+     * alpha value is 0, the values for the RGB channels are also 0, independent
+     * of their unmultiplied values. This loss of data can cause some problems
+     * when you perform operations. All BitmapData methods take and return
+     * unmultiplied values. The internal pixel representation is converted from
+     * premultiplied to unmultiplied before it is returned as a value. During a
+     * set operation, the pixel value is premultiplied before the raw image pixel
+     * is set.</p>
+     *
+     * <p><b>Note:</b> To increase performance, when you use the
+     * <code>setPixel()</code> or <code>setPixel32()</code> method repeatedly,
+     * call the <code>lock()</code> method before you call the
+     * <code>setPixel()</code> or <code>setPixel32()</code> method, and then call
+     * the <code>unlock()</code> method when you have made all pixel changes.
+     * This process prevents objects that reference this BitmapData instance from
+     * updating until you finish making the pixel changes.</p>
+     *
+     * @param x     The <i>x</i> position of the pixel whose value changes.
+     * @param y     The <i>y</i> position of the pixel whose value changes.
+     * @param color The resulting ARGB color for the pixel. If the bitmap is
+     *              opaque(not transparent), the alpha transparency portion of
+     *              this color value is ignored.
+     */
+    BitmapData.prototype.setPixel32 = function (x, y, color) {
+        var argb = ColorUtils.float32ColorToARGB(color);
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var index = (x + y * this._imageCanvas.width) * 4;
+        this._imageData.data[index + 0] = argb[1];
+        this._imageData.data[index + 1] = argb[2];
+        this._imageData.data[index + 2] = argb[3];
+        this._imageData.data[index + 3] = argb[0];
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    /**
+     * Converts a byte array into a rectangular region of pixel data. For each
+     * pixel, the <code>ByteArray.readUnsignedInt()</code> method is called and
+     * the return value is written into the pixel. If the byte array ends before
+     * the full rectangle is written, the function returns. The data in the byte
+     * array is expected to be 32-bit ARGB pixel values. No seeking is performed
+     * on the byte array before or after the pixels are read.
+     *
+     * @param rect           Specifies the rectangular region of the BitmapData
+     *                       object.
+     * @param inputByteArray A ByteArray object that consists of 32-bit
+     *                       unmultiplied pixel values to be used in the
+     *                       rectangular region.
+     * @throws EOFError  The <code>inputByteArray</code> object does not include
+     *                   enough data to fill the area of the <code>rect</code>
+     *                   rectangle. The method fills as many pixels as possible
+     *                   before throwing the exception.
+     * @throws TypeError The rect or inputByteArray are null.
+     */
+    BitmapData.prototype.setPixels = function (rect, inputByteArray) {
+        if (!this._locked)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        inputByteArray.position = 0;
+        var i /*uint*/, j /*uint*/, index /*uint*/;
+        for (i = 0; i < rect.width; ++i) {
+            for (j = 0; j < rect.height; ++j) {
+                index = (i + rect.x + (j + rect.y) * this._imageCanvas.width) * 4;
+                this._imageData.data[index + 0] = inputByteArray.readUnsignedInt();
+                this._imageData.data[index + 1] = inputByteArray.readUnsignedInt();
+                this._imageData.data[index + 2] = inputByteArray.readUnsignedInt();
+                this._imageData.data[index + 3] = inputByteArray.readUnsignedInt();
+            }
+        }
+        if (!this._locked) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        }
+    };
+    /**
+     * Unlocks an image so that any objects that reference the BitmapData object,
+     * such as Bitmap objects, are updated when this BitmapData object changes.
+     * To improve performance, use this method along with the <code>lock()</code>
+     * method before and after numerous calls to the <code>setPixel()</code> or
+     * <code>setPixel32()</code> method.
+     *
+     * @param changeRect The area of the BitmapData object that has changed. If
+     *                   you do not specify a value for this parameter, the
+     *                   entire area of the BitmapData object is considered
+     *                   changed.
+     */
+    BitmapData.prototype.unlock = function () {
+        if (!this._locked)
+            return;
+        this._locked = false;
+        this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+        this._imageData = null;
+    };
+    BitmapData.prototype._copyPixels = function (bmpd, sourceRect, destRect) {
+        if (bmpd instanceof BitmapData) {
+            this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+        }
+        else if (bmpd instanceof HTMLImageElement) {
+            this._context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+        }
+    };
+    BitmapData.prototype._draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+        if (source instanceof BitmapData) {
+            this._context.save();
+            if (matrix != null)
+                this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+            if (clipRect != null)
+                this._context.drawImage(source.canvas, clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+            else
+                this._context.drawImage(source.canvas, 0, 0);
+            this._context.restore();
+        }
+        else if (source instanceof HTMLElement) {
+            this._context.save();
+            if (matrix != null)
+                this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+            if (clipRect != null)
+                this._context.drawImage(source, clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+            else
+                this._context.drawImage(source, 0, 0);
+            this._context.restore();
+        }
+    };
+    BitmapData.prototype._fillRect = function (rect, color) {
+        if (color == 0x0 && this._transparent) {
+            this._context.clearRect(rect.x, rect.y, rect.width, rect.height);
+        }
+        else {
+            var argb = ColorUtils.float32ColorToARGB(color);
+            if (this._transparent)
+                this._context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',' + argb[0] / 255 + ')';
+            else
+                this._context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',1)';
+            this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+    };
+    Object.defineProperty(BitmapData.prototype, "imageData", {
+        /**
+         *
+         * @returns {ImageData}
+         */
+        get: function () {
+            if (!this._locked)
+                return this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+            return this._imageData;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "canvas", {
+        /**
+         *
+         * @returns {HTMLCanvasElement}
+         */
+        get: function () {
+            return this._imageCanvas;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return BitmapData;
+})();
+module.exports = BitmapData;
+
+
+},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],2:[function(require,module,exports){
+/**
+ * A class that provides constant values for visual blend mode effects. These
+ * constants are used in the following:
+ * <ul>
+ *   <li> The <code>blendMode</code> property of the
+ * flash.display.DisplayObject class.</li>
+ *   <li> The <code>blendMode</code> parameter of the <code>draw()</code>
+ * method of the flash.display.BitmapData class</li>
+ * </ul>
+ */
+var BlendMode = (function () {
+    function BlendMode() {
+    }
+    /**
+     * Adds the values of the constituent colors of the display object to the
+     * colors of its background, applying a ceiling of 0xFF. This setting is
+     * commonly used for animating a lightening dissolve between two objects.
+     *
+     * <p>For example, if the display object has a pixel with an RGB value of
+     * 0xAAA633, and the background pixel has an RGB value of 0xDD2200, the
+     * resulting RGB value for the displayed pixel is 0xFFC833(because 0xAA +
+     * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).</p>
+     */
+    BlendMode.ADD = "add";
+    /**
+     * Applies the alpha value of each pixel of the display object to the
+     * background. This requires the <code>blendMode</code> property of the
+     * parent display object be set to
+     * <code>away.base.BlendMode.LAYER</code>.
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.ALPHA = "alpha";
+    /**
+     * Selects the darker of the constituent colors of the display object and the
+     * colors of the background(the colors with the smaller values). This
+     * setting is commonly used for superimposing type.
+     *
+     * <p>For example, if the display object has a pixel with an RGB value of
+     * 0xFFCC33, and the background pixel has an RGB value of 0xDDF800, the
+     * resulting RGB value for the displayed pixel is 0xDDCC00(because 0xFF >
+     * 0xDD, 0xCC < 0xF8, and 0x33 > 0x00 = 33).</p>
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.DARKEN = "darken";
+    /**
+     * Compares the constituent colors of the display object with the colors of
+     * its background, and subtracts the darker of the values of the two
+     * constituent colors from the lighter value. This setting is commonly used
+     * for more vibrant colors.
+     *
+     * <p>For example, if the display object has a pixel with an RGB value of
+     * 0xFFCC33, and the background pixel has an RGB value of 0xDDF800, the
+     * resulting RGB value for the displayed pixel is 0x222C33(because 0xFF -
+     * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).</p>
+     */
+    BlendMode.DIFFERENCE = "difference";
+    /**
+     * Erases the background based on the alpha value of the display object. This
+     * process requires that the <code>blendMode</code> property of the parent
+     * display object be set to <code>flash.display.BlendMode.LAYER</code>.
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.ERASE = "erase";
+    /**
+     * Adjusts the color of each pixel based on the darkness of the display
+     * object. If the display object is lighter than 50% gray, the display object
+     * and background colors are screened, which results in a lighter color. If
+     * the display object is darker than 50% gray, the colors are multiplied,
+     * which results in a darker color. This setting is commonly used for shading
+     * effects.
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.HARDLIGHT = "hardlight";
+    /**
+     * Inverts the background.
+     */
+    BlendMode.INVERT = "invert";
+    /**
+     * Forces the creation of a transparency group for the display object. This
+     * means that the display object is precomposed in a temporary buffer before
+     * it is processed further. The precomposition is done automatically if the
+     * display object is precached by means of bitmap caching or if the display
+     * object is a display object container that has at least one child object
+     * with a <code>blendMode</code> setting other than <code>"normal"</code>.
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.LAYER = "layer";
+    /**
+     * Selects the lighter of the constituent colors of the display object and
+     * the colors of the background(the colors with the larger values). This
+     * setting is commonly used for superimposing type.
+     *
+     * <p>For example, if the display object has a pixel with an RGB value of
+     * 0xFFCC33, and the background pixel has an RGB value of 0xDDF800, the
+     * resulting RGB value for the displayed pixel is 0xFFF833(because 0xFF >
+     * 0xDD, 0xCC < 0xF8, and 0x33 > 0x00 = 33).</p>
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.LIGHTEN = "lighten";
+    /**
+     * Multiplies the values of the display object constituent colors by the
+     * constituent colors of the background color, and normalizes by dividing by
+     * 0xFF, resulting in darker colors. This setting is commonly used for
+     * shadows and depth effects.
+     *
+     * <p>For example, if a constituent color(such as red) of one pixel in the
+     * display object and the corresponding color of the pixel in the background
+     * both have the value 0x88, the multiplied result is 0x4840. Dividing by
+     * 0xFF yields a value of 0x48 for that constituent color, which is a darker
+     * shade than the color of the display object or the color of the
+     * background.</p>
+     */
+    BlendMode.MULTIPLY = "multiply";
+    /**
+     * The display object appears in front of the background. Pixel values of the
+     * display object override the pixel values of the background. Where the
+     * display object is transparent, the background is visible.
+     */
+    BlendMode.NORMAL = "normal";
+    /**
+     * Adjusts the color of each pixel based on the darkness of the background.
+     * If the background is lighter than 50% gray, the display object and
+     * background colors are screened, which results in a lighter color. If the
+     * background is darker than 50% gray, the colors are multiplied, which
+     * results in a darker color. This setting is commonly used for shading
+     * effects.
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.OVERLAY = "overlay";
+    /**
+     * Multiplies the complement(inverse) of the display object color by the
+     * complement of the background color, resulting in a bleaching effect. This
+     * setting is commonly used for highlights or to remove black areas of the
+     * display object.
+     */
+    BlendMode.SCREEN = "screen";
+    /**
+     * Uses a shader to define the blend between objects.
+     *
+     * <p>Setting the <code>blendShader</code> property to a Shader instance
+     * automatically sets the display object's <code>blendMode</code> property to
+     * <code>BlendMode.SHADER</code>. If the <code>blendMode</code> property is
+     * set to <code>BlendMode.SHADER</code> without first setting the
+     * <code>blendShader</code> property, the <code>blendMode</code> property is
+     * set to <code>BlendMode.NORMAL</code> instead. If the
+     * <code>blendShader</code> property is set(which sets the
+     * <code>blendMode</code> property to <code>BlendMode.SHADER</code>), then
+     * later the value of the <code>blendMode</code> property is changed, the
+     * blend mode can be reset to use the blend shader simply by setting the
+     * <code>blendMode</code> property to <code>BlendMode.SHADER</code>. The
+     * <code>blendShader</code> property does not need to be set again except to
+     * change the shader that's used to define the blend mode.</p>
+     *
+     * <p>Not supported under GPU rendering.</p>
+     */
+    BlendMode.SHADER = "shader";
+    /**
+     * Subtracts the values of the constituent colors in the display object from
+     * the values of the background color, applying a floor of 0. This setting is
+     * commonly used for animating a darkening dissolve between two objects.
+     *
+     * <p>For example, if the display object has a pixel with an RGB value of
+     * 0xAA2233, and the background pixel has an RGB value of 0xDDA600, the
+     * resulting RGB value for the displayed pixel is 0x338400(because 0xDD -
+     * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).</p>
+     */
+    BlendMode.SUBTRACT = "subtract";
+    return BlendMode;
+})();
+module.exports = BlendMode;
+
+
+},{}],3:[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+/**
+ * @class away.base.TriangleSubGeometry
+ */
+var SubGeometryBase = (function (_super) {
+    __extends(SubGeometryBase, _super);
+    /**
+     *
+     */
+    function SubGeometryBase(concatenatedArrays) {
+        _super.call(this);
+        this._pStrideOffsetDirty = true;
+        this._pConcatenateArrays = true;
+        this._pStride = new Object();
+        this._pOffset = new Object();
+        this._pConcatenateArrays = concatenatedArrays;
+    }
+    SubGeometryBase.prototype._pUpdateStrideOffset = function () {
+        throw new AbstractMethodError();
+    };
+    Object.defineProperty(SubGeometryBase.prototype, "subMeshClass", {
+        get: function () {
+            return this._pSubMeshClass;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "concatenateArrays", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pConcatenateArrays;
+        },
+        set: function (value) {
+            if (this._pConcatenateArrays == value)
+                return;
+            this._pConcatenateArrays = value;
+            this._pStrideOffsetDirty = true;
+            if (value)
+                this._pNotifyVerticesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "indices", {
+        /**
+         * The raw index data that define the faces.
+         */
+        get: function () {
+            return this._pIndices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            this.updateVertices();
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
+        /**
+         * The total amount of triangles in the TriangleSubGeometry.
+         */
+        get: function () {
+            return this._numTriangles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SubGeometryBase.prototype, "numVertices", {
+        get: function () {
+            return this._pNumVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    SubGeometryBase.prototype.getStride = function (dataType) {
+        if (this._pStrideOffsetDirty)
+            this._pUpdateStrideOffset();
+        return this._pStride[dataType];
+    };
+    /**
+     *
+     */
+    SubGeometryBase.prototype.getOffset = function (dataType) {
+        if (this._pStrideOffsetDirty)
+            this._pUpdateStrideOffset();
+        return this._pOffset[dataType];
+    };
+    SubGeometryBase.prototype.updateVertices = function () {
+        throw new AbstractMethodError();
+    };
+    /**
+     *
+     */
+    SubGeometryBase.prototype.dispose = function () {
+        this._pIndices = null;
+        this._pVertices = null;
+    };
+    /**
+     * Updates the face indices of the TriangleSubGeometry.
+     *
+     * @param indices The face indices to upload.
+     */
+    SubGeometryBase.prototype.updateIndices = function (indices) {
+        this._pIndices = indices;
+        this._numIndices = indices.length;
+        this._numTriangles = this._numIndices / 3;
+        this.notifyIndicesUpdate();
+    };
+    /**
+     * @protected
+     */
+    SubGeometryBase.prototype.pInvalidateBounds = function () {
+        if (this.parentGeometry)
+            this.parentGeometry.iInvalidateBounds(this);
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    SubGeometryBase.prototype.clone = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.prototype.applyTransformation = function (transform) {
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    SubGeometryBase.prototype.scale = function (scale) {
+    };
+    SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+    };
+    SubGeometryBase.prototype.getBoundingPositions = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.prototype.notifyIndicesUpdate = function () {
+        if (!this._indicesUpdated)
+            this._indicesUpdated = new SubGeometryEvent(SubGeometryEvent.INDICES_UPDATED);
+        this.dispatchEvent(this._indicesUpdated);
+    };
+    SubGeometryBase.prototype._pNotifyVerticesUpdate = function () {
+        throw new AbstractMethodError();
+    };
+    SubGeometryBase.VERTEX_DATA = "vertices";
+    return SubGeometryBase;
+})(NamedAssetBase);
+module.exports = SubGeometryBase;
+
+
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase","awayjs-display/lib/events/SubGeometryEvent":5}],4:[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var SubGeometryBase = require("awayjs-display/lib/base/SubGeometryBase");
+var TriangleSubMesh = require("awayjs-display/lib/base/TriangleSubMesh");
+var SubGeometryEvent = require("awayjs-display/lib/events/SubGeometryEvent");
+/**
+ * @class away.base.TriangleSubGeometry
+ */
+var TriangleSubGeometry = (function (_super) {
+    __extends(TriangleSubGeometry, _super);
+    /**
+     *
+     */
+    function TriangleSubGeometry(concatenatedArrays) {
+        _super.call(this, concatenatedArrays);
+        this._positionsDirty = true;
+        this._faceNormalsDirty = true;
+        this._faceTangentsDirty = true;
+        this._vertexNormalsDirty = true;
+        this._vertexTangentsDirty = true;
+        this._uvsDirty = true;
+        this._secondaryUVsDirty = true;
+        this._jointIndicesDirty = true;
+        this._jointWeightsDirty = true;
+        this._concatenateArrays = true;
+        this._autoDeriveNormals = true;
+        this._autoDeriveTangents = true;
+        this._autoDeriveUVs = false;
+        this._useFaceWeights = false;
+        this._scaleU = 1;
+        this._scaleV = 1;
+        this._pSubMeshClass = TriangleSubMesh;
+    }
+    Object.defineProperty(TriangleSubGeometry.prototype, "scaleU", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleU;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "scaleV", {
+        /**
+         *
+         */
+        get: function () {
+            return this._scaleV;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "useCondensedIndices", {
+        /**
+         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+         * by condensing the number of joint index values required per mesh. Only applicable to
+         * skeleton animations that utilise more than one mesh object. Defaults to false.
+         */
+        get: function () {
+            return this._useCondensedIndices;
+        },
+        set: function (value) {
+            if (this._useCondensedIndices == value)
+                return;
+            this._useCondensedIndices = value;
+            this.notifyJointIndicesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TriangleSubGeometry.prototype._pUpdateStrideOffset = function () {
+        if (this._concatenateArrays) {
+            this._pOffset[TriangleSubGeometry.VERTEX_DATA] = 0;
+            //always have positions
+            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+            var stride = 3;
+            if (this._vertexNormals != null) {
+                this._pOffset[TriangleSubGeometry.NORMAL_DATA] = stride;
+                stride += 3;
+            }
+            if (this._vertexTangents != null) {
+                this._pOffset[TriangleSubGeometry.TANGENT_DATA] = stride;
+                stride += 3;
+            }
+            if (this._uvs != null) {
+                this._pOffset[TriangleSubGeometry.UV_DATA] = stride;
+                stride += 2;
+            }
+            if (this._secondaryUVs != null) {
+                this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+                stride += 2;
+            }
+            if (this._jointIndices != null) {
+                this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+                stride += this._jointsPerVertex;
+            }
+            if (this._jointWeights != null) {
+                this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+                stride += this._jointsPerVertex;
+            }
+            this._pStride[TriangleSubGeometry.VERTEX_DATA] = stride;
+            this._pStride[TriangleSubGeometry.POSITION_DATA] = stride;
+            this._pStride[TriangleSubGeometry.NORMAL_DATA] = stride;
+            this._pStride[TriangleSubGeometry.TANGENT_DATA] = stride;
+            this._pStride[TriangleSubGeometry.UV_DATA] = stride;
+            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = stride;
+            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = stride;
+            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = stride;
+            var len = this._pNumVertices * stride;
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+        }
+        else {
+            this._pOffset[TriangleSubGeometry.POSITION_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.NORMAL_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.TANGENT_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.UV_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.SECONDARY_UV_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.JOINT_INDEX_DATA] = 0;
+            this._pOffset[TriangleSubGeometry.JOINT_WEIGHT_DATA] = 0;
+            this._pStride[TriangleSubGeometry.POSITION_DATA] = 3;
+            this._pStride[TriangleSubGeometry.NORMAL_DATA] = 3;
+            this._pStride[TriangleSubGeometry.TANGENT_DATA] = 3;
+            this._pStride[TriangleSubGeometry.UV_DATA] = 2;
+            this._pStride[TriangleSubGeometry.SECONDARY_UV_DATA] = 2;
+            this._pStride[TriangleSubGeometry.JOINT_INDEX_DATA] = this._jointsPerVertex;
+            this._pStride[TriangleSubGeometry.JOINT_WEIGHT_DATA] = this._jointsPerVertex;
+        }
+        this._pStrideOffsetDirty = false;
+    };
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointsPerVertex", {
+        /**
+         *
+         */
+        get: function () {
+            return this._jointsPerVertex;
+        },
+        set: function (value) {
+            if (this._jointsPerVertex == value)
+                return;
+            this._jointsPerVertex = value;
+            this._pStrideOffsetDirty = true;
+            if (this._pConcatenateArrays)
+                this._pNotifyVerticesUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveUVs", {
+        /**
+         * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+         * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+         * in cases where UV data is explicitly defined or the material does not require UV data.
+         */
+        get: function () {
+            return this._autoDeriveUVs;
+        },
+        set: function (value) {
+            if (this._autoDeriveUVs == value)
+                return;
+            this._autoDeriveUVs = value;
+            if (value)
+                this.notifyUVsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveNormals", {
+        /**
+         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+         * explicitly.
+         */
+        get: function () {
+            return this._autoDeriveNormals;
+        },
+        set: function (value) {
+            if (this._autoDeriveNormals == value)
+                return;
+            this._autoDeriveNormals = value;
+            if (value)
+                this.notifyNormalsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "autoDeriveTangents", {
+        /**
+         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+         * explicitly.
+         */
+        get: function () {
+            return this._autoDeriveTangents;
+        },
+        set: function (value) {
+            if (this._autoDeriveTangents == value)
+                return;
+            this._autoDeriveTangents = value;
+            if (value)
+                this.notifyTangentsUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            if (this._vertexNormalsDirty)
+                this.updateVertexNormals(this._vertexNormals);
+            if (this._vertexTangentsDirty)
+                this.updateVertexTangents(this._vertexTangents);
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            if (this._secondaryUVsDirty)
+                this.updateSecondaryUVs(this._secondaryUVs);
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            if (this._jointWeightsDirty)
+                this.updateJointWeights(this._jointWeights);
+            return this._pVertices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "positions", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._positionsDirty)
+                this.updatePositions(this._positions);
+            return this._positions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertexNormals", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._vertexNormalsDirty)
+                this.updateVertexNormals(this._vertexNormals);
+            return this._vertexNormals;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "vertexTangents", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._vertexTangentsDirty)
+                this.updateVertexTangents(this._vertexTangents);
+            return this._vertexTangents;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "faceNormals", {
+        /**
+         * The raw data of the face normals, in the same order as the faces are listed in the index list.
+         */
+        get: function () {
+            if (this._faceNormalsDirty)
+                this.updateFaceNormals();
+            return this._faceNormals;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "faceTangents", {
+        /**
+         * The raw data of the face tangets, in the same order as the faces are listed in the index list.
+         */
+        get: function () {
+            if (this._faceTangentsDirty)
+                this.updateFaceTangents();
+            return this._faceTangents;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "uvs", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._uvsDirty)
+                this.updateUVs(this._uvs);
+            return this._uvs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "secondaryUVs", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._secondaryUVsDirty)
+                this.updateSecondaryUVs(this._secondaryUVs);
+            return this._secondaryUVs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointIndices", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            if (this._useCondensedIndices)
+                return this._condensedJointIndices;
+            return this._jointIndices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "jointWeights", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._jointWeightsDirty)
+                this.updateJointWeights(this._jointWeights);
+            return this._jointWeights;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "useFaceWeights", {
+        /**
+         * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+         */
+        get: function () {
+            return this._useFaceWeights;
+        },
+        set: function (value) {
+            if (this._useFaceWeights == value)
+                return;
+            this._useFaceWeights = value;
+            if (this._autoDeriveNormals)
+                this.notifyNormalsUpdate();
+            if (this._autoDeriveTangents)
+                this.notifyTangentsUpdate();
+            this._faceNormalsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "numCondensedJoints", {
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            return this._numCondensedJoints;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TriangleSubGeometry.prototype, "condensedIndexLookUp", {
+        get: function () {
+            if (this._jointIndicesDirty)
+                this.updateJointIndices(this._jointIndices);
+            return this._condensedIndexLookUp;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TriangleSubGeometry.prototype.getBoundingPositions = function () {
+        if (this._positionsDirty)
+            this.updatePositions(this._positions);
+        return this._positions;
+    };
+    /**
+     *
+     */
+    TriangleSubGeometry.prototype.updatePositions = function (values) {
+        var i;
+        var index;
+        var stride;
+        var positions;
+        this._positions = values;
+        if (this._positions == null)
+            this._positions = new Array();
+        this._pNumVertices = this._positions.length / 3;
+        if (this._concatenateArrays) {
+            var len = this._pNumVertices * this.getStride(TriangleSubGeometry.VERTEX_DATA);
+            if (this._pVertices == null)
+                this._pVertices = new Array(len);
+            else if (this._pVertices.length != len)
+                this._pVertices.length = len;
+            i = 0;
+            index = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+            stride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+            positions = this._pVertices;
+            while (i < values.length) {
+                positions[index] = values[i++];
+                positions[index + 1] = values[i++];
+                positions[index + 2] = values[i++];
+                index += stride;
+            }
+        }
+        if (this._autoDeriveNormals)
+            this.notifyNormalsUpdate();
+        if (this._autoDeriveTangents)
+            this.notifyTangentsUpdate();
+        if (this._autoDeriveUVs)
+            this.notifyUVsUpdate();
+        this.pInvalidateBounds();
+        this.notifyPositionsUpdate();
+        this._positionsDirty = false;
+    };
+    /**
+     * Updates the vertex normals based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateVertexNormals = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var normals;
+        if (!this._autoDeriveNormals) {
+            if ((this._vertexNormals == null || values == null) && (this._vertexNormals != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._vertexNormals = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+                stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+                normals = this._pVertices;
+                while (i < values.length) {
+                    normals[index] = values[i++];
+                    normals[index + 1] = values[i++];
+                    normals[index + 2] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._vertexNormals == null) {
+                this._vertexNormals = new Array(this._positions.length);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            if (this._faceNormalsDirty)
+                this.updateFaceNormals();
+            offset = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+            stride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+            //autoderived normals
+            normals = this._concatenateArrays ? this._pVertices : this._vertexNormals;
+            var f1 = 0;
+            var f2 = 1;
+            var f3 = 2;
+            index = offset;
+            //clear normal values
+            var lenV = normals.length;
+            while (index < lenV) {
+                normals[index] = 0;
+                normals[index + 1] = 0;
+                normals[index + 2] = 0;
+                index += stride;
+            }
+            var k = 0;
+            var lenI = this._pIndices.length;
+            var weight;
+            i = 0;
+            while (i < lenI) {
+                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                normals[index] += this._faceNormals[f1] * weight;
+                normals[index + 1] += this._faceNormals[f2] * weight;
+                normals[index + 2] += this._faceNormals[f3] * weight;
+                f1 += 3;
+                f2 += 3;
+                f3 += 3;
+            }
+            i = 0;
+            index = offset;
+            while (index < lenV) {
+                var vx = normals[index];
+                var vy = normals[index + 1];
+                var vz = normals[index + 2];
+                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+                if (this._concatenateArrays) {
+                    this._vertexNormals[i++] = normals[index] = vx * d;
+                    this._vertexNormals[i++] = normals[index + 1] = vy * d;
+                    this._vertexNormals[i++] = normals[index + 2] = vz * d;
+                }
+                else {
+                    normals[index] = vx * d;
+                    normals[index + 1] = vy * d;
+                    normals[index + 2] = vz * d;
+                }
+                index += stride;
+            }
+        }
+        this.notifyNormalsUpdate();
+        this._vertexNormalsDirty = false;
+    };
+    /**
+     * Updates the vertex tangents based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateVertexTangents = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var tangents;
+        if (!this._autoDeriveTangents) {
+            if ((this._vertexTangents == null || values == null) && (this._vertexTangents != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._vertexTangents = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+                stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+                tangents = this._pVertices;
+                while (i < values.length) {
+                    tangents[index] = values[i++];
+                    tangents[index + 1] = values[i++];
+                    tangents[index + 2] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._vertexTangents == null) {
+                this._vertexTangents = new Array(this._positions.length);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            if (this._faceTangentsDirty)
+                this.updateFaceTangents();
+            offset = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+            stride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+            //autoderived tangents
+            tangents = this._concatenateArrays ? this._pVertices : this._vertexTangents;
+            index = offset;
+            //clear tangent values
+            var lenV = tangents.length;
+            while (index < lenV) {
+                tangents[index] = 0;
+                tangents[index + 1] = 0;
+                tangents[index + 2] = 0;
+                index += stride;
+            }
+            var k = 0;
+            var weight;
+            var f1 = 0;
+            var f2 = 1;
+            var f3 = 2;
+            i = 0;
+            //collect face tangents
+            var lenI = this._pIndices.length;
+            while (i < lenI) {
+                weight = this._useFaceWeights ? this._faceWeights[k++] : 1;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                index = offset + this._pIndices[i++] * stride;
+                tangents[index++] += this._faceTangents[f1] * weight;
+                tangents[index++] += this._faceTangents[f2] * weight;
+                tangents[index] += this._faceTangents[f3] * weight;
+                f1 += 3;
+                f2 += 3;
+                f3 += 3;
+            }
+            i = 0;
+            index = offset;
+            while (index < lenV) {
+                var vx = tangents[index];
+                var vy = tangents[index + 1];
+                var vz = tangents[index + 2];
+                var d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+                if (this._concatenateArrays) {
+                    this._vertexTangents[i++] = tangents[index] = vx * d;
+                    this._vertexTangents[i++] = tangents[index + 1] = vy * d;
+                    this._vertexTangents[i++] = tangents[index + 2] = vz * d;
+                }
+                else {
+                    tangents[index] = vx * d;
+                    tangents[index + 1] = vy * d;
+                    tangents[index + 2] = vz * d;
+                }
+                index += stride;
+            }
+        }
+        this.notifyTangentsUpdate();
+        this._vertexTangentsDirty = false;
+    };
+    /**
+     * Updates the uvs based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateUVs = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        if (!this._autoDeriveUVs) {
+            if ((this._uvs == null || values == null) && (this._uvs != null || values != null)) {
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            this._uvs = values;
+            if (values != null && this._concatenateArrays) {
+                i = 0;
+                index = this.getOffset(TriangleSubGeometry.UV_DATA);
+                stride = this.getStride(TriangleSubGeometry.UV_DATA);
+                uvs = this._pVertices;
+                while (i < values.length) {
+                    uvs[index] = values[i++];
+                    uvs[index + 1] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        else {
+            if (this._uvs == null) {
+                this._uvs = new Array(this._positions.length * 2 / 3);
+                if (this._concatenateArrays)
+                    this._pNotifyVerticesUpdate();
+                else
+                    this._pStrideOffsetDirty = true;
+            }
+            offset = this.getOffset(TriangleSubGeometry.UV_DATA);
+            stride = this.getStride(TriangleSubGeometry.UV_DATA);
+            //autoderived uvs
+            uvs = this._concatenateArrays ? this._pVertices : this._uvs;
+            i = 0;
+            index = offset;
+            var uvIdx = 0;
+            //clear uv values
+            var lenV = uvs.length;
+            while (index < lenV) {
+                if (this._concatenateArrays) {
+                    this._uvs[i++] = uvs[index] = uvIdx * .5;
+                    this._uvs[i++] = uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                else {
+                    uvs[index] = uvIdx * .5;
+                    uvs[index + 1] = 1.0 - (uvIdx & 1);
+                }
+                if (++uvIdx == 3)
+                    uvIdx = 0;
+                index += stride;
+            }
+        }
+        if (this._autoDeriveTangents)
+            this.notifyTangentsUpdate();
+        this.notifyUVsUpdate();
+        this._uvsDirty = false;
+    };
+    /**
+     * Updates the secondary uvs based on the geometry.
+     */
+    TriangleSubGeometry.prototype.updateSecondaryUVs = function (values) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        if (this._concatenateArrays && (this._secondaryUVs == null || values == null) && (this._secondaryUVs != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._secondaryUVs = values;
+        if (values != null && this._concatenateArrays) {
+            offset = this.getOffset(TriangleSubGeometry.SECONDARY_UV_DATA);
+            stride = this.getStride(TriangleSubGeometry.SECONDARY_UV_DATA);
+            i = 0;
+            index = offset;
+            uvs = this._pVertices;
+            while (i < values.length) {
+                uvs[index] = values[i++];
+                uvs[index + 1] = values[i++];
+                index += stride;
+            }
+        }
+        this.notifySecondaryUVsUpdate();
+        this._secondaryUVsDirty = false;
+    };
+    /**
+     * Updates the joint indices
+     */
+    TriangleSubGeometry.prototype.updateJointIndices = function (values) {
+        var i;
+        var j;
+        var index;
+        var offset;
+        var stride;
+        var jointIndices;
+        if (this._concatenateArrays && (this._jointIndices == null || values == null) && (this._jointIndices != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._jointIndices = values;
+        if (values != null) {
+            offset = this.getOffset(TriangleSubGeometry.JOINT_INDEX_DATA);
+            stride = this.getStride(TriangleSubGeometry.JOINT_INDEX_DATA);
+            if (this._useCondensedIndices) {
+                i = 0;
+                j = 0;
+                index = offset;
+                jointIndices = this._concatenateArrays ? this._pVertices : this._condensedJointIndices;
+                var oldIndex;
+                var newIndex = 0;
+                var dic = new Object();
+                if (!this._concatenateArrays)
+                    this._condensedJointIndices = new Array(values.length);
+                this._condensedIndexLookUp = new Array();
+                while (i < values.length) {
+                    for (j = 0; j < this._jointsPerVertex; j++) {
+                        oldIndex = values[i++];
+                        // if we encounter a new index, assign it a new condensed index
+                        if (dic[oldIndex] == undefined) {
+                            dic[oldIndex] = newIndex * 3; //3 required for the three vectors that store the matrix
+                            this._condensedIndexLookUp[newIndex++] = oldIndex;
+                        }
+                        jointIndices[index + j] = dic[oldIndex];
+                    }
+                    index += stride;
+                }
+                this._numCondensedJoints = newIndex;
+            }
+            else if (this._concatenateArrays) {
+                i = 0;
+                index = offset;
+                jointIndices = this._pVertices;
+                while (i < values.length) {
+                    j = 0;
+                    while (j < this._jointsPerVertex)
+                        jointIndices[index + j++] = values[i++];
+                    index += stride;
+                }
+            }
+        }
+        this.notifyJointIndicesUpdate();
+        this._jointIndicesDirty = false;
+    };
+    /**
+     * Updates the joint weights.
+     */
+    TriangleSubGeometry.prototype.updateJointWeights = function (values) {
+        var i;
+        var j;
+        var index;
+        var offset;
+        var stride;
+        var jointWeights;
+        if (this._concatenateArrays && (this._jointWeights == null || values == null) && (this._jointWeights != null || values != null))
+            this._pNotifyVerticesUpdate();
+        this._jointWeights = values;
+        if (values != null && this._concatenateArrays) {
+            offset = this.getOffset(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+            stride = this.getStride(TriangleSubGeometry.JOINT_WEIGHT_DATA);
+            i = 0;
+            index = offset;
+            jointWeights = this._pVertices;
+            while (i < values.length) {
+                j = 0;
+                while (j < this._jointsPerVertex)
+                    jointWeights[index + j++] = values[i++];
+                index += stride;
+            }
+        }
+        this.notifyJointWeightsUpdate();
+        this._jointWeightsDirty = false;
+    };
+    /**
+     *
+     */
+    TriangleSubGeometry.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this._positions = null;
+        this._vertexNormals = null;
+        this._vertexTangents = null;
+        this._uvs = null;
+        this._secondaryUVs = null;
+        this._jointIndices = null;
+        this._jointWeights = null;
+        this._faceNormals = null;
+        this._faceWeights = null;
+        this._faceTangents = null;
+    };
+    /**
+     * Updates the face indices of the TriangleSubGeometry.
+     *
+     * @param indices The face indices to upload.
+     */
+    TriangleSubGeometry.prototype.updateIndices = function (indices) {
+        _super.prototype.updateIndices.call(this, indices);
+        this._faceNormalsDirty = true;
+        if (this._autoDeriveNormals)
+            this._vertexNormalsDirty = true;
+        if (this._autoDeriveTangents)
+            this._vertexTangentsDirty = true;
+        if (this._autoDeriveUVs)
+            this._uvsDirty = true;
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    TriangleSubGeometry.prototype.clone = function () {
+        var clone = new TriangleSubGeometry(this._concatenateArrays);
+        clone.updateIndices(this._pIndices.concat());
+        clone.updatePositions(this._positions.concat());
+        if (this._vertexNormals && !this._autoDeriveNormals)
+            clone.updateVertexNormals(this._vertexNormals.concat());
+        else
+            clone.updateVertexNormals(null);
+        if (this._uvs && !this._autoDeriveUVs)
+            clone.updateUVs(this._uvs.concat());
+        else
+            clone.updateUVs(null);
+        if (this._vertexTangents && !this._autoDeriveTangents)
+            clone.updateVertexTangents(this._vertexTangents.concat());
+        else
+            clone.updateVertexTangents(null);
+        if (this._secondaryUVs)
+            clone.updateSecondaryUVs(this._secondaryUVs.concat());
+        if (this._jointIndices) {
+            clone.jointsPerVertex = this._jointsPerVertex;
+            clone.updateJointIndices(this._jointIndices.concat());
+        }
+        if (this._jointWeights)
+            clone.updateJointWeights(this._jointWeights.concat());
+        return clone;
+    };
+    TriangleSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var index;
+        var offset;
+        var stride;
+        var uvs;
+        uvs = this._uvs;
+        var ratioU = scaleU / this._scaleU;
+        var ratioV = scaleV / this._scaleV;
+        this._scaleU = scaleU;
+        this._scaleV = scaleV;
+        var len = uvs.length;
+        offset = 0;
+        stride = 2;
+        index = offset;
+        while (index < len) {
+            uvs[index] *= ratioU;
+            uvs[index + 1] *= ratioV;
+            index += stride;
+        }
+        this.notifyUVsUpdate();
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    TriangleSubGeometry.prototype.scale = function (scale) {
+        var i;
+        var index;
+        var offset;
+        var stride;
+        var positions;
+        positions = this._positions;
+        var len = positions.length;
+        offset = 0;
+        stride = 3;
+        i = 0;
+        index = offset;
+        while (i < len) {
+            positions[index] *= scale;
+            positions[index + 1] *= scale;
+            positions[index + 2] *= scale;
+            i += 3;
+            index += stride;
+        }
+        this.notifyPositionsUpdate();
+    };
+    TriangleSubGeometry.prototype.applyTransformation = function (transform) {
+        var positions;
+        var normals;
+        var tangents;
+        if (this._concatenateArrays) {
+            positions = this._pVertices;
+            normals = this._pVertices;
+            tangents = this._pVertices;
+        }
+        else {
+            positions = this._positions;
+            normals = this._vertexNormals;
+            tangents = this._vertexTangents;
+        }
+        var len = this._positions.length / 3;
+        var i;
+        var i1;
+        var i2;
+        var vector = new Vector3D();
+        var bakeNormals = this._vertexNormals != null;
+        var bakeTangents = this._vertexTangents != null;
+        var invTranspose;
+        if (bakeNormals || bakeTangents) {
+            invTranspose = transform.clone();
+            invTranspose.invert();
+            invTranspose.transpose();
+        }
+        var vi0 = this.getOffset(TriangleSubGeometry.POSITION_DATA);
+        var ni0 = this.getOffset(TriangleSubGeometry.NORMAL_DATA);
+        var ti0 = this.getOffset(TriangleSubGeometry.TANGENT_DATA);
+        var vStride = this.getStride(TriangleSubGeometry.POSITION_DATA);
+        var nStride = this.getStride(TriangleSubGeometry.NORMAL_DATA);
+        var tStride = this.getStride(TriangleSubGeometry.TANGENT_DATA);
+        for (i = 0; i < len; ++i) {
+            i1 = vi0 + 1;
+            i2 = vi0 + 2;
+            // bake position
+            vector.x = positions[vi0];
+            vector.y = positions[i1];
+            vector.z = positions[i2];
+            vector = transform.transformVector(vector);
+            positions[vi0] = vector.x;
+            positions[i1] = vector.y;
+            positions[i2] = vector.z;
+            vi0 += vStride;
+            // bake normal
+            if (bakeNormals) {
+                i1 = ni0 + 1;
+                i2 = ni0 + 2;
+                vector.x = normals[ni0];
+                vector.y = normals[i1];
+                vector.z = normals[i2];
+                vector = invTranspose.deltaTransformVector(vector);
+                vector.normalize();
+                normals[ni0] = vector.x;
+                normals[i1] = vector.y;
+                normals[i2] = vector.z;
+                ni0 += nStride;
+            }
+            // bake tangent
+            if (bakeTangents) {
+                i1 = ti0 + 1;
+                i2 = ti0 + 2;
+                vector.x = tangents[ti0];
+                vector.y = tangents[i1];
+                vector.z = tangents[i2];
+                vector = invTranspose.deltaTransformVector(vector);
+                vector.normalize();
+                tangents[ti0] = vector.x;
+                tangents[i1] = vector.y;
+                tangents[i2] = vector.z;
+                ti0 += tStride;
+            }
+        }
+        this.notifyPositionsUpdate();
+        this.notifyNormalsUpdate();
+        this.notifyTangentsUpdate();
+    };
+    /**
+     * Updates the tangents for each face.
+     */
+    TriangleSubGeometry.prototype.updateFaceTangents = function () {
+        var i = 0;
+        var index1;
+        var index2;
+        var index3;
+        var vi;
+        var v0;
+        var dv1;
+        var dv2;
+        var denom;
+        var x0, y0, z0;
+        var dx1, dy1, dz1;
+        var dx2, dy2, dz2;
+        var cx, cy, cz;
+        var positions = this._positions;
+        var uvs = this._uvs;
+        var len = this._pIndices.length;
+        if (this._faceTangents == null)
+            this._faceTangents = new Array(len);
+        while (i < len) {
+            index1 = this._pIndices[i];
+            index2 = this._pIndices[i + 1];
+            index3 = this._pIndices[i + 2];
+            v0 = uvs[index1 * 2 + 1];
+            dv1 = uvs[index2 * 2 + 1] - v0;
+            dv2 = uvs[index3 * 2 + 1] - v0;
+            vi = index1 * 3;
+            x0 = positions[vi];
+            y0 = positions[vi + 1];
+            z0 = positions[vi + 2];
+            vi = index2 * 3;
+            dx1 = positions[vi] - x0;
+            dy1 = positions[vi + 1] - y0;
+            dz1 = positions[vi + 2] - z0;
+            vi = index3 * 3;
+            dx2 = positions[vi] - x0;
+            dy2 = positions[vi + 1] - y0;
+            dz2 = positions[vi + 2] - z0;
+            cx = dv2 * dx1 - dv1 * dx2;
+            cy = dv2 * dy1 - dv1 * dy2;
+            cz = dv2 * dz1 - dv1 * dz2;
+            denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
+            this._faceTangents[i++] = denom * cx;
+            this._faceTangents[i++] = denom * cy;
+            this._faceTangents[i++] = denom * cz;
+        }
+        this._faceTangentsDirty = false;
+    };
+    /**
+     * Updates the normals for each face.
+     */
+    TriangleSubGeometry.prototype.updateFaceNormals = function () {
+        var i = 0;
+        var j = 0;
+        var k = 0;
+        var index;
+        var offset;
+        var stride;
+        var x1, x2, x3;
+        var y1, y2, y3;
+        var z1, z2, z3;
+        var dx1, dy1, dz1;
+        var dx2, dy2, dz2;
+        var cx, cy, cz;
+        var d;
+        var positions = this._positions;
+        var len = this._pIndices.length;
+        if (this._faceNormals == null)
+            this._faceNormals = new Array(len);
+        if (this._useFaceWeights && this._faceWeights == null)
+            this._faceWeights = new Array(len / 3);
+        while (i < len) {
+            index = this._pIndices[i++] * 3;
+            x1 = positions[index];
+            y1 = positions[index + 1];
+            z1 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x2 = positions[index];
+            y2 = positions[index + 1];
+            z2 = positions[index + 2];
+            index = this._pIndices[i++] * 3;
+            x3 = positions[index];
+            y3 = positions[index + 1];
+            z3 = positions[index + 2];
+            dx1 = x3 - x1;
+            dy1 = y3 - y1;
+            dz1 = z3 - z1;
+            dx2 = x2 - x1;
+            dy2 = y2 - y1;
+            dz2 = z2 - z1;
+            cx = dz1 * dy2 - dy1 * dz2;
+            cy = dx1 * dz2 - dz1 * dx2;
+            cz = dy1 * dx2 - dx1 * dy2;
+            d = Math.sqrt(cx * cx + cy * cy + cz * cz);
+            // length of cross product = 2*triangle area
+            if (this._useFaceWeights) {
+                var w = d * 10000;
+                if (w < 1)
+                    w = 1;
+                this._faceWeights[k++] = w;
+            }
+            d = 1 / d;
+            this._faceNormals[j++] = cx * d;
+            this._faceNormals[j++] = cy * d;
+            this._faceNormals[j++] = cz * d;
+        }
+        this._faceNormalsDirty = false;
+    };
+    TriangleSubGeometry.prototype._pNotifyVerticesUpdate = function () {
+        this._pStrideOffsetDirty = true;
+        this.notifyPositionsUpdate();
+        this.notifyNormalsUpdate();
+        this.notifyTangentsUpdate();
+        this.notifyUVsUpdate();
+        this.notifySecondaryUVsUpdate();
+        this.notifyJointIndicesUpdate();
+        this.notifyJointWeightsUpdate();
+    };
+    TriangleSubGeometry.prototype.notifyPositionsUpdate = function () {
+        if (this._positionsDirty)
+            return;
+        this._positionsDirty = true;
+        if (!this._positionsUpdated)
+            this._positionsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.POSITION_DATA);
+        this.dispatchEvent(this._positionsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyNormalsUpdate = function () {
+        if (this._vertexNormalsDirty)
+            return;
+        this._vertexNormalsDirty = true;
+        if (!this._normalsUpdated)
+            this._normalsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.NORMAL_DATA);
+        this.dispatchEvent(this._normalsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyTangentsUpdate = function () {
+        if (this._vertexTangentsDirty)
+            return;
+        this._vertexTangentsDirty = true;
+        if (!this._tangentsUpdated)
+            this._tangentsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.TANGENT_DATA);
+        this.dispatchEvent(this._tangentsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyUVsUpdate = function () {
+        if (this._uvsDirty)
+            return;
+        this._uvsDirty = true;
+        if (!this._uvsUpdated)
+            this._uvsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.UV_DATA);
+        this.dispatchEvent(this._uvsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifySecondaryUVsUpdate = function () {
+        if (this._secondaryUVsDirty)
+            return;
+        this._secondaryUVsDirty = true;
+        if (!this._secondaryUVsUpdated)
+            this._secondaryUVsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.SECONDARY_UV_DATA);
+        this.dispatchEvent(this._secondaryUVsUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyJointIndicesUpdate = function () {
+        if (this._jointIndicesDirty)
+            return;
+        this._jointIndicesDirty = true;
+        if (!this._jointIndicesUpdated)
+            this._jointIndicesUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_INDEX_DATA);
+        this.dispatchEvent(this._jointIndicesUpdated);
+    };
+    TriangleSubGeometry.prototype.notifyJointWeightsUpdate = function () {
+        if (this._jointWeightsDirty)
+            return;
+        this._jointWeightsDirty = true;
+        if (!this._jointWeightsUpdated)
+            this._jointWeightsUpdated = new SubGeometryEvent(SubGeometryEvent.VERTICES_UPDATED, TriangleSubGeometry.JOINT_WEIGHT_DATA);
+        this.dispatchEvent(this._jointWeightsUpdated);
+    };
+    TriangleSubGeometry.POSITION_DATA = "positions";
+    TriangleSubGeometry.NORMAL_DATA = "vertexNormals";
+    TriangleSubGeometry.TANGENT_DATA = "vertexTangents";
+    TriangleSubGeometry.UV_DATA = "uvs";
+    TriangleSubGeometry.SECONDARY_UV_DATA = "secondaryUVs";
+    TriangleSubGeometry.JOINT_INDEX_DATA = "jointIndices";
+    TriangleSubGeometry.JOINT_WEIGHT_DATA = "jointWeights";
+    //TODO - move these to StageGL
+    TriangleSubGeometry.POSITION_FORMAT = "float3";
+    TriangleSubGeometry.NORMAL_FORMAT = "float3";
+    TriangleSubGeometry.TANGENT_FORMAT = "float3";
+    TriangleSubGeometry.UV_FORMAT = "float2";
+    TriangleSubGeometry.SECONDARY_UV_FORMAT = "float2";
+    return TriangleSubGeometry;
+})(SubGeometryBase);
+module.exports = TriangleSubGeometry;
+
+
+},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-display/lib/base/SubGeometryBase":3,"awayjs-display/lib/base/TriangleSubMesh":"awayjs-display/lib/base/TriangleSubMesh","awayjs-display/lib/events/SubGeometryEvent":5}],5:[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Event = require("awayjs-core/lib/events/Event");
+/**
+ * Dispatched to notify changes in a sub geometry object's state.
+ *
+ * @class away.events.SubGeometryEvent
+ * @see away.core.base.Geometry
+ */
+var SubGeometryEvent = (function (_super) {
+    __extends(SubGeometryEvent, _super);
+    /**
+     * Create a new GeometryEvent
+     * @param type The event type.
+     * @param dataType An optional data type of the vertex data being updated.
+     */
+    function SubGeometryEvent(type, dataType) {
+        if (dataType === void 0) { dataType = ""; }
+        _super.call(this, type);
+        this._dataType = dataType;
+    }
+    Object.defineProperty(SubGeometryEvent.prototype, "dataType", {
+        /**
+         * The data type of the vertex data.
+         */
+        get: function () {
+            return this._dataType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    SubGeometryEvent.prototype.clone = function () {
+        return new SubGeometryEvent(this.type, this._dataType);
+    };
+    /**
+     * Dispatched when a TriangleSubGeometry's index data has been updated.
+     */
+    SubGeometryEvent.INDICES_UPDATED = "indicesUpdated";
+    /**
+     * Dispatched when a TriangleSubGeometry's vertex data has been updated.
+     */
+    SubGeometryEvent.VERTICES_UPDATED = "verticesUpdated";
+    return SubGeometryEvent;
+})(Event);
+module.exports = SubGeometryEvent;
+
+
+},{"awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event"}],"awayjs-core/lib/data/BitmapDataChannel":[function(require,module,exports){
 var BitmapDataChannel = (function () {
     function BitmapDataChannel() {
     }
@@ -32647,7 +34948,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var BlendMode = require("awayjs-core/lib/base/BlendMode");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var RenderObjectBase = require("awayjs-renderergl/lib/compilation/RenderObjectBase");
@@ -32896,7 +35197,7 @@ var RenderMethodMaterialObject = (function (_super) {
 module.exports = RenderMethodMaterialObject;
 
 
-},{"awayjs-core/lib/data/BlendMode":"awayjs-core/lib/data/BlendMode","awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/passes/MethodPass":"awayjs-methodmaterials/lib/passes/MethodPass","awayjs-methodmaterials/lib/passes/MethodPassMode":"awayjs-methodmaterials/lib/passes/MethodPassMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
+},{"awayjs-core/lib/base/BlendMode":2,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/passes/MethodPass":"awayjs-methodmaterials/lib/passes/MethodPass","awayjs-methodmaterials/lib/passes/MethodPassMode":"awayjs-methodmaterials/lib/passes/MethodPassMode","awayjs-renderergl/lib/compilation/RenderObjectBase":"awayjs-renderergl/lib/compilation/RenderObjectBase","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode"}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
 /**
  * MethodVO contains data for a given shader object for the use within a single material.
  * This allows shader methods to be shared across materials while their non-public state differs.
@@ -36192,7 +38493,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var BitmapData = require("awayjs-core/lib/data/BitmapData");
+var BitmapData = require("awayjs-core/lib/base/BitmapData");
 var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
 var ShadowMethodBase = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
 /**
@@ -36422,7 +38723,7 @@ var ShadowDitheredMethod = (function (_super) {
 module.exports = ShadowDitheredMethod;
 
 
-},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
+},{"awayjs-core/lib/base/BitmapData":1,"awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -38782,9 +41083,9 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var TriangleSubGeometry = require("awayjs-core/lib/data/TriangleSubGeometry");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var RenderTexture = require("awayjs-core/lib/textures/RenderTexture");
+var TriangleSubGeometry = require("awayjs-display/lib/base/TriangleSubGeometry");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
 var RenderPassBase = require("awayjs-renderergl/lib/passes/RenderPassBase");
 /**
@@ -38940,7 +41241,7 @@ var SingleObjectDepthPass = (function (_super) {
 module.exports = SingleObjectDepthPass;
 
 
-},{"awayjs-core/lib/data/TriangleSubGeometry":"awayjs-core/lib/data/TriangleSubGeometry","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-methodmaterials/lib/pool/MethodRenderablePool":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/textures/RenderTexture":"awayjs-core/lib/textures/RenderTexture","awayjs-display/lib/base/TriangleSubGeometry":4,"awayjs-renderergl/lib/passes/RenderPassBase":"awayjs-renderergl/lib/passes/RenderPassBase","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType"}],"awayjs-methodmaterials/lib/pool/MethodRenderablePool":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -39933,9 +42234,15 @@ var AWDParser = (function (_super) {
                             3: this._propsNrType,
                             4: AWDParser.UINT8,
                             5: AWDParser.UINT8,
-                            6: AWDParser.UINT32,
-                            7: AWDParser.UINT32
+                            6: AWDParser.UINT32
                         });
+                        // todo: fix property parsing so we can read variable size list (atm list with size = 1 is returned as single number)
+                        // for this reason, for now the mask-property is read sepperatly
+                        var mask_id_nums = this._newBlockBytes.readUnsignedInt();
+                        var mask_ids = new Array();
+                        for (var mi_cnt = 0; mi_cnt < mask_id_nums; mi_cnt++) {
+                            mask_ids.push(this._newBlockBytes.readUnsignedInt());
+                        }
                         if (valid_command) {
                             var matrix_2d = props.get(1, []);
                             //var matrix_3d:Float32Array = props.get(2, []);
@@ -39984,14 +42291,17 @@ var AWDParser = (function (_super) {
                             }
                             // mask must be positive to be valid. i think only add-commands will have this value.
                             // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
-                            if (mask.length > 0) {
-                                if ((mask.length == 1) && (mask[0] < 0)) {
+                            if (mask_ids.length > 0) {
+                                if ((mask_ids.length == 1) && (mask_ids[0] == 0)) {
                                     // TODO: this object is used as mask
                                     commandString += "\n                obj is used as mask";
                                 }
                                 else {
                                     // TODO: this object is masked by one or more objects defined by ids in mask-array
-                                    commandString += "\n                obj is masked by " + mask.length + " objects";
+                                    commandString += "\n                obj is masked by " + mask_ids.length + " objects";
+                                    for (var cm = 0; cm < mask_ids.length; cm++) {
+                                        commandString += "\n                obj is masked by " + mask_ids[cm];
+                                    }
                                 }
                             }
                         }

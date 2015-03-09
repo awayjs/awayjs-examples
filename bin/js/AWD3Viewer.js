@@ -116,7 +116,7 @@ var AWD3Viewer = (function () {
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
-        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+        loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
         //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
         //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
@@ -124,10 +124,6 @@ var AWD3Viewer = (function () {
         //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
         //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
         //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-        loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
-        //loader.load(new URLRequest("assets/AWD3/SimpleShape.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
         //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
     };
     /**
