@@ -41,7 +41,6 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -68,7 +67,6 @@ import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSph
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -251,7 +249,7 @@ class Intermediate_MouseInteraction
 	 */
 	private onAssetComplete(event:AssetEvent):void
 	{
-		if (event.asset.assetType == AssetType.MESH) {
+		if (event.asset.isAsset(Mesh)) {
 			this.initializeHeadModel(<Mesh> event.asset);
 		}
 	}

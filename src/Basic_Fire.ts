@@ -46,7 +46,6 @@ import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
@@ -392,18 +391,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
+					this.planeMaterial.texture = <Texture2DBase> asset;
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMap = <Texture2DBase> AssetLibrary.getAsset(asset.name);
+					this.planeMaterial.normalMap = <Texture2DBase> asset;
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMap = <Texture2DBase> AssetLibrary.getAsset(asset.name);
+					this.planeMaterial.specularMap = <Texture2DBase> asset;
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.texture = <Texture2DBase> AssetLibrary.getAsset(asset.name);
+					this.particleMaterial.texture = <Texture2DBase> asset;
 					break;
 			}
 		}

@@ -34,12 +34,13 @@
 
  */
 
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
+import Geometry						= require("awayjs-core/lib/data/Geometry");
+import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
+import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
+import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
 import OrthographicProjection		= require("awayjs-core/lib/projections/OrthographicProjection");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
@@ -48,7 +49,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Geometry						= require("awayjs-display/lib/base/Geometry");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
@@ -61,8 +61,8 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
-import Partition2D					= require("awayjs-player/lib/fl/partition/Partition2D");
-import MovieClip					= require("awayjs-player/lib/fl/display/MovieClip");
+import Partition2D					= require("awayjs-player/lib/partition/Partition2D");
+import MovieClip					= require("awayjs-player/lib/display/MovieClip");
 
 import CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
 import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
@@ -70,7 +70,7 @@ import Camera = require("awayjs-display/lib/entities/Camera");
 
 import Font					= require("awayjs-display/lib/text/Font");
 import TesselatedFontTable					= require("awayjs-display/lib/text/TesselatedFontTable");
-import SubGeometryBase					= require("awayjs-display/lib/base/SubGeometryBase");
+import TesselatedFontChar					= require("awayjs-display/lib/text/TesselatedFontChar");
 import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
 
 class AWD3FontViewer
@@ -192,11 +192,11 @@ class AWD3FontViewer
 	 */
 	private onAssetComplete(event: AssetEvent): void
 	{
-		if(event.asset.assetType == AssetType.FONT) {
+		if(event.asset.isAsset(Font)) {
 			console.log("Font finished!!! ");
-			var thisfont:Font=<Font>event.asset
+			var thisfont:Font = <Font> event.asset
 			var thisfonttable:TesselatedFontTable=<TesselatedFontTable>thisfont.get_font_table("RegularStyle");
-			var font_chars:Array<SubGeometryBase> = thisfonttable.get_font_chars();
+			var font_chars:Array<TesselatedFontChar> = thisfonttable.get_font_chars();
 			var charcnt_sqr:number = Math.sqrt(font_chars.length);
 			var font_em_size:number = thisfonttable.get_font_em_size()/100;
 			var position_x:number = -(charcnt_sqr/2)*font_em_size;
@@ -212,9 +212,15 @@ class AWD3FontViewer
 					pos_y+=font_em_size;
 				}
 				k++;
-				var thischar:SubGeometryBase=font_chars[i];
+				var thischar:TesselatedFontChar=font_chars[i];
+				if(thischar!=null){
+					var thisGeom:SubGeometryBase=thischar.subgeom;
+					if(thisGeom!=null) {
+						newmesh.geometry.addSubGeometry(thisGeom);
+					}
+
+				}
 				//thischar.applyTransformation(transMatrix);
-				newmesh.geometry.addSubGeometry(thischar);
 				pos_x+=font_em_size;
 				newmesh.x=pos_x;
 				newmesh.y=pos_y;
@@ -227,7 +233,7 @@ class AWD3FontViewer
 			//this._rootTimeLine = <MovieClip> event.asset;
 			//this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
 		}
-		if(event.asset.assetType == AssetType.TIMELINE) {
+		if(event.asset.isAsset(MovieClip)) {
 			//this._rootTimeLine = <MovieClip> event.asset;
 			//this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
 		}

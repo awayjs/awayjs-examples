@@ -42,7 +42,6 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetType   					= require("awayjs-core/lib/library/AssetType");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard 					= require("awayjs-core/lib/ui/Keyboard");
@@ -57,6 +56,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
+import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import VertexAnimationSet			= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
 import VertexAnimator				= require("awayjs-renderergl/lib/animators/VertexAnimator");
 
@@ -250,7 +250,7 @@ class Intermediate_PerelithKnight
 
         switch (asset.assetType)
         {
-            case AssetType.MESH :
+            case Mesh.assetType :
                 this._mesh = <Mesh> event.asset;
 
                 //adjust the mesh
@@ -261,7 +261,7 @@ class Intermediate_PerelithKnight
 
 
                 break;
-            case AssetType.ANIMATION_SET :
+            case AnimationSetBase.assetType :
                 this._animationSet = <VertexAnimationSet> event.asset;
                 this._animationSetInitialised = true;
                 break;

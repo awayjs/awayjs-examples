@@ -1,3 +1,5 @@
+import CurveSubGeometry             = require("awayjs-core/lib/data/CurveSubGeometry");
+import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -18,15 +20,12 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import MaterialBase		        	= require("awayjs-display/lib/materials/MaterialBase");
-import BasicMaterial		       = require("awayjs-display/lib/materials/BasicMaterial");
+import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
-import CurveSubGeometry             = require("awayjs-display/lib/base/CurveSubGeometry");
 import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubMesh");
-import Geometry                      = require("awayjs-display/lib/base/Geometry");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-//import CurveBasicMethod				= require("awayjs-methodmaterials/lib/methods/CurveBasicMethod");
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 

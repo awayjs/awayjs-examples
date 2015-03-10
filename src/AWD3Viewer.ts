@@ -36,7 +36,6 @@
 
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
@@ -64,9 +63,9 @@ import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import Partition2D					= require("awayjs-player/lib/partition/Partition2D");
 import MovieClip					= require("awayjs-player/lib/display/MovieClip");
 
-import CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera = require("awayjs-display/lib/entities/Camera");
+import CoordinateSystem				= require("awayjs-core/lib/projections/CoordinateSystem");
+import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
+import Camera						= require("awayjs-display/lib/entities/Camera");
 
 import TextField						= require("awayjs-display/lib/entities/TextField");
 import TextFormat						= require("awayjs-display/lib/text/TextFormat");
@@ -209,13 +208,13 @@ class AWD3Viewer
 	private onAssetComplete(event: AssetEvent): void
 	{
 
-		if(event.asset.assetType == AssetType.TEXTFIELD) {
+		if(event.asset.isAsset(TextField)) {
 			//var one_textfield:TextField=<TextField> event.asset;
 			//console.log("orginal textfield_text = "+one_textfield.text);
 			//one_textfield.text="new text";
 		}
 
-		if(event.asset.assetType == AssetType.TIMELINE) {
+		if(event.asset.isAsset(MovieClip)) {
 			this._rootTimeLine = <MovieClip> event.asset;
 			this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
 		}

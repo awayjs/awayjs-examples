@@ -44,13 +44,13 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
+import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import Loader						= require("awayjs-display/lib/containers/Loader");
@@ -66,6 +66,7 @@ import NearDirectionalShadowMapper	= require("awayjs-display/lib/materials/shado
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
+import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import SkeletonAnimationSet			= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
 import Skeleton						= require("awayjs-renderergl/lib/animators/data/Skeleton");
@@ -382,7 +383,7 @@ class Intermediate_MD5Animation
 	 */
 	private onAssetComplete(event:AssetEvent):void
 	{
-		if (event.asset.assetType == AssetType.ANIMATION_NODE) {
+		if (event.asset.isAsset(AnimationNodeBase)) {
 
 			var node:SkeletonClipNode = <SkeletonClipNode> event.asset;
 			var name:string = event.asset.assetNamespace;
@@ -399,16 +400,16 @@ class Intermediate_MD5Animation
 
 			if (name == Intermediate_MD5Animation.IDLE_NAME)
 				this.stop();
-		} else if (event.asset.assetType == AssetType.ANIMATION_SET) {
+		} else if (event.asset.isAsset(AnimationSetBase)) {
 			this.animationSet = <SkeletonAnimationSet> event.asset;
 			this.animator = new SkeletonAnimator(this.animationSet, this.skeleton);
 			for (var i:number /*uint*/ = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
 				AssetLibrary.load(new URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser());
 
 			this.mesh.animator = this.animator;
-		} else if (event.asset.assetType == AssetType.SKELETON) {
+		} else if (event.asset.isAsset(Skeleton)) {
 			this.skeleton = <Skeleton> event.asset;
-		} else if (event.asset.assetType == AssetType.MESH) {
+		} else if (event.asset.isAsset(Mesh)) {
 			//grab mesh object and assign our material object
 			this.mesh = <Mesh> event.asset;
 			this.mesh.subMeshes[0].material = this.bodyMaterial;

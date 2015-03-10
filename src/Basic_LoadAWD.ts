@@ -39,7 +39,6 @@ THE SOFTWARE.
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -49,6 +48,7 @@ import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -181,7 +181,7 @@ class Basic_LoadAWD
 
 		switch (asset.assetType)
 		{
-			case AssetType.MESH :
+			case Mesh.assetType :
 				var mesh:Mesh = <Mesh> asset;
 				mesh.y = -300;
 				mesh.transform.scale = new Vector3D(900, 900, 900);
@@ -189,7 +189,7 @@ class Basic_LoadAWD
 				this._suzanne = mesh;
 				this._view.scene.addChild(mesh);
 				break;
-			case AssetType.MATERIAL:
+			case MaterialBase.assetType:
 				var material:MethodMaterial = <MethodMaterial> asset;
 				material.lightPicker = this._lightPicker;
 				break;

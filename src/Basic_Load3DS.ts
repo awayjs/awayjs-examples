@@ -41,7 +41,6 @@ import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
@@ -52,6 +51,7 @@ import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 
@@ -215,11 +215,11 @@ class Basic_Load3DS
 
 		switch (asset.assetType)
 		{
-			case AssetType.MESH :
+			case Mesh.assetType :
 				var mesh:Mesh = <Mesh> event.asset;
 				mesh.castsShadows = true;
 				break;
-			case AssetType.MATERIAL :
+			case MaterialBase.assetType :
 				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 				material.shadowMethod.epsilon = 0.2;

@@ -37,16 +37,17 @@ THE SOFTWARE.
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
+import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 
+import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
 import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
 import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
 import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
@@ -161,10 +162,11 @@ class Intermediate_AWDViewer
 	 */		
 	private onAssetComplete(event:AssetEvent):void
 	{
-		if (event.asset.assetType == AssetType.ANIMATOR) {
+		console.log("...........", event.asset.assetType)
+		if (event.asset.isAsset(AnimatorBase)) {
 			this._animator = <SkeletonAnimator> event.asset;
 			this._animator.play(Intermediate_AWDViewer.IDLE_NAME);
-		} else if (event.asset.assetType == AssetType.ANIMATION_NODE) {
+		} else if (event.asset.isAsset(AnimationNodeBase)) {
 			console.log(event.asset.name);
 			var node:SkeletonClipNode = <SkeletonClipNode> event.asset;
 			

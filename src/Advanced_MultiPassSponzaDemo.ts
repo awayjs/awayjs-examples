@@ -55,7 +55,6 @@ import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext				= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetType						= require("awayjs-core/lib/library/AssetType");
 import URLLoader						= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest						= require("awayjs-core/lib/net/URLRequest");
@@ -536,7 +535,7 @@ class Advanced_MultiPassSponzaDemo
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.assetType == AssetType.MESH) {
+		if (event.asset.isAsset(Mesh)) {
 			//store meshes
 			this._meshes.push(<Mesh> event.asset);
 		}

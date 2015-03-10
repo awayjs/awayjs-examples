@@ -3,10 +3,10 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
-import AssetType   					= require("awayjs-core/lib/library/AssetType");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
+import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -114,7 +114,7 @@ class ObjLoaderMasterChief
 			console.log( d.name , event.url);
 
 			switch (d.assetType) {
-				case AssetType.MESH:
+				case  Mesh.assetType:
 					if (event.url =='assets/Halo_3_SPARTAN4.obj') {
 						var mesh:Mesh = <Mesh> d;
 
@@ -129,7 +129,7 @@ class ObjLoaderMasterChief
 					}
 
 					break;
-				case AssetType.TEXTURE :
+				case TextureBase.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
 						this.mat = new MethodMaterial( <ImageTexture> d, true, true, false );
 						this.mat.lightPicker = new StaticLightPicker([this.light]);

@@ -1,3 +1,4 @@
+import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -5,7 +6,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -15,6 +15,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
+import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -135,7 +136,7 @@ class AWDSuzanne
 			var asset:IAsset = loader.baseDependency.assets[ i ];
 
 			switch(asset.assetType) {
-				case AssetType.MESH:
+				case Mesh.assetType:
 
 					var mesh:Mesh = <Mesh> asset;
 
@@ -167,10 +168,10 @@ class AWDSuzanne
 
 					break;
 
-				case AssetType.GEOMETRY:
+				case Geometry.assetType:
 					break;
 
-				case AssetType.MATERIAL:
+				case MaterialBase.assetType:
 					break;
 			}
 		}

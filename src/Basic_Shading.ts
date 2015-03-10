@@ -51,6 +51,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import Camera						= require("awayjs-display/lib/entities/Camera");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -58,7 +59,6 @@ import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSph
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import DefaultMaterialManager		= require("awayjs-renderergl/lib/managers/DefaultMaterialManager");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");

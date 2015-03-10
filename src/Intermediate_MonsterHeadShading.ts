@@ -46,7 +46,6 @@ import ProgressEvent				= require("awayjs-core/lib/events/ProgressEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetType					= require("awayjs-core/lib/library/AssetType");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
@@ -360,7 +359,7 @@ class Intermediate_MonsterHeadShading
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.assetType == AssetType.MESH) {
+		if (event.asset.isAsset(Mesh)) {
 			this._headModel = <Mesh> event.asset;
 			this._headModel.geometry.scale(4);
 			this._headModel.y = -20;
