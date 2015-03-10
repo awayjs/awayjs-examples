@@ -34,23 +34,24 @@
  THE SOFTWARE.
 
  */
-var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
-var AssetType = require("awayjs-core/lib/library/AssetType");
+var Geometry = require("awayjs-core/lib/data/Geometry");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicProjection");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/containers/View");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
-var Geometry = require("awayjs-display/lib/base/Geometry");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var Loader = require("awayjs-display/lib/containers/Loader");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var MovieClip = require("awayjs-player/lib/display/MovieClip");
 var CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
 var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
 var Camera = require("awayjs-display/lib/entities/Camera");
+var Font = require("awayjs-display/lib/text/Font");
 var AWD3FontViewer = (function () {
     /**
      * Constructor
@@ -133,7 +134,7 @@ var AWD3FontViewer = (function () {
      * loader listener for asset complete events
      */
     AWD3FontViewer.prototype.onAssetComplete = function (event) {
-        if (event.asset.assetType == AssetType.FONT) {
+        if (event.asset.isAsset(Font)) {
             console.log("Font finished!!! ");
             var thisfont = event.asset;
             var thisfonttable = thisfont.get_font_table("RegularStyle");
@@ -154,8 +155,13 @@ var AWD3FontViewer = (function () {
                 }
                 k++;
                 var thischar = font_chars[i];
+                if (thischar != null) {
+                    var thisGeom = thischar.subgeom;
+                    if (thisGeom != null) {
+                        newmesh.geometry.addSubGeometry(thisGeom);
+                    }
+                }
                 //thischar.applyTransformation(transMatrix);
-                newmesh.geometry.addSubGeometry(thischar);
                 pos_x += font_em_size;
                 newmesh.x = pos_x;
                 newmesh.y = pos_y;
@@ -164,7 +170,7 @@ var AWD3FontViewer = (function () {
                 this._view.scene.addChild(newmesh);
             }
         }
-        if (event.asset.assetType == AssetType.TIMELINE) {
+        if (event.asset.isAsset(MovieClip)) {
         }
     };
     /**
@@ -298,7 +304,7 @@ window.onload = function () {
 };
 
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/AssetType":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
+},{"awayjs-core/lib/data/Geometry":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/display/MovieClip":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},[1])
 
 
 //# sourceMappingURL=AWD3FontViewer.js.map
