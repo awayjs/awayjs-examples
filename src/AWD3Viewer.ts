@@ -54,7 +54,7 @@ import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import RenderableNullSort			= require("awayjs-display/lib/sort/RenderableNullSort");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import Renderer2D				    = require("awayjs-player/lib/renderer/Renderer2D");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
@@ -119,8 +119,7 @@ class AWD3Viewer
 	private initEngine(): void
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
-		this._view.renderer.renderableSorter = new RenderableNullSort();
+		this._view = new View(new Renderer2D());
 		this._view.backgroundColor = 0xffffff;
 
 		//for plugin preview-runtime:
@@ -178,8 +177,8 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
-		loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
+		loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		//loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
 
 	}
 
