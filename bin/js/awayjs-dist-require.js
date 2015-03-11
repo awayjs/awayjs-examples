@@ -9930,7 +9930,45 @@ var AssetLoader = (function (_super) {
 module.exports = AssetLoader;
 
 
-},{"awayjs-core/lib/errors/Error":"awayjs-core/lib/errors/Error","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/IOErrorEvent":"awayjs-core/lib/events/IOErrorEvent","awayjs-core/lib/events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/library/AssetLoaderToken":"awayjs-core/lib/library/AssetLoaderToken","awayjs-core/lib/net/URLLoader":"awayjs-core/lib/net/URLLoader","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/CubeTextureParser":"awayjs-core/lib/parsers/CubeTextureParser","awayjs-core/lib/parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","awayjs-core/lib/parsers/Texture2DParser":"awayjs-core/lib/parsers/Texture2DParser"}],"awayjs-core/lib/library/ConflictPrecedence":[function(require,module,exports){
+},{"awayjs-core/lib/errors/Error":"awayjs-core/lib/errors/Error","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/Event":"awayjs-core/lib/events/Event","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/IOErrorEvent":"awayjs-core/lib/events/IOErrorEvent","awayjs-core/lib/events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/library/AssetLoaderToken":"awayjs-core/lib/library/AssetLoaderToken","awayjs-core/lib/net/URLLoader":"awayjs-core/lib/net/URLLoader","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/CubeTextureParser":"awayjs-core/lib/parsers/CubeTextureParser","awayjs-core/lib/parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","awayjs-core/lib/parsers/Texture2DParser":"awayjs-core/lib/parsers/Texture2DParser"}],"awayjs-core/lib/library/AssetType":[function(require,module,exports){
+var AssetType = (function () {
+    function AssetType() {
+    }
+    AssetType.ANIMATION_NODE = 'animationNode';
+    AssetType.ANIMATION_SET = 'animationSet';
+    AssetType.ANIMATION_STATE = 'animationState';
+    AssetType.ANIMATOR = 'animator';
+    AssetType.BILLBOARD = 'billboard';
+    AssetType.CAMERA = 'camera';
+    AssetType.CONTAINER = 'container';
+    AssetType.EFFECTS_METHOD = 'effectsMethod';
+    AssetType.FONT = 'font';
+    AssetType.GEOMETRY = 'geometry';
+    AssetType.LINE_SEGMENT = 'lineSegment';
+    AssetType.LIGHT = 'light';
+    AssetType.LIGHT_PICKER = 'lightPicker';
+    AssetType.MATERIAL = 'material';
+    AssetType.MESH = 'mesh';
+    AssetType.TRIANGLE_SUB_MESH = 'triangleSubMesh';
+    AssetType.CURVE_SUB_MESH = 'curveSubMesh';
+    AssetType.LINE_SUB_MESH = 'lineSubMesh';
+    AssetType.PRIMITIVE_PREFAB = 'primitivePrefab';
+    AssetType.SHADOW_MAP_METHOD = 'shadowMapMethod';
+    AssetType.SKELETON = 'skeleton';
+    AssetType.SKELETON_POSE = 'skeletonPose';
+    AssetType.SKYBOX = 'skybox';
+    AssetType.STATE_TRANSITION = 'stateTransition';
+    AssetType.TEXTFIELD = 'textfield';
+    AssetType.TEXTFORMAT = 'textformat';
+    AssetType.TEXTURE = 'texture';
+    AssetType.TEXTURE_PROJECTOR = 'textureProjector';
+    AssetType.TIMELINE = 'timeline';
+    return AssetType;
+})();
+module.exports = AssetType;
+
+
+},{}],"awayjs-core/lib/library/ConflictPrecedence":[function(require,module,exports){
 /**
  * Enumaration class for precedence when resolving naming conflicts in the library.
  *
@@ -10177,7 +10215,117 @@ var IgnoreConflictStrategy = (function (_super) {
 module.exports = IgnoreConflictStrategy;
 
 
-},{"awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/NumSuffixConflictStrategy":[function(require,module,exports){
+},{"awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/NamedAssetBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var NamedAssetBase = (function (_super) {
+    __extends(NamedAssetBase, _super);
+    function NamedAssetBase(name) {
+        if (name === void 0) { name = null; }
+        _super.call(this);
+        this._id = NamedAssetBase.ID_COUNT++;
+        if (name == null)
+            name = 'null';
+        this._name = name;
+        this._originalName = name;
+        this.updateFullPath();
+    }
+    Object.defineProperty(NamedAssetBase.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            throw new AbstractMethodError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NamedAssetBase.prototype, "originalName", {
+        /**
+         * The original name used for this asset in the resource (e.g. file) in which
+         * it was found. This may not be the same as <code>name</code>, which may
+         * have changed due to of a name conflict.
+         */
+        get: function () {
+            return this._originalName;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NamedAssetBase.prototype, "id", {
+        /**
+         * A unique id for the asset, used to identify assets in an associative array
+         */
+        get: function () {
+            return this._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NamedAssetBase.prototype, "name", {
+        get: function () {
+            return this._name;
+        },
+        set: function (val) {
+            var prev;
+            prev = this._name;
+            this._name = val;
+            if (this._name == null)
+                this._name = 'null';
+            this.updateFullPath();
+            //if (hasEventListener(AssetEvent.ASSET_RENAME))
+            this.dispatchEvent(new AssetEvent(AssetEvent.ASSET_RENAME, this, prev));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NamedAssetBase.prototype.dispose = function () {
+        throw new AbstractMethodError();
+    };
+    Object.defineProperty(NamedAssetBase.prototype, "assetNamespace", {
+        get: function () {
+            return this._namespace;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NamedAssetBase.prototype, "assetFullPath", {
+        get: function () {
+            return this._full_path;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NamedAssetBase.prototype.assetPathEquals = function (name, ns) {
+        return (this._name == name && (!ns || this._namespace == ns));
+    };
+    NamedAssetBase.prototype.resetAssetPath = function (name, ns, overrideOriginal) {
+        if (ns === void 0) { ns = null; }
+        if (overrideOriginal === void 0) { overrideOriginal = true; }
+        this._name = name ? name : 'null';
+        this._namespace = ns ? ns : NamedAssetBase.DEFAULT_NAMESPACE;
+        if (overrideOriginal)
+            this._originalName = this._name;
+        this.updateFullPath();
+    };
+    NamedAssetBase.prototype.updateFullPath = function () {
+        this._full_path = [this._namespace, this._name];
+    };
+    NamedAssetBase.ID_COUNT = 0;
+    NamedAssetBase.DEFAULT_NAMESPACE = 'default';
+    return NamedAssetBase;
+})(EventDispatcher);
+module.exports = NamedAssetBase;
+
+
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/NumSuffixConflictStrategy":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13240,7 +13388,95 @@ var TextureProxyBase = (function (_super) {
 module.exports = TextureProxyBase;
 
 
-},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/ui/Keyboard":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/textures/TextureProxyBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var NamedAssetBase = require("awayjs-core/lib/library/NamedAssetBase");
+/**
+ *
+ */
+var TextureProxyBase = (function (_super) {
+    __extends(TextureProxyBase, _super);
+    /**
+     *
+     */
+    function TextureProxyBase(generateMipmaps) {
+        if (generateMipmaps === void 0) { generateMipmaps = false; }
+        _super.call(this);
+        this._pFormat = "bgra";
+        this._textureData = new Array();
+    }
+    Object.defineProperty(TextureProxyBase.prototype, "size", {
+        get: function () {
+            return this._pSize;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextureProxyBase.prototype, "format", {
+        /**
+         *
+         * @returns {string}
+         */
+        get: function () {
+            return this._pFormat;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextureProxyBase.prototype, "assetType", {
+        /**
+         *
+         * @returns {string}
+         */
+        get: function () {
+            return AssetType.TEXTURE;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    TextureProxyBase.prototype.invalidateContent = function () {
+        var len = this._textureData.length;
+        for (var i = 0; i < len; i++)
+            this._textureData[i].invalidate();
+    };
+    /**
+     *
+     * @private
+     */
+    TextureProxyBase.prototype.invalidateSize = function () {
+        while (this._textureData.length)
+            this._textureData[0].dispose();
+    };
+    /**
+     * @inheritDoc
+     */
+    TextureProxyBase.prototype.dispose = function () {
+        while (this._textureData.length)
+            this._textureData[0].dispose();
+    };
+    TextureProxyBase.prototype._iAddTextureData = function (textureData) {
+        this._textureData.push(textureData);
+        return textureData;
+    };
+    TextureProxyBase.prototype._iRemoveTextureData = function (textureData) {
+        this._textureData.splice(this._textureData.indexOf(textureData), 1);
+        return textureData;
+    };
+    return TextureProxyBase;
+})(NamedAssetBase);
+module.exports = TextureProxyBase;
+
+
+},{"awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/library/NamedAssetBase":"awayjs-core/lib/library/NamedAssetBase"}],"awayjs-core/lib/ui/Keyboard":[function(require,module,exports){
 var Keyboard = (function () {
     function Keyboard() {
     }
@@ -15241,6 +15477,8 @@ var DisplayObject = (function (_super) {
         this._sphereBoundsInvalid = true;
         this._pSceneTransform = new Matrix3D();
         this._pSceneTransformDirty = true;
+        this._iMaskID = -1;
+        this._iMasks = null;
         this._matrix3D = new Matrix3D();
         this._matrix3DDirty = true;
         this._inverseSceneTransform = new Matrix3D();
@@ -16107,6 +16345,8 @@ var DisplayObject = (function (_super) {
         clone.pivot = this.pivot;
         clone._iMatrix3D = this._iMatrix3D;
         clone.name = name;
+        clone._iMaskID = this._iMaskID;
+        clone._iMasks = this._iMasks ? this._iMasks.concat() : null;
         // todo: implement for all subtypes
         return clone;
     };
@@ -22930,6 +23170,8 @@ var Mesh = (function (_super) {
         //this is of course no proper cloning
         //maybe use this instead?: http://blog.another-d-mention.ro/programming/how-to-clone-duplicate-an-object-in-actionscript-3/
         clone.extra = this.extra;
+        clone._iMasks = this._iMasks;
+        clone._iMaskID = this._iMaskID;
         var len = this._subMeshes.length;
         for (var i = 0; i < len; ++i)
             clone._subMeshes[i].material = this._subMeshes[i]._iGetExplicitMaterial();
@@ -40094,14 +40336,20 @@ var AWDParser = (function (_super) {
                             if (mask_ids.length > 0) {
                                 if ((mask_ids.length == 1) && (mask_ids[0] == 0)) {
                                     // TODO: this object is used as mask
+                                    console.log("Parsed mask: " + instanceID, depth);
+                                    frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "_iMaskID", instanceID));
                                     commandString += "\n                obj is used as mask";
                                 }
                                 else {
                                     // TODO: this object is masked by one or more objects defined by ids in mask-array
                                     commandString += "\n                obj is masked by " + mask_ids.length + " objects";
+                                    var maskDOs = [];
                                     for (var cm = 0; cm < mask_ids.length; cm++) {
+                                        maskDOs[cm] = timeLineContainer.getPotentialChild(objectIDMap[mask_ids[cm]]);
+                                        console.log("Used mask ID: ", maskDOs[cm]._iMaskID, objectIDMap[mask_ids[cm]]);
                                         commandString += "\n                obj is masked by " + mask_ids[cm];
                                     }
+                                    frame.addConstructCommand(new UpdatePropertyCommand(instanceID, "_iMasks", maskDOs));
                                 }
                             }
                         }
@@ -45470,6 +45718,8 @@ var MovieClip = (function (_super) {
         clone._fps = this._fps;
         clone._loop = this._loop;
         clone._totalFrames = this._totalFrames;
+        clone._iMaskID = this._iMaskID;
+        clone._iMasks = this._iMasks ? this._iMasks.concat() : null;
         clone.name = this.name;
         if (this.transform.matrix)
             clone.transform.matrix = this.transform.matrix.clone();
@@ -45585,6 +45835,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
 var NodeBase = require("awayjs-display/lib/partition/NodeBase");
+// Warning: contains horrible hacks
 var Partition2DNode = (function (_super) {
     __extends(Partition2DNode, _super);
     function Partition2DNode(root) {
@@ -45592,29 +45843,51 @@ var Partition2DNode = (function (_super) {
         this._root = root;
     }
     Partition2DNode.prototype.acceptTraverser = function (traverser) {
+        this._maskConfigID = 0;
+        this._index = 0;
         if (traverser.enterNode(this)) {
             this.traverseSceneGraph(this._root, traverser);
         }
     };
     // pass any so we can convert to IEntity. Sigh, TypeScript.
-    Partition2DNode.prototype.traverseSceneGraph = function (displayObject, traverser) {
+    Partition2DNode.prototype.traverseSceneGraph = function (displayObject, traverser, maskID, appliedMasks) {
+        if (maskID === void 0) { maskID = -1; }
+        if (appliedMasks === void 0) { appliedMasks = null; }
+        if (displayObject._iMaskID !== -1) {
+            if (maskID !== -1)
+                throw "masks within masker currently not supported";
+            maskID = displayObject._iMaskID;
+        }
+        else {
+            //console.log(displayObject._iMasks);
+            if (displayObject._iMasks) {
+                appliedMasks = appliedMasks ? appliedMasks.concat(displayObject._iMasks) : displayObject._iMasks;
+                // signify that applied masks have changed
+                ++this._maskConfigID;
+            }
+        }
+        displayObject["hierarchicalMaskID"] = maskID;
+        displayObject["hierarchicalMasks"] = appliedMasks;
+        displayObject["maskConfigID"] = this._maskConfigID;
+        // moving back up the tree, mask will change again
+        if (displayObject._iMasks)
+            ++this._maskConfigID;
         // typechecking is nasty, but we have little choice:
         if (displayObject instanceof DisplayObjectContainer)
-            this.traverseChildren(displayObject, traverser);
-        // (typechecking an interface doesn't work, ie "displayObject instanceof IEntity" is impossible)
-        if (displayObject._iCollectRenderables) {
-            var entity = (displayObject);
+            this.traverseChildren(displayObject, traverser, maskID, appliedMasks);
+        if (displayObject.isEntity) {
+            var entity = displayObject;
+            entity.zOffset = ++this._index;
             entity["node2D"].acceptTraverser(traverser);
         }
     };
-    Partition2DNode.prototype.traverseChildren = function (container, traverser) {
+    Partition2DNode.prototype.traverseChildren = function (container, traverser, maskID, appliedMasks) {
         var len = container.numChildren;
         for (var i = 0; i < len; ++i)
-            this.traverseSceneGraph(container.getChildAt(i), traverser);
+            this.traverseSceneGraph(container.getChildAt(i), traverser, maskID, appliedMasks);
     };
     Partition2DNode.prototype.iAddNode = function (node) {
         _super.prototype.iAddNode.call(this, node);
-        // HORRIBLE:
         var entityNode = (node);
         entityNode.entity["node2D"] = node;
     };
@@ -45642,7 +45915,275 @@ var Partition2D = (function (_super) {
 module.exports = Partition2D;
 
 
-},{"awayjs-display/lib/partition/Partition":"awayjs-display/lib/partition/Partition","awayjs-player/lib/partition/Partition2DNode":"awayjs-player/lib/partition/Partition2DNode"}],"awayjs-player/lib/timeline/InterpolationObject":[function(require,module,exports){
+},{"awayjs-display/lib/partition/Partition":"awayjs-display/lib/partition/Partition","awayjs-player/lib/partition/Partition2DNode":"awayjs-player/lib/partition/Partition2DNode"}],"awayjs-player/lib/renderer/Mask":[function(require,module,exports){
+var Mask = (function () {
+    function Mask(stage, renderer) {
+        this._stage = stage;
+        this._renderer = renderer;
+        //this._texture = new RenderTexture(renderer.width, renderer.height);
+    }
+    //public get texture()
+    //{
+    //return this._texture;
+    //}
+    //public dispose()
+    //{
+    //    this._texture.dispose();
+    //}
+    Mask.prototype.registerMask = function (obj) {
+        //console.log("registerMask");
+        this._registeredMasks.push(obj);
+    };
+    Mask.prototype.renderMasks = function (masks) {
+        //var oldRenderTarget = this._stage.renderTarget;
+        //this._stage.setRenderTarget(this._texture);
+        //this._stage.clear();
+        var context = this._stage.context;
+        context.setColorMask(false, false, false, false);
+        // TODO: Could we create masks within masks by providing a previous configID, and supply "clear/keep" on stencil fail
+        //context.setStencilActions("frontAndBack", "always", "set", "set", "set");
+        if (masks) {
+            var numMasks = masks.length;
+            var numRenderables = this._registeredMasks.length;
+            for (var i = 0; i < numMasks; ++i) {
+                var mask = masks[i];
+                for (var j = 0; j < numRenderables; ++j) {
+                    var obj = this._registeredMasks[j];
+                    if (obj.sourceEntity["hierarchicalMaskID"] === mask["hierarchicalMaskID"]) {
+                        //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
+                        this._draw(obj);
+                    }
+                }
+            }
+        }
+        context.setColorMask(true, true, true, true);
+        //this._stage.setRenderTarget(oldRenderTarget);
+    };
+    Mask.prototype.reset = function () {
+        this._registeredMasks = [];
+    };
+    /*    public get width() : number
+        {
+            return this._texture.width;
+        }
+    
+        public set width(value:number)
+        {
+            this._texture.width = value;
+        }
+    
+        public get height() : number
+        {
+            return this._texture.height;
+        }
+    
+        public set height(value:number)
+        {
+            this._texture.height = value;
+        }*/
+    Mask.prototype._draw = function (renderable) {
+        var renderObject = renderable.renderObject;
+        var passes = renderObject.passes;
+        var len = passes.length;
+        var pass = passes[len - 1];
+        var camera = this._renderer._pCamera;
+        this._renderer.activatePass(renderable, pass, camera);
+        // only render last pass for now
+        renderable._iRender(pass, camera, this._renderer._pRttViewProjectionMatrix);
+        this._renderer.deactivatePass(renderable, pass);
+    };
+    return Mask;
+})();
+module.exports = Mask;
+
+
+},{}],"awayjs-player/lib/renderer/RenderableSort2D":[function(require,module,exports){
+/**
+ * @class away.sort.RenderableMergeSort
+ */
+var RenderableMergeSort = (function () {
+    function RenderableMergeSort() {
+    }
+    RenderableMergeSort.prototype.sortBlendedRenderables = function (head) {
+        var headB;
+        var fast;
+        var slow;
+        if (!head || !head.next) {
+            return head;
+        }
+        // split in two sublists
+        slow = head;
+        fast = head.next;
+        while (fast) {
+            fast = fast.next;
+            if (fast) {
+                slow = slow.next;
+                fast = fast.next;
+            }
+        }
+        headB = slow.next;
+        slow.next = null;
+        // recurse
+        head = this.sortBlendedRenderables(head);
+        headB = this.sortBlendedRenderables(headB);
+        // merge sublists while respecting order
+        var result;
+        var curr;
+        var l;
+        if (!head)
+            return headB;
+        if (!headB)
+            return head;
+        while (head && headB) {
+            if (head.zIndex < headB.zIndex) {
+                l = head;
+                head = head.next;
+            }
+            else {
+                l = headB;
+                headB = headB.next;
+            }
+            if (!result)
+                result = l;
+            else
+                curr.next = l;
+            curr = l;
+        }
+        if (head)
+            curr.next = head;
+        else if (headB)
+            curr.next = headB;
+        return result;
+    };
+    RenderableMergeSort.prototype.sortOpaqueRenderables = function (head) {
+        return this.sortBlendedRenderables(head);
+    };
+    return RenderableMergeSort;
+})();
+module.exports = RenderableMergeSort;
+
+
+},{}],"awayjs-player/lib/renderer/Renderer2D":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var Mask = require("awayjs-player/lib/renderer/Mask");
+var RenderableSort2D = require("awayjs-player/lib/renderer/RenderableSort2D");
+var Renderer2D = (function (_super) {
+    __extends(Renderer2D, _super);
+    function Renderer2D(rendererPoolClass, stage) {
+        if (rendererPoolClass === void 0) { rendererPoolClass = null; }
+        if (stage === void 0) { stage = null; }
+        _super.call(this, rendererPoolClass, stage);
+        this.renderableSorter = new RenderableSort2D();
+        this._mask = new Mask(this._pStage, this);
+    }
+    Renderer2D.prototype.drawRenderables = function (renderable, entityCollector) {
+        var i;
+        var len;
+        var renderable2;
+        var renderObject;
+        var passes;
+        var pass;
+        var camera = entityCollector.camera;
+        var maskConfigID = -1;
+        /*// TypeScript does not allow calling super.setters -_-
+        //this._mask.width = this._pRttBufferManager.textureWidth;
+        //this._mask.height = this._pRttBufferManager.textureHeight;*/
+        this._mask.reset();
+        this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+        //console.log("------");
+        var gl = this._pContext["_gl"];
+        var gl = this._pContext["_gl"];
+        gl.disable(gl.STENCIL_TEST);
+        while (renderable) {
+            renderObject = renderable.renderObject;
+            passes = renderObject.passes;
+            if (renderable.sourceEntity["hierarchicalMaskID"] !== -1) {
+                renderable2 = renderable.next;
+                //console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"]);
+                this._mask.registerMask(renderable);
+            }
+            else if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
+                renderable2 = renderable;
+                do {
+                    renderable2 = renderable2.next;
+                } while (renderable2 && renderable2.renderObject == renderObject);
+            }
+            else {
+                var newMaskConfigID = renderable.sourceEntity["maskConfigID"];
+                if (maskConfigID !== newMaskConfigID) {
+                    if (newMaskConfigID === -1) {
+                        // disable stencil
+                        //this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
+                        gl.disable(gl.STENCIL_TEST);
+                        gl.stencilFunc(gl.ALWAYS, 0, 0xff);
+                        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                    }
+                    else {
+                        //console.log("Rendering masks with configID " + newMaskConfigID);
+                        //this._pContext.setStencilReferenceValue(newMaskConfigID);
+                        gl.enable(gl.STENCIL_TEST);
+                        gl.stencilFunc(gl.ALWAYS, newMaskConfigID, 0xff);
+                        gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
+                        this._mask.renderMasks(renderable.sourceEntity["hierarchicalMasks"]);
+                        gl.stencilFunc(gl.EQUAL, newMaskConfigID, 0xff);
+                        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                    }
+                    maskConfigID = newMaskConfigID;
+                }
+                //iterate through each shader object
+                len = passes.length;
+                for (i = 0; i < len; i++) {
+                    renderable2 = renderable;
+                    pass = passes[i];
+                    this.activatePass(renderable, pass, camera);
+                    do {
+                        //console.log("Rendering normal DO " + renderable2);
+                        renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                        renderable2 = renderable2.next;
+                    } while (renderable2 && renderable2.renderObject == renderObject && renderable2.sourceEntity["maskConfigID"] === maskConfigID && renderable2.sourceEntity["hierarchicalMaskID"] === -1);
+                    this.deactivatePass(renderable, pass);
+                }
+            }
+            renderable = renderable2;
+        }
+    };
+    Renderer2D.prototype.applyRenderable = function (renderable) {
+        //set local vars for faster referencing
+        var renderObject = this._pGetRenderObject(renderable, renderable.renderObjectOwner || DefaultMaterialManager.getDefaultMaterial(renderable.renderableOwner));
+        renderable.renderObject = renderObject;
+        renderable.renderObjectId = renderObject.renderObjectId;
+        renderable.renderOrderId = renderObject.renderOrderId;
+        renderable.cascaded = false;
+        var entity = renderable.sourceEntity;
+        renderable.zIndex = entity["hierarchicalMaskID"] === -1 ? entity.zOffset : -entity.zOffset;
+        //store reference to scene transform
+        renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+        if (renderObject.requiresBlending) {
+            renderable.next = this._pBlendedRenderableHead;
+            this._pBlendedRenderableHead = renderable;
+        }
+        else {
+            renderable.next = this._pOpaqueRenderableHead;
+            this._pOpaqueRenderableHead = renderable;
+        }
+        this._pNumTriangles += renderable.numTriangles;
+        //handle any overflow for renderables with data that exceeds GPU limitations
+        if (renderable.overflow)
+            this.applyRenderable(renderable.overflow);
+    };
+    return Renderer2D;
+})(DefaultRenderer);
+module.exports = Renderer2D;
+
+
+},{"awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-player/lib/renderer/Mask":"awayjs-player/lib/renderer/Mask","awayjs-player/lib/renderer/RenderableSort2D":"awayjs-player/lib/renderer/RenderableSort2D","awayjs-renderergl/lib/DefaultRenderer":"awayjs-renderergl/lib/DefaultRenderer"}],"awayjs-player/lib/timeline/InterpolationObject":[function(require,module,exports){
 /**
  * TimeLineObject represents a unique object that is (or will be) used by a TimeLine.
  *  A TimeLineObject basically consists of an objID, and an IAsset.
@@ -57319,7 +57860,69 @@ var Filter3DTaskBase = (function () {
 module.exports = Filter3DTaskBase;
 
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat"}],"awayjs-renderergl/lib/managers/DefaultMaterialManager":[function(require,module,exports){
+var BitmapData = require("awayjs-core/lib/data/BitmapData");
+var AssetType = require("awayjs-core/lib/library/AssetType");
+var BitmapTexture = require("awayjs-core/lib/textures/BitmapTexture");
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+var DefaultMaterialManager = (function () {
+    function DefaultMaterialManager() {
+    }
+    DefaultMaterialManager.getDefaultMaterial = function (renderableOwner) {
+        if (renderableOwner === void 0) { renderableOwner = null; }
+        if (renderableOwner != null && renderableOwner.assetType == AssetType.LINE_SUB_MESH) {
+            if (!DefaultMaterialManager._defaultLineMaterial)
+                DefaultMaterialManager.createDefaultLineMaterial();
+            return DefaultMaterialManager._defaultLineMaterial;
+        }
+        else {
+            if (!DefaultMaterialManager._defaultTriangleMaterial)
+                DefaultMaterialManager.createDefaultTriangleMaterial();
+            return DefaultMaterialManager._defaultTriangleMaterial;
+        }
+    };
+    DefaultMaterialManager.getDefaultTexture = function (renderableOwner) {
+        if (renderableOwner === void 0) { renderableOwner = null; }
+        if (!DefaultMaterialManager._defaultTexture)
+            DefaultMaterialManager.createDefaultTexture();
+        return DefaultMaterialManager._defaultTexture;
+    };
+    DefaultMaterialManager.createDefaultTexture = function () {
+        DefaultMaterialManager._defaultBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
+        DefaultMaterialManager._defaultTexture = new BitmapTexture(DefaultMaterialManager._defaultBitmapData);
+        DefaultMaterialManager._defaultTexture.name = "defaultTexture";
+    };
+    DefaultMaterialManager.createCheckeredBitmapData = function () {
+        var b = new BitmapData(8, 8, false, 0x000000);
+        //create chekerboard
+        var i, j;
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                if ((j & 1) ^ (i & 1)) {
+                    b.setPixel(i, j, 0XFFFFFF);
+                }
+            }
+        }
+        return b;
+    };
+    DefaultMaterialManager.createDefaultTriangleMaterial = function () {
+        if (!DefaultMaterialManager._defaultTexture)
+            DefaultMaterialManager.createDefaultTexture();
+        DefaultMaterialManager._defaultTriangleMaterial = new BasicMaterial(DefaultMaterialManager._defaultTexture);
+        DefaultMaterialManager._defaultTriangleMaterial.mipmap = false;
+        DefaultMaterialManager._defaultTriangleMaterial.smooth = false;
+        DefaultMaterialManager._defaultTriangleMaterial.name = "defaultTriangleMaterial";
+    };
+    DefaultMaterialManager.createDefaultLineMaterial = function () {
+        DefaultMaterialManager._defaultLineMaterial = new BasicMaterial();
+        DefaultMaterialManager._defaultLineMaterial.name = "defaultLineMaterial";
+    };
+    return DefaultMaterialManager;
+})();
+module.exports = DefaultMaterialManager;
+
+
+},{"awayjs-core/lib/data/BitmapData":"awayjs-core/lib/data/BitmapData","awayjs-core/lib/library/AssetType":"awayjs-core/lib/library/AssetType","awayjs-core/lib/textures/BitmapTexture":"awayjs-core/lib/textures/BitmapTexture","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -62046,12 +62649,13 @@ var ContextStage3D = (function () {
     ContextStage3D.prototype.setSamplerStateAt = function (sampler, wrap, filter, mipfilter) {
         //nothing to do here
     };
-    ContextStage3D.prototype.setStencilActions = function (triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail) {
+    ContextStage3D.prototype.setStencilActions = function (triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail, coordinateSystem) {
         if (triangleFace === void 0) { triangleFace = "frontAndBack"; }
         if (compareMode === void 0) { compareMode = "always"; }
         if (actionOnBothPass === void 0) { actionOnBothPass = "keep"; }
         if (actionOnDepthFail === void 0) { actionOnDepthFail = "keep"; }
         if (actionOnDepthPassStencilFail === void 0) { actionOnDepthPassStencilFail = "keep"; }
+        if (coordinateSystem === void 0) { coordinateSystem = "leftHanded"; }
         this.addStream(String.fromCharCode(OpCodes.setStencilActions) + triangleFace + "$" + compareMode + "$" + actionOnBothPass + "$" + actionOnDepthFail + "$" + actionOnDepthPassStencilFail + "$");
         if (ContextStage3D.debug)
             this.execute();
@@ -62276,6 +62880,7 @@ var ContextGLClearMask = require("awayjs-stagegl/lib/base/ContextGLClearMask");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLMipFilter = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
+var ContextGLStencilAction = require("awayjs-stagegl/lib/base/ContextGLStencilAction");
 var ContextGLTextureFilter = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
 var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -62289,7 +62894,8 @@ var VertexBufferWebGL = require("awayjs-stagegl/lib/base/VertexBufferWebGL");
 var ContextWebGL = (function () {
     function ContextWebGL(canvas) {
         this._blendFactorDictionary = new Object();
-        this._depthTestDictionary = new Object();
+        this._compareModeDictionary = new Object();
+        this._stencilActionDictionary = new Object();
         this._textureIndexDictionary = new Array(8);
         this._textureTypeDictionary = new Object();
         this._wrapDictionary = new Object();
@@ -62302,11 +62908,14 @@ var ContextWebGL = (function () {
         this._textureList = new Array();
         this._programList = new Array();
         this._samplerStates = new Array(8);
+        this._stencilReferenceValue = 0;
+        this._stencilReadMask = 0xff;
+        this._separateStencil = false;
         this._container = canvas;
         try {
-            this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false });
+            this._gl = canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha: false, stencil: true });
             if (!this._gl)
-                this._gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false });
+                this._gl = canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false, stencil: true });
         }
         catch (e) {
         }
@@ -62330,14 +62939,22 @@ var ContextWebGL = (function () {
             this._blendFactorDictionary[ContextGLBlendFactor.SOURCE_ALPHA] = this._gl.SRC_ALPHA;
             this._blendFactorDictionary[ContextGLBlendFactor.SOURCE_COLOR] = this._gl.SRC_COLOR;
             this._blendFactorDictionary[ContextGLBlendFactor.ZERO] = this._gl.ZERO;
-            this._depthTestDictionary[ContextGLCompareMode.ALWAYS] = this._gl.ALWAYS;
-            this._depthTestDictionary[ContextGLCompareMode.EQUAL] = this._gl.EQUAL;
-            this._depthTestDictionary[ContextGLCompareMode.GREATER] = this._gl.GREATER;
-            this._depthTestDictionary[ContextGLCompareMode.GREATER_EQUAL] = this._gl.GEQUAL;
-            this._depthTestDictionary[ContextGLCompareMode.LESS] = this._gl.LESS;
-            this._depthTestDictionary[ContextGLCompareMode.LESS_EQUAL] = this._gl.LEQUAL;
-            this._depthTestDictionary[ContextGLCompareMode.NEVER] = this._gl.NEVER;
-            this._depthTestDictionary[ContextGLCompareMode.NOT_EQUAL] = this._gl.NOTEQUAL;
+            this._compareModeDictionary[ContextGLCompareMode.ALWAYS] = this._gl.ALWAYS;
+            this._compareModeDictionary[ContextGLCompareMode.EQUAL] = this._gl.EQUAL;
+            this._compareModeDictionary[ContextGLCompareMode.GREATER] = this._gl.GREATER;
+            this._compareModeDictionary[ContextGLCompareMode.GREATER_EQUAL] = this._gl.GEQUAL;
+            this._compareModeDictionary[ContextGLCompareMode.LESS] = this._gl.LESS;
+            this._compareModeDictionary[ContextGLCompareMode.LESS_EQUAL] = this._gl.LEQUAL;
+            this._compareModeDictionary[ContextGLCompareMode.NEVER] = this._gl.NEVER;
+            this._compareModeDictionary[ContextGLCompareMode.NOT_EQUAL] = this._gl.NOTEQUAL;
+            this._stencilActionDictionary[ContextGLStencilAction.DECREMENT_SATURATE] = this._gl.DECR;
+            this._stencilActionDictionary[ContextGLStencilAction.DECREMENT_WRAP] = this._gl.DECR_WRAP;
+            this._stencilActionDictionary[ContextGLStencilAction.INCREMENT_SATURATE] = this._gl.INCR;
+            this._stencilActionDictionary[ContextGLStencilAction.INCREMENT_WRAP] = this._gl.INCR_WRAP;
+            this._stencilActionDictionary[ContextGLStencilAction.INVERT] = this._gl.INVERT;
+            this._stencilActionDictionary[ContextGLStencilAction.KEEP] = this._gl.KEEP;
+            this._stencilActionDictionary[ContextGLStencilAction.SET] = this._gl.REPLACE;
+            this._stencilActionDictionary[ContextGLStencilAction.ZERO] = this._gl.ZERO;
             this._textureIndexDictionary[0] = this._gl.TEXTURE0;
             this._textureIndexDictionary[1] = this._gl.TEXTURE1;
             this._textureIndexDictionary[2] = this._gl.TEXTURE2;
@@ -62367,6 +62984,9 @@ var ContextWebGL = (function () {
             this._vertexBufferDimensionDictionary[ContextGLVertexBufferFormat.FLOAT_3] = 3;
             this._vertexBufferDimensionDictionary[ContextGLVertexBufferFormat.FLOAT_4] = 4;
             this._vertexBufferDimensionDictionary[ContextGLVertexBufferFormat.BYTES_4] = 4;
+            this._stencilCompareMode = this._gl.ALWAYS;
+            this._stencilCompareModeBack = this._gl.ALWAYS;
+            this._stencilCompareModeFront = this._gl.ALWAYS;
         }
         else {
             //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
@@ -62511,25 +63131,53 @@ var ContextWebGL = (function () {
         }
         else {
             this._gl.enable(this._gl.CULL_FACE);
-            switch (triangleFaceToCull) {
-                case ContextGLTriangleFace.BACK:
-                    this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
-                    break;
-                case ContextGLTriangleFace.FRONT:
-                    this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
-                    break;
-                case ContextGLTriangleFace.FRONT_AND_BACK:
-                    this._gl.cullFace(this._gl.FRONT_AND_BACK);
-                    break;
-                default:
-                    throw "Unknown ContextGLTriangleFace type.";
-            }
+            this._gl.cullFace(this.translateTriangleFace(triangleFaceToCull, coordinateSystem));
         }
     };
     // TODO ContextGLCompareMode
     ContextWebGL.prototype.setDepthTest = function (depthMask, passCompareMode) {
-        this._gl.depthFunc(this._depthTestDictionary[passCompareMode]);
+        this._gl.depthFunc(this._compareModeDictionary[passCompareMode]);
         this._gl.depthMask(depthMask);
+    };
+    ContextWebGL.prototype.setStencilActions = function (triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail, coordinateSystem) {
+        //this._separateStencil = triangleFace != "frontAndBack";
+        if (triangleFace === void 0) { triangleFace = "frontAndBack"; }
+        if (compareMode === void 0) { compareMode = "always"; }
+        if (actionOnBothPass === void 0) { actionOnBothPass = "keep"; }
+        if (actionOnDepthFail === void 0) { actionOnDepthFail = "keep"; }
+        if (actionOnDepthPassStencilFail === void 0) { actionOnDepthPassStencilFail = "keep"; }
+        if (coordinateSystem === void 0) { coordinateSystem = "leftHanded"; }
+        var compareModeGL = this._compareModeDictionary[compareMode];
+        var fail = this._stencilActionDictionary[actionOnDepthPassStencilFail];
+        var zFail = this._stencilActionDictionary[actionOnDepthFail];
+        var pass = this._stencilActionDictionary[actionOnBothPass];
+        //if (!this._separateStencil) {
+        this._stencilCompareMode = compareModeGL;
+        this._gl.stencilFunc(compareModeGL, this._stencilReferenceValue, this._stencilReadMask);
+        this._gl.stencilOp(fail, zFail, pass);
+        /*        }
+                else if (triangleFace == "back") {
+                    this._stencilCompareModeBack = compareModeGL;
+                    this._gl.stencilFuncSeparate(this._gl.BACK, compareModeGL, this._stencilReferenceValue, this._stencilReadMask);
+                    this._gl.stencilOpSeparate(this._gl.BACK, fail, zFail, pass);
+                }
+                else if (triangleFace == "front") {
+                    this._stencilCompareModeFront = compareModeGL;
+                    this._gl.stencilFuncSeparate(this._gl.FRONT, compareModeGL, this._stencilReferenceValue, this._stencilReadMask);
+                    this._gl.stencilOpSeparate(this._gl.FRONT, fail, zFail, pass);
+                }*/
+    };
+    ContextWebGL.prototype.setStencilReferenceValue = function (referenceValue, readMask, writeMask) {
+        this._stencilReferenceValue = referenceValue;
+        this._stencilReadMask = readMask;
+        /*if (this._separateStencil) {
+            this._gl.stencilFuncSeparate(this._gl.FRONT, this._stencilCompareModeFront, referenceValue, readMask);
+            this._gl.stencilFuncSeparate(this._gl.BACK, this._stencilCompareModeBack, referenceValue, readMask);
+        }
+        else {*/
+        this._gl.stencilFunc(this._stencilCompareMode, referenceValue, readMask);
+        //}
+        this._gl.stencilMask(writeMask);
     };
     ContextWebGL.prototype.setProgram = function (program) {
         //TODO decide on construction/reference resposibilities
@@ -62642,6 +63290,21 @@ var ContextWebGL = (function () {
             this._gl.disable(this._gl.BLEND);
         }
     };
+    ContextWebGL.prototype.translateTriangleFace = function (triangleFace, coordinateSystem) {
+        switch (triangleFace) {
+            case ContextGLTriangleFace.BACK:
+                return (coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK;
+                break;
+            case ContextGLTriangleFace.FRONT:
+                return (coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT;
+                break;
+            case ContextGLTriangleFace.FRONT_AND_BACK:
+                return this._gl.FRONT_AND_BACK;
+                break;
+            default:
+                throw "Unknown ContextGLTriangleFace type.";
+        }
+    };
     ContextWebGL.MAX_SAMPLERS = 8;
     ContextWebGL.modulo = 0;
     return ContextWebGL;
@@ -62649,7 +63312,7 @@ var ContextWebGL = (function () {
 module.exports = ContextWebGL;
 
 
-},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/CubeTextureWebGL":"awayjs-stagegl/lib/base/CubeTextureWebGL","awayjs-stagegl/lib/base/IndexBufferWebGL":"awayjs-stagegl/lib/base/IndexBufferWebGL","awayjs-stagegl/lib/base/ProgramWebGL":"awayjs-stagegl/lib/base/ProgramWebGL","awayjs-stagegl/lib/base/SamplerState":"awayjs-stagegl/lib/base/SamplerState","awayjs-stagegl/lib/base/TextureWebGL":"awayjs-stagegl/lib/base/TextureWebGL","awayjs-stagegl/lib/base/VertexBufferWebGL":"awayjs-stagegl/lib/base/VertexBufferWebGL"}],"awayjs-stagegl/lib/base/CubeTextureFlash":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLStencilAction":"awayjs-stagegl/lib/base/ContextGLStencilAction","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/CubeTextureWebGL":"awayjs-stagegl/lib/base/CubeTextureWebGL","awayjs-stagegl/lib/base/IndexBufferWebGL":"awayjs-stagegl/lib/base/IndexBufferWebGL","awayjs-stagegl/lib/base/ProgramWebGL":"awayjs-stagegl/lib/base/ProgramWebGL","awayjs-stagegl/lib/base/SamplerState":"awayjs-stagegl/lib/base/SamplerState","awayjs-stagegl/lib/base/TextureWebGL":"awayjs-stagegl/lib/base/TextureWebGL","awayjs-stagegl/lib/base/VertexBufferWebGL":"awayjs-stagegl/lib/base/VertexBufferWebGL"}],"awayjs-stagegl/lib/base/CubeTextureFlash":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

@@ -73,7 +73,7 @@ var AWD3Viewer = (function () {
     AWD3Viewer.prototype.initEngine = function () {
         //create the view
         this._view = new View(new Renderer2D());
-        this._view.backgroundColor = 0xffffff;
+        //this._view.backgroundColor = 0xffffff;
         //for plugin preview-runtime:
         //this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
         this._stage_width = 550; //parseInt(document.getElementById("awdWidth").innerHTML);
@@ -124,7 +124,8 @@ var AWD3Viewer = (function () {
         //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
         //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
         //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-        loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+        loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
         //loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
     };
     /**

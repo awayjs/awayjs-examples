@@ -67,8 +67,8 @@ import CoordinateSystem				= require("awayjs-core/lib/projections/CoordinateSyst
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import Camera						= require("awayjs-display/lib/entities/Camera");
 
-import TextField						= require("awayjs-display/lib/entities/TextField");
-import TextFormat						= require("awayjs-display/lib/text/TextFormat");
+import TextField					= require("awayjs-display/lib/entities/TextField");
+import TextFormat					= require("awayjs-display/lib/text/TextFormat");
 
 class AWD3Viewer
 {
@@ -177,7 +177,8 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-		loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
 
 	}
