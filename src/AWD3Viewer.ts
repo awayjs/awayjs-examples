@@ -177,8 +177,8 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
-		loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
+		loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
+		//loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
 
 	}
