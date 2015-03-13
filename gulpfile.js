@@ -6,7 +6,6 @@ var source = require('vinyl-source-stream');
 var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
-var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var argv = require('yargs').argv;
 var watchify = require('watchify');
