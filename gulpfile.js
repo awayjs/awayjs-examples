@@ -7,6 +7,7 @@ var transform = require('vinyl-transform');
 var exorcist = require('exorcist');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
 var argv = require('yargs').argv;
 var watchify = require('watchify');
 var package = require('./package.json');
@@ -100,14 +101,16 @@ gulp.task('package-awayjs', function(){
     var awayjsDependencies = [];
     Object.keys(package.dependencies).forEach(function (key) {
         awayjsDependencies.push('./node_modules/' + key + '/build/' + key + ((argv.min)? '.min.js' : '.js'));
-    })
+    });
 
     if (argv.maps)
         return gulp.src(awayjsDependencies)
             .pipe(sourcemaps.init({loadMaps:true}))
             .pipe(concat('awayjs-dist-require.js'))
             .pipe(sourcemaps.write({sourceRoot:'./'}))
-            .pipe(transform(function() { return exorcist('./bin/js/awayjs-dist-require.js.map'); }))
+            .pipe(transform(function() {
+                return exorcist('./bin/js/awayjs-dist-require.js.map');
+            }))
             .pipe(gulp.dest('./bin/js/'));
 
     return gulp.src(awayjsDependencies)
