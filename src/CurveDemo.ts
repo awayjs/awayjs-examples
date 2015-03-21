@@ -136,7 +136,7 @@ class CurveDemo
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
 		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
-		imgLoader.load(new URLRequest("assets/alpha.png"));
+		imgLoader.load(new URLRequest("assets/dots_alpha.png"));
 	}
 
 	/**
