@@ -41,6 +41,8 @@ var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicProjection");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/containers/View");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Billboard = require("awayjs-display/lib/entities/Billboard");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var Loader = require("awayjs-display/lib/containers/Loader");
 var Renderer2D = require("awayjs-player/lib/renderer/Renderer2D");
@@ -63,9 +65,125 @@ var AWD3Viewer = (function () {
      * Global initialise function
      */
     AWD3Viewer.prototype.init = function () {
+        var _this = this;
         this.initEngine();
+        var testSelector = document.createElement('div');
+        testSelector.style.cssFloat = 'none';
+        testSelector.style.position = 'absolute';
+        testSelector.style.bottom = '30px';
+        testSelector.style.width = '600px';
+        testSelector.style.left = '50%';
+        testSelector.style.marginLeft = '-300px';
+        testSelector.style.padding = '20px';
+        testSelector.style.textAlign = 'center';
+        var testSelector2 = document.createElement('div');
+        testSelector2.style.cssFloat = 'none';
+        testSelector2.style.position = 'absolute';
+        testSelector2.style.bottom = '0px';
+        testSelector2.style.width = '600px';
+        testSelector2.style.left = '50%';
+        testSelector2.style.marginLeft = '-300px';
+        testSelector2.style.padding = '20px';
+        testSelector2.style.textAlign = 'center';
+        this.loaded_display_objects = new Array();
+        this.dropDown = document.createElement('select');
+        this.dropDown.name = "selectTestDropDown";
+        this.dropDown.id = "selectTest";
+        this.previousBtn = document.createElement('button');
+        this.previousBtn.innerHTML = '<<';
+        this.previousBtn.id = 'previous';
+        this.nextBtn = document.createElement('button');
+        this.nextBtn.innerHTML = '>>';
+        this.nextBtn.id = 'next';
+        this.playBtn = document.createElement('button');
+        this.playBtn.innerHTML = '||';
+        this.playBtn.id = 'previous';
+        this.stopBtn = document.createElement('button');
+        this.stopBtn.innerHTML = 'stop';
+        this.stopBtn.id = 'previous';
+        testSelector.appendChild(this.previousBtn);
+        testSelector.appendChild(this.dropDown);
+        testSelector.appendChild(this.nextBtn);
+        testSelector2.appendChild(this.playBtn);
+        testSelector2.appendChild(this.stopBtn);
+        document.body.appendChild(testSelector);
+        document.body.appendChild(testSelector2);
+        this.dropDown.onchange = function (e) { return _this.dropDownChange(e); };
+        this.previousBtn.onclick = function () { return _this.nagigateBy(-1); };
+        this.nextBtn.onclick = function () { return _this.nagigateBy(1); };
+        this.playBtn.onclick = function () { return _this.toggle_playback(); };
+        this.stopBtn.onclick = function () { return _this.stop_playback(); };
         this.initObjects();
         this.initListeners();
+    };
+    /*
+     * Dropbox event handler
+     *
+     * @param e
+     */
+    AWD3Viewer.prototype.dropDownChange = function (e) {
+        this.dropDown.options[this.dropDown.selectedIndex].value;
+        this.counter = this.dropDown.selectedIndex;
+        var dataIndex = parseInt(this.dropDown.options[this.dropDown.selectedIndex].value);
+        if (!isNaN(dataIndex)) {
+            this.navigateToSection(this.loaded_display_objects[dataIndex]);
+        }
+    };
+    AWD3Viewer.prototype.stop_playback = function () {
+        this.playBtn.innerHTML = "play";
+        this._rootTimeLine.stop();
+        this._rootTimeLine.currentFrameIndex = 0;
+    };
+    AWD3Viewer.prototype.toggle_playback = function () {
+        if (this.playBtn.innerHTML == "||") {
+            this.playBtn.innerHTML = "play";
+            this._rootTimeLine.stop();
+        }
+        else if (this.playBtn.innerHTML == "play") {
+            this.playBtn.innerHTML = "||";
+            this._rootTimeLine.play();
+        }
+    };
+    AWD3Viewer.prototype.nagigateBy = function (direction) {
+        if (direction === void 0) { direction = 1; }
+        var l = this.loaded_display_objects.length;
+        var nextCounter = this.counter + direction;
+        if (nextCounter < 0) {
+            nextCounter = this.loaded_display_objects.length - 1;
+        }
+        else if (nextCounter > this.loaded_display_objects.length - 1) {
+            nextCounter = 0;
+        }
+        var testData = this.loaded_display_objects[nextCounter];
+        this.navigateToSection(testData);
+        this.dropDown.selectedIndex = nextCounter;
+        this.counter = nextCounter;
+    };
+    AWD3Viewer.prototype.navigateToSection = function (object) {
+        this.playBtn.innerHTML = "||";
+        console.log(object.name);
+        var childcnt = this._view.scene.numChildren;
+        while (childcnt--) {
+            this._view.scene.removeChildAt(childcnt);
+        }
+        this._view.scene.addChild(object);
+        object.visible = true;
+        object.currentFrameIndex = 0;
+        object.play();
+        //todo: bounds object is not set
+        //var bounds = object.getBounds(object);
+        //object.x=-bounds.width/2;
+        //object.y=-bounds.height/2;
+        this._rootTimeLine = object;
+        console.log("added child = ", object.name);
+    };
+    AWD3Viewer.prototype.init_dropDown = function () {
+        for (var c = 0; c < this.loaded_display_objects.length; c++) {
+            var option = new Option(this.loaded_display_objects[c].name, String(c));
+            this.dropDown.add(option);
+        }
+        this.counter = this.loaded_display_objects.length - 1;
+        this.dropDown.selectedIndex = this.loaded_display_objects.length - 1;
     };
     /**
      * Initialise the engine
@@ -77,9 +195,9 @@ var AWD3Viewer = (function () {
         this._stage_width = 550;
         this._stage_height = 400;
         //for plugin preview-runtime:
-        //this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
-        //this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
-        //this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
+        this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
+        this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
+        this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
         this._isperspective = true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
@@ -116,8 +234,8 @@ var AWD3Viewer = (function () {
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
         //for plugin preview-runtime:
-        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
-        loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+        loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
         //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
@@ -150,9 +268,18 @@ var AWD3Viewer = (function () {
      */
     AWD3Viewer.prototype.onAssetComplete = function (event) {
         if (event.asset.isAsset(TextField)) {
+            var one_textfield = event.asset;
         }
-        if (event.asset.isAsset(MovieClip)) {
-            this._rootTimeLine = event.asset;
+        else if (event.asset.isAsset(Mesh)) {
+            var one_mesh = event.asset;
+        }
+        else if (event.asset.isAsset(Billboard)) {
+            var one_billboard = event.asset;
+        }
+        else if (event.asset.isAsset(MovieClip)) {
+            var one_mc = event.asset;
+            this.loaded_display_objects.push(one_mc);
+            this._rootTimeLine = one_mc;
             this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
         }
     };
@@ -166,6 +293,7 @@ var AWD3Viewer = (function () {
             this._rootTimeLine.x = -this._stage_width / 2;
             this._rootTimeLine.y = -this._stage_height / 2;
         }
+        this.init_dropDown();
     };
     /**
      * Render loop
@@ -290,7 +418,7 @@ window.onload = function () {
     new AWD3Viewer();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/display/MovieClip":undefined,"awayjs-player/lib/partition/Partition2D":undefined,"awayjs-player/lib/renderer/Renderer2D":undefined}]},{},["./src/AWD3Viewer.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/display/MovieClip":undefined,"awayjs-player/lib/partition/Partition2D":undefined,"awayjs-player/lib/renderer/Renderer2D":undefined}]},{},["./src/AWD3Viewer.ts"])
 
 
 //# sourceMappingURL=AWD3Viewer.js.map

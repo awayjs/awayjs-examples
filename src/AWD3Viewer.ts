@@ -47,12 +47,14 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Billboard					= require("awayjs-display/lib/entities/Billboard");
 import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import RenderableNullSort			= require("awayjs-display/lib/sort/RenderableNullSort");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 
 import Renderer2D				    = require("awayjs-player/lib/renderer/Renderer2D");
 
@@ -93,7 +95,15 @@ class AWD3Viewer
 	private _camera_perspective: Camera;
 	private _camera_ortho: Camera;
 	private _stage_width: number;
-	private _stage_height: number;
+	private _stage_height: number
+	private dropDown: HTMLSelectElement;
+	private playBtn: HTMLButtonElement;
+	private previousBtn: HTMLButtonElement;
+	private nextBtn: HTMLButtonElement;
+	private stopBtn: HTMLButtonElement;
+
+	private counter: number;
+	private loaded_display_objects: Array<MovieClip>;
 
 	/**
 	 * Constructor
@@ -108,9 +118,150 @@ class AWD3Viewer
 	 */
 	private init(): void
 	{
+
 		this.initEngine();
+		var testSelector : HTMLDivElement   = <HTMLDivElement> document.createElement( 'div' );
+		testSelector.style.cssFloat     = 'none';
+		testSelector.style.position     = 'absolute';
+		testSelector.style.bottom       = '30px';
+		testSelector.style.width        = '600px';
+		testSelector.style.left         = '50%';
+		testSelector.style.marginLeft   = '-300px';
+		testSelector.style.padding    = '20px';
+		testSelector.style.textAlign    = 'center';
+		var testSelector2 : HTMLDivElement   = <HTMLDivElement> document.createElement( 'div' );
+		testSelector2.style.cssFloat     = 'none';
+		testSelector2.style.position     = 'absolute';
+		testSelector2.style.bottom       = '0px';
+		testSelector2.style.width        = '600px';
+		testSelector2.style.left         = '50%';
+		testSelector2.style.marginLeft   = '-300px';
+		testSelector2.style.padding    = '20px';
+		testSelector2.style.textAlign    = 'center';
+
+		this.loaded_display_objects= new Array<MovieClip>();
+
+		this.dropDown                       = <HTMLSelectElement> document.createElement( 'select' );
+		this.dropDown.name                  = "selectTestDropDown"
+		this.dropDown.id                    = "selectTest"
+
+		this.previousBtn                    = <HTMLButtonElement> document.createElement( 'button' );
+		this.previousBtn.innerHTML          = '<<';
+		this.previousBtn.id                 = 'previous';
+
+		this.nextBtn                        = <HTMLButtonElement> document.createElement( 'button' );
+		this.nextBtn.innerHTML              = '>>';
+		this.nextBtn.id                     = 'next';
+
+		this.playBtn                      = <HTMLButtonElement> document.createElement( 'button' );
+		this.playBtn.innerHTML            = '||';
+		this.playBtn.id                   = 'previous';
+
+		this.stopBtn                      = <HTMLButtonElement> document.createElement( 'button' );
+		this.stopBtn.innerHTML            = 'stop';
+		this.stopBtn.id                   = 'previous';
+
+
+		testSelector.appendChild( this.previousBtn );
+		testSelector.appendChild( this.dropDown );
+		testSelector.appendChild( this.nextBtn );
+		testSelector2.appendChild( this.playBtn );
+		testSelector2.appendChild( this.stopBtn );
+		document.body.appendChild( testSelector );
+		document.body.appendChild( testSelector2 );
+		this.dropDown.onchange      = ( e ) => this.dropDownChange( e );
+		this.previousBtn.onclick   = () => this.nagigateBy( -1 );
+		this.nextBtn.onclick       = () => this.nagigateBy( 1 );
+		this.playBtn.onclick       = () => this.toggle_playback( );
+		this.stopBtn.onclick       = () => this.stop_playback( );
 		this.initObjects();
 		this.initListeners();
+
+
+	}
+
+	/*
+	 * Dropbox event handler
+	 *
+	 * @param e
+	 */
+	private dropDownChange( e ) : void {
+		this.dropDown.options[this.dropDown.selectedIndex].value
+		this.counter = this.dropDown.selectedIndex;
+		var dataIndex:number = parseInt(this.dropDown.options[this.dropDown.selectedIndex].value);
+
+		if (!isNaN(dataIndex)) {
+			this.navigateToSection(this.loaded_display_objects[dataIndex]);
+		}
+	}
+	private stop_playback() : void {
+		this.playBtn.innerHTML="play";
+		this._rootTimeLine.stop();
+		this._rootTimeLine.currentFrameIndex=0;
+	}
+	private toggle_playback() : void {
+		if(this.playBtn.innerHTML=="||"){
+			this.playBtn.innerHTML="play";
+			this._rootTimeLine.stop();
+		}
+		else if(this.playBtn.innerHTML=="play"){
+			this.playBtn.innerHTML="||";
+			this._rootTimeLine.play();
+		}
+	}
+	private nagigateBy( direction : number = 1 ) : void
+	{
+
+		var l : number  = this.loaded_display_objects.length;
+		var nextCounter = this.counter + direction;
+
+		if ( nextCounter < 0 )
+		{
+			nextCounter = this.loaded_display_objects.length - 1;
+		}
+		else if ( nextCounter > this.loaded_display_objects.length - 1 )
+		{
+			nextCounter = 0;
+		}
+
+		var testData : MovieClip = this.loaded_display_objects[nextCounter];
+
+		this.navigateToSection( testData );
+		this.dropDown.selectedIndex = nextCounter;
+		this.counter = nextCounter;
+
+
+	}
+	private navigateToSection(object:MovieClip): void
+	{
+		this.playBtn.innerHTML="||";
+		console.log(object.name);
+		var childcnt=this._view.scene.numChildren;
+		while(childcnt--){
+			this._view.scene.removeChildAt(childcnt);
+		}
+		this._view.scene.addChild(object);
+		object.visible=true;
+		object.currentFrameIndex=0;
+		object.play();
+		//todo: bounds object is not set
+		//var bounds = object.getBounds(object);
+		//object.x=-bounds.width/2;
+		//object.y=-bounds.height/2;
+		this._rootTimeLine=object;
+		console.log("added child = ", object.name)
+
+	}
+	private init_dropDown(): void {
+
+		for ( var c : number = 0 ; c < this.loaded_display_objects.length ; c ++  )
+		{
+			var option : HTMLOptionElement = <HTMLOptionElement> new Option(this.loaded_display_objects[c].name, String( c ) );
+			this.dropDown.add( option );
+		}
+		this.counter=this.loaded_display_objects.length-1;
+		this.dropDown.selectedIndex=this.loaded_display_objects.length-1;
+
 	}
 
 	/**
@@ -126,9 +277,9 @@ class AWD3Viewer
 
 		//for plugin preview-runtime:
 
-		//this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
-		//this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
-		//this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
+		this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
+		this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
+		this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
 
 		this._isperspective=true;
 		this._projection = new PerspectiveProjection();
@@ -169,9 +320,9 @@ class AWD3Viewer
 		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
 
 		//for plugin preview-runtime:
-		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+		loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
@@ -211,14 +362,24 @@ class AWD3Viewer
 	private onAssetComplete(event: AssetEvent): void
 	{
 
-		if(event.asset.isAsset(TextField)) {
-			//var one_textfield:TextField=<TextField> event.asset;
+		if(event.asset.isAsset(TextField)){
+			var one_textfield:TextField=<TextField> event.asset;
+			//this.loaded_display_objects.push(one_textfield);
 			//console.log("orginal textfield_text = "+one_textfield.text);
 			//one_textfield.text="new text";
 		}
-
-		if(event.asset.isAsset(MovieClip)) {
-			this._rootTimeLine = <MovieClip> event.asset;
+		else if(event.asset.isAsset(Mesh)) {
+			var one_mesh:Mesh = <Mesh> event.asset;
+			//this.loaded_display_objects.push(one_mesh);
+		}
+		else if(event.asset.isAsset(Billboard)) {
+			var one_billboard:Billboard = <Billboard> event.asset;
+			//this.loaded_display_objects.push(one_billboard);
+		}
+		else if(event.asset.isAsset(MovieClip)) {
+			var one_mc:MovieClip = <MovieClip> event.asset;
+			this.loaded_display_objects.push(one_mc);
+			this._rootTimeLine = one_mc;
 			this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
 		}
 	}
@@ -235,6 +396,7 @@ class AWD3Viewer
 			// autoplay like in Flash
 			//this._rootTimeLine.play();
 		}
+		this.init_dropDown();
 	}
 
 	/**
@@ -372,4 +534,5 @@ class AWD3Viewer
 
 window.onload = function () {
 	new AWD3Viewer();
+
 };

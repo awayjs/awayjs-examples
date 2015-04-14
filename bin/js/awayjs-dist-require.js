@@ -21753,10 +21753,10 @@ var Billboard = (function (_super) {
         this._pIsEntity = true;
         this.onSizeChangedDelegate = function (event) { return _this.onSizeChanged(event); };
         this.material = material;
-        this._billboardWidth = material.width;
         this._billboardHeight = material.height;
         //default bounds type
         this._boundsType = BoundsType.AXIS_ALIGNED_BOX;
+        this._billboardWidth = material.width;
     }
     Object.defineProperty(Billboard.prototype, "animator", {
         /**
@@ -21841,6 +21841,10 @@ var Billboard = (function (_super) {
         _super.prototype._pUpdateBoxBounds.call(this);
         this._pBoxBounds.width = this._billboardWidth;
         this._pBoxBounds.height = this._billboardHeight;
+    };
+    Billboard.prototype.clone = function () {
+        var clone = new Billboard(this.material);
+        return clone;
     };
     /**
      * //TODO
