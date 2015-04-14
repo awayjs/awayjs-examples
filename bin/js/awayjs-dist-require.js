@@ -22775,7 +22775,13 @@ var Mesh = (function (_super) {
      * </code>
      */
     Mesh.prototype.clone = function () {
-        var clone = new Mesh(this._geometry, this._material);
+        var clone = new Mesh(null, null);
+        this._iCopyToMesh(clone);
+        return clone;
+    };
+    Mesh.prototype._iCopyToMesh = function (clone) {
+        clone.geometry = this._geometry;
+        clone.material = this._material;
         clone._iMatrix3D = this._iMatrix3D;
         clone.pivot = this.pivot;
         clone.partition = this.partition;
@@ -22801,7 +22807,6 @@ var Mesh = (function (_super) {
         }
         if (this._animator)
             clone.animator = this._animator.clone();
-        return clone;
     };
     /**
      * //TODO
@@ -23739,7 +23744,7 @@ var TextField = (function (_super) {
                     tri_idx_offset += tri_cnt;
                     for (v = 0; v < positions2.length / 3; v++) {
                         positions.push((positions2[v * 3] * char_scale) + x_offset);
-                        positions.push((positions2[v * 3 + 1] * char_scale * -1) + y_offset);
+                        positions.push((positions2[v * 3 + 1] * char_scale) + y_offset);
                         positions.push(positions2[v * 3 + 2]);
                         curveData.push(curveData2[v * 2]);
                         curveData.push(curveData2[v * 2 + 1]);
@@ -24099,6 +24104,17 @@ var TextField = (function (_super) {
      */
     TextField.isFontCompatible = function (fontName, fontStyle) {
         return false;
+    };
+    TextField.prototype.clone = function () {
+        var clone = new TextField();
+        this._iCopyToTextField(clone);
+        return clone;
+    };
+    TextField.prototype._iCopyToTextField = function (clone) {
+        this._iCopyToMesh(clone);
+        clone.textFormat = clone.textFormat;
+        clone.textColor = clone.textColor;
+        clone.text = clone.text;
     };
     TextField.assetType = "[asset TextField]";
     return TextField;
@@ -49085,6 +49101,7 @@ var CurveSubMeshRenderable = (function (_super) {
             code.push("mul", d, d, fixb, nl);
             code.push("add", d, d, d2, nl);
             code.push("abs", d, d, nl);
+            code.push("min", d, d, _1, nl);
             code.push("mov", out + ".w", d, nl);
         }
         return code.join(" ");
@@ -57858,9 +57875,13 @@ var AS2SymbolAdapter = (function () {
             AS2SymbolAdapter.REFERENCE_TIME = new Date().getMilliseconds();
         if (!AS2SymbolAdapter.CLASS_REPLACEMENTS) {
             AS2SymbolAdapter.CLASS_REPLACEMENTS = {};
-            AS2SymbolAdapter.CLASS_REPLACEMENTS["Color"] = "AS2ColorAdapter";
+            AS2SymbolAdapter.CLASS_REPLACEMENTS["Color"] = "awayjs-player/lib/adapters/AS2ColorAdapter";
+            AS2SymbolAdapter.CLASS_REPLACEMENTS["System"] = "awayjs-player/lib/adapters/AS2SystemAdapter";
         }
     }
+    AS2SymbolAdapter.prototype.getVersion = function () {
+        return 0;
+    };
     Object.defineProperty(AS2SymbolAdapter.prototype, "adaptee", {
         get: function () {
             return this._adaptee;
@@ -57954,7 +57975,7 @@ var AS2SymbolAdapter = (function () {
         configurable: true
     });
     AS2SymbolAdapter.prototype.trace = function () {
-        console.log.apply(this, arguments);
+        //console.log.apply(window, arguments);
     };
     // may need proper high-def timer mechanism
     AS2SymbolAdapter.prototype.getTimer = function () {
@@ -57973,6 +57994,28 @@ var AS2SymbolAdapter = (function () {
     Object.defineProperty(AS2SymbolAdapter.prototype, "_url", {
         get: function () {
             return document.URL;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_global", {
+        get: function () {
+            return null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_level0", {
+        get: function () {
+            return this._root;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_level10301", {
+        // temporary:
+        get: function () {
+            return this._root;
         },
         enumerable: true,
         configurable: true
@@ -58007,9 +58050,79 @@ var AS2SymbolAdapter = (function () {
 })();
 module.exports = AS2SymbolAdapter;
 
-},{}],"awayjs-player/lib/adapters/MovieClipAdapter":[function(require,module,exports){
+},{}],"awayjs-player/lib/adapters/AS2SystemAdapter":[function(require,module,exports){
+// also contains global AS2 functions
+var AS2SystemAdapter = (function () {
+    function AS2SystemAdapter() {
+    }
+    AS2SystemAdapter.security = null;
+    AS2SystemAdapter.capabilities = { version: 6 };
+    return AS2SystemAdapter;
+})();
+module.exports = AS2SystemAdapter;
 
-},{}],"awayjs-player/lib/display/MovieClip":[function(require,module,exports){
+},{}],"awayjs-player/lib/adapters/AS2TextFieldAdapter":[function(require,module,exports){
+var AdaptedTextField = require("awayjs-player/lib/display/AdaptedTextField");
+var AS2TextFieldAdapter = (function () {
+    function AS2TextFieldAdapter(adaptee) {
+        // create an empty text field if none is passed
+        this._adaptee = adaptee || new AdaptedTextField();
+    }
+    Object.defineProperty(AS2TextFieldAdapter.prototype, "adaptee", {
+        get: function () {
+            return this._adaptee;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2TextFieldAdapter.prototype.clone = function (newAdaptee) {
+        return new AS2TextFieldAdapter(newAdaptee);
+    };
+    return AS2TextFieldAdapter;
+})();
+module.exports = AS2TextFieldAdapter;
+
+},{"awayjs-player/lib/display/AdaptedTextField":"awayjs-player/lib/display/AdaptedTextField"}],"awayjs-player/lib/adapters/MovieClipAdapter":[function(require,module,exports){
+
+},{}],"awayjs-player/lib/adapters/TextFieldAdapter":[function(require,module,exports){
+
+},{}],"awayjs-player/lib/display/AdaptedTextField":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var TextField = require("awayjs-display/lib/entities/TextField");
+var AdaptedTextField = (function (_super) {
+    __extends(AdaptedTextField, _super);
+    function AdaptedTextField() {
+        _super.call(this);
+    }
+    Object.defineProperty(AdaptedTextField.prototype, "adapter", {
+        // adapter is used to provide MovieClip to scripts taken from different platforms
+        // TODO: Perhaps adapters should be created dynamically whenever needed, rather than storing them
+        get: function () {
+            return this._adapter;
+        },
+        // setter typically managed by factor
+        set: function (value) {
+            this._adapter = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AdaptedTextField.prototype.clone = function () {
+        var clone = new AdaptedTextField();
+        this._iCopyToTextField(clone);
+        clone.adapter = this.adapter.clone(clone);
+        return clone;
+    };
+    return AdaptedTextField;
+})(TextField);
+module.exports = AdaptedTextField;
+
+},{"awayjs-display/lib/entities/TextField":undefined}],"awayjs-player/lib/display/MovieClip":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -58137,7 +58250,7 @@ var MovieClip = (function (_super) {
      * should be called right before the call to away3d-render.
      */
     MovieClip.prototype.update = function (timeDelta) {
-        //this.logHierarchy();
+        this.logHierarchy();
         // TODO: Implement proper elastic racetrack logic
         var frameMarker = 1000 / this._fps;
         // right now, just advance frame once time marker has been reached
@@ -58278,7 +58391,7 @@ var MovieClip = (function (_super) {
         for (var i = 0; i < depth; ++i)
             str += "--";
         str += " " + target.name;
-        console.log(str);
+       // console.log(str);
     };
     MovieClip.assetType = "[asset MovieClip]";
     return MovieClip;
@@ -58308,7 +58421,9 @@ module.exports = MovieClipEvent;
 
 },{"awayjs-core/lib/events/Event":undefined}],"awayjs-player/lib/factories/AS2SceneGraphFactory":[function(require,module,exports){
 var AS2MovieClipAdapter = require("awayjs-player/lib/adapters/AS2MovieClipAdapter");
+var AS2TextFieldAdapter = require("awayjs-player/lib/adapters/AS2TextFieldAdapter");
 var MovieClip = require("awayjs-player/lib/display/MovieClip");
+var AdaptedTextField = require("awayjs-player/lib/display/AdaptedTextField");
 var AS2SceneGraphFactory = (function () {
     function AS2SceneGraphFactory() {
     }
@@ -58317,11 +58432,16 @@ var AS2SceneGraphFactory = (function () {
         mc.adapter = new AS2MovieClipAdapter(mc);
         return mc;
     };
+    AS2SceneGraphFactory.prototype.createTextField = function () {
+        var tf = new AdaptedTextField();
+        tf.adapter = new AS2TextFieldAdapter(tf);
+        return tf;
+    };
     return AS2SceneGraphFactory;
 })();
 module.exports = AS2SceneGraphFactory;
 
-},{"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/display/MovieClip":"awayjs-player/lib/display/MovieClip"}],"awayjs-player/lib/factories/TimelineSceneGraphFactory":[function(require,module,exports){
+},{"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter","awayjs-player/lib/display/AdaptedTextField":"awayjs-player/lib/display/AdaptedTextField","awayjs-player/lib/display/MovieClip":"awayjs-player/lib/display/MovieClip"}],"awayjs-player/lib/factories/TimelineSceneGraphFactory":[function(require,module,exports){
 
 },{}],"awayjs-player/lib/partition/Partition2DNode":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
@@ -58350,6 +58470,7 @@ var Partition2DNode = (function (_super) {
     Partition2DNode.prototype.traverseSceneGraph = function (displayObject, traverser, maskID, appliedMasks) {
         if (maskID === void 0) { maskID = -1; }
         if (appliedMasks === void 0) { appliedMasks = null; }
+        //console.log(displayObject.name);
         if (displayObject._iMaskID !== -1) {
             if (maskID !== -1)
                 throw "masks within masker currently not supported";
@@ -58444,6 +58565,7 @@ var Mask = (function () {
                 var mask = masks[i];
                 for (var j = 0; j < numRenderables; ++j) {
                     var obj = this._registeredMasks[j];
+                    //console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
                     if (obj.sourceEntity["hierarchicalMaskID"] === mask["hierarchicalMaskID"]) {
                         //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
                         this._draw(obj);
@@ -58592,14 +58714,13 @@ var Renderer2D = (function (_super) {
         this._pContext.setStencilActions("frontAndBack", "always", "keep", "keep", "keep");
         //console.log("------");
         var gl = this._pContext["_gl"];
-        var gl = this._pContext["_gl"];
         gl.disable(gl.STENCIL_TEST);
         while (renderable) {
             renderObject = renderable.renderObject;
             passes = renderObject.passes;
             if (renderable.sourceEntity["hierarchicalMaskID"] !== -1) {
                 renderable2 = renderable.next;
-                //console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"]);
+                //console.log("Registering mask: " + renderable.sourceEntity["hierarchicalMaskID"], renderable.sourceEntity.name);
                 this._mask.registerMask(renderable);
             }
             else if (this._disableColor && renderObject._renderObjectOwner.alphaThreshold != 0) {
@@ -58855,24 +58976,64 @@ var ExecuteScriptCommand = (function () {
         var caller = sourceMovieClip.adapter ? sourceMovieClip.adapter : sourceMovieClip;
         this._translatedScript.call(caller);
     };
+    ExecuteScriptCommand.prototype.regexIndexOf = function (str, regex, startpos) {
+        var indexOf = str.substring(startpos || 0).search(regex);
+        return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
+    };
     // TODO: handle this in the exporter so it's safe!
     ExecuteScriptCommand.prototype.translateScript = function (classReplacements) {
         var replaced = this._script.replace(/(\\n|\r)/g, "");
         var replacementPreface = "";
         var replacementPostface = "";
         // where "this" is a single word
-        replaced = replaced.replace(/\wthis\./g, "___scoped_this___.");
+        replaced = replaced.replace(/\bthis\./, "___scoped_this___.");
         for (var srcName in classReplacements) {
             var dstName = classReplacements[srcName];
             // where class name is a single word
-            var regex = "\b" + srcName + "\b";
-            replaced = replaced.replace(new RegExp(regex, "g"), dstName);
+            //var regex = "\b" + srcName + "\b";
+            //replaced = replaced.replace(new RegExp(regex, "g"), dstName);
             // store old references to stuff in a temporary var to be reset after script execution;
-            replacementPreface += "var __OLD_" + srcName + " = " + srcName + ";\n";
+            // make sure a definition exists, even if it's undefined
+            replacementPreface += "var __OLD_" + srcName + " = typeof " + srcName + " == 'function'? " + srcName + " : undefined;\n";
+            replacementPreface += srcName + " = require(\"" + dstName + "\");\n";
             replacementPostface += srcName + " = __OLD_" + srcName + ";\n";
+        }
+        var functions = [];
+        var index = -1;
+        var functionRegEx = /\bfunction\s+[A-Za-z_][A-Za-z0-9_]*/g;
+        do {
+            // find a function definition, and pray we can replace global scope
+            index = this.regexIndexOf(replaced, functionRegEx, index >= 0 ? index : 0);
+            if (index >= 0) {
+                functions.push(replaced.substring(index + 9, replaced.indexOf("(", index)));
+                var insertIndex = replaced.indexOf("{", index) + 1;
+                replaced = replaced.slice(0, insertIndex) + "\nwith (___scoped_this___) {\n" + replaced.slice(insertIndex);
+                insertIndex += 27;
+                // insert a closing bracket before the closing bracket of the function (and not one that belongs to another index
+                var closingFound = 0;
+                var openingFound = 1; // count the opening bracket for the function
+                var len = replaced.length;
+                while (insertIndex < len) {
+                    var char = replaced.charAt(insertIndex);
+                    if (char === "{")
+                        ++openingFound;
+                    else if (char === "}")
+                        ++closingFound;
+                    // matching closing found
+                    if (closingFound === openingFound)
+                        break;
+                    ++insertIndex;
+                }
+                replaced = replaced.slice(0, insertIndex) + "\n}\n" + replaced.slice(insertIndex);
+                index = insertIndex + 3;
+            }
+        } while (index !== -1);
+        for (var i = 0; i < functions.length; ++i) {
+            replacementPostface += "___scoped_this___." + functions[i] + " = " + functions[i] + ";\n";
         }
         // make sure we don't use "this", since Actionscript's "this" has the same scope rules as a variable
         var str = replacementPreface + "var ___scoped_this___ = this;" + "with(___scoped_this___) { \n" + replaced + "}\n" + replacementPostface;
+        console.log(str);
         this._translatedScript = new Function(str);
     };
     return ExecuteScriptCommand;
@@ -58923,11 +59084,31 @@ var SetInstanceNameCommand = (function () {
     }
     SetInstanceNameCommand.prototype.execute = function (sourceMovieClip, time) {
         var target = sourceMovieClip.getPotentialChild(this._targetID);
+        sourceMovieClip[this._name] = target;
         target.name = this._name;
     };
     return SetInstanceNameCommand;
 })();
 module.exports = SetInstanceNameCommand;
+
+},{}],"awayjs-player/lib/timeline/commands/SetMaskCommand":[function(require,module,exports){
+var SetMaskCommand = (function () {
+    // target can be MovieClip, its ColorTransform, and so on
+    function SetMaskCommand(targetID, maskIDs) {
+        this._targetID = targetID;
+        this._maskIDs = maskIDs;
+    }
+    SetMaskCommand.prototype.execute = function (sourceMovieClip, time) {
+        var len = this._maskIDs.length;
+        var masks = new Array();
+        for (var i = 0; i < len; ++i) {
+            masks[i] = sourceMovieClip.getPotentialChild(this._maskIDs[i]);
+        }
+        sourceMovieClip.getPotentialChild(this._targetID)._iMasks = masks;
+    };
+    return SetMaskCommand;
+})();
+module.exports = SetMaskCommand;
 
 },{}],"awayjs-player/lib/timeline/commands/UpdatePropertyCommand":[function(require,module,exports){
 var UpdatePropertyCommand = (function () {
@@ -59048,6 +59229,7 @@ var ExecuteScriptCommand = require("awayjs-player/lib/timeline/commands/ExecuteS
 var RemoveChildrenAtDepthCommand = require("awayjs-player/lib/timeline/commands/RemoveChildrenAtDepthCommand");
 var SetInstanceNameCommand = require("awayjs-player/lib/timeline/commands/SetInstanceNameCommand");
 var UpdatePropertyCommand = require("awayjs-player/lib/timeline/commands/UpdatePropertyCommand");
+var SetMaskCommand = require("awayjs-player/lib/timeline/commands/SetMaskCommand");
 var Font = require("awayjs-display/lib/text/Font");
 var TextFormat = require("awayjs-display/lib/text/TextFormat");
 /**
@@ -59063,7 +59245,7 @@ var AWDParser = (function (_super) {
     function AWDParser() {
         _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
         //set to "true" to have some console.logs in the Console
-        this._debug = true;
+        this._debug = false;
         this._startedParsing = false;
         this._texture_users = {};
         this._parsed_header = false;
@@ -59350,7 +59532,7 @@ var AWDParser = (function (_super) {
                     isParsed = true;
                     break;
                 case 134:
-                    this.paresTextField(this._cur_block_id);
+                    this.paresTextField(this._cur_block_id, factory);
                     isParsed = true;
                     break;
                 case 135:
@@ -59558,7 +59740,6 @@ var AWDParser = (function (_super) {
                 curve_sub_geom.updateUVs(uvs);
                 new_font_style.set_subgeo_for_char(font_style_char.toString(), curve_sub_geom);
             }
-            console.log("Parsed a font-table");
         }
         //console.log("Parsed a font");
         this.parseProperties(null);
@@ -59613,18 +59794,12 @@ var AWDParser = (function (_super) {
             uv_values.push(uv_value);
         }
         newTextFormat.uv_values = uv_values;
-        var format_props = this.parseProperties({ 1: AWDParser.UINT16, 2: AWDParser.UINT16, 3: AWDParser.UINT8, 4: AWDParser.UINT8, 5: AWDParser.UINT8, 6: AWDParser.UINT8, 7: AWDParser.UINT16, 8: AWDParser.UINT16, 9: AWDParser.UINT16, 10: AWDParser.UINT16 });
-        // todo: add missing properties on textformat
+        var format_props = this.parseProperties({ 1: AWDParser.UINT16, 2: AWDParser.UINT16, 3: AWDParser.UINT8, 4: AWDParser.UINT8, 5: AWDParser.UINT8 });
         newTextFormat.size = format_props.get(1, 12);
         newTextFormat.letterSpacing = format_props.get(2, 0);
-        //newTextFormat.rotated = format_props.get(3, false);
+        //newTextFormat.rotated = format_props.get(3,false);
         newTextFormat.kerning = format_props.get(4, true);
-        //newTextFormat.baseline_shift = format_props.get(5, 1);
-        newTextFormat.align = format_props.get(6, 0);
-        newTextFormat.indent = format_props.get(7, 0);
-        newTextFormat.leftMargin = format_props.get(8, 0);
-        newTextFormat.rightMargin = format_props.get(9, 0);
-        //newTextFormat.line_spacing = format_props.get(10, 0);
+        //newTextFormat.baseline_shift = format_props.get(5,1);
         newTextFormat.material = mat;
         this.parseUserAttributes(); // textformat has no extra-properties
         //newTextFormat.extra =
@@ -59634,18 +59809,14 @@ var AWDParser = (function (_super) {
             console.log("Parsed a TextFormat: Name = '" + name + " font: " + font.name);
         }
     };
-    AWDParser.prototype.paresTextField = function (blockID) {
+    AWDParser.prototype.paresTextField = function (blockID, factory) {
         var name = this.parseVarStr();
         this._blocks[blockID].name = name;
         //console.log("name  '" + name);
-        var newTextField = new TextField();
+        var newTextField = factory.createTextField();
+        newTextField.width = this._newBlockBytes.readFloat();
+        newTextField.height = this._newBlockBytes.readFloat();
         var num_paragraphs = this._newBlockBytes.readUnsignedInt();
-        /*
-        var minX:number = this._newBlockBytes.readFloat();
-        var minY:number = this._newBlockBytes.readFloat();
-        var maxX:number = this._newBlockBytes.readFloat();
-        var maxY:number = this._newBlockBytes.readFloat();
-*/
         var complete_text = "";
         //console.log("num_paragraphs  '" + num_paragraphs);
         var text_format;
@@ -59675,18 +59846,8 @@ var AWDParser = (function (_super) {
         newTextField.textFormat = text_format;
         newTextField.text = complete_text;
         //newTextField.construct_geometry();
-        var textfield_props = this.parseProperties({ 1: AWDParser.UINT8, 2: AWDParser.UINT8, 3: AWDParser.UINT8, 4: AWDParser.UINT8, 5: AWDParser.UINT8, 6: AWDParser.UINT8, 7: AWDParser.UINT8, 8: AWDParser.UINT8, 9: AWDParser.UINT8 });
-        this.parseProperties(textfield_props);
-        // todo: add missing properties on textfield
-        newTextField.selectable = textfield_props.get(1, false);
-        //newTextField.inputTextfield = textfield_props.get(2, false);
-        newTextField.border = textfield_props.get(3, false);
-        //newTextField.renderHTML = textfield_props.get(4, false);
-        //newTextField.scrollable = textfield_props.get(5, false);
-        newTextField.displayAsPassword = textfield_props.get(6, false);
-        //newTextField.textflow = textfield_props.get(7, 0);
-        newTextField.orientationMode = textfield_props.get(8, 0);
-        newTextField.multiline = textfield_props.get(9, 0);
+        // todo: optional matrix etc can be put in properties.
+        this.parseProperties(null);
         newTextField.extra = this.parseUserAttributes();
         //console.log("Parsed a TextField: Name = '" + name + "| text  = " + complete_text);
         this._pFinalizeAsset(newTextField, name);
@@ -59859,7 +60020,7 @@ var AWDParser = (function (_super) {
                 }
             }
         }
-        console.log("Parsed " + num_potential_childs + " potential childs. They will be used by " + num_all_display_instances + " instances.");
+        //console.log("Parsed "+num_potential_childs+" potential childs. They will be used by "+num_all_display_instances+" instances.");
         // register list of potential sounds
         // a potential child can be reused on a timeline (added / removed / added)
         var num_potential_sounds = this._newBlockBytes.readUnsignedShort();
@@ -59873,41 +60034,43 @@ var AWDParser = (function (_super) {
             else {
             }
         }
-        console.log("Parsed " + num_potential_sounds + " potential sounds");
+        //console.log("Parsed "+num_potential_sounds+" potential sounds");
         var numFrames = this._newBlockBytes.readUnsignedShort();
         //console.log("numFrames "+numFrames);
         // var previousTimeLine:TimeLineFrame;
         // var fill_props:AWDProperties = this.parseProperties({1:AWDParser.UINT32});// { 1:UINT32, 6:AWDSTRING }  ); //; , 2:UINT32, 3:UINT32, 5:BOOL } );
-        var totalDuration = 0;
+        var totalDuration;
+        var frameDuration;
+        var numLabels;
+        var numCommands;
+        var objectID;
+        var target_depth;
+        var resourceID;
+        var number_of_obj;
+        var commandType;
+        var frame;
+        var label;
+        var hasDepthChanges;
+        totalDuration = 0;
         for (i = 0; i < numFrames; i++) {
-            var frame = new TimelineKeyFrame();
-            var traceString = "frame = " + i;
-            // TODO: remove the ms_per_frame to set the duration in frames
-            var frameDuration = this._newBlockBytes.readUnsignedInt() * ms_per_frame;
-            //console.log("frameDuration "+frameDuration);
+            frame = new TimelineKeyFrame();
+            // todo: remove the ms_per_frame to set the duration in frames
+            frameDuration = this._newBlockBytes.readUnsignedInt() * ms_per_frame;
             frame.setFrameTime(totalDuration, frameDuration);
             totalDuration += frameDuration;
             //console.log("duration = " + frameDuration);
-            //traceString += "duration = " + frameDuration;
-            var numLabels = this._newBlockBytes.readUnsignedByte();
+            numLabels = this._newBlockBytes.readUnsignedByte();
             for (j = 0; j < numLabels; j++) {
-                //var labelType = this._newBlockBytes.readUnsignedByte();
-                var label = this.parseVarStr();
+                label = this.parseVarStr();
             }
-            var numCommands = this._newBlockBytes.readUnsignedShort();
+            numCommands = this._newBlockBytes.readUnsignedShort();
             //console.log("numCommands "+numCommands);
             //traceString += "\n      Commands " + numCommands;
-            var hasDepthChanges = false;
-            var commandString = "";
+            hasDepthChanges = false;
             for (j = 0; j < numCommands; j++) {
-                var objectID;
-                var target_depth;
-                var resourceID;
-                var number_of_obj = 0;
-                var commandType = this._newBlockBytes.readUnsignedByte();
+                commandType = this._newBlockBytes.readUnsignedByte();
                 switch (commandType) {
                     case 1:
-                        //console.log("remove_obj ");
                         number_of_obj = this._newBlockBytes.readUnsignedShort();
                         //console.log("number_of_obj ", number_of_obj);
                         var remove_depths = new Array();
@@ -59920,98 +60083,91 @@ var AWDParser = (function (_super) {
                         break;
                     case 2:
                     case 3:
-                        //console.log("add / remove obj ");
                         objectID = this._newBlockBytes.readUnsignedShort();
-                        //console.log("objectID ", objectID);
+                        //console.log("add / update objectID ", objectID);
                         if (commandType == 2) {
                             hasDepthChanges = true;
                             target_depth = this._newBlockBytes.readShort();
-                            var instanceName = this.parseVarStr();
                             //console.log("target_depth ", target_depth);
-                            if (timeLineContainer.getPotentialChild(objectID) != undefined) {
+                            var potChild = timeLineContainer.getPotentialChild(objectID);
+                            if (potChild != undefined) {
                                 frame.addConstructCommand(new AddChildAtDepthCommand(objectID, target_depth));
-                                // this commands looks for a object by awd-id and puts it into the timeline
-                                if (instanceName.length) {
-                                    frame.addConstructCommand(new SetInstanceNameCommand(objectID, instanceName));
+                                // if the object is a tetfield, we set the textfield-name as instancename
+                                if (potChild.isAsset(TextField)) {
+                                    frame.addConstructCommand(new SetInstanceNameCommand(objectID, potChild.name));
                                 }
                             }
                             else {
                                 console.log("ERROR: could not find the objectID ", objectID);
                             }
                         }
-                        // read the command properties
-                        // 1: matrix2d (6 x number with storage precision matrix)
-                        // 2: matrix2d (12 x number with storage precision matrix) not used yet
-                        // 3: colortransform (20 x number with storage precision properties)
-                        // 4: blendmode (uint8)
-                        // 5: visibilty (uint8)
-                        var props = this.parseProperties({
-                            1: this._matrixNrType,
-                            2: this._matrixNrType,
-                            3: this._propsNrType,
-                            4: AWDParser.UINT8,
-                            5: AWDParser.UINT8
-                        });
-                        // todo: fix property parsing so we can read variable size list (atm list with size = 1 is returned as single number)
-                        // for this reason, for now the mask-property is read sepperatly
-                        var mask_id_nums = this._newBlockBytes.readUnsignedShort();
-                        var mask_ids = new Array();
-                        for (var mi_cnt = 0; mi_cnt < mask_id_nums; mi_cnt++) {
-                            mask_ids.push(this._newBlockBytes.readShort());
+                        var props_flag = this._newBlockBytes.readUnsignedShort();
+                        /*	Props_flags
+                         1: read display matrix - 6 x float,
+                         2: read display matrix - read another UINT8-bitflag that determinates what matrix components to parse
+                         3: read color matrix - 4 x float, 4 x uint16
+                         4: read color matrix - read another UINT8-bitflag that determinates what matrix components to parse
+                         5: blendmode - uint8
+                         6: visible - boolean
+                         7: AWDParser.UINT8
+                         });*/
+                        // read display matrix
+                        if (BitFlags.test(props_flag, BitFlags.FLAG1)) {
+                            var thisMatrix = new Matrix3D();
+                            if (BitFlags.test(props_flag, BitFlags.FLAG2)) {
+                            }
+                            else {
+                                thisMatrix.rawData[0] = this._newBlockBytes.readFloat();
+                                thisMatrix.rawData[1] = this._newBlockBytes.readFloat();
+                                thisMatrix.rawData[4] = this._newBlockBytes.readFloat();
+                                thisMatrix.rawData[5] = this._newBlockBytes.readFloat();
+                                thisMatrix.position = new Vector3D(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat(), 0);
+                            }
+                            frame.addConstructCommand(new UpdatePropertyCommand(objectID, "_iMatrix3D", thisMatrix));
                         }
-                        if (timeLineContainer.getPotentialChild(objectID) != undefined) {
-                            var matrix_2d = props.get(1, []);
-                            //var matrix_3d:Float32Array = props.get(2, []);
-                            var colortransform = props.get(3, []);
-                            var blendmode = props.get(4, -1);
-                            var visibilty = props.get(5, -1);
-                            // todo: handle filters
-                            //matrix2d must provide 6 values to be valid
-                            //commandString += "\n                transformArray = " + matrix_2d.length;
-                            if (matrix_2d.length == 6) {
-                                var thisMatrix = new Matrix3D();
-                                thisMatrix.position = new Vector3D(matrix_2d[4], matrix_2d[5], 0);
-                                // todo is this correct for 2d -> 3d scale and rotation. (i doubt it)
-                                thisMatrix.rawData[0] = matrix_2d[0];
-                                thisMatrix.rawData[1] = matrix_2d[1];
-                                thisMatrix.rawData[4] = matrix_2d[2];
-                                thisMatrix.rawData[5] = matrix_2d[3];
-                                frame.addConstructCommand(new UpdatePropertyCommand(objectID, "_iMatrix3D", thisMatrix));
+                        // read colortransforms
+                        if (BitFlags.test(props_flag, BitFlags.FLAG3)) {
+                            var thisColorTransform = new ColorTransform();
+                            if (BitFlags.test(props_flag, BitFlags.FLAG4)) {
                             }
-                            //matrix2d must provide 20 values to be valid
-                            if (colortransform.length == 20) {
+                            else {
+                                thisColorTransform.redMultiplier = this._newBlockBytes.readFloat();
+                                thisColorTransform.greenMultiplier = this._newBlockBytes.readFloat();
+                                thisColorTransform.blueMultiplier = this._newBlockBytes.readFloat();
+                                thisColorTransform.alphaMultiplier = this._newBlockBytes.readFloat();
+                                thisColorTransform.redOffset = this._newBlockBytes.readShort();
+                                thisColorTransform.greenOffset = this._newBlockBytes.readShort();
+                                thisColorTransform.blueOffset = this._newBlockBytes.readShort();
+                                thisColorTransform.alphaOffset = this._newBlockBytes.readShort();
                             }
-                            // blendmode must be positive to be valid
-                            if (blendmode >= 0) {
-                                var blendmode_string = this.blendModeDic[blendmode];
+                        }
+                        if (BitFlags.test(props_flag, BitFlags.FLAG5)) {
+                            var blendmode_int = this._newBlockBytes.readUnsignedByte();
+                            var blendmode_string = this.blendModeDic[blendmode_int];
+                        }
+                        if (BitFlags.test(props_flag, BitFlags.FLAG6)) {
+                            frame.addConstructCommand(new UpdatePropertyCommand(objectID, "visible", this._newBlockBytes.readByte()));
+                        }
+                        if (BitFlags.test(props_flag, BitFlags.FLAG7)) {
+                            var instanceName = this.parseVarStr();
+                            if (instanceName.length) {
+                                frame.addConstructCommand(new SetInstanceNameCommand(objectID, instanceName));
                             }
-                            // visibilty must be positive to be valid
-                            if (visibilty >= 0) {
-                                if (visibilty == 0)
-                                    frame.addConstructCommand(new UpdatePropertyCommand(objectID, "visible", false));
-                                else
-                                    frame.addConstructCommand(new UpdatePropertyCommand(objectID, "visible", true));
+                        }
+                        if (BitFlags.test(props_flag, BitFlags.FLAG8)) {
+                            var mask_id_nums = this._newBlockBytes.readUnsignedShort();
+                            var mask_ids = new Array();
+                            for (var mi_cnt = 0; mi_cnt < mask_id_nums; mi_cnt++) {
+                                mask_ids.push(this._newBlockBytes.readShort());
                             }
-                            // mask must be positive to be valid. i think only add-commands will have this value.
-                            // e.g. it should never be updated on already existing objects. (because depth of objects can change, i am not sure)
                             if (mask_ids.length > 0) {
                                 if ((mask_ids.length == 1) && (mask_ids[0] == -1)) {
                                     // TODO: this object is used as mask
                                     frame.addConstructCommand(new UpdatePropertyCommand(objectID, "_iMaskID", objectID));
                                 }
-                                else {
-                                    // TODO: this object is masked by one or more objects defined by ids in mask-array
-                                    commandString += "\n                obj is masked by " + mask_ids.length + " objects";
-                                    var maskDOs = [];
-                                    for (var cm = 0; cm < mask_ids.length; cm++) {
-                                        maskDOs[cm] = timeLineContainer.getPotentialChild(mask_ids[cm]);
-                                    }
-                                    frame.addConstructCommand(new UpdatePropertyCommand(objectID, "_iMasks", maskDOs));
-                                }
+                                else
+                                    frame.addConstructCommand(new SetMaskCommand(objectID, mask_ids));
                             }
-                        }
-                        else {
-                            console.log("ERROR: could not find the objectID ", objectID);
                         }
                         break;
                     case 4:
@@ -61891,7 +62047,7 @@ var BitFlags = (function () {
 })();
 module.exports = AWDParser;
 
-},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/data/Geometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/textures/TextureBase":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/base/LightBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/CurveMaterial":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-display/lib/materials/lightpickers/LightPickerBase":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectMethodBase":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-player/lib/timeline/TimelineKeyFrame":undefined,"awayjs-player/lib/timeline/commands/AddChildAtDepthCommand":undefined,"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":undefined,"awayjs-player/lib/timeline/commands/ExecuteScriptCommand":undefined,"awayjs-player/lib/timeline/commands/RemoveChildrenAtDepthCommand":undefined,"awayjs-player/lib/timeline/commands/SetInstanceNameCommand":undefined,"awayjs-player/lib/timeline/commands/UpdatePropertyCommand":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/data/CurveSubGeometry":undefined,"awayjs-core/lib/data/Geometry":undefined,"awayjs-core/lib/data/TriangleSubGeometry":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/textures/BitmapCubeTexture":undefined,"awayjs-core/lib/textures/ImageCubeTexture":undefined,"awayjs-core/lib/textures/ImageTexture":undefined,"awayjs-core/lib/textures/TextureBase":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/base/LightBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/CurveMaterial":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-display/lib/materials/lightpickers/LightPickerBase":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectMethodBase":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-player/lib/timeline/TimelineKeyFrame":undefined,"awayjs-player/lib/timeline/commands/AddChildAtDepthCommand":undefined,"awayjs-player/lib/timeline/commands/ApplyAS2DepthsCommand":undefined,"awayjs-player/lib/timeline/commands/ExecuteScriptCommand":undefined,"awayjs-player/lib/timeline/commands/RemoveChildrenAtDepthCommand":undefined,"awayjs-player/lib/timeline/commands/SetInstanceNameCommand":undefined,"awayjs-player/lib/timeline/commands/SetMaskCommand":undefined,"awayjs-player/lib/timeline/commands/UpdatePropertyCommand":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
