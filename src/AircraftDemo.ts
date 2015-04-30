@@ -1,3 +1,5 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
@@ -9,8 +11,6 @@ import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContex
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import Debug                		= require("awayjs-core/lib/utils/Debug");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -23,6 +23,8 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -53,7 +55,7 @@ class AircraftDemo
     //{ sea
     private _seaGeom:PrimitivePlanePrefab;
     private _seaMesh:Mesh;
-    private _seaNormalTexture:ImageTexture;
+    private _seaNormalTexture:Single2DTexture;
     private _seaInitialized:boolean = false;
     private _seaMaterial:MethodMaterial;
     //}
@@ -65,7 +67,7 @@ class AircraftDemo
     
     //{ skybox
     private _waterMethod:NormalSimpleWaterMethod;
-    private _skyboxCubeTexture:ImageCubeTexture;
+    private _skyboxCubeTexture:SingleCubeTexture;
     private _skyboxInitialized:boolean = false;
     //}
     
@@ -161,7 +163,7 @@ class AircraftDemo
     private initSea():void
     {
         this._seaMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
-        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, this._seaNormalTexture);
+        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, new Single2DTexture(this._seaNormalTexture.sampler2D));
         var fresnelMethod:SpecularFresnelMethod  = new SpecularFresnelMethod();
         fresnelMethod.normalReflectance = .3;
         
@@ -192,7 +194,7 @@ class AircraftDemo
         
         switch (event.url) {
             case "assets/sea_normals.jpg":
-                this._seaNormalTexture = <ImageTexture> loader.baseDependency.assets[0];
+                this._seaNormalTexture = new Single2DTexture(<BitmapImage2D> loader.baseDependency.assets[0]);
                 break;
             case 'assets/f14/f14d.obj':
                 this._f14Geom = new DisplayObjectContainer();
@@ -211,7 +213,7 @@ class AircraftDemo
                 }
                 break;
             case 'assets/skybox/CubeTextureTest.cube':
-                this._skyboxCubeTexture = <ImageCubeTexture> loader.baseDependency.assets[0];
+                this._skyboxCubeTexture = new SingleCubeTexture(<BitmapImageCube> loader.baseDependency.assets[0]);
                 break;
         }
         

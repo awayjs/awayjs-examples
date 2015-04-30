@@ -45,6 +45,9 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImageCube					= require("awayjs-core/lib/data/BitmapImageCube");
+import SpecularImage2D					= require("awayjs-core/lib/data/SpecularImage2D");
 import BlendMode						= require("awayjs-core/lib/data/BlendMode");
 import Geometry							= require("awayjs-core/lib/data/Geometry");
 import Event							= require("awayjs-core/lib/events/Event");
@@ -59,9 +62,6 @@ import URLLoader						= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest						= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
-import ImageCubeTexture					= require("awayjs-core/lib/textures/ImageCubeTexture");
-import ImageTexture						= require("awayjs-core/lib/textures/ImageTexture");
-import SpecularBitmapTexture			= require("awayjs-core/lib/textures/SpecularBitmapTexture");
 import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -78,6 +78,8 @@ import DirectionalShadowMapper			= require("awayjs-display/lib/materials/shadowm
 import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Cast								= require("awayjs-display/lib/utils/Cast");
+import SingleCubeTexture				= require("awayjs-display/lib/textures/SingleCubeTexture");
+import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
 
 import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
 import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -145,7 +147,7 @@ class Advanced_MultiPassSponzaDemo
 	private _lights:Array<any> = new Array<any>();
 	
 	//material variables
-	private _skyMap:ImageCubeTexture;
+	private _skyMap:SingleCubeTexture;
 	private _flameMaterial:MethodMaterial;
 	private _numTextures:number /*uint*/ = 0;
 	private _currentTexture:number /*uint*/ = 0;
@@ -489,7 +491,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-			this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
+			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
 
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)
@@ -743,10 +745,10 @@ class Advanced_MultiPassSponzaDemo
 		{
 			case 'assets/skybox/hourglass_texture.cube':
 				//create skybox texture map
-				this._skyMap = <ImageCubeTexture> event.assets[ 0 ];
+				this._skyMap = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 				break;
 			case "assets/fire.png" :
-				this._flameMaterial = new MethodMaterial(<ImageTexture> event.assets[ 0 ]);
+				this._flameMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> event.assets[0]));
 				this._flameMaterial.blendMode = BlendMode.ADD;
 				this._flameMaterial.animateUVs = true;
 				break;

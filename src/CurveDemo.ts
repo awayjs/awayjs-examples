@@ -1,3 +1,4 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import CurveSubGeometry             = require("awayjs-core/lib/data/CurveSubGeometry");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
@@ -9,7 +10,6 @@ import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat"
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -21,6 +21,7 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import MaterialBase		        	= require("awayjs-display/lib/materials/MaterialBase");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubMesh");
 
@@ -37,7 +38,7 @@ class CurveDemo
 	private _mesh:Mesh;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
-	private _texture:ImageTexture;
+	private _texture:Single2DTexture;
 	private _material:MethodMaterial;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
@@ -167,7 +168,7 @@ class CurveDemo
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._texture = new ImageTexture(image);
+		this._texture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(image));
 
 		this._material = new MethodMaterial (this._texture, true, true, false);
 		this._material.lightPicker = this._lightPicker;

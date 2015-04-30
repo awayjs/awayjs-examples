@@ -35,19 +35,20 @@ THE SOFTWARE.
 
 */
 
+import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -61,7 +62,7 @@ class Basic_SkyBox
 	private _view:View;
 
 	//material objects
-	private _cubeTexture:ImageCubeTexture;
+	private _cubeTexture:SingleCubeTexture;
 	private _torusMaterial:MethodMaterial;
 
 	//scene objects
@@ -180,7 +181,7 @@ class Basic_SkyBox
 		switch (event.url)
 		{
 			case 'assets/skybox/snow_texture.cube':
-				this._cubeTexture = <ImageCubeTexture> event.assets[0];
+				this._cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 
 				this._skyBox = new Skybox(this._cubeTexture);
 				this._view.scene.addChild(this._skyBox);

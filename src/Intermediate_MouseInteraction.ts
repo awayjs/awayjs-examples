@@ -35,14 +35,13 @@ THE SOFTWARE.
 
 */
 
-import BitmapData					= require("awayjs-core/lib/data/BitmapData");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 
@@ -65,6 +64,7 @@ import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCube
 import PrimitiveCylinderPrefab		= require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
@@ -259,9 +259,9 @@ class Intermediate_MouseInteraction
 		this._head = model;
 
 		// Apply a bitmap material that can be painted on.
-		var bmd:BitmapData = new BitmapData(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
+		var bmd:BitmapImage2D = new BitmapImage2D(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
 		//bmd.perlinNoise(50, 50, 8, 1, false, true, 7, true);
-		var bitmapTexture:BitmapTexture = new BitmapTexture(bmd);
+		var bitmapTexture:Single2DTexture = new Single2DTexture(bmd);
 		var textureMaterial:MethodMaterial = new MethodMaterial(bitmapTexture);
 		textureMaterial.lightPicker = this._lightPicker;
 		model.material = textureMaterial;
@@ -512,13 +512,13 @@ class Intermediate_MouseInteraction
 		//if( mesh == this._head ) {
 		//	var uv:Point = event.uv;
 		//	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Mesh> event.object).material);
-		//	var bmd:BitmapData = BitmapTexture( textureMaterial.texture ).bitmapData;
+		//	var bmd:BitmapData = Single2DTexture( textureMaterial.texture ).bitmapData;
 		//	var x:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.x;
 		//	var y:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.y;
 		//	var matrix:Matrix = new Matrix();
 		//	matrix.translate(x, y);
 		//	bmd.draw(this._painter, matrix);
-		//	BitmapTexture(textureMaterial.texture).invalidateContent();
+		//	Single2DTexture(textureMaterial.texture).invalidateContent();
 		//}
 	}
 

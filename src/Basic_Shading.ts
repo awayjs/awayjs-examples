@@ -35,13 +35,13 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Scene						= require("awayjs-display/lib/containers/Scene");
@@ -57,6 +57,7 @@ import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCube
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -291,40 +292,40 @@ class Basic_Shading
 			{
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.texture = <Texture2DBase> asset;
+					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this._planeMaterial.normalMap = <Texture2DBase> asset;
+					this._planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this._planeMaterial.specularMap = <Texture2DBase> asset;
+					this._planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//sphere textures
 				case "assets/beachball_diffuse.jpg" :
-					this._sphereMaterial.texture = <Texture2DBase> asset;
+					this._sphereMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/beachball_specular.jpg" :
-					this._sphereMaterial.specularMap = <Texture2DBase> asset;
+					this._sphereMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//cube textures
 				case "assets/trinket_diffuse.jpg" :
-					this._cubeMaterial.texture = <Texture2DBase> asset;
+					this._cubeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/trinket_normal.jpg" :
-					this._cubeMaterial.normalMap = <Texture2DBase> asset;
+					this._cubeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/trinket_specular.jpg" :
-					this._cubeMaterial.specularMap = <Texture2DBase> asset;
+					this._cubeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//torus textures
 				case "assets/weave_diffuse.jpg" :
-					this._torusMaterial.texture = <Texture2DBase> asset;
+					this._torusMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/weave_normal.jpg" :
-					this._torusMaterial.normalMap = this._torusMaterial.specularMap = <Texture2DBase> asset;
+					this._torusMaterial.normalMap = this._torusMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

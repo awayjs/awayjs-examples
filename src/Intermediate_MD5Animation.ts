@@ -38,6 +38,8 @@ THE SOFTWARE.
 
 */
 
+import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -46,8 +48,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
@@ -65,6 +65,8 @@ import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import NearDirectionalShadowMapper	= require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import SkeletonAnimationSet			= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
@@ -130,7 +132,7 @@ class Intermediate_MD5Animation
 	private groundMaterial:MethodMaterial;
 	private bodyMaterial:MethodMaterial;
 	private gobMaterial:MethodMaterial;
-	private cubeTexture:ImageCubeTexture;
+	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private placeHolder:DisplayObjectContainer;
@@ -433,7 +435,7 @@ class Intermediate_MD5Animation
 		{
 			//environment texture
 			case 'assets/skybox/grimnight_texture.cube':
-				this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
+				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 
 				this.skyBox = new Skybox(this.cubeTexture);
 				this.scene.addChild(this.skyBox);
@@ -441,35 +443,35 @@ class Intermediate_MD5Animation
 
 			//entities textures
 			case "assets/redlight.png" :
-				this.redLightMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.redLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/bluelight.png" :
-				this.blueLightMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.blueLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//floor textures
 			case "assets/rockbase_diffuse.jpg" :
-				this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_normals.png" :
-				this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_specular.png" :
-				this.groundMaterial.specularMap = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//hellknight textures
 			case "assets/hellknight/hellknight_diffuse.jpg" :
-				this.bodyMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.bodyMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_normals.png" :
-				this.bodyMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
+				this.bodyMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_specular.png" :
-				this.bodyMaterial.specularMap = <ImageTexture> event.assets[ 0 ];
+				this.bodyMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.bodyMaterial.specularMap = this.gobMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.bodyMaterial.specularMap = this.gobMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}

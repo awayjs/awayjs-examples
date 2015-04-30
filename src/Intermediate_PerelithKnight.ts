@@ -38,6 +38,7 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -45,7 +46,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard 					= require("awayjs-core/lib/ui/Keyboard");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -55,6 +55,7 @@ import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLig
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
 import VertexAnimationSet			= require("awayjs-renderergl/lib/animators/VertexAnimationSet");
@@ -315,7 +316,7 @@ class Intermediate_PerelithKnight
             {
                 //floor texture
                 case "assets/floor_diffuse.jpg" :
-                    this._floorMaterial.texture = <Texture2DBase> asset;
+                    this._floorMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
                     break;
 
                 //knight textures
@@ -323,7 +324,7 @@ class Intermediate_PerelithKnight
                 case "assets/pknight2.png" :
                 case "assets/pknight3.png" :
                 case "assets/pknight4.png" :
-                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = <Texture2DBase> asset;
+                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = new Single2DTexture(<BitmapImage2D> asset);
                     break;
 
                 //knight data

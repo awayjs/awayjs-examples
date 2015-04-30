@@ -37,7 +37,8 @@ THE SOFTWARE.
 
 */
 
-import BitmapData					= require("awayjs-core/lib/data/BitmapData");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
@@ -45,8 +46,6 @@ import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
-import SpecularBitmapTexture		= require("awayjs-core/lib/textures/SpecularBitmapTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Scene						= require("awayjs-display/lib/containers/Scene");
@@ -58,6 +57,7 @@ import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
@@ -94,10 +94,10 @@ class Intermediate_ParticleExplosions
 	private lightPicker:StaticLightPicker;
 	
 	//data variables
-	private chromeBitmapData:BitmapData;
-	private firefoxBitmapData:BitmapData;
-	private ieBitmapData:BitmapData;
-	private safariBitmapData:BitmapData;
+	private chromeBitmapImage2D:BitmapImage2D;
+	private firefoxBitmapImage2D:BitmapImage2D;
+	private ieBitmapImage2D:BitmapImage2D;
+	private safariBitmapImage2D:BitmapImage2D;
 	private colorValues:Array<Vector3D> = new Array<Vector3D>();
 	private colorPoints:Array<Vector3D> = new Array<Vector3D>();
 	private colorChromeSeparation:number /*int*/;
@@ -207,10 +207,10 @@ class Intermediate_ParticleExplosions
 		var rgb:Vector3D;
 		var color:number /*uint*/
 
-		for (i = 0; i < this.chromeBitmapData.width; i++) {
-			for (j = 0; j < this.chromeBitmapData.height; j++) {
-				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.chromeBitmapData.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.chromeBitmapData.height / 2));
-				color = this.chromeBitmapData.getPixel32(i, j);
+		for (i = 0; i < this.chromeBitmapImage2D.width; i++) {
+			for (j = 0; j < this.chromeBitmapImage2D.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.chromeBitmapImage2D.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.chromeBitmapImage2D.height / 2));
+				color = this.chromeBitmapImage2D.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -222,10 +222,10 @@ class Intermediate_ParticleExplosions
 		this.colorChromeSeparation = this.colorPoints.length;
 
 		
-		for (i = 0; i < this.firefoxBitmapData.width; i++) {
-			for (j = 0; j < this.firefoxBitmapData.height; j++) {
-				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.firefoxBitmapData.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.firefoxBitmapData.height / 2));
-				color = this.firefoxBitmapData.getPixel32(i, j);
+		for (i = 0; i < this.firefoxBitmapImage2D.width; i++) {
+			for (j = 0; j < this.firefoxBitmapImage2D.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.firefoxBitmapImage2D.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.firefoxBitmapImage2D.height / 2));
+				color = this.firefoxBitmapImage2D.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -237,10 +237,10 @@ class Intermediate_ParticleExplosions
 		this.colorFirefoxSeparation = this.colorPoints.length;
 
 
-		for (i = 0; i < this.safariBitmapData.width; i++) {
-			for (j = 0; j < this.safariBitmapData.height; j++) {
-				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.safariBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.safariBitmapData.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-				color = this.safariBitmapData.getPixel32(i, j);
+		for (i = 0; i < this.safariBitmapImage2D.width; i++) {
+			for (j = 0; j < this.safariBitmapImage2D.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.safariBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.safariBitmapImage2D.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
+				color = this.safariBitmapImage2D.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -252,10 +252,10 @@ class Intermediate_ParticleExplosions
 		this.colorSafariSeparation = this.colorPoints.length;
 
 
-		for (i = 0; i < this.ieBitmapData.width; i++) {
-			for (j = 0; j < this.ieBitmapData.height; j++) {
-				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.ieBitmapData.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.ieBitmapData.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
-				color = this.ieBitmapData.getPixel32(i, j);
+		for (i = 0; i < this.ieBitmapImage2D.width; i++) {
+			for (j = 0; j < this.ieBitmapImage2D.height; j++) {
+				point = new Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE*(i - this.ieBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*( -j + this.ieBitmapImage2D.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE*100);
+				color = this.ieBitmapImage2D.getPixel32(i, j);
 				if (((color >> 24) & 0xff) > 0xb0) {
 					this.colorValues.push(new Vector3D(((color & 0xff0000) >> 16)/255, ((color & 0xff00) >> 8)/255, (color & 0xff)/255));
 					this.colorPoints.push(point);
@@ -405,21 +405,21 @@ class Intermediate_ParticleExplosions
 
 			//image textures
 			case "assets/firefox.png" :
-				this.firefoxBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				this.firefoxBitmapImage2D = <BitmapImage2D> event.assets[0];
 				break;
 			case "assets/chrome.png" :
-				this.chromeBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				this.chromeBitmapImage2D = <BitmapImage2D> event.assets[0];
 				break;
 			case "assets/ie.png" :
-				this.ieBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				this.ieBitmapImage2D = <BitmapImage2D> event.assets[0];
 				break;
 			case "assets/safari.png" :
-				this.safariBitmapData = Cast.bitmapData(event.assets[ 0 ]);
+				this.safariBitmapImage2D = <BitmapImage2D> event.assets[0];
 				break;
 
 		}
 
-		if (this.firefoxBitmapData != null && this.chromeBitmapData != null && this.safariBitmapData != null && this.ieBitmapData != null) {
+		if (this.firefoxBitmapImage2D != null && this.chromeBitmapImage2D != null && this.safariBitmapImage2D != null && this.ieBitmapImage2D != null) {
 			this.initParticles();
 			this.initObjects();
 		}

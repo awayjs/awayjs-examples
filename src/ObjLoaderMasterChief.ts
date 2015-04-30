@@ -1,3 +1,4 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
@@ -5,8 +6,7 @@ import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
 import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
-import TextureBase					= require("awayjs-core/lib/textures/TextureBase");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Debug						= require("awayjs-core/lib/utils/Debug");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -129,12 +129,12 @@ class ObjLoaderMasterChief
 					}
 
 					break;
-				case TextureBase.assetType :
+				case BitmapImage2D.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
-						this.mat = new MethodMaterial( <ImageTexture> d, true, true, false );
+						this.mat = new MethodMaterial( new Single2DTexture(<BitmapImage2D> d), true, true, false );
 						this.mat.lightPicker = new StaticLightPicker([this.light]);
 					} else if (event.url == 'assets/stone_tx.jpg') {
-						this.terrainMaterial = new MethodMaterial(<ImageTexture> d, true, true, false);
+						this.terrainMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> d), true, true, false);
 						this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 					}
 
