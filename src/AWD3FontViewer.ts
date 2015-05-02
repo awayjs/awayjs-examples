@@ -58,7 +58,6 @@ import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCube
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import Partition2D					= require("awayjs-player/lib/partition/Partition2D");

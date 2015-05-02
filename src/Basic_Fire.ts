@@ -76,7 +76,6 @@ import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/Part
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -148,7 +147,7 @@ class Basic_Fire
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(MethodRendererPool));
+		this.view = new View(new DefaultRenderer());
 		//this.view.antiAlias = 4;
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;

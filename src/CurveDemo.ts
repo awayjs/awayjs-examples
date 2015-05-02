@@ -28,7 +28,6 @@ import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubM
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class CurveDemo
 {

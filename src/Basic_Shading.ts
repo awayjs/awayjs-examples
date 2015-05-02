@@ -62,7 +62,6 @@ import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 /**
  *
@@ -130,7 +129,7 @@ class Basic_Shading
 
 		this._camera = new Camera();
 
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 		this._view.scene = this._scene;
 		this._view.camera = this._camera;
 

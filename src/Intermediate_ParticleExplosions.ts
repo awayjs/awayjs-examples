@@ -75,7 +75,6 @@ import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGe
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class Intermediate_ParticleExplosions
 {
@@ -153,7 +152,7 @@ class Intermediate_ParticleExplosions
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(MethodRendererPool), this.scene, this.camera);
+		this.view = new View(new DefaultRenderer(), this.scene, this.camera);
 		
 		//setup controller to be used on the camera
 		this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);

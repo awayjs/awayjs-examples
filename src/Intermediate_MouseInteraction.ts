@@ -70,7 +70,6 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import OBJParser					= require("awayjs-parsers/lib/OBJParser");
 
@@ -155,7 +154,7 @@ class Intermediate_MouseInteraction
 	 */
 	private initEngine():void
 	{
-		this._renderer = new DefaultRenderer(MethodRendererPool);
+		this._renderer = new DefaultRenderer();
 		this._view = new View(this._renderer);
 		this._view.forceMouseMove = true;
 		this._scene = this._view.scene;
@@ -265,7 +264,7 @@ class Intermediate_MouseInteraction
 		var textureMaterial:MethodMaterial = new MethodMaterial(bitmapTexture);
 		textureMaterial.lightPicker = this._lightPicker;
 		model.material = textureMaterial;
-		model.pickingCollider = new JSPickingCollider(this._renderer.stage);
+		model.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
 
 		// Apply mouse interactivity.
 		model.mouseEnabled = model.mouseChildren = true;
@@ -332,7 +331,7 @@ class Intermediate_MouseInteraction
 		if( usesTriangleCollider ) {
 			// AS3 triangle pickers for meshes with low poly counts are faster than pixel bender ones.
 			//				mesh.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all meshes
-			mesh.pickingCollider = new JSPickingCollider(this._renderer.stage);
+			mesh.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
 			//				mesh.pickingCollider = PickingColliderType.AS3_BEST_HIT; // slower and more accurate, best for meshes with folds
 			//				mesh.pickingCollider = PickingColliderType.AUTO_FIRST_ENCOUNTERED; // automatically decides when to use pixel bender or actionscript
 		}

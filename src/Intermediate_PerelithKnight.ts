@@ -64,7 +64,6 @@ import VertexAnimator				= require("awayjs-renderergl/lib/animators/VertexAnimat
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowFilteredMethod			= require("awayjs-methodmaterials/lib/methods/ShadowFilteredMethod");
 
 import MD2Parser					= require("awayjs-parsers/lib/MD2Parser");
@@ -120,7 +119,7 @@ class Intermediate_PerelithKnight
     constructor()
     {
         //setup the view
-        this._view = new View(new DefaultRenderer(MethodRendererPool));
+        this._view = new View(new DefaultRenderer());
 
         //setup the camera for optimal rendering
         this._view.camera.projection.far = 5000;

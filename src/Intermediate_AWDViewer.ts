@@ -55,8 +55,6 @@ import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationSt
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
-
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class Intermediate_AWDViewer
@@ -103,7 +101,7 @@ class Intermediate_AWDViewer
 	private initEngine():void
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 		this._view.backgroundColor = 0x333338;
 		
 		//create custom lens

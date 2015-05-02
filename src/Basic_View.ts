@@ -58,7 +58,6 @@ import ContextMode					= require("awayjs-stagegl/lib/base/ContextMode");
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class Basic_View
 {
@@ -80,7 +79,7 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 
 		//setup the camera
 		this._view.camera.z = -600;

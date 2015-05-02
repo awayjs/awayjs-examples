@@ -21,7 +21,6 @@ import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTextur
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class CubePrimitive
 {
@@ -50,7 +49,7 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 		this._view.backgroundColor = 0x000000;
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;

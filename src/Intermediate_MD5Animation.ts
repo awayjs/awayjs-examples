@@ -79,7 +79,6 @@ import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationSt
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import EffectFogMethod				= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
 import ShadowNearMethod				= require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
@@ -169,7 +168,7 @@ class Intermediate_MD5Animation
 	 */
 	private initEngine():void
 	{
-		this.view = new View(new DefaultRenderer(MethodRendererPool));
+		this.view = new View(new DefaultRenderer());
 		this.scene = this.view.scene;
 		this.camera = this.view.camera;
 

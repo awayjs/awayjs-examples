@@ -69,7 +69,6 @@ import Cast							= require("awayjs-display/lib/utils/Cast");
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 import DiffuseGradientMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseGradientMethod");
 import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
@@ -167,7 +166,7 @@ class Intermediate_MonsterHeadShading
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
 
-		this._view = new View(new DefaultRenderer(MethodRendererPool), this._scene, this._camera);
+		this._view = new View(new DefaultRenderer(), this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);

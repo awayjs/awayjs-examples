@@ -53,7 +53,6 @@ import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeText
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import EffectEnvMapMethod			= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
 
 class Basic_SkyBox
@@ -100,7 +99,7 @@ class Basic_SkyBox
 	private initEngine():void
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 
 		//setup the camera
 		this._view.camera.z = -600;

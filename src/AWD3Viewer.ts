@@ -59,7 +59,6 @@ import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 import Renderer2D				    = require("awayjs-player/lib/renderer/Renderer2D");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import Partition2D					= require("awayjs-player/lib/partition/Partition2D");

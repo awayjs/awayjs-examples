@@ -86,7 +86,6 @@ import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial					= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodMaterialMode				= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import MethodRendererPool				= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowCascadeMethod				= require("awayjs-methodmaterials/lib/methods/ShadowCascadeMethod");
 import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
@@ -219,7 +218,7 @@ class Advanced_MultiPassSponzaDemo
 	private initEngine()
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 		this._view.camera.y = 150;
 		this._view.camera.z = 0;
 		
@@ -288,7 +287,7 @@ class Advanced_MultiPassSponzaDemo
 			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGeometry.getNewObject();
 			mesh.material = this._flameMaterial;
 			mesh.transform.position = flameVO.position;
-			mesh.subMeshes[0].uvTransform = new UVTransform()
+			mesh.subMeshes[0].uvTransform = new UVTransform();
 			mesh.subMeshes[0].uvTransform.scaleU = 1/16;
 			this._view.scene.addChild(mesh);
 			mesh.addChild(flameVO.light);
