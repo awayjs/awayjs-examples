@@ -67,10 +67,10 @@ import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodVO						= require("awayjs-methodmaterials/lib/data/MethodVO");
@@ -244,7 +244,7 @@ class Intermediate_Globe
 		this.atmosphereMaterial.ambient = 1;
 	}
 
-	private modulateDiffuseMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
 		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
@@ -255,7 +255,7 @@ class Intermediate_Globe
 		return code;
 	}
 
-	private modulateSpecularMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	private modulateSpecularMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
 		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
