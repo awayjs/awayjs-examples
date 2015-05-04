@@ -275,11 +275,11 @@ class AWD3Viewer
 		this._stage_height = 400;
 
 		//for plugin preview-runtime:
-
+/*
 		this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
 		this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
 		this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
-
+*/
 		this._isperspective=true;
 		this._projection = new PerspectiveProjection();
 		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
@@ -319,9 +319,9 @@ class AWD3Viewer
 		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
 
 		//for plugin preview-runtime:
-		loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
