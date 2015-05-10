@@ -36,6 +36,7 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -43,7 +44,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Loader						= require("awayjs-display/lib/containers/Loader");
@@ -51,14 +51,13 @@ import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 
 import Max3DSParser					= require("awayjs-parsers/lib/Max3DSParser");
@@ -116,7 +115,7 @@ class Basic_Load3DS
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 
 		//setup the camera for optimal shadow rendering
 		this._view.camera.projection.far = 2100;
@@ -146,6 +145,7 @@ class Basic_Load3DS
 		this._groundMaterial.shadowMethod.epsilon = 0.2;
 		this._groundMaterial.lightPicker = this._lightPicker;
 		this._groundMaterial.specular = 0;
+		//this._groundMaterial.mipmap = false;
 	}
 
 	/**
@@ -219,10 +219,11 @@ class Basic_Load3DS
 				var mesh:Mesh = <Mesh> event.asset;
 				mesh.castsShadows = true;
 				break;
-			case MaterialBase.assetType :
+			case MethodMaterial.assetType :
 				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 				material.shadowMethod.epsilon = 0.2;
+				//material.mipmap = false;
 				material.lightPicker = this._lightPicker;
 				material.gloss = 30;
 				material.specular = 1;
@@ -249,7 +250,7 @@ class Basic_Load3DS
 			switch (event.url) {
 				//plane textures
 				case "assets/CoarseRedSand.jpg" :
-					this._groundMaterial.texture = <Texture2DBase> asset;
+					this._groundMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

@@ -39,6 +39,8 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
@@ -50,8 +52,6 @@ import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
-import SpecularBitmapTexture		= require("awayjs-core/lib/textures/SpecularBitmapTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Scene						= require("awayjs-display/lib/containers/Scene");
@@ -63,12 +63,12 @@ import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 import DiffuseGradientMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseGradientMethod");
 import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
@@ -166,7 +166,7 @@ class Intermediate_MonsterHeadShading
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
 
-		this._view = new View(new DefaultRenderer(MethodRendererPool), this._scene, this._camera);
+		this._view = new View(new DefaultRenderer(), this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
@@ -331,10 +331,9 @@ class Intermediate_MonsterHeadShading
 	{
 		var image:HTMLImageElement = <HTMLImageElement> event.target;
 		image.onload = null;
-
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._textureStrings[this._n]])
-			this._textureDictionary[this._textureStrings[this._n]] = (this._n == 1)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
+			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
 
 		this._n++;
 
@@ -417,7 +416,7 @@ class Intermediate_MonsterHeadShading
 		switch (event.url) {
 			case "assets/diffuseGradient.jpg" :
 				// very low-cost and crude subsurface scattering for diffuse shading
-				//this._headMaterial.diffuseMethod = new DiffuseGradientMethod(<ImageTexture> event.assets[ 0 ]);
+				//this._headMaterial.diffuseMethod = new DiffuseGradientMethod(<Single2DTexture> event.assets[ 0 ]);
 				break;
 		}
 	}

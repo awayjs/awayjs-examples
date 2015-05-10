@@ -1,3 +1,4 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -6,7 +7,6 @@ import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat"
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Scene						= require("awayjs-display/lib/containers/Scene");
@@ -16,11 +16,11 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class CubePrimitive
 {
@@ -49,7 +49,7 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));
+		this._view = new View(new DefaultRenderer());
 		this._view.backgroundColor = 0x000000;
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;
@@ -134,7 +134,7 @@ class CubePrimitive
 	 */
 	private imageCompleteHandler(event:Event)
 	{
-		var ts:ImageTexture = new ImageTexture(this._image);
+		var ts:Single2DTexture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image));
 		var matTx:MethodMaterial = new MethodMaterial(ts, true, true, false);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

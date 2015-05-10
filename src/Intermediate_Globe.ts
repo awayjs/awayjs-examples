@@ -35,8 +35,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import BitmapData					= require("awayjs-core/lib/data/BitmapData");
-import BitmapDataChannel			= require("awayjs-core/lib/data/BitmapDataChannel");
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
+import BitmapImageChannel			= require("awayjs-core/lib/data/BitmapImageChannel");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
@@ -45,9 +46,6 @@ import Point						= require("awayjs-core/lib/geom/Point");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ImageCubeTexture				= require("awayjs-core/lib/textures/ImageCubeTexture");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
-import BitmapTexture				= require("awayjs-core/lib/textures/BitmapTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
@@ -64,16 +62,17 @@ import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ShaderObjectBase				= require("awayjs-renderergl/lib/compilation/ShaderObjectBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/compilation/ShaderRegisterElement");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/compilation/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/compilation/ShaderRegisterData");
+import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
+import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
+import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import MethodVO						= require("awayjs-methodmaterials/lib/data/MethodVO");
 import DiffuseCompositeMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
 import SpecularCompositeMethod		= require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
@@ -97,7 +96,7 @@ class Intermediate_Globe
 	private atmosphereMaterial:MethodMaterial;
 	private atmosphereDiffuseMethod:DiffuseBasicMethod;
 	private atmosphereSpecularMethod:SpecularBasicMethod;
-	private cubeTexture:ImageCubeTexture;
+	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private sun:Billboard;
@@ -158,7 +157,7 @@ class Intermediate_Globe
 		this.camera = new Camera();
 		this.camera.projection.far = 100000;
 
-		this.view = new View(new DefaultRenderer(MethodRendererPool));
+		this.view = new View(new DefaultRenderer());
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
 
@@ -205,7 +204,7 @@ class Intermediate_Globe
 		//this.cubeTexture = new BitmapCubeTexture(Cast.bitmapData(PosX), Cast.bitmapData(NegX), Cast.bitmapData(PosY), Cast.bitmapData(NegY), Cast.bitmapData(PosZ), Cast.bitmapData(NegZ));
 
 		//adjust specular map
-		//var specBitmap:BitmapData = Cast.bitmapData(EarthSpecular);
+		//var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
 		//specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
 
 		var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, new SpecularPhongMethod());
@@ -245,7 +244,7 @@ class Intermediate_Globe
 		this.atmosphereMaterial.ambient = 1;
 	}
 
-	private modulateDiffuseMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
 		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
@@ -256,7 +255,7 @@ class Intermediate_Globe
 		return code;
 	}
 
-	private modulateSpecularMethod(shaderObject:ShaderObjectBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	private modulateSpecularMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 	{
 		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
 		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
@@ -417,7 +416,7 @@ class Intermediate_Globe
 		switch(event.url) {
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
-				this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
+				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 
 				this.skyBox = new Skybox(this.cubeTexture);
 				this.scene.addChild(this.skyBox);
@@ -425,57 +424,57 @@ class Intermediate_Globe
 
 			//globe textures
 			case "assets/globe/cloud_combined_2048.jpg" :
-				var cloudBitmapData:BitmapData = new BitmapData(2048, 1024, true, 0xFFFFFFFF);
-				cloudBitmapData.copyChannel(Cast.bitmapData(event.assets[ 0 ]), cloudBitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
+				var cloudBitmapImage2D:BitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
+				cloudBitmapImage2D.copyChannel(<BitmapImage2D> event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-				this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData);
+				this.cloudMaterial.texture = new Single2DTexture(cloudBitmapImage2D);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
-				var specBitmapData:BitmapData = Cast.bitmapData(event.assets[ 0 ]);
-				specBitmapData.colorTransform(specBitmapData.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMap = new BitmapTexture(specBitmapData);
+				var specBitmapImage2D:BitmapImage2D = <BitmapImage2D> event.assets[0];
+				specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
+				this.groundMaterial.specularMap = new Single2DTexture(specBitmapImage2D);
 				break;
 			case "assets/globe/EarthNormal.png" :
-				this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_lights_16384.jpg" :
-				this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_ocean_ice_2048_match.jpg" :
-				this.groundMaterial.diffuseTexture = <ImageTexture> event.assets[ 0 ];
+				this.groundMaterial.diffuseTexture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//flare textures
 			case "assets/lensflare/flare2.jpg" :
-				this.flares[6] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 1.25, 1.1, 48.45, this.scene);
+				this.flares[6] = new FlareObject(<BitmapImage2D> event.assets[0], 1.25, 1.1, 48.45, this.scene);
 				break;
 			case "assets/lensflare/flare3.jpg" :
-				this.flares[7] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 1.75, 1.37, 7.65, this.scene);
+				this.flares[7] = new FlareObject(<BitmapImage2D> event.assets[0], 1.75, 1.37, 7.65, this.scene);
 				break;
 			case "assets/lensflare/flare4.jpg" :
-				this.flares[8] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 2.75, 1.85, 12.75, this.scene);
+				this.flares[8] = new FlareObject(<BitmapImage2D> event.assets[0], 2.75, 1.85, 12.75, this.scene);
 				break;
 			case "assets/lensflare/flare6.jpg" :
-				this.flares[5] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 1, 0.68, 20.4, this.scene);
-				this.flares[10] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 4, 2.5, 10.4, this.scene);
+				this.flares[5] = new FlareObject(<BitmapImage2D> event.assets[0], 1, 0.68, 20.4, this.scene);
+				this.flares[10] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 2.5, 10.4, this.scene);
 				break;
 			case "assets/lensflare/flare7.jpg" :
-				this.flares[2] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 2, 0, 25.5, this.scene);
-				this.flares[3] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 4, 0, 17.85, this.scene);
-				this.flares[11] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 10, 2.66, 50, this.scene);
+				this.flares[2] = new FlareObject(<BitmapImage2D> event.assets[0], 2, 0, 25.5, this.scene);
+				this.flares[3] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 0, 17.85, this.scene);
+				this.flares[11] = new FlareObject(<BitmapImage2D> event.assets[0], 10, 2.66, 50, this.scene);
 				break;
 			case "assets/lensflare/flare8.jpg" :
-				this.flares[9] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 0.5, 2.21, 33.15, this.scene);
+				this.flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this.scene);
 				break;
 			case "assets/lensflare/flare10.jpg" :
-				this.sunMaterial.texture = <ImageTexture> event.assets[ 0 ];
-				this.flares[0] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 3.2, -0.01, 100, this.scene);
+				this.sunMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this.scene);
 				break;
 			case "assets/lensflare/flare11.jpg" :
-				this.flares[1] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 6, 0, 30.6, this.scene);
+				this.flares[1] = new FlareObject(<BitmapImage2D> event.assets[0], 6, 0, 30.6, this.scene);
 				break;
 			case "assets/lensflare/flare12.jpg" :
-				this.flares[4] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 0.4, 0.32, 22.95, this.scene);
+				this.flares[4] = new FlareObject(<BitmapImage2D> event.assets[0], 0.4, 0.32, 22.95, this.scene);
 				break;
 		}
 	}
@@ -608,12 +607,12 @@ class FlareObject
 	/**
 	 * Constructor
 	 */
-	constructor(bitmapData:BitmapData, size:number, position:number, opacity:number, scene:Scene)
+	constructor(bitmapData:BitmapImage2D, size:number, position:number, opacity:number, scene:Scene)
 	{
-		var bd:BitmapData = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
-		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
+		var bd:BitmapImage2D = new BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
+		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-		var billboardMaterial:MethodMaterial = new MethodMaterial(new BitmapTexture(bd));
+		var billboardMaterial:MethodMaterial = new MethodMaterial(new Single2DTexture(bd));
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;

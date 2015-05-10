@@ -37,6 +37,7 @@ THE SOFTWARE.
 
 */
 
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
@@ -48,7 +49,6 @@ import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Texture2DBase				= require("awayjs-core/lib/textures/Texture2DBase");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Timer						= require("awayjs-core/lib/utils/Timer");
 
@@ -62,6 +62,7 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import PointLight					= require("awayjs-display/lib/entities/PointLight");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
 import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
@@ -75,7 +76,6 @@ import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/Part
 import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -147,7 +147,7 @@ class Basic_Fire
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(MethodRendererPool));
+		this.view = new View(new DefaultRenderer());
 		//this.view.antiAlias = 4;
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
@@ -391,18 +391,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.texture = <Texture2DBase> asset;
+					this.planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMap = <Texture2DBase> asset;
+					this.planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMap = <Texture2DBase> asset;
+					this.planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.texture = <Texture2DBase> asset;
+					this.particleMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

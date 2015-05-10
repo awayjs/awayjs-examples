@@ -22,7 +22,6 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 
 class AWDSuzanne
@@ -56,7 +55,7 @@ class AWDSuzanne
 	 */
 	private initView():void
 	{
-		this._renderer = new DefaultRenderer(MethodRendererPool)
+		this._renderer = new DefaultRenderer();
 		this._view = new View(this._renderer);
 		this._view.camera.projection.far = 6000;
 		this._view.forceMouseMove = true;
@@ -160,7 +159,7 @@ class AWDSuzanne
 					}
 
 					mesh.transform.scale = new Vector3D(500, 500, 500);
-					mesh.pickingCollider = new JSPickingCollider(this._renderer.stage);
+					mesh.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
 
 					mesh.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					mesh.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
@@ -169,9 +168,6 @@ class AWDSuzanne
 					break;
 
 				case Geometry.assetType:
-					break;
-
-				case MaterialBase.assetType:
 					break;
 			}
 		}

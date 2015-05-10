@@ -1,18 +1,15 @@
+import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import CurveSubGeometry             = require("awayjs-core/lib/data/CurveSubGeometry");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -31,8 +28,6 @@ import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubM
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-//import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
-
 
 class CurveDemo
 {
@@ -141,7 +136,7 @@ class CurveDemo
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
 		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
-		imgLoader.load(new URLRequest("assets/dots_alpha.png"));		//new texture
+		imgLoader.load(new URLRequest("assets/alpha.png"));
 	}
 
 	/**
@@ -172,11 +167,10 @@ class CurveDemo
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-
 		this._texture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(image));
+
 		this._material = new MethodMaterial (this._texture, true, true, false);
 		this._material.lightPicker = this._lightPicker;
-
 	}
 
 	/**
@@ -319,8 +313,8 @@ class CurveDemo
 		geom.addSubGeometry(curveSubGeometry);
 		var curveMesh:Mesh = new Mesh(geom);
 
-		var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF, 0.5);
-		curveMaterial.preserveAlpha = false;
+		var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF);
+		curveMaterial.preserveAlpha = true;
 		curveMaterial.alphaBlending = true;
 
 		curveMesh.material = curveMaterial;
@@ -377,12 +371,8 @@ class CurveDemo
 		var curveMaterial:BasicMaterial = new BasicMaterial(this._texture);
 		curveMaterial.preserveAlpha = true;
 		curveMaterial.alphaBlending = true;
-		//curveMaterial.blendMode = BlendMode.ALPHA;
-		//curveMaterial.alphaPremultiplied = false;
-		//curveMaterial.alphaThreshold = 0;
-		curveMesh.subMeshes[0].colorTransform = new ColorTransform(0,1,0,1, 0,0,0,1);
+
 		curveMesh.material = curveMaterial;
-		curveMaterial.useColorTransform = true;
 		this._view.scene.addChild(curveMesh);
 	}
 	/**

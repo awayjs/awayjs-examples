@@ -7,7 +7,6 @@ import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat"
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import ImageTexture					= require("awayjs-core/lib/textures/ImageTexture");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/containers/View");
@@ -16,11 +15,11 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Skybox						= require("awayjs-display/lib/entities/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
 
 class TorusPrimitive
 {
@@ -29,7 +28,7 @@ class TorusPrimitive
 	private _mesh:Mesh;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
-	private _texture:ImageTexture;
+	private _texture:Single2DTexture;
 	private _material:MethodMaterial;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
@@ -52,7 +51,7 @@ class TorusPrimitive
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer(MethodRendererPool));// Create the Away3D View
+		this._view = new View(new DefaultRenderer());// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 	}
 
@@ -95,7 +94,7 @@ class TorusPrimitive
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._texture = new ImageTexture(image);
+		this._texture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(image));
 
 		this._material = new MethodMaterial(this._texture, true, true, false);
 		this._material.lightPicker = this._lightPicker;
