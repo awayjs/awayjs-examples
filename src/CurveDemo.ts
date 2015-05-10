@@ -380,7 +380,7 @@ class CurveDemo
 		//curveMaterial.blendMode = BlendMode.ALPHA;
 		//curveMaterial.alphaPremultiplied = false;
 		//curveMaterial.alphaThreshold = 0;
-		curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,1);
+		curveMesh.subMeshes[0].colorTransform = new ColorTransform(0,1,0,1, 0,0,0,1);
 		curveMesh.material = curveMaterial;
 		curveMaterial.useColorTransform = true;
 		this._view.scene.addChild(curveMesh);
