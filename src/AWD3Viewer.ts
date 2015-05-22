@@ -321,13 +321,15 @@ class AWD3Viewer
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
+		loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
 		//loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Rectancle_blink_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
+		//loader.load(new URLRequest("assets/AWD3/ScareCrow_multi.awd"));
 		//loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
 		//loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
