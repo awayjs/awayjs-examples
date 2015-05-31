@@ -5,6 +5,7 @@ import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
+import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
@@ -26,6 +27,7 @@ import MaterialBase		        	= require("awayjs-display/lib/materials/MaterialBa
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
+import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubMesh");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -119,8 +121,150 @@ class CurveDemo
 			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
 			this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
 		}
-	}
 
+		//create a ray to cast
+		var rayPosition:Vector3D = this._view.unproject(this._view.mouseX, this._view.mouseY, 0);
+		var rayDirection:Vector3D = this._view.unproject(this._view.mouseX, this._view.mouseY, 1).subtract(rayPosition);
+		//console.log(this._view.mouseX, this._view.mouseY);
+		//console.log(rayPosition);
+		//console.log(rayDirection);
+
+		//project ray onto x/y plane to generate useful test points from mouse coordinates
+		var plane:Vector3D = new Vector3D(0,0,-1,0);
+
+		var result:Vector3D = new Vector3D();
+		var distance:number = plane.x * rayPosition.x + plane.y * rayPosition.y + plane.z * rayPosition.z + plane.w;//distance(position);
+		result.x = rayPosition.x - ( plane.x*distance);
+		result.y = rayPosition.y - ( plane.y*distance);
+		result.z = rayPosition.z - ( plane.z*distance);
+		var normal:Vector3D = new Vector3D(plane.x,plane.y,plane.z);
+		var t:number = -(rayPosition.dotProduct(normal))/(rayDirection.dotProduct(normal));
+		rayDirection.scaleBy(t);
+		var p:Vector3D = rayPosition.add(rayDirection);
+
+		//console.log(distance, t);
+		console.log(p);
+
+		for(var i:number = 0; i < this._view.scene.numChildren; i++)
+		{
+			var child:DisplayObject = this._view.scene.getChildAt(i);
+			var mesh:Mesh = <Mesh>child;
+			if(mesh)
+			{
+				//console.log(mesh.geometry.subGeometries[0]._pIndices.length);
+				var hit:boolean = false;
+				for(var j:number = 0; j < mesh.geometry.subGeometries.length; j++)
+				{
+					var sub:SubGeometryBase = mesh.geometry.subGeometries[j];
+					hit = this.hittestMesh(p.x, p.y, sub);
+					if(hit) break;
+				}
+				console.log("HIT::",hit);
+				if(hit)
+				{
+					var ct:ColorTransform = mesh.colorTransform;
+					ct.alphaMultiplier = 0.2;
+					mesh.colorTransform = ct;
+				}else{
+					var ct:ColorTransform = mesh.colorTransform;
+					ct.alphaMultiplier = 1;
+					mesh.colorTransform = ct;
+				}
+
+
+			}
+		}
+		//console.log(this._view.getRay(this._view.mouseX,this._view.mouseY,0));
+		//console.log(this._view.camera.unproject(this._view.mouseX,this._view.mouseY,0));
+	}
+	private hittestMesh(px:number, py:number, sub:SubGeometryBase):boolean
+	{
+		var vstride:number = sub._pStride["vertices"];
+		var cstride:number = sub._pStride["curves"];
+		var coffset:number = sub._pOffset["curves"];
+		var voffset:number = sub._pOffset["vertices"];
+
+		for(var k:number = 0; k < sub.indices.length; k+=3)
+		{
+			var id0:number = sub.indices[k];
+			var id1:number = sub.indices[k + 1];
+			var id2:number = sub.indices[k + 2];
+
+			var ax:number = sub.vertices[id0 * vstride];
+			var ay:number = sub.vertices[id0 * vstride + 1];
+			var bx:number = sub.vertices[id1 * vstride];
+			var by:number = sub.vertices[id1 * vstride + 1];
+			var cx:number = sub.vertices[id2 * vstride];
+			var cy:number = sub.vertices[id2 * vstride + 1];
+
+
+			//console.log(ax, ay, bx, by, cx, cy);
+
+			//from a to p
+			var dx:number = ax - px;
+			var dy:number = ay - py;
+
+			//edge normal (a-b)
+			var nx:number = by - ay;
+			var ny:number = -(bx - ax);
+
+			//console.log(ax,ay,bx,by,cx,cy);
+
+			var dot:number = (dx * nx) + (dy * ny);
+			//console.log("dot a",dot);
+			if (dot > 0) continue;
+
+			dx = bx - px;
+			dy = by - py;
+			nx = cy - by;
+			ny = -(cx - bx);
+
+			dot = (dx * nx) + (dy * ny);
+			//console.log("dot b",dot);
+			if (dot > 0) continue;
+
+			dx = cx - px;
+			dy = cy - py;
+			nx = ay - cy;
+			ny = -(ax - cx);
+
+			dot = (dx * nx) + (dy * ny);
+			//console.log("dot c",dot);
+			if (dot > 0) continue;
+
+
+			var curvex:number = sub.vertices[id0 * cstride + coffset];
+			var az:number = sub.vertices[id0 * vstride + 2];
+			//check if nmot solid
+			if (curvex != 2) {
+
+				var v0x:number = bx - ax;
+				var v0y:number = by - ay;
+				var v1x:number = cx - ax;
+				var v1y:number = cy - ay;
+				var v2x:number = px - ax;
+				var v2y:number = py - ay;
+
+				var den:number = v0x * v1y - v1x * v0y;
+				var v:number = (v2x * v1y - v1x * v2y) / den;
+				var w:number = (v0x * v2y - v2x * v0y) / den;
+				var u:number = 1 - v - w;
+
+				var uu:number = 0.5 * v + w;// (0 * u) + (0.5 * v) + (1 * w);// (lerp(0, 0.5, v) + lerp(0.5, 1, w) + lerp(1, 0, u)) / 1.5;
+				var vv:number = w;// (0 * u) + (0 * v) + (1 * w);// (lerp(0, 1, w) + lerp(1, 0, u)) / 1;
+
+				var d:number = uu * uu - vv;
+
+				if (d > 0 && az == -1) {
+					continue;
+				} else if (d < 0 && az == 1) {
+					continue;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * Mouse wheel listener for navigation
 	 */
@@ -319,9 +463,12 @@ class CurveDemo
 		geom.addSubGeometry(curveSubGeometry);
 		var curveMesh:Mesh = new Mesh(geom);
 
+		curveMesh.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+
 		var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF, 0.5);
-		curveMaterial.preserveAlpha = false;
+		curveMaterial.preserveAlpha = true;
 		curveMaterial.alphaBlending = true;
+		curveMaterial.useColorTransform = true;
 
 		curveMesh.material = curveMaterial;
 		this._view.scene.addChild(curveMesh);
@@ -380,7 +527,8 @@ class CurveDemo
 		//curveMaterial.blendMode = BlendMode.ALPHA;
 		//curveMaterial.alphaPremultiplied = false;
 		//curveMaterial.alphaThreshold = 0;
-		curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,1);
+		curveMesh.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+		//curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,0);
 		curveMesh.material = curveMaterial;
 		curveMaterial.useColorTransform = true;
 		this._view.scene.addChild(curveMesh);
