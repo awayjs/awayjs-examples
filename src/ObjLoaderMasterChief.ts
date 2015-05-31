@@ -57,11 +57,11 @@ class ObjLoaderMasterChief
 		this.light.ambientColor = 0x85b2cd;
 		this.light.diffuse = 2.8;
 		this.light.specular = 1.8;
+		this.view.scene.addChild(this.light);
 
 		this.spartan.transform.scale = new Vector3D(.25, .25, .25);
 		this.spartan.y = 0;
-
-		this.view.scene.addChild(this.light);
+		this.view.scene.addChild(this.spartan);
 
 		AssetLibrary.enableParser(OBJParser);
 
@@ -92,7 +92,6 @@ class ObjLoaderMasterChief
 	}
 
 	private spartanFlag    :boolean = false;
-	private terrainObjFlag :boolean = false;
 
 	public onResourceComplete (event:LoaderEvent)
 	{
@@ -121,9 +120,9 @@ class ObjLoaderMasterChief
 						this.spartanFlag = true;
 						this.meshes.push(mesh);
 					} else if (event.url =='assets/terrain.obj') {
-						this.terrainObjFlag = true;
 						this.terrain = <Mesh> d;
 						this.terrain.y = 98;
+						this.terrain.geometry.scaleUV(20, 20);
 						this.view.scene.addChild(this.terrain);
 					}
 
@@ -141,16 +140,13 @@ class ObjLoaderMasterChief
 			}
 		}
 
-		if (this.terrainObjFlag && this.terrainMaterial) {
+		if (this.terrain && this.terrainMaterial)
 			this.terrain.material = this.terrainMaterial;
-			this.terrain.geometry.scaleUV(20, 20);
-		}
 
 		if (this.mat && this.spartanFlag)
 			for (var c:number = 0; c < this.meshes.length; c++)
 				this.meshes[c].material = this.mat;
 
-		this.view.scene.addChild(this.spartan);
 		this.onResize();
 	}
 

@@ -1,3 +1,4 @@
+import AttributesBuffer             = require("awayjs-core/lib/attributes/AttributesBuffer");
 import CurveSubGeometry             = require("awayjs-core/lib/data/CurveSubGeometry");
 import Geometry						= require("awayjs-core/lib/data/Geometry");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
@@ -155,7 +156,7 @@ class CurveDemo
 				var hit:boolean = false;
 				for(var j:number = 0; j < mesh.geometry.subGeometries.length; j++)
 				{
-					var sub:SubGeometryBase = mesh.geometry.subGeometries[j];
+					var sub:CurveSubGeometry = <CurveSubGeometry> mesh.geometry.subGeometries[j];
 					hit = this.hittestMesh(p.x, p.y, sub);
 					if(hit) break;
 				}
@@ -177,26 +178,29 @@ class CurveDemo
 		//console.log(this._view.getRay(this._view.mouseX,this._view.mouseY,0));
 		//console.log(this._view.camera.unproject(this._view.mouseX,this._view.mouseY,0));
 	}
-	private hittestMesh(px:number, py:number, sub:SubGeometryBase):boolean
+	private hittestMesh(px:number, py:number, sub:CurveSubGeometry):boolean
 	{
-		var vstride:number = sub._pStride["vertices"];
-		var cstride:number = sub._pStride["curves"];
-		var coffset:number = sub._pOffset["curves"];
-		var voffset:number = sub._pOffset["vertices"];
+		var posDim:number = sub.positions.dimensions;
+		var curveDim:number = sub.curves.dimensions;
+		var indices:Uint16Array = sub.indices.get(sub.indices.count);
+		var positions:Float32Array = sub.positions.get(sub.positions.count);
+		var curves:Float32Array = sub.curves.get(sub.curves.count);
 
 		for(var k:number = 0; k < sub.indices.length; k+=3)
 		{
-			var id0:number = sub.indices[k];
-			var id1:number = sub.indices[k + 1];
-			var id2:number = sub.indices[k + 2];
+			var id0:number = indices[k];
+			var id1:number = indices[k + 1] * posDim;
+			var id2:number = indices[k + 2] * posDim;
 
-			var ax:number = sub.vertices[id0 * vstride];
-			var ay:number = sub.vertices[id0 * vstride + 1];
-			var bx:number = sub.vertices[id1 * vstride];
-			var by:number = sub.vertices[id1 * vstride + 1];
-			var cx:number = sub.vertices[id2 * vstride];
-			var cy:number = sub.vertices[id2 * vstride + 1];
-
+			var ax:number = positions[id0 * posDim];
+			var ay:number = positions[id0 * posDim + 1];
+			var bx:number = positions[id1];
+			var by:number = positions[id1 + 1];
+			var cx:number = positions[id2];
+			var cy:number = positions[id2 + 1];
+			
+			var curvex:number = curves[id0 * curveDim];
+			var az:number = positions[id0 * posDim + 2];
 
 			//console.log(ax, ay, bx, by, cx, cy);
 
@@ -231,10 +235,7 @@ class CurveDemo
 			dot = (dx * nx) + (dy * ny);
 			//console.log("dot c",dot);
 			if (dot > 0) continue;
-
-
-			var curvex:number = sub.vertices[id0 * cstride + coffset];
-			var az:number = sub.vertices[id0 * vstride + 2];
+			
 			//check if nmot solid
 			if (curvex != 2) {
 
@@ -453,11 +454,11 @@ class CurveDemo
 		curves.push(3,1);
 		curves.push(4,1);
 
-		var curveSubGeometry:CurveSubGeometry = new CurveSubGeometry(true);
+		var curveSubGeometry:CurveSubGeometry = new CurveSubGeometry(new AttributesBuffer());
 		curveSubGeometry.autoDeriveUVs = false;
-		curveSubGeometry.updatePositions(vertices);
-		curveSubGeometry.updateIndices(indices);
-		curveSubGeometry.updateCurves(curves);
+		curveSubGeometry.setPositions(vertices);
+		curveSubGeometry.setIndices(indices);
+		curveSubGeometry.setCurves(curves);
 
 		var geom:Geometry = new Geometry();
 		geom.addSubGeometry(curveSubGeometry);
@@ -510,12 +511,12 @@ class CurveDemo
 		uvs.push(0.5,1);
 		uvs.push(1,0);
 
-		var curveSubGeometry:CurveSubGeometry = new CurveSubGeometry(true);
+		var curveSubGeometry:CurveSubGeometry = new CurveSubGeometry(new AttributesBuffer());
 		curveSubGeometry.autoDeriveUVs = false;
-		curveSubGeometry.updatePositions(vertices);
-		curveSubGeometry.updateIndices(indices);
-		curveSubGeometry.updateCurves(curves);
-		curveSubGeometry.updateUVs(uvs);
+		curveSubGeometry.setPositions(vertices);
+		curveSubGeometry.setIndices(indices);
+		curveSubGeometry.setCurves(curves);
+		curveSubGeometry.setUVs(uvs);
 
 		var geom:Geometry = new Geometry();
 		geom.addSubGeometry(curveSubGeometry);
