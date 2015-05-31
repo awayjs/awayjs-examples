@@ -64,12 +64,22 @@ function _minify(filename) {
 
 gulp.task('package', function(callback){
     watch = false;
-    _package(argv.main, callback);
+    if (argv.main)
+        _package(argv.main, callback);
+    else {
+        console.log("missing --main arg");
+        callback();
+    }
 });
 
 gulp.task('package-watch', function(callback){
     watch = true;
-    _package(argv.main, callback);
+    if (argv.main)
+        _package(argv.main, callback);
+    else {
+        console.log("missing --main arg");
+        callback();
+    }
 });
 
 gulp.task('package-min', ['package'], function(){
