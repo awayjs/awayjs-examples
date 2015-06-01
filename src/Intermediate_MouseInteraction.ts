@@ -60,6 +60,7 @@ import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PickingCollisionVO			= require("awayjs-display/lib/pick/PickingCollisionVO");
 import RaycastPicker				= require("awayjs-display/lib/pick/RaycastPicker");
+import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveCylinderPrefab		= require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
 import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
@@ -67,7 +68,6 @@ import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTor
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 
@@ -264,7 +264,7 @@ class Intermediate_MouseInteraction
 		var textureMaterial:MethodMaterial = new MethodMaterial(bitmapTexture);
 		textureMaterial.lightPicker = this._lightPicker;
 		model.material = textureMaterial;
-		model.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
+		model.pickingCollider = new JSPickingCollider();
 
 		// Apply mouse interactivity.
 		model.mouseEnabled = model.mouseChildren = true;
@@ -331,7 +331,7 @@ class Intermediate_MouseInteraction
 		if( usesTriangleCollider ) {
 			// AS3 triangle pickers for meshes with low poly counts are faster than pixel bender ones.
 			//				mesh.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all meshes
-			mesh.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
+			mesh.pickingCollider = new JSPickingCollider();
 			//				mesh.pickingCollider = PickingColliderType.AS3_BEST_HIT; // slower and more accurate, best for meshes with folds
 			//				mesh.pickingCollider = PickingColliderType.AUTO_FIRST_ENCOUNTERED; // automatically decides when to use pixel bender or actionscript
 		}
