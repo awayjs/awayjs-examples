@@ -1,12 +1,9 @@
 import AttributesBuffer             = require("awayjs-core/lib/attributes/AttributesBuffer");
-import CurveSubGeometry             = require("awayjs-core/lib/data/CurveSubGeometry");
-import Geometry						= require("awayjs-core/lib/data/Geometry");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
@@ -14,9 +11,11 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
+import CurveSubGeometry             = require("awayjs-display/lib/base/CurveSubGeometry");
+import Geometry						= require("awayjs-display/lib/base/Geometry");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");

@@ -39,7 +39,6 @@ THE SOFTWARE.
 
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
@@ -52,6 +51,7 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Timer						= require("awayjs-core/lib/utils/Timer");
 
+import Geometry						= require("awayjs-display/lib/base/Geometry");
 import Loader						= require("awayjs-display/lib/containers/Loader");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");

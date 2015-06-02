@@ -1,6 +1,5 @@
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
@@ -203,8 +202,6 @@ class AircraftDemo
                         case Mesh.assetType:
                             var mesh:Mesh = <Mesh> asset;
                             this._f14Geom.addChild(mesh);
-                            break;
-                        case Geometry.assetType:
                             break;
                     }
                 }

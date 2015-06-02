@@ -39,7 +39,6 @@ THE SOFTWARE.
 
 import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
-import Geometry						= require("awayjs-core/lib/data/Geometry");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -48,6 +47,7 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
+import Geometry						= require("awayjs-display/lib/base/Geometry");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");

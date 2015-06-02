@@ -1,4 +1,3 @@
-import Geometry						= require("awayjs-core/lib/data/Geometry");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -14,12 +13,12 @@ import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
 import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import JSPickingCollider			= require("awayjs-renderergl/lib/pick/JSPickingCollider");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
@@ -159,15 +158,12 @@ class AWDSuzanne
 					}
 
 					mesh.transform.scale = new Vector3D(500, 500, 500);
-					mesh.pickingCollider = new JSPickingCollider(this._renderer.renderablePool);
+					mesh.pickingCollider = new JSPickingCollider();
 
 					mesh.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					mesh.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
 					this._view.scene.addChild(mesh);
 
-					break;
-
-				case Geometry.assetType:
 					break;
 			}
 		}

@@ -34,8 +34,6 @@
 
  */
 
-import Geometry						= require("awayjs-core/lib/data/Geometry");
-import SubGeometryBase				= require("awayjs-core/lib/data/SubGeometryBase");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -46,6 +44,8 @@ import OrthographicProjection		= require("awayjs-core/lib/projections/Orthograph
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
+import Geometry						= require("awayjs-display/lib/base/Geometry");
+import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
