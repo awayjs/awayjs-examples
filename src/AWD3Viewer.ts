@@ -320,7 +320,7 @@ class AWD3Viewer
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/mask_flicker.awd"));
+		loader.load(new URLRequest("assets/AWD3/flicker.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -336,6 +336,7 @@ class AWD3Viewer
 		//loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
 		//loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
+		//loader.load(new URLRequest("assets/AWD3/intro_icycle.awd"));
 
 	}
 
@@ -407,6 +408,8 @@ class AWD3Viewer
 	private onEnterFrame(dt: number): void {
 		this._time += dt;
 
+		//if (this._rootTimeLine)
+		//	this._rootTimeLine.logHierarchy();
 		//update camera controler
 		// this._cameraController.update();
 
