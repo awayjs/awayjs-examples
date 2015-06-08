@@ -1,0 +1,87 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'awayjs-' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.32
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 warn package.json awayjs-examples@0.7.8 No repository field.
+6 verbose readDependencies using package.json deps
+7 verbose cache add [ 'awayjs-', null ]
+8 verbose cache add name=undefined spec="awayjs-" args=["awayjs-",null]
+9 verbose parsed url { protocol: null,
+9 verbose parsed url   slashes: null,
+9 verbose parsed url   auth: null,
+9 verbose parsed url   host: null,
+9 verbose parsed url   port: null,
+9 verbose parsed url   hostname: null,
+9 verbose parsed url   hash: null,
+9 verbose parsed url   search: null,
+9 verbose parsed url   query: null,
+9 verbose parsed url   pathname: 'awayjs-',
+9 verbose parsed url   path: 'awayjs-',
+9 verbose parsed url   href: 'awayjs-' }
+10 silly lockFile 392b144d-awayjs awayjs-
+11 verbose lock awayjs- C:\Users\80prozent\AppData\Roaming\npm-cache\392b144d-awayjs.lock
+12 silly lockFile 392b144d-awayjs awayjs-
+13 silly lockFile 392b144d-awayjs awayjs-
+14 verbose addNamed [ 'awayjs-', '' ]
+15 verbose addNamed [ null, '*' ]
+16 silly lockFile c01677a0-awayjs awayjs-@
+17 verbose lock awayjs-@ C:\Users\80prozent\AppData\Roaming\npm-cache\c01677a0-awayjs.lock
+18 silly addNameRange { name: 'awayjs-', range: '*', hasData: false }
+19 verbose request where is /awayjs-
+20 verbose request registry https://registry.npmjs.org/
+21 verbose request id 07e60e77109c70c9
+22 verbose url raw /awayjs-
+23 verbose url resolving [ 'https://registry.npmjs.org/', './awayjs-' ]
+24 verbose url resolved https://registry.npmjs.org/awayjs-
+25 verbose request where is https://registry.npmjs.org/awayjs-
+26 info trying registry request attempt 1 at 19:05:04
+27 http GET https://registry.npmjs.org/awayjs-
+28 http 404 https://registry.npmjs.org/awayjs-
+29 verbose headers { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+29 verbose headers   'content-type': 'application/json',
+29 verbose headers   'cache-control': 'max-age=0',
+29 verbose headers   'content-length': '51',
+29 verbose headers   'accept-ranges': 'bytes',
+29 verbose headers   date: 'Fri, 05 Jun 2015 17:05:13 GMT',
+29 verbose headers   via: '1.1 varnish',
+29 verbose headers   age: '0',
+29 verbose headers   connection: 'keep-alive',
+29 verbose headers   'x-served-by': 'cache-fra1228-FRA',
+29 verbose headers   'x-cache': 'MISS',
+29 verbose headers   'x-cache-hits': '0',
+29 verbose headers   'x-timer': 'S1433523913.880813,VS0,VE109' }
+30 silly registry.get cb [ 404,
+30 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+30 silly registry.get     'content-type': 'application/json',
+30 silly registry.get     'cache-control': 'max-age=0',
+30 silly registry.get     'content-length': '51',
+30 silly registry.get     'accept-ranges': 'bytes',
+30 silly registry.get     date: 'Fri, 05 Jun 2015 17:05:13 GMT',
+30 silly registry.get     via: '1.1 varnish',
+30 silly registry.get     age: '0',
+30 silly registry.get     connection: 'keep-alive',
+30 silly registry.get     'x-served-by': 'cache-fra1228-FRA',
+30 silly registry.get     'x-cache': 'MISS',
+30 silly registry.get     'x-cache-hits': '0',
+30 silly registry.get     'x-timer': 'S1433523913.880813,VS0,VE109' } ]
+31 silly lockFile c01677a0-awayjs awayjs-@
+32 silly lockFile c01677a0-awayjs awayjs-@
+33 error 404 404 Not Found: awayjs-
+33 error 404
+33 error 404 'awayjs-' is not in the npm registry.
+33 error 404 You should bug the author to publish it
+33 error 404 It was specified as a dependency of 'awayjs-examples'
+33 error 404
+33 error 404 Note that you can also install from a
+33 error 404 tarball, folder, or http url, or git url.
+34 error System Windows_NT 6.1.7601
+35 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "awayjs-"
+36 error cwd C:\Users\80prozent\Documents\GitHub\_awayjs\awayjs-examples
+37 error node -v v0.10.32
+38 error npm -v 1.4.28
+39 error code E404
+40 verbose exit [ 1, true ]

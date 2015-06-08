@@ -322,7 +322,7 @@ class AWD3Viewer
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/icycle_2_awd.awd"));
+		loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
