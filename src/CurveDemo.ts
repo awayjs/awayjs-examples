@@ -17,6 +17,7 @@ import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import CurveSubGeometry             = require("awayjs-display/lib/base/CurveSubGeometry");
 import Geometry						= require("awayjs-display/lib/base/Geometry");
 import View							= require("awayjs-display/lib/containers/View");
+import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
@@ -26,6 +27,10 @@ import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/
 import MaterialBase		        	= require("awayjs-display/lib/materials/MaterialBase");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
+import RaycastPicker				= require("awayjs-display/lib/pick/RaycastPicker");
+import PickingCollisionVO			= require("awayjs-display/lib/pick/PickingCollisionVO");
+import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 
 import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
 import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubMesh");
@@ -49,6 +54,9 @@ class CurveDemo
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
 
+	//picking
+	private _raycastPicker:RaycastPicker = new RaycastPicker(false);
+
 	//navigation
 	private _lastPanAngle:number;
 	private _lastTiltAngle:number;
@@ -56,9 +64,15 @@ class CurveDemo
 	private _lastMouseY:number;
 	private _move:boolean;
 
+	private _container:DisplayObjectContainer;
+
 	constructor ()
 	{
+		this._container = new DisplayObjectContainer();
+
 		this.initView();
+
+		this._view.scene.addChild(this._container);
 
 		this._raf = new RequestAnimationFrame(this.render, this);
 		this._raf.start();
@@ -68,7 +82,7 @@ class CurveDemo
 
 		this.onResize();
 
-
+		this._raycastPicker.onlyMouseEnabled = false;
 
 	}
 
@@ -79,7 +93,7 @@ class CurveDemo
 	{
 		this._view = new View(new DefaultRenderer());// Create the Away3D View
 		this._view.backgroundColor = 0x224466;// Change the background color to black
-
+		this._view.mousePicker = new RaycastPicker(true);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._view.camera, null, 0, 0, -150, 10, 90);
@@ -121,7 +135,7 @@ class CurveDemo
 			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
 			this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
 		}
-
+	//return;
 		//create a ray to cast
 		var rayPosition:Vector3D = this._view.unproject(this._view.mouseX, this._view.mouseY, 0);
 		var rayDirection:Vector3D = this._view.unproject(this._view.mouseX, this._view.mouseY, 1).subtract(rayPosition);
@@ -142,15 +156,27 @@ class CurveDemo
 		rayDirection.scaleBy(t);
 		var p:Vector3D = rayPosition.add(rayDirection);
 
+
+		var hitContainer:boolean = this._container.hitTestPoint(p.x, p.y, true);
+		console.log("hit container", hitContainer);
+		return;
 		//console.log(distance, t);
 		console.log(p);
 
 		for(var i:number = 0; i < this._view.scene.numChildren; i++)
 		{
 			var child:DisplayObject = this._view.scene.getChildAt(i);
+
+			var hitChild:boolean = child.hitTestPoint(p.x, p.y, true);
+			console.log("hitChild", hitChild);
 			var mesh:Mesh = <Mesh>child;
 			if(mesh)
 			{
+
+				if(mesh.pickingCollider)
+				{
+					//mesh.pickingCollider.
+				}
 				//console.log(mesh.geometry.subGeometries[0]._pIndices.length);
 				var hit:boolean = false;
 				for(var j:number = 0; j < mesh.geometry.subGeometries.length; j++)
@@ -176,6 +202,26 @@ class CurveDemo
 		}
 		//console.log(this._view.getRay(this._view.mouseX,this._view.mouseY,0));
 		//console.log(this._view.camera.unproject(this._view.mouseX,this._view.mouseY,0));
+
+		var collidingObject:PickingCollisionVO = this._raycastPicker.getSceneCollision(this._view.camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
+
+		if (collidingObject) {
+			// Show tracers.
+			//this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
+
+			// Update position tracer.
+			//this._scenePositionTracer.transform.position = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+
+			// Update normal tracer.
+			//this._sceneNormalTracer.transform.position = this._scenePositionTracer.transform.position;
+
+			//var normal:Vector3D = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
+			//normal.normalize();
+			//normal.scaleBy( 25 );
+			//this._sceneNormalTracer.endPosition = normal.clone();
+
+			console.log("picking worked", collidingObject.index);
+		}
 	}
 	private hittestMesh(px:number, py:number, sub:CurveSubGeometry):boolean
 	{
@@ -471,7 +517,8 @@ class CurveDemo
 		curveMaterial.useColorTransform = true;
 
 		curveMesh.material = curveMaterial;
-		this._view.scene.addChild(curveMesh);
+		//this._view.scene.addChild(curveMesh);
+		this._container.addChild(curveMesh);
 	}
 	private addTexturedTris()
 	{
@@ -521,6 +568,11 @@ class CurveDemo
 		geom.addSubGeometry(curveSubGeometry);
 		var curveMesh:Mesh = new Mesh(geom);
 
+		curveMesh._pPickingCollider = new JSPickingCollider();
+		curveMesh.mouseEnabled = true;
+		curveMesh.mouseChildren = true;
+		curveMesh.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onMeshMouseOver(event));
+
 		var curveMaterial:BasicMaterial = new BasicMaterial(this._texture);
 		curveMaterial.preserveAlpha = true;
 		curveMaterial.alphaBlending = true;
@@ -531,8 +583,19 @@ class CurveDemo
 		//curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,0);
 		curveMesh.material = curveMaterial;
 		curveMaterial.useColorTransform = true;
-		this._view.scene.addChild(curveMesh);
+		//this._view.scene.addChild(curveMesh);
+		this._container.addChild(curveMesh);
 	}
+
+	/**
+	 * mesh listener for mouse over interaction
+	 */
+	private onMeshMouseOver(event:AwayMouseEvent):void
+	{
+		var mesh:Mesh = <Mesh> event.object;
+		console.log("MESH MOUSE OVER");
+	}
+
 	/**
 	 *
 	 */
