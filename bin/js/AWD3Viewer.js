@@ -38,6 +38,7 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var ParserEvent = require("awayjs-core/lib/events/ParserEvent");
 var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicProjection");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/containers/View");
@@ -191,7 +192,7 @@ var AWD3Viewer = (function () {
     AWD3Viewer.prototype.initEngine = function () {
         //create the view
         this._view = new View(new Renderer2D());
-        this._view.backgroundColor = 0xffffff;
+        this._view.backgroundColor = 0x000000;
         this._stage_width = 550;
         this._stage_height = 400;
         //for plugin preview-runtime:
@@ -235,9 +236,10 @@ var AWD3Viewer = (function () {
         var loader = new Loader();
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
+        loader.addEventListener(ParserEvent.PARSE_ERROR, function (event) { return _this.onParseError(event); });
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
-        loader.load(new URLRequest("assets/AWD3/flicker.awd"));
+        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -279,6 +281,7 @@ var AWD3Viewer = (function () {
         }
         else if (event.asset.isAsset(Mesh)) {
             var one_mesh = event.asset;
+            one_mesh.debugVisible = true;
         }
         else if (event.asset.isAsset(Billboard)) {
             var one_billboard = event.asset;
@@ -289,6 +292,12 @@ var AWD3Viewer = (function () {
             this._rootTimeLine = one_mc;
             this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
         }
+    };
+    /**
+     * loader listener for asset complete events
+     */
+    AWD3Viewer.prototype.onParseError = function (event) {
+        console.log(event.message);
     };
     /**
      * loader listener for asset complete events
@@ -427,7 +436,7 @@ window.onload = function () {
     new AWD3Viewer();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/display/MovieClip":undefined,"awayjs-player/lib/partition/Partition2D":undefined,"awayjs-player/lib/renderer/Renderer2D":undefined}]},{},["./src/AWD3Viewer.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-player/lib/display/MovieClip":undefined,"awayjs-player/lib/partition/Partition2D":undefined,"awayjs-player/lib/renderer/Renderer2D":undefined}]},{},["./src/AWD3Viewer.ts"])
 
 
 //# sourceMappingURL=AWD3Viewer.js.map

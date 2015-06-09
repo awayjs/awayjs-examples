@@ -38,6 +38,7 @@ import AssetLibrary							= require("awayjs-core/lib/library/AssetLibrary");
 import AssetEvent							= require("awayjs-core/lib/events/AssetEvent");
 import URLRequest							= require("awayjs-core/lib/net/URLRequest");
 import LoaderEvent							= require("awayjs-core/lib/events/LoaderEvent");
+import ParserEvent							= require("awayjs-core/lib/events/ParserEvent");
 import Vector3D								= require("awayjs-core/lib/geom/Vector3D");
 import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
 import OrthographicProjection				= require("awayjs-core/lib/projections/OrthographicProjection");
@@ -269,7 +270,7 @@ class AWD3Viewer
 	{
 		//create the view
 		this._view = new View(new Renderer2D());
-		this._view.backgroundColor = 0xffffff;
+		this._view.backgroundColor = 0x000000;
 		this._stage_width = 550;
 		this._stage_height = 400;
 
@@ -316,11 +317,12 @@ class AWD3Viewer
 		var loader:Loader = new Loader();
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
 		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
+		loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
 
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-		loader.load(new URLRequest("assets/AWD3/flicker.awd"));
+		loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"));
 		//loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
 		//loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 		//loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -373,6 +375,7 @@ class AWD3Viewer
 		}
 		else if(event.asset.isAsset(Mesh)) {
 			var one_mesh:Mesh = <Mesh> event.asset;
+			one_mesh.debugVisible = true;
 			//this.loaded_display_objects.push(one_mesh);
 		}
 		else if(event.asset.isAsset(Billboard)) {
@@ -385,6 +388,13 @@ class AWD3Viewer
 			this._rootTimeLine = one_mc;
 			this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
 		}
+	}
+
+	/**
+	 * loader listener for asset complete events
+	 */
+	private onParseError(event: ParserEvent): void {
+		console.log(event.message);
 	}
 
 	/**
