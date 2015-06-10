@@ -15,7 +15,7 @@
  Copyright (c) The Away Foundation http://www.theawayfoundation.org
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the “Software”), to deal
+ of this software and associated documentation files (the ï¿½Softwareï¿½), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
@@ -24,7 +24,7 @@
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ THE SOFTWARE IS PROVIDED ï¿½AS ISï¿½, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -140,27 +140,14 @@ class AWD3ViewerMinimal
         this._isperspective=true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-        this._projection.focalLength = 1000;
-        this._projection.preserveFocalLength = true;
+        this._projection.fieldOfView = 30;
         this._projection.originX = 0;
         this._projection.originY = 0;
         this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
         //this._projection.far = 500000;
         this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
-        this._ortho_projection = new OrthographicProjection(500);
-        this._ortho_projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-        this._ortho_projection.far = 500000;
-        this._ortho_projection.near = 0.1;
-        this._ortho_projection.originX = 0;
-        this._ortho_projection.originY = 0;
-        this._camera_ortho = new Camera();
-        this._camera_ortho.projection = this._ortho_projection;
         this._view.camera = this._camera_perspective;
-        this._camera_ortho.x = 0;
-        this._camera_ortho.y = 0;
-        this._camera_ortho.scaleY = -1;
-        this._camera_ortho.z = 0;
     }
 
     /**
@@ -286,6 +273,8 @@ class AWD3ViewerMinimal
         this._view.x         = 0;
         this._view.width     = window.innerWidth;
         this._view.height    = window.innerHeight;
+        this._projection.fieldOfView = Math.atan(0.464/2)*360/Math.PI;
+        this._projection.originX = (0.5 - 0.5*(window.innerHeight/464)*(700/window.innerWidth));
     }
 
 }
