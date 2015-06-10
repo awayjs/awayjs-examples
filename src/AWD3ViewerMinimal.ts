@@ -142,8 +142,8 @@ class AWD3ViewerMinimal
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._projection.focalLength = 1000;
         this._projection.preserveFocalLength = true;
-        this._projection.originX = 0.5;
-        this._projection.originY = 0.5;
+        this._projection.originX = 0;
+        this._projection.originY = 0;
         this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
         //this._projection.far = 500000;
@@ -152,8 +152,8 @@ class AWD3ViewerMinimal
         this._ortho_projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._ortho_projection.far = 500000;
         this._ortho_projection.near = 0.1;
-        this._ortho_projection.originX = 0.5;
-        this._ortho_projection.originY = 0.5;
+        this._ortho_projection.originX = 0;
+        this._ortho_projection.originY = 0;
         this._camera_ortho = new Camera();
         this._camera_ortho.projection = this._ortho_projection;
         this._view.camera = this._camera_perspective;
@@ -253,8 +253,8 @@ class AWD3ViewerMinimal
         if (this._rootTimeLine) {
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
             this._view.scene.addChild(this._rootTimeLine);
-            this._rootTimeLine.x=-this._stage_width/2;
-            this._rootTimeLine.y=-this._stage_height/2;
+            //this._rootTimeLine.x=-this._stage_width/2;
+            //this._rootTimeLine.y=-this._stage_height/2;
             // autoplay like in Flash
             //this._rootTimeLine.play();
         }
