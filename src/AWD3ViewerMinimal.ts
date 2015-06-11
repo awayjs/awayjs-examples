@@ -155,8 +155,6 @@ class AWD3ViewerMinimal
      */
     private initObjects(): void
     {
-        AssetLibrary.enableParser(AWDParser);
-
         //kickoff asset loading
         var loader:Loader = new Loader();
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
@@ -166,7 +164,7 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"));
+        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -221,6 +219,11 @@ class AWD3ViewerMinimal
         }
         else if(event.asset.isAsset(MovieClip)) {
             var one_mc:MovieClip = <MovieClip> event.asset;
+            if (one_mc.name == "border" || one_mc.name == "dream" || one_mc.name == "IAP") {
+                console.log("NAME:", one_mc.name)
+                one_mc.mouseEnabled = false;
+                one_mc.mouseChildren = false;
+            }
             this._rootTimeLine = one_mc;
             this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
         }
