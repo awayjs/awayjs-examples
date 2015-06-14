@@ -44,6 +44,7 @@ import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/O
 import OrthographicProjection				= require("awayjs-core/lib/projections/OrthographicProjection");
 import Keyboard								= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame				= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import IOErrorEvent				= require("awayjs-core/lib/events/IOErrorEvent");
 
 import View									= require("awayjs-display/lib/containers/View");
 import Mesh									= require("awayjs-display/lib/entities/Mesh");
@@ -73,6 +74,8 @@ import TextFormat							= require("awayjs-display/lib/text/TextFormat");
 
 class AWD3ViewerMinimal
 {
+    private _fps:number = 30;
+
     //engine variables
     private _view: View;
 
@@ -160,11 +163,12 @@ class AWD3ViewerMinimal
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
         loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
         loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
+        loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_awd.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_complete_no_sounds.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -229,6 +233,15 @@ class AWD3ViewerMinimal
         }
     }
 
+
+    /**
+     * loader listener for asset complete events
+     */
+    private onLoadError(event: IOErrorEvent):void
+    {
+        console.log("LoadError");
+    }
+
     /**
      * loader listener for asset complete events
      */
@@ -254,7 +267,10 @@ class AWD3ViewerMinimal
      * Render loop
      */
     private onEnterFrame(dt: number): void {
-        this._time += dt;
+
+        var frameMarker:number = Math.floor(1000/this._fps);
+
+        this._time += Math.min(dt, frameMarker);
 
         //if (this._rootTimeLine)
         //	this._rootTimeLine.logHierarchy();
@@ -267,7 +283,10 @@ class AWD3ViewerMinimal
         }
         //console.log("RENDER = ");
         //update view
-        this._view.render();
+        if (this._time >= frameMarker) {
+            this._time -= frameMarker;
+            this._view.render();
+        }
     }
 
     private onResize(event = null): void
