@@ -284,7 +284,7 @@ class AWD3ViewerMinimal
         //console.log("RENDER = ");
         //update view
         if (this._time >= frameMarker) {
-            this._time -= frameMarker;
+            this._time = 0;
             this._view.render();
         }
     }
