@@ -40,7 +40,7 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
@@ -83,7 +83,7 @@ class Intermediate_MouseInteraction
 	private _camera:Camera;
 	private _renderer:DefaultRenderer;
 	private _view:View;
-	private _token:AssetLoaderToken;
+	private _session:LoaderSession;
 	private _cameraController:HoverController;
 
 	private _timer:RequestAnimationFrame;
@@ -233,8 +233,9 @@ class Intermediate_MouseInteraction
 
 
 		// Load a head model that we will be able to paint on on mouse down.
-		this._token = AssetLibrary.load(new URLRequest('assets/head.obj'), null, null, new OBJParser( 25 ));
-		this._token.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+		this._session = AssetLibrary.getLoaderSession();
+		this._session.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+		this._session.load(new URLRequest('assets/head.obj'), null, null, new OBJParser( 25 ));
 
 		// Produce a bunch of objects to be around the scene.
 		this.createABunchOfObjects();

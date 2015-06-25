@@ -2,9 +2,8 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -28,7 +27,6 @@ class AWDSuzanne
 
 	private _renderer:DefaultRenderer;
 	private _view:View;
-	private _token:AssetLoaderToken;
 	private _timer:RequestAnimationFrame;
 	private _suzane:Mesh;
 	private _light:DirectionalLight;
@@ -70,8 +68,9 @@ class AWDSuzanne
 
 		AssetLibrary.enableParser(AWDParser);
 
-		this._token = AssetLibrary.load(new URLRequest('assets/suzanne.awd'));
-		this._token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:LoaderSession = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/suzanne.awd'));
 	}
 
 	/**
@@ -127,7 +126,7 @@ class AWDSuzanne
 	 */
 	public onResourceComplete(e:LoaderEvent)
 	{
-		var loader:AssetLoader = <AssetLoader> e.target;
+		var loader:LoaderSession = <LoaderSession> e.target;
 		var numAssets:number = loader.baseDependency.assets.length;
 
 		for (var i:number = 0; i < numAssets; ++i) {

@@ -39,7 +39,7 @@ import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -130,6 +130,7 @@ class Basic_SkyBox
 	{
 		this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
 		this._torus.material = this._torusMaterial;
+		this._torus.debugVisible = true;
 		this._view.scene.addChild(this._torus);
 	}
 
@@ -150,11 +151,11 @@ class Basic_SkyBox
 		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
-		var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
-		assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
+		var loaderContext:LoaderContext = new LoaderContext();
+		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
 		//environment texture
-		AssetLibrary.load(new URLRequest("assets/skybox/snow_texture.cube"), assetLoaderContext);
+		AssetLibrary.load(new URLRequest("assets/skybox/snow_texture.cube"), loaderContext);
 	}
 
 

@@ -56,7 +56,7 @@ import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext				= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext					= require("awayjs-core/lib/library/LoaderContext");
 import URLLoader						= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest						= require("awayjs-core/lib/net/URLRequest");
@@ -524,7 +524,7 @@ class Advanced_MultiPassSponzaDemo
 
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
 		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
-		loader.loadData(urlLoader.data, new AssetLoaderContext(false), null, new AWDParser());
+		loader.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
 		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
 		urlLoader.removeEventListener(Event.COMPLETE, this.parseAWDDelegate);
@@ -725,11 +725,11 @@ class Advanced_MultiPassSponzaDemo
 		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
-		var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
-		assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
+		var loaderContext:LoaderContext = new LoaderContext();
+		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
 		//environment texture
-		AssetLibrary.load(new URLRequest("assets/skybox/hourglass_texture.cube"), assetLoaderContext);
+		AssetLibrary.load(new URLRequest("assets/skybox/hourglass_texture.cube"), loaderContext);
 
 		//globe textures
 		AssetLibrary.load(new URLRequest("assets/fire.png"));

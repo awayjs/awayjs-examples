@@ -45,7 +45,6 @@ import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");

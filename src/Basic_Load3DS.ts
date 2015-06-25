@@ -41,7 +41,7 @@ import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -182,11 +182,11 @@ class Basic_Load3DS
 		this._timer.start();
 
 		//setup the url map for textures in the 3ds file
-		var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
-		assetLoaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
+		var loaderContext:LoaderContext = new LoaderContext();
+		loaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
 
 		this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
-		this._loader.load(new URLRequest("assets/soldier_ant.3ds"), assetLoaderContext, null, new Max3DSParser(false));
+		this._loader.load(new URLRequest("assets/soldier_ant.3ds"), loaderContext, null, new Max3DSParser(false));
 
 		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/CoarseRedSand.jpg"));

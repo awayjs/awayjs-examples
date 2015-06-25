@@ -45,7 +45,7 @@ import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
@@ -325,8 +325,8 @@ class Intermediate_MD5Animation
 		this._timer.start();
 
 		//setup the url map for textures in the cubemap file
-		var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
-		assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
+		var loaderContext:LoaderContext = new LoaderContext();
+		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
 		//load hellknight mesh
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
@@ -334,7 +334,7 @@ class Intermediate_MD5Animation
 		AssetLibrary.load(new URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
 
 		//load environment texture
-		AssetLibrary.load(new URLRequest("assets/skybox/grimnight_texture.cube"), assetLoaderContext);
+		AssetLibrary.load(new URLRequest("assets/skybox/grimnight_texture.cube"), loaderContext);
 
 		//load light textures
 		AssetLibrary.load(new URLRequest("assets/redlight.png"));

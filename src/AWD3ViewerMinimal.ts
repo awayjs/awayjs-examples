@@ -1,6 +1,6 @@
 /*
 
- AWD3 file loading example in AwayJS
+ AWD3 file loading example in
 
  Demonstrates:
 
@@ -168,7 +168,7 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
 
-        loader.load(new URLRequest("assets/AWD3/Icycle2_awd/icycle_2_complete_no_sounds.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));

@@ -47,7 +47,7 @@ import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ProgressEvent				= require("awayjs-core/lib/events/ProgressEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
@@ -317,7 +317,7 @@ class Intermediate_MonsterHeadShading
 		//setup parser
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
 		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
-		AssetLibrary.loadData(urlLoader.data, new AssetLoaderContext(false), null, new AWDParser());
+		AssetLibrary.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
 		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
 		urlLoader.removeEventListener(AwayEvent.COMPLETE, this.parseAWDDelegate);

@@ -5,9 +5,8 @@ import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
+import LoaderContext			    = require("awayjs-core/lib/library/LoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Debug                		= require("awayjs-core/lib/utils/Debug");
@@ -92,8 +91,9 @@ class AircraftDemo
     
     private loadAsset(path:string)
     {
-        var token:AssetLoaderToken = AssetLibrary.load(new URLRequest(path));
-        token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+        var session:LoaderSession = AssetLibrary.getLoaderSession();
+        session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+        session.load(new URLRequest(path));
     }
     
     private initParsers()
@@ -186,7 +186,7 @@ class AircraftDemo
     
     public onResourceComplete(event:LoaderEvent)
     {
-        var loader:AssetLoader = <AssetLoader> event.target;
+        var loader:LoaderSession = <LoaderSession> event.target;
         var numAssets:number = loader.baseDependency.assets.length;
         var i:number = 0;
         

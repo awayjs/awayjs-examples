@@ -44,7 +44,7 @@ import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import Point						= require("awayjs-core/lib/geom/Point");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoaderContext			= require("awayjs-core/lib/library/AssetLoaderContext");
+import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
@@ -331,11 +331,11 @@ class Intermediate_Globe
 		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
-		var assetLoaderContext:AssetLoaderContext = new AssetLoaderContext();
-		assetLoaderContext.dependencyBaseUrl = "assets/skybox/";
+		var loaderContext:LoaderContext = new LoaderContext();
+		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
 		//environment texture
-		AssetLibrary.load(new URLRequest("assets/skybox/space_texture.cube"), assetLoaderContext);
+		AssetLibrary.load(new URLRequest("assets/skybox/space_texture.cube"), loaderContext);
 
 		//globe textures
 		AssetLibrary.load(new URLRequest("assets/globe/cloud_combined_2048.jpg"));

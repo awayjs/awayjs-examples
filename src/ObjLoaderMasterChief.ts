@@ -2,8 +2,7 @@ import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import AssetLoader					= require("awayjs-core/lib/library/AssetLoader");
-import AssetLoaderToken				= require("awayjs-core/lib/library/AssetLoaderToken");
+import LoaderSession					= require("awayjs-core/lib/library/LoaderSession");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -24,7 +23,6 @@ import OBJParser					= require("awayjs-parsers/lib/OBJParser");
 
 class ObjLoaderMasterChief
 {
-	private token:AssetLoaderToken;
 	private view:View;
 	private raf:RequestAnimationFrame;
 	private meshes:Array<Mesh> = new Array<Mesh>();
@@ -65,17 +63,23 @@ class ObjLoaderMasterChief
 
 		AssetLibrary.enableParser(OBJParser);
 
-		this.token = AssetLibrary.load(new URLRequest('assets/Halo_3_SPARTAN4.obj'));
-		this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:LoaderSession;
+		
+		session = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/Halo_3_SPARTAN4.obj'));
 
-		this.token = AssetLibrary.load(new URLRequest('assets/terrain.obj'));
-		this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/terrain.obj'));
 
-		this.token = AssetLibrary.load(new URLRequest('assets/masterchief_base.png'));
-		this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/masterchief_base.png'));
 
-		this.token = AssetLibrary.load(new URLRequest('assets/stone_tx.jpg'));
-		this.token.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoaderSession();
+		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.load(new URLRequest('assets/stone_tx.jpg'));
 
 		window.onresize = (event:UIEvent) => this.onResize();
 
@@ -95,14 +99,14 @@ class ObjLoaderMasterChief
 
 	public onResourceComplete (event:LoaderEvent)
 	{
-		var loader:AssetLoader = <AssetLoader> event.target;
+		var loader:LoaderSession = <LoaderSession> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		console.log( '------------------------------------------------------------------------------');
 		console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , event , l , loader );
 		console.log( '------------------------------------------------------------------------------');
 
-		var loader:AssetLoader = <AssetLoader> event.target;
+		var loader:LoaderSession = <LoaderSession> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		for (var c:number = 0; c < l; c++) {
