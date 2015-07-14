@@ -223,7 +223,7 @@ class AWD3ViewerMinimal
         }
         else if(event.asset.isAsset(MovieClip)) {
             var one_mc:MovieClip = <MovieClip> event.asset;
-            if (one_mc.name == "border" || one_mc.name == "dream" || one_mc.name == "IAP") {
+            if (one_mc.name == "border" || one_mc.name == "dream" || one_mc.name == "IAP Menu" || one_mc.name == "shoptag_shapes" || one_mc.name == "shopttag_cliffedges") {
                 console.log("NAME:", one_mc.name)
                 one_mc.mouseEnabled = false;
                 one_mc.mouseChildren = false;
