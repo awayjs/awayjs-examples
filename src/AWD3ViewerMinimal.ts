@@ -97,15 +97,21 @@ class AWD3ViewerMinimal
     private _camera_perspective: Camera;
     private _camera_ortho: Camera;
     private _stage_width: number;
-    private _stage_height: number
+    private _stage_height: number;
 
     private counter: number;
+
+
+    private _replaced_gettext:boolean;
+    private _updated_property:boolean;
 
     /**
      * Constructor
      */
     constructor()
     {
+        this._replaced_gettext=false
+        this._updated_property=false;
         this.init();
     }
 
@@ -135,11 +141,11 @@ class AWD3ViewerMinimal
         this._stage_height = 400;
 
         //for plugin preview-runtime:
-        /*
+/*
          this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
          this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
          this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
-         */
+*/
         this._isperspective=true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
@@ -166,7 +172,7 @@ class AWD3ViewerMinimal
         loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 
         //for plugin preview-runtime:
-        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML));
+        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
         loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
@@ -263,6 +269,9 @@ class AWD3ViewerMinimal
         }
     }
 
+    private getText(input_string: string): string {
+        return "test getText";
+    }
     /**
      * Render loop
      */
@@ -280,6 +289,26 @@ class AWD3ViewerMinimal
         if (this._rootTimeLine != undefined) {
             //console.log("RENDER = ");
             this._rootTimeLine.update(dt);
+            if(!this._replaced_gettext) {
+                // getText is defined on frame 4 of root-timeline.
+                // once it has been defined by framescript, we want to replace it
+                if (this._rootTimeLine.adapter.hasOwnProperty("getText")) {
+                    console.log("function getText found");
+                    this._rootTimeLine.adapter["getText"] = this.getText;
+                    console.log("function getText replaced");
+                    this._replaced_gettext=true;
+                }
+            }
+            if(!this._updated_property) {
+                // getText is defined on frame 1 of root-timeline.
+                // once it has been defined by framescript, we want to control it
+                if (this._rootTimeLine.adapter.hasOwnProperty("IAPAVAILABLE")) {
+                    console.log("property IAPAVAILABLE found = " + this._rootTimeLine.adapter["IAPAVAILABLE"]);
+                    this._rootTimeLine.adapter["IAPAVAILABLE"] = false;
+                    console.log("property IAPAVAILABLE changed to = " + this._rootTimeLine.adapter["IAPAVAILABLE"]);
+                    this._updated_property=true;
+                }
+            }
         }
         //console.log("RENDER = ");
         //update view
