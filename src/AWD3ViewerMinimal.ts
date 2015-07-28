@@ -63,7 +63,7 @@ import MethodMaterial						= require("awayjs-methodmaterials/lib/MethodMaterial"
 
 import AWDParser							= require("awayjs-parsers/lib/AWDParser");
 import Partition2D							= require("awayjs-player/lib/partition/Partition2D");
-import MovieClip							= require("awayjs-player/lib/display/MovieClip");
+import MovieClip							= require("awayjs-display/lib/entities/MovieClip");
 
 import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
 import PerspectiveProjection				= require("awayjs-core/lib/projections/PerspectiveProjection");
@@ -235,7 +235,6 @@ class AWD3ViewerMinimal
                 one_mc.mouseChildren = false;
             }
             this._rootTimeLine = one_mc;
-            this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
         }
     }
 
@@ -260,6 +259,7 @@ class AWD3ViewerMinimal
      */
     private onRessourceComplete(event: LoaderEvent): void {
         if (this._rootTimeLine) {
+            this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
             this._view.scene.addChild(this._rootTimeLine);
             //this._rootTimeLine.x=-this._stage_width/2;
