@@ -214,6 +214,11 @@ class AWD3ViewerMinimal
 
         if(event.asset.isAsset(TextField)){
             var one_textfield:TextField=<TextField> event.asset;
+            if (one_textfield.name == "language_btn_tf" || one_textfield.name == "flag") {
+                console.log("NAME:", one_textfield.name)
+                one_textfield.mouseEnabled = false;
+                one_textfield.mouseChildren = false;
+            }
             //this.loaded_display_objects.push(one_textfield);
             //console.log("orginal textfield_text = "+one_textfield.text);
             //one_textfield.text="new text";
@@ -229,7 +234,11 @@ class AWD3ViewerMinimal
         }
         else if(event.asset.isAsset(MovieClip)) {
             var one_mc:MovieClip = <MovieClip> event.asset;
-            if (one_mc.name == "border" || one_mc.name == "dream" || one_mc.name == "IAP Menu" || one_mc.name == "shoptag_shapes" || one_mc.name == "shopttag_cliffedges") {
+            if (one_mc.name == "border" || one_mc.name == "dream"
+                || one_mc.name == "IAP Menu"
+                || one_mc.name == "language flag"
+                || one_mc.name == "shoptag_shapes"
+                || one_mc.name == "shoptag_cliffedges") {
                 console.log("NAME:", one_mc.name)
                 one_mc.mouseEnabled = false;
                 one_mc.mouseChildren = false;
