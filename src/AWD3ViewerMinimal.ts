@@ -287,8 +287,8 @@ class AWD3ViewerMinimal
     /**
      * Render loop
      */
-    private onEnterFrame(dt: number): void {
-
+    private onEnterFrame(dt: number): void
+    {
         var frameMarker:number = Math.floor(1000/this._fps);
 
         this._time += Math.min(dt, frameMarker);
@@ -300,7 +300,7 @@ class AWD3ViewerMinimal
 
 
         if (this._time >= frameMarker) {
-            this._time = 0;
+            this._time -= frameMarker;
 
             if (this._rootTimeLine != undefined)
                 this._rootTimeLine.update();
