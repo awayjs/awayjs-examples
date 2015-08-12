@@ -53,16 +53,16 @@ import Container							= require("awayjs-display/lib/containers/DisplayObjectCon
 import HoverController						= require("awayjs-display/lib/controllers/HoverController");
 import Loader								= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial						= require("awayjs-display/lib/materials/BasicMaterial");
-import RenderableNullSort					= require("awayjs-display/lib/sort/RenderableNullSort");
+import RenderableSort2D 					= require("awayjs-player/lib/renderer/RenderableSort2D");
 import PrimitiveCubePrefab					= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import DisplayObject						= require("awayjs-display/lib/base/DisplayObject");
 
-import Renderer2D						    = require("awayjs-player/lib/renderer/Renderer2D");
+import DefaultRenderer					    = require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial						= require("awayjs-methodmaterials/lib/MethodMaterial");
 
 import AWDParser							= require("awayjs-parsers/lib/AWDParser");
-import Partition2D							= require("awayjs-player/lib/partition/Partition2D");
+import SceneGraphPartition							= require("awayjs-display/lib/partition/SceneGraphPartition");
 import MovieClip							= require("awayjs-display/lib/entities/MovieClip");
 
 import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
@@ -78,6 +78,7 @@ class AWD3ViewerMinimal
 
     //engine variables
     private _view: View;
+    private _renderer: DefaultRenderer;
 
     private _rootTimeLine: MovieClip;
 
@@ -135,7 +136,9 @@ class AWD3ViewerMinimal
     private initEngine(): void
     {
         //create the view
-        this._view = new View(new Renderer2D());
+        this._renderer = new DefaultRenderer();
+        this._renderer.renderableSorter = null;//new RenderableSort2D();
+        this._view = new View(this._renderer);
         this._view.backgroundColor = 0x000000;
         this._stage_width = 550;
         this._stage_height = 400;
@@ -175,6 +178,7 @@ class AWD3ViewerMinimal
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
         loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
+
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -225,7 +229,7 @@ class AWD3ViewerMinimal
         }
         else if(event.asset.isAsset(Mesh)) {
             var one_mesh:Mesh = <Mesh> event.asset;
-            one_mesh.debugVisible = true;
+            //one_mesh.debugVisible = true;
             //this.loaded_display_objects.push(one_mesh);
         }
         else if(event.asset.isAsset(Billboard)) {
@@ -268,7 +272,7 @@ class AWD3ViewerMinimal
      */
     private onRessourceComplete(event: LoaderEvent): void {
         if (this._rootTimeLine) {
-            this._rootTimeLine.partition = new Partition2D(this._rootTimeLine);
+            this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
             this._view.scene.addChild(this._rootTimeLine);
             //this._rootTimeLine.x=-this._stage_width/2;
