@@ -53,7 +53,6 @@ import Container							= require("awayjs-display/lib/containers/DisplayObjectCon
 import HoverController						= require("awayjs-display/lib/controllers/HoverController");
 import Loader								= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial						= require("awayjs-display/lib/materials/BasicMaterial");
-import RenderableSort2D 					= require("awayjs-player/lib/renderer/RenderableSort2D");
 import PrimitiveCubePrefab					= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import DisplayObject						= require("awayjs-display/lib/base/DisplayObject");
 
@@ -299,34 +298,13 @@ class AWD3ViewerMinimal
         //update camera controler
         // this._cameraController.update();
 
-        if (this._rootTimeLine != undefined) {
-            //console.log("RENDER = ");
-            this._rootTimeLine.update(dt);
-            if(!this._replaced_gettext) {
-                // getText is defined on frame 4 of root-timeline.
-                // once it has been defined by framescript, we want to replace it
-                if (this._rootTimeLine.adapter.hasOwnProperty("getText")) {
-                    console.log("function getText found");
-                    this._rootTimeLine.adapter["getText"] = this.getText;
-                    console.log("function getText replaced");
-                    this._replaced_gettext=true;
-                }
-            }
-            if(!this._updated_property) {
-                // getText is defined on frame 1 of root-timeline.
-                // once it has been defined by framescript, we want to control it
-                if (this._rootTimeLine.adapter.hasOwnProperty("IAPAVAILABLE")) {
-                    console.log("property IAPAVAILABLE found = " + this._rootTimeLine.adapter["IAPAVAILABLE"]);
-                    this._rootTimeLine.adapter["IAPAVAILABLE"] = false;
-                    console.log("property IAPAVAILABLE changed to = " + this._rootTimeLine.adapter["IAPAVAILABLE"]);
-                    this._updated_property=true;
-                }
-            }
-        }
-        //console.log("RENDER = ");
-        //update view
+
         if (this._time >= frameMarker) {
             this._time = 0;
+
+            if (this._rootTimeLine != undefined)
+                this._rootTimeLine.update();
+
             this._view.render();
         }
     }
