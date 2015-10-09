@@ -1,3 +1,231 @@
-(function e(i,t,a){function s(r,o){if(!t[r]){if(!i[r]){var l=typeof require=="function"&&require;if(!o&&l)return l(r,!0);if(n)return n(r,!0);var d=new Error("Cannot find module '"+r+"'");throw d.code="MODULE_NOT_FOUND",d}var h=t[r]={exports:{}};i[r][0].call(h.exports,function(e){var t=i[r][1][e];return s(t?t:e)},h,h.exports,e,i,t,a)}return t[r].exports}var n=typeof require=="function"&&require;for(var r=0;r<a.length;r++)s(a[r]);return s})({"./src/Basic_Load3DS.ts":[function(e,i,t){var a=e("awayjs-core/lib/events/AssetEvent");var s=e("awayjs-core/lib/events/LoaderEvent");var n=e("awayjs-core/lib/geom/Vector3D");var r=e("awayjs-core/lib/library/AssetLibrary");var o=e("awayjs-core/lib/library/LoaderContext");var l=e("awayjs-core/lib/net/URLRequest");var d=e("awayjs-core/lib/utils/RequestAnimationFrame");var h=e("awayjs-display/lib/containers/Loader");var u=e("awayjs-display/lib/containers/View");var c=e("awayjs-display/lib/controllers/HoverController");var w=e("awayjs-display/lib/entities/DirectionalLight");var y=e("awayjs-display/lib/entities/Mesh");var p=e("awayjs-display/lib/materials/lightpickers/StaticLightPicker");var _=e("awayjs-display/lib/prefabs/PrimitivePlanePrefab");var f=e("awayjs-display/lib/textures/Single2DTexture");var v=e("awayjs-renderergl/lib/DefaultRenderer");var g=e("awayjs-methodmaterials/lib/MethodMaterial");var m=e("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");var b=e("awayjs-parsers/lib/Max3DSParser");var j=function(){function e(){this._time=0;this._move=false;this.init()}e.prototype.init=function(){this.initEngine();this.initLights();this.initMaterials();this.initObjects();this.initListeners()};e.prototype.initEngine=function(){this._view=new u(new v);this._view.camera.projection.far=2100;this._cameraController=new c(this._view.camera,null,45,20,1e3,10)};e.prototype.initLights=function(){this._light=new w(-1,-1,1);this._direction=new n(-1,-1,1);this._lightPicker=new p([this._light]);this._view.scene.addChild(this._light)};e.prototype.initMaterials=function(){this._groundMaterial=new g;this._groundMaterial.shadowMethod=new m(this._light,10,5);this._groundMaterial.shadowMethod.epsilon=.2;this._groundMaterial.lightPicker=this._lightPicker;this._groundMaterial.specular=0};e.prototype.initObjects=function(){this._loader=new h;this._loader.transform.scale=new n(300,300,300);this._loader.z=-200;this._view.scene.addChild(this._loader);this._plane=new _(1e3,1e3);this._ground=this._plane.getNewObject();this._ground.material=this._groundMaterial;this._ground.castsShadows=false;this._view.scene.addChild(this._ground)};e.prototype.initListeners=function(){var e=this;window.onresize=function(i){return e.onResize(i)};document.onmousedown=function(i){return e.onMouseDown(i)};document.onmouseup=function(i){return e.onMouseUp(i)};document.onmousemove=function(i){return e.onMouseMove(i)};this.onResize();this._timer=new d(this.onEnterFrame,this);this._timer.start();var i=new o;i.mapUrl("texture.jpg","assets/soldier_ant.jpg");this._loader.addEventListener(a.ASSET_COMPLETE,function(i){return e.onAssetComplete(i)});this._loader.load(new l("assets/soldier_ant.3ds"),i,null,new b(false));r.addEventListener(s.RESOURCE_COMPLETE,function(i){return e.onResourceComplete(i)});r.load(new l("assets/CoarseRedSand.jpg"))};e.prototype.onEnterFrame=function(e){this._time+=e;this._direction.x=-Math.sin(this._time/4e3);this._direction.z=-Math.cos(this._time/4e3);this._light.direction=this._direction;this._view.render()};e.prototype.onAssetComplete=function(e){var i=e.asset;switch(i.assetType){case y.assetType:var t=e.asset;t.castsShadows=true;break;case g.assetType:var a=e.asset;a.shadowMethod=new m(this._light,10,5);a.shadowMethod.epsilon=.2;a.lightPicker=this._lightPicker;a.gloss=30;a.specular=1;a.color=3158080;a.ambient=1;break}};e.prototype.onResourceComplete=function(e){var i=e.assets;var t=i.length;for(var a=0;a<t;a++){var s=i[a];console.log(s.name,e.url);switch(e.url){case"assets/CoarseRedSand.jpg":this._groundMaterial.texture=new f(s);break}}};e.prototype.onMouseDown=function(e){this._lastPanAngle=this._cameraController.panAngle;this._lastTiltAngle=this._cameraController.tiltAngle;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY;this._move=true};e.prototype.onMouseUp=function(e){this._move=false};e.prototype.onMouseMove=function(e){if(this._move){this._cameraController.panAngle=.3*(e.clientX-this._lastMouseX)+this._lastPanAngle;this._cameraController.tiltAngle=.3*(e.clientY-this._lastMouseY)+this._lastTiltAngle}};e.prototype.onResize=function(e){if(e===void 0){e=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};return e}();window.onload=function(){new j}},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/Basic_Load3DS.ts":[function(require,module,exports){
+/*
+
+3ds file loading example in Away3d
+
+Demonstrates:
+
+How to use the Loader object to load an embedded internal 3ds model.
+How to map an external asset reference inside a file to an internal embedded asset.
+How to extract material data and use it to set custom material properties on a model.
+
+Code by Rob Bateman
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
+
+This code is distributed under the MIT License
+
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var Loader = require("awayjs-display/lib/containers/Loader");
+var View = require("awayjs-display/lib/containers/View");
+var HoverController = require("awayjs-display/lib/controllers/HoverController");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+var Max3DSParser = require("awayjs-parsers/lib/Max3DSParser");
+var Basic_Load3DS = (function () {
+    /**
+     * Constructor
+     */
+    function Basic_Load3DS() {
+        this._time = 0;
+        this._move = false;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    Basic_Load3DS.prototype.init = function () {
+        this.initEngine();
+        this.initLights();
+        this.initMaterials();
+        this.initObjects();
+        this.initListeners();
+    };
+    /**
+     * Initialise the engine
+     */
+    Basic_Load3DS.prototype.initEngine = function () {
+        this._view = new View(new DefaultRenderer());
+        //setup the camera for optimal shadow rendering
+        this._view.camera.projection.far = 2100;
+        //setup controller to be used on the camera
+        this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
+    };
+    /**
+     * Initialise the lights
+     */
+    Basic_Load3DS.prototype.initLights = function () {
+        this._light = new DirectionalLight(-1, -1, 1);
+        this._direction = new Vector3D(-1, -1, 1);
+        this._lightPicker = new StaticLightPicker([this._light]);
+        this._view.scene.addChild(this._light);
+    };
+    /**
+     * Initialise the materials
+     */
+    Basic_Load3DS.prototype.initMaterials = function () {
+        this._groundMaterial = new MethodMaterial();
+        this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
+        this._groundMaterial.shadowMethod.epsilon = 0.2;
+        this._groundMaterial.lightPicker = this._lightPicker;
+        this._groundMaterial.specular = 0;
+        //this._groundMaterial.mipmap = false;
+    };
+    /**
+     * Initialise the scene objects
+     */
+    Basic_Load3DS.prototype.initObjects = function () {
+        this._loader = new Loader();
+        this._loader.transform.scale = new Vector3D(300, 300, 300);
+        this._loader.z = -200;
+        this._view.scene.addChild(this._loader);
+        this._plane = new PrimitivePlanePrefab(1000, 1000);
+        this._ground = this._plane.getNewObject();
+        this._ground.material = this._groundMaterial;
+        this._ground.castsShadows = false;
+        this._view.scene.addChild(this._ground);
+    };
+    /**
+     * Initialise the listeners
+     */
+    Basic_Load3DS.prototype.initListeners = function () {
+        var _this = this;
+        window.onresize = function (event) { return _this.onResize(event); };
+        document.onmousedown = function (event) { return _this.onMouseDown(event); };
+        document.onmouseup = function (event) { return _this.onMouseUp(event); };
+        document.onmousemove = function (event) { return _this.onMouseMove(event); };
+        this.onResize();
+        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this._timer.start();
+        //setup the url map for textures in the 3ds file
+        var loaderContext = new LoaderContext();
+        loaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
+        this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+        this._loader.load(new URLRequest("assets/soldier_ant.3ds"), loaderContext, null, new Max3DSParser(false));
+        AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+        AssetLibrary.load(new URLRequest("assets/CoarseRedSand.jpg"));
+    };
+    /**
+     * Navigation and render loop
+     */
+    Basic_Load3DS.prototype.onEnterFrame = function (dt) {
+        this._time += dt;
+        this._direction.x = -Math.sin(this._time / 4000);
+        this._direction.z = -Math.cos(this._time / 4000);
+        this._light.direction = this._direction;
+        this._view.render();
+    };
+    /**
+     * Listener function for asset complete event on loader
+     */
+    Basic_Load3DS.prototype.onAssetComplete = function (event) {
+        var asset = event.asset;
+        switch (asset.assetType) {
+            case Mesh.assetType:
+                var mesh = event.asset;
+                mesh.castsShadows = true;
+                break;
+            case MethodMaterial.assetType:
+                var material = event.asset;
+                material.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
+                material.shadowMethod.epsilon = 0.2;
+                //material.mipmap = false;
+                material.lightPicker = this._lightPicker;
+                material.gloss = 30;
+                material.specular = 1;
+                material.color = 0x303040;
+                material.ambient = 1;
+                break;
+        }
+    };
+    /**
+     * Listener function for resource complete event on asset library
+     */
+    Basic_Load3DS.prototype.onResourceComplete = function (event) {
+        var assets = event.assets;
+        var length = assets.length;
+        for (var c = 0; c < length; c++) {
+            var asset = assets[c];
+            console.log(asset.name, event.url);
+            switch (event.url) {
+                case "assets/CoarseRedSand.jpg":
+                    this._groundMaterial.texture = new Single2DTexture(asset);
+                    break;
+            }
+        }
+    };
+    /**
+     * Mouse down listener for navigation
+     */
+    Basic_Load3DS.prototype.onMouseDown = function (event) {
+        this._lastPanAngle = this._cameraController.panAngle;
+        this._lastTiltAngle = this._cameraController.tiltAngle;
+        this._lastMouseX = event.clientX;
+        this._lastMouseY = event.clientY;
+        this._move = true;
+    };
+    /**
+     * Mouse up listener for navigation
+     */
+    Basic_Load3DS.prototype.onMouseUp = function (event) {
+        this._move = false;
+    };
+    Basic_Load3DS.prototype.onMouseMove = function (event) {
+        if (this._move) {
+            this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+            this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+        }
+    };
+    /**
+     * stage listener for resize events
+     */
+    Basic_Load3DS.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    return Basic_Load3DS;
+})();
+window.onload = function () {
+    new Basic_Load3DS();
+};
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
+
 
 //# sourceMappingURL=Basic_Load3DS.js.map
