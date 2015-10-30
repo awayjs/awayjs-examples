@@ -161,7 +161,7 @@ class AircraftDemo
     private initSea()
     {
         this._seaMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
-        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, new Single2DTexture(this._seaNormalTexture.sampler2D));
+        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, new Single2DTexture(this._seaNormalTexture.image2D));
         var fresnelMethod:SpecularFresnelMethod  = new SpecularFresnelMethod();
         fresnelMethod.normalReflectance = .3;
         
