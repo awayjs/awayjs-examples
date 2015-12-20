@@ -36,7 +36,7 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -46,7 +46,7 @@ import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import Loader						= require("awayjs-display/lib/containers/Loader");
+import LoaderContainer				= require("awayjs-display/lib/containers/LoaderContainer");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
@@ -77,7 +77,7 @@ class Basic_Load3DS
 	private _direction:Vector3D;
 
 	//scene objects
-	private _loader:Loader;
+	private _loader:LoaderContainer;
 	private _plane:PrimitivePlanePrefab;
 	private _ground:Mesh;
 
@@ -153,7 +153,7 @@ class Basic_Load3DS
 	 */
 	private initObjects():void
 	{
-		this._loader = new Loader();
+		this._loader = new LoaderContainer();
 		this._loader.transform.scale = new Vector3D(300, 300, 300);
 		this._loader.z = -200;
 		this._view.scene.addChild(this._loader);
@@ -188,7 +188,7 @@ class Basic_Load3DS
 		this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 		this._loader.load(new URLRequest("assets/soldier_ant.3ds"), loaderContext, null, new Max3DSParser(false));
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/CoarseRedSand.jpg"));
 	}
 

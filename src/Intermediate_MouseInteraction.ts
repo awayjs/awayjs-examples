@@ -35,18 +35,17 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
-import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
+import Loader						= require("awayjs-core/lib/library/Loader");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
 
 import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import BoundsType					= require("awayjs-display/lib/bounds/BoundsType");
@@ -83,7 +82,7 @@ class Intermediate_MouseInteraction
 	private _camera:Camera;
 	private _renderer:DefaultRenderer;
 	private _view:View;
-	private _session:LoaderSession;
+	private _session:Loader;
 	private _cameraController:HoverController;
 
 	private _timer:RequestAnimationFrame;
@@ -233,7 +232,7 @@ class Intermediate_MouseInteraction
 
 
 		// Load a head model that we will be able to paint on on mouse down.
-		this._session = AssetLibrary.getLoaderSession();
+		this._session = AssetLibrary.getLoader();
 		this._session.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 		this._session.load(new URLRequest('assets/head.obj'), null, null, new OBJParser( 25 ));
 

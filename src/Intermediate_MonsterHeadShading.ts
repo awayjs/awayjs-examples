@@ -39,12 +39,11 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import SpecularImage2D				= require("awayjs-core/lib/image/SpecularImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import AwayEvent					= require("awayjs-core/lib/events/Event");
+import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ProgressEvent				= require("awayjs-core/lib/events/ProgressEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
@@ -121,9 +120,9 @@ class Intermediate_MonsterHeadShading
 	private timer:RequestAnimationFrame;
 	private time:number = 0;
 
-	private parseAWDDelegate:(event:AwayEvent) => void;
-	private parseBitmapDelegate:(event:AwayEvent) => void;
-	private loadProgressDelegate:(event:ProgressEvent) => void;
+	private parseAWDDelegate:(event:URLLoaderEvent) => void;
+	private parseBitmapDelegate:(event:URLLoaderEvent) => void;
+	private loadProgressDelegate:(event:URLLoaderEvent) => void;
 	private onBitmapCompleteDelegate:(event:Event) => void;
 	private onAssetCompleteDelegate:(event:AssetEvent) => void;
 	private onResourceCompleteDelegate:(event:LoaderEvent) => void;
@@ -227,9 +226,9 @@ class Intermediate_MonsterHeadShading
 
 		this.onResize();
 
-		this.parseAWDDelegate = (event:AwayEvent) => this.parseAWD(event);
-		this.parseBitmapDelegate = (event:AwayEvent) => this.parseBitmap(event);
-		this.loadProgressDelegate = (event:ProgressEvent) => this.loadProgress(event);
+		this.parseAWDDelegate = (event:URLLoaderEvent) => this.parseAWD(event);
+		this.parseBitmapDelegate = (event:URLLoaderEvent) => this.parseBitmap(event);
+		this.loadProgressDelegate = (event:URLLoaderEvent) => this.loadProgress(event);
 		this.onBitmapCompleteDelegate = (event:Event) => this.onBitmapComplete(event);
 		this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
 		this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
@@ -266,27 +265,27 @@ class Intermediate_MonsterHeadShading
 			case "awd":
 				loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 				this._loadingText = "Loading Model";
-				loader.addEventListener(AwayEvent.COMPLETE, this.parseAWDDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 				break;
 			case "png":
 			case "jpg":
 				loader.dataFormat = URLLoaderDataFormat.BLOB;
 				this._currentTexture++;
 				this._loadingText = "Loading Textures";
-				loader.addEventListener(AwayEvent.COMPLETE, this.parseBitmapDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 				break;
 		}
 
-		loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		loader.load(new URLRequest(this._assetsRoot+url));
 	}
 
 	/**
 	 * Display current load
 	 */
-	private loadProgress(event:ProgressEvent)
+	private loadProgress(event:URLLoaderEvent)
 	{
-		//TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
+		//TODO work out why the casting on URLLoaderEvent fails for bytesLoaded and bytesTotal properties
 		var P:number = Math.floor(event["bytesLoaded"] / event["bytesTotal"] * 100);
 		if (P != 100) {
 			console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? Math.floor((event["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((event["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
@@ -296,31 +295,31 @@ class Intermediate_MonsterHeadShading
 	/**
 	 * Parses the Bitmap file
 	 */
-	private parseBitmap(event:AwayEvent)
+	private parseBitmap(event:URLLoaderEvent)
 	{
 		var urlLoader:URLLoader = <URLLoader> event.target;
 		var image:HTMLImageElement = ParserUtils.blobToImage(urlLoader.data);
 		image.onload = this.onBitmapCompleteDelegate;
-		urlLoader.removeEventListener(AwayEvent.COMPLETE, this.parseBitmapDelegate);
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		urlLoader = null;
 	}
 
 	/**
 	 * Parses the AWD file
 	 */
-	private parseAWD(event:AwayEvent)
+	private parseAWD(event:URLLoaderEvent)
 	{
 		console.log("Parsing Data");
 		var urlLoader:URLLoader = <URLLoader> event.target;
 
 		//setup parser
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		AssetLibrary.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
-		urlLoader.removeEventListener(AwayEvent.COMPLETE, this.parseAWDDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 		urlLoader = null;
 	}
 
@@ -372,7 +371,7 @@ class Intermediate_MonsterHeadShading
 	private onResourceComplete(e:LoaderEvent)
 	{
 		AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 
 		//setup custom multipass material
 		this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
@@ -401,7 +400,7 @@ class Intermediate_MonsterHeadShading
 		for (var i:number = 0; i < len; i++)
 			this._headModel.subMeshes[i].material = this._headMaterial;
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//diffuse gradient texture
 		AssetLibrary.load(new URLRequest("assets/diffuseGradient.jpg"));

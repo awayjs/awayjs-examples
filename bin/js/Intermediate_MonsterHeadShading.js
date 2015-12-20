@@ -1,3 +1,359 @@
-(function e(t,i,a){function s(r,o){if(!i[r]){if(!t[r]){var l=typeof require=="function"&&require;if(!o&&l)return l(r,!0);if(n)return n(r,!0);var h=new Error("Cannot find module '"+r+"'");throw h.code="MODULE_NOT_FOUND",h}var d=i[r]={exports:{}};t[r][0].call(d.exports,function(e){var i=t[r][1][e];return s(i?i:e)},d,d.exports,e,t,i,a)}return i[r].exports}var n=typeof require=="function"&&require;for(var r=0;r<a.length;r++)s(a[r]);return s})({"./src/Intermediate_MonsterHeadShading.ts":[function(e,t,i){var a=e("awayjs-core/lib/data/SpecularImage2D");var s=e("awayjs-core/lib/events/AssetEvent");var n=e("awayjs-core/lib/events/Event");var r=e("awayjs-core/lib/events/LoaderEvent");var o=e("awayjs-core/lib/events/ProgressEvent");var l=e("awayjs-core/lib/geom/Vector3D");var h=e("awayjs-core/lib/library/AssetLibrary");var d=e("awayjs-core/lib/library/LoaderContext");var u=e("awayjs-core/lib/net/URLLoader");var c=e("awayjs-core/lib/net/URLLoaderDataFormat");var _=e("awayjs-core/lib/net/URLRequest");var g=e("awayjs-core/lib/parsers/ParserUtils");var p=e("awayjs-core/lib/utils/RequestAnimationFrame");var m=e("awayjs-display/lib/containers/Scene");var w=e("awayjs-display/lib/containers/View");var y=e("awayjs-display/lib/controllers/HoverController");var f=e("awayjs-display/lib/entities/Camera");var v=e("awayjs-display/lib/entities/DirectionalLight");var M=e("awayjs-display/lib/entities/PointLight");var b=e("awayjs-display/lib/entities/Mesh");var L=e("awayjs-display/lib/materials/lightpickers/StaticLightPicker");var j=e("awayjs-display/lib/textures/Single2DTexture");var E=e("awayjs-renderergl/lib/DefaultRenderer");var D=e("awayjs-methodmaterials/lib/MethodMaterial");var C=e("awayjs-methodmaterials/lib/MethodMaterialMode");var S=e("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");var R=e("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");var x=e("awayjs-parsers/lib/AWDParser");var P=function(){function e(){this._textureStrings=Array("monsterhead_diffuse.jpg","monsterhead_specular.jpg","monsterhead_normals.jpg");this._textureDictionary=new Object;this._advancedMethod=true;this._numTextures=0;this._currentTexture=0;this._n=0;this._assetsRoot="assets/monsterhead/";this._move=false;this.time=0;this._shadowRange=3;this._lightDirection=120*Math.PI/180;this._lightElevation=30*Math.PI/180;this.init()}e.prototype.init=function(){this.initEngine();this.initLights();this.initListeners();this._n=0;this._numTextures=this._textureStrings.length;this.load(this._textureStrings[this._n])};e.prototype.initEngine=function(){this._scene=new m;this._camera=new f;this._camera.projection.near=20;this._camera.projection.far=1e3;this._view=new w(new E,this._scene,this._camera);this._cameraController=new y(this._camera,null,225,10,800);this._cameraController.yFactor=1};e.prototype.initLights=function(){var e=Math.sin(this._lightElevation)*Math.cos(this._lightDirection);var t=-Math.cos(this._lightElevation);var i=Math.sin(this._lightElevation)*Math.sin(this._lightDirection);this._directionalLight=new v(e,t,i);this._directionalLight.color=16772829;this._directionalLight.ambient=1;this._directionalLight.specular=.3;this._directionalLight.ambientColor=1052709;this._directionalLight.castsShadows=true;this._directionalLight.shadowMapper.lightOffset=1e3;this._scene.addChild(this._directionalLight);this._blueLight=new M;this._blueLight.color=4227327;this._blueLight.x=3e3;this._blueLight.z=700;this._blueLight.y=20;this._scene.addChild(this._blueLight);this._redLight=new M;this._redLight.color=8396816;this._redLight.x=-2e3;this._redLight.z=800;this._redLight.y=-400;this._scene.addChild(this._redLight);this._lightPicker=new L([this._directionalLight,this._blueLight,this._redLight])};e.prototype.initListeners=function(){var e=this;window.onresize=function(t){return e.onResize(t)};document.onmousedown=function(t){return e.onMouseDown(t)};document.onmouseup=function(t){return e.onMouseUp(t)};document.onmousemove=function(t){return e.onMouseMove(t)};this.onResize();this.parseAWDDelegate=function(t){return e.parseAWD(t)};this.parseBitmapDelegate=function(t){return e.parseBitmap(t)};this.loadProgressDelegate=function(t){return e.loadProgress(t)};this.onBitmapCompleteDelegate=function(t){return e.onBitmapComplete(t)};this.onAssetCompleteDelegate=function(t){return e.onAssetComplete(t)};this.onResourceCompleteDelegate=function(t){return e.onResourceComplete(t)};this.timer=new p(this.onEnterFrame,this);this.timer.start()};e.prototype.updateDirection=function(){this._directionalLight.direction=new l(Math.sin(this._lightElevation)*Math.cos(this._lightDirection),-Math.cos(this._lightElevation),Math.sin(this._lightElevation)*Math.sin(this._lightDirection))};e.prototype.updateRange=function(){this._softShadowMethod.range=this._shadowRange};e.prototype.load=function(e){var t=new u;switch(e.substring(e.length-3)){case"AWD":case"awd":t.dataFormat=c.ARRAY_BUFFER;this._loadingText="Loading Model";t.addEventListener(n.COMPLETE,this.parseAWDDelegate);break;case"png":case"jpg":t.dataFormat=c.BLOB;this._currentTexture++;this._loadingText="Loading Textures";t.addEventListener(n.COMPLETE,this.parseBitmapDelegate);break}t.addEventListener(o.PROGRESS,this.loadProgressDelegate);t.load(new _(this._assetsRoot+e))};e.prototype.loadProgress=function(e){var t=Math.floor(e["bytesLoaded"]/e["bytesTotal"]*100);if(t!=100){console.log(this._loadingText+"\n"+(this._loadingText=="Loading Model"?Math.floor(e["bytesLoaded"]/1024<<0)+"kb | "+Math.floor(e["bytesTotal"]/1024<<0)+"kb":this._currentTexture+" | "+this._numTextures))}};e.prototype.parseBitmap=function(e){var t=e.target;var i=g.blobToImage(t.data);i.onload=this.onBitmapCompleteDelegate;t.removeEventListener(n.COMPLETE,this.parseBitmapDelegate);t.removeEventListener(o.PROGRESS,this.loadProgressDelegate);t=null};e.prototype.parseAWD=function(e){console.log("Parsing Data");var t=e.target;h.addEventListener(s.ASSET_COMPLETE,this.onAssetCompleteDelegate);h.addEventListener(r.RESOURCE_COMPLETE,this.onResourceCompleteDelegate);h.loadData(t.data,new d(false),null,new x);t.removeEventListener(o.PROGRESS,this.loadProgressDelegate);t.removeEventListener(n.COMPLETE,this.parseAWDDelegate);t=null};e.prototype.onBitmapComplete=function(e){var t=e.target;t.onload=null;if(!this._textureDictionary[this._textureStrings[this._n]])this._textureDictionary[this._textureStrings[this._n]]=new j(this._n==1?new a(g.imageToBitmapImage2D(t)):g.imageToBitmapImage2D(t));this._n++;if(this._n<this._textureStrings.length){this.load(this._textureStrings[this._n])}else{this.load("MonsterHead.awd")}};e.prototype.onEnterFrame=function(e){this._view.render()};e.prototype.onAssetComplete=function(e){if(e.asset.isAsset(b)){this._headModel=e.asset;this._headModel.geometry.scale(4);this._headModel.y=-20;this._scene.addChild(this._headModel)}};e.prototype.onResourceComplete=function(e){var t=this;h.removeEventListener(s.ASSET_COMPLETE,this.onAssetCompleteDelegate);h.removeEventListener(r.RESOURCE_COMPLETE,this.onResourceCompleteDelegate);this._headMaterial=new D(this._textureDictionary["monsterhead_diffuse.jpg"]);this._headMaterial.mode=C.MULTI_PASS;this._headMaterial.mipmap=false;this._headMaterial.normalMap=this._textureDictionary["monsterhead_normals.jpg"];this._headMaterial.lightPicker=this._lightPicker;this._headMaterial.ambientColor=3158080;this._softShadowMethod=new R(this._directionalLight,20);this._softShadowMethod.range=this._shadowRange;this._softShadowMethod.epsilon=.1;this._headMaterial.shadowMethod=this._softShadowMethod;this._fresnelMethod=new S(true);this._fresnelMethod.fresnelPower=3;this._headMaterial.specularMethod=this._fresnelMethod;this._headMaterial.specularMap=this._textureDictionary["monsterhead_specular.jpg"];this._headMaterial.specular=3;this._headMaterial.gloss=10;var i=this._headModel.subMeshes.length;for(var a=0;a<i;a++)this._headModel.subMeshes[a].material=this._headMaterial;h.addEventListener(r.RESOURCE_COMPLETE,function(e){return t.onExtraResourceComplete(e)});h.load(new _("assets/diffuseGradient.jpg"))};e.prototype.onExtraResourceComplete=function(e){switch(e.url){case"assets/diffuseGradient.jpg":break}};e.prototype.onMouseDown=function(e){this._lastPanAngle=this._cameraController.panAngle;this._lastTiltAngle=this._cameraController.tiltAngle;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY;this._move=true};e.prototype.onMouseUp=function(e){this._move=false};e.prototype.onMouseMove=function(e){if(this._move){this._cameraController.panAngle=.3*(e.clientX-this._lastMouseX)+this._lastPanAngle;this._cameraController.tiltAngle=.3*(e.clientY-this._lastMouseY)+this._lastTiltAngle}};e.prototype.onResize=function(e){if(e===void 0){e=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};return e}();window.onload=function(){new P}},{"awayjs-core/lib/data/SpecularImage2D":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ProgressEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/Intermediate_MonsterHeadShading.ts":[function(require,module,exports){
+/*
+
+Monster Head example in Away3d
+
+Demonstrates:
+
+How to use the AssetLibrary to load an internal AWD model.
+How to set custom material methods on a model.
+How to setup soft shadows and multiple lightsources with a multipass texture
+How to use a diffuse gradient method as a cheap way to simulate sub-surface scattering
+
+Code by Rob Bateman & David Lenaerts
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
+david.lenaerts@gmail.com
+http://www.derschmale.com
+
+This code is distributed under the MIT License
+
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var SpecularImage2D = require("awayjs-core/lib/image/SpecularImage2D");
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
+var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
+var URLLoader = require("awayjs-core/lib/net/URLLoader");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var Scene = require("awayjs-display/lib/containers/Scene");
+var View = require("awayjs-display/lib/containers/View");
+var HoverController = require("awayjs-display/lib/controllers/HoverController");
+var Camera = require("awayjs-display/lib/entities/Camera");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var PointLight = require("awayjs-display/lib/entities/PointLight");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var MethodMaterialMode = require("awayjs-methodmaterials/lib/MethodMaterialMode");
+var SpecularFresnelMethod = require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
+var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var Intermediate_MonsterHeadShading = (function () {
+    /**
+     * Constructor
+     */
+    function Intermediate_MonsterHeadShading() {
+        //textures
+        this._textureStrings = Array("monsterhead_diffuse.jpg", "monsterhead_specular.jpg", "monsterhead_normals.jpg");
+        this._textureDictionary = new Object();
+        this._advancedMethod = true;
+        //loading variables
+        this._numTextures = 0;
+        this._currentTexture = 0;
+        this._n = 0;
+        //root filepath for asset loading
+        this._assetsRoot = "assets/monsterhead/";
+        //navigation variables
+        this._move = false;
+        this.time = 0;
+        this._shadowRange = 3;
+        this._lightDirection = 120 * Math.PI / 180;
+        this._lightElevation = 30 * Math.PI / 180;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    Intermediate_MonsterHeadShading.prototype.init = function () {
+        this.initEngine();
+        this.initLights();
+        this.initListeners();
+        //kickoff asset loading
+        this._n = 0;
+        this._numTextures = this._textureStrings.length;
+        this.load(this._textureStrings[this._n]);
+    };
+    /**
+     * Initialise the engine
+     */
+    Intermediate_MonsterHeadShading.prototype.initEngine = function () {
+        this._scene = new Scene();
+        this._camera = new Camera();
+        this._camera.projection.near = 20;
+        this._camera.projection.far = 1000;
+        this._view = new View(new DefaultRenderer(), this._scene, this._camera);
+        //setup controller to be used on the camera
+        this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
+        this._cameraController.yFactor = 1;
+    };
+    /**
+     * Initialise the lights in a scene
+     */
+    Intermediate_MonsterHeadShading.prototype.initLights = function () {
+        //var initialAzimuth:number = .6;
+        //var initialArc:number = 2;
+        var x = Math.sin(this._lightElevation) * Math.cos(this._lightDirection);
+        var y = -Math.cos(this._lightElevation);
+        var z = Math.sin(this._lightElevation) * Math.sin(this._lightDirection);
+        // main light casting the shadows
+        this._directionalLight = new DirectionalLight(x, y, z);
+        this._directionalLight.color = 0xffeedd;
+        this._directionalLight.ambient = 1;
+        this._directionalLight.specular = .3;
+        this._directionalLight.ambientColor = 0x101025;
+        this._directionalLight.castsShadows = true;
+        this._directionalLight.shadowMapper.lightOffset = 1000;
+        this._scene.addChild(this._directionalLight);
+        // blue point light coming from the right
+        this._blueLight = new PointLight();
+        this._blueLight.color = 0x4080ff;
+        this._blueLight.x = 3000;
+        this._blueLight.z = 700;
+        this._blueLight.y = 20;
+        this._scene.addChild(this._blueLight);
+        // red light coming from the left
+        this._redLight = new PointLight();
+        this._redLight.color = 0x802010;
+        this._redLight.x = -2000;
+        this._redLight.z = 800;
+        this._redLight.y = -400;
+        this._scene.addChild(this._redLight);
+        this._lightPicker = new StaticLightPicker([this._directionalLight, this._blueLight, this._redLight]);
+    };
+    /**
+     * Initialise the listeners
+     */
+    Intermediate_MonsterHeadShading.prototype.initListeners = function () {
+        var _this = this;
+        window.onresize = function (event) { return _this.onResize(event); };
+        document.onmousedown = function (event) { return _this.onMouseDown(event); };
+        document.onmouseup = function (event) { return _this.onMouseUp(event); };
+        document.onmousemove = function (event) { return _this.onMouseMove(event); };
+        this.onResize();
+        this.parseAWDDelegate = function (event) { return _this.parseAWD(event); };
+        this.parseBitmapDelegate = function (event) { return _this.parseBitmap(event); };
+        this.loadProgressDelegate = function (event) { return _this.loadProgress(event); };
+        this.onBitmapCompleteDelegate = function (event) { return _this.onBitmapComplete(event); };
+        this.onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
+        this.onResourceCompleteDelegate = function (event) { return _this.onResourceComplete(event); };
+        this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this.timer.start();
+    };
+    /**
+     * Updates the direction of the directional lightsource
+     */
+    Intermediate_MonsterHeadShading.prototype.updateDirection = function () {
+        this._directionalLight.direction = new Vector3D(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
+    };
+    Intermediate_MonsterHeadShading.prototype.updateRange = function () {
+        this._softShadowMethod.range = this._shadowRange;
+    };
+    /**
+     * Global binary file loader
+     */
+    Intermediate_MonsterHeadShading.prototype.load = function (url) {
+        var loader = new URLLoader();
+        switch (url.substring(url.length - 3)) {
+            case "AWD":
+            case "awd":
+                loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
+                this._loadingText = "Loading Model";
+                loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
+                break;
+            case "png":
+            case "jpg":
+                loader.dataFormat = URLLoaderDataFormat.BLOB;
+                this._currentTexture++;
+                this._loadingText = "Loading Textures";
+                loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+                break;
+        }
+        loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        loader.load(new URLRequest(this._assetsRoot + url));
+    };
+    /**
+     * Display current load
+     */
+    Intermediate_MonsterHeadShading.prototype.loadProgress = function (event) {
+        //TODO work out why the casting on URLLoaderEvent fails for bytesLoaded and bytesTotal properties
+        var P = Math.floor(event["bytesLoaded"] / event["bytesTotal"] * 100);
+        if (P != 100) {
+            console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model") ? Math.floor((event["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((event["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
+        }
+    };
+    /**
+     * Parses the Bitmap file
+     */
+    Intermediate_MonsterHeadShading.prototype.parseBitmap = function (event) {
+        var urlLoader = event.target;
+        var image = ParserUtils.blobToImage(urlLoader.data);
+        image.onload = this.onBitmapCompleteDelegate;
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        urlLoader = null;
+    };
+    /**
+     * Parses the AWD file
+     */
+    Intermediate_MonsterHeadShading.prototype.parseAWD = function (event) {
+        console.log("Parsing Data");
+        var urlLoader = event.target;
+        //setup parser
+        AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+        AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+        AssetLibrary.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
+        urlLoader = null;
+    };
+    /**
+     * Listener for bitmap complete event on loader
+     */
+    Intermediate_MonsterHeadShading.prototype.onBitmapComplete = function (event) {
+        var image = event.target;
+        image.onload = null;
+        //create bitmap texture in dictionary
+        if (!this._textureDictionary[this._textureStrings[this._n]])
+            this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1) ? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+        this._n++;
+        //switch to next teture set
+        if (this._n < this._textureStrings.length) {
+            this.load(this._textureStrings[this._n]);
+        }
+        else {
+            this.load("MonsterHead.awd");
+        }
+    };
+    /**
+     * Navigation and render loop
+     */
+    Intermediate_MonsterHeadShading.prototype.onEnterFrame = function (dt) {
+        this._view.render();
+    };
+    /**
+     * Listener for asset complete event on loader
+     */
+    Intermediate_MonsterHeadShading.prototype.onAssetComplete = function (event) {
+        if (event.asset.isAsset(Mesh)) {
+            this._headModel = event.asset;
+            this._headModel.geometry.scale(4);
+            this._headModel.y = -20;
+            this._scene.addChild(this._headModel);
+        }
+    };
+    /**
+     * Triggered once all resources are loaded
+     */
+    Intermediate_MonsterHeadShading.prototype.onResourceComplete = function (e) {
+        var _this = this;
+        AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+        AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+        //setup custom multipass material
+        this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+        this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
+        this._headMaterial.mipmap = false;
+        this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
+        this._headMaterial.lightPicker = this._lightPicker;
+        this._headMaterial.ambientColor = 0x303040;
+        // create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
+        this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
+        this._softShadowMethod.range = this._shadowRange; // the sample radius defines the softness of the shadows
+        this._softShadowMethod.epsilon = .1;
+        this._headMaterial.shadowMethod = this._softShadowMethod;
+        // create specular reflections that are stronger from the sides
+        this._fresnelMethod = new SpecularFresnelMethod(true);
+        this._fresnelMethod.fresnelPower = 3;
+        this._headMaterial.specularMethod = this._fresnelMethod;
+        this._headMaterial.specularMap = this._textureDictionary["monsterhead_specular.jpg"];
+        this._headMaterial.specular = 3;
+        this._headMaterial.gloss = 10;
+        //apply material to head model
+        var len = this._headModel.subMeshes.length;
+        for (var i = 0; i < len; i++)
+            this._headModel.subMeshes[i].material = this._headMaterial;
+        AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
+        //diffuse gradient texture
+        AssetLibrary.load(new URLRequest("assets/diffuseGradient.jpg"));
+    };
+    /**
+     * Triggered once extra resources are loaded
+     */
+    Intermediate_MonsterHeadShading.prototype.onExtraResourceComplete = function (event) {
+        switch (event.url) {
+            case "assets/diffuseGradient.jpg":
+                break;
+        }
+    };
+    /**
+     * Mouse down listener for navigation
+     */
+    Intermediate_MonsterHeadShading.prototype.onMouseDown = function (event) {
+        this._lastPanAngle = this._cameraController.panAngle;
+        this._lastTiltAngle = this._cameraController.tiltAngle;
+        this._lastMouseX = event.clientX;
+        this._lastMouseY = event.clientY;
+        this._move = true;
+    };
+    /**
+     * Mouse up listener for navigation
+     */
+    Intermediate_MonsterHeadShading.prototype.onMouseUp = function (event) {
+        this._move = false;
+    };
+    /**
+     * Mouse move listener for mouseLock
+     */
+    Intermediate_MonsterHeadShading.prototype.onMouseMove = function (event) {
+        if (this._move) {
+            this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+            this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+        }
+    };
+    /**
+     * window listener for resize events
+     */
+    Intermediate_MonsterHeadShading.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    return Intermediate_MonsterHeadShading;
+})();
+window.onload = function () {
+    new Intermediate_MonsterHeadShading();
+};
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"])
+
 
 //# sourceMappingURL=Intermediate_MonsterHeadShading.js.map

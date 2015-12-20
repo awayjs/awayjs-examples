@@ -1,3 +1,165 @@
-(function i(e,t,n){function s(a,o){if(!t[a]){if(!e[a]){var l=typeof require=="function"&&require;if(!o&&l)return l(a,!0);if(r)return r(a,!0);var h=new Error("Cannot find module '"+a+"'");throw h.code="MODULE_NOT_FOUND",h}var d=t[a]={exports:{}};e[a][0].call(d.exports,function(i){var t=e[a][1][i];return s(t?t:i)},d,d.exports,i,e,t,n)}return t[a].exports}var r=typeof require=="function"&&require;for(var a=0;a<n.length;a++)s(n[a]);return s})({"./src/Basic_LoadAWD.ts":[function(i,e,t){var n=i("awayjs-core/lib/events/AssetEvent");var s=i("awayjs-core/lib/geom/Vector3D");var r=i("awayjs-core/lib/library/AssetLibrary");var a=i("awayjs-core/lib/net/URLRequest");var o=i("awayjs-core/lib/utils/RequestAnimationFrame");var l=i("awayjs-display/lib/containers/View");var h=i("awayjs-display/lib/entities/DirectionalLight");var d=i("awayjs-display/lib/entities/Mesh");var c=i("awayjs-display/lib/materials/lightpickers/StaticLightPicker");var u=i("awayjs-renderergl/lib/DefaultRenderer");var w=i("awayjs-methodmaterials/lib/MethodMaterial");var y=i("awayjs-parsers/lib/AWDParser");var f=function(){function i(){this._time=0;this.init()}i.prototype.init=function(){this.initEngine();this.initLights();this.initMaterials();this.initObjects();this.initListeners()};i.prototype.initEngine=function(){this._view=new l(new u);this._view.backgroundColor=1974565;this._view.camera.z=-2e3};i.prototype.initLights=function(){this._light=new h;this._light.color=6828057;this._light.direction=new s(1,0,0);this._light.ambient=.5;this._light.ambientColor=3159355;this._light.diffuse=2.8;this._light.specular=1.8;this._view.scene.addChild(this._light);this._lightPicker=new c([this._light])};i.prototype.initMaterials=function(){};i.prototype.initObjects=function(){};i.prototype.initListeners=function(){var i=this;window.onresize=function(e){return i.onResize(e)};this.onResize();this._timer=new o(this.onEnterFrame,this);this._timer.start();r.enableParser(y);r.addEventListener(n.ASSET_COMPLETE,function(e){return i.onAssetComplete(e)});r.load(new a("assets/suzanne.awd"))};i.prototype.onEnterFrame=function(i){this._time+=i;if(this._suzanne)this._suzanne.rotationY+=1;this._view.render()};i.prototype.onAssetComplete=function(i){var e=i.asset;switch(e.assetType){case d.assetType:var t=e;t.y=-300;t.transform.scale=new s(900,900,900);this._suzanne=t;this._view.scene.addChild(t);break;case w.assetType:var n=e;n.lightPicker=this._lightPicker;break}};i.prototype.onResize=function(i){if(i===void 0){i=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};return i}();window.onload=function(){new f}},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_LoadAWD.ts"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/Basic_LoadAWD.ts":[function(require,module,exports){
+/*
+
+AWD file loading example in Away3d
+
+Demonstrates:
+
+How to use the Loader3D object to load an embedded internal 3ds model.
+How to map an external asset reference inside a file to an internal embedded asset.
+How to extract material data and use it to set custom material properties on a model.
+
+Code by Rob Bateman
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
+
+This code is distributed under the MIT License
+
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var View = require("awayjs-display/lib/containers/View");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var Basic_LoadAWD = (function () {
+    /**
+     * Constructor
+     */
+    function Basic_LoadAWD() {
+        this._time = 0;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    Basic_LoadAWD.prototype.init = function () {
+        this.initEngine();
+        this.initLights();
+        this.initMaterials();
+        this.initObjects();
+        this.initListeners();
+    };
+    /**
+     * Initialise the engine
+     */
+    Basic_LoadAWD.prototype.initEngine = function () {
+        this._view = new View(new DefaultRenderer());
+        //set the background of the view to something suitable
+        this._view.backgroundColor = 0x1e2125;
+        //position the camera
+        this._view.camera.z = -2000;
+    };
+    /**
+     * Initialise the entities
+     */
+    Basic_LoadAWD.prototype.initLights = function () {
+        //create the light for the scene
+        this._light = new DirectionalLight();
+        this._light.color = 0x683019;
+        this._light.direction = new Vector3D(1, 0, 0);
+        this._light.ambient = 0.5;
+        this._light.ambientColor = 0x30353b;
+        this._light.diffuse = 2.8;
+        this._light.specular = 1.8;
+        this._view.scene.addChild(this._light);
+        //create the light picker for the material
+        this._lightPicker = new StaticLightPicker([this._light]);
+    };
+    /**
+     * Initialise the materials
+     */
+    Basic_LoadAWD.prototype.initMaterials = function () {
+    };
+    /**
+     * Initialise the scene objects
+     */
+    Basic_LoadAWD.prototype.initObjects = function () {
+    };
+    /**
+     * Initialise the listeners
+     */
+    Basic_LoadAWD.prototype.initListeners = function () {
+        var _this = this;
+        window.onresize = function (event) { return _this.onResize(event); };
+        this.onResize();
+        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this._timer.start();
+        AssetLibrary.enableParser(AWDParser);
+        AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+        AssetLibrary.load(new URLRequest('assets/suzanne.awd'));
+    };
+    /**
+     * Navigation and render loop
+     */
+    Basic_LoadAWD.prototype.onEnterFrame = function (dt) {
+        this._time += dt;
+        if (this._suzanne)
+            this._suzanne.rotationY += 1;
+        this._view.render();
+    };
+    /**
+     * Listener function for asset complete event on loader
+     */
+    Basic_LoadAWD.prototype.onAssetComplete = function (event) {
+        var asset = event.asset;
+        switch (asset.assetType) {
+            case Mesh.assetType:
+                var mesh = asset;
+                mesh.y = -300;
+                mesh.transform.scale = new Vector3D(900, 900, 900);
+                this._suzanne = mesh;
+                this._view.scene.addChild(mesh);
+                break;
+            case MethodMaterial.assetType:
+                var material = asset;
+                material.lightPicker = this._lightPicker;
+                break;
+        }
+    };
+    /**
+     * stage listener for resize events
+     */
+    Basic_LoadAWD.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    return Basic_LoadAWD;
+})();
+window.onload = function () {
+    new Basic_LoadAWD();
+};
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_LoadAWD.ts"])
+
 
 //# sourceMappingURL=Basic_LoadAWD.js.map

@@ -43,7 +43,7 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var Loader = require("awayjs-display/lib/containers/Loader");
+var LoaderContainer = require("awayjs-display/lib/containers/LoaderContainer");
 var View = require("awayjs-display/lib/containers/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
@@ -108,7 +108,7 @@ var Basic_Load3DS = (function () {
      * Initialise the scene objects
      */
     Basic_Load3DS.prototype.initObjects = function () {
-        this._loader = new Loader();
+        this._loader = new LoaderContainer();
         this._loader.transform.scale = new Vector3D(300, 300, 300);
         this._loader.z = -200;
         this._view.scene.addChild(this._loader);
@@ -135,7 +135,7 @@ var Basic_Load3DS = (function () {
         loaderContext.mapUrl("texture.jpg", "assets/soldier_ant.jpg");
         this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
         this._loader.load(new URLRequest("assets/soldier_ant.3ds"), loaderContext, null, new Max3DSParser(false));
-        AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+        AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
         AssetLibrary.load(new URLRequest("assets/CoarseRedSand.jpg"));
     };
     /**
@@ -225,7 +225,7 @@ window.onload = function () {
     new Basic_Load3DS();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
 
 
 //# sourceMappingURL=Basic_Load3DS.js.map

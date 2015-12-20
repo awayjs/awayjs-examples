@@ -1,3 +1,746 @@
-(function e(t,i,a){function s(r,o){if(!i[r]){if(!t[r]){var l=typeof require=="function"&&require;if(!o&&l)return l(r,!0);if(n)return n(r,!0);var h=new Error("Cannot find module '"+r+"'");throw h.code="MODULE_NOT_FOUND",h}var d=i[r]={exports:{}};t[r][0].call(d.exports,function(e){var i=t[r][1][e];return s(i?i:e)},d,d.exports,e,t,i,a)}return i[r].exports}var n=typeof require=="function"&&require;for(var r=0;r<a.length;r++)s(a[r]);return s})({"./src/Advanced_MultiPassSponzaDemo.ts":[function(e,t,i){var a=e("awayjs-core/lib/data/SpecularImage2D");var s=e("awayjs-core/lib/data/BlendMode");var n=e("awayjs-core/lib/events/Event");var r=e("awayjs-core/lib/events/AssetEvent");var o=e("awayjs-core/lib/events/ProgressEvent");var l=e("awayjs-core/lib/events/LoaderEvent");var h=e("awayjs-core/lib/geom/UVTransform");var d=e("awayjs-core/lib/geom/Vector3D");var u=e("awayjs-core/lib/library/AssetLibrary");var c=e("awayjs-core/lib/library/LoaderContext");var _=e("awayjs-core/lib/net/URLLoader");var g=e("awayjs-core/lib/net/URLLoaderDataFormat");var f=e("awayjs-core/lib/net/URLRequest");var p=e("awayjs-core/lib/parsers/ParserUtils");var m=e("awayjs-core/lib/ui/Keyboard");var w=e("awayjs-core/lib/utils/RequestAnimationFrame");var y=e("awayjs-display/lib/containers/Loader");var v=e("awayjs-display/lib/containers/View");var b=e("awayjs-display/lib/controllers/FirstPersonController");var j=e("awayjs-display/lib/base/Geometry");var M=e("awayjs-display/lib/entities/Mesh");var S=e("awayjs-display/lib/entities/Skybox");var T=e("awayjs-display/lib/entities/DirectionalLight");var x=e("awayjs-display/lib/entities/PointLight");var D=e("awayjs-display/lib/materials/lightpickers/StaticLightPicker");var L=e("awayjs-display/lib/prefabs/PrimitivePlanePrefab");var E=e("awayjs-display/lib/textures/SingleCubeTexture");var A=e("awayjs-display/lib/textures/Single2DTexture");var k=e("awayjs-renderergl/lib/tools/commands/Merge");var C=e("awayjs-renderergl/lib/DefaultRenderer");var P=e("awayjs-methodmaterials/lib/MethodMaterial");var R=e("awayjs-methodmaterials/lib/MethodMaterialMode");var O=e("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");var U=e("awayjs-methodmaterials/lib/methods/EffectFogMethod");var F=e("awayjs-parsers/lib/AWDParser");var B=function(){function e(){this._assetsRoot="assets/";this._materialNameStrings=Array("arch","Material__298","bricks","ceiling","chain","column_a","column_b","column_c","fabric_g","fabric_c","fabric_f","details","fabric_d","fabric_a","fabric_e","flagpole","floor","16___Default","Material__25","roof","leaf","vase","vase_hanging","Material__57","vase_round");this._diffuseTextureStrings=Array("arch_diff.jpg","background.jpg","bricks_a_diff.jpg","ceiling_a_diff.jpg","chain_texture.png","column_a_diff.jpg","column_b_diff.jpg","column_c_diff.jpg","curtain_blue_diff.jpg","curtain_diff.jpg","curtain_green_diff.jpg","details_diff.jpg","fabric_blue_diff.jpg","fabric_diff.jpg","fabric_green_diff.jpg","flagpole_diff.jpg","floor_a_diff.jpg","gi_flag.jpg","lion.jpg","roof_diff.jpg","thorn_diff.png","vase_dif.jpg","vase_hanging.jpg","vase_plant.png","vase_round.jpg");this._normalTextureStrings=Array("arch_ddn.jpg","background_ddn.jpg","bricks_a_ddn.jpg",null,"chain_texture_ddn.jpg","column_a_ddn.jpg","column_b_ddn.jpg","column_c_ddn.jpg",null,null,null,null,null,null,null,null,null,null,"lion2_ddn.jpg",null,"thorn_ddn.jpg","vase_ddn.jpg",null,null,"vase_round_ddn.jpg");this._specularTextureStrings=Array("arch_spec.jpg",null,"bricks_a_spec.jpg","ceiling_a_spec.jpg",null,"column_a_spec.jpg","column_b_spec.jpg","column_c_spec.jpg","curtain_spec.jpg","curtain_spec.jpg","curtain_spec.jpg","details_spec.jpg","fabric_spec.jpg","fabric_spec.jpg","fabric_spec.jpg","flagpole_spec.jpg","floor_a_spec.jpg",null,null,null,"thorn_spec.jpg",null,null,"vase_plant_spec.jpg","vase_round_spec.jpg");this._numTexStrings=Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);this._meshReference=new Array(25);this._flameData=Array(new I(new d(-625,165,219),16755268),new I(new d(485,165,219),16755268),new I(new d(-625,165,-148),16755268),new I(new d(485,165,-148),16755268));this._textureDictionary=new Object;this._multiMaterialDictionary=new Object;this._singleMaterialDictionary=new Object;this.vaseMeshes=new Array;this.poleMeshes=new Array;this.colMeshes=new Array;this._singlePassMaterial=false;this._multiPassMaterial=true;this._cascadeLevels=3;this._shadowOptions="PCF";this._depthMapSize=2048;this._lightDirection=Math.PI/2;this._lightElevation=Math.PI/18;this._lights=new Array;this._numTextures=0;this._currentTexture=0;this._n=0;this._meshes=new Array;this._move=false;this._drag=.5;this._walkIncrement=10;this._strafeIncrement=10;this._walkSpeed=0;this._strafeSpeed=0;this._walkAcceleration=0;this._strafeAcceleration=0;this._time=0;this.init()}e.prototype.init=function(){this.initEngine();this.initLights();this.initListeners();this._n=0;this._loadingTextureStrings=this._diffuseTextureStrings;this.countNumTextures();this._n=0;this._loadingTextureStrings=this._diffuseTextureStrings;this.load(this._loadingTextureStrings[this._n])};e.prototype.initEngine=function(){this._view=new v(new C);this._view.camera.y=150;this._view.camera.z=0;this._cameraController=new b(this._view.camera,90,0,-80,80)};e.prototype.initLights=function(){this._lights=new Array;this._directionalLight=new T(-1,-15,1);this._directionalLight.color=15654365;this._directionalLight.ambient=.35;this._directionalLight.ambientColor=8421520;this._view.scene.addChild(this._directionalLight);this._lights.push(this._directionalLight);this.updateDirection();var e;var t=this._flameData.length;for(var i=0;i<t;i++){e=this._flameData[i];var a=e.light=new x;a.radius=200;a.fallOff=600;a.color=e.color;a.y=10;this._lights.push(a)}this._lightPicker=new D(this._lights);this._baseShadowMethod=new O(this._directionalLight,10,5);this._fogMethod=new U(0,4e3,9474279)};e.prototype.initObjects=function(){this._view.scene.addChild(new S(this._skyMap));this._flameGeometry=new L(40,80,1,1,false,true);var e;var t=this._flameData.length;for(var i=0;i<t;i++){e=this._flameData[i];var a=e.mesh=this._flameGeometry.getNewObject();a.material=this._flameMaterial;a.transform.position=e.position;a.subMeshes[0].uvTransform=new h;a.subMeshes[0].uvTransform.scaleU=1/16;this._view.scene.addChild(a);a.addChild(e.light)}};e.prototype.initListeners=function(){var e=this;window.onresize=function(t){return e.onResize(t)};document.onmousedown=function(t){return e.onMouseDown(t)};document.onmouseup=function(t){return e.onMouseUp(t)};document.onmousemove=function(t){return e.onMouseMove(t)};document.onkeydown=function(t){return e.onKeyDown(t)};document.onkeyup=function(t){return e.onKeyUp(t)};this.onResize();this.parseAWDDelegate=function(t){return e.parseAWD(t)};this.parseBitmapDelegate=function(t){return e.parseBitmap(t)};this.loadProgressDelegate=function(t){return e.loadProgress(t)};this.onBitmapCompleteDelegate=function(t){return e.onBitmapComplete(t)};this.onAssetCompleteDelegate=function(t){return e.onAssetComplete(t)};this.onResourceCompleteDelegate=function(t){return e.onResourceComplete(t)};this._timer=new w(this.onEnterFrame,this);this._timer.start()};e.prototype.updateDirection=function(){this._directionalLight.direction=new d(Math.sin(this._lightElevation)*Math.cos(this._lightDirection),-Math.cos(this._lightElevation),Math.sin(this._lightElevation)*Math.sin(this._lightDirection))};e.prototype.countNumTextures=function(){this._numTextures++;while(this._n++<this._loadingTextureStrings.length-1)if(this._loadingTextureStrings[this._n])break;if(this._n<this._loadingTextureStrings.length){this.countNumTextures()}else if(this._loadingTextureStrings==this._diffuseTextureStrings){this._n=0;this._loadingTextureStrings=this._normalTextureStrings;this.countNumTextures()}else if(this._loadingTextureStrings==this._normalTextureStrings){this._n=0;this._loadingTextureStrings=this._specularTextureStrings;this.countNumTextures()}};e.prototype.load=function(e){var t=new _;switch(e.substring(e.length-3)){case"AWD":case"awd":t.dataFormat=g.ARRAY_BUFFER;this._loadingText="Loading Model";t.addEventListener(n.COMPLETE,this.parseAWDDelegate);break;case"png":case"jpg":t.dataFormat=g.BLOB;this._currentTexture++;this._loadingText="Loading Textures";t.addEventListener(n.COMPLETE,this.parseBitmapDelegate);e="sponza/"+e;break}t.addEventListener(o.PROGRESS,this.loadProgressDelegate);var i=new f(this._assetsRoot+e);t.load(i)};e.prototype.loadProgress=function(e){var t=Math.floor(e["bytesLoaded"]/e["bytesTotal"]*100);if(t!=100){console.log(this._loadingText+"\n"+(this._loadingText=="Loading Model"?Math.floor(e["bytesLoaded"]/1024<<0)+"kb | "+Math.floor(e["bytesTotal"]/1024<<0)+"kb":this._currentTexture+" | "+this._numTextures))}};e.prototype.parseBitmap=function(e){var t=e.target;var i=p.blobToImage(t.data);i.onload=this.onBitmapCompleteDelegate;t.removeEventListener(n.COMPLETE,this.parseBitmapDelegate);t.removeEventListener(o.PROGRESS,this.loadProgressDelegate);t=null};e.prototype.onBitmapComplete=function(e){var t=e.target;t.onload=null;if(!this._textureDictionary[this._loadingTextureStrings[this._n]])this._textureDictionary[this._loadingTextureStrings[this._n]]=new A(this._loadingTextureStrings==this._specularTextureStrings?new a(p.imageToBitmapImage2D(t)):p.imageToBitmapImage2D(t));while(this._n++<this._loadingTextureStrings.length-1)if(this._loadingTextureStrings[this._n])break;if(this._n<this._loadingTextureStrings.length){this.load(this._loadingTextureStrings[this._n])}else if(this._loadingTextureStrings==this._diffuseTextureStrings){this._n=0;this._loadingTextureStrings=this._normalTextureStrings;this.load(this._loadingTextureStrings[this._n])}else if(this._loadingTextureStrings==this._normalTextureStrings){this._n=0;this._loadingTextureStrings=this._specularTextureStrings;this.load(this._loadingTextureStrings[this._n])}else{this.load("sponza/sponza.awd")}};e.prototype.parseAWD=function(e){console.log("Parsing Data");var t=e.target;var i=new y(false);i.addEventListener(r.ASSET_COMPLETE,this.onAssetCompleteDelegate);i.addEventListener(l.RESOURCE_COMPLETE,this.onResourceCompleteDelegate);i.loadData(t.data,new c(false),null,new F);t.removeEventListener(o.PROGRESS,this.loadProgressDelegate);t.removeEventListener(n.COMPLETE,this.parseAWDDelegate);t=null};e.prototype.onAssetComplete=function(e){if(e.asset.isAsset(M)){this._meshes.push(e.asset)}};e.prototype.onResourceComplete=function(e){var t=this;var i=new k(false,false,true);var a=e.target;a.removeEventListener(r.ASSET_COMPLETE,this.onAssetCompleteDelegate);a.removeEventListener(l.RESOURCE_COMPLETE,this.onResourceCompleteDelegate);var s;var n;var o=this._meshes.length;for(var h=0;h<o;h++){s=this._meshes[h];if(s.name=="sponza_04"||s.name=="sponza_379")continue;var d=Number(s.name.substring(7));n=s.material.name;if(n=="column_c"&&(d<22||d>33))continue;var _=d-125;if(n=="column_b"){if(_>=0&&_<132&&_%11<10){this.colMeshes.push(s);continue}else{this.colMeshes.push(s);var g=new k;var p=new M(new j);g.applyToMeshes(p,this.colMeshes);s=p;this.colMeshes=new Array}}var m=d-334;if(n=="vase_hanging"&&m%9<5){if(m>=0&&m<370&&m%9<4){this.vaseMeshes.push(s);continue}else{this.vaseMeshes.push(s);var w=new k;var y=new M(new j);w.applyToMeshes(y,this.vaseMeshes);s=y;this.vaseMeshes=new Array}}var v=d-290;if(n=="flagpole"){if(v>=0&&v<320&&v%3<2){this.poleMeshes.push(s);continue}else if(v>=0){this.poleMeshes.push(s);var b=new k;var S=new M(new j);b.applyToMeshes(S,this.poleMeshes);s=S;this.poleMeshes=new Array}}if(n=="flagpole"&&(d==260||d==261||d==263||d==265||d==268||d==269||d==271||d==273))continue;var T=this._materialNameStrings.indexOf(n);if(T==-1||T>=this._materialNameStrings.length)continue;this._numTexStrings[T]++;var x=this._diffuseTextureStrings[T];var D;var L;var E=this._multiMaterialDictionary[n];if(!E){E=new P(this._textureDictionary[x]);E.mode=R.MULTI_PASS;E.name=n;E.lightPicker=this._lightPicker;E.shadowMethod=this._baseShadowMethod;E.addEffectMethod(this._fogMethod);E.repeat=true;E.mipmap=true;E.specular=2;if(x.substring(x.length-3)=="png")E.alphaThreshold=.5;D=this._normalTextureStrings[T];if(D)E.normalMap=this._textureDictionary[D];L=this._specularTextureStrings[T];if(L)E.specularMap=this._textureDictionary[L];this._multiMaterialDictionary[n]=E}s.material=E;this._view.scene.addChild(s);this._meshReference[T]=s}var A=0;while(A<this._numTexStrings.length){console.log(this._diffuseTextureStrings[A],this._numTexStrings[A]);A++}u.addEventListener(l.RESOURCE_COMPLETE,function(e){return t.onExtraResourceComplete(e)});var C=new c;C.dependencyBaseUrl="assets/skybox/";u.load(new f("assets/skybox/hourglass_texture.cube"),C);u.load(new f("assets/fire.png"))};e.prototype.onExtraResourceComplete=function(e){switch(e.url){case"assets/skybox/hourglass_texture.cube":this._skyMap=new E(e.assets[0]);break;case"assets/fire.png":this._flameMaterial=new P(new A(e.assets[0]));this._flameMaterial.blendMode=s.ADD;this._flameMaterial.animateUVs=true;break}if(this._skyMap&&this._flameMaterial)this.initObjects()};e.prototype.onEnterFrame=function(e){if(this._walkSpeed||this._walkAcceleration){this._walkSpeed=(this._walkSpeed+this._walkAcceleration)*this._drag;if(Math.abs(this._walkSpeed)<.01)this._walkSpeed=0;this._cameraController.incrementWalk(this._walkSpeed)}if(this._strafeSpeed||this._strafeAcceleration){this._strafeSpeed=(this._strafeSpeed+this._strafeAcceleration)*this._drag;if(Math.abs(this._strafeSpeed)<.01)this._strafeSpeed=0;this._cameraController.incrementStrafe(this._strafeSpeed)}var t;var i=this._flameData.length;for(var a=0;a<i;a++){t=this._flameData[a];var s=t.light;if(!s)continue;s.fallOff=380+Math.random()*20;s.radius=200+Math.random()*30;s.diffuse=.9+Math.random()*.1;var n=t.mesh;if(!n)continue;var r=n.subMeshes[0];r.uvTransform.offsetU+=1/16;r.uvTransform.offsetU%=1;n.rotationY=Math.atan2(n.x-this._view.camera.x,n.z-this._view.camera.z)*180/Math.PI}this._view.render()};e.prototype.onKeyDown=function(e){switch(e.keyCode){case m.UP:case m.W:this._walkAcceleration=this._walkIncrement;break;case m.DOWN:case m.S:this._walkAcceleration=-this._walkIncrement;break;case m.LEFT:case m.A:this._strafeAcceleration=-this._strafeIncrement;break;case m.RIGHT:case m.D:this._strafeAcceleration=this._strafeIncrement;break;case m.F:break;case m.C:this._cameraController.fly=!this._cameraController.fly}};e.prototype.onKeyUp=function(e){switch(e.keyCode){case m.UP:case m.W:case m.DOWN:case m.S:this._walkAcceleration=0;break;case m.LEFT:case m.A:case m.RIGHT:case m.D:this._strafeAcceleration=0;break}};e.prototype.onMouseDown=function(e){this._lastPanAngle=this._cameraController.panAngle;this._lastTiltAngle=this._cameraController.tiltAngle;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY;this._move=true};e.prototype.onMouseUp=function(e){this._move=false};e.prototype.onMouseMove=function(e){if(this._move){this._cameraController.panAngle=.3*(e.clientX-this._lastMouseX)+this._lastPanAngle;this._cameraController.tiltAngle=.3*(e.clientY-this._lastMouseY)+this._lastTiltAngle}};e.prototype.onResize=function(e){if(e===void 0){e=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};return e}();var I=function(){function e(e,t){this.position=e;this.color=t}return e}();window.onload=function(){new B}},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/data/SpecularImage2D":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/Event":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ProgressEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/Advanced_MultiPassSponzaDemo.ts":[function(require,module,exports){
+/*
+
+Crytek Sponza demo using multipass materials in Away3D
+
+Demonstrates:
+
+How to apply Multipass materials to a model
+How to enable cascading shadow maps on a multipass material.
+How to setup multiple lightsources, shadows and fog effects all in the same scene.
+How to apply specular, normal and diffuse maps to an AWD model.
+
+Code by Rob Bateman & David Lenaerts
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
+david.lenaerts@gmail.com
+http://www.derschmale.com
+
+Model re-modeled by Frank Meinl at Crytek with inspiration from Marko Dabrovic's original, converted to AWD by LoTH
+contact@crytek.com
+http://www.crytek.com/cryengine/cryengine3/downloads
+3dflashlo@gmail.com
+http://3dflashlo.wordpress.com
+
+This code is distributed under the MIT License
+
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var SpecularImage2D = require("awayjs-core/lib/image/SpecularImage2D");
+var BlendMode = require("awayjs-core/lib/image/BlendMode");
+var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
+var UVTransform = require("awayjs-core/lib/geom/UVTransform");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
+var URLLoader = require("awayjs-core/lib/net/URLLoader");
+var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
+var Keyboard = require("awayjs-core/lib/ui/Keyboard");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var LoaderContainer = require("awayjs-display/lib/containers/LoaderContainer");
+var View = require("awayjs-display/lib/containers/View");
+var FirstPersonController = require("awayjs-display/lib/controllers/FirstPersonController");
+var Geometry = require("awayjs-display/lib/base/Geometry");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Skybox = require("awayjs-display/lib/entities/Skybox");
+var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var PointLight = require("awayjs-display/lib/entities/PointLight");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
+var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var Merge = require("awayjs-renderergl/lib/tools/commands/Merge");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var MethodMaterialMode = require("awayjs-methodmaterials/lib/MethodMaterialMode");
+var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+var EffectFogMethod = require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
+var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var Advanced_MultiPassSponzaDemo = (function () {
+    /**
+     * Constructor
+     */
+    function Advanced_MultiPassSponzaDemo() {
+        //root filepath for asset loading
+        this._assetsRoot = "assets/";
+        //default material data strings
+        this._materialNameStrings = Array("arch", "Material__298", "bricks", "ceiling", "chain", "column_a", "column_b", "column_c", "fabric_g", "fabric_c", "fabric_f", "details", "fabric_d", "fabric_a", "fabric_e", "flagpole", "floor", "16___Default", "Material__25", "roof", "leaf", "vase", "vase_hanging", "Material__57", "vase_round");
+        //private const diffuseTextureStrings:Array<string> = Array<string>(["arch_diff.atf", "background.atf", "bricks_a_diff.atf", "ceiling_a_diff.atf", "chain_texture.png", "column_a_diff.atf", "column_b_diff.atf", "column_c_diff.atf", "curtain_blue_diff.atf", "curtain_diff.atf", "curtain_green_diff.atf", "details_diff.atf", "fabric_blue_diff.atf", "fabric_diff.atf", "fabric_green_diff.atf", "flagpole_diff.atf", "floor_a_diff.atf", "gi_flag.atf", "lion.atf", "roof_diff.atf", "thorn_diff.png", "vase_dif.atf", "vase_hanging.atf", "vase_plant.png", "vase_round.atf"]);
+        //private const normalTextureStrings:Array<string> = Array<string>(["arch_ddn.atf", "background_ddn.atf", "bricks_a_ddn.atf", null,                "chain_texture_ddn.atf", "column_a_ddn.atf", "column_b_ddn.atf", "column_c_ddn.atf", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.atf", null,       "thorn_ddn.atf", "vase_ddn.atf",  null,               null,             "vase_round_ddn.atf"]);
+        //private const specularTextureStrings:Array<string> = Array<string>(["arch_spec.atf", null,            "bricks_a_spec.atf", "ceiling_a_spec.atf", null,                "column_a_spec.atf", "column_b_spec.atf", "column_c_spec.atf", "curtain_spec.atf",      "curtain_spec.atf", "curtain_spec.atf",       "details_spec.atf", "fabric_spec.atf",      "fabric_spec.atf", "fabric_spec.atf",       "flagpole_spec.atf", "floor_a_spec.atf", null,          null,       null,            "thorn_spec.atf", null,           null,               "vase_plant_spec.atf", "vase_round_spec.atf"]);
+        this._diffuseTextureStrings = Array("arch_diff.jpg", "background.jpg", "bricks_a_diff.jpg", "ceiling_a_diff.jpg", "chain_texture.png", "column_a_diff.jpg", "column_b_diff.jpg", "column_c_diff.jpg", "curtain_blue_diff.jpg", "curtain_diff.jpg", "curtain_green_diff.jpg", "details_diff.jpg", "fabric_blue_diff.jpg", "fabric_diff.jpg", "fabric_green_diff.jpg", "flagpole_diff.jpg", "floor_a_diff.jpg", "gi_flag.jpg", "lion.jpg", "roof_diff.jpg", "thorn_diff.png", "vase_dif.jpg", "vase_hanging.jpg", "vase_plant.png", "vase_round.jpg");
+        this._normalTextureStrings = Array("arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null, "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null, null, null, null, null, null, null, null, null, null, "lion2_ddn.jpg", null, "thorn_ddn.jpg", "vase_ddn.jpg", null, null, "vase_round_ddn.jpg");
+        this._specularTextureStrings = Array("arch_spec.jpg", null, "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null, "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg", "curtain_spec.jpg", "curtain_spec.jpg", "details_spec.jpg", "fabric_spec.jpg", "fabric_spec.jpg", "fabric_spec.jpg", "flagpole_spec.jpg", "floor_a_spec.jpg", null, null, null, "thorn_spec.jpg", null, null, "vase_plant_spec.jpg", "vase_round_spec.jpg");
+        this._numTexStrings = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        this._meshReference = new Array(25);
+        //flame data objects
+        this._flameData = Array(new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44));
+        //material dictionaries to hold instances
+        this._textureDictionary = new Object();
+        this._multiMaterialDictionary = new Object();
+        this._singleMaterialDictionary = new Object();
+        //private meshDictionary:Dictionary = new Dictionary();
+        this.vaseMeshes = new Array();
+        this.poleMeshes = new Array();
+        this.colMeshes = new Array();
+        //gui variables
+        this._singlePassMaterial = false;
+        this._multiPassMaterial = true;
+        this._cascadeLevels = 3;
+        this._shadowOptions = "PCF";
+        this._depthMapSize = 2048;
+        this._lightDirection = Math.PI / 2;
+        this._lightElevation = Math.PI / 18;
+        this._lights = new Array();
+        this._numTextures = 0;
+        this._currentTexture = 0;
+        this._n = 0;
+        //scene variables
+        this._meshes = new Array();
+        //rotation variables
+        this._move = false;
+        //movement variables
+        this._drag = 0.5;
+        this._walkIncrement = 10;
+        this._strafeIncrement = 10;
+        this._walkSpeed = 0;
+        this._strafeSpeed = 0;
+        this._walkAcceleration = 0;
+        this._strafeAcceleration = 0;
+        this._time = 0;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    Advanced_MultiPassSponzaDemo.prototype.init = function () {
+        this.initEngine();
+        this.initLights();
+        this.initListeners();
+        //count textures
+        this._n = 0;
+        this._loadingTextureStrings = this._diffuseTextureStrings;
+        this.countNumTextures();
+        //kickoff asset loading
+        this._n = 0;
+        this._loadingTextureStrings = this._diffuseTextureStrings;
+        this.load(this._loadingTextureStrings[this._n]);
+    };
+    /**
+     * Initialise the engine
+     */
+    Advanced_MultiPassSponzaDemo.prototype.initEngine = function () {
+        //create the view
+        this._view = new View(new DefaultRenderer());
+        this._view.camera.y = 150;
+        this._view.camera.z = 0;
+        //setup controller to be used on the camera
+        this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);
+    };
+    /**
+     * Initialise the lights
+     */
+    Advanced_MultiPassSponzaDemo.prototype.initLights = function () {
+        //create lights array
+        this._lights = new Array();
+        //create global directional light
+        //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
+        //			this._cascadeShadowMapper.lightOffset = 20000;
+        this._directionalLight = new DirectionalLight(-1, -15, 1);
+        //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
+        this._directionalLight.color = 0xeedddd;
+        this._directionalLight.ambient = .35;
+        this._directionalLight.ambientColor = 0x808090;
+        this._view.scene.addChild(this._directionalLight);
+        this._lights.push(this._directionalLight);
+        this.updateDirection();
+        //create flame lights
+        var flameVO;
+        var len = this._flameData.length;
+        for (var i = 0; i < len; i++) {
+            flameVO = this._flameData[i];
+            var light = flameVO.light = new PointLight();
+            light.radius = 200;
+            light.fallOff = 600;
+            light.color = flameVO.color;
+            light.y = 10;
+            this._lights.push(light);
+        }
+        //create our global light picker
+        this._lightPicker = new StaticLightPicker(this._lights);
+        this._baseShadowMethod = new ShadowSoftMethod(this._directionalLight, 10, 5);
+        //			this._baseShadowMethod = new ShadowFilteredMethod(this._directionalLight);
+        //create our global fog method
+        this._fogMethod = new EffectFogMethod(0, 4000, 0x9090e7);
+        //			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
+    };
+    /**
+     * Initialise the scene objects
+     */
+    Advanced_MultiPassSponzaDemo.prototype.initObjects = function () {
+        //create skybox
+        this._view.scene.addChild(new Skybox(this._skyMap));
+        //create flame meshes
+        this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
+        var flameVO;
+        var len = this._flameData.length;
+        for (var i = 0; i < len; i++) {
+            flameVO = this._flameData[i];
+            var mesh = flameVO.mesh = this._flameGeometry.getNewObject();
+            mesh.material = this._flameMaterial;
+            mesh.transform.position = flameVO.position;
+            mesh.subMeshes[0].uvTransform = new UVTransform();
+            mesh.subMeshes[0].uvTransform.scaleU = 1 / 16;
+            this._view.scene.addChild(mesh);
+            mesh.addChild(flameVO.light);
+        }
+    };
+    /**
+     * Initialise the listeners
+     */
+    Advanced_MultiPassSponzaDemo.prototype.initListeners = function () {
+        var _this = this;
+        //add listeners
+        window.onresize = function (event) { return _this.onResize(event); };
+        document.onmousedown = function (event) { return _this.onMouseDown(event); };
+        document.onmouseup = function (event) { return _this.onMouseUp(event); };
+        document.onmousemove = function (event) { return _this.onMouseMove(event); };
+        document.onkeydown = function (event) { return _this.onKeyDown(event); };
+        document.onkeyup = function (event) { return _this.onKeyUp(event); };
+        this.onResize();
+        this.parseAWDDelegate = function (event) { return _this.parseAWD(event); };
+        this.parseBitmapDelegate = function (event) { return _this.parseBitmap(event); };
+        this.loadProgressDelegate = function (event) { return _this.loadProgress(event); };
+        this.onBitmapCompleteDelegate = function (event) { return _this.onBitmapComplete(event); };
+        this.onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
+        this.onResourceCompleteDelegate = function (event) { return _this.onResourceComplete(event); };
+        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this._timer.start();
+    };
+    /**
+     * Updates the material mode between single pass and multi pass
+     */
+    //		private updateMaterialPass(materialDictionary:Dictionary)
+    //		{
+    //			var mesh:Mesh;
+    //			var name:string;
+    //			var len:number = this._meshes.length;
+    //			for (var i:number = 0; i < len; i++) {
+    //				mesh = this._meshes[i];
+    //				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+    //					continue;
+    //				name = mesh.material.name;
+    //				var textureIndex:number = this._materialNameStrings.indexOf(name);
+    //				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
+    //					continue;
+    //
+    //				mesh.material = materialDictionary[name];
+    //			}
+    //		}
+    /**
+     * Updates the direction of the directional lightsource
+     */
+    Advanced_MultiPassSponzaDemo.prototype.updateDirection = function () {
+        this._directionalLight.direction = new Vector3D(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
+    };
+    /**
+     * Count the total number of textures to be loaded
+     */
+    Advanced_MultiPassSponzaDemo.prototype.countNumTextures = function () {
+        this._numTextures++;
+        while (this._n++ < this._loadingTextureStrings.length - 1)
+            if (this._loadingTextureStrings[this._n])
+                break;
+        //switch to next teture set
+        if (this._n < this._loadingTextureStrings.length) {
+            this.countNumTextures();
+        }
+        else if (this._loadingTextureStrings == this._diffuseTextureStrings) {
+            this._n = 0;
+            this._loadingTextureStrings = this._normalTextureStrings;
+            this.countNumTextures();
+        }
+        else if (this._loadingTextureStrings == this._normalTextureStrings) {
+            this._n = 0;
+            this._loadingTextureStrings = this._specularTextureStrings;
+            this.countNumTextures();
+        }
+    };
+    /**
+     * Global binary file loader
+     */
+    Advanced_MultiPassSponzaDemo.prototype.load = function (url) {
+        var loader = new URLLoader();
+        switch (url.substring(url.length - 3)) {
+            case "AWD":
+            case "awd":
+                loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
+                this._loadingText = "Loading Model";
+                loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
+                break;
+            case "png":
+            case "jpg":
+                loader.dataFormat = URLLoaderDataFormat.BLOB;
+                this._currentTexture++;
+                this._loadingText = "Loading Textures";
+                loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+                url = "sponza/" + url;
+                break;
+        }
+        loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        var urlReq = new URLRequest(this._assetsRoot + url);
+        loader.load(urlReq);
+    };
+    /**
+     * Display current load
+     */
+    Advanced_MultiPassSponzaDemo.prototype.loadProgress = function (e) {
+        //TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
+        var P = Math.floor(e["bytesLoaded"] / e["bytesTotal"] * 100);
+        if (P != 100) {
+            console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model") ? Math.floor((e["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((e["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
+        }
+    };
+    /**
+     * Parses the ATF file
+     */
+    //		private onATFComplete(e:Event)
+    //		{
+    //            var loader:URLLoader = URLLoader(e.target);
+    //            loader.removeEventListener(Event.COMPLETE, this.onATFComplete);
+    //
+    //			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
+    //			{
+    //				this._textureDictionary[this._loadingTextureStrings[this._n]] = new ATFTexture(loader.data);
+    //			}
+    //
+    //            loader.data = null;
+    //            loader.close();
+    //			loader = null;
+    //
+    //
+    //			//skip null textures
+    //			while (this._n++ < this._loadingTextureStrings.length - 1)
+    //				if (this._loadingTextureStrings[this._n])
+    //					break;
+    //
+    //			//switch to next teture set
+    //            if (this._n < this._loadingTextureStrings.length) {
+    //				this.load(this._loadingTextureStrings[this._n]);
+    //			} else if (this._loadingTextureStrings == this._diffuseTextureStrings) {
+    //				this._n = 0;
+    //				this._loadingTextureStrings = this._normalTextureStrings;
+    //				this.load(this._loadingTextureStrings[this._n]);
+    //			} else if (this._loadingTextureStrings == this._normalTextureStrings) {
+    //				this._n = 0;
+    //				this._loadingTextureStrings = this._specularTextureStrings;
+    //				this.load(this._loadingTextureStrings[this._n]);
+    //			} else {
+    //				this.load("sponza/sponza.awd");
+    //            }
+    //        }
+    /**
+     * Parses the Bitmap file
+     */
+    Advanced_MultiPassSponzaDemo.prototype.parseBitmap = function (e) {
+        var urlLoader = e.target;
+        var image = ParserUtils.blobToImage(urlLoader.data);
+        image.onload = this.onBitmapCompleteDelegate;
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        urlLoader = null;
+    };
+    /**
+     * Listener for bitmap complete event on loader
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onBitmapComplete = function (event) {
+        var image = event.target;
+        image.onload = null;
+        //create bitmap texture in dictionary
+        if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
+            this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+        while (this._n++ < this._loadingTextureStrings.length - 1)
+            if (this._loadingTextureStrings[this._n])
+                break;
+        //switch to next teture set
+        if (this._n < this._loadingTextureStrings.length) {
+            this.load(this._loadingTextureStrings[this._n]);
+        }
+        else if (this._loadingTextureStrings == this._diffuseTextureStrings) {
+            this._n = 0;
+            this._loadingTextureStrings = this._normalTextureStrings;
+            this.load(this._loadingTextureStrings[this._n]);
+        }
+        else if (this._loadingTextureStrings == this._normalTextureStrings) {
+            this._n = 0;
+            this._loadingTextureStrings = this._specularTextureStrings;
+            this.load(this._loadingTextureStrings[this._n]);
+        }
+        else {
+            this.load("sponza/sponza.awd");
+        }
+    };
+    /**
+     * Parses the AWD file
+     */
+    Advanced_MultiPassSponzaDemo.prototype.parseAWD = function (event) {
+        console.log("Parsing Data");
+        var urlLoader = event.target;
+        var loader = new LoaderContainer(false);
+        loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+        loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+        loader.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+        urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
+        urlLoader = null;
+    };
+    /**
+     * Listener for asset complete event on loader
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onAssetComplete = function (event) {
+        if (event.asset.isAsset(Mesh)) {
+            //store meshes
+            this._meshes.push(event.asset);
+        }
+    };
+    /**
+     * Triggered once all resources are loaded
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onResourceComplete = function (event) {
+        var _this = this;
+        var merge = new Merge(false, false, true);
+        var loader = event.target;
+        loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+        loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+        //reassign materials
+        var mesh;
+        var name;
+        var len = this._meshes.length;
+        for (var i = 0; i < len; i++) {
+            mesh = this._meshes[i];
+            if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+                continue;
+            var num = Number(mesh.name.substring(7));
+            name = mesh.material.name;
+            if (name == "column_c" && (num < 22 || num > 33))
+                continue;
+            var colNum = (num - 125);
+            if (name == "column_b") {
+                if (colNum >= 0 && colNum < 132 && (colNum % 11) < 10) {
+                    this.colMeshes.push(mesh);
+                    continue;
+                }
+                else {
+                    this.colMeshes.push(mesh);
+                    var colMerge = new Merge();
+                    var colMesh = new Mesh(new Geometry());
+                    colMerge.applyToMeshes(colMesh, this.colMeshes);
+                    mesh = colMesh;
+                    this.colMeshes = new Array();
+                }
+            }
+            var vaseNum = (num - 334);
+            if (name == "vase_hanging" && (vaseNum % 9) < 5) {
+                if (vaseNum >= 0 && vaseNum < 370 && (vaseNum % 9) < 4) {
+                    this.vaseMeshes.push(mesh);
+                    continue;
+                }
+                else {
+                    this.vaseMeshes.push(mesh);
+                    var vaseMerge = new Merge();
+                    var vaseMesh = new Mesh(new Geometry());
+                    vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
+                    mesh = vaseMesh;
+                    this.vaseMeshes = new Array();
+                }
+            }
+            var poleNum = num - 290;
+            if (name == "flagpole") {
+                if (poleNum >= 0 && poleNum < 320 && (poleNum % 3) < 2) {
+                    this.poleMeshes.push(mesh);
+                    continue;
+                }
+                else if (poleNum >= 0) {
+                    this.poleMeshes.push(mesh);
+                    var poleMerge = new Merge();
+                    var poleMesh = new Mesh(new Geometry());
+                    poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
+                    mesh = poleMesh;
+                    this.poleMeshes = new Array();
+                }
+            }
+            if (name == "flagpole" && (num == 260 || num == 261 || num == 263 || num == 265 || num == 268 || num == 269 || num == 271 || num == 273))
+                continue;
+            var textureIndex = this._materialNameStrings.indexOf(name);
+            if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
+                continue;
+            this._numTexStrings[textureIndex]++;
+            var textureName = this._diffuseTextureStrings[textureIndex];
+            var normalTextureName;
+            var specularTextureName;
+            //				//store single pass materials for use later
+            //				var singleMaterial:MethodMaterial = this._singleMaterialDictionary[name];
+            //
+            //				if (!singleMaterial) {
+            //
+            //					//create singlepass material
+            //					singleMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+            //
+            //					singleMaterial.name = name;
+            //					singleMaterial.lightPicker = this._lightPicker;
+            //					singleMaterial.addMethod(this._fogMethod);
+            //					singleMaterial.mipmap = true;
+            //					singleMaterial.repeat = true;
+            //					singleMaterial.specular = 2;
+            //
+            //					//use alpha transparancy if texture is png
+            //					if (textureName.substring(textureName.length - 3) == "png")
+            //						singleMaterial.alphaThreshold = 0.5;
+            //
+            //					//add normal map if it exists
+            //					normalTextureName = this._normalTextureStrings[textureIndex];
+            //					if (normalTextureName)
+            //						singleMaterial.normalMap = this._textureDictionary[normalTextureName];
+            //
+            //					//add specular map if it exists
+            //					specularTextureName = this._specularTextureStrings[textureIndex];
+            //					if (specularTextureName)
+            //						singleMaterial.specularMap = this._textureDictionary[specularTextureName];
+            //
+            //					this._singleMaterialDictionary[name] = singleMaterial;
+            //
+            //				}
+            //store multi pass materials for use later
+            var multiMaterial = this._multiMaterialDictionary[name];
+            if (!multiMaterial) {
+                //create multipass material
+                multiMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+                multiMaterial.mode = MethodMaterialMode.MULTI_PASS;
+                multiMaterial.name = name;
+                multiMaterial.lightPicker = this._lightPicker;
+                //					multiMaterial.shadowMethod = this._cascadeMethod;
+                multiMaterial.shadowMethod = this._baseShadowMethod;
+                multiMaterial.addEffectMethod(this._fogMethod);
+                multiMaterial.repeat = true;
+                multiMaterial.mipmap = true;
+                multiMaterial.specular = 2;
+                //use alpha transparancy if texture is png
+                if (textureName.substring(textureName.length - 3) == "png")
+                    multiMaterial.alphaThreshold = 0.5;
+                //add normal map if it exists
+                normalTextureName = this._normalTextureStrings[textureIndex];
+                if (normalTextureName)
+                    multiMaterial.normalMap = this._textureDictionary[normalTextureName];
+                //add specular map if it exists
+                specularTextureName = this._specularTextureStrings[textureIndex];
+                if (specularTextureName)
+                    multiMaterial.specularMap = this._textureDictionary[specularTextureName];
+                //add to material dictionary
+                this._multiMaterialDictionary[name] = multiMaterial;
+            }
+            /*
+            if (_meshReference[textureIndex]) {
+                var m:Mesh = mesh.clone() as Mesh;
+                m.material = multiMaterial;
+                _view.scene.addChild(m);
+                continue;
+            }
+            */
+            //default to multipass material
+            mesh.material = multiMaterial;
+            this._view.scene.addChild(mesh);
+            this._meshReference[textureIndex] = mesh;
+        }
+        var z = 0;
+        while (z < this._numTexStrings.length) {
+            console.log(this._diffuseTextureStrings[z], this._numTexStrings[z]);
+            z++;
+        }
+        //load skybox and flame texture
+        AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
+        //setup the url map for textures in the cubemap file
+        var loaderContext = new LoaderContext();
+        loaderContext.dependencyBaseUrl = "assets/skybox/";
+        //environment texture
+        AssetLibrary.load(new URLRequest("assets/skybox/hourglass_texture.cube"), loaderContext);
+        //globe textures
+        AssetLibrary.load(new URLRequest("assets/fire.png"));
+    };
+    /**
+     * Triggered once extra resources are loaded
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onExtraResourceComplete = function (event) {
+        switch (event.url) {
+            case 'assets/skybox/hourglass_texture.cube':
+                //create skybox texture map
+                this._skyMap = new SingleCubeTexture(event.assets[0]);
+                break;
+            case "assets/fire.png":
+                this._flameMaterial = new MethodMaterial(new Single2DTexture(event.assets[0]));
+                this._flameMaterial.blendMode = BlendMode.ADD;
+                this._flameMaterial.animateUVs = true;
+                break;
+        }
+        if (this._skyMap && this._flameMaterial)
+            this.initObjects();
+    };
+    /**
+     * Navigation and render loop
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onEnterFrame = function (dt) {
+        if (this._walkSpeed || this._walkAcceleration) {
+            this._walkSpeed = (this._walkSpeed + this._walkAcceleration) * this._drag;
+            if (Math.abs(this._walkSpeed) < 0.01)
+                this._walkSpeed = 0;
+            this._cameraController.incrementWalk(this._walkSpeed);
+        }
+        if (this._strafeSpeed || this._strafeAcceleration) {
+            this._strafeSpeed = (this._strafeSpeed + this._strafeAcceleration) * this._drag;
+            if (Math.abs(this._strafeSpeed) < 0.01)
+                this._strafeSpeed = 0;
+            this._cameraController.incrementStrafe(this._strafeSpeed);
+        }
+        //animate flames
+        var flameVO;
+        var len = this._flameData.length;
+        for (var i = 0; i < len; i++) {
+            flameVO = this._flameData[i];
+            //update flame light
+            var light = flameVO.light;
+            if (!light)
+                continue;
+            light.fallOff = 380 + Math.random() * 20;
+            light.radius = 200 + Math.random() * 30;
+            light.diffuse = .9 + Math.random() * .1;
+            //update flame mesh
+            var mesh = flameVO.mesh;
+            if (!mesh)
+                continue;
+            var subMesh = mesh.subMeshes[0];
+            subMesh.uvTransform.offsetU += 1 / 16;
+            subMesh.uvTransform.offsetU %= 1;
+            mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z) * 180 / Math.PI;
+        }
+        this._view.render();
+    };
+    /**
+     * Key down listener for camera control
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onKeyDown = function (event) {
+        switch (event.keyCode) {
+            case Keyboard.UP:
+            case Keyboard.W:
+                this._walkAcceleration = this._walkIncrement;
+                break;
+            case Keyboard.DOWN:
+            case Keyboard.S:
+                this._walkAcceleration = -this._walkIncrement;
+                break;
+            case Keyboard.LEFT:
+            case Keyboard.A:
+                this._strafeAcceleration = -this._strafeIncrement;
+                break;
+            case Keyboard.RIGHT:
+            case Keyboard.D:
+                this._strafeAcceleration = this._strafeIncrement;
+                break;
+            case Keyboard.F:
+                break;
+            case Keyboard.C:
+                this._cameraController.fly = !this._cameraController.fly;
+        }
+    };
+    /**
+     * Key up listener for camera control
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onKeyUp = function (event) {
+        switch (event.keyCode) {
+            case Keyboard.UP:
+            case Keyboard.W:
+            case Keyboard.DOWN:
+            case Keyboard.S:
+                this._walkAcceleration = 0;
+                break;
+            case Keyboard.LEFT:
+            case Keyboard.A:
+            case Keyboard.RIGHT:
+            case Keyboard.D:
+                this._strafeAcceleration = 0;
+                break;
+        }
+    };
+    /**
+     * Mouse down listener for navigation
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onMouseDown = function (event) {
+        this._lastPanAngle = this._cameraController.panAngle;
+        this._lastTiltAngle = this._cameraController.tiltAngle;
+        this._lastMouseX = event.clientX;
+        this._lastMouseY = event.clientY;
+        this._move = true;
+    };
+    /**
+     * Mouse up listener for navigation
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onMouseUp = function (event) {
+        this._move = false;
+    };
+    Advanced_MultiPassSponzaDemo.prototype.onMouseMove = function (event) {
+        if (this._move) {
+            this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+            this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+        }
+    };
+    /**
+     * stage listener for resize events
+     */
+    Advanced_MultiPassSponzaDemo.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    return Advanced_MultiPassSponzaDemo;
+})();
+/**
+* Data class for the Flame objects
+*/
+var FlameVO = (function () {
+    function FlameVO(position, color /*uint*/) {
+        this.position = position;
+        this.color = color;
+    }
+    return FlameVO;
+})();
+window.onload = function () {
+    new Advanced_MultiPassSponzaDemo();
+};
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
+
 
 //# sourceMappingURL=Advanced_MultiPassSponzaDemo.js.map

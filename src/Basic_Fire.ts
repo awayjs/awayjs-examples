@@ -37,8 +37,8 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
@@ -51,7 +51,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Timer						= require("awayjs-core/lib/utils/Timer");
 
 import Geometry						= require("awayjs-display/lib/base/Geometry");
-import Loader						= require("awayjs-display/lib/containers/Loader");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
@@ -277,7 +276,7 @@ class Basic_Fire
 		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this.timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//plane textures
 		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));

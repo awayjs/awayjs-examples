@@ -45,13 +45,12 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
-import BitmapImageCube					= require("awayjs-core/lib/data/BitmapImageCube");
-import SpecularImage2D					= require("awayjs-core/lib/data/SpecularImage2D");
-import BlendMode						= require("awayjs-core/lib/data/BlendMode");
-import Event							= require("awayjs-core/lib/events/Event");
+import BitmapImage2D					= require("awayjs-core/lib/image/BitmapImage2D");
+import BitmapImageCube					= require("awayjs-core/lib/image/BitmapImageCube");
+import SpecularImage2D					= require("awayjs-core/lib/image/SpecularImage2D");
+import BlendMode						= require("awayjs-core/lib/image/BlendMode");
+import URLLoaderEvent					= require("awayjs-core/lib/events/URLLoaderEvent");
 import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
-import ProgressEvent					= require("awayjs-core/lib/events/ProgressEvent");
 import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
@@ -64,7 +63,7 @@ import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
 import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import Loader							= require("awayjs-display/lib/containers/Loader");
+import LoaderContainer					= require("awayjs-display/lib/containers/LoaderContainer");
 import View								= require("awayjs-display/lib/containers/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
 import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
@@ -176,9 +175,9 @@ class Advanced_MultiPassSponzaDemo
 
 	private _timer:RequestAnimationFrame;
 	private _time:number = 0;
-	private parseAWDDelegate:(event:Event) => void;
-	private parseBitmapDelegate:(event:Event) => void;
-	private loadProgressDelegate:(event:ProgressEvent) => void;
+	private parseAWDDelegate:(event:URLLoaderEvent) => void;
+	private parseBitmapDelegate:(event:URLLoaderEvent) => void;
+	private loadProgressDelegate:(event:URLLoaderEvent) => void;
 	private onBitmapCompleteDelegate:(event) => void;
 	private onAssetCompleteDelegate:(event:AssetEvent) => void;
 	private onResourceCompleteDelegate:(event:LoaderEvent) => void;
@@ -310,9 +309,9 @@ class Advanced_MultiPassSponzaDemo
 
 		this.onResize();
 
-		this.parseAWDDelegate = (event:Event) => this.parseAWD(event);
-		this.parseBitmapDelegate = (event) => this.parseBitmap(event);
-		this.loadProgressDelegate = (event:ProgressEvent) => this.loadProgress(event);
+		this.parseAWDDelegate = (event:URLLoaderEvent) => this.parseAWD(event);
+		this.parseBitmapDelegate = (event:URLLoaderEvent) => this.parseBitmap(event);
+		this.loadProgressDelegate = (event:URLLoaderEvent) => this.loadProgress(event);
 		this.onBitmapCompleteDelegate = (event) => this.onBitmapComplete(event);
 		this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
 		this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
@@ -391,14 +390,14 @@ class Advanced_MultiPassSponzaDemo
 			case "awd":
 				loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 				this._loadingText = "Loading Model";
-				loader.addEventListener(Event.COMPLETE, this.parseAWDDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 				break;
 			case "png": 
 			case "jpg":
 				loader.dataFormat = URLLoaderDataFormat.BLOB;
 				this._currentTexture++;
 				this._loadingText = "Loading Textures";
-				loader.addEventListener(Event.COMPLETE, this.parseBitmapDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 				url = "sponza/" + url;
 				break;
 //				case "atf":
@@ -409,7 +408,7 @@ class Advanced_MultiPassSponzaDemo
 //                    break;
 		}
 		
-		loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		var urlReq:URLRequest = new URLRequest(this._assetsRoot+url);
 		loader.load(urlReq);
 		
@@ -418,7 +417,7 @@ class Advanced_MultiPassSponzaDemo
 	/**
 	 * Display current load
 	 */
-	private loadProgress(e:ProgressEvent)
+	private loadProgress(e:URLLoaderEvent)
 	{
 		//TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
 		var P:number = Math.floor(e["bytesLoaded"] / e["bytesTotal"] * 100);
@@ -475,17 +474,17 @@ class Advanced_MultiPassSponzaDemo
 		var urlLoader:URLLoader = <URLLoader> e.target;
 		var image:HTMLImageElement = ParserUtils.blobToImage(urlLoader.data);
 		image.onload = this.onBitmapCompleteDelegate;
-		urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmapDelegate);
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		urlLoader = null;
 	}
 	
 	/**
 	 * Listener for bitmap complete event on loader
 	 */
-	private onBitmapComplete(e:Event)
+	private onBitmapComplete(event:Event)
 	{
-		var image:HTMLImageElement = <HTMLImageElement> e.target;
+		var image:HTMLImageElement = <HTMLImageElement> event.target;
 		image.onload = null;
 
 		//create bitmap texture in dictionary
@@ -516,18 +515,18 @@ class Advanced_MultiPassSponzaDemo
 	/**
 	 * Parses the AWD file
 	 */
-	private parseAWD(e)
+	private parseAWD(event:URLLoaderEvent)
 	{
 		console.log("Parsing Data");
-		var urlLoader:URLLoader = <URLLoader> e.target;
-		var loader:Loader = new Loader(false);
+		var urlLoader:URLLoader = event.target;
+		var loader:LoaderContainer = new LoaderContainer(false);
 
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		loader.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
-		urlLoader.removeEventListener(Event.COMPLETE, this.parseAWDDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 		urlLoader = null;
 	}
 	
@@ -545,13 +544,13 @@ class Advanced_MultiPassSponzaDemo
 	/**
 	 * Triggered once all resources are loaded
 	 */
-	private onResourceComplete(e:LoaderEvent)
+	private onResourceComplete(event:LoaderEvent)
 	{
 		var merge:Merge = new Merge(false, false, true);
 
-		var loader:Loader = <Loader> e.target;
+		var loader:LoaderContainer = event.target;
 		loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		
 		//reassign materials
 		var mesh:Mesh;
@@ -722,7 +721,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//load skybox and flame texture
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();

@@ -1,11 +1,11 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
+import Loader			        	= require("awayjs-core/lib/library/Loader");
 import LoaderContext			    = require("awayjs-core/lib/library/LoaderContext");
 import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
@@ -91,8 +91,8 @@ class AircraftDemo
     
     private loadAsset(path:string)
     {
-        var session:LoaderSession = AssetLibrary.getLoaderSession();
-        session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+        var session:Loader = AssetLibrary.getLoader();
+        session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
         session.load(new URLRequest(path));
     }
     
@@ -186,7 +186,7 @@ class AircraftDemo
     
     public onResourceComplete(event:LoaderEvent)
     {
-        var loader:LoaderSession = <LoaderSession> event.target;
+        var loader:Loader = event.target;
         var numAssets:number = loader.baseDependency.assets.length;
         var i:number = 0;
         

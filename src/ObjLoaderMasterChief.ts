@@ -1,8 +1,8 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderSession					= require("awayjs-core/lib/library/LoaderSession");
+import Loader						= require("awayjs-core/lib/library/Loader");
 import IAsset   					= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -63,22 +63,22 @@ class ObjLoaderMasterChief
 
 		AssetLibrary.enableParser(OBJParser);
 
-		var session:LoaderSession;
+		var session:Loader;
 		
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/Halo_3_SPARTAN4.obj'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/terrain.obj'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/masterchief_base.png'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/stone_tx.jpg'));
 
 		window.onresize = (event:UIEvent) => this.onResize();
@@ -99,14 +99,14 @@ class ObjLoaderMasterChief
 
 	public onResourceComplete (event:LoaderEvent)
 	{
-		var loader:LoaderSession = <LoaderSession> event.target;
+		var loader:Loader = <Loader> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		console.log( '------------------------------------------------------------------------------');
-		console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , event , l , loader );
+		console.log( 'away.events.LoaderEvent.LOAD_COMPLETE' , event , l , loader );
 		console.log( '------------------------------------------------------------------------------');
 
-		var loader:LoaderSession = <LoaderSession> event.target;
+		var loader:Loader = <Loader> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		for (var c:number = 0; c < l; c++) {

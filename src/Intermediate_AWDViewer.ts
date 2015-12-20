@@ -4,7 +4,7 @@ AWD file loading example in Away3d
 
 Demonstrates:
 
-How to use the Loader object to load an embedded internal awd model.
+How to use the LoaderContainer object to load an embedded internal awd model.
 
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -43,7 +43,7 @@ import PerspectiveProjection		= require("awayjs-core/lib/projections/Perspective
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import Loader						= require("awayjs-display/lib/containers/Loader");
+import LoaderContainer				= require("awayjs-display/lib/containers/LoaderContainer");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 
@@ -127,7 +127,7 @@ class Intermediate_AWDViewer
 		AssetLibrary.enableParser(AWDParser);
 
 		//kickoff asset loading
-		var loader:Loader = new Loader();
+		var loader:LoaderContainer = new LoaderContainer();
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 
 		loader.load(new URLRequest("assets/shambler.awd"));
@@ -160,12 +160,10 @@ class Intermediate_AWDViewer
 	 */		
 	private onAssetComplete(event:AssetEvent):void
 	{
-		console.log("...........", event.asset.assetType)
 		if (event.asset.isAsset(AnimatorBase)) {
 			this._animator = <SkeletonAnimator> event.asset;
 			this._animator.play(Intermediate_AWDViewer.IDLE_NAME);
 		} else if (event.asset.isAsset(AnimationNodeBase)) {
-			console.log(event.asset.name);
 			var node:SkeletonClipNode = <SkeletonClipNode> event.asset;
 			
 			if (node.name == Intermediate_AWDViewer.IDLE_NAME) {

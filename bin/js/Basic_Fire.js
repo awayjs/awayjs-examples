@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-var BlendMode = require("awayjs-core/lib/data/BlendMode");
+var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var TimerEvent = require("awayjs-core/lib/events/TimerEvent");
 var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
@@ -197,7 +197,7 @@ var Basic_Fire = (function () {
         this.onResize();
         this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
         this.timer.start();
-        AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+        AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
         //plane textures
         AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
         AssetLibrary.load(new URLRequest("assets/floor_normal.jpg"));
@@ -344,7 +344,7 @@ window.onload = function () {
     new Basic_Fire();
 };
 
-},{"awayjs-core/lib/data/BlendMode":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGeometryHelper":undefined}]},{},["./src/Basic_Fire.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGeometryHelper":undefined}]},{},["./src/Basic_Fire.ts"])
 
 
 //# sourceMappingURL=Basic_Fire.js.map

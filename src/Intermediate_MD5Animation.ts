@@ -38,8 +38,8 @@ THE SOFTWARE.
 
 */
 
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -53,7 +53,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
 import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import LookAtController				= require("awayjs-display/lib/controllers/LookAtController");
 import Camera						= require("awayjs-display/lib/entities/Camera");
@@ -330,7 +329,7 @@ class Intermediate_MD5Animation
 
 		//load hellknight mesh
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
 
 		//load environment texture

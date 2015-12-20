@@ -37,8 +37,8 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import SpecularImage2D				= require("awayjs-core/lib/image/SpecularImage2D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -328,7 +328,7 @@ class Intermediate_ParticleExplosions
 		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this.timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//image textures
 		AssetLibrary.load(new URLRequest("assets/firefox.png"));

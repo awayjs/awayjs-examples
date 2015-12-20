@@ -1,6 +1,6 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import AwayEvent					= require("awayjs-core/lib/events/Event");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
+import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import URLLoader					= require("awayjs-core/lib/net/URLLoader");
 import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
@@ -111,7 +111,7 @@ class CubePrimitive
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
 
-		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
+		imgLoader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, (event:URLLoaderEvent) => this.urlCompleteHandler(event));
 		imgLoader.load(urlRequest);
 	}
 
@@ -119,9 +119,9 @@ class CubePrimitive
 	 *
 	 * @param event
 	 */
-	private urlCompleteHandler(event:AwayEvent)
+	private urlCompleteHandler(event:URLLoaderEvent)
 	{
-		var imageLoader:URLLoader = <URLLoader> event.target;
+		var imageLoader:URLLoader = event.target;
 
 		this._image = ParserUtils.blobToImage(imageLoader.data);
 

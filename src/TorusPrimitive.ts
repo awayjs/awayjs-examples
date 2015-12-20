@@ -1,4 +1,4 @@
-import AwayEvent					= require("awayjs-core/lib/events/Event");
+import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
@@ -62,7 +62,7 @@ class TorusPrimitive
 	{
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
-		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
+		imgLoader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, (event:URLLoaderEvent) => this.urlCompleteHandler(event));
 		imgLoader.load(new URLRequest("assets/dots.png"));
 	}
 
@@ -70,7 +70,7 @@ class TorusPrimitive
 	 *
 	 * @param event
 	 */
-	private urlCompleteHandler (event:AwayEvent)
+	private urlCompleteHandler (event:URLLoaderEvent)
 	{
 		this._image = ParserUtils.blobToImage((<URLLoader> event.target).data);
 		this._image.onload = (event:Event) => this.imageCompleteHandler(event);

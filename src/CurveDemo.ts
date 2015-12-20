@@ -1,5 +1,5 @@
 import AttributesBuffer             = require("awayjs-core/lib/attributes/AttributesBuffer");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import AwayEvent					= require("awayjs-core/lib/events/Event");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -10,7 +10,7 @@ import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat"
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");

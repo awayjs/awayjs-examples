@@ -35,10 +35,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import BitmapImageChannel			= require("awayjs-core/lib/data/BitmapImageChannel");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
+import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
+import BitmapImageChannel			= require("awayjs-core/lib/image/BitmapImageChannel");
+import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -50,7 +50,6 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 
 import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
@@ -328,7 +327,7 @@ class Intermediate_Globe
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();

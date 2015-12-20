@@ -1,3 +1,490 @@
-(function e(i,t,s){function a(r,o){if(!t[r]){if(!i[r]){var l=typeof require=="function"&&require;if(!o&&l)return l(r,!0);if(n)return n(r,!0);var c=new Error("Cannot find module '"+r+"'");throw c.code="MODULE_NOT_FOUND",c}var h=t[r]={exports:{}};i[r][0].call(h.exports,function(e){var t=i[r][1][e];return a(t?t:e)},h,h.exports,e,i,t,s)}return t[r].exports}var n=typeof require=="function"&&require;for(var r=0;r<s.length;r++)a(s[r]);return a})({"./src/Intermediate_MouseInteraction.ts":[function(e,i,t){var s=e("awayjs-core/lib/data/BitmapImage2D");var a=e("awayjs-core/lib/events/AssetEvent");var n=e("awayjs-core/lib/geom/Vector3D");var r=e("awayjs-core/lib/library/AssetLibrary");var o=e("awayjs-core/lib/net/URLRequest");var l=e("awayjs-core/lib/utils/RequestAnimationFrame");var c=e("awayjs-core/lib/ui/Keyboard");var h=e("awayjs-display/lib/containers/View");var d=e("awayjs-display/lib/controllers/HoverController");var u=e("awayjs-display/lib/bounds/BoundsType");var p=e("awayjs-display/lib/entities/LineSegment");var _=e("awayjs-display/lib/entities/Mesh");var f=e("awayjs-display/lib/entities/PointLight");var b=e("awayjs-display/lib/events/MouseEvent");var m=e("awayjs-display/lib/materials/BasicMaterial");var y=e("awayjs-display/lib/materials/lightpickers/StaticLightPicker");var w=e("awayjs-display/lib/pick/RaycastPicker");var v=e("awayjs-display/lib/pick/JSPickingCollider");var M=e("awayjs-display/lib/prefabs/PrimitiveCubePrefab");var g=e("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");var P=e("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");var j=e("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");var k=e("awayjs-display/lib/textures/Single2DTexture");var T=e("awayjs-renderergl/lib/DefaultRenderer");var E=e("awayjs-methodmaterials/lib/MethodMaterial");var C=e("awayjs-parsers/lib/OBJParser");var O=function(){function e(){this._time=0;this._raycastPicker=new w(false);this._move=false;this._tiltSpeed=4;this._panSpeed=4;this._distanceSpeed=4;this._tiltIncrement=0;this._panIncrement=0;this._distanceIncrement=0;this.init()}e.prototype.init=function(){this.initEngine();this.initLights();this.initMaterials();this.initObjects();this.initListeners()};e.prototype.initEngine=function(){this._renderer=new T;this._view=new h(this._renderer);this._view.forceMouseMove=true;this._scene=this._view.scene;this._camera=this._view.camera;this._view.mousePicker=new w(true);this._cameraController=new d(this._camera,null,180,20,320,5)};e.prototype.initLights=function(){this._pointLight=new f;this._scene.addChild(this._pointLight);this._lightPicker=new y([this._pointLight])};e.prototype.initMaterials=function(){this._whiteMaterial=new E(16777215);this._whiteMaterial.lightPicker=this._lightPicker;this._blackMaterial=new E(3355443);this._blackMaterial.lightPicker=this._lightPicker;this._grayMaterial=new E(13421772);this._grayMaterial.lightPicker=this._lightPicker;this._blueMaterial=new E(255);this._blueMaterial.lightPicker=this._lightPicker;this._redMaterial=new E(16711680);this._redMaterial.lightPicker=this._lightPicker};e.prototype.initObjects=function(){var e=this;this._pickingPositionTracer=new P(2).getNewObject();this._pickingPositionTracer.material=new E(65280,.5);this._pickingPositionTracer.visible=false;this._pickingPositionTracer.mouseEnabled=false;this._pickingPositionTracer.mouseChildren=false;this._scene.addChild(this._pickingPositionTracer);this._scenePositionTracer=new P(2).getNewObject();this._pickingPositionTracer.material=new E(255,.5);this._scenePositionTracer.visible=false;this._scenePositionTracer.mouseEnabled=false;this._scene.addChild(this._scenePositionTracer);this._pickingNormalTracer=new p(new m(16777215),new n,new n,3);this._pickingNormalTracer.mouseEnabled=false;this._pickingNormalTracer.visible=false;this._view.scene.addChild(this._pickingNormalTracer);this._sceneNormalTracer=new p(new m(16777215),new n,new n,3);this._sceneNormalTracer.mouseEnabled=false;this._sceneNormalTracer.visible=false;this._view.scene.addChild(this._sceneNormalTracer);this._session=r.getLoaderSession();this._session.addEventListener(a.ASSET_COMPLETE,function(i){return e.onAssetComplete(i)});this._session.load(new o("assets/head.obj"),null,null,new C(25));this.createABunchOfObjects();this._raycastPicker.setIgnoreList([this._sceneNormalTracer,this._scenePositionTracer]);this._raycastPicker.onlyMouseEnabled=false};e.prototype.onAssetComplete=function(e){if(e.asset.isAsset(_)){this.initializeHeadModel(e.asset)}};e.prototype.initializeHeadModel=function(i){this._head=i;var t=new s(e.PAINT_TEXTURE_SIZE,e.PAINT_TEXTURE_SIZE,false,13421772);var a=new k(t);var n=new E(a);n.lightPicker=this._lightPicker;i.material=n;i.pickingCollider=new v;i.mouseEnabled=i.mouseChildren=true;this.enableMeshMouseListeners(i);this._view.scene.addChild(i)};e.prototype.createABunchOfObjects=function(){this._cubePrefab=new M(25,50,25);this._spherePrefab=new P(12);this._cylinderPrefab=new g(12,12,25);this._torusPrefab=new j(12,12);for(var e=0;e<40;e++){var i=this.createSimpleObject();i.rotationZ=360*Math.random();var t=200+100*Math.random();var s=2*Math.PI*Math.random();var a=.25*Math.PI*Math.random();i.x=t*Math.cos(a)*Math.sin(s);i.y=t*Math.sin(a);i.z=t*Math.cos(a)*Math.cos(s)}};e.prototype.createSimpleObject=function(){var e;var i;var t=Math.random();if(t>.75){e=this._cubePrefab.getNewObject()}else if(t>.5){e=this._spherePrefab.getNewObject();i=u.SPHERE}else if(t>.25){e=this._cylinderPrefab.getNewObject()}else{e=this._torusPrefab.getNewObject()}if(i)e.boundsType=i;var s=Math.random()>.5;if(s){e.pickingCollider=new v}var a=Math.random()>.25;e.mouseEnabled=e.mouseChildren=a;var n=Math.random()>.25;if(a&&n){this.enableMeshMouseListeners(e)}this.choseMeshMaterial(e);this._view.scene.addChild(e);return e};e.prototype.choseMeshMaterial=function(e){if(!e.mouseEnabled){e.material=this._blackMaterial}else{if(!e.hasEventListener(b.MOUSE_MOVE)){e.material=this._grayMaterial}else{if(e.pickingCollider!=null){e.material=this._redMaterial}else{e.material=this._blueMaterial}}}};e.prototype.initListeners=function(){var e=this;window.onresize=function(i){return e.onResize(i)};document.onmousedown=function(i){return e.onMouseDown(i)};document.onmouseup=function(i){return e.onMouseUp(i)};document.onmousemove=function(i){return e.onMouseMove(i)};document.onmousewheel=function(i){return e.onMouseWheel(i)};document.onkeydown=function(i){return e.onKeyDown(i)};document.onkeyup=function(i){return e.onKeyUp(i)};this.onResize();this._timer=new l(this.onEnterFrame,this);this._timer.start()};e.prototype.onEnterFrame=function(e){this._pointLight.transform.position=this._camera.transform.position;var i=this._raycastPicker.getSceneCollision(this._camera.transform.position,this._view.camera.transform.forwardVector,this._view.scene);if(this._previoiusCollidingObject&&this._previoiusCollidingObject!=i){this._scenePositionTracer.visible=this._sceneNormalTracer.visible=false;this._scenePositionTracer.transform.position=new n}if(i){this._scenePositionTracer.visible=this._sceneNormalTracer.visible=true;this._scenePositionTracer.transform.position=i.displayObject.sceneTransform.transformVector(i.localPosition);this._sceneNormalTracer.transform.position=this._scenePositionTracer.transform.position;var t=i.displayObject.sceneTransform.deltaTransformVector(i.localNormal);t.normalize();t.scaleBy(25);this._sceneNormalTracer.endPosition=t.clone()}this._previoiusCollidingObject=i;this._view.render()};e.prototype.onKeyDown=function(e){switch(e.keyCode){case c.UP:case c.W:this._tiltIncrement=this._tiltSpeed;break;case c.DOWN:case c.S:this._tiltIncrement=-this._tiltSpeed;break;case c.LEFT:case c.A:this._panIncrement=this._panSpeed;break;case c.RIGHT:case c.D:this._panIncrement=-this._panSpeed;break;case c.Z:this._distanceIncrement=this._distanceSpeed;break;case c.X:this._distanceIncrement=-this._distanceSpeed;break}};e.prototype.onKeyUp=function(e){switch(e.keyCode){case c.UP:case c.W:case c.DOWN:case c.S:this._tiltIncrement=0;break;case c.LEFT:case c.A:case c.RIGHT:case c.D:this._panIncrement=0;break;case c.Z:case c.X:this._distanceIncrement=0;break}};e.prototype.enableMeshMouseListeners=function(e){var i=this;e.addEventListener(b.MOUSE_OVER,function(e){return i.onMeshMouseOver(e)});e.addEventListener(b.MOUSE_OUT,function(e){return i.onMeshMouseOut(e)});e.addEventListener(b.MOUSE_MOVE,function(e){return i.onMeshMouseMove(e)});e.addEventListener(b.MOUSE_DOWN,function(e){return i.onMeshMouseDown(e)})};e.prototype.onMeshMouseDown=function(e){};e.prototype.onMeshMouseOver=function(e){var i=e.object;i.debugVisible=true;if(i!=this._head)i.material=this._whiteMaterial;this._pickingPositionTracer.visible=this._pickingNormalTracer.visible=true;this.onMeshMouseMove(e)};e.prototype.onMeshMouseOut=function(e){var i=e.object;i.debugVisible=false;if(i!=this._head)this.choseMeshMaterial(i);this._pickingPositionTracer.visible=this._pickingNormalTracer.visible=false;this._pickingPositionTracer.transform.position=new n};e.prototype.onMeshMouseMove=function(e){this._pickingPositionTracer.visible=this._pickingNormalTracer.visible=true;this._pickingPositionTracer.transform.position=e.scenePosition;this._pickingNormalTracer.transform.position=this._pickingPositionTracer.transform.position;var i=e.sceneNormal.clone();i.scaleBy(25);this._pickingNormalTracer.endPosition=i.clone()};e.prototype.onMouseDown=function(e){this._lastPanAngle=this._cameraController.panAngle;this._lastTiltAngle=this._cameraController.tiltAngle;this._lastMouseX=e.clientX;this._lastMouseY=e.clientY;this._move=true};e.prototype.onMouseUp=function(e){this._move=false};e.prototype.onMouseMove=function(e){if(this._move){this._cameraController.panAngle=.3*(e.clientX-this._lastMouseX)+this._lastPanAngle;this._cameraController.tiltAngle=.3*(e.clientY-this._lastMouseY)+this._lastTiltAngle}};e.prototype.onMouseWheel=function(e){this._cameraController.distance-=e.wheelDelta;if(this._cameraController.distance<100)this._cameraController.distance=100;else if(this._cameraController.distance>2e3)this._cameraController.distance=2e3};e.prototype.onResize=function(e){if(e===void 0){e=null}this._view.y=0;this._view.x=0;this._view.width=window.innerWidth;this._view.height=window.innerHeight};e.PAINT_TEXTURE_SIZE=1024;return e}();window.onload=function(){new O}},{"awayjs-core/lib/data/BitmapImage2D":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/Intermediate_MouseInteraction.ts":[function(require,module,exports){
+/*
+
+Shading example in Away3d
+
+Demonstrates:
+
+How to create multiple entitiesources in a scene.
+How to apply specular maps, normals maps and diffuse texture maps to a material.
+
+Code by Rob Bateman
+rob@infiniteturtles.co.uk
+http://www.infiniteturtles.co.uk
+
+This code is distributed under the MIT License
+
+Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
+var URLRequest = require("awayjs-core/lib/net/URLRequest");
+var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
+var Keyboard = require("awayjs-core/lib/ui/Keyboard");
+var View = require("awayjs-display/lib/containers/View");
+var HoverController = require("awayjs-display/lib/controllers/HoverController");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var LineSegment = require("awayjs-display/lib/entities/LineSegment");
+var Mesh = require("awayjs-display/lib/entities/Mesh");
+var PointLight = require("awayjs-display/lib/entities/PointLight");
+var AwayMouseEvent = require("awayjs-display/lib/events/MouseEvent");
+var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
+var RaycastPicker = require("awayjs-display/lib/pick/RaycastPicker");
+var JSPickingCollider = require("awayjs-display/lib/pick/JSPickingCollider");
+var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+var PrimitiveCylinderPrefab = require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
+var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
+var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
+var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
+var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var OBJParser = require("awayjs-parsers/lib/OBJParser");
+/**
+ *
+ */
+var Intermediate_MouseInteraction = (function () {
+    /**
+     * Constructor
+     */
+    function Intermediate_MouseInteraction() {
+        this._time = 0;
+        this._raycastPicker = new RaycastPicker(false);
+        //navigation variables
+        this._move = false;
+        this._tiltSpeed = 4;
+        this._panSpeed = 4;
+        this._distanceSpeed = 4;
+        this._tiltIncrement = 0;
+        this._panIncrement = 0;
+        this._distanceIncrement = 0;
+        this.init();
+    }
+    /**
+     * Global initialise function
+     */
+    Intermediate_MouseInteraction.prototype.init = function () {
+        this.initEngine();
+        this.initLights();
+        this.initMaterials();
+        this.initObjects();
+        this.initListeners();
+    };
+    /**
+     * Initialise the engine
+     */
+    Intermediate_MouseInteraction.prototype.initEngine = function () {
+        this._renderer = new DefaultRenderer();
+        this._view = new View(this._renderer);
+        this._view.forceMouseMove = true;
+        this._scene = this._view.scene;
+        this._camera = this._view.camera;
+        this._view.mousePicker = new RaycastPicker(true);
+        //setup controller to be used on the camera
+        this._cameraController = new HoverController(this._camera, null, 180, 20, 320, 5);
+    };
+    /**
+     * Initialise the lights
+     */
+    Intermediate_MouseInteraction.prototype.initLights = function () {
+        //create a light for the camera
+        this._pointLight = new PointLight();
+        this._scene.addChild(this._pointLight);
+        this._lightPicker = new StaticLightPicker([this._pointLight]);
+    };
+    /**
+     * Initialise the material
+     */
+    Intermediate_MouseInteraction.prototype.initMaterials = function () {
+        // uv painter
+        //this._painter = new Sprite();
+        //this._painter.graphics.beginFill( 0xFF0000 );
+        //this._painter.graphics.drawCircle( 0, 0, 10 );
+        //this._painter.graphics.endFill();
+        // locator materials
+        this._whiteMaterial = new MethodMaterial(0xFFFFFF);
+        this._whiteMaterial.lightPicker = this._lightPicker;
+        this._blackMaterial = new MethodMaterial(0x333333);
+        this._blackMaterial.lightPicker = this._lightPicker;
+        this._grayMaterial = new MethodMaterial(0xCCCCCC);
+        this._grayMaterial.lightPicker = this._lightPicker;
+        this._blueMaterial = new MethodMaterial(0x0000FF);
+        this._blueMaterial.lightPicker = this._lightPicker;
+        this._redMaterial = new MethodMaterial(0xFF0000);
+        this._redMaterial.lightPicker = this._lightPicker;
+    };
+    /**
+     * Initialise the scene objects
+     */
+    Intermediate_MouseInteraction.prototype.initObjects = function () {
+        var _this = this;
+        // To trace mouse hit position.
+        this._pickingPositionTracer = new PrimitiveSpherePrefab(2).getNewObject();
+        this._pickingPositionTracer.material = new MethodMaterial(0x00FF00, 0.5);
+        this._pickingPositionTracer.visible = false;
+        this._pickingPositionTracer.mouseEnabled = false;
+        this._pickingPositionTracer.mouseChildren = false;
+        this._scene.addChild(this._pickingPositionTracer);
+        this._scenePositionTracer = new PrimitiveSpherePrefab(2).getNewObject();
+        this._pickingPositionTracer.material = new MethodMaterial(0x0000FF, 0.5);
+        this._scenePositionTracer.visible = false;
+        this._scenePositionTracer.mouseEnabled = false;
+        this._scene.addChild(this._scenePositionTracer);
+        // To trace picking normals.
+        this._pickingNormalTracer = new LineSegment(new BasicMaterial(0xFFFFFF), new Vector3D(), new Vector3D(), 3);
+        this._pickingNormalTracer.mouseEnabled = false;
+        this._pickingNormalTracer.visible = false;
+        this._view.scene.addChild(this._pickingNormalTracer);
+        this._sceneNormalTracer = new LineSegment(new BasicMaterial(0xFFFFFF), new Vector3D(), new Vector3D(), 3);
+        this._sceneNormalTracer.mouseEnabled = false;
+        this._sceneNormalTracer.visible = false;
+        this._view.scene.addChild(this._sceneNormalTracer);
+        // Load a head model that we will be able to paint on on mouse down.
+        this._session = AssetLibrary.getLoader();
+        this._session.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+        this._session.load(new URLRequest('assets/head.obj'), null, null, new OBJParser(25));
+        // Produce a bunch of objects to be around the scene.
+        this.createABunchOfObjects();
+        this._raycastPicker.setIgnoreList([this._sceneNormalTracer, this._scenePositionTracer]);
+        this._raycastPicker.onlyMouseEnabled = false;
+    };
+    /**
+     * Listener for asset complete event on loader
+     */
+    Intermediate_MouseInteraction.prototype.onAssetComplete = function (event) {
+        if (event.asset.isAsset(Mesh)) {
+            this.initializeHeadModel(event.asset);
+        }
+    };
+    Intermediate_MouseInteraction.prototype.initializeHeadModel = function (model) {
+        this._head = model;
+        // Apply a bitmap material that can be painted on.
+        var bmd = new BitmapImage2D(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
+        //bmd.perlinNoise(50, 50, 8, 1, false, true, 7, true);
+        var bitmapTexture = new Single2DTexture(bmd);
+        var textureMaterial = new MethodMaterial(bitmapTexture);
+        textureMaterial.lightPicker = this._lightPicker;
+        model.material = textureMaterial;
+        model.pickingCollider = new JSPickingCollider();
+        // Apply mouse interactivity.
+        model.mouseEnabled = model.mouseChildren = true;
+        this.enableMeshMouseListeners(model);
+        this._view.scene.addChild(model);
+    };
+    Intermediate_MouseInteraction.prototype.createABunchOfObjects = function () {
+        this._cubePrefab = new PrimitiveCubePrefab(25, 50, 25);
+        this._spherePrefab = new PrimitiveSpherePrefab(12);
+        this._cylinderPrefab = new PrimitiveCylinderPrefab(12, 12, 25);
+        this._torusPrefab = new PrimitiveTorusPrefab(12, 12);
+        for (var i = 0; i < 40; i++) {
+            // Create object.
+            var object = this.createSimpleObject();
+            // Random orientation.
+            //object.rotationX = 360*Math.random();
+            //object.rotationY = 360*Math.random();
+            object.rotationZ = 360 * Math.random();
+            // Random position.
+            var r = 200 + 100 * Math.random();
+            var azimuth = 2 * Math.PI * Math.random();
+            var elevation = 0.25 * Math.PI * Math.random();
+            object.x = r * Math.cos(elevation) * Math.sin(azimuth);
+            object.y = r * Math.sin(elevation);
+            object.z = r * Math.cos(elevation) * Math.cos(azimuth);
+        }
+    };
+    Intermediate_MouseInteraction.prototype.createSimpleObject = function () {
+        var mesh;
+        var boundsType;
+        // Chose a random mesh.
+        var randGeometry = Math.random();
+        if (randGeometry > 0.75) {
+            mesh = this._cubePrefab.getNewObject();
+        }
+        else if (randGeometry > 0.5) {
+            mesh = this._spherePrefab.getNewObject();
+            boundsType = BoundsType.SPHERE; // better on spherical meshes with bound picking colliders
+        }
+        else if (randGeometry > 0.25) {
+            mesh = this._cylinderPrefab.getNewObject();
+        }
+        else {
+            mesh = this._torusPrefab.getNewObject();
+        }
+        if (boundsType)
+            mesh.boundsType = boundsType;
+        // Randomly decide if the mesh has a triangle collider.
+        var usesTriangleCollider = Math.random() > 0.5;
+        if (usesTriangleCollider) {
+            // AS3 triangle pickers for meshes with low poly counts are faster than pixel bender ones.
+            //				mesh.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all meshes
+            mesh.pickingCollider = new JSPickingCollider();
+        }
+        // Enable mouse interactivity?
+        var isMouseEnabled = Math.random() > 0.25;
+        mesh.mouseEnabled = mesh.mouseChildren = isMouseEnabled;
+        // Enable mouse listeners?
+        var listensToMouseEvents = Math.random() > 0.25;
+        if (isMouseEnabled && listensToMouseEvents) {
+            this.enableMeshMouseListeners(mesh);
+        }
+        // Apply material according to the random setup of the object.
+        this.choseMeshMaterial(mesh);
+        // Add to scene and store.
+        this._view.scene.addChild(mesh);
+        return mesh;
+    };
+    Intermediate_MouseInteraction.prototype.choseMeshMaterial = function (mesh) {
+        if (!mesh.mouseEnabled) {
+            mesh.material = this._blackMaterial;
+        }
+        else {
+            if (!mesh.hasEventListener(AwayMouseEvent.MOUSE_MOVE)) {
+                mesh.material = this._grayMaterial;
+            }
+            else {
+                if (mesh.pickingCollider != null) {
+                    mesh.material = this._redMaterial;
+                }
+                else {
+                    mesh.material = this._blueMaterial;
+                }
+            }
+        }
+    };
+    /**
+     * Initialise the listeners
+     */
+    Intermediate_MouseInteraction.prototype.initListeners = function () {
+        var _this = this;
+        window.onresize = function (event) { return _this.onResize(event); };
+        document.onmousedown = function (event) { return _this.onMouseDown(event); };
+        document.onmouseup = function (event) { return _this.onMouseUp(event); };
+        document.onmousemove = function (event) { return _this.onMouseMove(event); };
+        document.onmousewheel = function (event) { return _this.onMouseWheel(event); };
+        document.onkeydown = function (event) { return _this.onKeyDown(event); };
+        document.onkeyup = function (event) { return _this.onKeyUp(event); };
+        this.onResize();
+        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+        this._timer.start();
+    };
+    /**
+     * Navigation and render loop
+     */
+    Intermediate_MouseInteraction.prototype.onEnterFrame = function (dt) {
+        // Move light with camera.
+        this._pointLight.transform.position = this._camera.transform.position;
+        var collidingObject = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
+        //var mesh:Mesh;
+        if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) {
+            this._scenePositionTracer.visible = this._sceneNormalTracer.visible = false;
+            this._scenePositionTracer.transform.position = new Vector3D();
+        }
+        if (collidingObject) {
+            // Show tracers.
+            this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
+            // Update position tracer.
+            this._scenePositionTracer.transform.position = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+            // Update normal tracer.
+            this._sceneNormalTracer.transform.position = this._scenePositionTracer.transform.position;
+            var normal = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
+            normal.normalize();
+            normal.scaleBy(25);
+            this._sceneNormalTracer.endPosition = normal.clone();
+        }
+        this._previoiusCollidingObject = collidingObject;
+        // Render 3D.
+        this._view.render();
+    };
+    /**
+     * Key down listener for camera control
+     */
+    Intermediate_MouseInteraction.prototype.onKeyDown = function (event) {
+        switch (event.keyCode) {
+            case Keyboard.UP:
+            case Keyboard.W:
+                this._tiltIncrement = this._tiltSpeed;
+                break;
+            case Keyboard.DOWN:
+            case Keyboard.S:
+                this._tiltIncrement = -this._tiltSpeed;
+                break;
+            case Keyboard.LEFT:
+            case Keyboard.A:
+                this._panIncrement = this._panSpeed;
+                break;
+            case Keyboard.RIGHT:
+            case Keyboard.D:
+                this._panIncrement = -this._panSpeed;
+                break;
+            case Keyboard.Z:
+                this._distanceIncrement = this._distanceSpeed;
+                break;
+            case Keyboard.X:
+                this._distanceIncrement = -this._distanceSpeed;
+                break;
+        }
+    };
+    /**
+     * Key up listener for camera control
+     */
+    Intermediate_MouseInteraction.prototype.onKeyUp = function (event) {
+        switch (event.keyCode) {
+            case Keyboard.UP:
+            case Keyboard.W:
+            case Keyboard.DOWN:
+            case Keyboard.S:
+                this._tiltIncrement = 0;
+                break;
+            case Keyboard.LEFT:
+            case Keyboard.A:
+            case Keyboard.RIGHT:
+            case Keyboard.D:
+                this._panIncrement = 0;
+                break;
+            case Keyboard.Z:
+            case Keyboard.X:
+                this._distanceIncrement = 0;
+                break;
+        }
+    };
+    // ---------------------------------------------------------------------
+    // 3D mouse event handlers.
+    // ---------------------------------------------------------------------
+    Intermediate_MouseInteraction.prototype.enableMeshMouseListeners = function (mesh) {
+        var _this = this;
+        mesh.addEventListener(AwayMouseEvent.MOUSE_OVER, function (event) { return _this.onMeshMouseOver(event); });
+        mesh.addEventListener(AwayMouseEvent.MOUSE_OUT, function (event) { return _this.onMeshMouseOut(event); });
+        mesh.addEventListener(AwayMouseEvent.MOUSE_MOVE, function (event) { return _this.onMeshMouseMove(event); });
+        mesh.addEventListener(AwayMouseEvent.MOUSE_DOWN, function (event) { return _this.onMeshMouseDown(event); });
+    };
+    /**
+     * mesh listener for mouse down interaction
+     */
+    Intermediate_MouseInteraction.prototype.onMeshMouseDown = function (event) {
+        //var mesh:Mesh = <Mesh> event.object;
+        //// Paint on the head's material.
+        //if( mesh == this._head ) {
+        //	var uv:Point = event.uv;
+        //	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Mesh> event.object).material);
+        //	var bmd:BitmapData = Single2DTexture( textureMaterial.texture ).bitmapData;
+        //	var x:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.x;
+        //	var y:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.y;
+        //	var matrix:Matrix = new Matrix();
+        //	matrix.translate(x, y);
+        //	bmd.draw(this._painter, matrix);
+        //	Single2DTexture(textureMaterial.texture).invalidateContent();
+        //}
+    };
+    /**
+     * mesh listener for mouse over interaction
+     */
+    Intermediate_MouseInteraction.prototype.onMeshMouseOver = function (event) {
+        var mesh = event.object;
+        mesh.debugVisible = true;
+        if (mesh != this._head)
+            mesh.material = this._whiteMaterial;
+        this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
+        this.onMeshMouseMove(event);
+    };
+    /**
+     * mesh listener for mouse out interaction
+     */
+    Intermediate_MouseInteraction.prototype.onMeshMouseOut = function (event) {
+        var mesh = event.object;
+        mesh.debugVisible = false;
+        if (mesh != this._head)
+            this.choseMeshMaterial(mesh);
+        this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
+        this._pickingPositionTracer.transform.position = new Vector3D();
+    };
+    /**
+     * mesh listener for mouse move interaction
+     */
+    Intermediate_MouseInteraction.prototype.onMeshMouseMove = function (event) {
+        // Show tracers.
+        this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
+        // Update position tracer.
+        this._pickingPositionTracer.transform.position = event.scenePosition;
+        // Update normal tracer.
+        this._pickingNormalTracer.transform.position = this._pickingPositionTracer.transform.position;
+        var normal = event.sceneNormal.clone();
+        normal.scaleBy(25);
+        this._pickingNormalTracer.endPosition = normal.clone();
+    };
+    /**
+     * Mouse down listener for navigation
+     */
+    Intermediate_MouseInteraction.prototype.onMouseDown = function (event) {
+        this._lastPanAngle = this._cameraController.panAngle;
+        this._lastTiltAngle = this._cameraController.tiltAngle;
+        this._lastMouseX = event.clientX;
+        this._lastMouseY = event.clientY;
+        this._move = true;
+    };
+    /**
+     * Mouse up listener for navigation
+     */
+    Intermediate_MouseInteraction.prototype.onMouseUp = function (event) {
+        this._move = false;
+    };
+    /**
+     * Mouse move listener for navigation
+     */
+    Intermediate_MouseInteraction.prototype.onMouseMove = function (event) {
+        if (this._move) {
+            this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+            this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+        }
+    };
+    /**
+     * Mouse wheel listener for navigation
+     */
+    Intermediate_MouseInteraction.prototype.onMouseWheel = function (event) {
+        this._cameraController.distance -= event.wheelDelta;
+        if (this._cameraController.distance < 100)
+            this._cameraController.distance = 100;
+        else if (this._cameraController.distance > 2000)
+            this._cameraController.distance = 2000;
+    };
+    /**
+     * window listener for resize events
+     */
+    Intermediate_MouseInteraction.prototype.onResize = function (event) {
+        if (event === void 0) { event = null; }
+        this._view.y = 0;
+        this._view.x = 0;
+        this._view.width = window.innerWidth;
+        this._view.height = window.innerHeight;
+    };
+    Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE = 1024;
+    return Intermediate_MouseInteraction;
+})();
+window.onload = function () {
+    new Intermediate_MouseInteraction();
+};
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
+
 
 //# sourceMappingURL=Intermediate_MouseInteraction.js.map

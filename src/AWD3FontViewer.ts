@@ -162,7 +162,7 @@ class AWD3FontViewer
 		//kickoff asset loading
 		var loader:Loader = new Loader();
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
-		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
+		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
 
 		loader.load(new URLRequest("assets/AWD3/Fonttable_test.awd"));
 	}
