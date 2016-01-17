@@ -38,6 +38,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -121,18 +122,18 @@ var Intermediate_PerelithKnight = (function () {
         //setup floor material
         this._floorMaterial = new MethodMaterial();
         this._floorMaterial.lightPicker = this._lightPicker;
-        this._floorMaterial.specular = 0;
-        this._floorMaterial.ambient = 1;
+        this._floorMaterial.specularMethod.strength = 0;
+        this._floorMaterial.ambientMethod.strength = 1;
         this._floorMaterial.shadowMethod = this._shadowMapMethod;
-        this._floorMaterial.repeat = true;
+        this._floorMaterial.style.sampler = new Sampler2D(true);
         for (var i = 0; i < this._pKnightTextures.length; i++) {
             var knightMaterial = new MethodMaterial();
             //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
             //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
             knightMaterial.lightPicker = this._lightPicker;
-            knightMaterial.gloss = 30;
-            knightMaterial.specular = 1;
-            knightMaterial.ambient = 1;
+            knightMaterial.specularMethod.gloss = 30;
+            knightMaterial.specularMethod.strength = 1;
+            knightMaterial.ambientMethod.strength = 1;
             knightMaterial.shadowMethod = this._shadowMapMethod;
             this._pKnightMaterials.push(knightMaterial);
         }
@@ -182,7 +183,7 @@ var Intermediate_PerelithKnight = (function () {
                 this._mesh = event.asset;
                 //adjust the mesh
                 this._mesh.y = 120;
-                this._mesh.transform.scale = new Vector3D(5, 5, 5);
+                this._mesh.transform.scaleTo(5, 5, 5);
                 this._meshInitialised = true;
                 break;
             case AnimationSetBase.assetType:
@@ -226,13 +227,13 @@ var Intermediate_PerelithKnight = (function () {
             console.log(asset.name, event.url);
             switch (event.url) {
                 case "assets/floor_diffuse.jpg":
-                    this._floorMaterial.texture = new Single2DTexture(asset);
+                    this._floorMaterial.ambientMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/pknight1.png":
                 case "assets/pknight2.png":
                 case "assets/pknight3.png":
                 case "assets/pknight4.png":
-                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = new Single2DTexture(asset);
+                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/pknight.md2":
                     break;
@@ -337,7 +338,7 @@ window.onload = function () {
     new Intermediate_PerelithKnight();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
 
 
 //# sourceMappingURL=Intermediate_PerelithKnight.js.map

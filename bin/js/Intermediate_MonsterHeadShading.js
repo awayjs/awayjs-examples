@@ -39,6 +39,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var SpecularImage2D = require("awayjs-core/lib/image/SpecularImage2D");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
@@ -276,13 +277,22 @@ var Intermediate_MonsterHeadShading = (function () {
         var _this = this;
         AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
         AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+        var material = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+        material.shadowMethod = new ShadowSoftMethod(this._directionalLight, 10, 5);
+        material.shadowMethod.epsilon = 0.2;
+        material.lightPicker = this._lightPicker;
+        material.specularMethod.gloss = 30;
+        material.specularMethod.strength = 1;
+        material.style.color = 0x303040;
+        material.ambientMethod.strength = 1;
         //setup custom multipass material
-        this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+        this._headMaterial = new MethodMaterial();
+        this._headMaterial.ambientMethod.texture = this._textureDictionary["monsterhead_diffuse.jpg"];
         this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
-        this._headMaterial.mipmap = false;
-        this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
+        this._headMaterial.style.sampler = new Sampler2D(true, true);
+        this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
         this._headMaterial.lightPicker = this._lightPicker;
-        this._headMaterial.ambientColor = 0x303040;
+        this._headMaterial.style.color = 0x303040;
         // create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
         this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
         this._softShadowMethod.range = this._shadowRange; // the sample radius defines the softness of the shadows
@@ -292,9 +302,9 @@ var Intermediate_MonsterHeadShading = (function () {
         this._fresnelMethod = new SpecularFresnelMethod(true);
         this._fresnelMethod.fresnelPower = 3;
         this._headMaterial.specularMethod = this._fresnelMethod;
-        this._headMaterial.specularMap = this._textureDictionary["monsterhead_specular.jpg"];
-        this._headMaterial.specular = 3;
-        this._headMaterial.gloss = 10;
+        this._headMaterial.specularMethod.texture = this._textureDictionary["monsterhead_specular.jpg"];
+        this._headMaterial.specularMethod.strength = 3;
+        this._headMaterial.specularMethod.gloss = 10;
         //apply material to head model
         var len = this._headModel.subMeshes.length;
         for (var i = 0; i < len; i++)
@@ -353,7 +363,7 @@ window.onload = function () {
     new Intermediate_MonsterHeadShading();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"])
 
 
 //# sourceMappingURL=Intermediate_MonsterHeadShading.js.map

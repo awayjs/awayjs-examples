@@ -1,10 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/ObjLoaderMasterChief.ts":[function(require,module,exports){
 var BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
-var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var Debug = require("awayjs-core/lib/utils/Debug");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
@@ -37,7 +37,7 @@ var ObjLoaderMasterChief = (function () {
         this.light.diffuse = 2.8;
         this.light.specular = 1.8;
         this.view.scene.addChild(this.light);
-        this.spartan.transform.scale = new Vector3D(.25, .25, .25);
+        this.spartan.transform.scaleTo(.25, .25, .25);
         this.spartan.y = 0;
         this.view.scene.addChild(this.spartan);
         AssetLibrary.enableParser(OBJParser);
@@ -91,11 +91,13 @@ var ObjLoaderMasterChief = (function () {
                     break;
                 case BitmapImage2D.assetType:
                     if (event.url == 'assets/masterchief_base.png') {
-                        this.mat = new MethodMaterial(new Single2DTexture(d), true, true, false);
+                        this.mat = new MethodMaterial(d);
+                        this.mat.style.sampler = new Sampler2D(true, true, false);
                         this.mat.lightPicker = new StaticLightPicker([this.light]);
                     }
                     else if (event.url == 'assets/stone_tx.jpg') {
-                        this.terrainMaterial = new MethodMaterial(new Single2DTexture(d), true, true, false);
+                        this.terrainMaterial = new MethodMaterial(d);
+                        this.terrainMaterial.style.sampler = new Sampler2D(true, true, false);
                         this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
                     }
                     break;
@@ -121,7 +123,7 @@ window.onload = function () {
     new ObjLoaderMasterChief(); // Start the demo
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
 
 
 //# sourceMappingURL=ObjLoaderMasterChief.js.map

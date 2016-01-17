@@ -59,7 +59,6 @@ var PointLight = require("awayjs-display/lib/entities/PointLight");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -137,28 +136,27 @@ var Intermediate_Globe = (function () {
      * Initialise the materials
      */
     Intermediate_Globe.prototype.initMaterials = function () {
-        //this.cubeTexture = new BitmapCubeTexture(Cast.bitmapData(PosX), Cast.bitmapData(NegX), Cast.bitmapData(PosY), Cast.bitmapData(NegY), Cast.bitmapData(PosZ), Cast.bitmapData(NegZ));
         //adjust specular map
         //var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
         //specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
         var specular = new SpecularFresnelMethod(true, new SpecularPhongMethod());
         specular.fresnelPower = 1;
         specular.normalReflectance = 0.1;
+        specular.gloss = 5;
+        specular.strength = 1;
         this.sunMaterial = new MethodMaterial();
         this.sunMaterial.blendMode = BlendMode.ADD;
         this.groundMaterial = new MethodMaterial();
         this.groundMaterial.specularMethod = specular;
         this.groundMaterial.lightPicker = this.lightPicker;
-        this.groundMaterial.gloss = 5;
-        this.groundMaterial.specular = 1;
-        this.groundMaterial.ambient = 1;
+        this.groundMaterial.ambientMethod.strength = 1;
         this.groundMaterial.diffuseMethod.multiply = false;
         this.cloudMaterial = new MethodMaterial();
         this.cloudMaterial.alphaBlending = true;
         this.cloudMaterial.lightPicker = this.lightPicker;
-        this.cloudMaterial.ambientColor = 0x1b2048;
-        this.cloudMaterial.specular = 0;
-        this.cloudMaterial.ambient = 1;
+        this.cloudMaterial.style.color = 0x1b2048;
+        this.cloudMaterial.specularMethod.strength = 0;
+        this.cloudMaterial.ambientMethod.strength = 1;
         this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
         this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
         this.atmosphereMaterial = new MethodMaterial();
@@ -166,11 +164,11 @@ var Intermediate_Globe = (function () {
         this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
         this.atmosphereMaterial.blendMode = BlendMode.ADD;
         this.atmosphereMaterial.lightPicker = this.lightPicker;
-        this.atmosphereMaterial.specular = 0.5;
-        this.atmosphereMaterial.gloss = 5;
-        this.atmosphereMaterial.ambientColor = 0;
-        this.atmosphereMaterial.diffuseColor = 0x1671cc;
-        this.atmosphereMaterial.ambient = 1;
+        this.atmosphereMaterial.specularMethod.strength = 0.5;
+        this.atmosphereMaterial.specularMethod.gloss = 5;
+        this.atmosphereMaterial.style.color = 0;
+        this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
+        this.atmosphereMaterial.ambientMethod.strength = 1;
     };
     Intermediate_Globe.prototype.modulateDiffuseMethod = function (shaderObject, methodVO, targetReg, regCache, sharedRegisters) {
         var viewDirFragmentReg = sharedRegisters.viewDirFragment;
@@ -287,8 +285,10 @@ var Intermediate_Globe = (function () {
             var flareDirection = new Point(xOffset, yOffset);
             for (var i = 0; i < this.flares.length; i++) {
                 flareObject = this.flares[i];
-                if (flareObject)
-                    flareObject.billboard.transform.position = this.view.unproject(sunScreenPosition.x - flareDirection.x * flareObject.position, sunScreenPosition.y - flareDirection.y * flareObject.position, 100 - i);
+                if (flareObject) {
+                    var position = this.view.unproject(sunScreenPosition.x - flareDirection.x * flareObject.position, sunScreenPosition.y - flareDirection.y * flareObject.position, 100 - i);
+                    flareObject.billboard.transform.moveTo(position.x, position.y, position.z);
+                }
             }
         }
     };
@@ -298,28 +298,27 @@ var Intermediate_Globe = (function () {
     Intermediate_Globe.prototype.onResourceComplete = function (event) {
         switch (event.url) {
             case 'assets/skybox/space_texture.cube':
-                this.cubeTexture = new SingleCubeTexture(event.assets[0]);
-                this.skyBox = new Skybox(this.cubeTexture);
+                this.skyBox = new Skybox(event.assets[0]);
                 this.scene.addChild(this.skyBox);
                 break;
             case "assets/globe/cloud_combined_2048.jpg":
                 var cloudBitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
                 cloudBitmapImage2D.copyChannel(event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
-                this.cloudMaterial.texture = new Single2DTexture(cloudBitmapImage2D);
+                this.cloudMaterial.ambientMethod.texture = new Single2DTexture(cloudBitmapImage2D);
                 break;
             case "assets/globe/earth_specular_2048.jpg":
                 var specBitmapImage2D = event.assets[0];
                 specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-                this.groundMaterial.specularMap = new Single2DTexture(specBitmapImage2D);
+                this.groundMaterial.specularMethod.texture = new Single2DTexture(specBitmapImage2D);
                 break;
             case "assets/globe/EarthNormal.png":
-                this.groundMaterial.normalMap = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.normalMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/globe/land_lights_16384.jpg":
-                this.groundMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/globe/land_ocean_ice_2048_match.jpg":
-                this.groundMaterial.diffuseTexture = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.diffuseMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/lensflare/flare2.jpg":
                 this.flares[6] = new FlareObject(event.assets[0], 1.25, 1.1, 48.45, this.scene);
@@ -343,7 +342,7 @@ var Intermediate_Globe = (function () {
                 this.flares[9] = new FlareObject(event.assets[0], 0.5, 2.21, 33.15, this.scene);
                 break;
             case "assets/lensflare/flare10.jpg":
-                this.sunMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.sunMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 this.flares[0] = new FlareObject(event.assets[0], 3.2, -0.01, 100, this.scene);
                 break;
             case "assets/lensflare/flare11.jpg":
@@ -463,7 +462,7 @@ var FlareObject = (function () {
         this.flareSize = 14.4;
         var bd = new BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
-        var billboardMaterial = new MethodMaterial(new Single2DTexture(bd));
+        var billboardMaterial = new MethodMaterial(bd);
         billboardMaterial.alpha = opacity / 100;
         billboardMaterial.alphaBlending = true;
         //billboardMaterial.blendMode = BlendMode.LAYER;
@@ -485,7 +484,7 @@ window.onload = function () {
     new Intermediate_Globe();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageChannel":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/AlignmentMode":undefined,"awayjs-display/lib/base/OrientationMode":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_Globe.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageChannel":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/AlignmentMode":undefined,"awayjs-display/lib/base/OrientationMode":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_Globe.ts"])
 
 
 //# sourceMappingURL=Intermediate_Globe.js.map

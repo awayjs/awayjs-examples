@@ -91,7 +91,7 @@ var Basic_View = (function () {
             console.log(asset.name, event.url);
             switch (event.url) {
                 case "assets/floor_diffuse.jpg":
-                    this._planeMaterial.texture = new Single2DTexture(asset);
+                    this._planeMaterial.ambientMethod.texture = new Single2DTexture(asset);
                     break;
             }
         }

@@ -35,6 +35,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
@@ -114,17 +115,17 @@ var Basic_Shading = (function () {
      * Initialise the materials
      */
     Basic_Shading.prototype.initMaterials = function () {
-        this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+        this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
         this._planeMaterial.lightPicker = this._lightPicker;
-        this._planeMaterial.repeat = true;
-        this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+        this._planeMaterial.style.sampler = new Sampler2D(true, true, true);
+        this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
         this._sphereMaterial.lightPicker = this._lightPicker;
-        this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+        this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
         this._cubeMaterial.lightPicker = this._lightPicker;
-        this._cubeMaterial.mipmap = false;
-        this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+        this._cubeMaterial.style.sampler = new Sampler2D(true, true);
+        this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
         this._torusMaterial.lightPicker = this._lightPicker;
-        this._torusMaterial.repeat = true;
+        this._torusMaterial.style.sampler = new Sampler2D(true, true, true);
     };
     /**
      * Initialise the scene objects
@@ -203,34 +204,34 @@ var Basic_Shading = (function () {
             console.log(asset.name, event.url);
             switch (event.url) {
                 case "assets/floor_diffuse.jpg":
-                    this._planeMaterial.texture = new Single2DTexture(asset);
+                    this._planeMaterial.style.image = asset;
                     break;
                 case "assets/floor_normal.jpg":
-                    this._planeMaterial.normalMap = new Single2DTexture(asset);
+                    this._planeMaterial.normalMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/floor_specular.jpg":
-                    this._planeMaterial.specularMap = new Single2DTexture(asset);
+                    this._planeMaterial.specularMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/beachball_diffuse.jpg":
-                    this._sphereMaterial.texture = new Single2DTexture(asset);
+                    this._sphereMaterial.style.image = asset;
                     break;
                 case "assets/beachball_specular.jpg":
-                    this._sphereMaterial.specularMap = new Single2DTexture(asset);
+                    this._sphereMaterial.specularMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/trinket_diffuse.jpg":
-                    this._cubeMaterial.texture = new Single2DTexture(asset);
+                    this._cubeMaterial.style.image = asset;
                     break;
                 case "assets/trinket_normal.jpg":
-                    this._cubeMaterial.normalMap = new Single2DTexture(asset);
+                    this._cubeMaterial.normalMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/trinket_specular.jpg":
-                    this._cubeMaterial.specularMap = new Single2DTexture(asset);
+                    this._cubeMaterial.specularMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/weave_diffuse.jpg":
-                    this._torusMaterial.texture = new Single2DTexture(asset);
+                    this._torusMaterial.style.image = asset;
                     break;
                 case "assets/weave_normal.jpg":
-                    this._torusMaterial.normalMap = this._torusMaterial.specularMap = new Single2DTexture(asset);
+                    this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture(asset);
                     break;
             }
         }
@@ -286,7 +287,7 @@ window.onload = function () {
     new Basic_Shading();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Shading.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Shading.ts"])
 
 
 //# sourceMappingURL=Basic_Shading.js.map

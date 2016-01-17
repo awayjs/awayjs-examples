@@ -37,6 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var TimerEvent = require("awayjs-core/lib/events/TimerEvent");
@@ -127,9 +128,8 @@ var Basic_Fire = (function () {
         this.planeMaterial = new MethodMaterial();
         this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
         this.planeMaterial.lightPicker = this.lightPicker;
-        this.planeMaterial.repeat = true;
-        this.planeMaterial.mipmap = false;
-        this.planeMaterial.specular = 10;
+        this.planeMaterial.style.sampler = new Sampler2D(true, true, false);
+        this.planeMaterial.specularMethod.strength = 10;
         this.particleMaterial = new MethodMaterial();
         this.particleMaterial.blendMode = BlendMode.ADD;
     };
@@ -242,7 +242,7 @@ var Basic_Fire = (function () {
         light.color = 0xFF3301;
         light.diffuse = 0;
         light.specular = 0;
-        light.transform.position = fireObject.mesh.transform.position;
+        light.transform.moveTo(fireObject.mesh.x, fireObject.mesh.y, fireObject.mesh.z);
         //add the lightsource to the fire object
         fireObject.light = light;
         //update the lightpicker
@@ -280,16 +280,16 @@ var Basic_Fire = (function () {
             console.log(asset.name, event.url);
             switch (event.url) {
                 case "assets/floor_diffuse.jpg":
-                    this.planeMaterial.texture = new Single2DTexture(asset);
+                    this.planeMaterial.ambientMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/floor_normal.jpg":
-                    this.planeMaterial.normalMap = new Single2DTexture(asset);
+                    this.planeMaterial.normalMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/floor_specular.jpg":
-                    this.planeMaterial.specularMap = new Single2DTexture(asset);
+                    this.planeMaterial.specularMethod.texture = new Single2DTexture(asset);
                     break;
                 case "assets/blue.png":
-                    this.particleMaterial.texture = new Single2DTexture(asset);
+                    this.particleMaterial.ambientMethod.texture = new Single2DTexture(asset);
                     break;
             }
         }
@@ -344,7 +344,7 @@ window.onload = function () {
     new Basic_Fire();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGeometryHelper":undefined}]},{},["./src/Basic_Fire.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGeometryHelper":undefined}]},{},["./src/Basic_Fire.ts"])
 
 
 //# sourceMappingURL=Basic_Fire.js.map

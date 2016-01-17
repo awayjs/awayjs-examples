@@ -38,6 +38,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var UVTransform = require("awayjs-core/lib/geom/UVTransform");
@@ -58,7 +59,6 @@ var Skybox = require("awayjs-display/lib/entities/Skybox");
 var NearDirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var AnimationSetBase = require("awayjs-renderergl/lib/animators/AnimationSetBase");
 var SkeletonAnimator = require("awayjs-renderergl/lib/animators/SkeletonAnimator");
@@ -172,23 +172,21 @@ var Intermediate_MD5Animation = (function () {
         this.blueLightMaterial.addEffectMethod(this.fogMethod);
         //ground material
         this.groundMaterial = new MethodMaterial();
-        this.groundMaterial.smooth = true;
-        this.groundMaterial.repeat = true;
+        this.groundMaterial.style.sampler = new Sampler2D(true, true);
         this.groundMaterial.lightPicker = this.lightPicker;
         this.groundMaterial.shadowMethod = this.shadowMapMethod;
         this.groundMaterial.addEffectMethod(this.fogMethod);
         //body material
         this.bodyMaterial = new MethodMaterial();
-        this.bodyMaterial.gloss = 20;
-        this.bodyMaterial.specular = 1.5;
+        this.bodyMaterial.specularMethod.gloss = 20;
+        this.bodyMaterial.specularMethod.strength = 1.5;
         this.bodyMaterial.addEffectMethod(this.fogMethod);
         this.bodyMaterial.lightPicker = this.lightPicker;
         this.bodyMaterial.shadowMethod = this.shadowMapMethod;
         //gob material
         this.gobMaterial = new MethodMaterial();
         this.gobMaterial.alphaBlending = true;
-        this.gobMaterial.smooth = true;
-        this.gobMaterial.repeat = true;
+        this.gobMaterial.style.sampler = new Sampler2D(true, true);
         this.gobMaterial.animateUVs = true;
         this.gobMaterial.addEffectMethod(this.fogMethod);
         this.gobMaterial.lightPicker = this.lightPicker;
@@ -320,36 +318,35 @@ var Intermediate_MD5Animation = (function () {
     Intermediate_MD5Animation.prototype.onResourceComplete = function (event) {
         switch (event.url) {
             case 'assets/skybox/grimnight_texture.cube':
-                this.cubeTexture = new SingleCubeTexture(event.assets[0]);
-                this.skyBox = new Skybox(this.cubeTexture);
+                this.skyBox = new Skybox(event.assets[0]);
                 this.scene.addChild(this.skyBox);
                 break;
             case "assets/redlight.png":
-                this.redLightMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.redLightMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/bluelight.png":
-                this.blueLightMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.blueLightMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/rockbase_diffuse.jpg":
-                this.groundMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/rockbase_normals.png":
-                this.groundMaterial.normalMap = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.normalMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/rockbase_specular.png":
-                this.groundMaterial.specularMap = new Single2DTexture(event.assets[0]);
+                this.groundMaterial.specularMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/hellknight/hellknight_diffuse.jpg":
-                this.bodyMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.bodyMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/hellknight/hellknight_normals.png":
-                this.bodyMaterial.normalMap = new Single2DTexture(event.assets[0]);
+                this.bodyMaterial.normalMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/hellknight/hellknight_specular.png":
-                this.bodyMaterial.specularMap = new Single2DTexture(event.assets[0]);
+                this.bodyMaterial.specularMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/hellknight/gob.png":
-                this.bodyMaterial.specularMap = this.gobMaterial.texture = new Single2DTexture(event.assets[0]);
+                this.bodyMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
         }
     };
@@ -493,7 +490,7 @@ window.onload = function () {
     new Intermediate_MD5Animation();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
 
 
 //# sourceMappingURL=Intermediate_MD5Animation.js.map

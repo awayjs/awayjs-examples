@@ -45,6 +45,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var SpecularImage2D = require("awayjs-core/lib/image/SpecularImage2D");
 var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
@@ -70,7 +71,6 @@ var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
 var PointLight = require("awayjs-display/lib/entities/PointLight");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var Merge = require("awayjs-renderergl/lib/tools/commands/Merge");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
@@ -170,6 +170,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
         //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
         //			this._cascadeShadowMapper.lightOffset = 20000;
         this._directionalLight = new DirectionalLight(-1, -15, 1);
+        this._directionalLight.castsShadows = true;
         //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
         this._directionalLight.color = 0xeedddd;
         this._directionalLight.ambient = .35;
@@ -211,7 +212,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
             flameVO = this._flameData[i];
             var mesh = flameVO.mesh = this._flameGeometry.getNewObject();
             mesh.material = this._flameMaterial;
-            mesh.transform.position = flameVO.position;
+            mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
             mesh.subMeshes[0].uvTransform = new UVTransform();
             mesh.subMeshes[0].uvTransform.scaleU = 1 / 16;
             this._view.scene.addChild(mesh);
@@ -537,27 +538,28 @@ var Advanced_MultiPassSponzaDemo = (function () {
             var multiMaterial = this._multiMaterialDictionary[name];
             if (!multiMaterial) {
                 //create multipass material
-                multiMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+                multiMaterial = new MethodMaterial();
+                multiMaterial.ambientMethod.texture = this._textureDictionary[textureName];
                 multiMaterial.mode = MethodMaterialMode.MULTI_PASS;
                 multiMaterial.name = name;
                 multiMaterial.lightPicker = this._lightPicker;
                 //					multiMaterial.shadowMethod = this._cascadeMethod;
                 multiMaterial.shadowMethod = this._baseShadowMethod;
                 multiMaterial.addEffectMethod(this._fogMethod);
-                multiMaterial.repeat = true;
-                multiMaterial.mipmap = true;
-                multiMaterial.specular = 2;
+                multiMaterial.style.sampler = new Sampler2D(true, true, true);
+                multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.depthMap);
+                multiMaterial.specularMethod.strength = 2;
                 //use alpha transparancy if texture is png
                 if (textureName.substring(textureName.length - 3) == "png")
                     multiMaterial.alphaThreshold = 0.5;
                 //add normal map if it exists
                 normalTextureName = this._normalTextureStrings[textureIndex];
                 if (normalTextureName)
-                    multiMaterial.normalMap = this._textureDictionary[normalTextureName];
+                    multiMaterial.normalMethod.texture = this._textureDictionary[normalTextureName];
                 //add specular map if it exists
                 specularTextureName = this._specularTextureStrings[textureIndex];
                 if (specularTextureName)
-                    multiMaterial.specularMap = this._textureDictionary[specularTextureName];
+                    multiMaterial.specularMethod.texture = this._textureDictionary[specularTextureName];
                 //add to material dictionary
                 this._multiMaterialDictionary[name] = multiMaterial;
             }
@@ -596,10 +598,10 @@ var Advanced_MultiPassSponzaDemo = (function () {
         switch (event.url) {
             case 'assets/skybox/hourglass_texture.cube':
                 //create skybox texture map
-                this._skyMap = new SingleCubeTexture(event.assets[0]);
+                this._skyMap = event.assets[0];
                 break;
             case "assets/fire.png":
-                this._flameMaterial = new MethodMaterial(new Single2DTexture(event.assets[0]));
+                this._flameMaterial = new MethodMaterial(event.assets[0]);
                 this._flameMaterial.blendMode = BlendMode.ADD;
                 this._flameMaterial.animateUVs = true;
                 break;
@@ -740,7 +742,7 @@ window.onload = function () {
     new Advanced_MultiPassSponzaDemo();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
 
 
 //# sourceMappingURL=Advanced_MultiPassSponzaDemo.js.map

@@ -36,6 +36,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -89,6 +90,7 @@ var Basic_Load3DS = (function () {
      */
     Basic_Load3DS.prototype.initLights = function () {
         this._light = new DirectionalLight(-1, -1, 1);
+        this._light.castsShadows = true;
         this._direction = new Vector3D(-1, -1, 1);
         this._lightPicker = new StaticLightPicker([this._light]);
         this._view.scene.addChild(this._light);
@@ -98,10 +100,13 @@ var Basic_Load3DS = (function () {
      */
     Basic_Load3DS.prototype.initMaterials = function () {
         this._groundMaterial = new MethodMaterial();
+        this._groundMaterial.ambientMethod.texture = new Single2DTexture();
         this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
+        this._groundMaterial.style.sampler = new Sampler2D(true, true, true);
+        this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.depthMap);
         this._groundMaterial.shadowMethod.epsilon = 0.2;
         this._groundMaterial.lightPicker = this._lightPicker;
-        this._groundMaterial.specular = 0;
+        this._groundMaterial.specularMethod.strength = 0;
         //this._groundMaterial.mipmap = false;
     };
     /**
@@ -109,7 +114,7 @@ var Basic_Load3DS = (function () {
      */
     Basic_Load3DS.prototype.initObjects = function () {
         this._loader = new LoaderContainer();
-        this._loader.transform.scale = new Vector3D(300, 300, 300);
+        this._loader.transform.scaleTo(300, 300, 300);
         this._loader.z = -200;
         this._view.scene.addChild(this._loader);
         this._plane = new PrimitivePlanePrefab(1000, 1000);
@@ -162,12 +167,11 @@ var Basic_Load3DS = (function () {
                 var material = event.asset;
                 material.shadowMethod = new ShadowSoftMethod(this._light, 10, 5);
                 material.shadowMethod.epsilon = 0.2;
-                //material.mipmap = false;
                 material.lightPicker = this._lightPicker;
-                material.gloss = 30;
-                material.specular = 1;
-                material.color = 0x303040;
-                material.ambient = 1;
+                material.specularMethod.gloss = 30;
+                material.specularMethod.strength = 1;
+                material.style.color = 0x303040;
+                material.ambientMethod.strength = 1;
                 break;
         }
     };
@@ -182,7 +186,7 @@ var Basic_Load3DS = (function () {
             console.log(asset.name, event.url);
             switch (event.url) {
                 case "assets/CoarseRedSand.jpg":
-                    this._groundMaterial.texture = new Single2DTexture(asset);
+                    this._groundMaterial.style.image = asset;
                     break;
             }
         }
@@ -225,7 +229,7 @@ window.onload = function () {
     new Basic_Load3DS();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
 
 
 //# sourceMappingURL=Basic_Load3DS.js.map

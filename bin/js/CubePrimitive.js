@@ -1,4 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/CubePrimitive.ts":[function(require,module,exports){
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -13,7 +14,6 @@ var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
 var CubePrimitive = (function () {
@@ -96,8 +96,8 @@ var CubePrimitive = (function () {
      * @param e
      */
     CubePrimitive.prototype.imageCompleteHandler = function (event) {
-        var ts = new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image));
-        var matTx = new MethodMaterial(ts, true, true, false);
+        var matTx = new MethodMaterial(ParserUtils.imageToBitmapImage2D(this._image));
+        matTx.style.sampler = new Sampler2D(true, true);
         matTx.blendMode = BlendMode.ADD;
         matTx.bothSides = true;
         matTx.lightPicker = this._lightPicker;
@@ -112,7 +112,7 @@ var CubePrimitive = (function () {
      */
     CubePrimitive.prototype.render = function (dt) {
         if (dt === void 0) { dt = null; }
-        this._view.camera.rotate(this._cameraAxis, 1);
+        this._view.camera.transform.rotate(this._cameraAxis, 1);
         this._mesh.rotationY += 1;
         this._mesh2.rotationX += 0.4;
         this._mesh2.rotationY += 0.4;
@@ -134,7 +134,7 @@ window.onload = function () {
     new CubePrimitive();
 };
 
-},{"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/CubePrimitive.ts"])
+},{"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/CubePrimitive.ts"])
 
 
 //# sourceMappingURL=CubePrimitive.js.map

@@ -1,4 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/AircraftDemo.ts":[function(require,module,exports){
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var UVTransform = require("awayjs-core/lib/geom/UVTransform");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
@@ -72,7 +73,7 @@ var AircraftDemo = (function () {
         this.onResize();
     };
     AircraftDemo.prototype.initializeScene = function () {
-        if (this._skyboxCubeTexture && this._f14Geom && this._seaNormalTexture) {
+        if (this._skyboxImageCube && this._f14Geom && this._seaNormalImage) {
             this.initF14();
             this.initSea();
             this._timer.start();
@@ -92,35 +93,37 @@ var AircraftDemo = (function () {
     AircraftDemo.prototype.initF14 = function () {
         var _this = this;
         this._f14Initialized = true;
-        var f14Material = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
+        var f14Material = new MethodMaterial(this._seaNormalImage); // will be the cubemap
+        f14Material.style.sampler = new Sampler2D(true, true, false);
         f14Material.lightPicker = this._lightPicker;
         this._view.scene.addChild(this._f14Geom);
-        this._f14Geom.transform.scale = new Vector3D(20, 20, 20);
+        this._f14Geom.transform.scaleTo(20, 20, 20);
         this._f14Geom.rotationX = 90;
         this._f14Geom.y = 200;
         this._view.camera.lookAt(this._f14Geom.transform.position);
         document.onmousedown = function (event) { return _this.onMouseDown(event); };
     };
     AircraftDemo.prototype.initSea = function () {
-        this._seaMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
-        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, new Single2DTexture(this._seaNormalTexture.image2D));
+        this._seaMaterial = new MethodMaterial(this._seaNormalImage); // will be the cubemap
+        this._seaMaterial.style.sampler = new Sampler2D(true, true, false);
+        this._waterMethod = new NormalSimpleWaterMethod(new Single2DTexture(this._seaNormalImage), new Single2DTexture(this._seaNormalImage));
         var fresnelMethod = new SpecularFresnelMethod();
         fresnelMethod.normalReflectance = .3;
+        fresnelMethod.gloss = 10;
+        fresnelMethod.strength = 1;
         this._seaMaterial.alphaBlending = true;
         this._seaMaterial.lightPicker = this._lightPicker;
-        this._seaMaterial.repeat = true;
+        this._seaMaterial.style.sampler = new Sampler2D(true);
         this._seaMaterial.animateUVs = true;
         this._seaMaterial.normalMethod = this._waterMethod;
-        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(this._skyboxCubeTexture));
+        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(new SingleCubeTexture(this._skyboxImageCube)));
         this._seaMaterial.specularMethod = fresnelMethod;
-        this._seaMaterial.gloss = 100;
-        this._seaMaterial.specular = 1;
         this._seaGeom = new PrimitivePlanePrefab(50000, 50000, 1, 1, true, false);
         this._seaMesh = this._seaGeom.getNewObject();
         this._seaGeom.geometry.scaleUV(100, 100);
         this._seaMesh.subMeshes[0].uvTransform = new UVTransform();
         this._seaMesh.material = this._seaMaterial;
-        this._view.scene.addChild(new Skybox(this._skyboxCubeTexture));
+        this._view.scene.addChild(new Skybox(this._skyboxImageCube));
         this._view.scene.addChild(this._seaMesh);
     };
     AircraftDemo.prototype.onResourceComplete = function (event) {
@@ -129,7 +132,7 @@ var AircraftDemo = (function () {
         var i = 0;
         switch (event.url) {
             case "assets/sea_normals.jpg":
-                this._seaNormalTexture = new Single2DTexture(loader.baseDependency.assets[0]);
+                this._seaNormalImage = loader.baseDependency.assets[0];
                 break;
             case 'assets/f14/f14d.obj':
                 this._f14Geom = new DisplayObjectContainer();
@@ -144,7 +147,7 @@ var AircraftDemo = (function () {
                 }
                 break;
             case 'assets/skybox/CubeTextureTest.cube':
-                this._skyboxCubeTexture = new SingleCubeTexture(loader.baseDependency.assets[0]);
+                this._skyboxImageCube = loader.baseDependency.assets[0];
                 break;
         }
         this.initializeScene();
@@ -204,7 +207,7 @@ window.onload = function () {
     new AircraftDemo();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AircraftDemo.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AircraftDemo.ts"])
 
 
 //# sourceMappingURL=AircraftDemo.js.map

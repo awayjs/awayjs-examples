@@ -57,7 +57,6 @@ var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefa
 var PrimitiveCylinderPrefab = require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
 var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
 var OBJParser = require("awayjs-parsers/lib/OBJParser");
@@ -182,8 +181,7 @@ var Intermediate_MouseInteraction = (function () {
         // Apply a bitmap material that can be painted on.
         var bmd = new BitmapImage2D(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
         //bmd.perlinNoise(50, 50, 8, 1, false, true, 7, true);
-        var bitmapTexture = new Single2DTexture(bmd);
-        var textureMaterial = new MethodMaterial(bitmapTexture);
+        var textureMaterial = new MethodMaterial(bmd);
         textureMaterial.lightPicker = this._lightPicker;
         model.material = textureMaterial;
         model.pickingCollider = new JSPickingCollider();
@@ -293,20 +291,23 @@ var Intermediate_MouseInteraction = (function () {
      */
     Intermediate_MouseInteraction.prototype.onEnterFrame = function (dt) {
         // Move light with camera.
-        this._pointLight.transform.position = this._camera.transform.position;
+        var pos = this._camera.transform.position;
+        this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
         var collidingObject = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
         //var mesh:Mesh;
         if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) {
             this._scenePositionTracer.visible = this._sceneNormalTracer.visible = false;
-            this._scenePositionTracer.transform.position = new Vector3D();
+            this._scenePositionTracer.transform.moveTo(0, 0, 0);
         }
         if (collidingObject) {
             // Show tracers.
             this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
             // Update position tracer.
-            this._scenePositionTracer.transform.position = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+            pos = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+            this._scenePositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
             // Update normal tracer.
-            this._sceneNormalTracer.transform.position = this._scenePositionTracer.transform.position;
+            pos = this._scenePositionTracer.transform.position;
+            this._sceneNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
             var normal = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
             normal.normalize();
             normal.scaleBy(25);
@@ -416,18 +417,21 @@ var Intermediate_MouseInteraction = (function () {
         if (mesh != this._head)
             this.choseMeshMaterial(mesh);
         this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
-        this._pickingPositionTracer.transform.position = new Vector3D();
+        this._pickingPositionTracer.transform.moveTo(0, 0, 0);
     };
     /**
      * mesh listener for mouse move interaction
      */
     Intermediate_MouseInteraction.prototype.onMeshMouseMove = function (event) {
+        var pos;
         // Show tracers.
         this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
         // Update position tracer.
-        this._pickingPositionTracer.transform.position = event.scenePosition;
+        pos = event.scenePosition;
+        this._pickingPositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
         // Update normal tracer.
-        this._pickingNormalTracer.transform.position = this._pickingPositionTracer.transform.position;
+        pos = this._pickingPositionTracer.transform.position;
+        this._pickingNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
         var normal = event.sceneNormal.clone();
         normal.scaleBy(25);
         this._pickingNormalTracer.endPosition = normal.clone();
@@ -484,7 +488,7 @@ window.onload = function () {
     new Intermediate_MouseInteraction();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
 
 
 //# sourceMappingURL=Intermediate_MouseInteraction.js.map

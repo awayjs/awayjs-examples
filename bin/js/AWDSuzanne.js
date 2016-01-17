@@ -108,13 +108,13 @@ var AWDSuzanne = (function () {
                         clone.x = this.getRandom(-2000, 2000);
                         clone.y = this.getRandom(-2000, 2000);
                         clone.z = this.getRandom(-2000, 2000);
-                        clone.transform.scale = new Vector3D(scale, scale, scale);
+                        clone.transform.scaleTo(scale, scale, scale);
                         clone.rotationY = this.getRandom(0, 360);
                         clone.addEventListener(MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
                         clone.addEventListener(MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
                         this._view.scene.addChild(clone);
                     }
-                    mesh.transform.scale = new Vector3D(500, 500, 500);
+                    mesh.transform.scaleTo(500, 500, 500);
                     mesh.pickingCollider = new JSPickingCollider();
                     mesh.addEventListener(MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
                     mesh.addEventListener(MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
