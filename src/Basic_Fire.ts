@@ -38,6 +38,7 @@ THE SOFTWARE.
 */
 
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
@@ -184,9 +185,8 @@ class Basic_Fire
 		this.planeMaterial = new MethodMaterial();
 		this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
 		this.planeMaterial.lightPicker = this.lightPicker;
-		this.planeMaterial.repeat = true;
-		this.planeMaterial.mipmap = false;
-		this.planeMaterial.specular = 10;
+		this.planeMaterial.style.sampler = new Sampler2D(true, true, false);
+		this.planeMaterial.specularMethod.strength = 10;
 
 		this.particleMaterial = new MethodMaterial();
 		this.particleMaterial.blendMode = BlendMode.ADD;
@@ -335,7 +335,7 @@ class Basic_Fire
 		light.color = 0xFF3301;
 		light.diffuse = 0;
 		light.specular = 0;
-		light.transform.position = fireObject.mesh.transform.position;
+		light.transform.moveTo(fireObject.mesh.x, fireObject.mesh.y, fireObject.mesh.z);
 
 		//add the lightsource to the fire object
 		fireObject.light = light;
@@ -389,18 +389,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.particleMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

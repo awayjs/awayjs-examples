@@ -181,7 +181,7 @@ class Basic_LoadAWD
 			case Mesh.assetType :
 				var mesh:Mesh = <Mesh> asset;
 				mesh.y = -300;
-				mesh.transform.scale = new Vector3D(900, 900, 900);
+				mesh.transform.scaleTo(900, 900, 900);
 
 				this._suzanne = mesh;
 				this._view.scene.addChild(mesh);

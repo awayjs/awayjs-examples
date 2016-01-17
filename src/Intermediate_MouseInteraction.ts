@@ -260,8 +260,7 @@ class Intermediate_MouseInteraction
 		// Apply a bitmap material that can be painted on.
 		var bmd:BitmapImage2D = new BitmapImage2D(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
 		//bmd.perlinNoise(50, 50, 8, 1, false, true, 7, true);
-		var bitmapTexture:Single2DTexture = new Single2DTexture(bmd);
-		var textureMaterial:MethodMaterial = new MethodMaterial(bitmapTexture);
+		var textureMaterial:MethodMaterial = new MethodMaterial(bmd);
 		textureMaterial.lightPicker = this._lightPicker;
 		model.material = textureMaterial;
 		model.pickingCollider = new JSPickingCollider();
@@ -401,14 +400,15 @@ class Intermediate_MouseInteraction
 	private onEnterFrame(dt:number):void
 	{
 		// Move light with camera.
-		this._pointLight.transform.position = this._camera.transform.position;
+		var pos:Vector3D = this._camera.transform.position;
+		this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
 
 		var collidingObject:PickingCollisionVO = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
 		//var mesh:Mesh;
 
 		if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) { //equivalent to mouse out
 			this._scenePositionTracer.visible = this._sceneNormalTracer.visible = false;
-			this._scenePositionTracer.transform.position = new Vector3D();
+			this._scenePositionTracer.transform.moveTo(0, 0, 0);
 		}
 
 		if (collidingObject) {
@@ -416,10 +416,12 @@ class Intermediate_MouseInteraction
 			this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
 
 			// Update position tracer.
-			this._scenePositionTracer.transform.position = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+			pos = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+			this._scenePositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
 
 			// Update normal tracer.
-			this._sceneNormalTracer.transform.position = this._scenePositionTracer.transform.position;
+			pos = this._scenePositionTracer.transform.position;
+			this._sceneNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
 			var normal:Vector3D = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
 			normal.normalize();
 			normal.scaleBy( 25 );
@@ -542,7 +544,7 @@ class Intermediate_MouseInteraction
 		mesh.debugVisible = false;
 		if( mesh != this._head ) this.choseMeshMaterial( mesh );
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
-		this._pickingPositionTracer.transform.position = new Vector3D();
+		this._pickingPositionTracer.transform.moveTo(0, 0, 0);
 	}
 
 	/**
@@ -550,14 +552,18 @@ class Intermediate_MouseInteraction
 	 */
 	private onMeshMouseMove(event:AwayMouseEvent):void
 	{
+		var pos:Vector3D;
+
 		// Show tracers.
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
 	
 		// Update position tracer.
-		this._pickingPositionTracer.transform.position = event.scenePosition;
+		pos = event.scenePosition;
+		this._pickingPositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
 	
 		// Update normal tracer.
-		this._pickingNormalTracer.transform.position = this._pickingPositionTracer.transform.position;
+		pos = this._pickingPositionTracer.transform.position;
+		this._pickingNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
 		var normal:Vector3D = event.sceneNormal.clone();
 		normal.scaleBy( 25 );
 		this._pickingNormalTracer.endPosition = normal.clone();

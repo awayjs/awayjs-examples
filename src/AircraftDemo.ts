@@ -1,5 +1,6 @@
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
 import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
@@ -52,7 +53,7 @@ class AircraftDemo
     //{ sea
     private _seaGeom:PrimitivePlanePrefab;
     private _seaMesh:Mesh;
-    private _seaNormalTexture:Single2DTexture;
+    private _seaNormalImage:BitmapImage2D;
     private _seaInitialized:boolean = false;
     private _seaMaterial:MethodMaterial;
     //}
@@ -64,7 +65,7 @@ class AircraftDemo
     
     //{ skybox
     private _waterMethod:NormalSimpleWaterMethod;
-    private _skyboxCubeTexture:SingleCubeTexture;
+    private _skyboxImageCube:BitmapImageCube;
     private _skyboxInitialized:boolean = false;
     //}
     
@@ -121,7 +122,7 @@ class AircraftDemo
     
     private initializeScene()
     {
-        if(this._skyboxCubeTexture && this._f14Geom && this._seaNormalTexture) {
+        if(this._skyboxImageCube && this._f14Geom && this._seaNormalImage) {
             this.initF14();
             this.initSea();
             this._timer.start();
@@ -146,11 +147,12 @@ class AircraftDemo
     {
         this._f14Initialized = true;
         
-        var f14Material: MethodMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
+        var f14Material: MethodMaterial = new MethodMaterial(this._seaNormalImage); // will be the cubemap
+        f14Material.style.sampler = new Sampler2D(true, true, false);
         f14Material.lightPicker = this._lightPicker;
         
         this._view.scene.addChild(this._f14Geom);
-        this._f14Geom.transform.scale = new Vector3D(20, 20, 20);
+        this._f14Geom.transform.scaleTo(20, 20, 20);
         this._f14Geom.rotationX = 90;
         this._f14Geom.y = 200;
         this._view.camera.lookAt(this._f14Geom.transform.position);
@@ -160,27 +162,28 @@ class AircraftDemo
 
     private initSea()
     {
-        this._seaMaterial = new MethodMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
-        this._waterMethod = new NormalSimpleWaterMethod(this._seaNormalTexture, new Single2DTexture(this._seaNormalTexture.image2D));
+        this._seaMaterial = new MethodMaterial(this._seaNormalImage); // will be the cubemap
+        this._seaMaterial.style.sampler = new Sampler2D(true, true, false)
+        this._waterMethod = new NormalSimpleWaterMethod(new Single2DTexture(this._seaNormalImage), new Single2DTexture(this._seaNormalImage));
         var fresnelMethod:SpecularFresnelMethod  = new SpecularFresnelMethod();
         fresnelMethod.normalReflectance = .3;
+        fresnelMethod.gloss = 10;
+        fresnelMethod.strength = 1;
         
         this._seaMaterial.alphaBlending = true;
         this._seaMaterial.lightPicker = this._lightPicker;
-        this._seaMaterial.repeat = true;
+        this._seaMaterial.style.sampler = new Sampler2D(true);
         this._seaMaterial.animateUVs = true;
         this._seaMaterial.normalMethod = this._waterMethod ;
-        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(this._skyboxCubeTexture));
+        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(new SingleCubeTexture(this._skyboxImageCube)));
         this._seaMaterial.specularMethod = fresnelMethod;
-        this._seaMaterial.gloss = 100;
-        this._seaMaterial.specular = 1;
         
         this._seaGeom = new PrimitivePlanePrefab( 50000, 50000, 1, 1, true, false );
         this._seaMesh = <Mesh> this._seaGeom.getNewObject();
         this._seaGeom.geometry.scaleUV( 100, 100 );
         this._seaMesh.subMeshes[0].uvTransform = new UVTransform();
         this._seaMesh.material = this._seaMaterial;
-        this._view.scene.addChild( new Skybox(this._skyboxCubeTexture));
+        this._view.scene.addChild( new Skybox(this._skyboxImageCube));
         this._view.scene.addChild( this._seaMesh );
     }
     
@@ -192,7 +195,7 @@ class AircraftDemo
         
         switch (event.url) {
             case "assets/sea_normals.jpg":
-                this._seaNormalTexture = new Single2DTexture(<BitmapImage2D> loader.baseDependency.assets[0]);
+                this._seaNormalImage = <BitmapImage2D> loader.baseDependency.assets[0];
                 break;
             case 'assets/f14/f14d.obj':
                 this._f14Geom = new DisplayObjectContainer();
@@ -207,7 +210,7 @@ class AircraftDemo
                 }
                 break;
             case 'assets/skybox/CubeTextureTest.cube':
-                this._skyboxCubeTexture = new SingleCubeTexture(<BitmapImageCube> loader.baseDependency.assets[0]);
+                this._skyboxImageCube = <BitmapImageCube> loader.baseDependency.assets[0];
                 break;
         }
         

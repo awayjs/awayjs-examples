@@ -1,4 +1,5 @@
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import BlendMode					= require("awayjs-core/lib/image/BlendMode");
 import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -134,8 +135,8 @@ class CubePrimitive
 	 */
 	private imageCompleteHandler(event:Event)
 	{
-		var ts:Single2DTexture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image));
-		var matTx:MethodMaterial = new MethodMaterial(ts, true, true, false);
+		var matTx:MethodMaterial = new MethodMaterial(ParserUtils.imageToBitmapImage2D(this._image));
+		matTx.style.sampler = new Sampler2D(true, true);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
 		matTx.lightPicker = this._lightPicker;
@@ -153,7 +154,7 @@ class CubePrimitive
 	 */
 	public render(dt:number = null):void
 	{
-		this._view.camera.rotate(this._cameraAxis, 1);
+		this._view.camera.transform.rotate(this._cameraAxis, 1);
 		this._mesh.rotationY += 1;
 		this._mesh2.rotationX += 0.4;
 		this._mesh2.rotationY += 0.4;

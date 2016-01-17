@@ -40,6 +40,7 @@ THE SOFTWARE.
 */
 
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import SpecularImage2D				= require("awayjs-core/lib/image/SpecularImage2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
@@ -373,13 +374,23 @@ class Intermediate_MonsterHeadShading
 		AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
 		AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 
+		var material:MethodMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+		material.shadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
+		material.shadowMethod.epsilon = 0.2;
+		material.lightPicker = this._lightPicker;
+		material.specularMethod.gloss = 30;
+		material.specularMethod.strength = 1;
+		material.style.color = 0x303040;
+		material.ambientMethod.strength = 1;
+
 		//setup custom multipass material
-		this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+		this._headMaterial = new MethodMaterial();
+		this._headMaterial.ambientMethod.texture = this._textureDictionary["monsterhead_diffuse.jpg"];
 		this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
-		this._headMaterial.mipmap = false;
-		this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
+		this._headMaterial.style.sampler = new Sampler2D(true, true);
+		this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
 		this._headMaterial.lightPicker = this._lightPicker;
-		this._headMaterial.ambientColor = 0x303040;
+		this._headMaterial.style.color = 0x303040;
 
 		// create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
 		this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
@@ -391,9 +402,9 @@ class Intermediate_MonsterHeadShading
 		this._fresnelMethod = new SpecularFresnelMethod(true);
 		this._fresnelMethod.fresnelPower = 3;
 		this._headMaterial.specularMethod = this._fresnelMethod;
-		this._headMaterial.specularMap = this._textureDictionary["monsterhead_specular.jpg"];
-		this._headMaterial.specular = 3;
-		this._headMaterial.gloss = 10;
+		this._headMaterial.specularMethod.texture = this._textureDictionary["monsterhead_specular.jpg"];
+		this._headMaterial.specularMethod.strength = 3;
+		this._headMaterial.specularMethod.gloss = 10;
 
 		//apply material to head model
 		var len:number = this._headModel.subMeshes.length;

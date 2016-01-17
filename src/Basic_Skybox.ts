@@ -36,6 +36,7 @@ THE SOFTWARE.
 */
 
 import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
+import SamplerCube					= require("awayjs-core/lib/image/SamplerCube");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
@@ -117,10 +118,10 @@ class Basic_SkyBox
 	{
 		//setup the torus material
 		this._torusMaterial = new MethodMaterial(0xFFFFFF, 1);
-		this._torusMaterial.specular = 0.5;
-		this._torusMaterial.ambient = 0.25;
-		this._torusMaterial.color = 0x111199;
-		this._torusMaterial.ambient = 1;
+		this._torusMaterial.style.color = 0x111199;
+		this._torusMaterial.style.sampler = new SamplerCube(true, true);
+		this._torusMaterial.specularMethod.strength = 0.5;
+		this._torusMaterial.ambientMethod.strength = 1;
 	}
 
 	/**
@@ -167,7 +168,7 @@ class Basic_SkyBox
 		this._torus.rotationX += 2;
 		this._torus.rotationY += 1;
 
-		this._view.camera.transform.position = new Vector3D();
+		this._view.camera.transform.moveTo(0, 0, 0);
 		this._view.camera.rotationY += 0.5*(this._mouseX - window.innerWidth/2)/800;
 		this._view.camera.transform.moveBackward(600);
 		this._view.render();
@@ -183,7 +184,7 @@ class Basic_SkyBox
 			case 'assets/skybox/snow_texture.cube':
 				this._cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 
-				this._skyBox = new Skybox(this._cubeTexture);
+				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this._view.scene.addChild(this._skyBox);
 
 				this._torusMaterial.addEffectMethod(new EffectEnvMapMethod(this._cubeTexture, 1));

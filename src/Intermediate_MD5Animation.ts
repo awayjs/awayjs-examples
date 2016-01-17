@@ -40,6 +40,7 @@ THE SOFTWARE.
 
 import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -130,7 +131,6 @@ class Intermediate_MD5Animation
 	private groundMaterial:MethodMaterial;
 	private bodyMaterial:MethodMaterial;
 	private gobMaterial:MethodMaterial;
-	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private placeHolder:DisplayObjectContainer;
@@ -256,16 +256,15 @@ class Intermediate_MD5Animation
 
 		//ground material
 		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.smooth = true;
-		this.groundMaterial.repeat = true;
+		this.groundMaterial.style.sampler = new Sampler2D(true, true);
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.shadowMethod = this.shadowMapMethod;
 		this.groundMaterial.addEffectMethod(this.fogMethod);
 
 		//body material
 		this.bodyMaterial = new MethodMaterial();
-		this.bodyMaterial.gloss = 20;
-		this.bodyMaterial.specular = 1.5;
+		this.bodyMaterial.specularMethod.gloss = 20;
+		this.bodyMaterial.specularMethod.strength = 1.5;
 		this.bodyMaterial.addEffectMethod(this.fogMethod);
 		this.bodyMaterial.lightPicker = this.lightPicker;
 		this.bodyMaterial.shadowMethod = this.shadowMapMethod;
@@ -273,8 +272,7 @@ class Intermediate_MD5Animation
 		//gob material
 		this.gobMaterial = new MethodMaterial();
 		this.gobMaterial.alphaBlending = true;
-		this.gobMaterial.smooth = true;
-		this.gobMaterial.repeat = true;
+		this.gobMaterial.style.sampler = new Sampler2D(true, true);
 		this.gobMaterial.animateUVs = true;
 		this.gobMaterial.addEffectMethod(this.fogMethod);
 		this.gobMaterial.lightPicker = this.lightPicker;
@@ -433,43 +431,41 @@ class Intermediate_MD5Animation
 		{
 			//environment texture
 			case 'assets/skybox/grimnight_texture.cube':
-				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
-
-				this.skyBox = new Skybox(this.cubeTexture);
+				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this.scene.addChild(this.skyBox);
 				break;
 
 			//entities textures
 			case "assets/redlight.png" :
-				this.redLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.redLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/bluelight.png" :
-				this.blueLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.blueLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//floor textures
 			case "assets/rockbase_diffuse.jpg" :
-				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_normals.png" :
-				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_specular.png" :
-				this.groundMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//hellknight textures
 			case "assets/hellknight/hellknight_diffuse.jpg" :
-				this.bodyMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_normals.png" :
-				this.bodyMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_specular.png" :
-				this.bodyMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.bodyMaterial.specularMap = this.gobMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}

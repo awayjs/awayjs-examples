@@ -47,6 +47,7 @@ THE SOFTWARE.
 
 import BitmapImage2D					= require("awayjs-core/lib/image/BitmapImage2D");
 import BitmapImageCube					= require("awayjs-core/lib/image/BitmapImageCube");
+import Sampler2D						= require("awayjs-core/lib/image/Sampler2D");
 import SpecularImage2D					= require("awayjs-core/lib/image/SpecularImage2D");
 import BlendMode						= require("awayjs-core/lib/image/BlendMode");
 import URLLoaderEvent					= require("awayjs-core/lib/events/URLLoaderEvent");
@@ -145,7 +146,7 @@ class Advanced_MultiPassSponzaDemo
 	private _lights:Array<any> = new Array<any>();
 	
 	//material variables
-	private _skyMap:SingleCubeTexture;
+	private _skyMap:BitmapImageCube;
 	private _flameMaterial:MethodMaterial;
 	private _numTextures:number /*uint*/ = 0;
 	private _currentTexture:number /*uint*/ = 0;
@@ -237,6 +238,7 @@ class Advanced_MultiPassSponzaDemo
 //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 //			this._cascadeShadowMapper.lightOffset = 20000;
 		this._directionalLight = new DirectionalLight(-1, -15, 1);
+		this._directionalLight.castsShadows = true;
 //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
 		this._directionalLight.color = 0xeedddd;
 		this._directionalLight.ambient = .35;
@@ -263,7 +265,7 @@ class Advanced_MultiPassSponzaDemo
 		this._lightPicker = new StaticLightPicker(this._lights);
 		this._baseShadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
 //			this._baseShadowMethod = new ShadowFilteredMethod(this._directionalLight);
-		
+
 		//create our global fog method
 		this._fogMethod = new EffectFogMethod(0, 4000, 0x9090e7);
 //			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
@@ -285,7 +287,7 @@ class Advanced_MultiPassSponzaDemo
 			flameVO = this._flameData[i];
 			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGeometry.getNewObject();
 			mesh.material = this._flameMaterial;
-			mesh.transform.position = flameVO.position;
+			mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
 			mesh.subMeshes[0].uvTransform = new UVTransform();
 			mesh.subMeshes[0].uvTransform.scaleU = 1/16;
 			this._view.scene.addChild(mesh);
@@ -666,16 +668,17 @@ class Advanced_MultiPassSponzaDemo
 			if (!multiMaterial) {
 				
 				//create multipass material
-				multiMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+				multiMaterial = new MethodMaterial();
+				multiMaterial.ambientMethod.texture = this._textureDictionary[textureName];
 				multiMaterial.mode = MethodMaterialMode.MULTI_PASS;
 				multiMaterial.name = name;
 				multiMaterial.lightPicker = this._lightPicker;
 //					multiMaterial.shadowMethod = this._cascadeMethod;
 				multiMaterial.shadowMethod = this._baseShadowMethod;
 				multiMaterial.addEffectMethod(this._fogMethod);
-				multiMaterial.repeat = true;
-				multiMaterial.mipmap = true;
-				multiMaterial.specular = 2;
+				multiMaterial.style.sampler = new Sampler2D(true, true, true);
+				multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.depthMap);
+				multiMaterial.specularMethod.strength = 2;
 				
 				
 				//use alpha transparancy if texture is png
@@ -685,12 +688,12 @@ class Advanced_MultiPassSponzaDemo
 				//add normal map if it exists
 				normalTextureName = this._normalTextureStrings[textureIndex];
 				if (normalTextureName)
-					multiMaterial.normalMap = this._textureDictionary[normalTextureName];
+					multiMaterial.normalMethod.texture = this._textureDictionary[normalTextureName];
 
 				//add specular map if it exists
 				specularTextureName = this._specularTextureStrings[textureIndex];
 				if (specularTextureName)
-					multiMaterial.specularMap = this._textureDictionary[specularTextureName];
+					multiMaterial.specularMethod.texture = this._textureDictionary[specularTextureName];
 
 				//add to material dictionary
 				this._multiMaterialDictionary[name] = multiMaterial;
@@ -743,10 +746,10 @@ class Advanced_MultiPassSponzaDemo
 		{
 			case 'assets/skybox/hourglass_texture.cube':
 				//create skybox texture map
-				this._skyMap = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
+				this._skyMap = <BitmapImageCube> event.assets[0];
 				break;
 			case "assets/fire.png" :
-				this._flameMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> event.assets[0]));
+				this._flameMaterial = new MethodMaterial(<BitmapImage2D> event.assets[0]);
 				this._flameMaterial.blendMode = BlendMode.ADD;
 				this._flameMaterial.animateUVs = true;
 				break;

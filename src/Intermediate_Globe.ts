@@ -95,7 +95,6 @@ class Intermediate_Globe
 	private atmosphereMaterial:MethodMaterial;
 	private atmosphereDiffuseMethod:DiffuseBasicMethod;
 	private atmosphereSpecularMethod:SpecularBasicMethod;
-	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private sun:Billboard;
@@ -200,8 +199,6 @@ class Intermediate_Globe
 	 */
 	private initMaterials():void
 	{
-		//this.cubeTexture = new BitmapCubeTexture(Cast.bitmapData(PosX), Cast.bitmapData(NegX), Cast.bitmapData(PosY), Cast.bitmapData(NegY), Cast.bitmapData(PosZ), Cast.bitmapData(NegZ));
-
 		//adjust specular map
 		//var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
 		//specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
@@ -209,6 +206,8 @@ class Intermediate_Globe
 		var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, new SpecularPhongMethod());
 		specular.fresnelPower = 1;
 		specular.normalReflectance = 0.1;
+		specular.gloss = 5;
+		specular.strength = 1;
 
 		this.sunMaterial = new MethodMaterial();
 		this.sunMaterial.blendMode = BlendMode.ADD;
@@ -216,17 +215,15 @@ class Intermediate_Globe
 		this.groundMaterial = new MethodMaterial();
 		this.groundMaterial.specularMethod = specular;
 		this.groundMaterial.lightPicker = this.lightPicker;
-		this.groundMaterial.gloss = 5;
-		this.groundMaterial.specular = 1;
-		this.groundMaterial.ambient = 1;
+		this.groundMaterial.ambientMethod.strength = 1;
 		this.groundMaterial.diffuseMethod.multiply = false;
 
 		this.cloudMaterial = new MethodMaterial();
 		this.cloudMaterial.alphaBlending = true;
 		this.cloudMaterial.lightPicker = this.lightPicker;
-		this.cloudMaterial.ambientColor = 0x1b2048;
-		this.cloudMaterial.specular = 0;
-		this.cloudMaterial.ambient = 1;
+		this.cloudMaterial.style.color = 0x1b2048;
+		this.cloudMaterial.specularMethod.strength = 0;
+		this.cloudMaterial.ambientMethod.strength = 1;
 
 		this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
 		this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
@@ -236,11 +233,11 @@ class Intermediate_Globe
 		this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
 		this.atmosphereMaterial.blendMode = BlendMode.ADD;
 		this.atmosphereMaterial.lightPicker = this.lightPicker;
-		this.atmosphereMaterial.specular = 0.5;
-		this.atmosphereMaterial.gloss = 5;
-		this.atmosphereMaterial.ambientColor = 0;
-		this.atmosphereMaterial.diffuseColor = 0x1671cc;
-		this.atmosphereMaterial.ambient = 1;
+		this.atmosphereMaterial.specularMethod.strength = 0.5;
+		this.atmosphereMaterial.specularMethod.gloss = 5;
+		this.atmosphereMaterial.style.color = 0;
+		this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
+		this.atmosphereMaterial.ambientMethod.strength = 1;
 	}
 
 	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
@@ -401,8 +398,10 @@ class Intermediate_Globe
 			var flareDirection:Point = new Point(xOffset, yOffset);
 			for (var i:number = 0; i < this.flares.length; i++) {
 				flareObject = this.flares[i];
-				if (flareObject)
-					flareObject.billboard.transform.position = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+				if (flareObject) {
+					var position:Vector3D = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+					flareObject.billboard.transform.moveTo(position.x, position.y, position.z);
+				}
 			}
 		}
 	}
@@ -415,9 +414,7 @@ class Intermediate_Globe
 		switch(event.url) {
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
-				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
-
-				this.skyBox = new Skybox(this.cubeTexture);
+				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this.scene.addChild(this.skyBox);
 				break;
 
@@ -426,21 +423,21 @@ class Intermediate_Globe
 				var cloudBitmapImage2D:BitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
 				cloudBitmapImage2D.copyChannel(<BitmapImage2D> event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-				this.cloudMaterial.texture = new Single2DTexture(cloudBitmapImage2D);
+				this.cloudMaterial.ambientMethod.texture = new Single2DTexture(cloudBitmapImage2D);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
 				var specBitmapImage2D:BitmapImage2D = <BitmapImage2D> event.assets[0];
 				specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMap = new Single2DTexture(specBitmapImage2D);
+				this.groundMaterial.specularMethod.texture = new Single2DTexture(specBitmapImage2D);
 				break;
 			case "assets/globe/EarthNormal.png" :
-				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_lights_16384.jpg" :
-				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_ocean_ice_2048_match.jpg" :
-				this.groundMaterial.diffuseTexture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.diffuseMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//flare textures
@@ -466,7 +463,7 @@ class Intermediate_Globe
 				this.flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this.scene);
 				break;
 			case "assets/lensflare/flare10.jpg" :
-				this.sunMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.sunMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				this.flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this.scene);
 				break;
 			case "assets/lensflare/flare11.jpg" :
@@ -611,7 +608,7 @@ class FlareObject
 		var bd:BitmapImage2D = new BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-		var billboardMaterial:MethodMaterial = new MethodMaterial(new Single2DTexture(bd));
+		var billboardMaterial:MethodMaterial = new MethodMaterial(bd);
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;

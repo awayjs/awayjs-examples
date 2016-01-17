@@ -133,7 +133,7 @@ class Basic_View
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

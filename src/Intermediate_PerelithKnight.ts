@@ -39,6 +39,7 @@ THE SOFTWARE.
 */
 
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -176,10 +177,10 @@ class Intermediate_PerelithKnight
         //setup floor material
         this._floorMaterial = new MethodMaterial();
         this._floorMaterial.lightPicker = this._lightPicker;
-        this._floorMaterial.specular = 0;
-        this._floorMaterial.ambient = 1;
+        this._floorMaterial.specularMethod.strength = 0;
+        this._floorMaterial.ambientMethod.strength = 1;
         this._floorMaterial.shadowMethod = this._shadowMapMethod;
-        this._floorMaterial.repeat = true;
+        this._floorMaterial.style.sampler = new Sampler2D(true);
 
         //setup knight materials
         for (var i:number /*uint*/  = 0; i < this._pKnightTextures.length; i++) {
@@ -187,9 +188,9 @@ class Intermediate_PerelithKnight
             //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
             //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
             knightMaterial.lightPicker = this._lightPicker;
-            knightMaterial.gloss = 30;
-            knightMaterial.specular = 1;
-            knightMaterial.ambient = 1;
+            knightMaterial.specularMethod.gloss = 30;
+            knightMaterial.specularMethod.strength = 1;
+            knightMaterial.ambientMethod.strength = 1;
             knightMaterial.shadowMethod = this._shadowMapMethod;
             this._pKnightMaterials.push(knightMaterial);
         }
@@ -255,7 +256,7 @@ class Intermediate_PerelithKnight
 
                 //adjust the mesh
                 this._mesh.y = 120;
-                this._mesh.transform.scale = new Vector3D(5, 5, 5);
+                this._mesh.transform.scaleTo(5, 5, 5);
 
                 this._meshInitialised = true;
 
@@ -315,7 +316,7 @@ class Intermediate_PerelithKnight
             {
                 //floor texture
                 case "assets/floor_diffuse.jpg" :
-                    this._floorMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+                    this._floorMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
                     break;
 
                 //knight textures
@@ -323,7 +324,7 @@ class Intermediate_PerelithKnight
                 case "assets/pknight2.png" :
                 case "assets/pknight3.png" :
                 case "assets/pknight4.png" :
-                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].texture = new Single2DTexture(<BitmapImage2D> asset);
+                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
                     break;
 
                 //knight data

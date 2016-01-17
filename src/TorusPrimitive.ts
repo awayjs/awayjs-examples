@@ -1,3 +1,4 @@
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -28,7 +29,6 @@ class TorusPrimitive
 	private _mesh:Mesh;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
-	private _texture:Single2DTexture;
 	private _material:MethodMaterial;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
@@ -94,9 +94,8 @@ class TorusPrimitive
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._texture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(image));
-
-		this._material = new MethodMaterial(this._texture, true, true, false);
+		this._material = new MethodMaterial(ParserUtils.imageToBitmapImage2D(image));
+		this._material.style.sampler = new Sampler2D(true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}
 

@@ -1,4 +1,5 @@
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
@@ -57,7 +58,7 @@ class ObjLoaderMasterChief
 		this.light.specular = 1.8;
 		this.view.scene.addChild(this.light);
 
-		this.spartan.transform.scale = new Vector3D(.25, .25, .25);
+		this.spartan.transform.scaleTo(.25, .25, .25);
 		this.spartan.y = 0;
 		this.view.scene.addChild(this.spartan);
 
@@ -133,10 +134,12 @@ class ObjLoaderMasterChief
 					break;
 				case BitmapImage2D.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
-						this.mat = new MethodMaterial( new Single2DTexture(<BitmapImage2D> d), true, true, false );
+						this.mat = new MethodMaterial(<BitmapImage2D> d);
+						this.mat.style.sampler = new Sampler2D(true, true, false);
 						this.mat.lightPicker = new StaticLightPicker([this.light]);
 					} else if (event.url == 'assets/stone_tx.jpg') {
-						this.terrainMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> d), true, true, false);
+						this.terrainMaterial = new MethodMaterial(<BitmapImage2D> d);
+						this.terrainMaterial.style.sampler = new Sampler2D(true, true, false);
 						this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 					}
 

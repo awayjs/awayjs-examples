@@ -188,13 +188,13 @@ class CurveDemo
 				console.log("HIT::",hit);
 				if(hit)
 				{
-					var ct:ColorTransform = mesh.colorTransform;
+					var ct:ColorTransform = mesh.transform.colorTransform;
 					ct.alphaMultiplier = 0.2;
-					mesh.colorTransform = ct;
+					mesh.transform.colorTransform = ct;
 				}else{
-					var ct:ColorTransform = mesh.colorTransform;
+					var ct:ColorTransform = mesh.transform.colorTransform;
 					ct.alphaMultiplier = 1;
-					mesh.colorTransform = ct;
+					mesh.transform.colorTransform = ct;
 				}
 
 
@@ -509,7 +509,7 @@ class CurveDemo
 		geom.addSubGeometry(curveSubGeometry);
 		var curveMesh:Mesh = new Mesh(geom);
 
-		curveMesh.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+		curveMesh.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
 
 		var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF, 0.5);
 		curveMaterial.preserveAlpha = true;
@@ -579,7 +579,7 @@ class CurveDemo
 		//curveMaterial.blendMode = BlendMode.ALPHA;
 		//curveMaterial.alphaPremultiplied = false;
 		//curveMaterial.alphaThreshold = 0;
-		curveMesh.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+		curveMesh.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
 		//curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,0);
 		curveMesh.material = curveMaterial;
 		curveMaterial.useColorTransform = true;

@@ -37,6 +37,7 @@ THE SOFTWARE.
 */
 
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -130,6 +131,7 @@ class Basic_Load3DS
 	private initLights():void
 	{
 		this._light = new DirectionalLight(-1, -1, 1);
+		this._light.castsShadows = true;
 		this._direction = new Vector3D(-1, -1, 1);
 		this._lightPicker = new StaticLightPicker([this._light]);
 		this._view.scene.addChild(this._light);
@@ -141,10 +143,13 @@ class Basic_Load3DS
 	private initMaterials():void
 	{
 		this._groundMaterial = new MethodMaterial();
+		this._groundMaterial.ambientMethod.texture = new Single2DTexture();
 		this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
+		this._groundMaterial.style.sampler = new Sampler2D(true, true, true);
+		this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.depthMap);
 		this._groundMaterial.shadowMethod.epsilon = 0.2;
 		this._groundMaterial.lightPicker = this._lightPicker;
-		this._groundMaterial.specular = 0;
+		this._groundMaterial.specularMethod.strength = 0;
 		//this._groundMaterial.mipmap = false;
 	}
 
@@ -154,7 +159,7 @@ class Basic_Load3DS
 	private initObjects():void
 	{
 		this._loader = new LoaderContainer();
-		this._loader.transform.scale = new Vector3D(300, 300, 300);
+		this._loader.transform.scaleTo(300, 300, 300);
 		this._loader.z = -200;
 		this._view.scene.addChild(this._loader);
 
@@ -223,12 +228,11 @@ class Basic_Load3DS
 				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 				material.shadowMethod.epsilon = 0.2;
-				//material.mipmap = false;
 				material.lightPicker = this._lightPicker;
-				material.gloss = 30;
-				material.specular = 1;
-				material.color = 0x303040;
-				material.ambient = 1;
+				material.specularMethod.gloss = 30;
+				material.specularMethod.strength = 1;
+				material.style.color = 0x303040;
+				material.ambientMethod.strength = 1;
 
 				break;
 		}
@@ -250,7 +254,7 @@ class Basic_Load3DS
 			switch (event.url) {
 				//plane textures
 				case "assets/CoarseRedSand.jpg" :
-					this._groundMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._groundMaterial.style.image = <BitmapImage2D> asset;
 					break;
 			}
 		}

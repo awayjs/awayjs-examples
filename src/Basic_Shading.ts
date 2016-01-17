@@ -36,6 +36,7 @@ THE SOFTWARE.
 */
 
 import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
+import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
@@ -170,20 +171,20 @@ class Basic_Shading
 	 */
 	private initMaterials():void
 	{
-		this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._planeMaterial.lightPicker = this._lightPicker;
-		this._planeMaterial.repeat = true;
+		this._planeMaterial.style.sampler = new Sampler2D(true, true, true);
 
-		this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._sphereMaterial.lightPicker = this._lightPicker;
 
-		this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._cubeMaterial.lightPicker = this._lightPicker;
-		this._cubeMaterial.mipmap = false;
+		this._cubeMaterial.style.sampler = new Sampler2D(true, true);
 
-		this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._torusMaterial.lightPicker = this._lightPicker;
-		this._torusMaterial.repeat = true;
+		this._torusMaterial.style.sampler = new Sampler2D(true, true, true);
 	}
 
 	/**
@@ -291,40 +292,40 @@ class Basic_Shading
 			{
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/floor_normal.jpg" :
-					this._planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this._planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//sphere textures
 				case "assets/beachball_diffuse.jpg" :
-					this._sphereMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._sphereMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/beachball_specular.jpg" :
-					this._sphereMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._sphereMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//cube textures
 				case "assets/trinket_diffuse.jpg" :
-					this._cubeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/trinket_normal.jpg" :
-					this._cubeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/trinket_specular.jpg" :
-					this._cubeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//torus textures
 				case "assets/weave_diffuse.jpg" :
-					this._torusMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._torusMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/weave_normal.jpg" :
-					this._torusMaterial.normalMap = this._torusMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}
