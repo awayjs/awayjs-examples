@@ -224,6 +224,7 @@ class Intermediate_Globe
 		this.cloudMaterial.style.color = 0x1b2048;
 		this.cloudMaterial.specularMethod.strength = 0;
 		this.cloudMaterial.ambientMethod.strength = 1;
+		this.cloudMaterial.diffuseMethod.multiply = false;
 
 		this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
 		this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
@@ -238,6 +239,7 @@ class Intermediate_Globe
 		this.atmosphereMaterial.style.color = 0;
 		this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
 		this.atmosphereMaterial.ambientMethod.strength = 1;
+		this.atmosphereMaterial.diffuseMethod.multiply = false;
 	}
 
 	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string

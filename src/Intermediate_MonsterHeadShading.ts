@@ -391,6 +391,7 @@ class Intermediate_MonsterHeadShading
 		this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
 		this._headMaterial.lightPicker = this._lightPicker;
 		this._headMaterial.style.color = 0x303040;
+		this._headMaterial.diffuseMethod.multiply = false;
 
 		// create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
 		this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);

@@ -232,6 +232,7 @@ class Basic_Load3DS
 				material.specularMethod.gloss = 30;
 				material.specularMethod.strength = 1;
 				material.style.color = 0x303040;
+				material.diffuseMethod.multiply = false;
 				material.ambientMethod.strength = 1;
 
 				break;
