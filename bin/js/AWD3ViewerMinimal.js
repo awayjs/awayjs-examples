@@ -39,12 +39,11 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var ParserEvent = require("awayjs-core/lib/events/ParserEvent");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var IOErrorEvent = require("awayjs-core/lib/events/IOErrorEvent");
 var View = require("awayjs-display/lib/containers/View");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var Billboard = require("awayjs-display/lib/entities/Billboard");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
-var Loader = require("awayjs-display/lib/containers/Loader");
+var Loader = require("awayjs-display/lib/containers/LoaderContainer");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
 var SceneGraphPartition = require("awayjs-display/lib/partition/SceneGraphPartition");
@@ -95,11 +94,10 @@ var AWD3ViewerMinimal = (function () {
         this._projection.fieldOfView = 30;
         this._projection.originX = 0;
         this._projection.originY = 0;
-        this._camera_perspective = new Camera();
-        this._camera_perspective.projection = this._projection;
-        //this._projection.far = 500000;
-        this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
-        this._view.camera = this._camera_perspective;
+        var camera = new Camera();
+        camera.projection = this._projection;
+        this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
+        this._view.camera = camera;
     };
     /**
      * Initialise the scene objects
@@ -109,12 +107,12 @@ var AWD3ViewerMinimal = (function () {
         //kickoff asset loading
         var loader = new Loader();
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-        loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
+        loader.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
         loader.addEventListener(ParserEvent.PARSE_ERROR, function (event) { return _this.onParseError(event); });
-        loader.addEventListener(IOErrorEvent.IO_ERROR, function (event) { return _this.onParseError(event); });
+        //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
-        loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/CheckDisplaySize.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -173,9 +171,12 @@ var AWD3ViewerMinimal = (function () {
     /**
      * loader listener for asset complete events
      */
-    AWD3ViewerMinimal.prototype.onLoadError = function (event) {
+    /*
+    private onLoadError(event: IOErrorEvent):void
+    {
         console.log("LoadError");
-    };
+    }
+    */
     /**
      * loader listener for asset complete events
      */
@@ -187,7 +188,7 @@ var AWD3ViewerMinimal = (function () {
      */
     AWD3ViewerMinimal.prototype.onRessourceComplete = function (event) {
         if (this._rootTimeLine) {
-            this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
+            this._rootTimeLine.partition = new SceneGraphPartition();
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
             this._view.scene.addChild(this._rootTimeLine);
         }
@@ -218,8 +219,8 @@ var AWD3ViewerMinimal = (function () {
         this._view.x = 0;
         this._view.width = window.innerWidth;
         this._view.height = window.innerHeight;
-        this._projection.fieldOfView = Math.atan(0.464 / 2) * 360 / Math.PI;
-        this._projection.originX = (0.5 - 0.5 * (window.innerHeight / 464) * (700 / window.innerWidth));
+        this._projection.fieldOfView = Math.atan(this._stage_height / 2000) * 360 / Math.PI;
+        this._projection.originX = (0.5 - 0.5 * (window.innerHeight / this._stage_height) * (this._stage_width / window.innerWidth));
     };
     return AWD3ViewerMinimal;
 })();
@@ -227,7 +228,7 @@ window.onload = function () {
     new AWD3ViewerMinimal();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/IOErrorEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Loader":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/MovieClip":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-display/lib/partition/SceneGraphPartition":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWD3ViewerMinimal.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/MovieClip":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-display/lib/partition/SceneGraphPartition":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWD3ViewerMinimal.ts"])
 
 
 //# sourceMappingURL=AWD3ViewerMinimal.js.map
