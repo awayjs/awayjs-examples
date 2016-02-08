@@ -44,14 +44,13 @@ import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/O
 import OrthographicProjection				= require("awayjs-core/lib/projections/OrthographicProjection");
 import Keyboard								= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame				= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import IOErrorEvent				= require("awayjs-core/lib/events/IOErrorEvent");
 
 import View									= require("awayjs-display/lib/containers/View");
 import Mesh									= require("awayjs-display/lib/entities/Mesh");
 import Billboard							= require("awayjs-display/lib/entities/Billboard");
 import Container							= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import HoverController						= require("awayjs-display/lib/controllers/HoverController");
-import Loader								= require("awayjs-display/lib/containers/Loader");
+import Loader								= require("awayjs-display/lib/containers/LoaderContainer");
 import ColorMaterial						= require("awayjs-display/lib/materials/BasicMaterial");
 import PrimitiveCubePrefab					= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import DisplayObject						= require("awayjs-display/lib/base/DisplayObject");
@@ -154,11 +153,11 @@ class AWD3ViewerMinimal
         this._projection.fieldOfView = 30;
         this._projection.originX = 0;
         this._projection.originY = 0;
-        this._camera_perspective = new Camera();
-        this._camera_perspective.projection = this._projection;
-        //this._projection.far = 500000;
-        this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
-        this._view.camera = this._camera_perspective;
+        var camera:Camera = new Camera();
+        camera.projection = this._projection;
+
+        this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
+        this._view.camera = camera;
     }
 
     /**
@@ -171,12 +170,12 @@ class AWD3ViewerMinimal
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
         loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
         loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
-        loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
+        //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/CheckDisplaySize.awd"), null, null, new AWDParser(this._view));
 
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
@@ -254,10 +253,12 @@ class AWD3ViewerMinimal
     /**
      * loader listener for asset complete events
      */
+    /*
     private onLoadError(event: IOErrorEvent):void
     {
         console.log("LoadError");
     }
+    */
 
     /**
      * loader listener for asset complete events
@@ -271,7 +272,7 @@ class AWD3ViewerMinimal
      */
     private onRessourceComplete(event: LoaderEvent): void {
         if (this._rootTimeLine) {
-            this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
+            this._rootTimeLine.partition = new SceneGraphPartition();
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
             this._view.scene.addChild(this._rootTimeLine);
             //this._rootTimeLine.x=-this._stage_width/2;
@@ -315,8 +316,8 @@ class AWD3ViewerMinimal
         this._view.x         = 0;
         this._view.width     = window.innerWidth;
         this._view.height    = window.innerHeight;
-        this._projection.fieldOfView = Math.atan(0.464/2)*360/Math.PI;
-        this._projection.originX = (0.5 - 0.5*(window.innerHeight/464)*(700/window.innerWidth));
+        this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*360/Math.PI;
+        this._projection.originX = (0.5 - 0.5*(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth));
     }
 
 }
