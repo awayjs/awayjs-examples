@@ -175,7 +175,7 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        loader.load(new URLRequest("assets/AWD3/CheckDisplaySize.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"), null, null, new AWDParser(this._view));
 
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
@@ -216,11 +216,6 @@ class AWD3ViewerMinimal
 
         if(event.asset.isAsset(TextField)){
             var one_textfield:TextField=<TextField> event.asset;
-            if (one_textfield.name == "language_btn_tf" || one_textfield.name == "flag") {
-                console.log("NAME:", one_textfield.name)
-                one_textfield.mouseEnabled = false;
-                one_textfield.mouseChildren = false;
-            }
             //this.loaded_display_objects.push(one_textfield);
             //console.log("orginal textfield_text = "+one_textfield.text);
             //one_textfield.text="new text";
@@ -235,16 +230,6 @@ class AWD3ViewerMinimal
             //this.loaded_display_objects.push(one_billboard);
         }
         else if(event.asset.isAsset(MovieClip)) {
-            var one_mc:MovieClip = <MovieClip> event.asset;
-            if (one_mc.name == "border" || one_mc.name == "dream"
-                || one_mc.name == "IAP Menu"
-                || one_mc.name == "language flag"
-                || one_mc.name == "shoptag_shapes"
-                || one_mc.name == "shoptag_cliffedges") {
-                console.log("NAME:", one_mc.name)
-                one_mc.mouseEnabled = false;
-                one_mc.mouseChildren = false;
-            }
             this._rootTimeLine = one_mc;
         }
     }

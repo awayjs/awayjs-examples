@@ -52,9 +52,8 @@ import View							= require("awayjs-display/lib/containers/View");
 import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Loader						= require("awayjs-display/lib/containers/Loader");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import RenderableNullSort			= require("awayjs-display/lib/sort/RenderableNullSort");
+
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -153,22 +152,42 @@ class Graphics_Drawing
 		var root_timeline:MovieClip=new MovieClip();
 		root_timeline.partition=new SceneGraphPartition();
 		root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
-		var drawingMC:MovieClip = new MovieClip();
-		//Graphics._tess_obj=new TESS();
-		var new_ct:ColorTransform = drawingMC._iColorTransform || (drawingMC._iColorTransform = new ColorTransform());
-		new_ct.alphaMultiplier = 0.5;
-		drawingMC.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
 
-		drawingMC.graphics.beginFill(0xFF0000, 1);
-		drawingMC.graphics.lineStyle(10,0x000000, 1);
-		drawingMC.graphics.moveTo(100, 100);
-		drawingMC.graphics.lineTo(300, 100);
-		//new_graphics_mesh.curveTo(250, 200, 300, 300);
-		drawingMC.graphics.lineTo(300, 300);
-		drawingMC.graphics.lineTo(100, 300);
-		//new_graphics_mesh.lineTo(100, 100);
-		drawingMC.graphics.curveTo(0, 200, 100, 100);
-		drawingMC.graphics.endFill();
+		// Graphics is not wired into any Displayobjects yet.
+		// to have it produce geometry, for now we have to pass it a mesh when constructing it
+		var drawingMC = new Mesh(null);
+		var drawingGraphics = new Graphics(drawingMC);
+
+		// for now i did not find a way to activate this other than doing it in js (not in ts)
+		// so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
+		//Graphics._tess_obj=new TESS();
+
+		// color do not work yet
+		drawingGraphics.beginFill(0xFF0000, 1);
+
+		// strokes not at a showable state yet
+		//drawingGraphics.lineStyle(10, 0x000000, 1);
+
+		// draw some shape
+		drawingGraphics.moveTo(100, 100);
+		drawingGraphics.lineTo(200, 100);
+		drawingGraphics.lineTo(200, 200);
+		drawingGraphics.curveTo(150, 150, 100, 200);
+		drawingGraphics.curveTo(0, 150, 100, 100);
+		// draw a hole into the shape:
+		drawingGraphics.moveTo(110, 110);
+		drawingGraphics.lineTo(130, 110);
+		drawingGraphics.lineTo(130, 130);
+		drawingGraphics.lineTo(110, 130);
+		drawingGraphics.moveTo(110, 110);
+
+		drawingGraphics.beginFill(0xFF0000, 1);
+		drawingGraphics.drawCircle(300, 150, 80);
+		drawingGraphics.drawCircle(550, 150, 160);
+		drawingGraphics.drawRect(100, 250, 50, 50);
+		drawingGraphics.drawRoundRect(100, 350, 200, 100, 20);
+		drawingGraphics.drawEllipse(550, 400, 200, 100);
+		drawingGraphics.endFill();
 
 		this._view.scene.addChild(drawingMC);
 

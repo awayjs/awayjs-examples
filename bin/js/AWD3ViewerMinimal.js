@@ -112,7 +112,7 @@ var AWD3ViewerMinimal = (function () {
         //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
-        loader.load(new URLRequest("assets/AWD3/CheckDisplaySize.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
         //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
