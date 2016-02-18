@@ -55,6 +55,7 @@ import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import EffectEnvMapMethod			= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Basic_SkyBox
 {
@@ -129,8 +130,7 @@ class Basic_SkyBox
 	 */
 	private initObjects():void
 	{
-		this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
-		this._torus.material = this._torusMaterial;
+		this._torus = <Mesh> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.debugVisible = true;
 		this._view.scene.addChild(this._torus);
 	}

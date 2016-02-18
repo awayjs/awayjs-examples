@@ -62,6 +62,7 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 
 import Max3DSParser					= require("awayjs-parsers/lib/Max3DSParser");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Basic_Load3DS
 {
@@ -163,9 +164,8 @@ class Basic_Load3DS
 		this._loader.z = -200;
 		this._view.scene.addChild(this._loader);
 
-		this._plane = new PrimitivePlanePrefab(1000, 1000)
+		this._plane = new PrimitivePlanePrefab(this._groundMaterial, ElementsType.TRIANGLE, 1000, 1000);
 		this._ground = <Mesh> this._plane.getNewObject();
-		this._ground.material = this._groundMaterial;
 		this._ground.castsShadows = false;
 		this._view.scene.addChild(this._ground);
 	}

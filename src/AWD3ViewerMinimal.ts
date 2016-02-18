@@ -69,6 +69,8 @@ import Camera								= require("awayjs-display/lib/entities/Camera");
 
 import TextField							= require("awayjs-display/lib/entities/TextField");
 import TextFormat							= require("awayjs-display/lib/text/TextFormat");
+import BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
+import TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 
 class AWD3ViewerMinimal
 {
@@ -213,7 +215,6 @@ class AWD3ViewerMinimal
      */
     private onAssetComplete(event: AssetEvent): void
     {
-
         if(event.asset.isAsset(TextField)){
             var one_textfield:TextField=<TextField> event.asset;
             //this.loaded_display_objects.push(one_textfield);
@@ -222,7 +223,10 @@ class AWD3ViewerMinimal
         }
         else if(event.asset.isAsset(Mesh)) {
             var one_mesh:Mesh = <Mesh> event.asset;
-            //one_mesh.debugVisible = true;
+            one_mesh.debugVisible = true;
+            //one_mesh.material = new BasicMaterial(0xFF0000);
+            //one_mesh.material.alphaBlending = false;
+            this._view.scene.addChild(one_mesh);
             //this.loaded_display_objects.push(one_mesh);
         }
         else if(event.asset.isAsset(Billboard)) {

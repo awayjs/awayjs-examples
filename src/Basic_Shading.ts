@@ -63,6 +63,7 @@ import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 /**
  *
@@ -192,32 +193,28 @@ class Basic_Shading
 	 */
 	private initObjects():void
 	{
-		this._plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
-		this._plane.material = this._planeMaterial;
-		this._plane.geometry.scaleUV(2, 2);
+		this._plane = <Mesh> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+		this._plane.graphics.scaleUV(2, 2);
 		this._plane.y = -20;
 
 		this._scene.addChild(this._plane);
 
-		this._sphere = <Mesh> new PrimitiveSpherePrefab(150, 40, 20).getNewObject();
-		this._sphere.material = this._sphereMaterial;
+		this._sphere = <Mesh> new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
 		this._sphere.x = 300;
 		this._sphere.y = 160;
 		this._sphere.z = 300;
 
 		this._scene.addChild(this._sphere);
 
-		this._cube = <Mesh> new PrimitiveCubePrefab(200, 200, 200, 1, 1, 1, false).getNewObject();
-		this._cube.material = this._cubeMaterial;
+		this._cube = <Mesh> new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
 		this._cube.x = 300;
 		this._cube.y = 160;
 		this._cube.z = -250;
 
 		this._scene.addChild(this._cube);
 
-		this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
-		this._torus.material = this._torusMaterial;
-		this._torus.geometry.scaleUV(10, 5);
+		this._torus = <Mesh> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
+		this._torus.graphics.scaleUV(10, 5);
 		this._torus.x = -250;
 		this._torus.y = 160;
 		this._torus.z = -250;

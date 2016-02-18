@@ -3,7 +3,7 @@ import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
 import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
+import Matrix				       	= require("awayjs-core/lib/geom/Matrix");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import Loader			        	= require("awayjs-core/lib/library/Loader");
@@ -34,6 +34,7 @@ import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/Spec
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import OBJParser					= require("awayjs-parsers/lib/OBJParser");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class AircraftDemo
 {
@@ -178,11 +179,10 @@ class AircraftDemo
         this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(new SingleCubeTexture(this._skyboxImageCube)));
         this._seaMaterial.specularMethod = fresnelMethod;
         
-        this._seaGeom = new PrimitivePlanePrefab( 50000, 50000, 1, 1, true, false );
+        this._seaGeom = new PrimitivePlanePrefab(this._seaMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1, true, false );
         this._seaMesh = <Mesh> this._seaGeom.getNewObject();
-        this._seaGeom.geometry.scaleUV( 100, 100 );
-        this._seaMesh.subMeshes[0].uvTransform = new UVTransform();
-        this._seaMesh.material = this._seaMaterial;
+        this._seaMesh.graphics.scaleUV( 100, 100 );
+        this._seaMesh.uvTransform = new Matrix();
         this._view.scene.addChild( new Skybox(this._skyboxImageCube));
         this._view.scene.addChild( this._seaMesh );
     }
@@ -256,7 +256,7 @@ class AircraftDemo
         }
         
         if (this._seaMaterial) {
-            this._seaMesh.subMeshes[0].uvTransform.offsetV -= 0.04;
+            this._seaMesh.uvTransform.ty -= 0.04;
             
             /*
              this.waterMethod.water1OffsetX += .001;

@@ -17,11 +17,12 @@ import Mesh							= require("awayjs-display/lib/entities/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
+import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class CubePrimitive
 {
@@ -41,7 +42,6 @@ class CubePrimitive
 		this.initView();
 		this.initCamera();
 		this.initLights();
-		this.initGeometry();
 		this.loadResources();
 	}
 
@@ -55,20 +55,6 @@ class CubePrimitive
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;
 		this._view.camera.z = 0;
-	}
-
-	/**
-	 *
-	 */
-	private initGeometry():void
-	{
-		this._cube = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-		this._torus = new PrimitiveTorusPrefab(150, 80, 32, 16, true);
-
-		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh2 = <Mesh> this._cube.getNewObject();
-		this._mesh2.x = 130;
-		this._mesh2.z = 40;
 	}
 
 	/**
@@ -102,12 +88,6 @@ class CubePrimitive
 	 */
 	private loadResources()
 	{
-		window.onresize = (event:UIEvent) => this.onResize(event);
-		this.onResize();
-
-		this._raf = new RequestAnimationFrame(this.render, this);
-		this._raf.start();
-
 		var urlRequest:URLRequest = new URLRequest("assets/spacy_texture.png");
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
@@ -141,11 +121,22 @@ class CubePrimitive
 		matTx.bothSides = true;
 		matTx.lightPicker = this._lightPicker;
 
-		this._mesh.material = matTx;
-		this._mesh2.material = matTx;
+		this._cube = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
+		this._torus = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
+
+		this._mesh = <Mesh> this._torus.getNewObject();
+		this._mesh2 = <Mesh> this._cube.getNewObject();
+		this._mesh2.x = 130;
+		this._mesh2.z = 40;
 
 		this._view.scene.addChild(this._mesh);
 		this._view.scene.addChild(this._mesh2);
+
+		this._raf = new RequestAnimationFrame(this.render, this);
+		this._raf.start();
+
+		window.onresize = (event:UIEvent) => this.onResize(event);
+		this.onResize();
     }
 
 	/**

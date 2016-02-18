@@ -57,6 +57,7 @@ import ContextMode					= require("awayjs-stagegl/lib/base/ContextMode");
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Basic_View
 {
@@ -89,8 +90,7 @@ class Basic_View
 		this._planeMaterial = new MethodMaterial();
 
 		//setup the scene
-		this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();
-		this._plane.material = this._planeMaterial;
+		this._plane = <Mesh> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
 		this._view.scene.addChild(this._plane);
 
 		//setup the render loop

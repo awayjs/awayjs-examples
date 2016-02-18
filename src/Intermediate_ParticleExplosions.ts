@@ -47,7 +47,7 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import Geometry						= require("awayjs-display/lib/base/Geometry");
+import Graphics						= require("awayjs-display/lib/graphics/Graphics");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
@@ -60,7 +60,6 @@ import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePla
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 import Cast							= require("awayjs-display/lib/utils/Cast");
 
-import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
 import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
 import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
@@ -71,10 +70,11 @@ import ParticleInitialColorNode		= require("awayjs-renderergl/lib/animators/node
 import ParticlePositionNode			= require("awayjs-renderergl/lib/animators/nodes/ParticlePositionNode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
+import ParticleGraphicsHelper		= require("awayjs-renderergl/lib/utils/ParticleGraphicsHelper");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Intermediate_ParticleExplosions
 {
@@ -107,7 +107,7 @@ class Intermediate_ParticleExplosions
 	private colorMaterial:MethodMaterial;
 	
 	//particle objects
-	private colorGeometry:ParticleGeometry;
+	private colorGraphics:Graphics;
 	private colorAnimationSet:ParticleAnimationSet;
 	
 	//scene objects
@@ -262,19 +262,6 @@ class Intermediate_ParticleExplosions
 			}
 		}
 
-		var num:number /*uint*/ = this.colorPoints.length;
-		
-		//setup the base geometry for one particle
-		var plane:PrimitivePlanePrefab = new PrimitivePlanePrefab(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
-		
-		//combine them into a list
-		var colorGeometrySet:Array<Geometry> = new Array<Geometry>();
-		for (i = 0; i < num; i++)
-			colorGeometrySet.push(plane.geometry);
-		
-		//generate the particle geometries
-		this.colorGeometry = ParticleGeometryHelper.generateGeometry(colorGeometrySet);
-
 		//define the particle animations and init function
 		this.colorAnimationSet = new ParticleAnimationSet();
 		this.colorAnimationSet.addAnimation(new ParticleBillboardNode());
@@ -290,11 +277,23 @@ class Intermediate_ParticleExplosions
 	 */
 	private initObjects():void
 	{
+		//setup the base graphics for one particle
+		var plane:Mesh = <Mesh> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false)).getNewObject();
+
+		//combine them into a list
+		var colorGraphicsSet:Array<Graphics> = new Array<Graphics>();
+		var len:number /*uint*/ = this.colorPoints.length;
+		for (i = 0; i < len; i++)
+			colorGraphicsSet.push(plane.graphics);
+
+		//create the particle mesh
+		this.colorParticleMesh = new Mesh(this.colorMaterial);
+
+		//generate the particle geometries
+		ParticleGraphicsHelper.generateGraphics(this.colorParticleMesh.graphics, colorGraphicsSet);
+		
 		//initialise animators vectors
 		this.colorAnimators = new Array<ParticleAnimator>(Intermediate_ParticleExplosions.NUM_ANIMATORS);
-		
-		//create the particle mesh
-		this.colorParticleMesh = new Mesh(this.colorGeometry, this.colorMaterial);
 		
 		var i:number /*uint*/ = 0;
 		for (i=0; i<Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {

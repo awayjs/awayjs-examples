@@ -53,7 +53,7 @@ import BlendMode						= require("awayjs-core/lib/image/BlendMode");
 import URLLoaderEvent					= require("awayjs-core/lib/events/URLLoaderEvent");
 import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
-import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
+import Matrix							= require("awayjs-core/lib/geom/Matrix");
 import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
 import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
 import LoaderContext					= require("awayjs-core/lib/library/LoaderContext");
@@ -67,8 +67,8 @@ import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimation
 import LoaderContainer					= require("awayjs-display/lib/containers/LoaderContainer");
 import View								= require("awayjs-display/lib/containers/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
-import Geometry							= require("awayjs-display/lib/base/Geometry");
+import Graphic							= require("awayjs-display/lib/graphics/Graphic");
+import Graphics							= require("awayjs-display/lib/graphics/Graphics");
 import Mesh								= require("awayjs-display/lib/entities/Mesh");
 import Skybox							= require("awayjs-display/lib/entities/Skybox");
 import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
@@ -91,6 +91,7 @@ import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/Shadow
 import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
 
 import AWDParser						= require("awayjs-parsers/lib/AWDParser");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Advanced_MultiPassSponzaDemo
 {
@@ -156,7 +157,7 @@ class Advanced_MultiPassSponzaDemo
 	
 	//scene variables
 	private _meshes:Array<Mesh> = new Array<Mesh>();
-	private _flameGeometry:PrimitivePlanePrefab;
+	private _flameGraphics:PrimitivePlanePrefab;
 			
 	//rotation variables
 	private _move:boolean = false;
@@ -280,16 +281,15 @@ class Advanced_MultiPassSponzaDemo
 		this._view.scene.addChild(new Skybox(this._skyMap));
 		
 		//create flame meshes
-		this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
+		this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
 		var flameVO:FlameVO;
 		var len:number = this._flameData.length;
 		for (var i:number = 0; i < len; i++) {
 			flameVO = this._flameData[i];
-			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGeometry.getNewObject();
-			mesh.material = this._flameMaterial;
+			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGraphics.getNewObject();
 			mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			mesh.subMeshes[0].uvTransform = new UVTransform();
-			mesh.subMeshes[0].uvTransform.scaleU = 1/16;
+			mesh.graphics.getGraphicAt(0).uvTransform = new Matrix();
+			mesh.graphics.getGraphicAt(0).uvTransform.scale(1/16, 1);
 			this._view.scene.addChild(mesh);
 			mesh.addChild(flameVO.light);
 		}
@@ -579,7 +579,7 @@ class Advanced_MultiPassSponzaDemo
 				} else {
 					this.colMeshes.push(mesh);
 					var colMerge:Merge = new Merge();
-					var colMesh:Mesh = new Mesh(new Geometry());
+					var colMesh:Mesh = new Mesh();
 					colMerge.applyToMeshes(colMesh, this.colMeshes);
 					mesh = colMesh;
 					this.colMeshes = new Array<Mesh>();
@@ -594,7 +594,7 @@ class Advanced_MultiPassSponzaDemo
 				} else {
 					this.vaseMeshes.push(mesh);
 					var vaseMerge:Merge = new Merge();
-					var vaseMesh:Mesh = new Mesh(new Geometry());
+					var vaseMesh:Mesh = new Mesh();
 					vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
 					mesh = vaseMesh;
 					this.vaseMeshes = new Array<Mesh>();
@@ -609,7 +609,7 @@ class Advanced_MultiPassSponzaDemo
 				} else if (poleNum >=0) {
 					this.poleMeshes.push(mesh);
 					var poleMerge:Merge = new Merge();
-					var poleMesh:Mesh = new Mesh(new Geometry());
+					var poleMesh:Mesh = new Mesh();
 					poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
 					mesh = poleMesh;
 					this.poleMeshes = new Array<Mesh>();
@@ -800,9 +800,9 @@ class Advanced_MultiPassSponzaDemo
 			if (!mesh)
 				continue;
 			
-			var subMesh:ISubMesh = mesh.subMeshes[0];
-			subMesh.uvTransform.offsetU += 1/16;
-			subMesh.uvTransform.offsetU %= 1;
+			var graphic:Graphic = mesh.graphics.getGraphicAt(0);
+			graphic.uvTransform.tx += 1/16;
+			graphic.uvTransform.tx %= 1;
 			mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;
 		}
 

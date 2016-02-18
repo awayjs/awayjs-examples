@@ -68,6 +68,7 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import ShadowFilteredMethod			= require("awayjs-methodmaterials/lib/methods/ShadowFilteredMethod");
 
 import MD2Parser					= require("awayjs-parsers/lib/MD2Parser");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Intermediate_PerelithKnight
 {
@@ -196,9 +197,8 @@ class Intermediate_PerelithKnight
         }
 
         //setup the floor
-        this._floor = <Mesh> new PrimitivePlanePrefab(5000, 5000).getNewObject();
-        this._floor.material = this._floorMaterial;
-        this._floor.geometry.scaleUV(5, 5);
+        this._floor = <Mesh> new PrimitivePlanePrefab(this._floorMaterial, ElementsType.TRIANGLE, 5000, 5000).getNewObject();
+        this._floor.graphics.scaleUV(5, 5);
 
         //setup the scene
         this._view.scene.addChild(this._floor);

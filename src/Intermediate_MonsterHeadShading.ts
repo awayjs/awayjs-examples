@@ -360,7 +360,7 @@ class Intermediate_MonsterHeadShading
 	{
 		if (event.asset.isAsset(Mesh)) {
 			this._headModel = <Mesh> event.asset;
-			this._headModel.geometry.scale(4);
+			this._headModel.graphics.scale(4);
 			this._headModel.y = -20;
 			this._scene.addChild(this._headModel);
 		}
@@ -408,9 +408,9 @@ class Intermediate_MonsterHeadShading
 		this._headMaterial.specularMethod.gloss = 10;
 
 		//apply material to head model
-		var len:number = this._headModel.subMeshes.length;
+		var len:number = this._headModel.graphics.count;
 		for (var i:number = 0; i < len; i++)
-			this._headModel.subMeshes[i].material = this._headMaterial;
+			this._headModel.graphics.getGraphicAt(i).material = this._headMaterial;
 
 		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 

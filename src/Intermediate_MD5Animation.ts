@@ -44,7 +44,7 @@ import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
+import Matrix					= require("awayjs-core/lib/geom/Matrix");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
@@ -85,6 +85,7 @@ import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowS
 
 import MD5AnimParser				= require("awayjs-parsers/lib/MD5AnimParser");
 import MD5MeshParser				= require("awayjs-parsers/lib/MD5MeshParser");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Intermediate_MD5Animation
 {
@@ -300,9 +301,8 @@ class Intermediate_MD5Animation
 		AssetLibrary.enableParser(MD5AnimParser);
 
 		//create a rocky ground plane
-		this.ground = <Mesh> new PrimitivePlanePrefab(50000, 50000, 1, 1).getNewObject();
-		this.ground.material = this.groundMaterial;
-		this.ground.geometry.scaleUV(200, 200);
+		this.ground = <Mesh> new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+		this.ground.graphics.scaleUV(200, 200);
 		this.ground.castsShadows = false;
 		this.scene.addChild(this.ground);
 	}
@@ -360,7 +360,7 @@ class Intermediate_MD5Animation
 
 		//update character animation
 		if (this.mesh) {
-			this.mesh.subMeshes[1].uvTransform.offsetV = this.mesh.subMeshes[2].uvTransform.offsetV = this.mesh.subMeshes[3].uvTransform.offsetV = (-this._time/2000 % 1);
+			this.mesh.graphics.getGraphicAt(1).uvTransform.ty = this.mesh.graphics.getGraphicAt(2).uvTransform.ty = this.mesh.graphics.getGraphicAt(3).uvTransform.ty = (-this._time/2000 % 1);
 			this.mesh.rotationY += this.currentRotationInc;
 		}
 
@@ -410,11 +410,11 @@ class Intermediate_MD5Animation
 		} else if (event.asset.isAsset(Mesh)) {
 			//grab mesh object and assign our material object
 			this.mesh = <Mesh> event.asset;
-			this.mesh.subMeshes[0].material = this.bodyMaterial;
-			this.mesh.subMeshes[1].material = this.mesh.subMeshes[2].material = this.mesh.subMeshes[3].material = this.gobMaterial;
+			this.mesh.graphics.getGraphicAt(0).material = this.bodyMaterial;
+			this.mesh.graphics.getGraphicAt(1).material = this.mesh.graphics.getGraphicAt(2).material = this.mesh.graphics.getGraphicAt(3).material = this.gobMaterial;
 			this.mesh.castsShadows = true;
 			this.mesh.rotationY = 180;
-			this.mesh.subMeshes[1].uvTransform = this.mesh.subMeshes[2].uvTransform = this.mesh.subMeshes[3].uvTransform = new UVTransform();
+			this.mesh.graphics.getGraphicAt(1).uvTransform = this.mesh.graphics.getGraphicAt(2).uvTransform = this.mesh.graphics.getGraphicAt(3).uvTransform = new Matrix();
 			this.scene.addChild(this.mesh);
 
 			//add our lookat object to the mesh
@@ -465,7 +465,7 @@ class Intermediate_MD5Animation
 				this.bodyMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.bodyMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}

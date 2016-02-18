@@ -51,7 +51,7 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 import Timer						= require("awayjs-core/lib/utils/Timer");
 
-import Geometry						= require("awayjs-display/lib/base/Geometry");
+import Graphics						= require("awayjs-display/lib/graphics/Graphics");
 import Scene						= require("awayjs-display/lib/containers/Scene");
 import View							= require("awayjs-display/lib/containers/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
@@ -72,13 +72,13 @@ import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/P
 import ParticleScaleNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleScaleNode");
 import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode");
 import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
-import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
+import ParticleGraphicsHelper		= require("awayjs-renderergl/lib/utils/ParticleGraphicsHelper");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Basic_Fire
 {
@@ -100,7 +100,7 @@ class Basic_Fire
 
 	//particle objects
 	private fireAnimationSet:ParticleAnimationSet;
-	private particleGeometry:ParticleGeometry;
+	private particleMesh:Mesh;
 	private fireTimer:Timer;
 
 	//scene objects
@@ -215,14 +215,15 @@ class Basic_Fire
 		this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
 		//create the original particle geometry
-		var particle:PrimitivePlanePrefab = new PrimitivePlanePrefab(10, 10, 1, 1, false);
+		var particle:Mesh = <Mesh> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
 
 		//combine them into a list
-		var geometrySet:Array<Geometry> = new Array<Geometry>();
+		var graphicsSet:Array<Graphics> = new Array<Graphics>();
 		for (var i:number /*int*/ = 0; i < 500; i++)
-			geometrySet.push(particle.geometry);
+			graphicsSet.push(particle.graphics);
 
-		this.particleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
+		this.particleMesh = new Mesh(this.particleMaterial);
+		ParticleGraphicsHelper.generateGraphics(this.particleMesh.graphics, graphicsSet);
 	}
 
 	/**
@@ -230,16 +231,16 @@ class Basic_Fire
 	 */
 	private initObjects():void
 	{
-		this.plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
+		this.plane = <Mesh> new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 		this.plane.material = this.planeMaterial;
-		this.plane.geometry.scaleUV(2, 2);
+		this.plane.graphics.scaleUV(2, 2);
 		this.plane.y = -20;
 
 		this.scene.addChild(this.plane);
 
 		//create fire object meshes from geomtry and material, and apply particle animators to each
 		for (var i:number /*int*/ = 0; i < Basic_Fire.NUM_FIRES; i++) {
-			var particleMesh:Mesh = new Mesh(this.particleGeometry, this.particleMaterial);
+			var particleMesh:Mesh = this.particleMesh.clone();
 			var animator:ParticleAnimator = new ParticleAnimator(this.fireAnimationSet);
 			particleMesh.animator = animator;
 

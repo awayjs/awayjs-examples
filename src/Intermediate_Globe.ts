@@ -79,6 +79,7 @@ import DiffuseBasicMethod			= require("awayjs-methodmaterials/lib/methods/Diffus
 import SpecularBasicMethod			= require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
 import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
 import SpecularPhongMethod			= require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Intermediate_Globe
 {
@@ -287,14 +288,11 @@ class Intermediate_Globe
 		this.sun.x = 10000;
 		this.orbitContainer.addChild(this.sun);
 
-		this.earth = <Mesh> new PrimitiveSpherePrefab(200, 200, 100).getNewObject();
-		this.earth.material = this.groundMaterial;
+		this.earth = <Mesh> new PrimitiveSpherePrefab(this.groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
 
-		this.clouds = <Mesh> new PrimitiveSpherePrefab(202, 200, 100).getNewObject();
-		this.clouds.material = this.cloudMaterial;
+		this.clouds = <Mesh> new PrimitiveSpherePrefab(this.cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
 
-		this.atmosphere = <Mesh> new PrimitiveSpherePrefab(210, 200, 100).getNewObject();
-		this.atmosphere.material = this.atmosphereMaterial;
+		this.atmosphere = <Mesh> new PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
 		this.atmosphere.scaleX = -1;
 
 		this.tiltContainer = new DisplayObjectContainer();
