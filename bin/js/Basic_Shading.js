@@ -55,6 +55,7 @@ var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPre
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 /**
  *
  */
@@ -131,26 +132,22 @@ var Basic_Shading = (function () {
      * Initialise the scene objects
      */
     Basic_Shading.prototype.initObjects = function () {
-        this._plane = new PrimitivePlanePrefab(1000, 1000).getNewObject();
-        this._plane.material = this._planeMaterial;
-        this._plane.geometry.scaleUV(2, 2);
+        this._plane = new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+        this._plane.graphics.scaleUV(2, 2);
         this._plane.y = -20;
         this._scene.addChild(this._plane);
-        this._sphere = new PrimitiveSpherePrefab(150, 40, 20).getNewObject();
-        this._sphere.material = this._sphereMaterial;
+        this._sphere = new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
         this._sphere.x = 300;
         this._sphere.y = 160;
         this._sphere.z = 300;
         this._scene.addChild(this._sphere);
-        this._cube = new PrimitiveCubePrefab(200, 200, 200, 1, 1, 1, false).getNewObject();
-        this._cube.material = this._cubeMaterial;
+        this._cube = new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
         this._cube.x = 300;
         this._cube.y = 160;
         this._cube.z = -250;
         this._scene.addChild(this._cube);
-        this._torus = new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
-        this._torus.material = this._torusMaterial;
-        this._torus.geometry.scaleUV(10, 5);
+        this._torus = new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
+        this._torus.graphics.scaleUV(10, 5);
         this._torus.x = -250;
         this._torus.y = 160;
         this._torus.z = -250;
@@ -287,7 +284,7 @@ window.onload = function () {
     new Basic_Shading();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Shading.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Shading.ts"])
 
 
 //# sourceMappingURL=Basic_Shading.js.map

@@ -154,6 +154,10 @@ var AWD3ViewerMinimal = (function () {
         }
         else if (event.asset.isAsset(Mesh)) {
             var one_mesh = event.asset;
+            one_mesh.debugVisible = true;
+            //one_mesh.material = new BasicMaterial(0xFF0000);
+            //one_mesh.material.alphaBlending = false;
+            this._view.scene.addChild(one_mesh);
         }
         else if (event.asset.isAsset(Billboard)) {
             var one_billboard = event.asset;

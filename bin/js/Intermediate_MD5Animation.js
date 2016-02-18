@@ -41,7 +41,7 @@ THE SOFTWARE.
 var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
-var UVTransform = require("awayjs-core/lib/geom/UVTransform");
+var Matrix = require("awayjs-core/lib/geom/Matrix");
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
@@ -72,6 +72,7 @@ var ShadowNearMethod = require("awayjs-methodmaterials/lib/methods/ShadowNearMet
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 var MD5AnimParser = require("awayjs-parsers/lib/MD5AnimParser");
 var MD5MeshParser = require("awayjs-parsers/lib/MD5MeshParser");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Intermediate_MD5Animation = (function () {
     /**
      * Constructor
@@ -210,9 +211,8 @@ var Intermediate_MD5Animation = (function () {
         AssetLibrary.enableParser(MD5MeshParser);
         AssetLibrary.enableParser(MD5AnimParser);
         //create a rocky ground plane
-        this.ground = new PrimitivePlanePrefab(50000, 50000, 1, 1).getNewObject();
-        this.ground.material = this.groundMaterial;
-        this.ground.geometry.scaleUV(200, 200);
+        this.ground = new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+        this.ground.graphics.scaleUV(200, 200);
         this.ground.castsShadows = false;
         this.scene.addChild(this.ground);
     };
@@ -257,7 +257,7 @@ var Intermediate_MD5Animation = (function () {
         this.cameraController.update();
         //update character animation
         if (this.mesh) {
-            this.mesh.subMeshes[1].uvTransform.offsetV = this.mesh.subMeshes[2].uvTransform.offsetV = this.mesh.subMeshes[3].uvTransform.offsetV = (-this._time / 2000 % 1);
+            this.mesh.graphics.getGraphicAt(1).uvTransform.ty = this.mesh.graphics.getGraphicAt(2).uvTransform.ty = this.mesh.graphics.getGraphicAt(3).uvTransform.ty = (-this._time / 2000 % 1);
             this.mesh.rotationY += this.currentRotationInc;
         }
         this.count += 0.01;
@@ -302,11 +302,11 @@ var Intermediate_MD5Animation = (function () {
         else if (event.asset.isAsset(Mesh)) {
             //grab mesh object and assign our material object
             this.mesh = event.asset;
-            this.mesh.subMeshes[0].material = this.bodyMaterial;
-            this.mesh.subMeshes[1].material = this.mesh.subMeshes[2].material = this.mesh.subMeshes[3].material = this.gobMaterial;
+            this.mesh.graphics.getGraphicAt(0).material = this.bodyMaterial;
+            this.mesh.graphics.getGraphicAt(1).material = this.mesh.graphics.getGraphicAt(2).material = this.mesh.graphics.getGraphicAt(3).material = this.gobMaterial;
             this.mesh.castsShadows = true;
             this.mesh.rotationY = 180;
-            this.mesh.subMeshes[1].uvTransform = this.mesh.subMeshes[2].uvTransform = this.mesh.subMeshes[3].uvTransform = new UVTransform();
+            this.mesh.graphics.getGraphicAt(1).uvTransform = this.mesh.graphics.getGraphicAt(2).uvTransform = this.mesh.graphics.getGraphicAt(3).uvTransform = new Matrix();
             this.scene.addChild(this.mesh);
             //add our lookat object to the mesh
             this.mesh.addChild(this.placeHolder);
@@ -346,7 +346,7 @@ var Intermediate_MD5Animation = (function () {
                 this.bodyMaterial.specularMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
             case "assets/hellknight/gob.png":
-                this.bodyMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
+                this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(event.assets[0]);
                 break;
         }
     };
@@ -490,7 +490,7 @@ window.onload = function () {
     new Intermediate_MD5Animation();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
 
 
 //# sourceMappingURL=Intermediate_MD5Animation.js.map

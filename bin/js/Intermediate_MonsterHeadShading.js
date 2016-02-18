@@ -265,7 +265,7 @@ var Intermediate_MonsterHeadShading = (function () {
     Intermediate_MonsterHeadShading.prototype.onAssetComplete = function (event) {
         if (event.asset.isAsset(Mesh)) {
             this._headModel = event.asset;
-            this._headModel.geometry.scale(4);
+            this._headModel.graphics.scale(4);
             this._headModel.y = -20;
             this._scene.addChild(this._headModel);
         }
@@ -293,6 +293,7 @@ var Intermediate_MonsterHeadShading = (function () {
         this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
         this._headMaterial.lightPicker = this._lightPicker;
         this._headMaterial.style.color = 0x303040;
+        this._headMaterial.diffuseMethod.multiply = false;
         // create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
         this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
         this._softShadowMethod.range = this._shadowRange; // the sample radius defines the softness of the shadows
@@ -306,9 +307,9 @@ var Intermediate_MonsterHeadShading = (function () {
         this._headMaterial.specularMethod.strength = 3;
         this._headMaterial.specularMethod.gloss = 10;
         //apply material to head model
-        var len = this._headModel.subMeshes.length;
+        var len = this._headModel.graphics.count;
         for (var i = 0; i < len; i++)
-            this._headModel.subMeshes[i].material = this._headMaterial;
+            this._headModel.graphics.getGraphicAt(i).material = this._headMaterial;
         AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
         //diffuse gradient texture
         AssetLibrary.load(new URLRequest("assets/diffuseGradient.jpg"));

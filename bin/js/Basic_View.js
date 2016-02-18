@@ -46,6 +46,7 @@ var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePre
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Basic_View = (function () {
     /**
      * Constructor
@@ -61,8 +62,7 @@ var Basic_View = (function () {
         //setup the materials
         this._planeMaterial = new MethodMaterial();
         //setup the scene
-        this._plane = new PrimitivePlanePrefab(700, 700).getNewObject();
-        this._plane.material = this._planeMaterial;
+        this._plane = new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
         this._view.scene.addChild(this._plane);
         //setup the render loop
         window.onresize = function (event) { return _this.onResize(event); };
@@ -112,7 +112,7 @@ window.onload = function () {
     new Basic_View();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_View.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_View.ts"])
 
 
 //# sourceMappingURL=Basic_View.js.map

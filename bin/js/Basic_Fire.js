@@ -67,7 +67,8 @@ var ParticleColorNode = require("awayjs-renderergl/lib/animators/nodes/ParticleC
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
 var MethodMaterialMode = require("awayjs-methodmaterials/lib/MethodMaterialMode");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
-var ParticleGeometryHelper = require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
+var ParticleGraphicsHelper = require("awayjs-renderergl/lib/utils/ParticleGraphicsHelper");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Basic_Fire = (function () {
     /**
      * Constructor
@@ -150,25 +151,26 @@ var Basic_Fire = (function () {
         //set the initParticleFunc. It will be invoked for the local static property initialization of every particle
         this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
         //create the original particle geometry
-        var particle = new PrimitivePlanePrefab(10, 10, 1, 1, false);
+        var particle = (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
         //combine them into a list
-        var geometrySet = new Array();
+        var graphicsSet = new Array();
         for (var i = 0; i < 500; i++)
-            geometrySet.push(particle.geometry);
-        this.particleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
+            graphicsSet.push(particle.graphics);
+        this.particleMesh = new Mesh(this.particleMaterial);
+        ParticleGraphicsHelper.generateGraphics(this.particleMesh.graphics, graphicsSet);
     };
     /**
      * Initialise the scene objects
      */
     Basic_Fire.prototype.initObjects = function () {
         var _this = this;
-        this.plane = new PrimitivePlanePrefab(1000, 1000).getNewObject();
+        this.plane = new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
         this.plane.material = this.planeMaterial;
-        this.plane.geometry.scaleUV(2, 2);
+        this.plane.graphics.scaleUV(2, 2);
         this.plane.y = -20;
         this.scene.addChild(this.plane);
         for (var i = 0; i < Basic_Fire.NUM_FIRES; i++) {
-            var particleMesh = new Mesh(this.particleGeometry, this.particleMaterial);
+            var particleMesh = this.particleMesh.clone();
             var animator = new ParticleAnimator(this.fireAnimationSet);
             particleMesh.animator = animator;
             //position the mesh
@@ -344,7 +346,7 @@ window.onload = function () {
     new Basic_Fire();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGeometryHelper":undefined}]},{},["./src/Basic_Fire.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":undefined}]},{},["./src/Basic_Fire.ts"])
 
 
 //# sourceMappingURL=Basic_Fire.js.map

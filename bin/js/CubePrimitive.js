@@ -16,12 +16,12 @@ var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefa
 var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var CubePrimitive = (function () {
     function CubePrimitive() {
         this.initView();
         this.initCamera();
         this.initLights();
-        this.initGeometry();
         this.loadResources();
     }
     /**
@@ -33,17 +33,6 @@ var CubePrimitive = (function () {
         this._view.camera.x = 130;
         this._view.camera.y = 0;
         this._view.camera.z = 0;
-    };
-    /**
-     *
-     */
-    CubePrimitive.prototype.initGeometry = function () {
-        this._cube = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-        this._torus = new PrimitiveTorusPrefab(150, 80, 32, 16, true);
-        this._mesh = this._torus.getNewObject();
-        this._mesh2 = this._cube.getNewObject();
-        this._mesh2.x = 130;
-        this._mesh2.z = 40;
     };
     /**
      *
@@ -71,10 +60,6 @@ var CubePrimitive = (function () {
      */
     CubePrimitive.prototype.loadResources = function () {
         var _this = this;
-        window.onresize = function (event) { return _this.onResize(event); };
-        this.onResize();
-        this._raf = new RequestAnimationFrame(this.render, this);
-        this._raf.start();
         var urlRequest = new URLRequest("assets/spacy_texture.png");
         var imgLoader = new URLLoader();
         imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
@@ -96,15 +81,24 @@ var CubePrimitive = (function () {
      * @param e
      */
     CubePrimitive.prototype.imageCompleteHandler = function (event) {
+        var _this = this;
         var matTx = new MethodMaterial(ParserUtils.imageToBitmapImage2D(this._image));
         matTx.style.sampler = new Sampler2D(true, true);
         matTx.blendMode = BlendMode.ADD;
         matTx.bothSides = true;
         matTx.lightPicker = this._lightPicker;
-        this._mesh.material = matTx;
-        this._mesh2.material = matTx;
+        this._cube = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
+        this._torus = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
+        this._mesh = this._torus.getNewObject();
+        this._mesh2 = this._cube.getNewObject();
+        this._mesh2.x = 130;
+        this._mesh2.z = 40;
         this._view.scene.addChild(this._mesh);
         this._view.scene.addChild(this._mesh2);
+        this._raf = new RequestAnimationFrame(this.render, this);
+        this._raf.start();
+        window.onresize = function (event) { return _this.onResize(event); };
+        this.onResize();
     };
     /**
      *
@@ -134,7 +128,7 @@ window.onload = function () {
     new CubePrimitive();
 };
 
-},{"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/CubePrimitive.ts"])
+},{"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/CubePrimitive.ts"])
 
 
 //# sourceMappingURL=CubePrimitive.js.map

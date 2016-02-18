@@ -51,7 +51,7 @@ var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
-var UVTransform = require("awayjs-core/lib/geom/UVTransform");
+var Matrix = require("awayjs-core/lib/geom/Matrix");
 var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
@@ -64,7 +64,6 @@ var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame
 var LoaderContainer = require("awayjs-display/lib/containers/LoaderContainer");
 var View = require("awayjs-display/lib/containers/View");
 var FirstPersonController = require("awayjs-display/lib/controllers/FirstPersonController");
-var Geometry = require("awayjs-display/lib/base/Geometry");
 var Mesh = require("awayjs-display/lib/entities/Mesh");
 var Skybox = require("awayjs-display/lib/entities/Skybox");
 var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
@@ -79,6 +78,7 @@ var MethodMaterialMode = require("awayjs-methodmaterials/lib/MethodMaterialMode"
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 var EffectFogMethod = require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Advanced_MultiPassSponzaDemo = (function () {
     /**
      * Constructor
@@ -205,16 +205,15 @@ var Advanced_MultiPassSponzaDemo = (function () {
         //create skybox
         this._view.scene.addChild(new Skybox(this._skyMap));
         //create flame meshes
-        this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
+        this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
         var flameVO;
         var len = this._flameData.length;
         for (var i = 0; i < len; i++) {
             flameVO = this._flameData[i];
-            var mesh = flameVO.mesh = this._flameGeometry.getNewObject();
-            mesh.material = this._flameMaterial;
+            var mesh = flameVO.mesh = this._flameGraphics.getNewObject();
             mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-            mesh.subMeshes[0].uvTransform = new UVTransform();
-            mesh.subMeshes[0].uvTransform.scaleU = 1 / 16;
+            mesh.graphics.getGraphicAt(0).uvTransform = new Matrix();
+            mesh.graphics.getGraphicAt(0).uvTransform.scale(1 / 16, 1);
             this._view.scene.addChild(mesh);
             mesh.addChild(flameVO.light);
         }
@@ -457,7 +456,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
                 else {
                     this.colMeshes.push(mesh);
                     var colMerge = new Merge();
-                    var colMesh = new Mesh(new Geometry());
+                    var colMesh = new Mesh();
                     colMerge.applyToMeshes(colMesh, this.colMeshes);
                     mesh = colMesh;
                     this.colMeshes = new Array();
@@ -472,7 +471,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
                 else {
                     this.vaseMeshes.push(mesh);
                     var vaseMerge = new Merge();
-                    var vaseMesh = new Mesh(new Geometry());
+                    var vaseMesh = new Mesh();
                     vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
                     mesh = vaseMesh;
                     this.vaseMeshes = new Array();
@@ -487,7 +486,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
                 else if (poleNum >= 0) {
                     this.poleMeshes.push(mesh);
                     var poleMerge = new Merge();
-                    var poleMesh = new Mesh(new Geometry());
+                    var poleMesh = new Mesh();
                     poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
                     mesh = poleMesh;
                     this.poleMeshes = new Array();
@@ -641,9 +640,9 @@ var Advanced_MultiPassSponzaDemo = (function () {
             var mesh = flameVO.mesh;
             if (!mesh)
                 continue;
-            var subMesh = mesh.subMeshes[0];
-            subMesh.uvTransform.offsetU += 1 / 16;
-            subMesh.uvTransform.offsetU %= 1;
+            var graphic = mesh.graphics.getGraphicAt(0);
+            graphic.uvTransform.tx += 1 / 16;
+            graphic.uvTransform.tx %= 1;
             mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z) * 180 / Math.PI;
         }
         this._view.render();
@@ -742,7 +741,7 @@ window.onload = function () {
     new Advanced_MultiPassSponzaDemo();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/UVTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/Geometry":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
 
 
 //# sourceMappingURL=Advanced_MultiPassSponzaDemo.js.map

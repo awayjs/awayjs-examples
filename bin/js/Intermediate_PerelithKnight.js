@@ -59,6 +59,7 @@ var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
 var ShadowFilteredMethod = require("awayjs-methodmaterials/lib/methods/ShadowFilteredMethod");
 var MD2Parser = require("awayjs-parsers/lib/MD2Parser");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Intermediate_PerelithKnight = (function () {
     /**
      * Constructor
@@ -138,9 +139,8 @@ var Intermediate_PerelithKnight = (function () {
             this._pKnightMaterials.push(knightMaterial);
         }
         //setup the floor
-        this._floor = new PrimitivePlanePrefab(5000, 5000).getNewObject();
-        this._floor.material = this._floorMaterial;
-        this._floor.geometry.scaleUV(5, 5);
+        this._floor = new PrimitivePlanePrefab(this._floorMaterial, ElementsType.TRIANGLE, 5000, 5000).getNewObject();
+        this._floor.graphics.scaleUV(5, 5);
         //setup the scene
         this._view.scene.addChild(this._floor);
         //add stats panel
@@ -338,7 +338,7 @@ window.onload = function () {
     new Intermediate_PerelithKnight();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
 
 
 //# sourceMappingURL=Intermediate_PerelithKnight.js.map

@@ -60,6 +60,7 @@ var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPre
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
 var OBJParser = require("awayjs-parsers/lib/OBJParser");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 /**
  *
  */
@@ -139,14 +140,12 @@ var Intermediate_MouseInteraction = (function () {
     Intermediate_MouseInteraction.prototype.initObjects = function () {
         var _this = this;
         // To trace mouse hit position.
-        this._pickingPositionTracer = new PrimitiveSpherePrefab(2).getNewObject();
-        this._pickingPositionTracer.material = new MethodMaterial(0x00FF00, 0.5);
+        this._pickingPositionTracer = new PrimitiveSpherePrefab(new MethodMaterial(0x00FF00, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
         this._pickingPositionTracer.visible = false;
         this._pickingPositionTracer.mouseEnabled = false;
         this._pickingPositionTracer.mouseChildren = false;
         this._scene.addChild(this._pickingPositionTracer);
-        this._scenePositionTracer = new PrimitiveSpherePrefab(2).getNewObject();
-        this._pickingPositionTracer.material = new MethodMaterial(0x0000FF, 0.5);
+        this._scenePositionTracer = new PrimitiveSpherePrefab(new MethodMaterial(0x0000FF, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
         this._scenePositionTracer.visible = false;
         this._scenePositionTracer.mouseEnabled = false;
         this._scene.addChild(this._scenePositionTracer);
@@ -191,10 +190,10 @@ var Intermediate_MouseInteraction = (function () {
         this._view.scene.addChild(model);
     };
     Intermediate_MouseInteraction.prototype.createABunchOfObjects = function () {
-        this._cubePrefab = new PrimitiveCubePrefab(25, 50, 25);
-        this._spherePrefab = new PrimitiveSpherePrefab(12);
-        this._cylinderPrefab = new PrimitiveCylinderPrefab(12, 12, 25);
-        this._torusPrefab = new PrimitiveTorusPrefab(12, 12);
+        this._cubePrefab = new PrimitiveCubePrefab(null, ElementsType.TRIANGLE, 25, 50, 25);
+        this._spherePrefab = new PrimitiveSpherePrefab(null, ElementsType.TRIANGLE, 12);
+        this._cylinderPrefab = new PrimitiveCylinderPrefab(null, ElementsType.TRIANGLE, 12, 12, 25);
+        this._torusPrefab = new PrimitiveTorusPrefab(null, ElementsType.TRIANGLE, 12, 12);
         for (var i = 0; i < 40; i++) {
             // Create object.
             var object = this.createSimpleObject();
@@ -488,7 +487,7 @@ window.onload = function () {
     new Intermediate_MouseInteraction();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
 
 
 //# sourceMappingURL=Intermediate_MouseInteraction.js.map
