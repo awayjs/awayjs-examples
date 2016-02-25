@@ -52,13 +52,13 @@ var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var Scene = require("awayjs-display/lib/containers/Scene");
-var View = require("awayjs-display/lib/containers/View");
+var Scene = require("awayjs-display/lib/display/Scene");
+var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
-var Camera = require("awayjs-display/lib/entities/Camera");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Camera = require("awayjs-display/lib/display/Camera");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var PointLight = require("awayjs-display/lib/display/PointLight");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
@@ -364,7 +364,7 @@ window.onload = function () {
     new Intermediate_MonsterHeadShading();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MonsterHeadShading.ts"])
 
 
 //# sourceMappingURL=Intermediate_MonsterHeadShading.js.map

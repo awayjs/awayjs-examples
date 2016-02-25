@@ -15329,15 +15329,15 @@ module.exports = getTimer;
 
 //# sourceMappingURL=awayjs-core.js.map
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./display.ts":[function(require,module,exports){
-var Camera = require("awayjs-display/lib/entities/Camera");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
-var Billboard = require("awayjs-display/lib/entities/Billboard");
-var LineSegment = require("awayjs-display/lib/entities/LineSegment");
-var TextField = require("awayjs-display/lib/entities/TextField");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
-var LightProbe = require("awayjs-display/lib/entities/LightProbe");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
+var Camera = require("awayjs-display/lib/display/Camera");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var Mesh = require("awayjs-display/lib/display/Mesh");
+var Billboard = require("awayjs-display/lib/display/Billboard");
+var LineSegment = require("awayjs-display/lib/display/LineSegment");
+var TextField = require("awayjs-display/lib/display/TextField");
+var PointLight = require("awayjs-display/lib/display/PointLight");
+var LightProbe = require("awayjs-display/lib/display/LightProbe");
+var Skybox = require("awayjs-display/lib/display/Skybox");
 var CameraNode = require("awayjs-display/lib/partition/CameraNode");
 var DirectionalLightNode = require("awayjs-display/lib/partition/DirectionalLightNode");
 var EntityNode = require("awayjs-display/lib/partition/EntityNode");
@@ -15365,9 +15365,521 @@ var display = (function () {
 })();
 module.exports = display;
 
-},{"awayjs-display/lib/entities/Billboard":"awayjs-display/lib/entities/Billboard","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/LightProbe":"awayjs-display/lib/entities/LightProbe","awayjs-display/lib/entities/LineSegment":"awayjs-display/lib/entities/LineSegment","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/entities/TextField":"awayjs-display/lib/entities/TextField","awayjs-display/lib/partition/CameraNode":"awayjs-display/lib/partition/CameraNode","awayjs-display/lib/partition/DirectionalLightNode":"awayjs-display/lib/partition/DirectionalLightNode","awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode","awayjs-display/lib/partition/LightProbeNode":"awayjs-display/lib/partition/LightProbeNode","awayjs-display/lib/partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","awayjs-display/lib/partition/PointLightNode":"awayjs-display/lib/partition/PointLightNode","awayjs-display/lib/partition/SkyboxNode":"awayjs-display/lib/partition/SkyboxNode"}],"awayjs-display/lib/IRenderer":[function(require,module,exports){
+},{"awayjs-display/lib/display/Billboard":"awayjs-display/lib/display/Billboard","awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","awayjs-display/lib/display/LightProbe":"awayjs-display/lib/display/LightProbe","awayjs-display/lib/display/LineSegment":"awayjs-display/lib/display/LineSegment","awayjs-display/lib/display/Mesh":"awayjs-display/lib/display/Mesh","awayjs-display/lib/display/PointLight":"awayjs-display/lib/display/PointLight","awayjs-display/lib/display/Skybox":"awayjs-display/lib/display/Skybox","awayjs-display/lib/display/TextField":"awayjs-display/lib/display/TextField","awayjs-display/lib/partition/CameraNode":"awayjs-display/lib/partition/CameraNode","awayjs-display/lib/partition/DirectionalLightNode":"awayjs-display/lib/partition/DirectionalLightNode","awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode","awayjs-display/lib/partition/LightProbeNode":"awayjs-display/lib/partition/LightProbeNode","awayjs-display/lib/partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","awayjs-display/lib/partition/PointLightNode":"awayjs-display/lib/partition/PointLightNode","awayjs-display/lib/partition/SkyboxNode":"awayjs-display/lib/partition/SkyboxNode"}],"awayjs-display/lib/IRenderer":[function(require,module,exports){
 
-},{}],"awayjs-display/lib/adapters/IDisplayObjectAdapter":[function(require,module,exports){
+},{}],"awayjs-display/lib/View":[function(require,module,exports){
+var getTimer = require("awayjs-core/lib/utils/getTimer");
+var TouchPoint = require("awayjs-display/lib/base/TouchPoint");
+var Scene = require("awayjs-display/lib/display/Scene");
+var RaycastPicker = require("awayjs-display/lib/pick/RaycastPicker");
+var Camera = require("awayjs-display/lib/display/Camera");
+var CameraEvent = require("awayjs-display/lib/events/CameraEvent");
+var DisplayObjectEvent = require("awayjs-display/lib/events/DisplayObjectEvent");
+var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
+var MouseManager = require("awayjs-display/lib/managers/MouseManager");
+var View = (function () {
+    /*
+     ***********************************************************************
+     * Disabled / Not yet implemented
+     ***********************************************************************
+     *
+     * private _background:away.textures.Texture2DBase;
+     *
+     * public _pTouch3DManager:away.managers.Touch3DManager;
+     *
+     */
+    function View(renderer, scene, camera) {
+        var _this = this;
+        if (scene === void 0) { scene = null; }
+        if (camera === void 0) { camera = null; }
+        this._width = 0;
+        this._height = 0;
+        this._time = 0;
+        this._deltaTime = 0;
+        this._backgroundColor = 0x000000;
+        this._backgroundAlpha = 1;
+        this._viewportDirty = true;
+        this._scissorDirty = true;
+        this._mousePicker = new RaycastPicker();
+        this._pTouchPoints = new Array();
+        this._onPartitionChangedDelegate = function (event) { return _this._onPartitionChanged(event); };
+        this._onProjectionChangedDelegate = function (event) { return _this._onProjectionChanged(event); };
+        this._onViewportUpdatedDelegate = function (event) { return _this._onViewportUpdated(event); };
+        this._onScissorUpdatedDelegate = function (event) { return _this._onScissorUpdated(event); };
+        this.scene = scene || new Scene();
+        this.camera = camera || new Camera();
+        this.renderer = renderer;
+        //make sure document border is zero
+        if (document) {
+            document.body.style.margin = "0px";
+            this._htmlElement = document.createElement("div");
+            this._htmlElement.style.position = "absolute";
+            document.body.appendChild(this._htmlElement);
+        }
+        this._mouseManager = MouseManager.getInstance();
+        this._mouseManager.registerView(this);
+        //			if (this._shareContext)
+        //				this._mouse3DManager.addViewLayer(this);
+    }
+    Object.defineProperty(View.prototype, "mouseX", {
+        get: function () {
+            return this._pMouseX;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "mouseY", {
+        get: function () {
+            return this._pMouseY;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "touchPoints", {
+        get: function () {
+            return this._pTouchPoints;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    View.prototype.getLocalMouseX = function (displayObject) {
+        return displayObject.inverseSceneTransform.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).x;
+    };
+    View.prototype.getLocalMouseY = function (displayObject) {
+        return displayObject.inverseSceneTransform.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).y;
+    };
+    View.prototype.getLocalTouchPoints = function (displayObject) {
+        var localPosition;
+        var localTouchPoints = new Array();
+        var len = this._pTouchPoints.length;
+        for (var i = 0; i < len; i++) {
+            localPosition = displayObject.inverseSceneTransform.transformVector(this.unproject(this._pTouchPoints[i].x, this._pTouchPoints[i].y, 1000));
+            localTouchPoints.push(new TouchPoint(localPosition.x, localPosition.y, this._pTouchPoints[i].id));
+        }
+        return localTouchPoints;
+    };
+    Object.defineProperty(View.prototype, "htmlElement", {
+        /**
+         *
+         */
+        get: function () {
+            return this._htmlElement;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "renderer", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer;
+        },
+        set: function (value) {
+            if (this._pRenderer == value)
+                return;
+            if (this._pRenderer) {
+                this._pRenderer.dispose();
+                this._pRenderer.removeEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                this._pRenderer.removeEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+            }
+            this._pRenderer = value;
+            this._pRenderer.addEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+            this._pRenderer.addEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+            //reset entity collector
+            this._pEntityCollector = this._pRenderer._iCreateEntityCollector();
+            if (this._pCamera)
+                this._pEntityCollector.camera = this._pCamera;
+            //reset back buffer
+            this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
+            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
+            this._pRenderer.width = this._width;
+            this._pRenderer.height = this._height;
+            this._pRenderer.shareContext = this._shareContext;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "shareContext", {
+        /**
+         *
+         */
+        get: function () {
+            return this._shareContext;
+        },
+        set: function (value) {
+            if (this._shareContext == value)
+                return;
+            this._shareContext = value;
+            if (this._pRenderer)
+                this._pRenderer.shareContext = this._shareContext;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "backgroundColor", {
+        /**
+         *
+         */
+        get: function () {
+            return this._backgroundColor;
+        },
+        set: function (value) {
+            if (this._backgroundColor == value)
+                return;
+            this._backgroundColor = value;
+            this._pRenderer._iBackgroundR = ((value >> 16) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundG = ((value >> 8) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundB = (value & 0xff) / 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "backgroundAlpha", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return this._backgroundAlpha;
+        },
+        /**
+         *
+         * @param value
+         */
+        set: function (value) {
+            if (value > 1)
+                value = 1;
+            else if (value < 0)
+                value = 0;
+            if (this._backgroundAlpha == value)
+                return;
+            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "camera", {
+        /**
+         *
+         * @returns {Camera3D}
+         */
+        get: function () {
+            return this._pCamera;
+        },
+        /**
+         * Set camera that's used to render the scene for this viewport
+         */
+        set: function (value) {
+            if (this._pCamera == value)
+                return;
+            if (this._pCamera)
+                this._pCamera.removeEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
+            this._pCamera = value;
+            if (this._pEntityCollector)
+                this._pEntityCollector.camera = this._pCamera;
+            if (this._pScene)
+                this._pScene.partition._iRegisterEntity(this._pCamera);
+            this._pCamera.addEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
+            this._scissorDirty = true;
+            this._viewportDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "scene", {
+        /**
+         *
+         * @returns {away.containers.Scene3D}
+         */
+        get: function () {
+            return this._pScene;
+        },
+        /**
+         * Set the scene that's used to render for this viewport
+         */
+        set: function (value) {
+            if (this._pScene == value)
+                return;
+            if (this._pScene)
+                this._pScene.removeEventListener(DisplayObjectEvent.PARTITION_CHANGED, this._onPartitionChangedDelegate);
+            this._pScene = value;
+            this._pScene.addEventListener(DisplayObjectEvent.PARTITION_CHANGED, this._onPartitionChangedDelegate);
+            if (this._pCamera)
+                this._pScene.partition._iRegisterEntity(this._pCamera);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "deltaTime", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return this._deltaTime;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "width", {
+        /**
+         *
+         */
+        get: function () {
+            return this._width;
+        },
+        set: function (value) {
+            if (this._width == value)
+                return;
+            this._width = value;
+            this._aspectRatio = this._width / this._height;
+            this._pCamera.projection._iAspectRatio = this._aspectRatio;
+            this._pRenderer.width = value;
+            if (this._htmlElement) {
+                this._htmlElement.style.width = value + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "height", {
+        /**
+         *
+         */
+        get: function () {
+            return this._height;
+        },
+        set: function (value) {
+            if (this._height == value)
+                return;
+            this._height = value;
+            this._aspectRatio = this._width / this._height;
+            this._pCamera.projection._iAspectRatio = this._aspectRatio;
+            this._pRenderer.height = value;
+            if (this._htmlElement) {
+                this._htmlElement.style.height = value + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "mousePicker", {
+        /**
+         *
+         */
+        get: function () {
+            return this._mousePicker;
+        },
+        set: function (value) {
+            if (this._mousePicker == value)
+                return;
+            if (value == null)
+                this._mousePicker = new RaycastPicker();
+            else
+                this._mousePicker = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "x", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.x;
+        },
+        set: function (value) {
+            if (this._pRenderer.x == value)
+                return;
+            this._pRenderer.x == value;
+            if (this._htmlElement) {
+                this._htmlElement.style.left = value + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "y", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.y;
+        },
+        set: function (value) {
+            if (this._pRenderer.y == value)
+                return;
+            this._pRenderer.y == value;
+            if (this._htmlElement) {
+                this._htmlElement.style.top = value + "px";
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "visible", {
+        /**
+         *
+         */
+        get: function () {
+            return (this._htmlElement && this._htmlElement.style.visibility == "visible");
+        },
+        set: function (value) {
+            if (this._htmlElement) {
+                this._htmlElement.style.visibility = value ? "visible" : "hidden";
+            }
+            //TODO transfer visible property to associated context (if one exists)
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "renderedFacesCount", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return 0; //TODO
+            //return this._pEntityCollector._pNumTriangles;//numTriangles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Renders the view.
+     */
+    View.prototype.render = function () {
+        this.pUpdateTime();
+        //update view and size data
+        this._pCamera.projection._iAspectRatio = this._aspectRatio;
+        if (this._scissorDirty) {
+            this._scissorDirty = false;
+            this._pCamera.projection._iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
+        }
+        if (this._viewportDirty) {
+            this._viewportDirty = false;
+            this._pCamera.projection._iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
+        }
+        // update picking
+        if (!this._shareContext) {
+            if (this.forceMouseMove && this._htmlElement == this._mouseManager._iActiveDiv && !this._mouseManager._iUpdateDirty)
+                this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+            this._mouseManager.fireMouseEvents(this.forceMouseMove);
+        }
+        //_touch3DManager.updateCollider();
+        //clear entity collector ready for collection
+        this._pEntityCollector.clear();
+        // collect stuff to render
+        this._pScene.traversePartitions(this._pEntityCollector);
+        //render the contents of the entity collector
+        this._pRenderer.render(this._pEntityCollector);
+    };
+    /**
+     *
+     */
+    View.prototype.pUpdateTime = function () {
+        var time = getTimer();
+        if (this._time == 0)
+            this._time = time;
+        this._deltaTime = time - this._time;
+        this._time = time;
+    };
+    /**
+     *
+     */
+    View.prototype.dispose = function () {
+        this._pRenderer.dispose();
+        // TODO: imeplement mouseManager / touch3DManager
+        this._mouseManager.unregisterView(this);
+        //this._touch3DManager.disableTouchListeners(this);
+        //this._touch3DManager.dispose();
+        this._mouseManager = null;
+        //this._touch3DManager = null;
+        this._pRenderer = null;
+        this._pEntityCollector = null;
+    };
+    Object.defineProperty(View.prototype, "iEntityCollector", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pEntityCollector;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     * @param e
+     */
+    View.prototype._onPartitionChanged = function (event) {
+        if (this._pCamera)
+            this._pScene.partition._iRegisterEntity(this._pCamera);
+    };
+    /**
+     *
+     */
+    View.prototype._onProjectionChanged = function (event) {
+        this._scissorDirty = true;
+        this._viewportDirty = true;
+    };
+    /**
+     *
+     */
+    View.prototype._onViewportUpdated = function (event) {
+        this._viewportDirty = true;
+    };
+    /**
+     *
+     */
+    View.prototype._onScissorUpdated = function (event) {
+        this._scissorDirty = true;
+    };
+    View.prototype.project = function (point3d) {
+        var v = this._pCamera.project(point3d);
+        v.x = v.x * this._pRenderer.viewPort.width / 2 + this._width * this._pCamera.projection.originX;
+        v.y = v.y * this._pRenderer.viewPort.height / 2 + this._height * this._pCamera.projection.originY;
+        return v;
+    };
+    View.prototype.unproject = function (sX, sY, sZ) {
+        return this._pCamera.unproject(2 * (sX - this._width * this._pCamera.projection.originX) / this._pRenderer.viewPort.width, 2 * (sY - this._height * this._pCamera.projection.originY) / this._pRenderer.viewPort.height, sZ);
+    };
+    View.prototype.getRay = function (sX, sY, sZ) {
+        return this._pCamera.getRay((sX * 2 - this._width) / this._width, (sY * 2 - this._height) / this._height, sZ);
+    };
+    /*TODO: implement Background
+     public get background():away.textures.Texture2DBase
+     {
+     return this._background;
+     }
+     */
+    /*TODO: implement Background
+     public set background( value:away.textures.Texture2DBase )
+     {
+     this._background = value;
+     this._renderer.background = _background;
+     }
+     */
+    // TODO: required dependency stageGL
+    View.prototype.updateCollider = function () {
+        if (!this._shareContext) {
+            if (this._htmlElement == this._mouseManager._iActiveDiv)
+                this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+        }
+        else {
+            var collidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
+            if (this.layeredView || this._mouseManager._iCollidingObject == null || collidingObject.rayEntryDistance < this._mouseManager._iCollidingObject.rayEntryDistance)
+                this._mouseManager._iCollidingObject = collidingObject;
+        }
+    };
+    return View;
+})();
+module.exports = View;
+
+},{"awayjs-core/lib/utils/getTimer":undefined,"awayjs-display/lib/base/TouchPoint":"awayjs-display/lib/base/TouchPoint","awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/display/Scene":"awayjs-display/lib/display/Scene","awayjs-display/lib/events/CameraEvent":"awayjs-display/lib/events/CameraEvent","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/RendererEvent":"awayjs-display/lib/events/RendererEvent","awayjs-display/lib/managers/MouseManager":"awayjs-display/lib/managers/MouseManager","awayjs-display/lib/pick/RaycastPicker":"awayjs-display/lib/pick/RaycastPicker"}],"awayjs-display/lib/adapters/IDisplayObjectAdapter":[function(require,module,exports){
 
 },{}],"awayjs-display/lib/adapters/IMovieClipAdapter":[function(require,module,exports){
 
@@ -15448,7 +15960,3407 @@ var AlignmentMode = (function () {
 })();
 module.exports = AlignmentMode;
 
-},{}],"awayjs-display/lib/base/DisplayObject":[function(require,module,exports){
+},{}],"awayjs-display/lib/base/HierarchicalProperties":[function(require,module,exports){
+/**
+ *
+ */
+var HierarchicalProperties = (function () {
+    function HierarchicalProperties() {
+    }
+    /**
+     *
+     */
+    HierarchicalProperties.MOUSE_ENABLED = 1;
+    /**
+     *
+     */
+    HierarchicalProperties.VISIBLE = 2;
+    /**
+     *
+     */
+    HierarchicalProperties.MASK_ID = 4;
+    /**
+     *
+     */
+    HierarchicalProperties.MASKS = 8;
+    /**
+     *
+     */
+    HierarchicalProperties.COLOR_TRANSFORM = 16;
+    /**
+     *
+     */
+    HierarchicalProperties.SCENE_TRANSFORM = 32;
+    /**
+     *
+     */
+    HierarchicalProperties.ALL = 63;
+    return HierarchicalProperties;
+})();
+module.exports = HierarchicalProperties;
+
+},{}],"awayjs-display/lib/base/IBitmapDrawable":[function(require,module,exports){
+
+},{}],"awayjs-display/lib/base/IRenderable":[function(require,module,exports){
+
+},{}],"awayjs-display/lib/base/ISurface":[function(require,module,exports){
+
+},{}],"awayjs-display/lib/base/OrientationMode":[function(require,module,exports){
+var OrientationMode = (function () {
+    function OrientationMode() {
+    }
+    /**
+     *
+     */
+    OrientationMode.DEFAULT = "default";
+    /**
+     *
+     */
+    OrientationMode.CAMERA_PLANE = "cameraPlane";
+    /**
+     *
+     */
+    OrientationMode.CAMERA_POSITION = "cameraPosition";
+    return OrientationMode;
+})();
+module.exports = OrientationMode;
+
+},{}],"awayjs-display/lib/base/Style":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
+/**
+ *
+ */
+var Style = (function (_super) {
+    __extends(Style, _super);
+    function Style() {
+        _super.call(this);
+        this._samplers = new Object();
+        this._images = new Object();
+        this._color = 0xFFFFFF;
+    }
+    Object.defineProperty(Style.prototype, "sampler", {
+        get: function () {
+            return this._sampler;
+        },
+        set: function (value) {
+            if (this._sampler == value)
+                return;
+            this._sampler = value;
+            this._invalidateProperties();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Style.prototype, "image", {
+        get: function () {
+            return this._image;
+        },
+        set: function (value) {
+            if (this._image == value)
+                return;
+            this._image = value;
+            this._invalidateProperties();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Style.prototype, "uvMatrix", {
+        get: function () {
+            return this._uvMatrix;
+        },
+        set: function (value) {
+            if (this._uvMatrix == value)
+                return;
+            this._uvMatrix = value;
+            this._invalidateProperties();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Style.prototype, "color", {
+        /**
+         * The diffuse reflectivity color of the surface.
+         */
+        get: function () {
+            return this._color;
+        },
+        set: function (value) {
+            if (this._color == value)
+                return;
+            this._color = value;
+            this._invalidateProperties();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Style.prototype.getImageAt = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return (this._images[texture.id] ? this._images[texture.id][index] : null) || this._image;
+    };
+    Style.prototype.getSamplerAt = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return (this._samplers[texture.id] ? this._samplers[texture.id][index] : null) || this._sampler;
+    };
+    Style.prototype.addImageAt = function (image, texture, index) {
+        if (index === void 0) { index = 0; }
+        if (!this._images[texture.id])
+            this._images[texture.id] = new Array();
+        this._images[texture.id][index] = image;
+    };
+    Style.prototype.addSamplerAt = function (sampler, texture, index) {
+        if (index === void 0) { index = 0; }
+        if (!this._samplers[texture.id])
+            this._samplers[texture.id] = new Array();
+        this._samplers[texture.id][index] = sampler;
+        this._invalidateProperties();
+    };
+    Style.prototype.removeImageAt = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        if (!this._images[texture.id])
+            return;
+        this._images[texture.id][index] = null;
+        this._invalidateProperties();
+    };
+    Style.prototype.removeSamplerAt = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        if (!this._samplers[texture.id])
+            return;
+        this._samplers[texture.id][index] = null;
+        this._invalidateProperties();
+    };
+    Style.prototype._invalidateProperties = function () {
+        this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_PROPERTIES, this));
+    };
+    return Style;
+})(EventDispatcher);
+module.exports = Style;
+
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/base/Timeline":[function(require,module,exports){
+var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
+var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+var FrameScriptManager = require("awayjs-display/lib/managers/FrameScriptManager");
+var Timeline = (function () {
+    function Timeline() {
+        this._functions = [];
+        this._update_indices = [];
+        this.numKeyFrames = 0;
+        this.keyframe_indices = [];
+        this._potentialPrototypes = [];
+        this._labels = {};
+        this._framescripts = {};
+        this._framescripts_translated = {};
+        //cache functions
+        this._functions[1] = this.update_mtx_all;
+        this._functions[2] = this.update_colortransform;
+        this._functions[3] = this.update_masks;
+        this._functions[4] = this.update_name;
+        this._functions[5] = this.update_button_name;
+        this._functions[6] = this.update_visibility;
+        this._functions[11] = this.update_mtx_scale_rot;
+        this._functions[12] = this.update_mtx_pos;
+        this._functions[200] = this.enable_maskmode;
+        this._functions[201] = this.remove_masks;
+    }
+    Timeline.prototype.init = function () {
+        if ((this.frame_command_indices == null) || (this.frame_recipe == null) || (this.keyframe_durations == null))
+            return;
+        this.keyframe_firstframes = [];
+        this.keyframe_constructframes = [];
+        var frame_cnt = 0;
+        var ic = 0;
+        var ic2 = 0;
+        var keyframe_cnt = 0;
+        var last_construct_frame = 0;
+        for (ic = 0; ic < this.numKeyFrames; ic++) {
+            var duration = this.keyframe_durations[(ic)];
+            if (this.frame_recipe[ic] & 1)
+                last_construct_frame = keyframe_cnt;
+            this.keyframe_firstframes[keyframe_cnt] = frame_cnt;
+            this.keyframe_constructframes[keyframe_cnt++] = last_construct_frame;
+            for (ic2 = 0; ic2 < duration; ic2++)
+                this.keyframe_indices[frame_cnt++] = ic;
+        }
+    };
+    Timeline.prototype.get_framescript = function (keyframe_index) {
+        if (this._framescripts[keyframe_index] == null)
+            return "";
+        if (typeof this._framescripts[keyframe_index] == "string")
+            return this._framescripts[keyframe_index];
+        else {
+            throw new Error("Framescript is already translated to Function!!!");
+        }
+        return "";
+    };
+    Timeline.prototype.add_framescript = function (value, keyframe_index) {
+        if (FrameScriptManager.frameScriptDebug) {
+            // if we are in debug mode, we try to extract the function name from the first line of framescript code,
+            // and check if this function is available on the object that is set as frameScriptDebug
+            // try to get the functions name (it should be the first line as comment)
+            var functionname = value.split(/[\r\n]+/g)[0].split("//")[1];
+            if (FrameScriptManager.frameScriptDebug[functionname]) {
+                this._framescripts[keyframe_index] = FrameScriptManager.frameScriptDebug[functionname];
+                this._framescripts_translated[keyframe_index] = true;
+                return;
+            }
+            else {
+                throw new Error("Framescript could not be found on FrameScriptManager.frameScriptDebug.\n the Object set as FrameScriptmanager.frameScriptDebug should contain a function with the name '" + functionname + "' !!!");
+            }
+        }
+        this._framescripts[keyframe_index] = value;
+    };
+    Timeline.prototype.regexIndexOf = function (str, regex, startpos) {
+        var indexOf = str.substring(startpos || 0).search(regex);
+        return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
+    };
+    Timeline.prototype.add_script_for_postcontruct = function (target_mc, keyframe_idx, scriptPass1) {
+        if (scriptPass1 === void 0) { scriptPass1 = false; }
+        if (this._framescripts[keyframe_idx] != null) {
+            if (this._framescripts_translated[keyframe_idx] == null) {
+                this._framescripts[keyframe_idx] = target_mc.adapter.evalScript(this._framescripts[keyframe_idx]);
+                this._framescripts_translated[keyframe_idx] = true;
+            }
+            if (scriptPass1)
+                FrameScriptManager.add_script_to_queue(target_mc, this._framescripts[keyframe_idx]);
+            else
+                FrameScriptManager.add_script_to_queue_pass2(target_mc, this._framescripts[keyframe_idx]);
+        }
+    };
+    Object.defineProperty(Timeline.prototype, "numFrames", {
+        get: function () {
+            return this.keyframe_indices.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Timeline.prototype.getPotentialChildPrototype = function (id) {
+        return this._potentialPrototypes[id];
+    };
+    Timeline.prototype.getKeyframeIndexForFrameIndex = function (frame_index) {
+        return this.keyframe_indices[frame_index];
+    };
+    Timeline.prototype.getPotentialChildInstance = function (id) {
+        var this_clone = this._potentialPrototypes[id].clone();
+        this_clone.name = "";
+        return this_clone;
+    };
+    Timeline.prototype.registerPotentialChild = function (prototype) {
+        var id = this._potentialPrototypes.length;
+        this._potentialPrototypes[id] = prototype;
+    };
+    Timeline.prototype.jumpToLabel = function (target_mc, label) {
+        var key_frame_index = this._labels[label];
+        if (key_frame_index >= 0)
+            target_mc.currentFrameIndex = this.keyframe_firstframes[key_frame_index];
+    };
+    Timeline.prototype.gotoFrame = function (target_mc, value, skip_script) {
+        if (skip_script === void 0) { skip_script = false; }
+        var current_keyframe_idx = target_mc.constructedKeyFrameIndex;
+        var target_keyframe_idx = this.keyframe_indices[value];
+        if (current_keyframe_idx == target_keyframe_idx)
+            return;
+        if (current_keyframe_idx + 1 == target_keyframe_idx) {
+            this.constructNextFrame(target_mc, !skip_script, true);
+            return;
+        }
+        var break_frame_idx = this.keyframe_constructframes[target_keyframe_idx];
+        //we now have 3 index to keyframes: current_keyframe_idx / target_keyframe_idx / break_frame_idx
+        var jump_forward = (target_keyframe_idx > current_keyframe_idx);
+        var jump_gap = (break_frame_idx > current_keyframe_idx);
+        // in case we jump forward, but not jump a gap, we start at current_keyframe_idx + 1
+        // in case we jump back or we jump a gap, we want to start constructing at BreakFrame
+        var start_construct_idx = (jump_forward && !jump_gap) ? current_keyframe_idx + 1 : break_frame_idx;
+        var i;
+        var k;
+        if (jump_gap)
+            for (i = target_mc.numChildren - 1; i >= 0; i--)
+                if (target_mc._children[i]._depthID < 0)
+                    target_mc.removeChildAt(i);
+        //if we jump back, we want to reset all objects (but not the timelines of the mcs)
+        if (!jump_forward)
+            target_mc.resetSessionIDs();
+        // in other cases, we want to collect the current objects to compare state of targetframe with state of currentframe
+        var depth_sessionIDs = target_mc.getSessionIDDepths();
+        //pass1: only apply add/remove commands into depth_sessionIDs.
+        this.pass1(start_construct_idx, target_keyframe_idx, depth_sessionIDs);
+        // check what childs are alive on both frames.
+        // childs that are not alive anymore get removed and unregistered
+        // childs that are alive on both frames have their properties reset if we are jumping back
+        var child;
+        for (i = target_mc.numChildren - 1; i >= 0; i--) {
+            child = target_mc._children[i];
+            if (child._depthID < 0) {
+                if (depth_sessionIDs[child._depthID] != child._sessionID) {
+                    target_mc.removeChildAt(i);
+                }
+                else if (!jump_forward) {
+                    if (child.adapter) {
+                        if (!child.adapter.isBlockedByScript()) {
+                            child.transform.clearMatrix3D();
+                            child.transform.clearColorTransform();
+                            //this.name="";
+                            child.masks = null;
+                            child.maskMode = false;
+                        }
+                        if (!child.adapter.isVisibilityByScript()) {
+                            child.visible = true;
+                        }
+                    }
+                }
+            }
+        }
+        for (var key in depth_sessionIDs) {
+            child = target_mc.getPotentialChildInstance(this.add_child_stream[depth_sessionIDs[key] * 2]);
+            if (child._sessionID == -1)
+                target_mc._addTimelineChildAt(child, Number(key), depth_sessionIDs[key]);
+        }
+        if (!skip_script && this.keyframe_firstframes[target_keyframe_idx] == value)
+            this.add_script_for_postcontruct(target_mc, target_keyframe_idx, true);
+        //pass2: apply update commands for objects on stage (only if they are not blocked by script)
+        this.pass2(target_mc);
+        target_mc.constructedKeyFrameIndex = target_keyframe_idx;
+    };
+    Timeline.prototype.pass1 = function (start_construct_idx, target_keyframe_idx, depth_sessionIDs) {
+        var i;
+        var k;
+        this._update_indices.length = 0; // store a list of updatecommand_indices, so we dont have to read frame_recipe again
+        var update_cnt = 0;
+        var start_index;
+        var end_index;
+        for (k = start_construct_idx; k <= target_keyframe_idx; k++) {
+            var frame_command_idx = this.frame_command_indices[k];
+            var frame_recipe = this.frame_recipe[k];
+            if (frame_recipe & 2) {
+                // remove childs
+                start_index = this.command_index_stream[frame_command_idx];
+                end_index = start_index + this.command_length_stream[frame_command_idx++];
+                for (i = start_index; i < end_index; i++)
+                    delete depth_sessionIDs[this.remove_child_stream[i] - 16383];
+            }
+            if (frame_recipe & 4) {
+                start_index = this.command_index_stream[frame_command_idx];
+                end_index = start_index + this.command_length_stream[frame_command_idx++];
+                for (i = end_index - 1; i >= start_index; i--)
+                    depth_sessionIDs[this.add_child_stream[i * 2 + 1] - 16383] = i;
+            }
+            if (frame_recipe & 8)
+                this._update_indices[update_cnt++] = frame_command_idx; // execute update command later
+        }
+    };
+    Timeline.prototype.pass2 = function (target_mc) {
+        var k;
+        var len = this._update_indices.length;
+        for (k = 0; k < len; k++)
+            this.update_childs(target_mc, this._update_indices[k]);
+    };
+    Timeline.prototype.constructNextFrame = function (target_mc, queueScript, scriptPass1) {
+        if (queueScript === void 0) { queueScript = true; }
+        if (scriptPass1 === void 0) { scriptPass1 = false; }
+        var frameIndex = target_mc.currentFrameIndex;
+        var new_keyFrameIndex = this.keyframe_indices[frameIndex];
+        if (queueScript && this.keyframe_firstframes[new_keyFrameIndex] == frameIndex)
+            this.add_script_for_postcontruct(target_mc, new_keyFrameIndex, scriptPass1);
+        if (target_mc.constructedKeyFrameIndex != new_keyFrameIndex) {
+            target_mc.constructedKeyFrameIndex = new_keyFrameIndex;
+            var frame_command_idx = this.frame_command_indices[new_keyFrameIndex];
+            var frame_recipe = this.frame_recipe[new_keyFrameIndex];
+            if (frame_recipe & 1) {
+                for (var i = target_mc.numChildren - 1; i >= 0; i--)
+                    if (target_mc._children[i]._depthID < 0)
+                        target_mc.removeChildAt(i);
+            }
+            else if (frame_recipe & 2) {
+                this.remove_childs_continous(target_mc, frame_command_idx++);
+            }
+            if (frame_recipe & 4)
+                this.add_childs_continous(target_mc, frame_command_idx++);
+            if (frame_recipe & 8)
+                this.update_childs(target_mc, frame_command_idx++);
+        }
+    };
+    Timeline.prototype.remove_childs_continous = function (sourceMovieClip, frame_command_idx) {
+        var start_index = this.command_index_stream[frame_command_idx];
+        var end_index = start_index + this.command_length_stream[frame_command_idx];
+        for (var i = start_index; i < end_index; i++)
+            sourceMovieClip.removeChildAt(sourceMovieClip.getDepthIndexInternal(this.remove_child_stream[i] - 16383));
+    };
+    // used to add childs when jumping between frames
+    Timeline.prototype.add_childs_continous = function (sourceMovieClip, frame_command_idx) {
+        // apply add commands in reversed order to have script exeucted in correct order.
+        // this could be changed in exporter
+        var idx;
+        var start_index = this.command_index_stream[frame_command_idx];
+        var end_index = start_index + this.command_length_stream[frame_command_idx];
+        for (var i = end_index - 1; i >= start_index; i--) {
+            idx = i * 2;
+            sourceMovieClip._addTimelineChildAt(sourceMovieClip.getPotentialChildInstance(this.add_child_stream[idx]), this.add_child_stream[idx + 1] - 16383, i);
+        }
+    };
+    Timeline.prototype.update_childs = function (target_mc, frame_command_idx) {
+        var p;
+        var props_start_idx;
+        var props_end_index;
+        var start_index = this.command_index_stream[frame_command_idx];
+        var end_index = start_index + this.command_length_stream[frame_command_idx];
+        var child;
+        for (var i = start_index; i < end_index; i++) {
+            child = target_mc.getChildAtSessionID(this.update_child_stream[i]);
+            if (child) {
+                // check if the child is active + not blocked by script
+                this._blocked = Boolean(child.adapter && child.adapter.isBlockedByScript());
+                props_start_idx = this.update_child_props_indices_stream[i];
+                props_end_index = props_start_idx + this.update_child_props_length_stream[i];
+                for (p = props_start_idx; p < props_end_index; p++)
+                    this._functions[this.property_type_stream[p]].call(this, child, target_mc, this.property_index_stream[p]);
+            }
+        }
+    };
+    Timeline.prototype.update_mtx_all = function (child, target_mc, i) {
+        if (this._blocked)
+            return;
+        i *= 6;
+        var new_matrix = child.transform.matrix3D;
+        new_matrix.rawData[0] = this.properties_stream_f32_mtx_all[i++];
+        new_matrix.rawData[1] = this.properties_stream_f32_mtx_all[i++];
+        new_matrix.rawData[4] = this.properties_stream_f32_mtx_all[i++];
+        new_matrix.rawData[5] = this.properties_stream_f32_mtx_all[i++];
+        new_matrix.rawData[12] = this.properties_stream_f32_mtx_all[i++];
+        new_matrix.rawData[13] = this.properties_stream_f32_mtx_all[i];
+        child.transform.invalidateComponents();
+    };
+    Timeline.prototype.update_colortransform = function (child, target_mc, i) {
+        if (this._blocked)
+            return;
+        i *= 8;
+        var new_ct = child.transform.colorTransform || (child.transform.colorTransform = new ColorTransform());
+        new_ct.redMultiplier = this.properties_stream_f32_ct[i++];
+        new_ct.greenMultiplier = this.properties_stream_f32_ct[i++];
+        new_ct.blueMultiplier = this.properties_stream_f32_ct[i++];
+        new_ct.alphaMultiplier = this.properties_stream_f32_ct[i++];
+        new_ct.redOffset = this.properties_stream_f32_ct[i++];
+        new_ct.greenOffset = this.properties_stream_f32_ct[i++];
+        new_ct.blueOffset = this.properties_stream_f32_ct[i++];
+        new_ct.alphaOffset = this.properties_stream_f32_ct[i];
+        child.transform.invalidateColorTransform();
+    };
+    Timeline.prototype.update_masks = function (child, target_mc, i) {
+        // an object could have multiple groups of masks, in case a graphic clip was merged into the timeline
+        // this is not implmeented in the runtime yet
+        // for now, a second mask-groupd would overwrite the first one
+        var mask;
+        var masks = new Array();
+        var numMasks = this.properties_stream_int[i++];
+        for (var m = 0; m < numMasks; m++)
+            if ((mask = target_mc.getChildAtSessionID(this.properties_stream_int[i++])))
+                masks.push(mask);
+        child.masks = masks;
+    };
+    Timeline.prototype.update_name = function (child, target_mc, i) {
+        child.name = this.properties_stream_strings[i];
+        target_mc.adapter.registerScriptObject(child);
+    };
+    Timeline.prototype.update_button_name = function (target, sourceMovieClip, i) {
+        target.name = this.properties_stream_strings[i];
+        // todo: creating the buttonlistenrs later should also be done, but for icycle i dont think this will cause problems
+        target.addButtonListeners();
+        sourceMovieClip.adapter.registerScriptObject(target);
+    };
+    Timeline.prototype.update_visibility = function (child, target_mc, i) {
+        if (!child.adapter || !child.adapter.isVisibilityByScript())
+            child.visible = Boolean(i);
+    };
+    Timeline.prototype.update_mtx_scale_rot = function (child, target_mc, i) {
+        if (this._blocked)
+            return;
+        i *= 4;
+        var new_matrix = child.transform.matrix3D;
+        new_matrix.rawData[0] = this.properties_stream_f32_mtx_scale_rot[i++];
+        new_matrix.rawData[1] = this.properties_stream_f32_mtx_scale_rot[i++];
+        new_matrix.rawData[4] = this.properties_stream_f32_mtx_scale_rot[i++];
+        new_matrix.rawData[5] = this.properties_stream_f32_mtx_scale_rot[i];
+        child.transform.invalidateComponents();
+        child.pInvalidateHierarchicalProperties(HierarchicalProperties.SCENE_TRANSFORM);
+    };
+    Timeline.prototype.update_mtx_pos = function (child, target_mc, i) {
+        if (this._blocked)
+            return;
+        i *= 2;
+        var new_matrix = child.transform.matrix3D;
+        new_matrix.rawData[12] = this.properties_stream_f32_mtx_pos[i++];
+        new_matrix.rawData[13] = this.properties_stream_f32_mtx_pos[i];
+        child.transform.invalidatePosition();
+    };
+    Timeline.prototype.enable_maskmode = function (child, target_mc, i) {
+        child.maskMode = true;
+    };
+    Timeline.prototype.remove_masks = function (child, target_mc, i) {
+        child.masks = null;
+    };
+    return Timeline;
+})();
+module.exports = Timeline;
+
+},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/base/TouchPoint":[function(require,module,exports){
+/**
+ *
+ */
+var TouchPoint = (function () {
+    function TouchPoint(x, y, id) {
+        this.x = x;
+        this.y = y;
+        this.id = id;
+    }
+    return TouchPoint;
+})();
+module.exports = TouchPoint;
+
+},{}],"awayjs-display/lib/base/Transform":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var TransformEvent = require("awayjs-display/lib/events/TransformEvent");
+/**
+ * The Transform class provides access to color adjustment properties and two-
+ * or three-dimensional transformation objects that can be applied to a
+ * display object. During the transformation, the color or the orientation and
+ * position of a display object is adjusted(offset) from the current values
+ * or coordinates to new values or coordinates. The Transform class also
+ * collects data about color and two-dimensional matrix transformations that
+ * are applied to a display object and all of its parent objects. You can
+ * access these combined transformations through the
+ * <code>concatenatedColorTransform</code> and <code>concatenatedMatrix</code>
+ * properties.
+ *
+ * <p>To apply color transformations: create a ColorTransform object, set the
+ * color adjustments using the object's methods and properties, and then
+ * assign the <code>colorTransformation</code> property of the
+ * <code>transform</code> property of the display object to the new
+ * ColorTransformation object.</p>
+ *
+ * <p>To apply two-dimensional transformations: create a Matrix object, set
+ * the matrix's two-dimensional transformation, and then assign the
+ * <code>transform.matrix</code> property of the display object to the new
+ * Matrix object.</p>
+ *
+ * <p>To apply three-dimensional transformations: start with a
+ * three-dimensional display object. A three-dimensional display object has a
+ * <code>z</code> property value other than zero. You do not need to create
+ * the Matrix3D object. For all three-dimensional objects, a Matrix3D object
+ * is created automatically when you assign a <code>z</code> value to a
+ * display object. You can access the display object's Matrix3D object through
+ * the display object's <code>transform</code> property. Using the methods of
+ * the Matrix3D class, you can add to or modify the existing transformation
+ * settings. Also, you can create a custom Matrix3D object, set the custom
+ * Matrix3D object's transformation elements, and then assign the new Matrix3D
+ * object to the display object using the <code>transform.matrix</code>
+ * property.</p>
+ *
+ * <p>To modify a perspective projection of the stage or root object: use the
+ * <code>transform.matrix</code> property of the root display object to gain
+ * access to the PerspectiveProjection object. Or, apply different perspective
+ * projection properties to a display object by setting the perspective
+ * projection properties of the display object's parent. The child display
+ * object inherits the new properties. Specifically, create a
+ * PerspectiveProjection object and set its properties, then assign the
+ * PerspectiveProjection object to the <code>perspectiveProjection</code>
+ * property of the parent display object's <code>transform</code> property.
+ * The specified projection transformation then applies to all the display
+ * object's three-dimensional children.</p>
+ *
+ * <p>Since both PerspectiveProjection and Matrix3D objects perform
+ * perspective transformations, do not assign both to a display object at the
+ * same time. Use the PerspectiveProjection object for focal length and
+ * projection center changes. For more control over the perspective
+ * transformation, create a perspective projection Matrix3D object.</p>
+ */
+var Transform = (function (_super) {
+    __extends(Transform, _super);
+    function Transform() {
+        _super.call(this);
+        this._matrix3D = new Matrix3D();
+        this._rotation = new Vector3D();
+        this._skew = new Vector3D();
+        this._scale = new Vector3D(1, 1, 1);
+        // Cached vector of transformation components used when
+        // recomposing the transform matrix in updateTransform()
+        this._components = new Array(4);
+        this._components[1] = this._rotation;
+        this._components[2] = this._skew;
+        this._components[3] = this._scale;
+    }
+    Object.defineProperty(Transform.prototype, "backVector", {
+        /**
+         *
+         */
+        get: function () {
+            var director = Matrix3DUtils.getForward(this._matrix3D);
+            director.negate();
+            return director;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "colorTransform", {
+        /**
+         * A ColorTransform object containing values that universally adjust the
+         * colors in the display object.
+         *
+         * @throws TypeError The colorTransform is null when being set
+         */
+        get: function () {
+            return this._colorTransform;
+        },
+        set: function (val) {
+            if (this._colorTransform == val)
+                return;
+            this._colorTransform = val;
+            this.invalidateColorTransform();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "concatenatedColorTransform", {
+        /**
+         * A ColorTransform object representing the combined color transformations
+         * applied to the display object and all of its parent objects, back to the
+         * root level. If different color transformations have been applied at
+         * different levels, all of those transformations are concatenated into one
+         * ColorTransform object for this property.
+         */
+        get: function () {
+            return this._concatenatedColorTransform; //TODO
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "concatenatedMatrix", {
+        /**
+         * A Matrix object representing the combined transformation matrixes of the
+         * display object and all of its parent objects, back to the root level. If
+         * different transformation matrixes have been applied at different levels,
+         * all of those matrixes are concatenated into one matrix for this property.
+         * Also, for resizeable SWF content running in the browser, this property
+         * factors in the difference between stage coordinates and window coordinates
+         * due to window resizing. Thus, the property converts local coordinates to
+         * window coordinates, which may not be the same coordinate space as that of
+         * the Scene.
+         */
+        get: function () {
+            return this._concatenatedMatrix; //TODO
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "downVector", {
+        /**
+         *
+         */
+        get: function () {
+            var director = Matrix3DUtils.getUp(this._matrix3D);
+            director.negate();
+            return director;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "forwardVector", {
+        /**
+         *
+         */
+        get: function () {
+            return Matrix3DUtils.getForward(this._matrix3D);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "leftVector", {
+        /**
+         *
+         */
+        get: function () {
+            var director = Matrix3DUtils.getRight(this._matrix3D);
+            director.negate();
+            return director;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "matrix3D", {
+        /**
+         * Provides access to the Matrix3D object of a three-dimensional display
+         * object. The Matrix3D object represents a transformation matrix that
+         * determines the display object's position and orientation. A Matrix3D
+         * object can also perform perspective projection.
+         *
+         * <p>If the <code>matrix</code> property is set to a value(not
+         * <code>null</code>), the <code>matrix3D</code> property is
+         * <code>null</code>. And if the <code>matrix3D</code> property is set to a
+         * value(not <code>null</code>), the <code>matrix</code> property is
+         * <code>null</code>.</p>
+         */
+        get: function () {
+            if (this._matrix3DDirty)
+                this._updateMatrix3D();
+            return this._matrix3D;
+        },
+        set: function (val) {
+            for (var i = 0; i < 15; i++)
+                this._matrix3D.rawData[i] = val.rawData[i];
+            this.invalidateComponents();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "pixelBounds", {
+        /**
+         * A Rectangle object that defines the bounding rectangle of the display
+         * object on the stage.
+         */
+        get: function () {
+            return this._pixelBounds;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "position", {
+        /**
+         * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+         */
+        get: function () {
+            return this._matrix3D.position;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "rightVector", {
+        /**
+         *
+         */
+        get: function () {
+            return Matrix3DUtils.getRight(this.matrix3D);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Transform.prototype, "rotation", {
+        /**
+         * Defines the rotation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+         */
+        get: function () {
+            if (this._componentsDirty)
+                this._updateComponents();
+            return this._rotation;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Rotates the 3d object directly to a euler angle
+     *
+     * @param    ax        The angle in degrees of the rotation around the x axis.
+     * @param    ay        The angle in degrees of the rotation around the y axis.
+     * @param    az        The angle in degrees of the rotation around the z axis.
+     */
+    Transform.prototype.rotateTo = function (ax, ay, az) {
+        if (this._componentsDirty)
+            this._updateComponents();
+        this._rotation.x = ax;
+        this._rotation.y = ay;
+        this._rotation.z = az;
+        this.invalidateMatrix3D();
+    };
+    Object.defineProperty(Transform.prototype, "scale", {
+        /**
+         * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+         */
+        get: function () {
+            if (this._componentsDirty)
+                this._updateComponents();
+            return this._scale;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Transform.prototype.scaleTo = function (sx, sy, sz) {
+        if (this._componentsDirty)
+            this._updateComponents();
+        this._scale.x = sx;
+        this._scale.y = sy;
+        this._scale.z = sz;
+        this.invalidateMatrix3D();
+    };
+    Object.defineProperty(Transform.prototype, "skew", {
+        /**
+         * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+         */
+        get: function () {
+            if (this._componentsDirty)
+                this._updateComponents();
+            return this._skew;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Transform.prototype.skewTo = function (sx, sy, sz) {
+        if (this._componentsDirty)
+            this._updateComponents();
+        this._skew.x = sx;
+        this._skew.y = sy;
+        this._skew.z = sz;
+        this.invalidateMatrix3D();
+    };
+    Object.defineProperty(Transform.prototype, "upVector", {
+        /**
+         *
+         */
+        get: function () {
+            return Matrix3DUtils.getUp(this.matrix3D);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Transform.prototype.dispose = function () {
+    };
+    /**
+     * Returns a Matrix3D object, which can transform the space of a specified
+     * display object in relation to the current display object's space. You can
+     * use the <code>getRelativeMatrix3D()</code> method to move one
+     * three-dimensional display object relative to another three-dimensional
+     * display object.
+     *
+     * @param relativeTo The display object relative to which the transformation
+     *                   occurs. To get a Matrix3D object relative to the stage,
+     *                   set the parameter to the <code>root</code> or
+     *                   <code>stage</code> object. To get the world-relative
+     *                   matrix of the display object, set the parameter to a
+     *                   display object that has a perspective transformation
+     *                   applied to it.
+     * @return A Matrix3D object that can be used to transform the space from the
+     *         <code>relativeTo</code> display object to the current display
+     *         object space.
+     */
+    Transform.prototype.getRelativeMatrix3D = function (relativeTo) {
+        return new Matrix3D(); //TODO
+    };
+    /**
+     * Moves the 3d object forwards along it's local z axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveForward = function (distance) {
+        this.translateLocal(Vector3D.Z_AXIS, distance);
+    };
+    /**
+     * Moves the 3d object backwards along it's local z axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveBackward = function (distance) {
+        this.translateLocal(Vector3D.Z_AXIS, -distance);
+    };
+    /**
+     * Moves the 3d object backwards along it's local x axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveLeft = function (distance) {
+        this.translateLocal(Vector3D.X_AXIS, -distance);
+    };
+    /**
+     * Moves the 3d object forwards along it's local x axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveRight = function (distance) {
+        this.translateLocal(Vector3D.X_AXIS, distance);
+    };
+    /**
+     * Moves the 3d object forwards along it's local y axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveUp = function (distance) {
+        this.translateLocal(Vector3D.Y_AXIS, distance);
+    };
+    /**
+     * Moves the 3d object backwards along it's local y axis
+     *
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.moveDown = function (distance) {
+        this.translateLocal(Vector3D.Y_AXIS, -distance);
+    };
+    /**
+     * Moves the 3d object directly to a point in space
+     *
+     * @param    dx        The amount of movement along the local x axis.
+     * @param    dy        The amount of movement along the local y axis.
+     * @param    dz        The amount of movement along the local z axis.
+     */
+    Transform.prototype.moveTo = function (dx, dy, dz) {
+        this._matrix3D.rawData[12] = dx;
+        this._matrix3D.rawData[13] = dy;
+        this._matrix3D.rawData[14] = dz;
+        this.invalidatePosition();
+    };
+    /**
+     * Rotates the 3d object around it's local x-axis
+     *
+     * @param    angle        The amount of rotation in degrees
+     */
+    Transform.prototype.pitch = function (angle) {
+        this.rotate(Vector3D.X_AXIS, angle);
+    };
+    /**
+     * Rotates the 3d object around it's local z-axis
+     *
+     * @param    angle        The amount of rotation in degrees
+     */
+    Transform.prototype.roll = function (angle) {
+        this.rotate(Vector3D.Z_AXIS, angle);
+    };
+    /**
+     * Rotates the 3d object around it's local y-axis
+     *
+     * @param    angle        The amount of rotation in degrees
+     */
+    Transform.prototype.yaw = function (angle) {
+        this.rotate(Vector3D.Y_AXIS, angle);
+    };
+    /**
+     * Rotates the 3d object around an axis by a defined angle
+     *
+     * @param    axis        The vector defining the axis of rotation
+     * @param    angle        The amount of rotation in degrees
+     */
+    Transform.prototype.rotate = function (axis, angle) {
+        this.matrix3D.prependRotation(angle, axis);
+        this.invalidateComponents();
+    };
+    /**
+     * Moves the 3d object along a vector by a defined length
+     *
+     * @param    axis        The vector defining the axis of movement
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.translate = function (axis, distance) {
+        var x = axis.x, y = axis.y, z = axis.z;
+        var len = distance / Math.sqrt(x * x + y * y + z * z);
+        this.matrix3D.appendTranslation(x * len, y * len, z * len);
+        this.invalidatePosition();
+    };
+    /**
+     * Moves the 3d object along a vector by a defined length
+     *
+     * @param    axis        The vector defining the axis of movement
+     * @param    distance    The length of the movement
+     */
+    Transform.prototype.translateLocal = function (axis, distance) {
+        var x = axis.x, y = axis.y, z = axis.z;
+        var len = distance / Math.sqrt(x * x + y * y + z * z);
+        this.matrix3D.prependTranslation(x * len, y * len, z * len);
+        this.invalidatePosition();
+    };
+    Transform.prototype.clearMatrix3D = function () {
+        this._matrix3D.identity();
+        this.invalidateComponents();
+    };
+    Transform.prototype.clearColorTransform = function () {
+        if (!this._colorTransform)
+            return;
+        this._colorTransform.clear();
+        this.invalidateColorTransform();
+    };
+    /**
+     * Invalidates the 3D transformation matrix, causing it to be updated upon the next request
+     *
+     * @private
+     */
+    Transform.prototype.invalidateMatrix3D = function () {
+        this._matrix3DDirty = true;
+        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_MATRIX3D, this));
+    };
+    Transform.prototype.invalidateComponents = function () {
+        this.invalidatePosition();
+        this._componentsDirty = true;
+    };
+    /**
+     *
+     */
+    Transform.prototype.invalidatePosition = function () {
+        this._matrix3D.invalidatePosition();
+        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_MATRIX3D, this));
+    };
+    Transform.prototype.invalidateColorTransform = function () {
+        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_COLOR_TRANSFORM, this));
+    };
+    /**
+     *
+     */
+    Transform.prototype._updateMatrix3D = function () {
+        this._matrix3D.recompose(this._components);
+        this._matrix3DDirty = false;
+    };
+    Transform.prototype._updateComponents = function () {
+        var elements = this._matrix3D.decompose();
+        var vec;
+        vec = elements[1];
+        this._rotation.x = vec.x;
+        this._rotation.y = vec.y;
+        this._rotation.z = vec.z;
+        vec = elements[2];
+        this._skew.x = vec.x;
+        this._skew.y = vec.y;
+        this._skew.z = vec.z;
+        vec = elements[3];
+        this._scale.x = vec.x;
+        this._scale.y = vec.y;
+        this._scale.z = vec.z;
+        this._componentsDirty = false;
+    };
+    return Transform;
+})(EventDispatcher);
+module.exports = Transform;
+
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent"}],"awayjs-display/lib/bounds/AxisAlignedBoundingBox":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
+var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+/**
+ * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+ * This is useful for most meshes.
+ */
+var AxisAlignedBoundingBox = (function (_super) {
+    __extends(AxisAlignedBoundingBox, _super);
+    /**
+     * Creates a new <code>AxisAlignedBoundingBox</code> object.
+     */
+    function AxisAlignedBoundingBox(entity) {
+        _super.call(this, entity);
+        this._x = 0;
+        this._y = 0;
+        this._z = 0;
+        this._width = 0;
+        this._height = 0;
+        this._depth = 0;
+        this._centerX = 0;
+        this._centerY = 0;
+        this._centerZ = 0;
+        this._halfExtentsX = 0;
+        this._halfExtentsY = 0;
+        this._halfExtentsZ = 0;
+    }
+    /**
+     * @inheritDoc
+     */
+    AxisAlignedBoundingBox.prototype.nullify = function () {
+        this._x = this._y = this._z = 0;
+        this._width = this._height = this._depth = 0;
+        this._centerX = this._centerY = this._centerZ = 0;
+        this._halfExtentsX = this._halfExtentsY = this._halfExtentsZ = 0;
+    };
+    /**
+     * @inheritDoc
+     */
+    AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
+        if (this._pInvalidated)
+            this._pUpdate();
+        for (var i = 0; i < numPlanes; ++i) {
+            var plane = planes[i];
+            var a = plane.a;
+            var b = plane.b;
+            var c = plane.c;
+            var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
+            var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
+            var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
+            var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
+            if (projDist < 0)
+                return false;
+        }
+        return true;
+    };
+    AxisAlignedBoundingBox.prototype.rayIntersection = function (position, direction, targetNormal) {
+        if (this._pInvalidated)
+            this._pUpdate();
+        return this._box.rayIntersection(position, direction, targetNormal);
+    };
+    AxisAlignedBoundingBox.prototype.classifyToPlane = function (plane) {
+        var a = plane.a;
+        var b = plane.b;
+        var c = plane.c;
+        var centerDistance = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+        if (a < 0)
+            a = -a;
+        if (b < 0)
+            b = -b;
+        if (c < 0)
+            c = -c;
+        var boundOffset = a * this._halfExtentsX + b * this._halfExtentsY + c * this._halfExtentsZ;
+        return centerDistance > boundOffset ? PlaneClassification.FRONT : centerDistance < -boundOffset ? PlaneClassification.BACK : PlaneClassification.INTERSECT;
+    };
+    AxisAlignedBoundingBox.prototype._pUpdate = function () {
+        _super.prototype._pUpdate.call(this);
+        this._box = this._pEntity.getBox();
+        var matrix = this._pEntity.sceneTransform;
+        var hx = this._box.width / 2;
+        var hy = this._box.height / 2;
+        var hz = this._box.depth / 2;
+        var cx = this._box.x + hx;
+        var cy = this._box.y + hy;
+        var cz = this._box.z + hz;
+        var raw = matrix.rawData;
+        var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+        var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+        var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+        this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+        this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+        this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+        this._halfExtentsX = Math.abs(hx * m11 + hy * m12 + hz * m13);
+        this._halfExtentsY = Math.abs(hx * m21 + hy * m22 + hz * m23);
+        this._halfExtentsZ = Math.abs(hx * m31 + hy * m32 + hz * m33);
+        if (this._prefab) {
+            this._prefab.width = this._box.width;
+            this._prefab.height = this._box.height;
+            this._prefab.depth = this._box.depth;
+            this._pBoundsPrimitive.transform.matrix3D = matrix;
+        }
+        this._width = this._halfExtentsX * 2;
+        this._height = this._halfExtentsY * 2;
+        this._depth = this._halfExtentsZ * 2;
+        this._x = this._centerX - this._halfExtentsX;
+        this._y = this._centerY - this._halfExtentsY;
+        this._z = this._centerZ - this._halfExtentsZ;
+    };
+    AxisAlignedBoundingBox.prototype._pCreateBoundsPrimitive = function () {
+        this._prefab = new PrimitiveCubePrefab(null, ElementsType.LINE);
+        return this._prefab.getNewObject();
+    };
+    return AxisAlignedBoundingBox;
+})(BoundingVolumeBase);
+module.exports = AxisAlignedBoundingBox;
+
+},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab"}],"awayjs-display/lib/bounds/BoundingSphere":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
+var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+var BoundingSphere = (function (_super) {
+    __extends(BoundingSphere, _super);
+    function BoundingSphere(entity) {
+        _super.call(this, entity);
+        this._radius = 0;
+        this._centerX = 0;
+        this._centerY = 0;
+        this._centerZ = 0;
+    }
+    BoundingSphere.prototype.nullify = function () {
+        this._centerX = this._centerY = this._centerZ = 0;
+        this._radius = 0;
+    };
+    BoundingSphere.prototype.isInFrustum = function (planes, numPlanes) {
+        if (this._pInvalidated)
+            this._pUpdate();
+        for (var i = 0; i < numPlanes; ++i) {
+            var plane = planes[i];
+            var flippedExtentX = plane.a < 0 ? -this._radius : this._radius;
+            var flippedExtentY = plane.b < 0 ? -this._radius : this._radius;
+            var flippedExtentZ = plane.c < 0 ? -this._radius : this._radius;
+            var projDist = plane.a * (this._centerX + flippedExtentX) + plane.b * (this._centerY + flippedExtentY) + plane.c * (this._centerZ + flippedExtentZ) - plane.d;
+            if (projDist < 0) {
+                return false;
+            }
+        }
+        return true;
+    };
+    BoundingSphere.prototype.rayIntersection = function (position, direction, targetNormal) {
+        if (this._pInvalidated)
+            this._pUpdate();
+        return this._sphere.rayIntersection(position, direction, targetNormal);
+    };
+    //@override
+    BoundingSphere.prototype.classifyToPlane = function (plane) {
+        var a = plane.a;
+        var b = plane.b;
+        var c = plane.c;
+        var dd = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+        if (a < 0)
+            a = -a;
+        if (b < 0)
+            b = -b;
+        if (c < 0)
+            c = -c;
+        var rr = (a + b + c) * this._radius;
+        return dd > rr ? PlaneClassification.FRONT : dd < -rr ? PlaneClassification.BACK : PlaneClassification.INTERSECT;
+    };
+    BoundingSphere.prototype._pUpdate = function () {
+        _super.prototype._pUpdate.call(this);
+        this._sphere = this._pEntity.getSphere();
+        var matrix = this._pEntity.sceneTransform;
+        var cx = this._sphere.x;
+        var cy = this._sphere.y;
+        var cz = this._sphere.z;
+        var r = this._sphere.radius;
+        var raw = matrix.rawData;
+        var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+        var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+        var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+        this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+        this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+        this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+        var rx = m11 + m12 + m13;
+        var ry = m21 + m22 + m23;
+        var rz = m31 + m32 + m33;
+        this._radius = r * Math.sqrt((rx * rx + ry * ry + rz * rz) / 3);
+        if (this._prefab) {
+            this._prefab.radius = r;
+            this._pBoundsPrimitive.x = cx;
+            this._pBoundsPrimitive.y = cy;
+            this._pBoundsPrimitive.z = cz;
+            this._pBoundsPrimitive.transform.matrix3D = matrix;
+        }
+    };
+    BoundingSphere.prototype._pCreateBoundsPrimitive = function () {
+        this._prefab = new PrimitiveSpherePrefab(null, ElementsType.LINE);
+        return this._prefab.getNewObject();
+    };
+    return BoundingSphere;
+})(BoundingVolumeBase);
+module.exports = BoundingSphere;
+
+},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab"}],"awayjs-display/lib/bounds/BoundingVolumeBase":[function(require,module,exports){
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var BoundingVolumeBase = (function () {
+    function BoundingVolumeBase(entity) {
+        this._pInvalidated = true;
+        this._pEntity = entity;
+    }
+    BoundingVolumeBase.prototype.dispose = function () {
+        this._pEntity = null;
+        this._pBoundsPrimitive = null;
+    };
+    Object.defineProperty(BoundingVolumeBase.prototype, "boundsPrimitive", {
+        get: function () {
+            if (this._pBoundsPrimitive == null) {
+                this._pBoundsPrimitive = this._pCreateBoundsPrimitive();
+                this._pInvalidated = true;
+            }
+            if (this._pInvalidated)
+                this._pUpdate();
+            return this._pBoundsPrimitive;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BoundingVolumeBase.prototype.nullify = function () {
+        throw new AbstractMethodError();
+    };
+    BoundingVolumeBase.prototype.isInFrustum = function (planes, numPlanes) {
+        throw new AbstractMethodError();
+    };
+    BoundingVolumeBase.prototype.clone = function () {
+        throw new AbstractMethodError();
+    };
+    BoundingVolumeBase.prototype.rayIntersection = function (position, direction, targetNormal) {
+        return -1;
+    };
+    BoundingVolumeBase.prototype.classifyToPlane = function (plane) {
+        throw new AbstractMethodError();
+    };
+    BoundingVolumeBase.prototype._pUpdate = function () {
+        this._pInvalidated = false;
+    };
+    BoundingVolumeBase.prototype.invalidate = function () {
+        this._pInvalidated = true;
+    };
+    BoundingVolumeBase.prototype._pCreateBoundsPrimitive = function () {
+        throw new AbstractMethodError();
+    };
+    return BoundingVolumeBase;
+})();
+module.exports = BoundingVolumeBase;
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/bounds/BoundsType":[function(require,module,exports){
+/**
+ *
+ */
+var BoundsType = (function () {
+    function BoundsType() {
+    }
+    /**
+     *
+     */
+    BoundsType.SPHERE = "sphere";
+    /**
+     *
+     */
+    BoundsType.AXIS_ALIGNED_BOX = "axisAlignedBox";
+    /**
+     *
+     */
+    BoundsType.NULL = "null";
+    return BoundsType;
+})();
+module.exports = BoundsType;
+
+},{}],"awayjs-display/lib/bounds/NullBounds":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
+var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
+var NullBounds = (function (_super) {
+    __extends(NullBounds, _super);
+    function NullBounds(alwaysIn) {
+        if (alwaysIn === void 0) { alwaysIn = true; }
+        _super.call(this, null);
+        this._alwaysIn = alwaysIn;
+    }
+    //@override
+    NullBounds.prototype.clone = function () {
+        return new NullBounds(this._alwaysIn);
+    };
+    //@override
+    NullBounds.prototype.isInFrustum = function (planes, numPlanes) {
+        return this._alwaysIn;
+    };
+    NullBounds.prototype.classifyToPlane = function (plane) {
+        return PlaneClassification.INTERSECT;
+    };
+    return NullBounds;
+})(BoundingVolumeBase);
+module.exports = NullBounds;
+
+},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase"}],"awayjs-display/lib/controllers/ControllerBase":[function(require,module,exports){
+var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
+var ControllerBase = (function () {
+    function ControllerBase(targetObject) {
+        if (targetObject === void 0) { targetObject = null; }
+        this._pAutoUpdate = true;
+        this.targetObject = targetObject;
+    }
+    ControllerBase.prototype.pNotifyUpdate = function () {
+        if (this._pTargetObject)
+            this._pTargetObject.invalidatePartitionBounds();
+    };
+    Object.defineProperty(ControllerBase.prototype, "targetObject", {
+        get: function () {
+            return this._pTargetObject;
+        },
+        set: function (val) {
+            if (this._pTargetObject == val)
+                return;
+            if (this._pTargetObject && this._pAutoUpdate)
+                this._pTargetObject._iController = null;
+            this._pTargetObject = val;
+            if (this._pTargetObject && this._pAutoUpdate)
+                this._pTargetObject._iController = this;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ControllerBase.prototype, "autoUpdate", {
+        get: function () {
+            return this._pAutoUpdate;
+        },
+        set: function (val) {
+            if (this._pAutoUpdate == val)
+                return;
+            this._pAutoUpdate = val;
+            if (this._pTargetObject) {
+                if (this._pAutoUpdate)
+                    this._pTargetObject._iController = this;
+                else
+                    this._pTargetObject._iController = null;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ControllerBase.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        throw new AbstractMethodError();
+    };
+    ControllerBase.prototype.updateController = function () {
+        if (this._pControllerDirty && this._pAutoUpdate) {
+            this._pControllerDirty = false;
+            this.pNotifyUpdate();
+        }
+    };
+    return ControllerBase;
+})();
+module.exports = ControllerBase;
+
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/controllers/FirstPersonController":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var MathConsts = require("awayjs-core/lib/geom/MathConsts");
+var ControllerBase = require("awayjs-display/lib/controllers/ControllerBase");
+/**
+ * Extended camera used to hover round a specified target object.
+ *
+ * @see    away3d.containers.View3D
+ */
+var FirstPersonController = (function (_super) {
+    __extends(FirstPersonController, _super);
+    /**
+     * Creates a new <code>HoverController</code> object.
+     */
+    function FirstPersonController(targetObject, panAngle, tiltAngle, minTiltAngle, maxTiltAngle, steps, wrapPanAngle) {
+        if (targetObject === void 0) { targetObject = null; }
+        if (panAngle === void 0) { panAngle = 0; }
+        if (tiltAngle === void 0) { tiltAngle = 90; }
+        if (minTiltAngle === void 0) { minTiltAngle = -90; }
+        if (maxTiltAngle === void 0) { maxTiltAngle = 90; }
+        if (steps === void 0) { steps = 8; }
+        if (wrapPanAngle === void 0) { wrapPanAngle = false; }
+        _super.call(this, targetObject);
+        this._iCurrentPanAngle = 0;
+        this._iCurrentTiltAngle = 90;
+        this._panAngle = 0;
+        this._tiltAngle = 90;
+        this._minTiltAngle = -90;
+        this._maxTiltAngle = 90;
+        this._steps = 8;
+        this._walkIncrement = 0;
+        this._strafeIncrement = 0;
+        this._wrapPanAngle = false;
+        this.fly = false;
+        this.panAngle = panAngle;
+        this.tiltAngle = tiltAngle;
+        this.minTiltAngle = minTiltAngle;
+        this.maxTiltAngle = maxTiltAngle;
+        this.steps = steps;
+        this.wrapPanAngle = wrapPanAngle;
+        //values passed in contrustor are applied immediately
+        this._iCurrentPanAngle = this._panAngle;
+        this._iCurrentTiltAngle = this._tiltAngle;
+    }
+    Object.defineProperty(FirstPersonController.prototype, "steps", {
+        /**
+         * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+         *
+         * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+         *
+         * @see    #tiltAngle
+         * @see    #panAngle
+         */
+        get: function () {
+            return this._steps;
+        },
+        set: function (val) {
+            val = (val < 1) ? 1 : val;
+            if (this._steps == val)
+                return;
+            this._steps = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirstPersonController.prototype, "panAngle", {
+        /**
+         * Rotation of the camera in degrees around the y axis. Defaults to 0.
+         */
+        get: function () {
+            return this._panAngle;
+        },
+        set: function (val) {
+            if (this._panAngle == val)
+                return;
+            this._panAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirstPersonController.prototype, "tiltAngle", {
+        /**
+         * Elevation angle of the camera in degrees. Defaults to 90.
+         */
+        get: function () {
+            return this._tiltAngle;
+        },
+        set: function (val) {
+            val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+            if (this._tiltAngle == val)
+                return;
+            this._tiltAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirstPersonController.prototype, "minTiltAngle", {
+        /**
+         * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+         *
+         * @see    #tiltAngle
+         */
+        get: function () {
+            return this._minTiltAngle;
+        },
+        set: function (val) {
+            if (this._minTiltAngle == val)
+                return;
+            this._minTiltAngle = val;
+            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirstPersonController.prototype, "maxTiltAngle", {
+        /**
+         * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+         *
+         * @see    #tiltAngle
+         */
+        get: function () {
+            return this._maxTiltAngle;
+        },
+        set: function (val) {
+            if (this._maxTiltAngle == val)
+                return;
+            this._maxTiltAngle = val;
+            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirstPersonController.prototype, "wrapPanAngle", {
+        /**
+         * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+         */
+        get: function () {
+            return this._wrapPanAngle;
+        },
+        set: function (val) {
+            if (this._wrapPanAngle == val)
+                return;
+            this._wrapPanAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Updates the current tilt angle and pan angle values.
+     *
+     * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+     *
+     * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+     *
+     * @see    #tiltAngle
+     * @see    #panAngle
+     * @see    #steps
+     */
+    FirstPersonController.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+            this._pControllerDirty = true;
+            if (this._wrapPanAngle) {
+                if (this._panAngle < 0) {
+                    this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                    this._panAngle = this._panAngle % 360 + 360;
+                }
+                else {
+                    this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                    this._panAngle = this._panAngle % 360;
+                }
+                while (this._panAngle - this._iCurrentPanAngle < -180)
+                    this._iCurrentPanAngle -= 360;
+                while (this._panAngle - this._iCurrentPanAngle > 180)
+                    this._iCurrentPanAngle += 360;
+            }
+            if (interpolate) {
+                this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+            }
+            else {
+                this._iCurrentTiltAngle = this._tiltAngle;
+                this._iCurrentPanAngle = this._panAngle;
+            }
+            //snap coords if angle differences are close
+            if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                this._iCurrentTiltAngle = this._tiltAngle;
+                this._iCurrentPanAngle = this._panAngle;
+            }
+        }
+        this.targetObject.rotationX = this._iCurrentTiltAngle;
+        this.targetObject.rotationY = this._iCurrentPanAngle;
+        if (this._walkIncrement) {
+            if (this.fly) {
+                this.targetObject.transform.moveForward(this._walkIncrement);
+            }
+            else {
+                this.targetObject.x += this._walkIncrement * Math.sin(this._panAngle * MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.z += this._walkIncrement * Math.cos(this._panAngle * MathConsts.DEGREES_TO_RADIANS);
+            }
+            this._walkIncrement = 0;
+        }
+        if (this._strafeIncrement) {
+            this.targetObject.transform.moveRight(this._strafeIncrement);
+            this._strafeIncrement = 0;
+        }
+    };
+    FirstPersonController.prototype.incrementWalk = function (val) {
+        if (val == 0)
+            return;
+        this._walkIncrement += val;
+        this.pNotifyUpdate();
+    };
+    FirstPersonController.prototype.incrementStrafe = function (val) {
+        if (val == 0)
+            return;
+        this._strafeIncrement += val;
+        this.pNotifyUpdate();
+    };
+    return FirstPersonController;
+})(ControllerBase);
+module.exports = FirstPersonController;
+
+},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase"}],"awayjs-display/lib/controllers/FollowController":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var HoverController = require("awayjs-display/lib/controllers/HoverController");
+/**
+ * Controller used to follow behind an object on the XZ plane, with an optional
+ * elevation (tiltAngle).
+ *
+ * @see    away3d.containers.View3D
+ */
+var FollowController = (function (_super) {
+    __extends(FollowController, _super);
+    function FollowController(targetObject, lookAtObject, tiltAngle, distance) {
+        if (targetObject === void 0) { targetObject = null; }
+        if (lookAtObject === void 0) { lookAtObject = null; }
+        if (tiltAngle === void 0) { tiltAngle = 45; }
+        if (distance === void 0) { distance = 700; }
+        _super.call(this, targetObject, lookAtObject, 0, tiltAngle, distance);
+    }
+    FollowController.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        if (!this.lookAtObject)
+            return;
+        this.panAngle = this._pLookAtObject.rotationY - 180;
+        _super.prototype.update.call(this);
+    };
+    return FollowController;
+})(HoverController);
+module.exports = FollowController;
+
+},{"awayjs-display/lib/controllers/HoverController":"awayjs-display/lib/controllers/HoverController"}],"awayjs-display/lib/controllers/HoverController":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var MathConsts = require("awayjs-core/lib/geom/MathConsts");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var LookAtController = require("awayjs-display/lib/controllers/LookAtController");
+/**
+ * Extended camera used to hover round a specified target object.
+ *
+ * @see    away.containers.View
+ */
+var HoverController = (function (_super) {
+    __extends(HoverController, _super);
+    /**
+     * Creates a new <code>HoverController</code> object.
+     */
+    function HoverController(targetObject, lookAtObject, panAngle, tiltAngle, distance, minTiltAngle, maxTiltAngle, minPanAngle, maxPanAngle, steps, yFactor, wrapPanAngle) {
+        if (targetObject === void 0) { targetObject = null; }
+        if (lookAtObject === void 0) { lookAtObject = null; }
+        if (panAngle === void 0) { panAngle = 0; }
+        if (tiltAngle === void 0) { tiltAngle = 90; }
+        if (distance === void 0) { distance = 1000; }
+        if (minTiltAngle === void 0) { minTiltAngle = -90; }
+        if (maxTiltAngle === void 0) { maxTiltAngle = 90; }
+        if (minPanAngle === void 0) { minPanAngle = null; }
+        if (maxPanAngle === void 0) { maxPanAngle = null; }
+        if (steps === void 0) { steps = 8; }
+        if (yFactor === void 0) { yFactor = 2; }
+        if (wrapPanAngle === void 0) { wrapPanAngle = false; }
+        _super.call(this, targetObject, lookAtObject);
+        this._iCurrentPanAngle = 0;
+        this._iCurrentTiltAngle = 90;
+        this._panAngle = 0;
+        this._tiltAngle = 90;
+        this._distance = 1000;
+        this._minPanAngle = -Infinity;
+        this._maxPanAngle = Infinity;
+        this._minTiltAngle = -90;
+        this._maxTiltAngle = 90;
+        this._steps = 8;
+        this._yFactor = 2;
+        this._wrapPanAngle = false;
+        this._upAxis = new Vector3D();
+        this.distance = distance;
+        this.panAngle = panAngle;
+        this.tiltAngle = tiltAngle;
+        this.minPanAngle = (minPanAngle != null) ? minPanAngle : -Infinity;
+        this.maxPanAngle = (maxPanAngle != null) ? maxPanAngle : Infinity;
+        this.minTiltAngle = minTiltAngle;
+        this.maxTiltAngle = maxTiltAngle;
+        this.steps = steps;
+        this.yFactor = yFactor;
+        this.wrapPanAngle = wrapPanAngle;
+        //values passed in contrustor are applied immediately
+        this._iCurrentPanAngle = this._panAngle;
+        this._iCurrentTiltAngle = this._tiltAngle;
+    }
+    Object.defineProperty(HoverController.prototype, "steps", {
+        /**
+         * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+         *
+         * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+         *
+         * @see    #tiltAngle
+         * @see    #panAngle
+         */
+        get: function () {
+            return this._steps;
+        },
+        set: function (val) {
+            val = (val < 1) ? 1 : val;
+            if (this._steps == val)
+                return;
+            this._steps = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "panAngle", {
+        /**
+         * Rotation of the camera in degrees around the y axis. Defaults to 0.
+         */
+        get: function () {
+            return this._panAngle;
+        },
+        set: function (val) {
+            val = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, val));
+            if (this._panAngle == val)
+                return;
+            this._panAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "tiltAngle", {
+        /**
+         * Elevation angle of the camera in degrees. Defaults to 90.
+         */
+        get: function () {
+            return this._tiltAngle;
+        },
+        set: function (val) {
+            val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+            if (this._tiltAngle == val)
+                return;
+            this._tiltAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "distance", {
+        /**
+         * Distance between the camera and the specified target. Defaults to 1000.
+         */
+        get: function () {
+            return this._distance;
+        },
+        set: function (val) {
+            if (this._distance == val)
+                return;
+            this._distance = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "minPanAngle", {
+        /**
+         * Minimum bounds for the <code>panAngle</code>. Defaults to -Infinity.
+         *
+         * @see    #panAngle
+         */
+        get: function () {
+            return this._minPanAngle;
+        },
+        set: function (val) {
+            if (this._minPanAngle == val)
+                return;
+            this._minPanAngle = val;
+            this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "maxPanAngle", {
+        /**
+         * Maximum bounds for the <code>panAngle</code>. Defaults to Infinity.
+         *
+         * @see    #panAngle
+         */
+        get: function () {
+            return this._maxPanAngle;
+        },
+        set: function (val) {
+            if (this._maxPanAngle == val)
+                return;
+            this._maxPanAngle = val;
+            this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "minTiltAngle", {
+        /**
+         * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+         *
+         * @see    #tiltAngle
+         */
+        get: function () {
+            return this._minTiltAngle;
+        },
+        set: function (val) {
+            if (this._minTiltAngle == val)
+                return;
+            this._minTiltAngle = val;
+            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "maxTiltAngle", {
+        /**
+         * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+         *
+         * @see    #tiltAngle
+         */
+        get: function () {
+            return this._maxTiltAngle;
+        },
+        set: function (val) {
+            if (this._maxTiltAngle == val)
+                return;
+            this._maxTiltAngle = val;
+            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "yFactor", {
+        /**
+         * Fractional difference in distance between the horizontal camera orientation and vertical camera orientation. Defaults to 2.
+         *
+         * @see    #distance
+         */
+        get: function () {
+            return this._yFactor;
+        },
+        set: function (val) {
+            if (this._yFactor == val)
+                return;
+            this._yFactor = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HoverController.prototype, "wrapPanAngle", {
+        /**
+         * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+         */
+        get: function () {
+            return this._wrapPanAngle;
+        },
+        set: function (val) {
+            if (this._wrapPanAngle == val)
+                return;
+            this._wrapPanAngle = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Updates the current tilt angle and pan angle values.
+     *
+     * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+     *
+     * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+     *
+     * @see    #tiltAngle
+     * @see    #panAngle
+     * @see    #steps
+     */
+    HoverController.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+            this._pControllerDirty = true;
+            if (this._wrapPanAngle) {
+                if (this._panAngle < 0) {
+                    this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                    this._panAngle = this._panAngle % 360 + 360;
+                }
+                else {
+                    this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                    this._panAngle = this._panAngle % 360;
+                }
+                while (this._panAngle - this._iCurrentPanAngle < -180)
+                    this._iCurrentPanAngle -= 360;
+                while (this._panAngle - this._iCurrentPanAngle > 180)
+                    this._iCurrentPanAngle += 360;
+            }
+            if (interpolate) {
+                this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+            }
+            else {
+                this._iCurrentPanAngle = this._panAngle;
+                this._iCurrentTiltAngle = this._tiltAngle;
+            }
+            //snap coords if angle differences are close
+            if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                this._iCurrentTiltAngle = this._tiltAngle;
+                this._iCurrentPanAngle = this._panAngle;
+            }
+        }
+        var pos = (this.lookAtObject) ? this.lookAtObject.transform.position : (this.lookAtPosition) ? this.lookAtPosition : this._pOrigin;
+        this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+        this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
+        this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+        this._upAxis.x = -Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+        this._upAxis.y = Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+        this._upAxis.z = -Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
+        if (this._pTargetObject) {
+            if (this._pLookAtPosition)
+                this._pTargetObject.lookAt(this._pLookAtPosition, this._upAxis);
+            else if (this._pLookAtObject)
+                this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position, this._upAxis);
+        }
+    };
+    return HoverController;
+})(LookAtController);
+module.exports = HoverController;
+
+},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/controllers/LookAtController":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var ControllerBase = require("awayjs-display/lib/controllers/ControllerBase");
+var DisplayObjectEvent = require("awayjs-display/lib/events/DisplayObjectEvent");
+var LookAtController = (function (_super) {
+    __extends(LookAtController, _super);
+    function LookAtController(targetObject, lookAtObject) {
+        var _this = this;
+        if (targetObject === void 0) { targetObject = null; }
+        if (lookAtObject === void 0) { lookAtObject = null; }
+        _super.call(this, targetObject);
+        this._pOrigin = new Vector3D(0.0, 0.0, 0.0);
+        this._onLookAtObjectChangedDelegate = function (event) { return _this.onLookAtObjectChanged(event); };
+        if (lookAtObject)
+            this.lookAtObject = lookAtObject;
+        else
+            this.lookAtPosition = new Vector3D();
+    }
+    Object.defineProperty(LookAtController.prototype, "lookAtPosition", {
+        get: function () {
+            return this._pLookAtPosition;
+        },
+        set: function (val) {
+            if (this._pLookAtObject) {
+                this._pLookAtObject.removeEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+                this._pLookAtObject = null;
+            }
+            this._pLookAtPosition = val;
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LookAtController.prototype, "lookAtObject", {
+        get: function () {
+            return this._pLookAtObject;
+        },
+        set: function (val) {
+            if (this._pLookAtPosition)
+                this._pLookAtPosition = null;
+            if (this._pLookAtObject == val)
+                return;
+            if (this._pLookAtObject)
+                this._pLookAtObject.removeEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+            this._pLookAtObject = val;
+            if (this._pLookAtObject)
+                this._pLookAtObject.addEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+            this.pNotifyUpdate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //@override
+    LookAtController.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        if (this._pTargetObject) {
+            if (this._pLookAtPosition)
+                this._pTargetObject.lookAt(this._pLookAtPosition);
+            else if (this._pLookAtObject)
+                this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position);
+        }
+    };
+    LookAtController.prototype.onLookAtObjectChanged = function (event) {
+        this.pNotifyUpdate();
+    };
+    return LookAtController;
+})(ControllerBase);
+module.exports = LookAtController;
+
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent"}],"awayjs-display/lib/controllers/SpringController":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var LookAtController = require("awayjs-display/lib/controllers/LookAtController");
+/**
+ * Uses spring physics to animate the target object towards a position that is
+ * defined as the lookAtTarget object's position plus the vector defined by the
+ * positionOffset property.
+ */
+var SpringController = (function (_super) {
+    __extends(SpringController, _super);
+    function SpringController(targetObject, lookAtObject, stiffness, mass, damping) {
+        if (targetObject === void 0) { targetObject = null; }
+        if (lookAtObject === void 0) { lookAtObject = null; }
+        if (stiffness === void 0) { stiffness = 1; }
+        if (mass === void 0) { mass = 40; }
+        if (damping === void 0) { damping = 4; }
+        _super.call(this, targetObject, lookAtObject);
+        /**
+         * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
+         */
+        this.positionOffset = new Vector3D(0, 500, -1000);
+        this.stiffness = stiffness;
+        this.damping = damping;
+        this.mass = mass;
+        this._velocity = new Vector3D();
+        this._dv = new Vector3D();
+        this._stretch = new Vector3D();
+        this._force = new Vector3D();
+        this._acceleration = new Vector3D();
+        this._desiredPosition = new Vector3D();
+    }
+    SpringController.prototype.update = function (interpolate) {
+        if (interpolate === void 0) { interpolate = true; }
+        var offs;
+        if (!this._pLookAtObject || !this._pTargetObject)
+            return;
+        this._pControllerDirty = true;
+        offs = this._pLookAtObject.transform.matrix3D.deltaTransformVector(this.positionOffset);
+        this._desiredPosition.x = this._pLookAtObject.x + offs.x;
+        this._desiredPosition.y = this._pLookAtObject.y + offs.y;
+        this._desiredPosition.z = this._pLookAtObject.z + offs.z;
+        this._stretch = this._pTargetObject.transform.position.add(this._desiredPosition);
+        this._stretch.scaleBy(-this.stiffness);
+        this._dv.copyFrom(this._velocity);
+        this._dv.scaleBy(this.damping);
+        this._force.x = this._stretch.x - this._dv.x;
+        this._force.y = this._stretch.y - this._dv.y;
+        this._force.z = this._stretch.z - this._dv.z;
+        this._acceleration.copyFrom(this._force);
+        this._acceleration.scaleBy(1 / this.mass);
+        this._velocity.incrementBy(this._acceleration);
+        this._pTargetObject.transform.position = this._pTargetObject.transform.position.add(this._velocity);
+        _super.prototype.update.call(this);
+    };
+    return SpringController;
+})(LookAtController);
+module.exports = SpringController;
+
+},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/display/Billboard":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Rectangle = require("awayjs-core/lib/geom/Rectangle");
+var DisplayObject = require("awayjs-display/lib/display/DisplayObject");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var RenderableEvent = require("awayjs-display/lib/events/RenderableEvent");
+var SurfaceEvent = require("awayjs-display/lib/events/SurfaceEvent");
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
+var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
+/**
+ * The Billboard class represents display objects that represent bitmap images.
+ * These can be images that you load with the <code>flash.Assets</code> or
+ * <code>flash.display.Loader</code> classes, or they can be images that you
+ * create with the <code>Billboard()</code> constructor.
+ *
+ * <p>The <code>Billboard()</code> constructor allows you to create a Billboard
+ * object that contains a reference to a Image2D object. After you create a
+ * Billboard object, use the <code>addChild()</code> or <code>addChildAt()</code>
+ * method of the parent DisplayObjectContainer instance to place the bitmap on
+ * the display list.</p>
+ *
+ * <p>A Billboard object can share its Image2D reference among several Billboard
+ * objects, independent of translation or rotation properties. Because you can
+ * create multiple Billboard objects that reference the same Image2D object,
+ * multiple display objects can use the same complex Image2D object without
+ * incurring the memory overhead of a Image2D object for each display
+ * object instance.</p>
+ *
+ * <p>A Image2D object can be drawn to the screen by a Billboard object in one
+ * of two ways: by using the default hardware renderer with a single hardware surface,
+ * or by using the slower software renderer when 3D acceleration is not available.</p>
+ *
+ * <p>If you would prefer to perform a batch rendering command, rather than using a
+ * single surface for each Billboard object, you can also draw to the screen using the
+ * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
+ * available to <code>flash.display.Tilesheet</code> and <code>flash.display.Graphics
+ * objects.</code></p>
+ *
+ * <p><b>Note:</b> The Billboard class is not a subclass of the InteractiveObject
+ * class, so it cannot dispatch mouse events. However, you can use the
+ * <code>addEventListener()</code> method of the display object container that
+ * contains the Billboard object.</p>
+ */
+var Billboard = (function (_super) {
+    __extends(Billboard, _super);
+    function Billboard(material, pixelSnapping, smoothing) {
+        var _this = this;
+        if (pixelSnapping === void 0) { pixelSnapping = "auto"; }
+        if (smoothing === void 0) { smoothing = false; }
+        _super.call(this);
+        this._pIsEntity = true;
+        this.onInvalidateTextureDelegate = function (event) { return _this.onInvalidateTexture(event); };
+        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+        this.material = material;
+        this._updateDimensions();
+        //default bounds type
+        this._boundsType = BoundsType.AXIS_ALIGNED_BOX;
+    }
+    Object.defineProperty(Billboard.prototype, "animator", {
+        /**
+         * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
+         */
+        get: function () {
+            return this._animator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Billboard.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return Billboard.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Billboard.prototype, "billboardRect", {
+        /**
+         *
+         */
+        get: function () {
+            return this._billboardRect;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Billboard.prototype, "billboardHeight", {
+        /**
+         *
+         */
+        get: function () {
+            return this._billboardHeight;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Billboard.prototype, "billboardWidth", {
+        /**
+         *
+         */
+        get: function () {
+            return this._billboardWidth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Billboard.prototype, "material", {
+        /**
+         *
+         */
+        get: function () {
+            return this._material;
+        },
+        set: function (value) {
+            if (value == this._material)
+                return;
+            if (this._material) {
+                this._material.iRemoveOwner(this);
+                this._material.removeEventListener(SurfaceEvent.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
+            }
+            this._material = value;
+            if (this._material) {
+                this._material.iAddOwner(this);
+                this._material.addEventListener(SurfaceEvent.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @protected
+     */
+    Billboard.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        this._pBoxBounds.width = this._billboardRect.width;
+        this._pBoxBounds.height = this._billboardRect.height;
+    };
+    Billboard.prototype.clone = function () {
+        var clone = new Billboard(this.material);
+        return clone;
+    };
+    Object.defineProperty(Billboard.prototype, "style", {
+        /**
+         * The style used to render the current Billboard. If set to null, the default style of the material will be used instead.
+         */
+        get: function () {
+            return this._style;
+        },
+        set: function (value) {
+            if (this._style == value)
+                return;
+            if (this._style)
+                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._style = value;
+            if (this._style)
+                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._onInvalidateProperties();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * //TODO
+     *
+     * @param shortestCollisionDistance
+     * @returns {boolean}
+     *
+     * @internal
+     */
+    Billboard.prototype._iTestCollision = function (shortestCollisionDistance) {
+        return this._pPickingCollider.testBillboardCollision(this, this.material, this._pPickingCollisionVO, shortestCollisionDistance);
+    };
+    /**
+     * @private
+     */
+    Billboard.prototype.onInvalidateTexture = function (event) {
+        this._updateDimensions();
+    };
+    Billboard.prototype._acceptTraverser = function (traverser) {
+        traverser.applyRenderable(this);
+    };
+    Billboard.prototype._updateDimensions = function () {
+        var texture = this.material.getTextureAt(0);
+        var image = texture ? ((this._style ? this._style.getImageAt(texture) : null) || (this.material.style ? this.material.style.getImageAt(texture) : null) || texture.getImageAt(0)) : null;
+        if (image) {
+            var sampler = ((this._style ? this._style.getSamplerAt(texture) : null) || (this.material.style ? this.material.style.getSamplerAt(texture) : null) || texture.getSamplerAt(0) || DefaultMaterialManager.getDefaultSampler());
+            if (sampler.imageRect) {
+                this._billboardWidth = sampler.imageRect.width * image.width;
+                this._billboardHeight = sampler.imageRect.height * image.height;
+            }
+            else {
+                this._billboardWidth = image.rect.width;
+                this._billboardHeight = image.rect.height;
+            }
+            this._billboardRect = sampler.frameRect || new Rectangle(0, 0, this._billboardWidth, this._billboardHeight);
+        }
+        else {
+            this._billboardWidth = 1;
+            this._billboardHeight = 1;
+            this._billboardRect = new Rectangle(0, 0, 1, 1);
+        }
+        this._pInvalidateBounds();
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_ELEMENTS, this));
+    };
+    Billboard.prototype.invalidateSurface = function () {
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_RENDER_OWNER, this));
+    };
+    Billboard.prototype._onInvalidateProperties = function (event) {
+        if (event === void 0) { event = null; }
+        this.invalidateSurface();
+        this._updateDimensions();
+    };
+    Billboard.assetType = "[asset Billboard]";
+    return Billboard;
+})(DisplayObject);
+module.exports = Billboard;
+
+},{"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/display/Camera":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Plane3D = require("awayjs-core/lib/geom/Plane3D");
+var ProjectionEvent = require("awayjs-core/lib/events/ProjectionEvent");
+var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
+var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var CameraEvent = require("awayjs-display/lib/events/CameraEvent");
+var Camera = (function (_super) {
+    __extends(Camera, _super);
+    function Camera(projection) {
+        var _this = this;
+        if (projection === void 0) { projection = null; }
+        _super.call(this);
+        this._viewProjection = new Matrix3D();
+        this._viewProjectionDirty = true;
+        this._frustumPlanesDirty = true;
+        this._pIsEntity = true;
+        this._onProjectionMatrixChangedDelegate = function (event) { return _this.onProjectionMatrixChanged(event); };
+        this._projection = projection || new PerspectiveProjection();
+        this._projection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+        this._frustumPlanes = [];
+        for (var i = 0; i < 6; ++i)
+            this._frustumPlanes[i] = new Plane3D();
+        this.z = -1000;
+        //default bounds type
+        this._boundsType = BoundsType.NULL;
+    }
+    Object.defineProperty(Camera.prototype, "assetType", {
+        //@override
+        get: function () {
+            return Camera.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Camera.prototype.onProjectionMatrixChanged = function (event) {
+        this._viewProjectionDirty = true;
+        this._frustumPlanesDirty = true;
+        this.dispatchEvent(event);
+    };
+    Object.defineProperty(Camera.prototype, "frustumPlanes", {
+        get: function () {
+            if (this._frustumPlanesDirty)
+                this.updateFrustum();
+            return this._frustumPlanes;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Camera.prototype.updateFrustum = function () {
+        var a, b, c;
+        //var d : Number;
+        var c11, c12, c13, c14;
+        var c21, c22, c23, c24;
+        var c31, c32, c33, c34;
+        var c41, c42, c43, c44;
+        var p;
+        var raw = this.viewProjection.rawData;
+        var invLen;
+        c11 = raw[0];
+        c12 = raw[4];
+        c13 = raw[8];
+        c14 = raw[12];
+        c21 = raw[1];
+        c22 = raw[5];
+        c23 = raw[9];
+        c24 = raw[13];
+        c31 = raw[2];
+        c32 = raw[6];
+        c33 = raw[10];
+        c34 = raw[14];
+        c41 = raw[3];
+        c42 = raw[7];
+        c43 = raw[11];
+        c44 = raw[15];
+        // left plane
+        p = this._frustumPlanes[0];
+        a = c41 + c11;
+        b = c42 + c12;
+        c = c43 + c13;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = -(c44 + c14) * invLen;
+        // right plane
+        p = this._frustumPlanes[1];
+        a = c41 - c11;
+        b = c42 - c12;
+        c = c43 - c13;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = (c14 - c44) * invLen;
+        // bottom
+        p = this._frustumPlanes[2];
+        a = c41 + c21;
+        b = c42 + c22;
+        c = c43 + c23;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = -(c44 + c24) * invLen;
+        // top
+        p = this._frustumPlanes[3];
+        a = c41 - c21;
+        b = c42 - c22;
+        c = c43 - c23;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = (c24 - c44) * invLen;
+        // near
+        p = this._frustumPlanes[4];
+        a = c31;
+        b = c32;
+        c = c33;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = -c34 * invLen;
+        // far
+        p = this._frustumPlanes[5];
+        a = c41 - c31;
+        b = c42 - c32;
+        c = c43 - c33;
+        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+        p.a = a * invLen;
+        p.b = b * invLen;
+        p.c = c * invLen;
+        p.d = (c34 - c44) * invLen;
+        this._frustumPlanesDirty = false;
+    };
+    Camera.prototype.pInvalidateHierarchicalProperties = function (bitFlag) {
+        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, bitFlag))
+            return true;
+        if (this._hierarchicalPropsDirty & HierarchicalProperties.SCENE_TRANSFORM) {
+            this._viewProjectionDirty = true;
+            this._frustumPlanesDirty = true;
+        }
+        return false;
+    };
+    Object.defineProperty(Camera.prototype, "projection", {
+        /**
+         *
+         */
+        get: function () {
+            return this._projection;
+        },
+        set: function (value) {
+            if (this._projection == value)
+                return;
+            if (!value)
+                throw new Error("Projection cannot be null!");
+            this._projection.removeEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+            this._projection = value;
+            this._projection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+            this.dispatchEvent(new CameraEvent(CameraEvent.PROJECTION_CHANGED, this));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Camera.prototype, "viewProjection", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._viewProjectionDirty) {
+                this._viewProjection.copyFrom(this.inverseSceneTransform);
+                this._viewProjection.append(this._projection.matrix);
+                this._viewProjectionDirty = false;
+            }
+            return this._viewProjection;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+     *
+     * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+     * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+     * @param sZ The z coordinate in screen space, representing the distance into the screen.
+     * @return The ray from the camera to the scene space position of the given screen coordinates.
+     */
+    Camera.prototype.getRay = function (nX, nY, sZ) {
+        return this.sceneTransform.deltaTransformVector(this._projection.unproject(nX, nY, sZ));
+    };
+    /**
+     * Calculates the normalised position in screen space of the given scene position.
+     *
+     * @param point3d the position vector of the scene coordinates to be projected.
+     * @return The normalised screen position of the given scene coordinates.
+     */
+    Camera.prototype.project = function (point3d) {
+        return this._projection.project(this.inverseSceneTransform.transformVector(point3d));
+    };
+    /**
+     * Calculates the scene position of the given normalized coordinates in screen space.
+     *
+     * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
+     * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
+     * @param sZ The z coordinate in screen space, representing the distance into the screen.
+     * @return The scene position of the given screen coordinates.
+     */
+    Camera.prototype.unproject = function (nX, nY, sZ) {
+        return this.sceneTransform.transformVector(this._projection.unproject(nX, nY, sZ));
+    };
+    Camera.prototype._applyRenderer = function (renderer) {
+        // Since this getter is invoked every iteration of the render loop, and
+        // the prefab construct could affect the sub-meshes, the prefab is
+        // validated here to give it a chance to rebuild.
+        if (this._iSourcePrefab)
+            this._iSourcePrefab._iValidate();
+        //nothing to do here
+    };
+    Camera.assetType = "[asset Camera]";
+    return Camera;
+})(DisplayObjectContainer);
+module.exports = Camera;
+
+},{"awayjs-core/lib/events/ProjectionEvent":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Plane3D":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/events/CameraEvent":"awayjs-display/lib/events/CameraEvent"}],"awayjs-display/lib/display/DirectionalLight":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var LightBase = require("awayjs-display/lib/display/LightBase");
+var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var DirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+var DirectionalLight = (function (_super) {
+    __extends(DirectionalLight, _super);
+    function DirectionalLight(xDir, yDir, zDir) {
+        if (xDir === void 0) { xDir = 0; }
+        if (yDir === void 0) { yDir = -1; }
+        if (zDir === void 0) { zDir = 1; }
+        _super.call(this);
+        this._pAabbPoints = new Array(24);
+        this._pIsEntity = true;
+        this.direction = new Vector3D(xDir, yDir, zDir);
+        this._sceneDirection = new Vector3D();
+        //default bounds type
+        this._boundsType = BoundsType.NULL;
+    }
+    Object.defineProperty(DirectionalLight.prototype, "assetType", {
+        get: function () {
+            return DirectionalLight.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DirectionalLight.prototype, "sceneDirection", {
+        get: function () {
+            if (this._hierarchicalPropsDirty & HierarchicalProperties.SCENE_TRANSFORM)
+                this.pUpdateSceneTransform();
+            return this._sceneDirection;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DirectionalLight.prototype, "direction", {
+        get: function () {
+            return this._direction;
+        },
+        set: function (value) {
+            this._direction = value;
+            if (!this._tmpLookAt)
+                this._tmpLookAt = new Vector3D();
+            this._tmpLookAt.x = this.x + this._direction.x;
+            this._tmpLookAt.y = this.y + this._direction.y;
+            this._tmpLookAt.z = this.z + this._direction.z;
+            this.lookAt(this._tmpLookAt);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //@override
+    DirectionalLight.prototype.pUpdateSceneTransform = function () {
+        _super.prototype.pUpdateSceneTransform.call(this);
+        this.sceneTransform.copyColumnTo(2, this._sceneDirection);
+        this._sceneDirection.normalize();
+    };
+    //@override
+    DirectionalLight.prototype.pCreateShadowMapper = function () {
+        return new DirectionalShadowMapper();
+    };
+    //override
+    DirectionalLight.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
+        if (target === void 0) { target = null; }
+        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+        var m = new Matrix3D();
+        m.copyFrom(entity.getRenderSceneTransform(camera));
+        m.append(this.inverseSceneTransform);
+        if (!this._projAABBPoints)
+            this._projAABBPoints = [];
+        m.transformVectors(this._pAabbPoints, this._projAABBPoints);
+        var xMin = Infinity, xMax = -Infinity;
+        var yMin = Infinity, yMax = -Infinity;
+        var zMin = Infinity, zMax = -Infinity;
+        var d;
+        for (var i = 0; i < 24;) {
+            d = this._projAABBPoints[i++];
+            if (d < xMin)
+                xMin = d;
+            if (d > xMax)
+                xMax = d;
+            d = this._projAABBPoints[i++];
+            if (d < yMin)
+                yMin = d;
+            if (d > yMax)
+                yMax = d;
+            d = this._projAABBPoints[i++];
+            if (d < zMin)
+                zMin = d;
+            if (d > zMax)
+                zMax = d;
+        }
+        var invXRange = 1 / (xMax - xMin);
+        var invYRange = 1 / (yMax - yMin);
+        var invZRange = 1 / (zMax - zMin);
+        raw[0] = 2 * invXRange;
+        raw[5] = 2 * invYRange;
+        raw[10] = invZRange;
+        raw[12] = -(xMax + xMin) * invXRange;
+        raw[13] = -(yMax + yMin) * invYRange;
+        raw[14] = -zMin * invZRange;
+        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+        raw[15] = 1;
+        if (!target)
+            target = new Matrix3D();
+        target.copyRawDataFrom(raw);
+        target.prepend(m);
+        return target;
+    };
+    /**
+     * //TODO
+     *
+     * @protected
+     */
+    DirectionalLight.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        //update points
+        var minX = this._pBoxBounds.x;
+        var minY = this._pBoxBounds.y - this._pBoxBounds.height;
+        var minZ = this._pBoxBounds.z;
+        var maxX = this._pBoxBounds.x + this._pBoxBounds.width;
+        var maxY = this._pBoxBounds.y;
+        var maxZ = this._pBoxBounds.z + this._pBoxBounds.depth;
+        this._pAabbPoints[0] = minX;
+        this._pAabbPoints[1] = minY;
+        this._pAabbPoints[2] = minZ;
+        this._pAabbPoints[3] = maxX;
+        this._pAabbPoints[4] = minY;
+        this._pAabbPoints[5] = minZ;
+        this._pAabbPoints[6] = minX;
+        this._pAabbPoints[7] = maxY;
+        this._pAabbPoints[8] = minZ;
+        this._pAabbPoints[9] = maxX;
+        this._pAabbPoints[10] = maxY;
+        this._pAabbPoints[11] = minZ;
+        this._pAabbPoints[12] = minX;
+        this._pAabbPoints[13] = minY;
+        this._pAabbPoints[14] = maxZ;
+        this._pAabbPoints[15] = maxX;
+        this._pAabbPoints[16] = minY;
+        this._pAabbPoints[17] = maxZ;
+        this._pAabbPoints[18] = minX;
+        this._pAabbPoints[19] = maxY;
+        this._pAabbPoints[20] = maxZ;
+        this._pAabbPoints[21] = maxX;
+        this._pAabbPoints[22] = maxY;
+        this._pAabbPoints[23] = maxZ;
+    };
+    DirectionalLight.assetType = "[light DirectionalLight]";
+    return DirectionalLight;
+})(LightBase);
+module.exports = DirectionalLight;
+
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/display/DisplayObjectContainer":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
+var RangeError = require("awayjs-core/lib/errors/RangeError");
+var DisplayObject = require("awayjs-display/lib/display/DisplayObject");
+var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
+/**
+ * The DisplayObjectContainer class is the base class for all objects that can
+ * serve as display object containers on the display list. The display list
+ * manages all objects displayed in the Flash runtimes. Use the
+ * DisplayObjectContainer class to arrange the display objects in the display
+ * list. Each DisplayObjectContainer object has its own child list for
+ * organizing the z-order of the objects. The z-order is the front-to-back
+ * order that determines which object is drawn in front, which is behind, and
+ * so on.
+ *
+ * <p>DisplayObject is an abstract base class; therefore, you cannot call
+ * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
+ * <code>ArgumentError</code> exception.</p>
+ * The DisplayObjectContainer class is an abstract base class for all objects
+ * that can contain child objects. It cannot be instantiated directly; calling
+ * the <code>new DisplayObjectContainer()</code> constructor throws an
+ * <code>ArgumentError</code> exception.
+ *
+ * <p>For more information, see the "Display Programming" chapter of the
+ * <i>ActionScript 3.0 Developer's Guide</i>.</p>
+ */
+var DisplayObjectContainer = (function (_super) {
+    __extends(DisplayObjectContainer, _super);
+    /**
+     * Calling the <code>new DisplayObjectContainer()</code> constructor throws
+     * an <code>ArgumentError</code> exception. You <i>can</i>, however, call
+     * constructors for the following subclasses of DisplayObjectContainer:
+     * <ul>
+     *   <li><code>new Loader()</code></li>
+     *   <li><code>new Sprite()</code></li>
+     *   <li><code>new MovieClip()</code></li>
+     * </ul>
+     */
+    function DisplayObjectContainer() {
+        _super.call(this);
+        this._mouseChildren = true;
+        this._depth_childs = {};
+        this._nextHighestDepth = 0;
+        this._children = new Array();
+        this._pIsContainer = true;
+    }
+    Object.defineProperty(DisplayObjectContainer.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return DisplayObjectContainer.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DisplayObjectContainer.prototype, "mouseChildren", {
+        /**
+         * Determines whether or not the children of the object are mouse, or user
+         * input device, enabled. If an object is enabled, a user can interact with
+         * it by using a mouse or user input device. The default is
+         * <code>true</code>.
+         *
+         * <p>This property is useful when you create a button with an instance of
+         * the Sprite class(instead of using the SimpleButton class). When you use a
+         * Sprite instance to create a button, you can choose to decorate the button
+         * by using the <code>addChild()</code> method to add additional Sprite
+         * instances. This process can cause unexpected behavior with mouse events
+         * because the Sprite instances you add as children can become the target
+         * object of a mouse event when you expect the parent instance to be the
+         * target object. To ensure that the parent instance serves as the target
+         * objects for mouse events, you can set the <code>mouseChildren</code>
+         * property of the parent instance to <code>false</code>.</p>
+         *
+         * <p> No event is dispatched by setting this property. You must use the
+         * <code>addEventListener()</code> method to create interactive
+         * functionality.</p>
+         */
+        get: function () {
+            if (this._hierarchicalPropsDirty & HierarchicalProperties.MOUSE_ENABLED)
+                this._updateMouseEnabled();
+            return this._mouseChildren;
+        },
+        set: function (value) {
+            if (this._mouseChildren == value)
+                return;
+            this._mouseChildren = value;
+            this.pInvalidateHierarchicalProperties(HierarchicalProperties.MOUSE_ENABLED);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
+        /**
+         * Returns the number of children of this object.
+         */
+        get: function () {
+            return this._children.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Adds a child DisplayObject instance to this DisplayObjectContainer
+     * instance. The child is added to the front(top) of all other children in
+     * this DisplayObjectContainer instance.(To add a child to a specific index
+     * position, use the <code>addChildAt()</code> method.)
+     *
+     * <p>If you add a child object that already has a different display object
+     * container as a parent, the object is removed from the child list of the
+     * other display object container. </p>
+     *
+     * <p><b>Note:</b> The command <code>stage.addChild()</code> can cause
+     * problems with a published SWF file, including security problems and
+     * conflicts with other loaded SWF files. There is only one Stage within a
+     * Flash runtime instance, no matter how many SWF files you load into the
+     * runtime. So, generally, objects should not be added to the Stage,
+     * directly, at all. The only object the Stage should contain is the root
+     * object. Create a DisplayObjectContainer to contain all of the items on the
+     * display list. Then, if necessary, add that DisplayObjectContainer instance
+     * to the Stage.</p>
+     *
+     * @param child The DisplayObject instance to add as a child of this
+     *              DisplayObjectContainer instance.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child is the same as the parent. Also
+     *                       throws if the caller is a child(or grandchild etc.)
+     *                       of the child being added.
+     * @event added Dispatched when a display object is added to the display
+     *              list.
+     */
+    DisplayObjectContainer.prototype.addChild = function (child) {
+        return this.addChildAt(child, this._children.length);
+    };
+    DisplayObjectContainer.prototype.addChildAtDepth = function (child, depth, replace) {
+        if (replace === void 0) { replace = true; }
+        if (child == null)
+            throw new ArgumentError("Parameter child cannot be null.");
+        //if child already has a parent, remove it.
+        if (child._pParent)
+            child._pParent.removeChildAtInternal(child._pParent.getChildIndex(child));
+        var index = this.getDepthIndexInternal(depth);
+        if (index != -1) {
+            if (replace) {
+                this.removeChildAt(index);
+            }
+            else {
+                //move depth of existing child up by 1
+                this.addChildAtDepth(this._children[index], depth + 1, false);
+            }
+        }
+        if (this._nextHighestDepth < depth + 1)
+            this._nextHighestDepth = depth + 1;
+        this._depth_childs[depth] = child;
+        this._children.push(child);
+        child._depthID = depth;
+        child.iSetParent(this);
+        this._pInvalidateBounds();
+        return child;
+    };
+    /**
+     * Adds a child DisplayObject instance to this DisplayObjectContainer
+     * instance. The child is added at the index position specified. An index of
+     * 0 represents the back(bottom) of the display list for this
+     * DisplayObjectContainer object.
+     *
+     * <p>For example, the following example shows three display objects, labeled
+     * a, b, and c, at index positions 0, 2, and 1, respectively:</p>
+     *
+     * <p>If you add a child object that already has a different display object
+     * container as a parent, the object is removed from the child list of the
+     * other display object container. </p>
+     *
+     * @param child The DisplayObject instance to add as a child of this
+     *              DisplayObjectContainer instance.
+     * @param index The index position to which the child is added. If you
+     *              specify a currently occupied index position, the child object
+     *              that exists at that position and all higher positions are
+     *              moved up one position in the child list.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child is the same as the parent. Also
+     *                       throws if the caller is a child(or grandchild etc.)
+     *                       of the child being added.
+     * @throws RangeError    Throws if the index position does not exist in the
+     *                       child list.
+     * @event added Dispatched when a display object is added to the display
+     *              list.
+     */
+    DisplayObjectContainer.prototype.addChildAt = function (child, index) {
+        return this.addChildAtDepth(child, (index < this._children.length) ? this._children[index]._depthID : this.getNextHighestDepth(), false);
+    };
+    DisplayObjectContainer.prototype.addChildren = function () {
+        var childarray = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            childarray[_i - 0] = arguments[_i];
+        }
+        var len = childarray.length;
+        for (var i = 0; i < len; i++)
+            this.addChild(childarray[i]);
+    };
+    /**
+     *
+     */
+    DisplayObjectContainer.prototype.clone = function () {
+        var newInstance = new DisplayObjectContainer();
+        this.copyTo(newInstance);
+        return newInstance;
+    };
+    DisplayObjectContainer.prototype.copyTo = function (newInstance) {
+        _super.prototype.copyTo.call(this, newInstance);
+        newInstance.mouseChildren = this._mouseChildren;
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            newInstance.addChild(this._children[i].clone());
+    };
+    /**
+     * Determines whether the specified display object is a child of the
+     * DisplayObjectContainer instance or the instance itself. The search
+     * includes the entire display list including this DisplayObjectContainer
+     * instance. Grandchildren, great-grandchildren, and so on each return
+     * <code>true</code>.
+     *
+     * @param child The child object to test.
+     * @return <code>true</code> if the <code>child</code> object is a child of
+     *         the DisplayObjectContainer or the container itself; otherwise
+     *         <code>false</code>.
+     */
+    DisplayObjectContainer.prototype.contains = function (child) {
+        return this._children.indexOf(child) >= 0;
+    };
+    /**
+     *
+     */
+    DisplayObjectContainer.prototype.disposeValues = function () {
+        for (var i = this._children.length - 1; i >= 0; i--)
+            this.removeChild(this._children[i]);
+        _super.prototype.disposeValues.call(this);
+    };
+    DisplayObjectContainer.prototype.getChildAtDepth = function (depth) {
+        return this._depth_childs[depth];
+    };
+    /**
+     * Returns the child display object instance that exists at the specified
+     * index.
+     *
+     * @param index The index position of the child object.
+     * @return The child display object at the specified index position.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     */
+    DisplayObjectContainer.prototype.getChildAt = function (index /*int*/) {
+        var child = this._children[index];
+        if (child == null)
+            throw new RangeError("Index does not exist in the child list of the caller");
+        return child;
+    };
+    /**
+     * Returns the child display object that exists with the specified name. If
+     * more that one child display object has the specified name, the method
+     * returns the first object in the child list.
+     *
+     * <p>The <code>getChildAt()</code> method is faster than the
+     * <code>getChildByName()</code> method. The <code>getChildAt()</code> method
+     * accesses a child from a cached array, whereas the
+     * <code>getChildByName()</code> method has to traverse a linked list to
+     * access a child.</p>
+     *
+     * @param name The name of the child to return.
+     * @return The child display object with the specified name.
+     */
+    DisplayObjectContainer.prototype.getChildByName = function (name) {
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            if (this._children[i].name == name)
+                return this._children[i];
+        return null;
+    };
+    /**
+     * Returns the index position of a <code>child</code> DisplayObject instance.
+     *
+     * @param child The DisplayObject instance to identify.
+     * @return The index position of the child display object to identify.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     */
+    DisplayObjectContainer.prototype.getChildIndex = function (child) {
+        var childIndex = this._children.indexOf(child);
+        if (childIndex == -1)
+            throw new ArgumentError("Child parameter is not a child of the caller");
+        return childIndex;
+    };
+    DisplayObjectContainer.prototype.getNextHighestDepth = function () {
+        if (this._nextHighestDepthDirty)
+            this._updateNextHighestDepth();
+        return this._nextHighestDepth;
+    };
+    /**
+     * Returns an array of objects that lie under the specified point and are
+     * children(or grandchildren, and so on) of this DisplayObjectContainer
+     * instance. Any child objects that are inaccessible for security reasons are
+     * omitted from the returned array. To determine whether this security
+     * restriction affects the returned array, call the
+     * <code>areInaccessibleObjectsUnderPoint()</code> method.
+     *
+     * <p>The <code>point</code> parameter is in the coordinate space of the
+     * Stage, which may differ from the coordinate space of the display object
+     * container(unless the display object container is the Stage). You can use
+     * the <code>globalToLocal()</code> and the <code>localToGlobal()</code>
+     * methods to convert points between these coordinate spaces.</p>
+     *
+     * @param point The point under which to look.
+     * @return An array of objects that lie under the specified point and are
+     *         children(or grandchildren, and so on) of this
+     *         DisplayObjectContainer instance.
+     */
+    DisplayObjectContainer.prototype.getObjectsUnderPoint = function (point) {
+        return new Array();
+    };
+    /**
+     * Removes the specified <code>child</code> DisplayObject instance from the
+     * child list of the DisplayObjectContainer instance. The <code>parent</code>
+     * property of the removed child is set to <code>null</code> , and the object
+     * is garbage collected if no other references to the child exist. The index
+     * positions of any display objects above the child in the
+     * DisplayObjectContainer are decreased by 1.
+     *
+     * <p>The garbage collector reallocates unused memory space. When a variable
+     * or object is no longer actively referenced or stored somewhere, the
+     * garbage collector sweeps through and wipes out the memory space it used to
+     * occupy if no other references to it exist.</p>
+     *
+     * @param child The DisplayObject instance to remove.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     */
+    DisplayObjectContainer.prototype.removeChild = function (child) {
+        if (child == null)
+            throw new ArgumentError("Parameter child cannot be null");
+        this.removeChildAt(this.getChildIndex(child));
+        return child;
+    };
+    DisplayObjectContainer.prototype.removeChildAtDepth = function (depth /*int*/) {
+        return this.removeChildAt(this.getDepthIndexInternal(depth));
+    };
+    /**
+     * Removes a child DisplayObject from the specified <code>index</code>
+     * position in the child list of the DisplayObjectContainer. The
+     * <code>parent</code> property of the removed child is set to
+     * <code>null</code>, and the object is garbage collected if no other
+     * references to the child exist. The index positions of any display objects
+     * above the child in the DisplayObjectContainer are decreased by 1.
+     *
+     * <p>The garbage collector reallocates unused memory space. When a variable
+     * or object is no longer actively referenced or stored somewhere, the
+     * garbage collector sweeps through and wipes out the memory space it used to
+     * occupy if no other references to it exist.</p>
+     *
+     * @param index The child index of the DisplayObject to remove.
+     * @return The DisplayObject instance that was removed.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     * @throws SecurityError This child display object belongs to a sandbox to
+     *                       which the calling object does not have access. You
+     *                       can avoid this situation by having the child movie
+     *                       call the <code>Security.allowDomain()</code> method.
+     */
+    DisplayObjectContainer.prototype.removeChildAt = function (index /*int*/) {
+        var child = this.removeChildAtInternal(index);
+        child.iSetParent(null);
+        this._pInvalidateBounds();
+        return child;
+    };
+    /**
+     * Removes all <code>child</code> DisplayObject instances from the child list
+     * of the DisplayObjectContainer instance. The <code>parent</code> property
+     * of the removed children is set to <code>null</code>, and the objects are
+     * garbage collected if no other references to the children exist.
+     *
+     * The garbage collector reallocates unused memory space. When a variable or
+     * object is no longer actively referenced or stored somewhere, the garbage
+     * collector sweeps through and wipes out the memory space it used to occupy
+     * if no other references to it exist.
+     *
+     * @param beginIndex The beginning position. A value smaller than 0 throws a RangeError.
+     * @param endIndex The ending position. A value smaller than 0 throws a RangeError.
+     * @throws RangeError    Throws if the beginIndex or endIndex positions do
+     *                       not exist in the child list.
+     */
+    DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
+        if (beginIndex === void 0) { beginIndex = 0; }
+        if (endIndex === void 0) { endIndex = 2147483647; }
+        if (beginIndex < 0)
+            throw new RangeError("beginIndex is out of range of the child list");
+        if (endIndex > this._children.length)
+            throw new RangeError("endIndex is out of range of the child list");
+        for (var i = beginIndex; i < endIndex; i++)
+            this.removeChild(this._children[i]);
+    };
+    /**
+     * Changes the position of an existing child in the display object container.
+     * This affects the layering of child objects. For example, the following
+     * example shows three display objects, labeled a, b, and c, at index
+     * positions 0, 1, and 2, respectively:
+     *
+     * <p>When you use the <code>setChildIndex()</code> method and specify an
+     * index position that is already occupied, the only positions that change
+     * are those in between the display object's former and new position. All
+     * others will stay the same. If a child is moved to an index LOWER than its
+     * current index, all children in between will INCREASE by 1 for their index
+     * reference. If a child is moved to an index HIGHER than its current index,
+     * all children in between will DECREASE by 1 for their index reference. For
+     * example, if the display object container in the previous example is named
+     * <code>container</code>, you can swap the position of the display objects
+     * labeled a and b by calling the following code:</p>
+     *
+     * <p>This code results in the following arrangement of objects:</p>
+     *
+     * @param child The child DisplayObject instance for which you want to change
+     *              the index number.
+     * @param index The resulting index number for the <code>child</code> display
+     *              object.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     */
+    DisplayObjectContainer.prototype.setChildIndex = function (child, index /*int*/) {
+        //TODO
+    };
+    /**
+     * Swaps the z-order (front-to-back order) of the two specified child
+     * objects. All other child objects in the display object container remain in
+     * the same index positions.
+     *
+     * @param child1 The first child object.
+     * @param child2 The second child object.
+     * @throws ArgumentError Throws if either child parameter is not a child of
+     *                       this object.
+     */
+    DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
+        this.swapChildrenAt(this.getChildIndex(child1), this.getChildIndex(child2));
+    };
+    /**
+     * Swaps the z-order(front-to-back order) of the child objects at the two
+     * specified index positions in the child list. All other child objects in
+     * the display object container remain in the same index positions.
+     *
+     * @param index1 The index position of the first child object.
+     * @param index2 The index position of the second child object.
+     * @throws RangeError If either index does not exist in the child list.
+     */
+    DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
+        var depth = this._children[index2]._depthID;
+        var child = this._children[index1];
+        this.addChildAtDepth(this._children[index2], this._children[index1]._depthID);
+        this.addChildAtDepth(child, depth);
+    };
+    /**
+     * //TODO
+     *
+     * @protected
+     */
+    DisplayObjectContainer.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        var box;
+        var numChildren = this._children.length;
+        if (numChildren > 0) {
+            var min;
+            var max;
+            var minX, minY, minZ;
+            var maxX, maxY, maxZ;
+            for (var i = 0; i < numChildren; ++i) {
+                box = this._children[i].getBox(this);
+                if (i == 0) {
+                    maxX = box.width + (minX = box.x);
+                    maxY = box.height + (minY = box.y);
+                    maxZ = box.depth + (minZ = box.z);
+                }
+                else {
+                    max = box.width + (min = box.x);
+                    if (min < minX)
+                        minX = min;
+                    if (max > maxX)
+                        maxX = max;
+                    max = box.height + (min = box.y);
+                    if (min < minY)
+                        minY = min;
+                    if (max > maxY)
+                        maxY = max;
+                    max = box.depth + (min = box.z);
+                    if (min < minZ)
+                        minZ = min;
+                    if (max > maxZ)
+                        maxZ = max;
+                }
+            }
+            this._pBoxBounds.width = maxX - (this._pBoxBounds.x = minX);
+            this._pBoxBounds.height = maxY - (this._pBoxBounds.y = minY);
+            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
+        }
+        else {
+            this._pBoxBounds.setEmpty();
+        }
+    };
+    /**
+     * @protected
+     */
+    DisplayObjectContainer.prototype.pInvalidateHierarchicalProperties = function (bitFlag) {
+        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, bitFlag))
+            return true;
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            this._children[i].pInvalidateHierarchicalProperties(bitFlag);
+        return false;
+    };
+    /**
+     * @internal
+     */
+    DisplayObjectContainer.prototype._iSetScene = function (value, partition) {
+        _super.prototype._iSetScene.call(this, value, partition);
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            this._children[i]._iSetScene(value, partition);
+    };
+    /**
+     * @private
+     *
+     * @param child
+     */
+    DisplayObjectContainer.prototype.removeChildAtInternal = function (index) {
+        var child = this._children.splice(index, 1)[0];
+        //update next highest depth
+        if (this._nextHighestDepth == child._depthID + 1)
+            this._nextHighestDepthDirty = true;
+        delete this._depth_childs[child._depthID];
+        child._depthID = -16384;
+        return child;
+    };
+    DisplayObjectContainer.prototype.getDepthIndexInternal = function (depth /*int*/) {
+        if (!this._depth_childs[depth])
+            return -1;
+        return this._children.indexOf(this._depth_childs[depth]);
+    };
+    DisplayObjectContainer.prototype._updateNextHighestDepth = function () {
+        this._nextHighestDepthDirty = false;
+        this._nextHighestDepth = 0;
+        var len = this._children.length;
+        for (var i = 0; i < len; i++)
+            if (this._nextHighestDepth < this._children[i]._depthID)
+                this._nextHighestDepth = this._children[i]._depthID;
+        this._nextHighestDepth += 1;
+    };
+    /**
+     * Evaluates the display object to see if it overlaps or intersects with the
+     * point specified by the <code>x</code> and <code>y</code> parameters. The
+     * <code>x</code> and <code>y</code> parameters specify a point in the
+     * coordinate space of the Scene, not the display object container that
+     * contains the display object(unless that display object container is the
+     * Scene).
+     *
+     * @param x         The <i>x</i> coordinate to test against this object.
+     * @param y         The <i>y</i> coordinate to test against this object.
+     * @param shapeFlag Whether to check against the actual pixels of the object
+     *                 (<code>true</code>) or the bounding box
+     *                 (<code>false</code>).
+     * @return <code>true</code> if the display object overlaps or intersects
+     *         with the specified point; <code>false</code> otherwise.
+     */
+    DisplayObjectContainer.prototype.hitTestPoint = function (x, y, shapeFlag, masksFlag) {
+        if (shapeFlag === void 0) { shapeFlag = false; }
+        if (masksFlag === void 0) { masksFlag = false; }
+        if (!this._pImplicitVisibility)
+            return;
+        if (this._pImplicitMaskId != -1 && !masksFlag)
+            return;
+        if (this._explicitMasks) {
+            var numMasks = this._explicitMasks.length;
+            var maskHit = false;
+            for (var i = 0; i < numMasks; i++) {
+                if (this._explicitMasks[i].hitTestPoint(x, y, shapeFlag, true)) {
+                    maskHit = true;
+                    break;
+                }
+            }
+            if (!maskHit)
+                return false;
+        }
+        return this._hitTestPointInternal(x, y, shapeFlag, masksFlag);
+    };
+    DisplayObjectContainer.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
+        var numChildren = this._children.length;
+        for (var i = 0; i < numChildren; i++)
+            if (this._children[i].hitTestPoint(x, y, shapeFlag, masksFlag))
+                return true;
+        return false;
+    };
+    DisplayObjectContainer.prototype._updateMaskMode = function () {
+        if (this.maskMode)
+            this.mouseChildren = false;
+        _super.prototype._updateMaskMode.call(this);
+    };
+    DisplayObjectContainer.assetType = "[asset DisplayObjectContainer]";
+    return DisplayObjectContainer;
+})(DisplayObject);
+module.exports = DisplayObjectContainer;
+
+},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/errors/RangeError":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject"}],"awayjs-display/lib/display/DisplayObject":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -17331,52 +21243,9 @@ var DisplayObject = (function (_super) {
 })(AssetBase);
 module.exports = DisplayObject;
 
-},{"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/OrientationMode":"awayjs-display/lib/base/OrientationMode","awayjs-display/lib/base/Transform":"awayjs-display/lib/base/Transform","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent","awayjs-display/lib/pick/PickingCollisionVO":"awayjs-display/lib/pick/PickingCollisionVO"}],"awayjs-display/lib/base/HierarchicalProperties":[function(require,module,exports){
-/**
- *
- */
-var HierarchicalProperties = (function () {
-    function HierarchicalProperties() {
-    }
-    /**
-     *
-     */
-    HierarchicalProperties.MOUSE_ENABLED = 1;
-    /**
-     *
-     */
-    HierarchicalProperties.VISIBLE = 2;
-    /**
-     *
-     */
-    HierarchicalProperties.MASK_ID = 4;
-    /**
-     *
-     */
-    HierarchicalProperties.MASKS = 8;
-    /**
-     *
-     */
-    HierarchicalProperties.COLOR_TRANSFORM = 16;
-    /**
-     *
-     */
-    HierarchicalProperties.SCENE_TRANSFORM = 32;
-    /**
-     *
-     */
-    HierarchicalProperties.ALL = 63;
-    return HierarchicalProperties;
-})();
-module.exports = HierarchicalProperties;
+},{"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/OrientationMode":"awayjs-display/lib/base/OrientationMode","awayjs-display/lib/base/Transform":"awayjs-display/lib/base/Transform","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent","awayjs-display/lib/pick/PickingCollisionVO":"awayjs-display/lib/pick/PickingCollisionVO"}],"awayjs-display/lib/display/IEntity":[function(require,module,exports){
 
-},{}],"awayjs-display/lib/base/IBitmapDrawable":[function(require,module,exports){
-
-},{}],"awayjs-display/lib/base/IRenderOwner":[function(require,module,exports){
-
-},{}],"awayjs-display/lib/base/IRenderableOwner":[function(require,module,exports){
-
-},{}],"awayjs-display/lib/base/LightBase":[function(require,module,exports){
+},{}],"awayjs-display/lib/display/LightBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -17384,7 +21253,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
 var LightEvent = require("awayjs-display/lib/events/LightEvent");
 var LightBase = (function (_super) {
     __extends(LightBase, _super);
@@ -17536,1964 +21405,248 @@ var LightBase = (function (_super) {
 })(DisplayObjectContainer);
 module.exports = LightBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent"}],"awayjs-display/lib/base/OrientationMode":[function(require,module,exports){
-var OrientationMode = (function () {
-    function OrientationMode() {
-    }
-    /**
-     *
-     */
-    OrientationMode.DEFAULT = "default";
-    /**
-     *
-     */
-    OrientationMode.CAMERA_PLANE = "cameraPlane";
-    /**
-     *
-     */
-    OrientationMode.CAMERA_POSITION = "cameraPosition";
-    return OrientationMode;
-})();
-module.exports = OrientationMode;
-
-},{}],"awayjs-display/lib/base/Style":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent"}],"awayjs-display/lib/display/LightProbe":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var SamplerCube = require("awayjs-core/lib/image/SamplerCube");
+var ErrorBase = require("awayjs-core/lib/errors/ErrorBase");
+var LightBase = require("awayjs-display/lib/display/LightBase");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var LightProbe = (function (_super) {
+    __extends(LightProbe, _super);
+    function LightProbe(diffuseMap, specularMap) {
+        if (specularMap === void 0) { specularMap = null; }
+        _super.call(this);
+        this.diffuseSampler = new SamplerCube();
+        this.specularSampler = new SamplerCube();
+        this._pIsEntity = true;
+        this.diffuseMap = diffuseMap;
+        this.specularMap = specularMap;
+        //default bounds type
+        this._boundsType = BoundsType.NULL;
+    }
+    Object.defineProperty(LightProbe.prototype, "assetType", {
+        get: function () {
+            return LightProbe.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //@override
+    LightProbe.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
+        if (target === void 0) { target = null; }
+        throw new ErrorBase("Object projection matrices are not supported for LightProbe objects!");
+    };
+    LightProbe.assetType = "[light LightProbe]";
+    return LightProbe;
+})(LightBase);
+module.exports = LightProbe;
+
+},{"awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase"}],"awayjs-display/lib/display/LineSegment":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var DisplayObject = require("awayjs-display/lib/display/DisplayObject");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var RenderableEvent = require("awayjs-display/lib/events/RenderableEvent");
 var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
 /**
- *
+ * A Line Segment primitive.
  */
-var Style = (function (_super) {
-    __extends(Style, _super);
-    function Style() {
+var LineSegment = (function (_super) {
+    __extends(LineSegment, _super);
+    /**
+     * Create a line segment
+     *
+     * @param startPosition Start position of the line segment
+     * @param endPosition Ending position of the line segment
+     * @param thickness Thickness of the line
+     */
+    function LineSegment(material, startPosition, endPosition, thickness) {
+        var _this = this;
+        if (thickness === void 0) { thickness = 1; }
         _super.call(this);
-        this._samplers = new Object();
-        this._images = new Object();
-        this._color = 0xFFFFFF;
+        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+        this._pIsEntity = true;
+        this.material = material;
+        this._startPosition = startPosition;
+        this._endPosition = endPosition;
+        this._halfThickness = thickness * 0.5;
+        //default bounds type
+        this._boundsType = BoundsType.AXIS_ALIGNED_BOX;
     }
-    Object.defineProperty(Style.prototype, "sampler", {
+    Object.defineProperty(LineSegment.prototype, "animator", {
+        /**
+         * Defines the animator of the line segment. Act on the line segment's geometry. Defaults to null
+         */
         get: function () {
-            return this._sampler;
+            return this._animator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSegment.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return LineSegment.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSegment.prototype, "startPostion", {
+        /**
+         *
+         */
+        get: function () {
+            return this._startPosition;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSegment.prototype, "startPosition", {
+        set: function (value) {
+            if (this._startPosition == value)
+                return;
+            this._startPosition = value;
+            this.invalidateGraphics();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LineSegment.prototype, "endPosition", {
+        /**
+         *
+         */
+        get: function () {
+            return this._endPosition;
         },
         set: function (value) {
-            if (this._sampler == value)
+            if (this._endPosition == value)
                 return;
-            this._sampler = value;
-            this._invalidateProperties();
+            this._endPosition = value;
+            this.invalidateGraphics();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Style.prototype, "image", {
+    Object.defineProperty(LineSegment.prototype, "material", {
+        /**
+         *
+         */
         get: function () {
-            return this._image;
+            return this._material;
         },
         set: function (value) {
-            if (this._image == value)
-                return;
-            this._image = value;
-            this._invalidateProperties();
+            if (this.material)
+                this.material.iRemoveOwner(this);
+            this._material = value;
+            if (this.material)
+                this.material.iAddOwner(this);
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Style.prototype, "color", {
+    Object.defineProperty(LineSegment.prototype, "thickness", {
         /**
-         * The diffuse reflectivity color of the surface.
+         *
          */
         get: function () {
-            return this._color;
+            return this._halfThickness * 2;
         },
         set: function (value) {
-            if (this._color == value)
+            if (this._halfThickness == value)
                 return;
-            this._color = value;
-            this._invalidateProperties();
+            this._halfThickness = value * 0.5;
+            this.invalidateGraphics();
         },
         enumerable: true,
         configurable: true
     });
-    Style.prototype.getImageAt = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        return (this._images[texture.id] ? this._images[texture.id][index] : null) || this._image;
-    };
-    Style.prototype.getSamplerAt = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        return (this._samplers[texture.id] ? this._samplers[texture.id][index] : null) || this._sampler;
-    };
-    Style.prototype.addImageAt = function (image, texture, index) {
-        if (index === void 0) { index = 0; }
-        if (!this._images[texture.id])
-            this._images[texture.id] = new Array();
-        this._images[texture.id][index] = image;
-    };
-    Style.prototype.addSamplerAt = function (sampler, texture, index) {
-        if (index === void 0) { index = 0; }
-        if (!this._samplers[texture.id])
-            this._samplers[texture.id] = new Array();
-        this._samplers[texture.id][index] = sampler;
-        this._invalidateProperties();
-    };
-    Style.prototype.removeImageAt = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        if (!this._images[texture.id])
-            return;
-        this._images[texture.id][index] = null;
-        this._invalidateProperties();
-    };
-    Style.prototype.removeSamplerAt = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        if (!this._samplers[texture.id])
-            return;
-        this._samplers[texture.id][index] = null;
-        this._invalidateProperties();
-    };
-    Style.prototype._invalidateProperties = function () {
-        this.dispatchEvent(new StyleEvent(StyleEvent.INVALIDATE_PROPERTIES, this));
-    };
-    return Style;
-})(EventDispatcher);
-module.exports = Style;
-
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/base/Timeline":[function(require,module,exports){
-var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
-var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-var FrameScriptManager = require("awayjs-display/lib/managers/FrameScriptManager");
-var Timeline = (function () {
-    function Timeline() {
-        this._functions = [];
-        this._update_indices = [];
-        this.numKeyFrames = 0;
-        this.keyframe_indices = [];
-        this._potentialPrototypes = [];
-        this._labels = {};
-        this._framescripts = {};
-        this._framescripts_translated = {};
-        //cache functions
-        this._functions[1] = this.update_mtx_all;
-        this._functions[2] = this.update_colortransform;
-        this._functions[3] = this.update_masks;
-        this._functions[4] = this.update_name;
-        this._functions[5] = this.update_button_name;
-        this._functions[6] = this.update_visibility;
-        this._functions[11] = this.update_mtx_scale_rot;
-        this._functions[12] = this.update_mtx_pos;
-        this._functions[200] = this.enable_maskmode;
-        this._functions[201] = this.remove_masks;
-    }
-    Timeline.prototype.init = function () {
-        if ((this.frame_command_indices == null) || (this.frame_recipe == null) || (this.keyframe_durations == null))
-            return;
-        this.keyframe_firstframes = [];
-        this.keyframe_constructframes = [];
-        var frame_cnt = 0;
-        var ic = 0;
-        var ic2 = 0;
-        var keyframe_cnt = 0;
-        var last_construct_frame = 0;
-        for (ic = 0; ic < this.numKeyFrames; ic++) {
-            var duration = this.keyframe_durations[(ic)];
-            if (this.frame_recipe[ic] & 1)
-                last_construct_frame = keyframe_cnt;
-            this.keyframe_firstframes[keyframe_cnt] = frame_cnt;
-            this.keyframe_constructframes[keyframe_cnt++] = last_construct_frame;
-            for (ic2 = 0; ic2 < duration; ic2++)
-                this.keyframe_indices[frame_cnt++] = ic;
-        }
-    };
-    Timeline.prototype.get_framescript = function (keyframe_index) {
-        if (this._framescripts[keyframe_index] == null)
-            return "";
-        if (typeof this._framescripts[keyframe_index] == "string")
-            return this._framescripts[keyframe_index];
-        else {
-            throw new Error("Framescript is already translated to Function!!!");
-        }
-        return "";
-    };
-    Timeline.prototype.add_framescript = function (value, keyframe_index) {
-        if (FrameScriptManager.frameScriptDebug) {
-            // if we are in debug mode, we try to extract the function name from the first line of framescript code,
-            // and check if this function is available on the object that is set as frameScriptDebug
-            // try to get the functions name (it should be the first line as comment)
-            var functionname = value.split(/[\r\n]+/g)[0].split("//")[1];
-            if (FrameScriptManager.frameScriptDebug[functionname]) {
-                this._framescripts[keyframe_index] = FrameScriptManager.frameScriptDebug[functionname];
-                this._framescripts_translated[keyframe_index] = true;
+    Object.defineProperty(LineSegment.prototype, "style", {
+        /**
+         * The style used to render the current LineSegment. If set to null, the default style of the material will be used instead.
+         */
+        get: function () {
+            return this._style;
+        },
+        set: function (value) {
+            if (this._style == value)
                 return;
-            }
-            else {
-                throw new Error("Framescript could not be found on FrameScriptManager.frameScriptDebug.\n the Object set as FrameScriptmanager.frameScriptDebug should contain a function with the name '" + functionname + "' !!!");
-            }
-        }
-        this._framescripts[keyframe_index] = value;
-    };
-    Timeline.prototype.regexIndexOf = function (str, regex, startpos) {
-        var indexOf = str.substring(startpos || 0).search(regex);
-        return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
-    };
-    Timeline.prototype.add_script_for_postcontruct = function (target_mc, keyframe_idx, scriptPass1) {
-        if (scriptPass1 === void 0) { scriptPass1 = false; }
-        if (this._framescripts[keyframe_idx] != null) {
-            if (this._framescripts_translated[keyframe_idx] == null) {
-                this._framescripts[keyframe_idx] = target_mc.adapter.evalScript(this._framescripts[keyframe_idx]);
-                this._framescripts_translated[keyframe_idx] = true;
-            }
-            if (scriptPass1)
-                FrameScriptManager.add_script_to_queue(target_mc, this._framescripts[keyframe_idx]);
-            else
-                FrameScriptManager.add_script_to_queue_pass2(target_mc, this._framescripts[keyframe_idx]);
-        }
-    };
-    Object.defineProperty(Timeline.prototype, "numFrames", {
-        get: function () {
-            return this.keyframe_indices.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Timeline.prototype.getPotentialChildPrototype = function (id) {
-        return this._potentialPrototypes[id];
-    };
-    Timeline.prototype.getKeyframeIndexForFrameIndex = function (frame_index) {
-        return this.keyframe_indices[frame_index];
-    };
-    Timeline.prototype.getPotentialChildInstance = function (id) {
-        var this_clone = this._potentialPrototypes[id].clone();
-        this_clone.name = "";
-        return this_clone;
-    };
-    Timeline.prototype.registerPotentialChild = function (prototype) {
-        var id = this._potentialPrototypes.length;
-        this._potentialPrototypes[id] = prototype;
-    };
-    Timeline.prototype.jumpToLabel = function (target_mc, label) {
-        var key_frame_index = this._labels[label];
-        if (key_frame_index >= 0)
-            target_mc.currentFrameIndex = this.keyframe_firstframes[key_frame_index];
-    };
-    Timeline.prototype.gotoFrame = function (target_mc, value, skip_script) {
-        if (skip_script === void 0) { skip_script = false; }
-        var current_keyframe_idx = target_mc.constructedKeyFrameIndex;
-        var target_keyframe_idx = this.keyframe_indices[value];
-        if (current_keyframe_idx == target_keyframe_idx)
-            return;
-        if (current_keyframe_idx + 1 == target_keyframe_idx) {
-            this.constructNextFrame(target_mc, !skip_script, true);
-            return;
-        }
-        var break_frame_idx = this.keyframe_constructframes[target_keyframe_idx];
-        //we now have 3 index to keyframes: current_keyframe_idx / target_keyframe_idx / break_frame_idx
-        var jump_forward = (target_keyframe_idx > current_keyframe_idx);
-        var jump_gap = (break_frame_idx > current_keyframe_idx);
-        // in case we jump forward, but not jump a gap, we start at current_keyframe_idx + 1
-        // in case we jump back or we jump a gap, we want to start constructing at BreakFrame
-        var start_construct_idx = (jump_forward && !jump_gap) ? current_keyframe_idx + 1 : break_frame_idx;
-        var i;
-        var k;
-        if (jump_gap)
-            for (i = target_mc.numChildren - 1; i >= 0; i--)
-                if (target_mc._children[i]._depthID < 0)
-                    target_mc.removeChildAt(i);
-        //if we jump back, we want to reset all objects (but not the timelines of the mcs)
-        if (!jump_forward)
-            target_mc.resetSessionIDs();
-        // in other cases, we want to collect the current objects to compare state of targetframe with state of currentframe
-        var depth_sessionIDs = target_mc.getSessionIDDepths();
-        //pass1: only apply add/remove commands into depth_sessionIDs.
-        this.pass1(start_construct_idx, target_keyframe_idx, depth_sessionIDs);
-        // check what childs are alive on both frames.
-        // childs that are not alive anymore get removed and unregistered
-        // childs that are alive on both frames have their properties reset if we are jumping back
-        var child;
-        for (i = target_mc.numChildren - 1; i >= 0; i--) {
-            child = target_mc._children[i];
-            if (child._depthID < 0) {
-                if (depth_sessionIDs[child._depthID] != child._sessionID) {
-                    target_mc.removeChildAt(i);
-                }
-                else if (!jump_forward) {
-                    if (child.adapter) {
-                        if (!child.adapter.isBlockedByScript()) {
-                            child.transform.clearMatrix3D();
-                            child.transform.clearColorTransform();
-                            //this.name="";
-                            child.masks = null;
-                            child.maskMode = false;
-                        }
-                        if (!child.adapter.isVisibilityByScript()) {
-                            child.visible = true;
-                        }
-                    }
-                }
-            }
-        }
-        for (var key in depth_sessionIDs) {
-            child = target_mc.getPotentialChildInstance(this.add_child_stream[depth_sessionIDs[key] * 2]);
-            if (child._sessionID == -1)
-                target_mc._addTimelineChildAt(child, Number(key), depth_sessionIDs[key]);
-        }
-        if (!skip_script && this.keyframe_firstframes[target_keyframe_idx] == value)
-            this.add_script_for_postcontruct(target_mc, target_keyframe_idx, true);
-        //pass2: apply update commands for objects on stage (only if they are not blocked by script)
-        this.pass2(target_mc);
-        target_mc.constructedKeyFrameIndex = target_keyframe_idx;
-    };
-    Timeline.prototype.pass1 = function (start_construct_idx, target_keyframe_idx, depth_sessionIDs) {
-        var i;
-        var k;
-        this._update_indices.length = 0; // store a list of updatecommand_indices, so we dont have to read frame_recipe again
-        var update_cnt = 0;
-        var start_index;
-        var end_index;
-        for (k = start_construct_idx; k <= target_keyframe_idx; k++) {
-            var frame_command_idx = this.frame_command_indices[k];
-            var frame_recipe = this.frame_recipe[k];
-            if (frame_recipe & 2) {
-                // remove childs
-                start_index = this.command_index_stream[frame_command_idx];
-                end_index = start_index + this.command_length_stream[frame_command_idx++];
-                for (i = start_index; i < end_index; i++)
-                    delete depth_sessionIDs[this.remove_child_stream[i] - 16383];
-            }
-            if (frame_recipe & 4) {
-                start_index = this.command_index_stream[frame_command_idx];
-                end_index = start_index + this.command_length_stream[frame_command_idx++];
-                for (i = end_index - 1; i >= start_index; i--)
-                    depth_sessionIDs[this.add_child_stream[i * 2 + 1] - 16383] = i;
-            }
-            if (frame_recipe & 8)
-                this._update_indices[update_cnt++] = frame_command_idx; // execute update command later
-        }
-    };
-    Timeline.prototype.pass2 = function (target_mc) {
-        var k;
-        var len = this._update_indices.length;
-        for (k = 0; k < len; k++)
-            this.update_childs(target_mc, this._update_indices[k]);
-    };
-    Timeline.prototype.constructNextFrame = function (target_mc, queueScript, scriptPass1) {
-        if (queueScript === void 0) { queueScript = true; }
-        if (scriptPass1 === void 0) { scriptPass1 = false; }
-        var frameIndex = target_mc.currentFrameIndex;
-        var new_keyFrameIndex = this.keyframe_indices[frameIndex];
-        if (queueScript && this.keyframe_firstframes[new_keyFrameIndex] == frameIndex)
-            this.add_script_for_postcontruct(target_mc, new_keyFrameIndex, scriptPass1);
-        if (target_mc.constructedKeyFrameIndex != new_keyFrameIndex) {
-            target_mc.constructedKeyFrameIndex = new_keyFrameIndex;
-            var frame_command_idx = this.frame_command_indices[new_keyFrameIndex];
-            var frame_recipe = this.frame_recipe[new_keyFrameIndex];
-            if (frame_recipe & 1) {
-                for (var i = target_mc.numChildren - 1; i >= 0; i--)
-                    if (target_mc._children[i]._depthID < 0)
-                        target_mc.removeChildAt(i);
-            }
-            else if (frame_recipe & 2) {
-                this.remove_childs_continous(target_mc, frame_command_idx++);
-            }
-            if (frame_recipe & 4)
-                this.add_childs_continous(target_mc, frame_command_idx++);
-            if (frame_recipe & 8)
-                this.update_childs(target_mc, frame_command_idx++);
-        }
-    };
-    Timeline.prototype.remove_childs_continous = function (sourceMovieClip, frame_command_idx) {
-        var start_index = this.command_index_stream[frame_command_idx];
-        var end_index = start_index + this.command_length_stream[frame_command_idx];
-        for (var i = start_index; i < end_index; i++)
-            sourceMovieClip.removeChildAt(sourceMovieClip.getDepthIndexInternal(this.remove_child_stream[i] - 16383));
-    };
-    // used to add childs when jumping between frames
-    Timeline.prototype.add_childs_continous = function (sourceMovieClip, frame_command_idx) {
-        // apply add commands in reversed order to have script exeucted in correct order.
-        // this could be changed in exporter
-        var idx;
-        var start_index = this.command_index_stream[frame_command_idx];
-        var end_index = start_index + this.command_length_stream[frame_command_idx];
-        for (var i = end_index - 1; i >= start_index; i--) {
-            idx = i * 2;
-            sourceMovieClip._addTimelineChildAt(sourceMovieClip.getPotentialChildInstance(this.add_child_stream[idx]), this.add_child_stream[idx + 1] - 16383, i);
-        }
-    };
-    Timeline.prototype.update_childs = function (target_mc, frame_command_idx) {
-        var p;
-        var props_start_idx;
-        var props_end_index;
-        var start_index = this.command_index_stream[frame_command_idx];
-        var end_index = start_index + this.command_length_stream[frame_command_idx];
-        var child;
-        for (var i = start_index; i < end_index; i++) {
-            child = target_mc.getChildAtSessionID(this.update_child_stream[i]);
-            if (child) {
-                // check if the child is active + not blocked by script
-                this._blocked = Boolean(child.adapter && child.adapter.isBlockedByScript());
-                props_start_idx = this.update_child_props_indices_stream[i];
-                props_end_index = props_start_idx + this.update_child_props_length_stream[i];
-                for (p = props_start_idx; p < props_end_index; p++)
-                    this._functions[this.property_type_stream[p]].call(this, child, target_mc, this.property_index_stream[p]);
-            }
-        }
-    };
-    Timeline.prototype.update_mtx_all = function (child, target_mc, i) {
-        if (this._blocked)
-            return;
-        i *= 6;
-        var new_matrix = child.transform.matrix3D;
-        new_matrix.rawData[0] = this.properties_stream_f32_mtx_all[i++];
-        new_matrix.rawData[1] = this.properties_stream_f32_mtx_all[i++];
-        new_matrix.rawData[4] = this.properties_stream_f32_mtx_all[i++];
-        new_matrix.rawData[5] = this.properties_stream_f32_mtx_all[i++];
-        new_matrix.rawData[12] = this.properties_stream_f32_mtx_all[i++];
-        new_matrix.rawData[13] = this.properties_stream_f32_mtx_all[i];
-        child.transform.invalidateComponents();
-    };
-    Timeline.prototype.update_colortransform = function (child, target_mc, i) {
-        if (this._blocked)
-            return;
-        i *= 8;
-        var new_ct = child.transform.colorTransform || (child.transform.colorTransform = new ColorTransform());
-        new_ct.redMultiplier = this.properties_stream_f32_ct[i++];
-        new_ct.greenMultiplier = this.properties_stream_f32_ct[i++];
-        new_ct.blueMultiplier = this.properties_stream_f32_ct[i++];
-        new_ct.alphaMultiplier = this.properties_stream_f32_ct[i++];
-        new_ct.redOffset = this.properties_stream_f32_ct[i++];
-        new_ct.greenOffset = this.properties_stream_f32_ct[i++];
-        new_ct.blueOffset = this.properties_stream_f32_ct[i++];
-        new_ct.alphaOffset = this.properties_stream_f32_ct[i];
-        child.transform.invalidateColorTransform();
-    };
-    Timeline.prototype.update_masks = function (child, target_mc, i) {
-        // an object could have multiple groups of masks, in case a graphic clip was merged into the timeline
-        // this is not implmeented in the runtime yet
-        // for now, a second mask-groupd would overwrite the first one
-        var mask;
-        var masks = new Array();
-        var numMasks = this.properties_stream_int[i++];
-        for (var m = 0; m < numMasks; m++)
-            if ((mask = target_mc.getChildAtSessionID(this.properties_stream_int[i++])))
-                masks.push(mask);
-        child.masks = masks;
-    };
-    Timeline.prototype.update_name = function (child, target_mc, i) {
-        child.name = this.properties_stream_strings[i];
-        target_mc.adapter.registerScriptObject(child);
-    };
-    Timeline.prototype.update_button_name = function (target, sourceMovieClip, i) {
-        target.name = this.properties_stream_strings[i];
-        // todo: creating the buttonlistenrs later should also be done, but for icycle i dont think this will cause problems
-        target.addButtonListeners();
-        sourceMovieClip.adapter.registerScriptObject(target);
-    };
-    Timeline.prototype.update_visibility = function (child, target_mc, i) {
-        if (!child.adapter || !child.adapter.isVisibilityByScript())
-            child.visible = Boolean(i);
-    };
-    Timeline.prototype.update_mtx_scale_rot = function (child, target_mc, i) {
-        if (this._blocked)
-            return;
-        i *= 4;
-        var new_matrix = child.transform.matrix3D;
-        new_matrix.rawData[0] = this.properties_stream_f32_mtx_scale_rot[i++];
-        new_matrix.rawData[1] = this.properties_stream_f32_mtx_scale_rot[i++];
-        new_matrix.rawData[4] = this.properties_stream_f32_mtx_scale_rot[i++];
-        new_matrix.rawData[5] = this.properties_stream_f32_mtx_scale_rot[i];
-        child.transform.invalidateComponents();
-        child.pInvalidateHierarchicalProperties(HierarchicalProperties.SCENE_TRANSFORM);
-    };
-    Timeline.prototype.update_mtx_pos = function (child, target_mc, i) {
-        if (this._blocked)
-            return;
-        i *= 2;
-        var new_matrix = child.transform.matrix3D;
-        new_matrix.rawData[12] = this.properties_stream_f32_mtx_pos[i++];
-        new_matrix.rawData[13] = this.properties_stream_f32_mtx_pos[i];
-        child.transform.invalidatePosition();
-    };
-    Timeline.prototype.enable_maskmode = function (child, target_mc, i) {
-        child.maskMode = true;
-    };
-    Timeline.prototype.remove_masks = function (child, target_mc, i) {
-        child.masks = null;
-    };
-    return Timeline;
-})();
-module.exports = Timeline;
-
-},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/base/TouchPoint":[function(require,module,exports){
-/**
- *
- */
-var TouchPoint = (function () {
-    function TouchPoint(x, y, id) {
-        this.x = x;
-        this.y = y;
-        this.id = id;
-    }
-    return TouchPoint;
-})();
-module.exports = TouchPoint;
-
-},{}],"awayjs-display/lib/base/Transform":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var TransformEvent = require("awayjs-display/lib/events/TransformEvent");
-/**
- * The Transform class provides access to color adjustment properties and two-
- * or three-dimensional transformation objects that can be applied to a
- * display object. During the transformation, the color or the orientation and
- * position of a display object is adjusted(offset) from the current values
- * or coordinates to new values or coordinates. The Transform class also
- * collects data about color and two-dimensional matrix transformations that
- * are applied to a display object and all of its parent objects. You can
- * access these combined transformations through the
- * <code>concatenatedColorTransform</code> and <code>concatenatedMatrix</code>
- * properties.
- *
- * <p>To apply color transformations: create a ColorTransform object, set the
- * color adjustments using the object's methods and properties, and then
- * assign the <code>colorTransformation</code> property of the
- * <code>transform</code> property of the display object to the new
- * ColorTransformation object.</p>
- *
- * <p>To apply two-dimensional transformations: create a Matrix object, set
- * the matrix's two-dimensional transformation, and then assign the
- * <code>transform.matrix</code> property of the display object to the new
- * Matrix object.</p>
- *
- * <p>To apply three-dimensional transformations: start with a
- * three-dimensional display object. A three-dimensional display object has a
- * <code>z</code> property value other than zero. You do not need to create
- * the Matrix3D object. For all three-dimensional objects, a Matrix3D object
- * is created automatically when you assign a <code>z</code> value to a
- * display object. You can access the display object's Matrix3D object through
- * the display object's <code>transform</code> property. Using the methods of
- * the Matrix3D class, you can add to or modify the existing transformation
- * settings. Also, you can create a custom Matrix3D object, set the custom
- * Matrix3D object's transformation elements, and then assign the new Matrix3D
- * object to the display object using the <code>transform.matrix</code>
- * property.</p>
- *
- * <p>To modify a perspective projection of the stage or root object: use the
- * <code>transform.matrix</code> property of the root display object to gain
- * access to the PerspectiveProjection object. Or, apply different perspective
- * projection properties to a display object by setting the perspective
- * projection properties of the display object's parent. The child display
- * object inherits the new properties. Specifically, create a
- * PerspectiveProjection object and set its properties, then assign the
- * PerspectiveProjection object to the <code>perspectiveProjection</code>
- * property of the parent display object's <code>transform</code> property.
- * The specified projection transformation then applies to all the display
- * object's three-dimensional children.</p>
- *
- * <p>Since both PerspectiveProjection and Matrix3D objects perform
- * perspective transformations, do not assign both to a display object at the
- * same time. Use the PerspectiveProjection object for focal length and
- * projection center changes. For more control over the perspective
- * transformation, create a perspective projection Matrix3D object.</p>
- */
-var Transform = (function (_super) {
-    __extends(Transform, _super);
-    function Transform() {
-        _super.call(this);
-        this._matrix3D = new Matrix3D();
-        this._rotation = new Vector3D();
-        this._skew = new Vector3D();
-        this._scale = new Vector3D(1, 1, 1);
-        // Cached vector of transformation components used when
-        // recomposing the transform matrix in updateTransform()
-        this._components = new Array(4);
-        this._components[1] = this._rotation;
-        this._components[2] = this._skew;
-        this._components[3] = this._scale;
-    }
-    Object.defineProperty(Transform.prototype, "backVector", {
-        /**
-         *
-         */
-        get: function () {
-            var director = Matrix3DUtils.getForward(this._matrix3D);
-            director.negate();
-            return director;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "colorTransform", {
-        /**
-         * A ColorTransform object containing values that universally adjust the
-         * colors in the display object.
-         *
-         * @throws TypeError The colorTransform is null when being set
-         */
-        get: function () {
-            return this._colorTransform;
-        },
-        set: function (val) {
-            if (this._colorTransform == val)
-                return;
-            this._colorTransform = val;
-            this.invalidateColorTransform();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "concatenatedColorTransform", {
-        /**
-         * A ColorTransform object representing the combined color transformations
-         * applied to the display object and all of its parent objects, back to the
-         * root level. If different color transformations have been applied at
-         * different levels, all of those transformations are concatenated into one
-         * ColorTransform object for this property.
-         */
-        get: function () {
-            return this._concatenatedColorTransform; //TODO
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "concatenatedMatrix", {
-        /**
-         * A Matrix object representing the combined transformation matrixes of the
-         * display object and all of its parent objects, back to the root level. If
-         * different transformation matrixes have been applied at different levels,
-         * all of those matrixes are concatenated into one matrix for this property.
-         * Also, for resizeable SWF content running in the browser, this property
-         * factors in the difference between stage coordinates and window coordinates
-         * due to window resizing. Thus, the property converts local coordinates to
-         * window coordinates, which may not be the same coordinate space as that of
-         * the Scene.
-         */
-        get: function () {
-            return this._concatenatedMatrix; //TODO
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "downVector", {
-        /**
-         *
-         */
-        get: function () {
-            var director = Matrix3DUtils.getUp(this._matrix3D);
-            director.negate();
-            return director;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "forwardVector", {
-        /**
-         *
-         */
-        get: function () {
-            return Matrix3DUtils.getForward(this._matrix3D);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "leftVector", {
-        /**
-         *
-         */
-        get: function () {
-            var director = Matrix3DUtils.getRight(this._matrix3D);
-            director.negate();
-            return director;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "matrix3D", {
-        /**
-         * Provides access to the Matrix3D object of a three-dimensional display
-         * object. The Matrix3D object represents a transformation matrix that
-         * determines the display object's position and orientation. A Matrix3D
-         * object can also perform perspective projection.
-         *
-         * <p>If the <code>matrix</code> property is set to a value(not
-         * <code>null</code>), the <code>matrix3D</code> property is
-         * <code>null</code>. And if the <code>matrix3D</code> property is set to a
-         * value(not <code>null</code>), the <code>matrix</code> property is
-         * <code>null</code>.</p>
-         */
-        get: function () {
-            if (this._matrix3DDirty)
-                this._updateMatrix3D();
-            return this._matrix3D;
-        },
-        set: function (val) {
-            for (var i = 0; i < 15; i++)
-                this._matrix3D.rawData[i] = val.rawData[i];
-            this.invalidateComponents();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "pixelBounds", {
-        /**
-         * A Rectangle object that defines the bounding rectangle of the display
-         * object on the stage.
-         */
-        get: function () {
-            return this._pixelBounds;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "position", {
-        /**
-         * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
-         */
-        get: function () {
-            return this._matrix3D.position;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "rightVector", {
-        /**
-         *
-         */
-        get: function () {
-            return Matrix3DUtils.getRight(this.matrix3D);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Transform.prototype, "rotation", {
-        /**
-         * Defines the rotation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
-         */
-        get: function () {
-            if (this._componentsDirty)
-                this._updateComponents();
-            return this._rotation;
+            if (this._style)
+                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._style = value;
+            if (this._style)
+                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this.invalidateSurface();
         },
         enumerable: true,
         configurable: true
     });
     /**
-     * Rotates the 3d object directly to a euler angle
-     *
-     * @param    ax        The angle in degrees of the rotation around the x axis.
-     * @param    ay        The angle in degrees of the rotation around the y axis.
-     * @param    az        The angle in degrees of the rotation around the z axis.
+     * @protected
      */
-    Transform.prototype.rotateTo = function (ax, ay, az) {
-        if (this._componentsDirty)
-            this._updateComponents();
-        this._rotation.x = ax;
-        this._rotation.y = ay;
-        this._rotation.z = az;
-        this.invalidateMatrix3D();
+    LineSegment.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        this._pBoxBounds.x = Math.min(this._startPosition.x, this._endPosition.x);
+        this._pBoxBounds.y = Math.min(this._startPosition.y, this._endPosition.y);
+        this._pBoxBounds.z = Math.min(this._startPosition.z, this._endPosition.z);
+        this._pBoxBounds.width = Math.abs(this._startPosition.x - this._endPosition.x);
+        this._pBoxBounds.height = Math.abs(this._startPosition.y - this._endPosition.y);
+        this._pBoxBounds.depth = Math.abs(this._startPosition.z - this._endPosition.z);
     };
-    Object.defineProperty(Transform.prototype, "scale", {
-        /**
-         * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
-         */
-        get: function () {
-            if (this._componentsDirty)
-                this._updateComponents();
-            return this._scale;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Transform.prototype.scaleTo = function (sx, sy, sz) {
-        if (this._componentsDirty)
-            this._updateComponents();
-        this._scale.x = sx;
-        this._scale.y = sy;
-        this._scale.z = sz;
-        this.invalidateMatrix3D();
-    };
-    Object.defineProperty(Transform.prototype, "skew", {
-        /**
-         * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
-         */
-        get: function () {
-            if (this._componentsDirty)
-                this._updateComponents();
-            return this._skew;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Transform.prototype.skewTo = function (sx, sy, sz) {
-        if (this._componentsDirty)
-            this._updateComponents();
-        this._skew.x = sx;
-        this._skew.y = sy;
-        this._skew.z = sz;
-        this.invalidateMatrix3D();
-    };
-    Object.defineProperty(Transform.prototype, "upVector", {
-        /**
-         *
-         */
-        get: function () {
-            return Matrix3DUtils.getUp(this.matrix3D);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Transform.prototype.dispose = function () {
+    LineSegment.prototype._pUpdateSphereBounds = function () {
+        _super.prototype._pUpdateSphereBounds.call(this);
+        this._pUpdateBoxBounds();
+        var halfWidth = (this._endPosition.x - this._startPosition.x) / 2;
+        var halfHeight = (this._endPosition.y - this._startPosition.y) / 2;
+        var halfDepth = (this._endPosition.z - this._startPosition.z) / 2;
+        this._pSphereBounds.x = this._startPosition.x + halfWidth;
+        this._pSphereBounds.y = this._startPosition.y + halfHeight;
+        this._pSphereBounds.z = this._startPosition.z + halfDepth;
+        this._pSphereBounds.radius = Math.sqrt(halfWidth * halfWidth + halfHeight * halfHeight + halfDepth * halfDepth);
     };
     /**
-     * Returns a Matrix3D object, which can transform the space of a specified
-     * display object in relation to the current display object's space. You can
-     * use the <code>getRelativeMatrix3D()</code> method to move one
-     * three-dimensional display object relative to another three-dimensional
-     * display object.
-     *
-     * @param relativeTo The display object relative to which the transformation
-     *                   occurs. To get a Matrix3D object relative to the stage,
-     *                   set the parameter to the <code>root</code> or
-     *                   <code>stage</code> object. To get the world-relative
-     *                   matrix of the display object, set the parameter to a
-     *                   display object that has a perspective transformation
-     *                   applied to it.
-     * @return A Matrix3D object that can be used to transform the space from the
-     *         <code>relativeTo</code> display object to the current display
-     *         object space.
-     */
-    Transform.prototype.getRelativeMatrix3D = function (relativeTo) {
-        return new Matrix3D(); //TODO
-    };
-    /**
-     * Moves the 3d object forwards along it's local z axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveForward = function (distance) {
-        this.translateLocal(Vector3D.Z_AXIS, distance);
-    };
-    /**
-     * Moves the 3d object backwards along it's local z axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveBackward = function (distance) {
-        this.translateLocal(Vector3D.Z_AXIS, -distance);
-    };
-    /**
-     * Moves the 3d object backwards along it's local x axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveLeft = function (distance) {
-        this.translateLocal(Vector3D.X_AXIS, -distance);
-    };
-    /**
-     * Moves the 3d object forwards along it's local x axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveRight = function (distance) {
-        this.translateLocal(Vector3D.X_AXIS, distance);
-    };
-    /**
-     * Moves the 3d object forwards along it's local y axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveUp = function (distance) {
-        this.translateLocal(Vector3D.Y_AXIS, distance);
-    };
-    /**
-     * Moves the 3d object backwards along it's local y axis
-     *
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.moveDown = function (distance) {
-        this.translateLocal(Vector3D.Y_AXIS, -distance);
-    };
-    /**
-     * Moves the 3d object directly to a point in space
-     *
-     * @param    dx        The amount of movement along the local x axis.
-     * @param    dy        The amount of movement along the local y axis.
-     * @param    dz        The amount of movement along the local z axis.
-     */
-    Transform.prototype.moveTo = function (dx, dy, dz) {
-        this._matrix3D.rawData[12] = dx;
-        this._matrix3D.rawData[13] = dy;
-        this._matrix3D.rawData[14] = dz;
-        this.invalidatePosition();
-    };
-    /**
-     * Rotates the 3d object around it's local x-axis
-     *
-     * @param    angle        The amount of rotation in degrees
-     */
-    Transform.prototype.pitch = function (angle) {
-        this.rotate(Vector3D.X_AXIS, angle);
-    };
-    /**
-     * Rotates the 3d object around it's local z-axis
-     *
-     * @param    angle        The amount of rotation in degrees
-     */
-    Transform.prototype.roll = function (angle) {
-        this.rotate(Vector3D.Z_AXIS, angle);
-    };
-    /**
-     * Rotates the 3d object around it's local y-axis
-     *
-     * @param    angle        The amount of rotation in degrees
-     */
-    Transform.prototype.yaw = function (angle) {
-        this.rotate(Vector3D.Y_AXIS, angle);
-    };
-    /**
-     * Rotates the 3d object around an axis by a defined angle
-     *
-     * @param    axis        The vector defining the axis of rotation
-     * @param    angle        The amount of rotation in degrees
-     */
-    Transform.prototype.rotate = function (axis, angle) {
-        this.matrix3D.prependRotation(angle, axis);
-        this.invalidateComponents();
-    };
-    /**
-     * Moves the 3d object along a vector by a defined length
-     *
-     * @param    axis        The vector defining the axis of movement
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.translate = function (axis, distance) {
-        var x = axis.x, y = axis.y, z = axis.z;
-        var len = distance / Math.sqrt(x * x + y * y + z * z);
-        this.matrix3D.appendTranslation(x * len, y * len, z * len);
-        this.invalidatePosition();
-    };
-    /**
-     * Moves the 3d object along a vector by a defined length
-     *
-     * @param    axis        The vector defining the axis of movement
-     * @param    distance    The length of the movement
-     */
-    Transform.prototype.translateLocal = function (axis, distance) {
-        var x = axis.x, y = axis.y, z = axis.z;
-        var len = distance / Math.sqrt(x * x + y * y + z * z);
-        this.matrix3D.prependTranslation(x * len, y * len, z * len);
-        this.invalidatePosition();
-    };
-    Transform.prototype.clearMatrix3D = function () {
-        this._matrix3D.identity();
-        this.invalidateComponents();
-    };
-    Transform.prototype.clearColorTransform = function () {
-        if (!this._colorTransform)
-            return;
-        this._colorTransform.clear();
-        this.invalidateColorTransform();
-    };
-    /**
-     * Invalidates the 3D transformation matrix, causing it to be updated upon the next request
-     *
      * @private
      */
-    Transform.prototype.invalidateMatrix3D = function () {
-        this._matrix3DDirty = true;
-        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_MATRIX3D, this));
+    LineSegment.prototype.invalidateGraphics = function () {
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_ELEMENTS, this)); //TODO improve performance by only using one geometry for all line segments
     };
-    Transform.prototype.invalidateComponents = function () {
-        this.invalidatePosition();
-        this._componentsDirty = true;
+    LineSegment.prototype.invalidateSurface = function () {
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_RENDER_OWNER, this));
     };
-    /**
-     *
-     */
-    Transform.prototype.invalidatePosition = function () {
-        this._matrix3D.invalidatePosition();
-        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_MATRIX3D, this));
-    };
-    Transform.prototype.invalidateColorTransform = function () {
-        this.dispatchEvent(new TransformEvent(TransformEvent.INVALIDATE_COLOR_TRANSFORM, this));
-    };
-    /**
-     *
-     */
-    Transform.prototype._updateMatrix3D = function () {
-        this._matrix3D.recompose(this._components);
-        this._matrix3DDirty = false;
-    };
-    Transform.prototype._updateComponents = function () {
-        var elements = this._matrix3D.decompose();
-        var vec;
-        vec = elements[1];
-        this._rotation.x = vec.x;
-        this._rotation.y = vec.y;
-        this._rotation.z = vec.z;
-        vec = elements[2];
-        this._skew.x = vec.x;
-        this._skew.y = vec.y;
-        this._skew.z = vec.z;
-        vec = elements[3];
-        this._scale.x = vec.x;
-        this._scale.y = vec.y;
-        this._scale.z = vec.z;
-        this._componentsDirty = false;
-    };
-    return Transform;
-})(EventDispatcher);
-module.exports = Transform;
-
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent"}],"awayjs-display/lib/bounds/AxisAlignedBoundingBox":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
-var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
-var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
-var PrimitiveCubePrefab = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-/**
- * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
- * This is useful for most meshes.
- */
-var AxisAlignedBoundingBox = (function (_super) {
-    __extends(AxisAlignedBoundingBox, _super);
-    /**
-     * Creates a new <code>AxisAlignedBoundingBox</code> object.
-     */
-    function AxisAlignedBoundingBox(entity) {
-        _super.call(this, entity);
-        this._x = 0;
-        this._y = 0;
-        this._z = 0;
-        this._width = 0;
-        this._height = 0;
-        this._depth = 0;
-        this._centerX = 0;
-        this._centerY = 0;
-        this._centerZ = 0;
-        this._halfExtentsX = 0;
-        this._halfExtentsY = 0;
-        this._halfExtentsZ = 0;
-    }
-    /**
-     * @inheritDoc
-     */
-    AxisAlignedBoundingBox.prototype.nullify = function () {
-        this._x = this._y = this._z = 0;
-        this._width = this._height = this._depth = 0;
-        this._centerX = this._centerY = this._centerZ = 0;
-        this._halfExtentsX = this._halfExtentsY = this._halfExtentsZ = 0;
-    };
-    /**
-     * @inheritDoc
-     */
-    AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
-        if (this._pInvalidated)
-            this._pUpdate();
-        for (var i = 0; i < numPlanes; ++i) {
-            var plane = planes[i];
-            var a = plane.a;
-            var b = plane.b;
-            var c = plane.c;
-            var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
-            var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
-            var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
-            var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
-            if (projDist < 0)
-                return false;
-        }
-        return true;
-    };
-    AxisAlignedBoundingBox.prototype.rayIntersection = function (position, direction, targetNormal) {
-        if (this._pInvalidated)
-            this._pUpdate();
-        return this._box.rayIntersection(position, direction, targetNormal);
-    };
-    AxisAlignedBoundingBox.prototype.classifyToPlane = function (plane) {
-        var a = plane.a;
-        var b = plane.b;
-        var c = plane.c;
-        var centerDistance = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
-        if (a < 0)
-            a = -a;
-        if (b < 0)
-            b = -b;
-        if (c < 0)
-            c = -c;
-        var boundOffset = a * this._halfExtentsX + b * this._halfExtentsY + c * this._halfExtentsZ;
-        return centerDistance > boundOffset ? PlaneClassification.FRONT : centerDistance < -boundOffset ? PlaneClassification.BACK : PlaneClassification.INTERSECT;
-    };
-    AxisAlignedBoundingBox.prototype._pUpdate = function () {
-        _super.prototype._pUpdate.call(this);
-        this._box = this._pEntity.getBox();
-        var matrix = this._pEntity.sceneTransform;
-        var hx = this._box.width / 2;
-        var hy = this._box.height / 2;
-        var hz = this._box.depth / 2;
-        var cx = this._box.x + hx;
-        var cy = this._box.y + hy;
-        var cz = this._box.z + hz;
-        var raw = matrix.rawData;
-        var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
-        var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
-        var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
-        this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
-        this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
-        this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
-        this._halfExtentsX = Math.abs(hx * m11 + hy * m12 + hz * m13);
-        this._halfExtentsY = Math.abs(hx * m21 + hy * m22 + hz * m23);
-        this._halfExtentsZ = Math.abs(hx * m31 + hy * m32 + hz * m33);
-        if (this._prefab) {
-            this._prefab.width = this._box.width;
-            this._prefab.height = this._box.height;
-            this._prefab.depth = this._box.depth;
-            this._pBoundsPrimitive.transform.matrix3D = matrix;
-        }
-        this._width = this._halfExtentsX * 2;
-        this._height = this._halfExtentsY * 2;
-        this._depth = this._halfExtentsZ * 2;
-        this._x = this._centerX - this._halfExtentsX;
-        this._y = this._centerY - this._halfExtentsY;
-        this._z = this._centerZ - this._halfExtentsZ;
-    };
-    AxisAlignedBoundingBox.prototype._pCreateBoundsPrimitive = function () {
-        this._prefab = new PrimitiveCubePrefab(null, ElementsType.LINE);
-        return this._prefab.getNewObject();
-    };
-    return AxisAlignedBoundingBox;
-})(BoundingVolumeBase);
-module.exports = AxisAlignedBoundingBox;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab"}],"awayjs-display/lib/bounds/BoundingSphere":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
-var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
-var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
-var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-var BoundingSphere = (function (_super) {
-    __extends(BoundingSphere, _super);
-    function BoundingSphere(entity) {
-        _super.call(this, entity);
-        this._radius = 0;
-        this._centerX = 0;
-        this._centerY = 0;
-        this._centerZ = 0;
-    }
-    BoundingSphere.prototype.nullify = function () {
-        this._centerX = this._centerY = this._centerZ = 0;
-        this._radius = 0;
-    };
-    BoundingSphere.prototype.isInFrustum = function (planes, numPlanes) {
-        if (this._pInvalidated)
-            this._pUpdate();
-        for (var i = 0; i < numPlanes; ++i) {
-            var plane = planes[i];
-            var flippedExtentX = plane.a < 0 ? -this._radius : this._radius;
-            var flippedExtentY = plane.b < 0 ? -this._radius : this._radius;
-            var flippedExtentZ = plane.c < 0 ? -this._radius : this._radius;
-            var projDist = plane.a * (this._centerX + flippedExtentX) + plane.b * (this._centerY + flippedExtentY) + plane.c * (this._centerZ + flippedExtentZ) - plane.d;
-            if (projDist < 0) {
-                return false;
-            }
-        }
-        return true;
-    };
-    BoundingSphere.prototype.rayIntersection = function (position, direction, targetNormal) {
-        if (this._pInvalidated)
-            this._pUpdate();
-        return this._sphere.rayIntersection(position, direction, targetNormal);
-    };
-    //@override
-    BoundingSphere.prototype.classifyToPlane = function (plane) {
-        var a = plane.a;
-        var b = plane.b;
-        var c = plane.c;
-        var dd = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
-        if (a < 0)
-            a = -a;
-        if (b < 0)
-            b = -b;
-        if (c < 0)
-            c = -c;
-        var rr = (a + b + c) * this._radius;
-        return dd > rr ? PlaneClassification.FRONT : dd < -rr ? PlaneClassification.BACK : PlaneClassification.INTERSECT;
-    };
-    BoundingSphere.prototype._pUpdate = function () {
-        _super.prototype._pUpdate.call(this);
-        this._sphere = this._pEntity.getSphere();
-        var matrix = this._pEntity.sceneTransform;
-        var cx = this._sphere.x;
-        var cy = this._sphere.y;
-        var cz = this._sphere.z;
-        var r = this._sphere.radius;
-        var raw = matrix.rawData;
-        var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
-        var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
-        var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
-        this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
-        this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
-        this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
-        var rx = m11 + m12 + m13;
-        var ry = m21 + m22 + m23;
-        var rz = m31 + m32 + m33;
-        this._radius = r * Math.sqrt((rx * rx + ry * ry + rz * rz) / 3);
-        if (this._prefab) {
-            this._prefab.radius = r;
-            this._pBoundsPrimitive.x = cx;
-            this._pBoundsPrimitive.y = cy;
-            this._pBoundsPrimitive.z = cz;
-            this._pBoundsPrimitive.transform.matrix3D = matrix;
-        }
-    };
-    BoundingSphere.prototype._pCreateBoundsPrimitive = function () {
-        this._prefab = new PrimitiveSpherePrefab(null, ElementsType.LINE);
-        return this._prefab.getNewObject();
-    };
-    return BoundingSphere;
-})(BoundingVolumeBase);
-module.exports = BoundingSphere;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab"}],"awayjs-display/lib/bounds/BoundingVolumeBase":[function(require,module,exports){
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var BoundingVolumeBase = (function () {
-    function BoundingVolumeBase(entity) {
-        this._pInvalidated = true;
-        this._pEntity = entity;
-    }
-    BoundingVolumeBase.prototype.dispose = function () {
-        this._pEntity = null;
-        this._pBoundsPrimitive = null;
-    };
-    Object.defineProperty(BoundingVolumeBase.prototype, "boundsPrimitive", {
-        get: function () {
-            if (this._pBoundsPrimitive == null) {
-                this._pBoundsPrimitive = this._pCreateBoundsPrimitive();
-                this._pInvalidated = true;
-            }
-            if (this._pInvalidated)
-                this._pUpdate();
-            return this._pBoundsPrimitive;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BoundingVolumeBase.prototype.nullify = function () {
-        throw new AbstractMethodError();
-    };
-    BoundingVolumeBase.prototype.isInFrustum = function (planes, numPlanes) {
-        throw new AbstractMethodError();
-    };
-    BoundingVolumeBase.prototype.clone = function () {
-        throw new AbstractMethodError();
-    };
-    BoundingVolumeBase.prototype.rayIntersection = function (position, direction, targetNormal) {
-        return -1;
-    };
-    BoundingVolumeBase.prototype.classifyToPlane = function (plane) {
-        throw new AbstractMethodError();
-    };
-    BoundingVolumeBase.prototype._pUpdate = function () {
-        this._pInvalidated = false;
-    };
-    BoundingVolumeBase.prototype.invalidate = function () {
-        this._pInvalidated = true;
-    };
-    BoundingVolumeBase.prototype._pCreateBoundsPrimitive = function () {
-        throw new AbstractMethodError();
-    };
-    return BoundingVolumeBase;
-})();
-module.exports = BoundingVolumeBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/bounds/BoundsType":[function(require,module,exports){
-/**
- *
- */
-var BoundsType = (function () {
-    function BoundsType() {
-    }
-    /**
-     *
-     */
-    BoundsType.SPHERE = "sphere";
-    /**
-     *
-     */
-    BoundsType.AXIS_ALIGNED_BOX = "axisAlignedBox";
-    /**
-     *
-     */
-    BoundsType.NULL = "null";
-    return BoundsType;
-})();
-module.exports = BoundsType;
-
-},{}],"awayjs-display/lib/bounds/NullBounds":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var PlaneClassification = require("awayjs-core/lib/geom/PlaneClassification");
-var BoundingVolumeBase = require("awayjs-display/lib/bounds/BoundingVolumeBase");
-var NullBounds = (function (_super) {
-    __extends(NullBounds, _super);
-    function NullBounds(alwaysIn) {
-        if (alwaysIn === void 0) { alwaysIn = true; }
-        _super.call(this, null);
-        this._alwaysIn = alwaysIn;
-    }
-    //@override
-    NullBounds.prototype.clone = function () {
-        return new NullBounds(this._alwaysIn);
-    };
-    //@override
-    NullBounds.prototype.isInFrustum = function (planes, numPlanes) {
-        return this._alwaysIn;
-    };
-    NullBounds.prototype.classifyToPlane = function (plane) {
-        return PlaneClassification.INTERSECT;
-    };
-    return NullBounds;
-})(BoundingVolumeBase);
-module.exports = NullBounds;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase"}],"awayjs-display/lib/containers/DisplayObjectContainer":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var ArgumentError = require("awayjs-core/lib/errors/ArgumentError");
-var RangeError = require("awayjs-core/lib/errors/RangeError");
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
-/**
- * The DisplayObjectContainer class is the base class for all objects that can
- * serve as display object containers on the display list. The display list
- * manages all objects displayed in the Flash runtimes. Use the
- * DisplayObjectContainer class to arrange the display objects in the display
- * list. Each DisplayObjectContainer object has its own child list for
- * organizing the z-order of the objects. The z-order is the front-to-back
- * order that determines which object is drawn in front, which is behind, and
- * so on.
- *
- * <p>DisplayObject is an abstract base class; therefore, you cannot call
- * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
- * <code>ArgumentError</code> exception.</p>
- * The DisplayObjectContainer class is an abstract base class for all objects
- * that can contain child objects. It cannot be instantiated directly; calling
- * the <code>new DisplayObjectContainer()</code> constructor throws an
- * <code>ArgumentError</code> exception.
- *
- * <p>For more information, see the "Display Programming" chapter of the
- * <i>ActionScript 3.0 Developer's Guide</i>.</p>
- */
-var DisplayObjectContainer = (function (_super) {
-    __extends(DisplayObjectContainer, _super);
-    /**
-     * Calling the <code>new DisplayObjectContainer()</code> constructor throws
-     * an <code>ArgumentError</code> exception. You <i>can</i>, however, call
-     * constructors for the following subclasses of DisplayObjectContainer:
-     * <ul>
-     *   <li><code>new Loader()</code></li>
-     *   <li><code>new Sprite()</code></li>
-     *   <li><code>new MovieClip()</code></li>
-     * </ul>
-     */
-    function DisplayObjectContainer() {
-        _super.call(this);
-        this._mouseChildren = true;
-        this._depth_childs = {};
-        this._nextHighestDepth = 0;
-        this._children = new Array();
-        this._pIsContainer = true;
-    }
-    Object.defineProperty(DisplayObjectContainer.prototype, "assetType", {
-        /**
-         *
-         */
-        get: function () {
-            return DisplayObjectContainer.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectContainer.prototype, "mouseChildren", {
-        /**
-         * Determines whether or not the children of the object are mouse, or user
-         * input device, enabled. If an object is enabled, a user can interact with
-         * it by using a mouse or user input device. The default is
-         * <code>true</code>.
-         *
-         * <p>This property is useful when you create a button with an instance of
-         * the Sprite class(instead of using the SimpleButton class). When you use a
-         * Sprite instance to create a button, you can choose to decorate the button
-         * by using the <code>addChild()</code> method to add additional Sprite
-         * instances. This process can cause unexpected behavior with mouse events
-         * because the Sprite instances you add as children can become the target
-         * object of a mouse event when you expect the parent instance to be the
-         * target object. To ensure that the parent instance serves as the target
-         * objects for mouse events, you can set the <code>mouseChildren</code>
-         * property of the parent instance to <code>false</code>.</p>
-         *
-         * <p> No event is dispatched by setting this property. You must use the
-         * <code>addEventListener()</code> method to create interactive
-         * functionality.</p>
-         */
-        get: function () {
-            if (this._hierarchicalPropsDirty & HierarchicalProperties.MOUSE_ENABLED)
-                this._updateMouseEnabled();
-            return this._mouseChildren;
-        },
-        set: function (value) {
-            if (this._mouseChildren == value)
-                return;
-            this._mouseChildren = value;
-            this.pInvalidateHierarchicalProperties(HierarchicalProperties.MOUSE_ENABLED);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
-        /**
-         * Returns the number of children of this object.
-         */
-        get: function () {
-            return this._children.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Adds a child DisplayObject instance to this DisplayObjectContainer
-     * instance. The child is added to the front(top) of all other children in
-     * this DisplayObjectContainer instance.(To add a child to a specific index
-     * position, use the <code>addChildAt()</code> method.)
-     *
-     * <p>If you add a child object that already has a different display object
-     * container as a parent, the object is removed from the child list of the
-     * other display object container. </p>
-     *
-     * <p><b>Note:</b> The command <code>stage.addChild()</code> can cause
-     * problems with a published SWF file, including security problems and
-     * conflicts with other loaded SWF files. There is only one Stage within a
-     * Flash runtime instance, no matter how many SWF files you load into the
-     * runtime. So, generally, objects should not be added to the Stage,
-     * directly, at all. The only object the Stage should contain is the root
-     * object. Create a DisplayObjectContainer to contain all of the items on the
-     * display list. Then, if necessary, add that DisplayObjectContainer instance
-     * to the Stage.</p>
-     *
-     * @param child The DisplayObject instance to add as a child of this
-     *              DisplayObjectContainer instance.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child is the same as the parent. Also
-     *                       throws if the caller is a child(or grandchild etc.)
-     *                       of the child being added.
-     * @event added Dispatched when a display object is added to the display
-     *              list.
-     */
-    DisplayObjectContainer.prototype.addChild = function (child) {
-        return this.addChildAt(child, this._children.length);
-    };
-    DisplayObjectContainer.prototype.addChildAtDepth = function (child, depth, replace) {
-        if (replace === void 0) { replace = true; }
-        if (child == null)
-            throw new ArgumentError("Parameter child cannot be null.");
-        //if child already has a parent, remove it.
-        if (child._pParent)
-            child._pParent.removeChildAtInternal(child._pParent.getChildIndex(child));
-        var index = this.getDepthIndexInternal(depth);
-        if (index != -1) {
-            if (replace) {
-                this.removeChildAt(index);
-            }
-            else {
-                //move depth of existing child up by 1
-                this.addChildAtDepth(this._children[index], depth + 1, false);
-            }
-        }
-        if (this._nextHighestDepth < depth + 1)
-            this._nextHighestDepth = depth + 1;
-        this._depth_childs[depth] = child;
-        this._children.push(child);
-        child._depthID = depth;
-        child.iSetParent(this);
-        this._pInvalidateBounds();
-        return child;
-    };
-    /**
-     * Adds a child DisplayObject instance to this DisplayObjectContainer
-     * instance. The child is added at the index position specified. An index of
-     * 0 represents the back(bottom) of the display list for this
-     * DisplayObjectContainer object.
-     *
-     * <p>For example, the following example shows three display objects, labeled
-     * a, b, and c, at index positions 0, 2, and 1, respectively:</p>
-     *
-     * <p>If you add a child object that already has a different display object
-     * container as a parent, the object is removed from the child list of the
-     * other display object container. </p>
-     *
-     * @param child The DisplayObject instance to add as a child of this
-     *              DisplayObjectContainer instance.
-     * @param index The index position to which the child is added. If you
-     *              specify a currently occupied index position, the child object
-     *              that exists at that position and all higher positions are
-     *              moved up one position in the child list.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child is the same as the parent. Also
-     *                       throws if the caller is a child(or grandchild etc.)
-     *                       of the child being added.
-     * @throws RangeError    Throws if the index position does not exist in the
-     *                       child list.
-     * @event added Dispatched when a display object is added to the display
-     *              list.
-     */
-    DisplayObjectContainer.prototype.addChildAt = function (child, index) {
-        return this.addChildAtDepth(child, (index < this._children.length) ? this._children[index]._depthID : this.getNextHighestDepth(), false);
-    };
-    DisplayObjectContainer.prototype.addChildren = function () {
-        var childarray = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            childarray[_i - 0] = arguments[_i];
-        }
-        var len = childarray.length;
-        for (var i = 0; i < len; i++)
-            this.addChild(childarray[i]);
-    };
-    /**
-     *
-     */
-    DisplayObjectContainer.prototype.clone = function () {
-        var newInstance = new DisplayObjectContainer();
-        this.copyTo(newInstance);
-        return newInstance;
-    };
-    DisplayObjectContainer.prototype.copyTo = function (newInstance) {
-        _super.prototype.copyTo.call(this, newInstance);
-        newInstance.mouseChildren = this._mouseChildren;
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            newInstance.addChild(this._children[i].clone());
-    };
-    /**
-     * Determines whether the specified display object is a child of the
-     * DisplayObjectContainer instance or the instance itself. The search
-     * includes the entire display list including this DisplayObjectContainer
-     * instance. Grandchildren, great-grandchildren, and so on each return
-     * <code>true</code>.
-     *
-     * @param child The child object to test.
-     * @return <code>true</code> if the <code>child</code> object is a child of
-     *         the DisplayObjectContainer or the container itself; otherwise
-     *         <code>false</code>.
-     */
-    DisplayObjectContainer.prototype.contains = function (child) {
-        return this._children.indexOf(child) >= 0;
-    };
-    /**
-     *
-     */
-    DisplayObjectContainer.prototype.disposeValues = function () {
-        for (var i = this._children.length - 1; i >= 0; i--)
-            this.removeChild(this._children[i]);
-        _super.prototype.disposeValues.call(this);
-    };
-    DisplayObjectContainer.prototype.getChildAtDepth = function (depth) {
-        return this._depth_childs[depth];
-    };
-    /**
-     * Returns the child display object instance that exists at the specified
-     * index.
-     *
-     * @param index The index position of the child object.
-     * @return The child display object at the specified index position.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     */
-    DisplayObjectContainer.prototype.getChildAt = function (index /*int*/) {
-        var child = this._children[index];
-        if (child == null)
-            throw new RangeError("Index does not exist in the child list of the caller");
-        return child;
-    };
-    /**
-     * Returns the child display object that exists with the specified name. If
-     * more that one child display object has the specified name, the method
-     * returns the first object in the child list.
-     *
-     * <p>The <code>getChildAt()</code> method is faster than the
-     * <code>getChildByName()</code> method. The <code>getChildAt()</code> method
-     * accesses a child from a cached array, whereas the
-     * <code>getChildByName()</code> method has to traverse a linked list to
-     * access a child.</p>
-     *
-     * @param name The name of the child to return.
-     * @return The child display object with the specified name.
-     */
-    DisplayObjectContainer.prototype.getChildByName = function (name) {
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            if (this._children[i].name == name)
-                return this._children[i];
-        return null;
-    };
-    /**
-     * Returns the index position of a <code>child</code> DisplayObject instance.
-     *
-     * @param child The DisplayObject instance to identify.
-     * @return The index position of the child display object to identify.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     */
-    DisplayObjectContainer.prototype.getChildIndex = function (child) {
-        var childIndex = this._children.indexOf(child);
-        if (childIndex == -1)
-            throw new ArgumentError("Child parameter is not a child of the caller");
-        return childIndex;
-    };
-    DisplayObjectContainer.prototype.getNextHighestDepth = function () {
-        if (this._nextHighestDepthDirty)
-            this._updateNextHighestDepth();
-        return this._nextHighestDepth;
-    };
-    /**
-     * Returns an array of objects that lie under the specified point and are
-     * children(or grandchildren, and so on) of this DisplayObjectContainer
-     * instance. Any child objects that are inaccessible for security reasons are
-     * omitted from the returned array. To determine whether this security
-     * restriction affects the returned array, call the
-     * <code>areInaccessibleObjectsUnderPoint()</code> method.
-     *
-     * <p>The <code>point</code> parameter is in the coordinate space of the
-     * Stage, which may differ from the coordinate space of the display object
-     * container(unless the display object container is the Stage). You can use
-     * the <code>globalToLocal()</code> and the <code>localToGlobal()</code>
-     * methods to convert points between these coordinate spaces.</p>
-     *
-     * @param point The point under which to look.
-     * @return An array of objects that lie under the specified point and are
-     *         children(or grandchildren, and so on) of this
-     *         DisplayObjectContainer instance.
-     */
-    DisplayObjectContainer.prototype.getObjectsUnderPoint = function (point) {
-        return new Array();
-    };
-    /**
-     * Removes the specified <code>child</code> DisplayObject instance from the
-     * child list of the DisplayObjectContainer instance. The <code>parent</code>
-     * property of the removed child is set to <code>null</code> , and the object
-     * is garbage collected if no other references to the child exist. The index
-     * positions of any display objects above the child in the
-     * DisplayObjectContainer are decreased by 1.
-     *
-     * <p>The garbage collector reallocates unused memory space. When a variable
-     * or object is no longer actively referenced or stored somewhere, the
-     * garbage collector sweeps through and wipes out the memory space it used to
-     * occupy if no other references to it exist.</p>
-     *
-     * @param child The DisplayObject instance to remove.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     */
-    DisplayObjectContainer.prototype.removeChild = function (child) {
-        if (child == null)
-            throw new ArgumentError("Parameter child cannot be null");
-        this.removeChildAt(this.getChildIndex(child));
-        return child;
-    };
-    DisplayObjectContainer.prototype.removeChildAtDepth = function (depth /*int*/) {
-        return this.removeChildAt(this.getDepthIndexInternal(depth));
-    };
-    /**
-     * Removes a child DisplayObject from the specified <code>index</code>
-     * position in the child list of the DisplayObjectContainer. The
-     * <code>parent</code> property of the removed child is set to
-     * <code>null</code>, and the object is garbage collected if no other
-     * references to the child exist. The index positions of any display objects
-     * above the child in the DisplayObjectContainer are decreased by 1.
-     *
-     * <p>The garbage collector reallocates unused memory space. When a variable
-     * or object is no longer actively referenced or stored somewhere, the
-     * garbage collector sweeps through and wipes out the memory space it used to
-     * occupy if no other references to it exist.</p>
-     *
-     * @param index The child index of the DisplayObject to remove.
-     * @return The DisplayObject instance that was removed.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     * @throws SecurityError This child display object belongs to a sandbox to
-     *                       which the calling object does not have access. You
-     *                       can avoid this situation by having the child movie
-     *                       call the <code>Security.allowDomain()</code> method.
-     */
-    DisplayObjectContainer.prototype.removeChildAt = function (index /*int*/) {
-        var child = this.removeChildAtInternal(index);
-        child.iSetParent(null);
-        this._pInvalidateBounds();
-        return child;
-    };
-    /**
-     * Removes all <code>child</code> DisplayObject instances from the child list
-     * of the DisplayObjectContainer instance. The <code>parent</code> property
-     * of the removed children is set to <code>null</code>, and the objects are
-     * garbage collected if no other references to the children exist.
-     *
-     * The garbage collector reallocates unused memory space. When a variable or
-     * object is no longer actively referenced or stored somewhere, the garbage
-     * collector sweeps through and wipes out the memory space it used to occupy
-     * if no other references to it exist.
-     *
-     * @param beginIndex The beginning position. A value smaller than 0 throws a RangeError.
-     * @param endIndex The ending position. A value smaller than 0 throws a RangeError.
-     * @throws RangeError    Throws if the beginIndex or endIndex positions do
-     *                       not exist in the child list.
-     */
-    DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
-        if (beginIndex === void 0) { beginIndex = 0; }
-        if (endIndex === void 0) { endIndex = 2147483647; }
-        if (beginIndex < 0)
-            throw new RangeError("beginIndex is out of range of the child list");
-        if (endIndex > this._children.length)
-            throw new RangeError("endIndex is out of range of the child list");
-        for (var i = beginIndex; i < endIndex; i++)
-            this.removeChild(this._children[i]);
-    };
-    /**
-     * Changes the position of an existing child in the display object container.
-     * This affects the layering of child objects. For example, the following
-     * example shows three display objects, labeled a, b, and c, at index
-     * positions 0, 1, and 2, respectively:
-     *
-     * <p>When you use the <code>setChildIndex()</code> method and specify an
-     * index position that is already occupied, the only positions that change
-     * are those in between the display object's former and new position. All
-     * others will stay the same. If a child is moved to an index LOWER than its
-     * current index, all children in between will INCREASE by 1 for their index
-     * reference. If a child is moved to an index HIGHER than its current index,
-     * all children in between will DECREASE by 1 for their index reference. For
-     * example, if the display object container in the previous example is named
-     * <code>container</code>, you can swap the position of the display objects
-     * labeled a and b by calling the following code:</p>
-     *
-     * <p>This code results in the following arrangement of objects:</p>
-     *
-     * @param child The child DisplayObject instance for which you want to change
-     *              the index number.
-     * @param index The resulting index number for the <code>child</code> display
-     *              object.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     */
-    DisplayObjectContainer.prototype.setChildIndex = function (child, index /*int*/) {
-        //TODO
-    };
-    /**
-     * Swaps the z-order (front-to-back order) of the two specified child
-     * objects. All other child objects in the display object container remain in
-     * the same index positions.
-     *
-     * @param child1 The first child object.
-     * @param child2 The second child object.
-     * @throws ArgumentError Throws if either child parameter is not a child of
-     *                       this object.
-     */
-    DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
-        this.swapChildrenAt(this.getChildIndex(child1), this.getChildIndex(child2));
-    };
-    /**
-     * Swaps the z-order(front-to-back order) of the child objects at the two
-     * specified index positions in the child list. All other child objects in
-     * the display object container remain in the same index positions.
-     *
-     * @param index1 The index position of the first child object.
-     * @param index2 The index position of the second child object.
-     * @throws RangeError If either index does not exist in the child list.
-     */
-    DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
-        var depth = this._children[index2]._depthID;
-        var child = this._children[index1];
-        this.addChildAtDepth(this._children[index2], this._children[index1]._depthID);
-        this.addChildAtDepth(child, depth);
+    LineSegment.prototype._onInvalidateProperties = function (event) {
+        this.invalidateSurface();
     };
     /**
      * //TODO
      *
-     * @protected
-     */
-    DisplayObjectContainer.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        var box;
-        var numChildren = this._children.length;
-        if (numChildren > 0) {
-            var min;
-            var max;
-            var minX, minY, minZ;
-            var maxX, maxY, maxZ;
-            for (var i = 0; i < numChildren; ++i) {
-                box = this._children[i].getBox(this);
-                if (i == 0) {
-                    maxX = box.width + (minX = box.x);
-                    maxY = box.height + (minY = box.y);
-                    maxZ = box.depth + (minZ = box.z);
-                }
-                else {
-                    max = box.width + (min = box.x);
-                    if (min < minX)
-                        minX = min;
-                    if (max > maxX)
-                        maxX = max;
-                    max = box.height + (min = box.y);
-                    if (min < minY)
-                        minY = min;
-                    if (max > maxY)
-                        maxY = max;
-                    max = box.depth + (min = box.z);
-                    if (min < minZ)
-                        minZ = min;
-                    if (max > maxZ)
-                        maxZ = max;
-                }
-            }
-            this._pBoxBounds.width = maxX - (this._pBoxBounds.x = minX);
-            this._pBoxBounds.height = maxY - (this._pBoxBounds.y = minY);
-            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
-        }
-        else {
-            this._pBoxBounds.setEmpty();
-        }
-    };
-    /**
-     * @protected
-     */
-    DisplayObjectContainer.prototype.pInvalidateHierarchicalProperties = function (bitFlag) {
-        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, bitFlag))
-            return true;
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            this._children[i].pInvalidateHierarchicalProperties(bitFlag);
-        return false;
-    };
-    /**
+     * @param shortestCollisionDistance
+     * @param findClosest
+     * @returns {boolean}
+     *
      * @internal
      */
-    DisplayObjectContainer.prototype._iSetScene = function (value, partition) {
-        _super.prototype._iSetScene.call(this, value, partition);
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            this._children[i]._iSetScene(value, partition);
+    LineSegment.prototype._iTestCollision = function (shortestCollisionDistance) {
+        return false; //TODO: detect line collisions
     };
-    /**
-     * @private
-     *
-     * @param child
-     */
-    DisplayObjectContainer.prototype.removeChildAtInternal = function (index) {
-        var child = this._children.splice(index, 1)[0];
-        //update next highest depth
-        if (this._nextHighestDepth == child._depthID + 1)
-            this._nextHighestDepthDirty = true;
-        delete this._depth_childs[child._depthID];
-        child._depthID = -16384;
-        return child;
+    LineSegment.prototype._acceptTraverser = function (traverser) {
+        traverser.applyRenderable(this);
     };
-    DisplayObjectContainer.prototype.getDepthIndexInternal = function (depth /*int*/) {
-        if (!this._depth_childs[depth])
-            return -1;
-        return this._children.indexOf(this._depth_childs[depth]);
-    };
-    DisplayObjectContainer.prototype._updateNextHighestDepth = function () {
-        this._nextHighestDepthDirty = false;
-        this._nextHighestDepth = 0;
-        var len = this._children.length;
-        for (var i = 0; i < len; i++)
-            if (this._nextHighestDepth < this._children[i]._depthID)
-                this._nextHighestDepth = this._children[i]._depthID;
-        this._nextHighestDepth += 1;
-    };
-    /**
-     * Evaluates the display object to see if it overlaps or intersects with the
-     * point specified by the <code>x</code> and <code>y</code> parameters. The
-     * <code>x</code> and <code>y</code> parameters specify a point in the
-     * coordinate space of the Scene, not the display object container that
-     * contains the display object(unless that display object container is the
-     * Scene).
-     *
-     * @param x         The <i>x</i> coordinate to test against this object.
-     * @param y         The <i>y</i> coordinate to test against this object.
-     * @param shapeFlag Whether to check against the actual pixels of the object
-     *                 (<code>true</code>) or the bounding box
-     *                 (<code>false</code>).
-     * @return <code>true</code> if the display object overlaps or intersects
-     *         with the specified point; <code>false</code> otherwise.
-     */
-    DisplayObjectContainer.prototype.hitTestPoint = function (x, y, shapeFlag, masksFlag) {
-        if (shapeFlag === void 0) { shapeFlag = false; }
-        if (masksFlag === void 0) { masksFlag = false; }
-        if (!this._pImplicitVisibility)
-            return;
-        if (this._pImplicitMaskId != -1 && !masksFlag)
-            return;
-        if (this._explicitMasks) {
-            var numMasks = this._explicitMasks.length;
-            var maskHit = false;
-            for (var i = 0; i < numMasks; i++) {
-                if (this._explicitMasks[i].hitTestPoint(x, y, shapeFlag, true)) {
-                    maskHit = true;
-                    break;
-                }
-            }
-            if (!maskHit)
-                return false;
-        }
-        return this._hitTestPointInternal(x, y, shapeFlag, masksFlag);
-    };
-    DisplayObjectContainer.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
-        var numChildren = this._children.length;
-        for (var i = 0; i < numChildren; i++)
-            if (this._children[i].hitTestPoint(x, y, shapeFlag, masksFlag))
-                return true;
-        return false;
-    };
-    DisplayObjectContainer.prototype._updateMaskMode = function () {
-        if (this.maskMode)
-            this.mouseChildren = false;
-        _super.prototype._updateMaskMode.call(this);
-    };
-    DisplayObjectContainer.assetType = "[asset DisplayObjectContainer]";
-    return DisplayObjectContainer;
+    LineSegment.assetType = "[asset LineSegment]";
+    return LineSegment;
 })(DisplayObject);
-module.exports = DisplayObjectContainer;
+module.exports = LineSegment;
 
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/errors/RangeError":undefined,"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties"}],"awayjs-display/lib/containers/LoaderContainer":[function(require,module,exports){
+},{"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/display/LoaderContainer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -19506,7 +21659,7 @@ var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var URLLoaderEvent = require("awayjs-core/lib/events/URLLoaderEvent");
 var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var ParserEvent = require("awayjs-core/lib/events/ParserEvent");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
 /**
  * The LoaderContainer class is used to load SWF files or image(JPG, PNG, or GIF)
  * files. Use the <code>load()</code> method to initiate loading. The loaded
@@ -20055,14 +22208,695 @@ var LoaderContainer = (function (_super) {
 })(DisplayObjectContainer);
 module.exports = LoaderContainer;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/library/AssetLibraryBundle":undefined,"awayjs-core/lib/library/Loader":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer"}],"awayjs-display/lib/containers/Scene":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/library/AssetLibraryBundle":undefined,"awayjs-core/lib/library/Loader":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer"}],"awayjs-display/lib/display/Mesh":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var Point = require("awayjs-core/lib/geom/Point");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var Graphics = require("awayjs-display/lib/graphics/Graphics");
+var GraphicsEvent = require("awayjs-display/lib/events/GraphicsEvent");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+/**
+ * Mesh is an instance of a Graphics, augmenting it with a presence in the scene graph, a material, and an animation
+ * state. It consists out of Graphices, which in turn correspond to SubGeometries. Graphices allow different parts
+ * of the graphics to be assigned different materials.
+ */
+var Mesh = (function (_super) {
+    __extends(Mesh, _super);
+    /**
+     * Create a new Mesh object.
+     *
+     * @param material    [optional]        The material with which to render the Mesh.
+     */
+    function Mesh(material) {
+        var _this = this;
+        if (material === void 0) { material = null; }
+        _super.call(this);
+        this._castsShadows = true;
+        this._shareAnimationGraphics = true;
+        //temp point used in hit testing
+        this._tempPoint = new Point();
+        this._pIsEntity = true;
+        this._onGraphicsBoundsInvalidDelegate = function (event) { return _this.onGraphicsBoundsInvalid(event); };
+        this._graphics = new Graphics(this); //unique graphics object for each Mesh
+        this._graphics.addEventListener(GraphicsEvent.BOUNDS_INVALID, this._onGraphicsBoundsInvalidDelegate);
+        this.material = material;
+    }
+    Object.defineProperty(Mesh.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return Mesh.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "castsShadows", {
+        /**
+         * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+         */
+        get: function () {
+            return this._castsShadows;
+        },
+        set: function (value) {
+            this._castsShadows = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "graphics", {
+        /**
+         * The graphics used by the mesh that provides it with its shape.
+         */
+        get: function () {
+            if (this._iSourcePrefab)
+                this._iSourcePrefab._iValidate();
+            return this._graphics;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "animator", {
+        /**
+         * Defines the animator of the graphics object.  Default value is <code>null</code>.
+         */
+        get: function () {
+            return this._graphics.animator;
+        },
+        set: function (value) {
+            if (this._graphics.animator)
+                this._graphics.animator.removeOwner(this);
+            this._graphics.animator = value;
+            if (this._graphics.animator)
+                this._graphics.animator.addOwner(this);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "material", {
+        /**
+         * The material with which to render the Mesh.
+         */
+        get: function () {
+            return this._graphics.material;
+        },
+        set: function (value) {
+            this._graphics.material = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "shareAnimationGraphics", {
+        /**
+         * Indicates whether or not the mesh share the same animation graphics.
+         */
+        get: function () {
+            return this._shareAnimationGraphics;
+        },
+        set: function (value) {
+            this._shareAnimationGraphics = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Mesh.prototype, "style", {
+        /**
+         *
+         */
+        get: function () {
+            return this._graphics.style;
+        },
+        set: function (value) {
+            this._graphics.style = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    Mesh.prototype.bakeTransformations = function () {
+        this._graphics.applyTransformation(this.transform.matrix3D);
+        this.transform.clearMatrix3D();
+    };
+    /**
+     * @inheritDoc
+     */
+    Mesh.prototype.dispose = function () {
+        this.disposeValues();
+        Mesh._meshes.push(this);
+    };
+    /**
+     * @inheritDoc
+     */
+    Mesh.prototype.disposeValues = function () {
+        _super.prototype.disposeValues.call(this);
+        this._graphics.dispose();
+    };
+    /**
+     * Clones this Mesh instance along with all it's children, while re-using the same
+     * material, graphics and animation set. The returned result will be a copy of this mesh,
+     * containing copies of all of it's children.
+     *
+     * Properties that are re-used (i.e. not cloned) by the new copy include name,
+     * graphics, and material. Properties that are cloned or created anew for the copy
+     * include subMeshes, children of the mesh, and the animator.
+     *
+     * If you want to copy just the mesh, reusing it's graphics and material while not
+     * cloning it's children, the simplest way is to create a new mesh manually:
+     *
+     * <code>
+     * var clone : Mesh = new Mesh(original.graphics, original.material);
+     * </code>
+     */
+    Mesh.prototype.clone = function () {
+        var newInstance = (Mesh._meshes.length) ? Mesh._meshes.pop() : new Mesh();
+        this.copyTo(newInstance);
+        return newInstance;
+    };
+    Mesh.prototype.copyTo = function (mesh) {
+        _super.prototype.copyTo.call(this, mesh);
+        mesh.castsShadows = this._castsShadows;
+        mesh.shareAnimationGraphics = this._shareAnimationGraphics;
+        this._graphics.copyTo(mesh.graphics);
+    };
+    /**
+     * //TODO
+     *
+     * @protected
+     */
+    Mesh.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
+    };
+    Mesh.prototype._pUpdateSphereBounds = function () {
+        _super.prototype._pUpdateSphereBounds.call(this);
+        var box = this.getBox();
+        if (!this._center)
+            this._center = new Vector3D();
+        this._center.x = box.x + box.width / 2;
+        this._center.y = box.y + box.height / 2;
+        this._center.z = box.z + box.depth / 2;
+        this._pSphereBounds = this._graphics.getSphereBounds(this._center, this._pSphereBounds);
+    };
+    /**
+     * //TODO
+     *
+     * @private
+     */
+    Mesh.prototype.onGraphicsBoundsInvalid = function (event) {
+        this._pInvalidateBounds();
+    };
+    /**
+     *
+     * @param renderer
+     *
+     * @internal
+     */
+    Mesh.prototype._acceptTraverser = function (traverser) {
+        this.graphics.acceptTraverser(traverser);
+    };
+    Mesh.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
+        if (this._graphics.count) {
+            this._tempPoint.setTo(x, y);
+            var local = this.globalToLocal(this._tempPoint, this._tempPoint);
+            var box;
+            //early out for box test
+            if (!(box = this.getBox()).contains(local.x, local.y, 0))
+                return false;
+            //early out for non-shape tests
+            if (!shapeFlag)
+                return true;
+            //ok do the graphics thing
+            if (this._graphics._hitTestPointInternal(local.x, local.y))
+                return true;
+        }
+        return _super.prototype._hitTestPointInternal.call(this, x, y, shapeFlag, masksFlag);
+    };
+    Mesh.prototype.clear = function () {
+        _super.prototype.clear.call(this);
+        this._graphics.clear();
+    };
+    Mesh._meshes = new Array();
+    Mesh.assetType = "[asset Mesh]";
+    return Mesh;
+})(DisplayObjectContainer);
+module.exports = Mesh;
+
+},{"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/events/GraphicsEvent":"awayjs-display/lib/events/GraphicsEvent","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics"}],"awayjs-display/lib/display/MovieClip":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var TextField = require("awayjs-display/lib/display/TextField");
+var MouseEvent = require("awayjs-display/lib/events/MouseEvent");
+var Timeline = require("awayjs-display/lib/base/Timeline");
+var FrameScriptManager = require("awayjs-display/lib/managers/FrameScriptManager");
+var MovieClip = (function (_super) {
+    __extends(MovieClip, _super);
+    function MovieClip(timeline) {
+        var _this = this;
+        if (timeline === void 0) { timeline = null; }
+        _super.call(this);
+        this._isButton = false;
+        this._time = 0; // the current time inside the animation
+        this._currentFrameIndex = -1; // the current frame
+        this._isPlaying = true; // false if paused or stopped
+        this._isInit = true;
+        this._potentialInstances = {};
+        this._depth_sessionIDs = {};
+        this._sessionID_childs = {};
+        /**
+         *
+         */
+        this.loop = true;
+        /**
+         * the current index of the current active frame
+         */
+        this.constructedKeyFrameIndex = -1;
+        this._enterFrame = new AssetEvent(AssetEvent.ENTER_FRAME, this);
+        this.inheritColorTransform = true;
+        this._onMouseOver = function (event) { return _this.currentFrameIndex = 1; };
+        this._onMouseOut = function (event) { return _this.currentFrameIndex = 0; };
+        this._onMouseDown = function (event) { return _this.currentFrameIndex = 2; };
+        this._onMouseUp = function (event) { return _this.currentFrameIndex = _this.currentFrameIndex == 0 ? 0 : 1; };
+        this._timeline = timeline || new Timeline();
+    }
+    Object.defineProperty(MovieClip.prototype, "adapter", {
+        /**
+         * adapter is used to provide MovieClip to scripts taken from different platforms
+         * setter typically managed by factory
+         */
+        get: function () {
+            return this._adapter;
+        },
+        set: function (value) {
+            this._adapter = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MovieClip.prototype.dispose = function () {
+        this.disposeValues();
+        MovieClip._movieClips.push(this);
+    };
+    MovieClip.prototype.disposeValues = function () {
+        _super.prototype.disposeValues.call(this);
+        this._potentialInstances = {};
+        this._depth_sessionIDs = {};
+        this._sessionID_childs = {};
+    };
+    MovieClip.prototype.reset_textclones = function () {
+        if (this.timeline) {
+            for (var key in this._potentialInstances) {
+                if (this._potentialInstances[key] != null) {
+                    if (this._potentialInstances[key].isAsset(TextField)) {
+                        this._potentialInstances[key].text = this.timeline.getPotentialChildPrototype(key).text;
+                    }
+                    else if (this._potentialInstances[key].isAsset(MovieClip)) {
+                        this._potentialInstances[key].reset_textclones();
+                    }
+                }
+            }
+        }
+    };
+    Object.defineProperty(MovieClip.prototype, "isInit", {
+        get: function () {
+            return this._isInit;
+        },
+        set: function (value) {
+            this._isInit = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MovieClip.prototype, "timeline", {
+        get: function () {
+            return this._timeline;
+        },
+        set: function (value) {
+            this._timeline = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MovieClip.prototype, "numFrames", {
+        get: function () {
+            return this._timeline.numFrames;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MovieClip.prototype.jumpToLabel = function (label) {
+        // the timeline.jumpTolabel will set currentFrameIndex
+        this._timeline.jumpToLabel(this, label);
+    };
+    MovieClip.prototype.reset = function () {
+        _super.prototype.reset.call(this);
+        // time only is relevant for the root mc, as it is the only one that executes the update function
+        this._time = 0;
+        if (this.adapter)
+            this.adapter.freeFromScript();
+        this.constructedKeyFrameIndex = -1;
+        for (var i = this.numChildren - 1; i >= 0; i--)
+            this.removeChildAt(i);
+        this._skipAdvance = MovieClip._skipAdvance;
+        var numFrames = this._timeline.keyframe_indices.length;
+        this._isPlaying = Boolean(numFrames > 1);
+        if (numFrames) {
+            this._currentFrameIndex = 0;
+            this._timeline.constructNextFrame(this, true, true);
+        }
+        else {
+            this._currentFrameIndex = -1;
+        }
+    };
+    MovieClip.prototype.resetSessionIDs = function () {
+        this._depth_sessionIDs = {};
+    };
+    Object.defineProperty(MovieClip.prototype, "currentFrameIndex", {
+        /*
+        * Setting the currentFrameIndex will move the playhead for this movieclip to the new position
+         */
+        get: function () {
+            return this._currentFrameIndex;
+        },
+        set: function (value) {
+            //if currentFrame is set greater than the available number of
+            //frames, the playhead is moved to the last frame in the timeline.
+            //But because the frame specified was not a keyframe, no scripts are
+            //executed, even if they exist on the last frame.
+            var skip_script = false;
+            var numFrames = this._timeline.keyframe_indices.length;
+            if (!numFrames)
+                return;
+            if (value < 0) {
+                value = 0;
+            }
+            else if (value >= numFrames) {
+                value = numFrames - 1;
+                skip_script = true;
+            }
+            if (this._currentFrameIndex == value)
+                return;
+            this._currentFrameIndex = value;
+            //changing current frame will ignore advance command for that
+            //update's advanceFrame function, unless advanceFrame has
+            //already been executed
+            this._skipAdvance = MovieClip._skipAdvance;
+            this._timeline.gotoFrame(this, value, skip_script);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MovieClip.prototype.addButtonListeners = function () {
+        this._isButton = true;
+        this.stop();
+        this.addEventListener(MouseEvent.MOUSE_OVER, this._onMouseOver);
+        this.addEventListener(MouseEvent.MOUSE_OUT, this._onMouseOut);
+        this.addEventListener(MouseEvent.MOUSE_DOWN, this._onMouseDown);
+        this.addEventListener(MouseEvent.MOUSE_UP, this._onMouseUp);
+    };
+    MovieClip.prototype.removeButtonListeners = function () {
+        this.removeEventListener(MouseEvent.MOUSE_OVER, this._onMouseOver);
+        this.removeEventListener(MouseEvent.MOUSE_OUT, this._onMouseOut);
+        this.removeEventListener(MouseEvent.MOUSE_DOWN, this._onMouseDown);
+        this.removeEventListener(MouseEvent.MOUSE_UP, this._onMouseUp);
+    };
+    MovieClip.prototype.getChildAtSessionID = function (sessionID) {
+        return this._sessionID_childs[sessionID];
+    };
+    MovieClip.prototype.getSessionIDDepths = function () {
+        return this._depth_sessionIDs;
+    };
+    MovieClip.prototype.addChildAtDepth = function (child, depth, replace) {
+        if (replace === void 0) { replace = true; }
+        //this should be implemented for all display objects
+        child.inheritColorTransform = true;
+        child.reset(); // this takes care of transform and visibility
+        return _super.prototype.addChildAtDepth.call(this, child, depth, replace);
+    };
+    MovieClip.prototype._addTimelineChildAt = function (child, depth, sessionID) {
+        this._depth_sessionIDs[depth] = child._sessionID = sessionID;
+        this._sessionID_childs[sessionID] = child;
+        return this.addChildAtDepth(child, depth);
+    };
+    MovieClip.prototype.removeChildAtInternal = function (index) {
+        var child = this._children[index];
+        if (child.adapter)
+            child.adapter.freeFromScript();
+        this.adapter.unregisterScriptObject(child);
+        //check to make sure _depth_sessionIDs wasn't modified with a new child
+        if (this._depth_sessionIDs[child._depthID] == child._sessionID)
+            delete this._depth_sessionIDs[child._depthID];
+        delete this._sessionID_childs[child._sessionID];
+        child._sessionID = -1;
+        return _super.prototype.removeChildAtInternal.call(this, index);
+    };
+    Object.defineProperty(MovieClip.prototype, "assetType", {
+        get: function () {
+            return MovieClip.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Starts playback of animation from current position
+     */
+    MovieClip.prototype.play = function () {
+        if (this._timeline.keyframe_indices.length > 1)
+            this._isPlaying = true;
+    };
+    /**
+     * should be called right before the call to away3d-render.
+     */
+    MovieClip.prototype.update = function () {
+        MovieClip._skipAdvance = true;
+        this.advanceFrame();
+        MovieClip._skipAdvance = false;
+        // after we advanced the scenegraph, we might have some script that needs executing
+        FrameScriptManager.execute_queue();
+        // now we want to execute the onEnter
+        this.dispatchEvent(this._enterFrame);
+        // after we executed the onEnter, we might have some script that needs executing
+        FrameScriptManager.execute_queue();
+        // now we execute any intervals queued
+        FrameScriptManager.execute_intervals();
+        // finally, we execute any scripts that were added from intervals
+        FrameScriptManager.execute_queue();
+        //execute any disposes as a result of framescripts
+        FrameScriptManager.execute_dispose();
+    };
+    MovieClip.prototype.getPotentialChildInstance = function (id) {
+        if (!this._potentialInstances[id])
+            this._potentialInstances[id] = this._timeline.getPotentialChildInstance(id);
+        return this._potentialInstances[id];
+    };
+    /**
+     * Stop playback of animation and hold current position
+     */
+    MovieClip.prototype.stop = function () {
+        this._isPlaying = false;
+    };
+    MovieClip.prototype.clone = function () {
+        var newInstance = (MovieClip._movieClips.length) ? MovieClip._movieClips.pop() : new MovieClip(this._timeline);
+        this.copyTo(newInstance);
+        return newInstance;
+    };
+    MovieClip.prototype.copyTo = function (newInstance) {
+        _super.prototype.copyTo.call(this, newInstance);
+        newInstance.timeline = this._timeline;
+        newInstance.loop = this.loop;
+    };
+    MovieClip.prototype.advanceFrame = function () {
+        if (this._isPlaying && !this._skipAdvance) {
+            if (this._currentFrameIndex == this._timeline.keyframe_indices.length - 1) {
+                if (this.loop)
+                    this.currentFrameIndex = 0;
+                else
+                    this._isPlaying = false;
+            }
+            else {
+                this._currentFrameIndex++;
+                this._timeline.constructNextFrame(this);
+            }
+        }
+        var len = this._children.length;
+        var child;
+        for (var i = 0; i < len; ++i) {
+            child = this._children[i];
+            if (child.isAsset(MovieClip))
+                child.advanceFrame();
+        }
+        this._skipAdvance = false;
+    };
+    // DEBUG CODE:
+    MovieClip.prototype.logHierarchy = function (depth) {
+        if (depth === void 0) { depth = 0; }
+        this.printHierarchyName(depth, this);
+        var len = this._children.length;
+        var child;
+        for (var i = 0; i < len; i++) {
+            child = this._children[i];
+            if (child.isAsset(MovieClip))
+                child.logHierarchy(depth + 1);
+            else
+                this.printHierarchyName(depth + 1, child);
+        }
+    };
+    MovieClip.prototype.printHierarchyName = function (depth, target) {
+        var str = "";
+        for (var i = 0; i < depth; ++i)
+            str += "--";
+        str += " " + target.name + " = " + target.id;
+        console.log(str);
+    };
+    MovieClip.prototype.clear = function () {
+        for (var key in this._potentialInstances) {
+            var instance = this._potentialInstances[key];
+            //only dispose instances that are not used in script ie. do not have an instance name
+            if (instance.name == "") {
+                FrameScriptManager.add_child_to_dispose(instance);
+                delete this._potentialInstances[key];
+            }
+        }
+        _super.prototype.clear.call(this);
+    };
+    MovieClip._movieClips = new Array();
+    MovieClip.assetType = "[asset MovieClip]";
+    return MovieClip;
+})(DisplayObjectContainer);
+module.exports = MovieClip;
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/base/Timeline":"awayjs-display/lib/base/Timeline","awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/display/TextField":"awayjs-display/lib/display/TextField","awayjs-display/lib/events/MouseEvent":"awayjs-display/lib/events/MouseEvent","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/display/PointLight":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
+var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
+var Vector3D = require("awayjs-core/lib/geom/Vector3D");
+var LightBase = require("awayjs-display/lib/display/LightBase");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var CubeMapShadowMapper = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
+var PointLight = (function (_super) {
+    __extends(PointLight, _super);
+    function PointLight() {
+        _super.call(this);
+        this._pRadius = 90000;
+        this._pFallOff = 100000;
+        this._pIsEntity = true;
+        this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
+        //default bounds type
+        this._boundsType = BoundsType.SPHERE;
+    }
+    Object.defineProperty(PointLight.prototype, "assetType", {
+        get: function () {
+            return PointLight.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PointLight.prototype.pCreateShadowMapper = function () {
+        return new CubeMapShadowMapper();
+    };
+    Object.defineProperty(PointLight.prototype, "radius", {
+        get: function () {
+            return this._pRadius;
+        },
+        set: function (value) {
+            this._pRadius = value;
+            if (this._pRadius < 0) {
+                this._pRadius = 0;
+            }
+            else if (this._pRadius > this._pFallOff) {
+                this._pFallOff = this._pRadius;
+                this._pInvalidateBounds();
+            }
+            this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PointLight.prototype.iFallOffFactor = function () {
+        return this._pFallOffFactor;
+    };
+    Object.defineProperty(PointLight.prototype, "fallOff", {
+        get: function () {
+            return this._pFallOff;
+        },
+        set: function (value) {
+            this._pFallOff = value;
+            if (this._pFallOff < 0)
+                this._pFallOff = 0;
+            if (this._pFallOff < this._pRadius)
+                this._pRadius = this._pFallOff;
+            this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
+            this._pInvalidateBounds();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PointLight.prototype._pUpdateSphereBounds = function () {
+        _super.prototype._pUpdateSphereBounds.call(this);
+        this._pSphereBounds.radius = this._pFallOff;
+    };
+    PointLight.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
+        if (target === void 0) { target = null; }
+        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+        var m = new Matrix3D();
+        // todo: do not use lookAt on Light
+        m.copyFrom(entity.getRenderSceneTransform(camera));
+        m.append(this._pParent.inverseSceneTransform);
+        this.lookAt(m.position);
+        m.copyFrom(entity.getRenderSceneTransform(camera));
+        m.append(this.inverseSceneTransform);
+        var box = entity.getBox();
+        var v1 = m.deltaTransformVector(new Vector3D(box.left, box.bottom, box.front));
+        var v2 = m.deltaTransformVector(new Vector3D(box.right, box.top, box.back));
+        var d1 = v1.x * v1.x + v1.y * v1.y + v1.z * v1.z;
+        var d2 = v2.x * v2.x + v2.y * v2.y + v2.z * v2.z;
+        var d = Math.sqrt(d1 > d2 ? d1 : d2);
+        var zMin;
+        var zMax;
+        var z = m.rawData[14];
+        zMin = z - d;
+        zMax = z + d;
+        raw[5] = raw[0] = zMin / d;
+        raw[10] = zMax / (zMax - zMin);
+        raw[11] = 1;
+        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
+        raw[14] = -zMin * raw[10];
+        if (!target)
+            target = new Matrix3D();
+        target.copyRawDataFrom(raw);
+        target.prepend(m);
+        return target;
+    };
+    PointLight.assetType = "[light PointLight]";
+    return PointLight;
+})(LightBase);
+module.exports = PointLight;
+
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper"}],"awayjs-display/lib/display/Scene":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
 var BasicPartition = require("awayjs-display/lib/partition/BasicPartition");
 var Scene = (function (_super) {
     __extends(Scene, _super);
@@ -20106,1285 +22940,1169 @@ var Scene = (function (_super) {
 })(DisplayObjectContainer);
 module.exports = Scene;
 
-},{"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/partition/BasicPartition":"awayjs-display/lib/partition/BasicPartition"}],"awayjs-display/lib/containers/View":[function(require,module,exports){
-var getTimer = require("awayjs-core/lib/utils/getTimer");
-var TouchPoint = require("awayjs-display/lib/base/TouchPoint");
-var Scene = require("awayjs-display/lib/containers/Scene");
-var RaycastPicker = require("awayjs-display/lib/pick/RaycastPicker");
-var Camera = require("awayjs-display/lib/entities/Camera");
-var CameraEvent = require("awayjs-display/lib/events/CameraEvent");
-var DisplayObjectEvent = require("awayjs-display/lib/events/DisplayObjectEvent");
-var RendererEvent = require("awayjs-display/lib/events/RendererEvent");
-var MouseManager = require("awayjs-display/lib/managers/MouseManager");
-var View = (function () {
-    /*
-     ***********************************************************************
-     * Disabled / Not yet implemented
-     ***********************************************************************
-     *
-     * private _background:away.textures.Texture2DBase;
-     *
-     * public _pTouch3DManager:away.managers.Touch3DManager;
-     *
+},{"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/partition/BasicPartition":"awayjs-display/lib/partition/BasicPartition"}],"awayjs-display/lib/display/Shape":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var DisplayObject = require("awayjs-display/lib/display/DisplayObject");
+/**
+ * This class is used to create lightweight shapes using the ActionScript
+ * drawing application program interface(API). The Shape class includes a
+ * <code>graphics</code> property, which lets you access methods from the
+ * Graphics class.
+ *
+ * <p>The Sprite class also includes a <code>graphics</code>property, and it
+ * includes other features not available to the Shape class. For example, a
+ * Sprite object is a display object container, whereas a Shape object is not
+ * (and cannot contain child display objects). For this reason, Shape objects
+ * consume less memory than Sprite objects that contain the same graphics.
+ * However, a Sprite object supports user input events, while a Shape object
+ * does not.</p>
+ */
+var Shape = (function (_super) {
+    __extends(Shape, _super);
+    /**
+     * Creates a new Shape object.
      */
-    function View(renderer, scene, camera) {
-        var _this = this;
-        if (scene === void 0) { scene = null; }
-        if (camera === void 0) { camera = null; }
-        this._width = 0;
-        this._height = 0;
-        this._time = 0;
-        this._deltaTime = 0;
-        this._backgroundColor = 0x000000;
-        this._backgroundAlpha = 1;
-        this._viewportDirty = true;
-        this._scissorDirty = true;
-        this._mousePicker = new RaycastPicker();
-        this._pTouchPoints = new Array();
-        this._onPartitionChangedDelegate = function (event) { return _this._onPartitionChanged(event); };
-        this._onProjectionChangedDelegate = function (event) { return _this._onProjectionChanged(event); };
-        this._onViewportUpdatedDelegate = function (event) { return _this._onViewportUpdated(event); };
-        this._onScissorUpdatedDelegate = function (event) { return _this._onScissorUpdated(event); };
-        this.scene = scene || new Scene();
-        this.camera = camera || new Camera();
-        this.renderer = renderer;
-        //make sure document border is zero
-        if (document) {
-            document.body.style.margin = "0px";
-            this._htmlElement = document.createElement("div");
-            this._htmlElement.style.position = "absolute";
-            document.body.appendChild(this._htmlElement);
-        }
-        this._mouseManager = MouseManager.getInstance();
-        this._mouseManager.registerView(this);
-        //			if (this._shareContext)
-        //				this._mouse3DManager.addViewLayer(this);
+    function Shape() {
+        _super.call(this);
     }
-    Object.defineProperty(View.prototype, "mouseX", {
+    Object.defineProperty(Shape.prototype, "graphics", {
+        /**
+         * Specifies the Graphics object belonging to this Shape object, where vector
+         * drawing commands can occur.
+         */
         get: function () {
-            return this._pMouseX;
+            return this._graphics;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "mouseY", {
-        get: function () {
-            return this._pMouseY;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "touchPoints", {
-        get: function () {
-            return this._pTouchPoints;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    View.prototype.getLocalMouseX = function (displayObject) {
-        return displayObject.inverseSceneTransform.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).x;
+    Shape.prototype.clone = function () {
+        var clone = new Shape();
+        clone.pivot = this.pivot;
+        clone.transform.matrix3D = this.transform.matrix3D;
+        clone.name = name;
+        clone.maskMode = this.maskMode;
+        clone.masks = this.masks ? this.masks.concat() : null;
+        clone._graphics = this._graphics;
+        return clone;
     };
-    View.prototype.getLocalMouseY = function (displayObject) {
-        return displayObject.inverseSceneTransform.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).y;
-    };
-    View.prototype.getLocalTouchPoints = function (displayObject) {
-        var localPosition;
-        var localTouchPoints = new Array();
-        var len = this._pTouchPoints.length;
-        for (var i = 0; i < len; i++) {
-            localPosition = displayObject.inverseSceneTransform.transformVector(this.unproject(this._pTouchPoints[i].x, this._pTouchPoints[i].y, 1000));
-            localTouchPoints.push(new TouchPoint(localPosition.x, localPosition.y, this._pTouchPoints[i].id));
-        }
-        return localTouchPoints;
-    };
-    Object.defineProperty(View.prototype, "htmlElement", {
+    return Shape;
+})(DisplayObject);
+module.exports = Shape;
+
+},{"awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject"}],"awayjs-display/lib/display/Skybox":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var BlendMode = require("awayjs-core/lib/image/BlendMode");
+var DisplayObject = require("awayjs-display/lib/display/DisplayObject");
+var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
+var RenderableEvent = require("awayjs-display/lib/events/RenderableEvent");
+var SurfaceEvent = require("awayjs-display/lib/events/SurfaceEvent");
+var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
+var Style = require("awayjs-display/lib/base/Style");
+var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
+/**
+ * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
+ * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
+ * the sky box is always as large as possible without being clipped.
+ */
+var Skybox = (function (_super) {
+    __extends(Skybox, _super);
+    /**
+     * Create a new Skybox object.
+     *
+     * @param material	The material with which to render the Skybox.
+     */
+    function Skybox(image) {
+        var _this = this;
+        if (image === void 0) { image = null; }
+        _super.call(this);
+        this._textures = new Array();
+        this._pAlphaThreshold = 0;
+        this._pBlendMode = BlendMode.NORMAL;
+        this._curves = false;
+        this._imageRect = false;
+        this._style = new Style();
+        this._onTextureInvalidateDelegate = function (event) { return _this.onTextureInvalidate(event); };
+        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+        this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+        this._pIsEntity = true;
+        this._owners = new Array(this);
+        this._style.image = image;
+        this.texture = new SingleCubeTexture();
+        //default bounds type
+        this._boundsType = BoundsType.NULL;
+    }
+    Object.defineProperty(Skybox.prototype, "alphaThreshold", {
         /**
-         *
+         * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+         * invisible or entirely opaque, often used with textures for foliage, etc.
+         * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
          */
         get: function () {
-            return this._htmlElement;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "renderer", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer;
+            return this._pAlphaThreshold;
         },
         set: function (value) {
-            if (this._pRenderer == value)
-                return;
-            if (this._pRenderer) {
-                this._pRenderer.dispose();
-                this._pRenderer.removeEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-                this._pRenderer.removeEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
-            }
-            this._pRenderer = value;
-            this._pRenderer.addEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-            this._pRenderer.addEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
-            //reset entity collector
-            this._pEntityCollector = this._pRenderer._iCreateEntityCollector();
-            if (this._pCamera)
-                this._pEntityCollector.camera = this._pCamera;
-            //reset back buffer
-            this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
-            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
-            this._pRenderer.width = this._width;
-            this._pRenderer.height = this._height;
-            this._pRenderer.shareContext = this._shareContext;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "shareContext", {
-        /**
-         *
-         */
-        get: function () {
-            return this._shareContext;
-        },
-        set: function (value) {
-            if (this._shareContext == value)
-                return;
-            this._shareContext = value;
-            if (this._pRenderer)
-                this._pRenderer.shareContext = this._shareContext;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "backgroundColor", {
-        /**
-         *
-         */
-        get: function () {
-            return this._backgroundColor;
-        },
-        set: function (value) {
-            if (this._backgroundColor == value)
-                return;
-            this._backgroundColor = value;
-            this._pRenderer._iBackgroundR = ((value >> 16) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundG = ((value >> 8) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundB = (value & 0xff) / 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "backgroundAlpha", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return this._backgroundAlpha;
-        },
-        /**
-         *
-         * @param value
-         */
-        set: function (value) {
-            if (value > 1)
-                value = 1;
-            else if (value < 0)
+            if (value < 0)
                 value = 0;
-            if (this._backgroundAlpha == value)
+            else if (value > 1)
+                value = 1;
+            if (this._pAlphaThreshold == value)
                 return;
-            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha = value;
+            this._pAlphaThreshold = value;
+            this.invalidatePasses();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "camera", {
+    Object.defineProperty(Skybox.prototype, "curves", {
         /**
-         *
-         * @returns {Camera3D}
+         * Indicates whether skybox should use curves. Defaults to false.
          */
         get: function () {
-            return this._pCamera;
-        },
-        /**
-         * Set camera that's used to render the scene for this viewport
-         */
-        set: function (value) {
-            if (this._pCamera == value)
-                return;
-            if (this._pCamera)
-                this._pCamera.removeEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
-            this._pCamera = value;
-            if (this._pEntityCollector)
-                this._pEntityCollector.camera = this._pCamera;
-            if (this._pScene)
-                this._pScene.partition._iRegisterEntity(this._pCamera);
-            this._pCamera.addEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
-            this._scissorDirty = true;
-            this._viewportDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "scene", {
-        /**
-         *
-         * @returns {away.containers.Scene3D}
-         */
-        get: function () {
-            return this._pScene;
-        },
-        /**
-         * Set the scene that's used to render for this viewport
-         */
-        set: function (value) {
-            if (this._pScene == value)
-                return;
-            if (this._pScene)
-                this._pScene.removeEventListener(DisplayObjectEvent.PARTITION_CHANGED, this._onPartitionChangedDelegate);
-            this._pScene = value;
-            this._pScene.addEventListener(DisplayObjectEvent.PARTITION_CHANGED, this._onPartitionChangedDelegate);
-            if (this._pCamera)
-                this._pScene.partition._iRegisterEntity(this._pCamera);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "deltaTime", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return this._deltaTime;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "width", {
-        /**
-         *
-         */
-        get: function () {
-            return this._width;
+            return this._curves;
         },
         set: function (value) {
-            if (this._width == value)
+            if (this._curves == value)
                 return;
-            this._width = value;
-            this._aspectRatio = this._width / this._height;
-            this._pCamera.projection._iAspectRatio = this._aspectRatio;
-            this._pRenderer.width = value;
-            if (this._htmlElement) {
-                this._htmlElement.style.width = value + "px";
-            }
+            this._curves = value;
+            this.invalidatePasses();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "height", {
+    Object.defineProperty(Skybox.prototype, "imageRect", {
         /**
-         *
+         * Indicates whether or not the Skybox texture should use imageRects. Defaults to false.
          */
         get: function () {
-            return this._height;
+            return this._imageRect;
         },
         set: function (value) {
-            if (this._height == value)
+            if (this._imageRect == value)
                 return;
-            this._height = value;
-            this._aspectRatio = this._width / this._height;
-            this._pCamera.projection._iAspectRatio = this._aspectRatio;
-            this._pRenderer.height = value;
-            if (this._htmlElement) {
-                this._htmlElement.style.height = value + "px";
-            }
+            this._imageRect = value;
+            this.invalidatePasses();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "mousePicker", {
+    Object.defineProperty(Skybox.prototype, "lightPicker", {
+        /**
+         * The light picker used by the material to provide lights to the material if it supports lighting.
+         *
+         * @see LightPickerBase
+         * @see StaticLightPicker
+         */
+        get: function () {
+            return this._pLightPicker;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "animationSet", {
         /**
          *
          */
         get: function () {
-            return this._mousePicker;
+            return this._animationSet;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "blendMode", {
+        /**
+         * The blend mode to use when drawing this renderable. The following blend modes are supported:
+         * <ul>
+         * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+         * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+         * <li>BlendMode.MULTIPLY</li>
+         * <li>BlendMode.ADD</li>
+         * <li>BlendMode.ALPHA</li>
+         * </ul>
+         */
+        get: function () {
+            return this._pBlendMode;
         },
         set: function (value) {
-            if (this._mousePicker == value)
+            if (this._pBlendMode == value)
                 return;
-            if (value == null)
-                this._mousePicker = new RaycastPicker();
-            else
-                this._mousePicker = value;
+            this._pBlendMode = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "x", {
+    Object.defineProperty(Skybox.prototype, "iOwners", {
         /**
+         * A list of the IRenderables that use this material
          *
+         * @private
          */
         get: function () {
-            return this._pRenderer.x;
+            return this._owners;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "animator", {
+        get: function () {
+            return this._animator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "texture", {
+        /**
+        * The cube texture to use as the skybox.
+        */
+        get: function () {
+            return this._texture;
         },
         set: function (value) {
-            if (this._pRenderer.x == value)
+            if (this._texture == value)
                 return;
-            this._pRenderer.x == value;
-            if (this._htmlElement) {
-                this._htmlElement.style.left = value + "px";
-            }
+            if (this._texture)
+                this.removeTexture(this._texture);
+            this._texture = value;
+            if (this._texture)
+                this.addTexture(this._texture);
+            this.invalidatePasses();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(View.prototype, "y", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer.y;
-        },
-        set: function (value) {
-            if (this._pRenderer.y == value)
-                return;
-            this._pRenderer.y == value;
-            if (this._htmlElement) {
-                this._htmlElement.style.top = value + "px";
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "visible", {
-        /**
-         *
-         */
-        get: function () {
-            return (this._htmlElement && this._htmlElement.style.visibility == "visible");
-        },
-        set: function (value) {
-            if (this._htmlElement) {
-                this._htmlElement.style.visibility = value ? "visible" : "hidden";
-            }
-            //TODO transfer visible property to associated context (if one exists)
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "renderedFacesCount", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return 0; //TODO
-            //return this._pEntityCollector._pNumTriangles;//numTriangles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Renders the view.
-     */
-    View.prototype.render = function () {
-        this.pUpdateTime();
-        //update view and size data
-        this._pCamera.projection._iAspectRatio = this._aspectRatio;
-        if (this._scissorDirty) {
-            this._scissorDirty = false;
-            this._pCamera.projection._iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
-        }
-        if (this._viewportDirty) {
-            this._viewportDirty = false;
-            this._pCamera.projection._iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
-        }
-        // update picking
-        if (!this._shareContext) {
-            if (this.forceMouseMove && this._htmlElement == this._mouseManager._iActiveDiv && !this._mouseManager._iUpdateDirty)
-                this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
-            this._mouseManager.fireMouseEvents(this.forceMouseMove);
-        }
-        //_touch3DManager.updateCollider();
-        //clear entity collector ready for collection
-        this._pEntityCollector.clear();
-        // collect stuff to render
-        this._pScene.traversePartitions(this._pEntityCollector);
-        //render the contents of the entity collector
-        this._pRenderer.render(this._pEntityCollector);
+    Skybox.prototype.getNumTextures = function () {
+        return this._textures.length;
     };
+    Skybox.prototype.getTextureAt = function (index) {
+        return this._textures[index];
+    };
+    Object.defineProperty(Skybox.prototype, "style", {
+        /**
+         *
+         */
+        get: function () {
+            return this._style;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "assetType", {
+        get: function () {
+            return Skybox.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Skybox.prototype, "castsShadows", {
+        get: function () {
+            return false; //TODO
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
+     * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
      *
+     * @private
      */
-    View.prototype.pUpdateTime = function () {
-        var time = getTimer();
-        if (this._time == 0)
-            this._time = time;
-        this._deltaTime = time - this._time;
-        this._time = time;
+    Skybox.prototype.invalidatePasses = function () {
+        this.dispatchEvent(new SurfaceEvent(SurfaceEvent.INVALIDATE_PASSES, this));
+    };
+    Skybox.prototype.invalidateSurface = function () {
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_RENDER_OWNER, this));
+    };
+    Skybox.prototype.addTexture = function (texture) {
+        this._textures.push(texture);
+        texture.addEventListener(AssetEvent.INVALIDATE, this._onTextureInvalidateDelegate);
+        this.onTextureInvalidate();
+    };
+    Skybox.prototype.removeTexture = function (texture) {
+        this._textures.splice(this._textures.indexOf(texture), 1);
+        texture.removeEventListener(AssetEvent.INVALIDATE, this._onTextureInvalidateDelegate);
+        this.onTextureInvalidate();
+    };
+    Skybox.prototype.onTextureInvalidate = function (event) {
+        if (event === void 0) { event = null; }
+        this.invalidate();
+    };
+    Skybox.prototype._onInvalidateProperties = function (event) {
+        this.invalidatePasses();
     };
     /**
+     * //TODO
      *
-     */
-    View.prototype.dispose = function () {
-        this._pRenderer.dispose();
-        // TODO: imeplement mouseManager / touch3DManager
-        this._mouseManager.unregisterView(this);
-        //this._touch3DManager.disableTouchListeners(this);
-        //this._touch3DManager.dispose();
-        this._mouseManager = null;
-        //this._touch3DManager = null;
-        this._pRenderer = null;
-        this._pEntityCollector = null;
-    };
-    Object.defineProperty(View.prototype, "iEntityCollector", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pEntityCollector;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
+     * @param shortestCollisionDistance
+     * @returns {boolean}
      *
-     * @param e
+     * @internal
      */
-    View.prototype._onPartitionChanged = function (event) {
-        if (this._pCamera)
-            this._pScene.partition._iRegisterEntity(this._pCamera);
+    Skybox.prototype._iTestCollision = function (shortestCollisionDistance) {
+        return false;
     };
-    /**
-     *
-     */
-    View.prototype._onProjectionChanged = function (event) {
-        this._scissorDirty = true;
-        this._viewportDirty = true;
-    };
-    /**
-     *
-     */
-    View.prototype._onViewportUpdated = function (event) {
-        this._viewportDirty = true;
-    };
-    /**
-     *
-     */
-    View.prototype._onScissorUpdated = function (event) {
-        this._scissorDirty = true;
-    };
-    View.prototype.project = function (point3d) {
-        var v = this._pCamera.project(point3d);
-        v.x = v.x * this._pRenderer.viewPort.width / 2 + this._width * this._pCamera.projection.originX;
-        v.y = v.y * this._pRenderer.viewPort.height / 2 + this._height * this._pCamera.projection.originY;
-        return v;
-    };
-    View.prototype.unproject = function (sX, sY, sZ) {
-        return this._pCamera.unproject(2 * (sX - this._width * this._pCamera.projection.originX) / this._pRenderer.viewPort.width, 2 * (sY - this._height * this._pCamera.projection.originY) / this._pRenderer.viewPort.height, sZ);
-    };
-    View.prototype.getRay = function (sX, sY, sZ) {
-        return this._pCamera.getRay((sX * 2 - this._width) / this._width, (sY * 2 - this._height) / this._height, sZ);
-    };
-    /*TODO: implement Background
-     public get background():away.textures.Texture2DBase
-     {
-     return this._background;
-     }
-     */
-    /*TODO: implement Background
-     public set background( value:away.textures.Texture2DBase )
-     {
-     this._background = value;
-     this._renderer.background = _background;
-     }
-     */
-    // TODO: required dependency stageGL
-    View.prototype.updateCollider = function () {
-        if (!this._shareContext) {
-            if (this._htmlElement == this._mouseManager._iActiveDiv)
-                this._mouseManager._iCollidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
-        }
-        else {
-            var collidingObject = this.mousePicker.getViewCollision(this._pMouseX, this._pMouseY, this);
-            if (this.layeredView || this._mouseManager._iCollidingObject == null || collidingObject.rayEntryDistance < this._mouseManager._iCollidingObject.rayEntryDistance)
-                this._mouseManager._iCollidingObject = collidingObject;
-        }
-    };
-    return View;
-})();
-module.exports = View;
+    Skybox.assetType = "[asset Skybox]";
+    return Skybox;
+})(DisplayObject);
+module.exports = Skybox;
 
-},{"awayjs-core/lib/utils/getTimer":undefined,"awayjs-display/lib/base/TouchPoint":"awayjs-display/lib/base/TouchPoint","awayjs-display/lib/containers/Scene":"awayjs-display/lib/containers/Scene","awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/events/CameraEvent":"awayjs-display/lib/events/CameraEvent","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/RendererEvent":"awayjs-display/lib/events/RendererEvent","awayjs-display/lib/managers/MouseManager":"awayjs-display/lib/managers/MouseManager","awayjs-display/lib/pick/RaycastPicker":"awayjs-display/lib/pick/RaycastPicker"}],"awayjs-display/lib/controllers/ControllerBase":[function(require,module,exports){
-var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var ControllerBase = (function () {
-    function ControllerBase(targetObject) {
-        if (targetObject === void 0) { targetObject = null; }
-        this._pAutoUpdate = true;
-        this.targetObject = targetObject;
-    }
-    ControllerBase.prototype.pNotifyUpdate = function () {
-        if (this._pTargetObject)
-            this._pTargetObject.invalidatePartitionBounds();
-    };
-    Object.defineProperty(ControllerBase.prototype, "targetObject", {
-        get: function () {
-            return this._pTargetObject;
-        },
-        set: function (val) {
-            if (this._pTargetObject == val)
-                return;
-            if (this._pTargetObject && this._pAutoUpdate)
-                this._pTargetObject._iController = null;
-            this._pTargetObject = val;
-            if (this._pTargetObject && this._pAutoUpdate)
-                this._pTargetObject._iController = this;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ControllerBase.prototype, "autoUpdate", {
-        get: function () {
-            return this._pAutoUpdate;
-        },
-        set: function (val) {
-            if (this._pAutoUpdate == val)
-                return;
-            this._pAutoUpdate = val;
-            if (this._pTargetObject) {
-                if (this._pAutoUpdate)
-                    this._pTargetObject._iController = this;
-                else
-                    this._pTargetObject._iController = null;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ControllerBase.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        throw new AbstractMethodError();
-    };
-    ControllerBase.prototype.updateController = function () {
-        if (this._pControllerDirty && this._pAutoUpdate) {
-            this._pControllerDirty = false;
-            this.pNotifyUpdate();
-        }
-    };
-    return ControllerBase;
-})();
-module.exports = ControllerBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/controllers/FirstPersonController":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/display/TextField":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var MathConsts = require("awayjs-core/lib/geom/MathConsts");
-var ControllerBase = require("awayjs-display/lib/controllers/ControllerBase");
+var AttributesView = require("awayjs-core/lib/attributes/AttributesView");
+var Float3Attributes = require("awayjs-core/lib/attributes/Float3Attributes");
+var Float2Attributes = require("awayjs-core/lib/attributes/Float2Attributes");
+var Matrix = require("awayjs-core/lib/geom/Matrix");
+var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
+var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
+var TextFieldType = require("awayjs-display/lib/text/TextFieldType");
+var Mesh = require("awayjs-display/lib/display/Mesh");
+var Graphics = require("awayjs-display/lib/graphics/Graphics");
+var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
+var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
+var Style = require("awayjs-display/lib/base/Style");
 /**
- * Extended camera used to hover round a specified target object.
+ * The TextField class is used to create display objects for text display and
+ * input. <ph outputclass="flexonly">You can use the TextField class to
+ * perform low-level text rendering. However, in Flex, you typically use the
+ * Label, Text, TextArea, and TextInput controls to process text. <ph
+ * outputclass="flashonly">You can give a text field an instance name in the
+ * Property inspector and use the methods and properties of the TextField
+ * class to manipulate it with ActionScript. TextField instance names are
+ * displayed in the Movie Explorer and in the Insert Target Path dialog box in
+ * the Actions panel.
  *
- * @see    away3d.containers.View3D
+ * <p>To create a text field dynamically, use the <code>TextField()</code>
+ * constructor.</p>
+ *
+ * <p>The methods of the TextField class let you set, select, and manipulate
+ * text in a dynamic or input text field that you create during authoring or
+ * at runtime. </p>
+ *
+ * <p>ActionScript provides several ways to format your text at runtime. The
+ * TextFormat class lets you set character and paragraph formatting for
+ * TextField objects. You can apply Cascading Style Sheets(CSS) styles to
+ * text fields by using the <code>TextField.styleSheet</code> property and the
+ * StyleSheet class. You can use CSS to style built-in HTML tags, define new
+ * formatting tags, or apply styles. You can assign HTML formatted text, which
+ * optionally uses CSS styles, directly to a text field. HTML text that you
+ * assign to a text field can contain embedded media(movie clips, SWF files,
+ * GIF files, PNG files, and JPEG files). The text wraps around the embedded
+ * media in the same way that a web browser wraps text around media embedded
+ * in an HTML document. </p>
+ *
+ * <p>Flash Player supports a subset of HTML tags that you can use to format
+ * text. See the list of supported HTML tags in the description of the
+ * <code>htmlText</code> property.</p>
+ *
+ * @event change                    Dispatched after a control value is
+ *                                  modified, unlike the
+ *                                  <code>textInput</code> event, which is
+ *                                  dispatched before the value is modified.
+ *                                  Unlike the W3C DOM Event Model version of
+ *                                  the <code>change</code> event, which
+ *                                  dispatches the event only after the
+ *                                  control loses focus, the ActionScript 3.0
+ *                                  version of the <code>change</code> event
+ *                                  is dispatched any time the control
+ *                                  changes. For example, if a user types text
+ *                                  into a text field, a <code>change</code>
+ *                                  event is dispatched after every keystroke.
+ * @event link                      Dispatched when a user clicks a hyperlink
+ *                                  in an HTML-enabled text field, where the
+ *                                  URL begins with "event:". The remainder of
+ *                                  the URL after "event:" is placed in the
+ *                                  text property of the LINK event.
+ *
+ *                                  <p><b>Note:</b> The default behavior,
+ *                                  adding the text to the text field, occurs
+ *                                  only when Flash Player generates the
+ *                                  event, which in this case happens when a
+ *                                  user attempts to input text. You cannot
+ *                                  put text into a text field by sending it
+ *                                  <code>textInput</code> events.</p>
+ * @event scroll                    Dispatched by a TextField object
+ *                                  <i>after</i> the user scrolls.
+ * @event textInput                 Flash Player dispatches the
+ *                                  <code>textInput</code> event when a user
+ *                                  enters one or more characters of text.
+ *                                  Various text input methods can generate
+ *                                  this event, including standard keyboards,
+ *                                  input method editors(IMEs), voice or
+ *                                  speech recognition systems, and even the
+ *                                  act of pasting plain text with no
+ *                                  formatting or style information.
+ * @event textInteractionModeChange Flash Player dispatches the
+ *                                  <code>textInteractionModeChange</code>
+ *                                  event when a user changes the interaction
+ *                                  mode of a text field. for example on
+ *                                  Android, one can toggle from NORMAL mode
+ *                                  to SELECTION mode using context menu
+ *                                  options
  */
-var FirstPersonController = (function (_super) {
-    __extends(FirstPersonController, _super);
+var TextField = (function (_super) {
+    __extends(TextField, _super);
     /**
-     * Creates a new <code>HoverController</code> object.
+     * Creates a new TextField instance. After you create the TextField instance,
+     * call the <code>addChild()</code> or <code>addChildAt()</code> method of
+     * the parent DisplayObjectContainer object to add the TextField instance to
+     * the display list.
+     *
+     * <p>The default size for a text field is 100 x 100 pixels.</p>
      */
-    function FirstPersonController(targetObject, panAngle, tiltAngle, minTiltAngle, maxTiltAngle, steps, wrapPanAngle) {
-        if (targetObject === void 0) { targetObject = null; }
-        if (panAngle === void 0) { panAngle = 0; }
-        if (tiltAngle === void 0) { tiltAngle = 90; }
-        if (minTiltAngle === void 0) { minTiltAngle = -90; }
-        if (maxTiltAngle === void 0) { maxTiltAngle = 90; }
-        if (steps === void 0) { steps = 8; }
-        if (wrapPanAngle === void 0) { wrapPanAngle = false; }
-        _super.call(this, targetObject);
-        this._iCurrentPanAngle = 0;
-        this._iCurrentTiltAngle = 90;
-        this._panAngle = 0;
-        this._tiltAngle = 90;
-        this._minTiltAngle = -90;
-        this._maxTiltAngle = 90;
-        this._steps = 8;
-        this._walkIncrement = 0;
-        this._strafeIncrement = 0;
-        this._wrapPanAngle = false;
-        this.fly = false;
-        this.panAngle = panAngle;
-        this.tiltAngle = tiltAngle;
-        this.minTiltAngle = minTiltAngle;
-        this.maxTiltAngle = maxTiltAngle;
-        this.steps = steps;
-        this.wrapPanAngle = wrapPanAngle;
-        //values passed in contrustor are applied immediately
-        this._iCurrentPanAngle = this._panAngle;
-        this._iCurrentTiltAngle = this._tiltAngle;
+    function TextField() {
+        _super.call(this);
+        this._text = "";
+        this.type = TextFieldType.STATIC;
     }
-    Object.defineProperty(FirstPersonController.prototype, "steps", {
+    Object.defineProperty(TextField.prototype, "assetType", {
         /**
-         * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
          *
-         * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+         * @returns {string}
+         */
+        get: function () {
+            return TextField.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "bottomScrollV", {
+        /**
+         * An integer(1-based index) that indicates the bottommost line that is
+         * currently visible in the specified text field. Think of the text field as
+         * a window onto a block of text. The <code>scrollV</code> property is the
+         * 1-based index of the topmost visible line in the window.
          *
-         * @see    #tiltAngle
-         * @see    #panAngle
+         * <p>All the text between the lines indicated by <code>scrollV</code> and
+         * <code>bottomScrollV</code> is currently visible in the text field.</p>
          */
         get: function () {
-            return this._steps;
-        },
-        set: function (val) {
-            val = (val < 1) ? 1 : val;
-            if (this._steps == val)
-                return;
-            this._steps = val;
-            this.pNotifyUpdate();
+            return this._bottomScrollV;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(FirstPersonController.prototype, "panAngle", {
+    Object.defineProperty(TextField.prototype, "caretIndex", {
         /**
-         * Rotation of the camera in degrees around the y axis. Defaults to 0.
-         */
-        get: function () {
-            return this._panAngle;
-        },
-        set: function (val) {
-            if (this._panAngle == val)
-                return;
-            this._panAngle = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(FirstPersonController.prototype, "tiltAngle", {
-        /**
-         * Elevation angle of the camera in degrees. Defaults to 90.
-         */
-        get: function () {
-            return this._tiltAngle;
-        },
-        set: function (val) {
-            val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
-            if (this._tiltAngle == val)
-                return;
-            this._tiltAngle = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(FirstPersonController.prototype, "minTiltAngle", {
-        /**
-         * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+         * The index of the insertion point(caret) position. If no insertion point
+         * is displayed, the value is the position the insertion point would be if
+         * you restored focus to the field(typically where the insertion point last
+         * was, or 0 if the field has not had focus).
          *
-         * @see    #tiltAngle
+         * <p>Selection span indexes are zero-based(for example, the first position
+         * is 0, the second position is 1, and so on).</p>
          */
         get: function () {
-            return this._minTiltAngle;
-        },
-        set: function (val) {
-            if (this._minTiltAngle == val)
-                return;
-            this._minTiltAngle = val;
-            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+            return this._caretIndex;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(FirstPersonController.prototype, "maxTiltAngle", {
+    Object.defineProperty(TextField.prototype, "length", {
         /**
-         * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
-         *
-         * @see    #tiltAngle
+         * The number of characters in a text field. A character such as tab
+         * (<code>\t</code>) counts as one character.
          */
         get: function () {
-            return this._maxTiltAngle;
-        },
-        set: function (val) {
-            if (this._maxTiltAngle == val)
-                return;
-            this._maxTiltAngle = val;
-            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(FirstPersonController.prototype, "wrapPanAngle", {
-        /**
-         * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
-         */
-        get: function () {
-            return this._wrapPanAngle;
-        },
-        set: function (val) {
-            if (this._wrapPanAngle == val)
-                return;
-            this._wrapPanAngle = val;
-            this.pNotifyUpdate();
+            return this._length;
         },
         enumerable: true,
         configurable: true
     });
     /**
-     * Updates the current tilt angle and pan angle values.
-     *
-     * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
-     *
-     * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
-     *
-     * @see    #tiltAngle
-     * @see    #panAngle
-     * @see    #steps
+     * The maximum value of <code>scrollH</code>.
      */
-    FirstPersonController.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
-            this._pControllerDirty = true;
-            if (this._wrapPanAngle) {
-                if (this._panAngle < 0) {
-                    this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
-                    this._panAngle = this._panAngle % 360 + 360;
+    TextField.prototype.maxScrollH = function () {
+        return this._maxScrollH;
+    };
+    /**
+     * The maximum value of <code>scrollV</code>.
+     */
+    TextField.prototype.maxScrollV = function () {
+        return this._maxScrollV;
+    };
+    Object.defineProperty(TextField.prototype, "numLines", {
+        /**
+         * Defines the number of text lines in a multiline text field. If
+         * <code>wordWrap</code> property is set to <code>true</code>, the number of
+         * lines increases when text wraps.
+         */
+        get: function () {
+            return this._numLines;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "selectionBeginIndex", {
+        /**
+         * The zero-based character index value of the first character in the current
+         * selection. For example, the first character is 0, the second character is
+         * 1, and so on. If no text is selected, this property is the value of
+         * <code>caretIndex</code>.
+         */
+        get: function () {
+            return this._selectionBeginIndex;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "selectionEndIndex", {
+        /**
+         * The zero-based character index value of the last character in the current
+         * selection. For example, the first character is 0, the second character is
+         * 1, and so on. If no text is selected, this property is the value of
+         * <code>caretIndex</code>.
+         */
+        get: function () {
+            return this._selectionEndIndex;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "text", {
+        /**
+         * A string that is the current text in the text field. Lines are separated
+         * by the carriage return character(<code>'\r'</code>, ASCII 13). This
+         * property contains unformatted text in the text field, without HTML tags.
+         *
+         * <p>To get the text in HTML form, use the <code>htmlText</code>
+         * property.</p>
+         */
+        get: function () {
+            return this._text;
+        },
+        set: function (value) {
+            value = value.toString();
+            if (this._text == value)
+                return;
+            this._text = value;
+            this._textGraphicsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textFormat", {
+        get: function () {
+            return this._textFormat;
+        },
+        set: function (value) {
+            if (this._textFormat == value)
+                return;
+            this._textFormat = value;
+            this._textGraphicsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "graphics", {
+        /**
+         * The geometry used by the mesh that provides it with its shape.
+         */
+        get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
+            return this._graphics;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textColor", {
+        get: function () {
+            return this._textColor;
+        },
+        set: function (value) {
+            this._textColor = value;
+            if (!this.transform.colorTransform)
+                this.transform.colorTransform = new ColorTransform();
+            this.transform.colorTransform.color = value;
+            this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textInteractionMode", {
+        /**
+         * The interaction mode property, Default value is
+         * TextInteractionMode.NORMAL. On mobile platforms, the normal mode implies
+         * that the text can be scrolled but not selected. One can switch to the
+         * selectable mode through the in-built context menu on the text field. On
+         * Desktop, the normal mode implies that the text is in scrollable as well as
+         * selection mode.
+         */
+        get: function () {
+            return this._textInteractionMode;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textWidth", {
+        /**
+         * The width of the text in pixels.
+         */
+        get: function () {
+            return this._textWidth;
+        },
+        set: function (value) {
+            this._textWidth = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textHeight", {
+        /**
+         * The width of the text in pixels.
+         */
+        get: function () {
+            return this._textHeight;
+        },
+        set: function (value) {
+            this._textHeight = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    TextField.prototype.dispose = function () {
+        this.disposeValues();
+        TextField._textFields.push(this);
+    };
+    /**
+     * @inheritDoc
+     */
+    TextField.prototype.disposeValues = function () {
+        _super.prototype.disposeValues.call(this);
+        this._textFormat = null;
+    };
+    /**
+     * Reconstructs the Graphics for this Text-field.
+     */
+    TextField.prototype.reConstruct = function () {
+        this._textGraphicsDirty = false;
+        if (this._textFormat == null)
+            return;
+        this._graphics.dispose();
+        this._graphics = new Graphics(this);
+        if (this._text == "")
+            return;
+        var vertices = new Array();
+        var char_scale = this._textFormat.size / this._textFormat.font_table.get_font_em_size();
+        var additional_margin_x = this._textFormat.font_table.offset_x;
+        var additional_margin_y = this._textFormat.font_table.offset_y;
+        var y_offset = additional_margin_y;
+        var prev_char = null;
+        var j = 0;
+        var k = 0;
+        var whitespace_width = (this._textFormat.font_table.get_whitespace_width() * char_scale);
+        var textlines = this.text.toString().split("\\n");
+        var final_lines_chars = [];
+        var final_lines_char_scale = [];
+        var final_lines_width = [];
+        for (var tl = 0; tl < textlines.length; tl++) {
+            final_lines_chars.push([]);
+            final_lines_char_scale.push([]);
+            final_lines_width.push(0);
+            var words = textlines[tl].split(" ");
+            for (var i = 0; i < words.length; i++) {
+                var word_width = 0;
+                var word_chars = [];
+                var word_chars_scale = [];
+                var c_cnt = 0;
+                for (var w = 0; w < words[i].length; w++) {
+                    char_scale = this._textFormat.size / this._textFormat.font_table.get_font_em_size();
+                    var this_char = this._textFormat.font_table.getChar(words[i].charCodeAt(w).toString());
+                    if (this_char == null) {
+                        if (this._textFormat.fallback_font_table) {
+                            char_scale = this._textFormat.size / this._textFormat.fallback_font_table.get_font_em_size();
+                            this_char = this._textFormat.fallback_font_table.getChar(words[i].charCodeAt(w).toString());
+                        }
+                    }
+                    if (this_char != null) {
+                        var this_subGeom = this_char.elements;
+                        if (this_subGeom != null) {
+                            // find kerning value that has been set for this char_code on previous char (if non exists, kerning_value will stay 0)
+                            var kerning_value = 0;
+                            if (prev_char != null) {
+                                for (var k = 0; k < prev_char.kerningCharCodes.length; k++) {
+                                    if (prev_char.kerningCharCodes[k] == words[i].charCodeAt(w)) {
+                                        kerning_value = prev_char.kerningValues[k];
+                                        break;
+                                    }
+                                }
+                            }
+                            word_width += ((this_char.char_width + kerning_value) * char_scale) + this._textFormat.letterSpacing;
+                        }
+                        else {
+                            // if no char-geometry was found, we insert a "space"
+                            word_width += whitespace_width;
+                        }
+                    }
+                    else {
+                        // if no char-geometry was found, we insert a "space"
+                        //x_offset += this._textFormat.font_table.get_font_em_size() * char_scale;
+                        word_width += whitespace_width;
+                    }
+                    word_chars_scale[c_cnt] = char_scale;
+                    word_chars[c_cnt++] = this_char;
+                }
+                if ((final_lines_width[final_lines_width.length - 1] + word_width) <= this.textWidth) {
+                    for (var fw = 0; fw < word_chars_scale.length; fw++) {
+                        final_lines_chars[final_lines_chars.length - 1].push(word_chars[fw]);
+                        final_lines_char_scale[final_lines_char_scale.length - 1].push(word_chars_scale[fw]);
+                    }
+                    final_lines_width[final_lines_width.length - 1] += word_width;
                 }
                 else {
-                    this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
-                    this._panAngle = this._panAngle % 360;
+                    // word does not fit
+                    // todo respect multiline and autowrapping properties.
+                    // right now we just pretend everything has autowrapping and multiline
+                    final_lines_chars.push([]);
+                    final_lines_char_scale.push([]);
+                    final_lines_width.push(0);
+                    for (var fw = 0; fw < word_chars_scale.length; fw++) {
+                        final_lines_chars[final_lines_chars.length - 1].push(word_chars[fw]);
+                        final_lines_char_scale[final_lines_char_scale.length - 1].push(word_chars_scale[fw]);
+                    }
+                    final_lines_width[final_lines_width.length - 1] = word_width;
                 }
-                while (this._panAngle - this._iCurrentPanAngle < -180)
-                    this._iCurrentPanAngle -= 360;
-                while (this._panAngle - this._iCurrentPanAngle > 180)
-                    this._iCurrentPanAngle += 360;
-            }
-            if (interpolate) {
-                this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
-                this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
-            }
-            else {
-                this._iCurrentTiltAngle = this._tiltAngle;
-                this._iCurrentPanAngle = this._panAngle;
-            }
-            //snap coords if angle differences are close
-            if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
-                this._iCurrentTiltAngle = this._tiltAngle;
-                this._iCurrentPanAngle = this._panAngle;
+                if (i < (words.length - 1)) {
+                    if ((final_lines_width[final_lines_width.length - 1] + whitespace_width) <= this.textWidth) {
+                        final_lines_chars[final_lines_chars.length - 1].push(null);
+                        final_lines_char_scale[final_lines_char_scale.length - 1].push(char_scale);
+                        final_lines_width[final_lines_width.length - 1] += whitespace_width;
+                    }
+                    else {
+                        final_lines_chars.push([null]);
+                        final_lines_char_scale.push([char_scale]);
+                        final_lines_width.push(whitespace_width);
+                    }
+                }
             }
         }
-        this.targetObject.rotationX = this._iCurrentTiltAngle;
-        this.targetObject.rotationY = this._iCurrentPanAngle;
-        if (this._walkIncrement) {
-            if (this.fly) {
-                this.targetObject.transform.moveForward(this._walkIncrement);
+        for (var i = 0; i < final_lines_chars.length; i++) {
+            var x_offset = additional_margin_x;
+            if (this._textFormat.align == "center") {
+                x_offset = (this._textWidth - final_lines_width[i]) / 2;
             }
-            else {
-                this.targetObject.x += this._walkIncrement * Math.sin(this._panAngle * MathConsts.DEGREES_TO_RADIANS);
-                this.targetObject.z += this._walkIncrement * Math.cos(this._panAngle * MathConsts.DEGREES_TO_RADIANS);
+            else if (this._textFormat.align == "right") {
+                x_offset = (this._textWidth - final_lines_width[i]) - additional_margin_x;
             }
-            this._walkIncrement = 0;
-        }
-        if (this._strafeIncrement) {
-            this.targetObject.transform.moveRight(this._strafeIncrement);
-            this._strafeIncrement = 0;
-        }
-    };
-    FirstPersonController.prototype.incrementWalk = function (val) {
-        if (val == 0)
-            return;
-        this._walkIncrement += val;
-        this.pNotifyUpdate();
-    };
-    FirstPersonController.prototype.incrementStrafe = function (val) {
-        if (val == 0)
-            return;
-        this._strafeIncrement += val;
-        this.pNotifyUpdate();
-    };
-    return FirstPersonController;
-})(ControllerBase);
-module.exports = FirstPersonController;
-
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase"}],"awayjs-display/lib/controllers/FollowController":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var HoverController = require("awayjs-display/lib/controllers/HoverController");
-/**
- * Controller used to follow behind an object on the XZ plane, with an optional
- * elevation (tiltAngle).
- *
- * @see    away3d.containers.View3D
- */
-var FollowController = (function (_super) {
-    __extends(FollowController, _super);
-    function FollowController(targetObject, lookAtObject, tiltAngle, distance) {
-        if (targetObject === void 0) { targetObject = null; }
-        if (lookAtObject === void 0) { lookAtObject = null; }
-        if (tiltAngle === void 0) { tiltAngle = 45; }
-        if (distance === void 0) { distance = 700; }
-        _super.call(this, targetObject, lookAtObject, 0, tiltAngle, distance);
-    }
-    FollowController.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        if (!this.lookAtObject)
-            return;
-        this.panAngle = this._pLookAtObject.rotationY - 180;
-        _super.prototype.update.call(this);
-    };
-    return FollowController;
-})(HoverController);
-module.exports = FollowController;
-
-},{"awayjs-display/lib/controllers/HoverController":"awayjs-display/lib/controllers/HoverController"}],"awayjs-display/lib/controllers/HoverController":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var MathConsts = require("awayjs-core/lib/geom/MathConsts");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var LookAtController = require("awayjs-display/lib/controllers/LookAtController");
-/**
- * Extended camera used to hover round a specified target object.
- *
- * @see    away.containers.View
- */
-var HoverController = (function (_super) {
-    __extends(HoverController, _super);
-    /**
-     * Creates a new <code>HoverController</code> object.
-     */
-    function HoverController(targetObject, lookAtObject, panAngle, tiltAngle, distance, minTiltAngle, maxTiltAngle, minPanAngle, maxPanAngle, steps, yFactor, wrapPanAngle) {
-        if (targetObject === void 0) { targetObject = null; }
-        if (lookAtObject === void 0) { lookAtObject = null; }
-        if (panAngle === void 0) { panAngle = 0; }
-        if (tiltAngle === void 0) { tiltAngle = 90; }
-        if (distance === void 0) { distance = 1000; }
-        if (minTiltAngle === void 0) { minTiltAngle = -90; }
-        if (maxTiltAngle === void 0) { maxTiltAngle = 90; }
-        if (minPanAngle === void 0) { minPanAngle = null; }
-        if (maxPanAngle === void 0) { maxPanAngle = null; }
-        if (steps === void 0) { steps = 8; }
-        if (yFactor === void 0) { yFactor = 2; }
-        if (wrapPanAngle === void 0) { wrapPanAngle = false; }
-        _super.call(this, targetObject, lookAtObject);
-        this._iCurrentPanAngle = 0;
-        this._iCurrentTiltAngle = 90;
-        this._panAngle = 0;
-        this._tiltAngle = 90;
-        this._distance = 1000;
-        this._minPanAngle = -Infinity;
-        this._maxPanAngle = Infinity;
-        this._minTiltAngle = -90;
-        this._maxTiltAngle = 90;
-        this._steps = 8;
-        this._yFactor = 2;
-        this._wrapPanAngle = false;
-        this._upAxis = new Vector3D();
-        this.distance = distance;
-        this.panAngle = panAngle;
-        this.tiltAngle = tiltAngle;
-        this.minPanAngle = (minPanAngle != null) ? minPanAngle : -Infinity;
-        this.maxPanAngle = (maxPanAngle != null) ? maxPanAngle : Infinity;
-        this.minTiltAngle = minTiltAngle;
-        this.maxTiltAngle = maxTiltAngle;
-        this.steps = steps;
-        this.yFactor = yFactor;
-        this.wrapPanAngle = wrapPanAngle;
-        //values passed in contrustor are applied immediately
-        this._iCurrentPanAngle = this._panAngle;
-        this._iCurrentTiltAngle = this._tiltAngle;
-    }
-    Object.defineProperty(HoverController.prototype, "steps", {
-        /**
-         * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
-         *
-         * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
-         *
-         * @see    #tiltAngle
-         * @see    #panAngle
-         */
-        get: function () {
-            return this._steps;
-        },
-        set: function (val) {
-            val = (val < 1) ? 1 : val;
-            if (this._steps == val)
-                return;
-            this._steps = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "panAngle", {
-        /**
-         * Rotation of the camera in degrees around the y axis. Defaults to 0.
-         */
-        get: function () {
-            return this._panAngle;
-        },
-        set: function (val) {
-            val = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, val));
-            if (this._panAngle == val)
-                return;
-            this._panAngle = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "tiltAngle", {
-        /**
-         * Elevation angle of the camera in degrees. Defaults to 90.
-         */
-        get: function () {
-            return this._tiltAngle;
-        },
-        set: function (val) {
-            val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
-            if (this._tiltAngle == val)
-                return;
-            this._tiltAngle = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "distance", {
-        /**
-         * Distance between the camera and the specified target. Defaults to 1000.
-         */
-        get: function () {
-            return this._distance;
-        },
-        set: function (val) {
-            if (this._distance == val)
-                return;
-            this._distance = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "minPanAngle", {
-        /**
-         * Minimum bounds for the <code>panAngle</code>. Defaults to -Infinity.
-         *
-         * @see    #panAngle
-         */
-        get: function () {
-            return this._minPanAngle;
-        },
-        set: function (val) {
-            if (this._minPanAngle == val)
-                return;
-            this._minPanAngle = val;
-            this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "maxPanAngle", {
-        /**
-         * Maximum bounds for the <code>panAngle</code>. Defaults to Infinity.
-         *
-         * @see    #panAngle
-         */
-        get: function () {
-            return this._maxPanAngle;
-        },
-        set: function (val) {
-            if (this._maxPanAngle == val)
-                return;
-            this._maxPanAngle = val;
-            this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "minTiltAngle", {
-        /**
-         * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
-         *
-         * @see    #tiltAngle
-         */
-        get: function () {
-            return this._minTiltAngle;
-        },
-        set: function (val) {
-            if (this._minTiltAngle == val)
-                return;
-            this._minTiltAngle = val;
-            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "maxTiltAngle", {
-        /**
-         * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
-         *
-         * @see    #tiltAngle
-         */
-        get: function () {
-            return this._maxTiltAngle;
-        },
-        set: function (val) {
-            if (this._maxTiltAngle == val)
-                return;
-            this._maxTiltAngle = val;
-            this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "yFactor", {
-        /**
-         * Fractional difference in distance between the horizontal camera orientation and vertical camera orientation. Defaults to 2.
-         *
-         * @see    #distance
-         */
-        get: function () {
-            return this._yFactor;
-        },
-        set: function (val) {
-            if (this._yFactor == val)
-                return;
-            this._yFactor = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HoverController.prototype, "wrapPanAngle", {
-        /**
-         * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
-         */
-        get: function () {
-            return this._wrapPanAngle;
-        },
-        set: function (val) {
-            if (this._wrapPanAngle == val)
-                return;
-            this._wrapPanAngle = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Updates the current tilt angle and pan angle values.
-     *
-     * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
-     *
-     * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
-     *
-     * @see    #tiltAngle
-     * @see    #panAngle
-     * @see    #steps
-     */
-    HoverController.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
-            this._pControllerDirty = true;
-            if (this._wrapPanAngle) {
-                if (this._panAngle < 0) {
-                    this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
-                    this._panAngle = this._panAngle % 360 + 360;
+            for (var t = 0; t < final_lines_chars[i].length; t++) {
+                var this_char = final_lines_chars[i][t];
+                char_scale = final_lines_char_scale[i][t];
+                if (this_char != null) {
+                    var elements = this_char.elements;
+                    if (elements != null) {
+                        var positions2 = elements.positions.get(elements.numVertices);
+                        var curveData2 = elements.getCustomAtributes("curves").get(elements.numVertices);
+                        for (var v = 0; v < elements.numVertices; v++) {
+                            vertices[j++] = (positions2[v * 2] * char_scale) + x_offset;
+                            vertices[j++] = (positions2[v * 2 + 1] * char_scale) + y_offset;
+                            vertices[j++] = curveData2[v * 3];
+                            vertices[j++] = curveData2[v * 3 + 1];
+                            vertices[j++] = curveData2[v * 3 + 2];
+                        }
+                        // find kerning value that has been set for this char_code on previous char (if non exists, kerning_value will stay 0)
+                        var kerning_value = 0;
+                        if (prev_char != null) {
+                            for (var k = 0; k < prev_char.kerningCharCodes.length; k++) {
+                                if (prev_char.kerningCharCodes[k] == this._text.charCodeAt(i)) {
+                                    kerning_value = prev_char.kerningValues[k];
+                                    break;
+                                }
+                            }
+                        }
+                        x_offset += ((this_char.char_width + kerning_value) * char_scale) + this._textFormat.letterSpacing;
+                    }
+                    else {
+                        // if no char-geometry was found, we insert a "space"
+                        x_offset += whitespace_width;
+                    }
                 }
                 else {
-                    this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
-                    this._panAngle = this._panAngle % 360;
+                    x_offset += whitespace_width;
                 }
-                while (this._panAngle - this._iCurrentPanAngle < -180)
-                    this._iCurrentPanAngle -= 360;
-                while (this._panAngle - this._iCurrentPanAngle > 180)
-                    this._iCurrentPanAngle += 360;
             }
-            if (interpolate) {
-                this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
-                this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
-            }
-            else {
-                this._iCurrentPanAngle = this._panAngle;
-                this._iCurrentTiltAngle = this._tiltAngle;
-            }
-            //snap coords if angle differences are close
-            if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
-                this._iCurrentTiltAngle = this._tiltAngle;
-                this._iCurrentPanAngle = this._panAngle;
+            // hack for multiline textfield in icycle.
+            y_offset += (this._textFormat.size + this._textFormat.leading * 1.6);
+            if (this._textFormat.leading >= 11) {
+                y_offset += 2.5;
             }
         }
-        var pos = (this.lookAtObject) ? this.lookAtObject.transform.position : (this.lookAtPosition) ? this.lookAtPosition : this._pOrigin;
-        this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
-        this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
-        this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
-        this._upAxis.x = -Math.sin(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
-        this._upAxis.y = Math.cos(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
-        this._upAxis.z = -Math.cos(this._iCurrentPanAngle * MathConsts.DEGREES_TO_RADIANS) * Math.sin(this._iCurrentTiltAngle * MathConsts.DEGREES_TO_RADIANS);
-        if (this._pTargetObject) {
-            if (this._pLookAtPosition)
-                this._pTargetObject.lookAt(this._pLookAtPosition, this._upAxis);
-            else if (this._pLookAtObject)
-                this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position, this._upAxis);
-        }
+        var attributesView = new AttributesView(Float32Array, 5);
+        attributesView.set(vertices);
+        var vertexBuffer = attributesView.buffer;
+        attributesView.dispose();
+        var curveElements = new TriangleElements(vertexBuffer);
+        curveElements.setPositions(new Float2Attributes(vertexBuffer));
+        curveElements.setCustomAttributes("curves", new Float3Attributes(vertexBuffer));
+        this._graphics.addGraphic(curveElements);
+        this.material = this._textFormat.material;
+        var sampler = new Sampler2D();
+        this.style = new Style();
+        this.style.addSamplerAt(sampler, this.material.getTextureAt(0));
+        this.style.uvMatrix = new Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
+        this.material.animateUVs = true;
     };
-    return HoverController;
-})(LookAtController);
-module.exports = HoverController;
+    /**
+     * Appends the string specified by the <code>newText</code> parameter to the
+     * end of the text of the text field. This method is more efficient than an
+     * addition assignment(<code>+=</code>) on a <code>text</code> property
+     * (such as <code>someTextField.text += moreText</code>), particularly for a
+     * text field that contains a significant amount of content.
+     *
+     * @param newText The string to append to the existing text.
+     */
+    TextField.prototype.appendText = function (newText) {
+        this._text += newText;
+    };
+    /**
+     * *tells the Textfield that a paragraph is defined completly.
+     * e.g. the textfield will start a new line for future added text.
+     */
+    TextField.prototype.closeParagraph = function () {
+        //TODO
+    };
+    /**
+     * Returns a rectangle that is the bounding box of the character.
+     *
+     * @param charIndex The zero-based index value for the character(for
+     *                  example, the first position is 0, the second position is
+     *                  1, and so on).
+     * @return A rectangle with <code>x</code> and <code>y</code> minimum and
+     *         maximum values defining the bounding box of the character.
+     */
+    TextField.prototype.getCharBoundaries = function (charIndex) {
+        return this._charBoundaries;
+    };
+    /**
+     * Returns the zero-based index value of the character at the point specified
+     * by the <code>x</code> and <code>y</code> parameters.
+     *
+     * @param x The <i>x</i> coordinate of the character.
+     * @param y The <i>y</i> coordinate of the character.
+     * @return The zero-based index value of the character(for example, the
+     *         first position is 0, the second position is 1, and so on). Returns
+     *         -1 if the point is not over any character.
+     */
+    TextField.prototype.getCharIndexAtPoint = function (x, y) {
+        return this._charIndexAtPoint;
+    };
+    /**
+     * Given a character index, returns the index of the first character in the
+     * same paragraph.
+     *
+     * @param charIndex The zero-based index value of the character(for example,
+     *                  the first character is 0, the second character is 1, and
+     *                  so on).
+     * @return The zero-based index value of the first character in the same
+     *         paragraph.
+     * @throws RangeError The character index specified is out of range.
+     */
+    TextField.prototype.getFirstCharInParagraph = function (charIndex /*int*/) {
+        return this._firstCharInParagraph;
+    };
+    /**
+     * Returns a DisplayObject reference for the given <code>id</code>, for an
+     * image or SWF file that has been added to an HTML-formatted text field by
+     * using an <code><img></code> tag. The <code><img></code> tag is in the
+     * following format:
+     *
+     * <p><pre xml:space="preserve"><code> <img src = 'filename.jpg' id =
+     * 'instanceName' ></code></pre></p>
+     *
+     * @param id The <code>id</code> to match(in the <code>id</code> attribute
+     *           of the <code><img></code> tag).
+     * @return The display object corresponding to the image or SWF file with the
+     *         matching <code>id</code> attribute in the <code><img></code> tag
+     *         of the text field. For media loaded from an external source, this
+     *         object is a Loader object, and, once loaded, the media object is a
+     *         child of that Loader object. For media embedded in the SWF file,
+     *         it is the loaded object. If no <code><img></code> tag with the
+     *         matching <code>id</code> exists, the method returns
+     *         <code>null</code>.
+     */
+    TextField.prototype.getImageReference = function (id) {
+        return this._imageReference;
+    };
+    /**
+     * Returns the zero-based index value of the line at the point specified by
+     * the <code>x</code> and <code>y</code> parameters.
+     *
+     * @param x The <i>x</i> coordinate of the line.
+     * @param y The <i>y</i> coordinate of the line.
+     * @return The zero-based index value of the line(for example, the first
+     *         line is 0, the second line is 1, and so on). Returns -1 if the
+     *         point is not over any line.
+     */
+    TextField.prototype.getLineIndexAtPoint = function (x, y) {
+        return this._lineIndexAtPoint;
+    };
+    /**
+     * Returns the zero-based index value of the line containing the character
+     * specified by the <code>charIndex</code> parameter.
+     *
+     * @param charIndex The zero-based index value of the character(for example,
+     *                  the first character is 0, the second character is 1, and
+     *                  so on).
+     * @return The zero-based index value of the line.
+     * @throws RangeError The character index specified is out of range.
+     */
+    TextField.prototype.getLineIndexOfChar = function (charIndex /*int*/) {
+        return this._lineIndexOfChar;
+    };
+    /**
+     * Returns the number of characters in a specific text line.
+     *
+     * @param lineIndex The line number for which you want the length.
+     * @return The number of characters in the line.
+     * @throws RangeError The line number specified is out of range.
+     */
+    TextField.prototype.getLineLength = function (lineIndex /*int*/) {
+        return this._lineLength;
+    };
+    /**
+     * Returns metrics information about a given text line.
+     *
+     * @param lineIndex The line number for which you want metrics information.
+     * @return A TextLineMetrics object.
+     * @throws RangeError The line number specified is out of range.
+     */
+    TextField.prototype.getLineMetrics = function (lineIndex /*int*/) {
+        return this._lineMetrics;
+    };
+    /**
+     * Returns the character index of the first character in the line that the
+     * <code>lineIndex</code> parameter specifies.
+     *
+     * @param lineIndex The zero-based index value of the line(for example, the
+     *                  first line is 0, the second line is 1, and so on).
+     * @return The zero-based index value of the first character in the line.
+     * @throws RangeError The line number specified is out of range.
+     */
+    TextField.prototype.getLineOffset = function (lineIndex /*int*/) {
+        return this._lineOffset;
+    };
+    /**
+     * Returns the text of the line specified by the <code>lineIndex</code>
+     * parameter.
+     *
+     * @param lineIndex The zero-based index value of the line(for example, the
+     *                  first line is 0, the second line is 1, and so on).
+     * @return The text string contained in the specified line.
+     * @throws RangeError The line number specified is out of range.
+     */
+    TextField.prototype.getLineText = function (lineIndex /*int*/) {
+        return this._lineText;
+    };
+    /**
+     * Given a character index, returns the length of the paragraph containing
+     * the given character. The length is relative to the first character in the
+     * paragraph(as returned by <code>getFirstCharInParagraph()</code>), not to
+     * the character index passed in.
+     *
+     * @param charIndex The zero-based index value of the character(for example,
+     *                  the first character is 0, the second character is 1, and
+     *                  so on).
+     * @return Returns the number of characters in the paragraph.
+     * @throws RangeError The character index specified is out of range.
+     */
+    TextField.prototype.getParagraphLength = function (charIndex /*int*/) {
+        return this._paragraphLength;
+    };
+    /**
+     * Returns a TextFormat object that contains formatting information for the
+     * range of text that the <code>beginIndex</code> and <code>endIndex</code>
+     * parameters specify. Only properties that are common to the entire text
+     * specified are set in the resulting TextFormat object. Any property that is
+     * <i>mixed</i>, meaning that it has different values at different points in
+     * the text, has a value of <code>null</code>.
+     *
+     * <p>If you do not specify values for these parameters, this method is
+     * applied to all the text in the text field. </p>
+     *
+     * <p>The following table describes three possible usages:</p>
+     *
+     * @return The TextFormat object that represents the formatting properties
+     *         for the specified text.
+     * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
+     *                    specified is out of range.
+     */
+    TextField.prototype.getTextFormat = function (beginIndex, endIndex) {
+        if (beginIndex === void 0) { beginIndex = -1; }
+        if (endIndex === void 0) { endIndex = -1; }
+        return this._textFormat;
+    };
+    /**
+     * Replaces the current selection with the contents of the <code>value</code>
+     * parameter. The text is inserted at the position of the current selection,
+     * using the current default character format and default paragraph format.
+     * The text is not treated as HTML.
+     *
+     * <p>You can use the <code>replaceSelectedText()</code> method to insert and
+     * delete text without disrupting the character and paragraph formatting of
+     * the rest of the text.</p>
+     *
+     * <p><b>Note:</b> This method does not work if a style sheet is applied to
+     * the text field.</p>
+     *
+     * @param value The string to replace the currently selected text.
+     * @throws Error This method cannot be used on a text field with a style
+     *               sheet.
+     */
+    TextField.prototype.replaceSelectedText = function (value) {
+    };
+    /**
+     * Replaces the range of characters that the <code>beginIndex</code> and
+     * <code>endIndex</code> parameters specify with the contents of the
+     * <code>newText</code> parameter. As designed, the text from
+     * <code>beginIndex</code> to <code>endIndex-1</code> is replaced.
+     *
+     * <p><b>Note:</b> This method does not work if a style sheet is applied to
+     * the text field.</p>
+     *
+     * @param beginIndex The zero-based index value for the start position of the
+     *                   replacement range.
+     * @param endIndex   The zero-based index position of the first character
+     *                   after the desired text span.
+     * @param newText    The text to use to replace the specified range of
+     *                   characters.
+     * @throws Error This method cannot be used on a text field with a style
+     *               sheet.
+     */
+    TextField.prototype.replaceText = function (beginIndex /*int*/, endIndex /*int*/, newText) {
+    };
+    /**
+     * Sets as selected the text designated by the index values of the first and
+     * last characters, which are specified with the <code>beginIndex</code> and
+     * <code>endIndex</code> parameters. If the two parameter values are the
+     * same, this method sets the insertion point, as if you set the
+     * <code>caretIndex</code> property.
+     *
+     * @param beginIndex The zero-based index value of the first character in the
+     *                   selection(for example, the first character is 0, the
+     *                   second character is 1, and so on).
+     * @param endIndex   The zero-based index value of the last character in the
+     *                   selection.
+     */
+    TextField.prototype.setSelection = function (beginIndex /*int*/, endIndex /*int*/) {
+    };
+    /**
+     * Applies the text formatting that the <code>format</code> parameter
+     * specifies to the specified text in a text field. The value of
+     * <code>format</code> must be a TextFormat object that specifies the desired
+     * text formatting changes. Only the non-null properties of
+     * <code>format</code> are applied to the text field. Any property of
+     * <code>format</code> that is set to <code>null</code> is not applied. By
+     * default, all of the properties of a newly created TextFormat object are
+     * set to <code>null</code>.
+     *
+     * <p><b>Note:</b> This method does not work if a style sheet is applied to
+     * the text field.</p>
+     *
+     * <p>The <code>setTextFormat()</code> method changes the text formatting
+     * applied to a range of characters or to the entire body of text in a text
+     * field. To apply the properties of format to all text in the text field, do
+     * not specify values for <code>beginIndex</code> and <code>endIndex</code>.
+     * To apply the properties of the format to a range of text, specify values
+     * for the <code>beginIndex</code> and the <code>endIndex</code> parameters.
+     * You can use the <code>length</code> property to determine the index
+     * values.</p>
+     *
+     * <p>The two types of formatting information in a TextFormat object are
+     * character level formatting and paragraph level formatting. Each character
+     * in a text field can have its own character formatting settings, such as
+     * font name, font size, bold, and italic.</p>
+     *
+     * <p>For paragraphs, the first character of the paragraph is examined for
+     * the paragraph formatting settings for the entire paragraph. Examples of
+     * paragraph formatting settings are left margin, right margin, and
+     * indentation.</p>
+     *
+     * <p>Any text inserted manually by the user, or replaced by the
+     * <code>replaceSelectedText()</code> method, receives the default text field
+     * formatting for new text, and not the formatting specified for the text
+     * insertion point. To set the default formatting for new text, use
+     * <code>defaultTextFormat</code>.</p>
+     *
+     * @param format A TextFormat object that contains character and paragraph
+     *               formatting information.
+     * @throws Error      This method cannot be used on a text field with a style
+     *                    sheet.
+     * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
+     *                    specified is out of range.
+     */
+    TextField.prototype.setTextFormat = function (format, beginIndex, endIndex) {
+        if (beginIndex === void 0) { beginIndex = -1; }
+        if (endIndex === void 0) { endIndex = -1; }
+    };
+    /**
+     * Returns true if an embedded font is available with the specified
+     * <code>fontName</code> and <code>fontStyle</code> where
+     * <code>Font.fontType</code> is <code>flash.text.FontType.EMBEDDED</code>.
+     * Starting with Flash Player 10, two kinds of embedded fonts can appear in a
+     * SWF file. Normal embedded fonts are only used with TextField objects. CFF
+     * embedded fonts are only used with the flash.text.engine classes. The two
+     * types are distinguished by the <code>fontType</code> property of the
+     * <code>Font</code> class, as returned by the <code>enumerateFonts()</code>
+     * function.
+     *
+     * <p>TextField cannot use a font of type <code>EMBEDDED_CFF</code>. If
+     * <code>embedFonts</code> is set to <code>true</code> and the only font
+     * available at run time with the specified name and style is of type
+     * <code>EMBEDDED_CFF</code>, Flash Player fails to render the text, as if no
+     * embedded font were available with the specified name and style.</p>
+     *
+     * <p>If both <code>EMBEDDED</code> and <code>EMBEDDED_CFF</code> fonts are
+     * available with the same name and style, the <code>EMBEDDED</code> font is
+     * selected and text renders with the <code>EMBEDDED</code> font.</p>
+     *
+     * @param fontName  The name of the embedded font to check.
+     * @param fontStyle Specifies the font style to check. Use
+     *                  <code>flash.text.FontStyle</code>
+     * @return <code>true</code> if a compatible embedded font is available,
+     *         otherwise <code>false</code>.
+     * @throws ArgumentError The <code>fontStyle</code> specified is not a member
+     *                       of <code>flash.text.FontStyle</code>.
+     */
+    TextField.isFontCompatible = function (fontName, fontStyle) {
+        return false;
+    };
+    TextField.prototype.clone = function () {
+        var newInstance = (TextField._textFields.length) ? TextField._textFields.pop() : new TextField();
+        this.copyTo(newInstance);
+        return newInstance;
+    };
+    TextField.prototype.copyTo = function (newInstance) {
+        _super.prototype.copyTo.call(this, newInstance);
+        newInstance.textWidth = this._textWidth;
+        newInstance.textHeight = this._textHeight;
+        newInstance.textFormat = this._textFormat;
+        //newInstance.textColor = this._textColor;
+        newInstance.text = this._text;
+    };
+    TextField._textFields = new Array();
+    TextField.assetType = "[asset TextField]";
+    return TextField;
+})(Mesh);
+module.exports = TextField;
 
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/controllers/LookAtController":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var ControllerBase = require("awayjs-display/lib/controllers/ControllerBase");
-var DisplayObjectEvent = require("awayjs-display/lib/events/DisplayObjectEvent");
-var LookAtController = (function (_super) {
-    __extends(LookAtController, _super);
-    function LookAtController(targetObject, lookAtObject) {
-        var _this = this;
-        if (targetObject === void 0) { targetObject = null; }
-        if (lookAtObject === void 0) { lookAtObject = null; }
-        _super.call(this, targetObject);
-        this._pOrigin = new Vector3D(0.0, 0.0, 0.0);
-        this._onLookAtObjectChangedDelegate = function (event) { return _this.onLookAtObjectChanged(event); };
-        if (lookAtObject)
-            this.lookAtObject = lookAtObject;
-        else
-            this.lookAtPosition = new Vector3D();
-    }
-    Object.defineProperty(LookAtController.prototype, "lookAtPosition", {
-        get: function () {
-            return this._pLookAtPosition;
-        },
-        set: function (val) {
-            if (this._pLookAtObject) {
-                this._pLookAtObject.removeEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
-                this._pLookAtObject = null;
-            }
-            this._pLookAtPosition = val;
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LookAtController.prototype, "lookAtObject", {
-        get: function () {
-            return this._pLookAtObject;
-        },
-        set: function (val) {
-            if (this._pLookAtPosition)
-                this._pLookAtPosition = null;
-            if (this._pLookAtObject == val)
-                return;
-            if (this._pLookAtObject)
-                this._pLookAtObject.removeEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
-            this._pLookAtObject = val;
-            if (this._pLookAtObject)
-                this._pLookAtObject.addEventListener(DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
-            this.pNotifyUpdate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    LookAtController.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        if (this._pTargetObject) {
-            if (this._pLookAtPosition)
-                this._pTargetObject.lookAt(this._pLookAtPosition);
-            else if (this._pLookAtObject)
-                this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position);
-        }
-    };
-    LookAtController.prototype.onLookAtObjectChanged = function (event) {
-        this.pNotifyUpdate();
-    };
-    return LookAtController;
-})(ControllerBase);
-module.exports = LookAtController;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent"}],"awayjs-display/lib/controllers/SpringController":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var LookAtController = require("awayjs-display/lib/controllers/LookAtController");
-/**
- * Uses spring physics to animate the target object towards a position that is
- * defined as the lookAtTarget object's position plus the vector defined by the
- * positionOffset property.
- */
-var SpringController = (function (_super) {
-    __extends(SpringController, _super);
-    function SpringController(targetObject, lookAtObject, stiffness, mass, damping) {
-        if (targetObject === void 0) { targetObject = null; }
-        if (lookAtObject === void 0) { lookAtObject = null; }
-        if (stiffness === void 0) { stiffness = 1; }
-        if (mass === void 0) { mass = 40; }
-        if (damping === void 0) { damping = 4; }
-        _super.call(this, targetObject, lookAtObject);
-        /**
-         * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
-         */
-        this.positionOffset = new Vector3D(0, 500, -1000);
-        this.stiffness = stiffness;
-        this.damping = damping;
-        this.mass = mass;
-        this._velocity = new Vector3D();
-        this._dv = new Vector3D();
-        this._stretch = new Vector3D();
-        this._force = new Vector3D();
-        this._acceleration = new Vector3D();
-        this._desiredPosition = new Vector3D();
-    }
-    SpringController.prototype.update = function (interpolate) {
-        if (interpolate === void 0) { interpolate = true; }
-        var offs;
-        if (!this._pLookAtObject || !this._pTargetObject)
-            return;
-        this._pControllerDirty = true;
-        offs = this._pLookAtObject.transform.matrix3D.deltaTransformVector(this.positionOffset);
-        this._desiredPosition.x = this._pLookAtObject.x + offs.x;
-        this._desiredPosition.y = this._pLookAtObject.y + offs.y;
-        this._desiredPosition.z = this._pLookAtObject.z + offs.z;
-        this._stretch = this._pTargetObject.transform.position.add(this._desiredPosition);
-        this._stretch.scaleBy(-this.stiffness);
-        this._dv.copyFrom(this._velocity);
-        this._dv.scaleBy(this.damping);
-        this._force.x = this._stretch.x - this._dv.x;
-        this._force.y = this._stretch.y - this._dv.y;
-        this._force.z = this._stretch.z - this._dv.z;
-        this._acceleration.copyFrom(this._force);
-        this._acceleration.scaleBy(1 / this.mass);
-        this._velocity.incrementBy(this._acceleration);
-        this._pTargetObject.transform.position = this._pTargetObject.transform.position.add(this._velocity);
-        _super.prototype.update.call(this);
-    };
-    return SpringController;
-})(LookAtController);
-module.exports = SpringController;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/draw/CapsStyle":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/display/Mesh":"awayjs-display/lib/display/Mesh","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/text/TextFieldType":"awayjs-display/lib/text/TextFieldType"}],"awayjs-display/lib/draw/CapsStyle":[function(require,module,exports){
 /**
  * The CapsStyle class is an enumeration of constant values that specify the
  * caps style to use in drawing lines. The constants are provided for use as
@@ -21438,8 +24156,8 @@ module.exports = GradientType;
 
 },{}],"awayjs-display/lib/draw/GraphicsPathCommand":[function(require,module,exports){
 /**
- * Defines the values to use for specifying path-drawing commands.
- * The values in this class are used by the Graphics.drawPath() method,
+* Defines the values to use for specifying path-drawing commands.
+* The values in this class are used by the Graphics.drawPath() method,
  *or stored in the commands vector of a GraphicsPath object.
  */
 var GraphicsPathCommand = (function () {
@@ -21702,9 +24420,10 @@ var GraphicsPathCommand = require("awayjs-display/lib/draw/GraphicsPathCommand")
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var Point = require("awayjs-core/lib/geom/Point");
 var AttributesView = require("awayjs-core/lib/attributes/AttributesView");
-var CurveSubGeometry = require("awayjs-display/lib/base/CurveSubGeometry");
+var Float3Attributes = require("awayjs-core/lib/attributes/Float3Attributes");
 var Float2Attributes = require("awayjs-core/lib/attributes/Float2Attributes");
 var PartialImplementationError = require("awayjs-core/lib/errors/PartialImplementationError");
+var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 /**
  * The Graphics class contains a set of methods that you can use to create a
  * vector shape. Display objects that support drawing include Sprite and Shape
@@ -21959,7 +24678,7 @@ var Graphics = (function () {
      */
     Graphics.prototype.clear = function () {
         // todo: do this the correct way
-        this._target.geometry.dispose();
+        this._target.graphics.dispose();
     };
     /**
      * Copies all of drawing commands from the source Graphics object into the
@@ -21969,11 +24688,7 @@ var Graphics = (function () {
      *                       commands.
      */
     Graphics.prototype.copyFrom = function (sourceGraphics) {
-        // todo: do this the correct way
-        var cnt = sourceGraphics._target.geometry.subGeometries.length;
-        for (var i = 0; i > cnt; i++) {
-            this._target.addSubMesh(sourceGraphics._target.geometry.subGeometries[i]);
-        }
+        sourceGraphics._target.graphics.copyTo(this._target.graphics);
     };
     /**
      * Draws a cubic Bezier curve from the current drawing position to the
@@ -23197,12 +25912,15 @@ var Graphics = (function () {
         attributesView.set(final_vert_list);
         var attributesBuffer = attributesView.buffer;
         attributesView.dispose();
-        var curve_sub_geom = new CurveSubGeometry(attributesBuffer);
-        curve_sub_geom.setUVs(new Float2Attributes(attributesBuffer));
-        this._target.geometry.addSubGeometry(curve_sub_geom);
-        this._target.subMeshes[this._target.subMeshes.length - 1].material = DefaultMaterialManager.getDefaultMaterial();
-        this._target.subMeshes[this._target.subMeshes.length - 1].material.bothSides = true;
-        this._target.subMeshes[this._target.subMeshes.length - 1].material.useColorTransform = true;
+        var elements = new TriangleElements(attributesBuffer);
+        elements.setPositions(new Float2Attributes(attributesBuffer));
+        elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
+        elements.setUVs(new Float2Attributes(attributesBuffer));
+        var material = DefaultMaterialManager.getDefaultMaterial();
+        material.bothSides = true;
+        material.useColorTransform = true;
+        material.curves = true;
+        this._target.graphics.addGraphic(elements, material);
         this._active_stroke_path = null;
     };
     Graphics.prototype.isClockWiseXY = function (point1x, point1y, point2x, point2y, point3x, point3y) {
@@ -23439,18 +26157,22 @@ var Graphics = (function () {
         attributesView.set(final_vert_list);
         var attributesBuffer = attributesView.buffer;
         attributesView.dispose();
-        var curve_sub_geom = new CurveSubGeometry(attributesBuffer);
-        curve_sub_geom.setUVs(new Float2Attributes(attributesBuffer));
-        this._target.geometry.addSubGeometry(curve_sub_geom);
-        this._target.subMeshes[this._target.subMeshes.length - 1].material = DefaultMaterialManager.getDefaultMaterial();
-        //this._subMeshes[this._subMeshes.length-1].material.bothSides=true;
+        var elements = new TriangleElements(attributesBuffer);
+        elements.setPositions(new Float2Attributes(attributesBuffer));
+        elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
+        elements.setUVs(new Float2Attributes(attributesBuffer));
+        var material = DefaultMaterialManager.getDefaultMaterial();
+        material.bothSides = true;
+        material.useColorTransform = true;
+        material.curves = true;
+        this._target.graphics.addGraphic(elements, material);
         this._active_fill_path = null;
     };
     return Graphics;
 })();
 module.exports = Graphics;
 
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/errors/PartialImplementationError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-display/lib/base/CurveSubGeometry":"awayjs-display/lib/base/CurveSubGeometry","awayjs-display/lib/draw/GraphicsPath":"awayjs-display/lib/draw/GraphicsPath","awayjs-display/lib/draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/draw/IGraphicsData":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/errors/PartialImplementationError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-display/lib/draw/GraphicsPath":"awayjs-display/lib/draw/GraphicsPath","awayjs-display/lib/draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/draw/IGraphicsData":[function(require,module,exports){
 
 },{}],"awayjs-display/lib/draw/InterpolationMethod":[function(require,module,exports){
 /**
@@ -23671,2785 +26393,7 @@ var TriangleCulling = (function () {
 })();
 module.exports = TriangleCulling;
 
-},{}],"awayjs-display/lib/entities/Billboard":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Rectangle = require("awayjs-core/lib/geom/Rectangle");
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
-var RenderOwnerEvent = require("awayjs-display/lib/events/RenderOwnerEvent");
-var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
-/**
- * The Billboard class represents display objects that represent bitmap images.
- * These can be images that you load with the <code>flash.Assets</code> or
- * <code>flash.display.Loader</code> classes, or they can be images that you
- * create with the <code>Billboard()</code> constructor.
- *
- * <p>The <code>Billboard()</code> constructor allows you to create a Billboard
- * object that contains a reference to a Image2D object. After you create a
- * Billboard object, use the <code>addChild()</code> or <code>addChildAt()</code>
- * method of the parent DisplayObjectContainer instance to place the bitmap on
- * the display list.</p>
- *
- * <p>A Billboard object can share its Image2D reference among several Billboard
- * objects, independent of translation or rotation properties. Because you can
- * create multiple Billboard objects that reference the same Image2D object,
- * multiple display objects can use the same complex Image2D object without
- * incurring the memory overhead of a Image2D object for each display
- * object instance.</p>
- *
- * <p>A Image2D object can be drawn to the screen by a Billboard object in one
- * of two ways: by using the default hardware renderer with a single hardware surface,
- * or by using the slower software renderer when 3D acceleration is not available.</p>
- *
- * <p>If you would prefer to perform a batch rendering command, rather than using a
- * single surface for each Billboard object, you can also draw to the screen using the
- * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
- * available to <code>flash.display.Tilesheet</code> and <code>flash.display.Graphics
- * objects.</code></p>
- *
- * <p><b>Note:</b> The Billboard class is not a subclass of the InteractiveObject
- * class, so it cannot dispatch mouse events. However, you can use the
- * <code>addEventListener()</code> method of the display object container that
- * contains the Billboard object.</p>
- */
-var Billboard = (function (_super) {
-    __extends(Billboard, _super);
-    function Billboard(material, pixelSnapping, smoothing) {
-        var _this = this;
-        if (pixelSnapping === void 0) { pixelSnapping = "auto"; }
-        if (smoothing === void 0) { smoothing = false; }
-        _super.call(this);
-        this._pIsEntity = true;
-        this.onInvalidateTextureDelegate = function (event) { return _this.onInvalidateTexture(event); };
-        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-        this.material = material;
-        this._updateDimensions();
-        //default bounds type
-        this._boundsType = BoundsType.AXIS_ALIGNED_BOX;
-    }
-    Object.defineProperty(Billboard.prototype, "animator", {
-        /**
-         * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
-         */
-        get: function () {
-            return this._animator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "assetType", {
-        /**
-         *
-         */
-        get: function () {
-            return Billboard.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "billboardRect", {
-        /**
-         *
-         */
-        get: function () {
-            return this._billboardRect;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "billboardHeight", {
-        /**
-         *
-         */
-        get: function () {
-            return this._billboardHeight;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "billboardWidth", {
-        /**
-         *
-         */
-        get: function () {
-            return this._billboardWidth;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "material", {
-        /**
-         *
-         */
-        get: function () {
-            return this._material;
-        },
-        set: function (value) {
-            if (value == this._material)
-                return;
-            if (this._material) {
-                this._material.iRemoveOwner(this);
-                this._material.removeEventListener(RenderOwnerEvent.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
-            }
-            this._material = value;
-            if (this._material) {
-                this._material.iAddOwner(this);
-                this._material.addEventListener(RenderOwnerEvent.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Billboard.prototype, "uvTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._uvTransform;
-        },
-        set: function (value) {
-            this._uvTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @protected
-     */
-    Billboard.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        this._pBoxBounds.width = this._billboardRect.width;
-        this._pBoxBounds.height = this._billboardRect.height;
-    };
-    Billboard.prototype.clone = function () {
-        var clone = new Billboard(this.material);
-        return clone;
-    };
-    Object.defineProperty(Billboard.prototype, "style", {
-        /**
-         * The style used to render the current Billboard. If set to null, the default style of the material will be used instead.
-         */
-        get: function () {
-            return this._style;
-        },
-        set: function (value) {
-            if (this._style == value)
-                return;
-            if (this._style)
-                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._style = value;
-            if (this._style)
-                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._onInvalidateProperties();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * //TODO
-     *
-     * @param shortestCollisionDistance
-     * @returns {boolean}
-     *
-     * @internal
-     */
-    Billboard.prototype._iTestCollision = function (shortestCollisionDistance) {
-        return this._pPickingCollider.testBillboardCollision(this, this.material, this._pPickingCollisionVO, shortestCollisionDistance);
-    };
-    /**
-     * @private
-     */
-    Billboard.prototype.onInvalidateTexture = function (event) {
-        this._updateDimensions();
-    };
-    Billboard.prototype._acceptTraverser = function (traverser) {
-        traverser.applyRenderable(this);
-    };
-    Billboard.prototype._updateDimensions = function () {
-        var texture = this.material.getTextureAt(0);
-        var image = texture ? ((this._style ? this._style.getImageAt(texture) : null) || (this.material.style ? this.material.style.getImageAt(texture) : null) || texture.getImageAt(0)) : null;
-        if (image) {
-            var sampler = ((this._style ? this._style.getSamplerAt(texture) : null) || (this.material.style ? this.material.style.getSamplerAt(texture) : null) || texture.getSamplerAt(0) || DefaultMaterialManager.getDefaultSampler());
-            var rect = sampler.imageRect || image.rect;
-            this._billboardWidth = rect.width * image.width;
-            this._billboardHeight = rect.height * image.height;
-            this._billboardRect = sampler.frameRect || new Rectangle(0, 0, this._billboardWidth, this._billboardHeight);
-        }
-        else {
-            this._billboardWidth = 1;
-            this._billboardHeight = 1;
-            this._billboardRect = new Rectangle(0, 0, 1, 1);
-        }
-        this._pInvalidateBounds();
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_ELEMENTS, this));
-    };
-    Billboard.prototype.invalidateRenderOwner = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this));
-    };
-    Billboard.prototype._onInvalidateProperties = function (event) {
-        if (event === void 0) { event = null; }
-        this.invalidateRenderOwner();
-        this._updateDimensions();
-    };
-    Billboard.assetType = "[asset Billboard]";
-    return Billboard;
-})(DisplayObject);
-module.exports = Billboard;
-
-},{"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/RenderOwnerEvent":"awayjs-display/lib/events/RenderOwnerEvent","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/entities/Camera":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var Plane3D = require("awayjs-core/lib/geom/Plane3D");
-var ProjectionEvent = require("awayjs-core/lib/events/ProjectionEvent");
-var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
-var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var CameraEvent = require("awayjs-display/lib/events/CameraEvent");
-var Camera = (function (_super) {
-    __extends(Camera, _super);
-    function Camera(projection) {
-        var _this = this;
-        if (projection === void 0) { projection = null; }
-        _super.call(this);
-        this._viewProjection = new Matrix3D();
-        this._viewProjectionDirty = true;
-        this._frustumPlanesDirty = true;
-        this._pIsEntity = true;
-        this._onProjectionMatrixChangedDelegate = function (event) { return _this.onProjectionMatrixChanged(event); };
-        this._projection = projection || new PerspectiveProjection();
-        this._projection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-        this._frustumPlanes = [];
-        for (var i = 0; i < 6; ++i)
-            this._frustumPlanes[i] = new Plane3D();
-        this.z = -1000;
-        //default bounds type
-        this._boundsType = BoundsType.NULL;
-    }
-    Object.defineProperty(Camera.prototype, "assetType", {
-        //@override
-        get: function () {
-            return Camera.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Camera.prototype.onProjectionMatrixChanged = function (event) {
-        this._viewProjectionDirty = true;
-        this._frustumPlanesDirty = true;
-        this.dispatchEvent(event);
-    };
-    Object.defineProperty(Camera.prototype, "frustumPlanes", {
-        get: function () {
-            if (this._frustumPlanesDirty)
-                this.updateFrustum();
-            return this._frustumPlanes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Camera.prototype.updateFrustum = function () {
-        var a, b, c;
-        //var d : Number;
-        var c11, c12, c13, c14;
-        var c21, c22, c23, c24;
-        var c31, c32, c33, c34;
-        var c41, c42, c43, c44;
-        var p;
-        var raw = this.viewProjection.rawData;
-        var invLen;
-        c11 = raw[0];
-        c12 = raw[4];
-        c13 = raw[8];
-        c14 = raw[12];
-        c21 = raw[1];
-        c22 = raw[5];
-        c23 = raw[9];
-        c24 = raw[13];
-        c31 = raw[2];
-        c32 = raw[6];
-        c33 = raw[10];
-        c34 = raw[14];
-        c41 = raw[3];
-        c42 = raw[7];
-        c43 = raw[11];
-        c44 = raw[15];
-        // left plane
-        p = this._frustumPlanes[0];
-        a = c41 + c11;
-        b = c42 + c12;
-        c = c43 + c13;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = -(c44 + c14) * invLen;
-        // right plane
-        p = this._frustumPlanes[1];
-        a = c41 - c11;
-        b = c42 - c12;
-        c = c43 - c13;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = (c14 - c44) * invLen;
-        // bottom
-        p = this._frustumPlanes[2];
-        a = c41 + c21;
-        b = c42 + c22;
-        c = c43 + c23;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = -(c44 + c24) * invLen;
-        // top
-        p = this._frustumPlanes[3];
-        a = c41 - c21;
-        b = c42 - c22;
-        c = c43 - c23;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = (c24 - c44) * invLen;
-        // near
-        p = this._frustumPlanes[4];
-        a = c31;
-        b = c32;
-        c = c33;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = -c34 * invLen;
-        // far
-        p = this._frustumPlanes[5];
-        a = c41 - c31;
-        b = c42 - c32;
-        c = c43 - c33;
-        invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-        p.a = a * invLen;
-        p.b = b * invLen;
-        p.c = c * invLen;
-        p.d = (c34 - c44) * invLen;
-        this._frustumPlanesDirty = false;
-    };
-    Camera.prototype.pInvalidateHierarchicalProperties = function (bitFlag) {
-        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, bitFlag))
-            return true;
-        if (this._hierarchicalPropsDirty & HierarchicalProperties.SCENE_TRANSFORM) {
-            this._viewProjectionDirty = true;
-            this._frustumPlanesDirty = true;
-        }
-        return false;
-    };
-    Object.defineProperty(Camera.prototype, "projection", {
-        /**
-         *
-         */
-        get: function () {
-            return this._projection;
-        },
-        set: function (value) {
-            if (this._projection == value)
-                return;
-            if (!value)
-                throw new Error("Projection cannot be null!");
-            this._projection.removeEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-            this._projection = value;
-            this._projection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-            this.dispatchEvent(new CameraEvent(CameraEvent.PROJECTION_CHANGED, this));
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Camera.prototype, "viewProjection", {
-        /**
-         *
-         */
-        get: function () {
-            if (this._viewProjectionDirty) {
-                this._viewProjection.copyFrom(this.inverseSceneTransform);
-                this._viewProjection.append(this._projection.matrix);
-                this._viewProjectionDirty = false;
-            }
-            return this._viewProjection;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
-     *
-     * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
-     * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
-     * @param sZ The z coordinate in screen space, representing the distance into the screen.
-     * @return The ray from the camera to the scene space position of the given screen coordinates.
-     */
-    Camera.prototype.getRay = function (nX, nY, sZ) {
-        return this.sceneTransform.deltaTransformVector(this._projection.unproject(nX, nY, sZ));
-    };
-    /**
-     * Calculates the normalised position in screen space of the given scene position.
-     *
-     * @param point3d the position vector of the scene coordinates to be projected.
-     * @return The normalised screen position of the given scene coordinates.
-     */
-    Camera.prototype.project = function (point3d) {
-        return this._projection.project(this.inverseSceneTransform.transformVector(point3d));
-    };
-    /**
-     * Calculates the scene position of the given normalized coordinates in screen space.
-     *
-     * @param nX The normalised x coordinate in screen space, minus the originX offset of the projection property.
-     * @param nY The normalised y coordinate in screen space, minus the originY offset of the projection property.
-     * @param sZ The z coordinate in screen space, representing the distance into the screen.
-     * @return The scene position of the given screen coordinates.
-     */
-    Camera.prototype.unproject = function (nX, nY, sZ) {
-        return this.sceneTransform.transformVector(this._projection.unproject(nX, nY, sZ));
-    };
-    Camera.prototype._applyRenderer = function (renderer) {
-        // Since this getter is invoked every iteration of the render loop, and
-        // the prefab construct could affect the sub-meshes, the prefab is
-        // validated here to give it a chance to rebuild.
-        if (this._iSourcePrefab)
-            this._iSourcePrefab._iValidate();
-        //nothing to do here
-    };
-    Camera.assetType = "[asset Camera]";
-    return Camera;
-})(DisplayObjectContainer);
-module.exports = Camera;
-
-},{"awayjs-core/lib/events/ProjectionEvent":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Plane3D":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/CameraEvent":"awayjs-display/lib/events/CameraEvent"}],"awayjs-display/lib/entities/DirectionalLight":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var LightBase = require("awayjs-display/lib/base/LightBase");
-var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var DirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-var DirectionalLight = (function (_super) {
-    __extends(DirectionalLight, _super);
-    function DirectionalLight(xDir, yDir, zDir) {
-        if (xDir === void 0) { xDir = 0; }
-        if (yDir === void 0) { yDir = -1; }
-        if (zDir === void 0) { zDir = 1; }
-        _super.call(this);
-        this._pAabbPoints = new Array(24);
-        this._pIsEntity = true;
-        this.direction = new Vector3D(xDir, yDir, zDir);
-        this._sceneDirection = new Vector3D();
-        //default bounds type
-        this._boundsType = BoundsType.NULL;
-    }
-    Object.defineProperty(DirectionalLight.prototype, "assetType", {
-        get: function () {
-            return DirectionalLight.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DirectionalLight.prototype, "sceneDirection", {
-        get: function () {
-            if (this._hierarchicalPropsDirty & HierarchicalProperties.SCENE_TRANSFORM)
-                this.pUpdateSceneTransform();
-            return this._sceneDirection;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DirectionalLight.prototype, "direction", {
-        get: function () {
-            return this._direction;
-        },
-        set: function (value) {
-            this._direction = value;
-            if (!this._tmpLookAt)
-                this._tmpLookAt = new Vector3D();
-            this._tmpLookAt.x = this.x + this._direction.x;
-            this._tmpLookAt.y = this.y + this._direction.y;
-            this._tmpLookAt.z = this.z + this._direction.z;
-            this.lookAt(this._tmpLookAt);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    DirectionalLight.prototype.pUpdateSceneTransform = function () {
-        _super.prototype.pUpdateSceneTransform.call(this);
-        this.sceneTransform.copyColumnTo(2, this._sceneDirection);
-        this._sceneDirection.normalize();
-    };
-    //@override
-    DirectionalLight.prototype.pCreateShadowMapper = function () {
-        return new DirectionalShadowMapper();
-    };
-    //override
-    DirectionalLight.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
-        if (target === void 0) { target = null; }
-        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
-        var m = new Matrix3D();
-        m.copyFrom(entity.getRenderSceneTransform(camera));
-        m.append(this.inverseSceneTransform);
-        if (!this._projAABBPoints)
-            this._projAABBPoints = [];
-        m.transformVectors(this._pAabbPoints, this._projAABBPoints);
-        var xMin = Infinity, xMax = -Infinity;
-        var yMin = Infinity, yMax = -Infinity;
-        var zMin = Infinity, zMax = -Infinity;
-        var d;
-        for (var i = 0; i < 24;) {
-            d = this._projAABBPoints[i++];
-            if (d < xMin)
-                xMin = d;
-            if (d > xMax)
-                xMax = d;
-            d = this._projAABBPoints[i++];
-            if (d < yMin)
-                yMin = d;
-            if (d > yMax)
-                yMax = d;
-            d = this._projAABBPoints[i++];
-            if (d < zMin)
-                zMin = d;
-            if (d > zMax)
-                zMax = d;
-        }
-        var invXRange = 1 / (xMax - xMin);
-        var invYRange = 1 / (yMax - yMin);
-        var invZRange = 1 / (zMax - zMin);
-        raw[0] = 2 * invXRange;
-        raw[5] = 2 * invYRange;
-        raw[10] = invZRange;
-        raw[12] = -(xMax + xMin) * invXRange;
-        raw[13] = -(yMax + yMin) * invYRange;
-        raw[14] = -zMin * invZRange;
-        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
-        raw[15] = 1;
-        if (!target)
-            target = new Matrix3D();
-        target.copyRawDataFrom(raw);
-        target.prepend(m);
-        return target;
-    };
-    /**
-     * //TODO
-     *
-     * @protected
-     */
-    DirectionalLight.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        //update points
-        var minX = this._pBoxBounds.x;
-        var minY = this._pBoxBounds.y - this._pBoxBounds.height;
-        var minZ = this._pBoxBounds.z;
-        var maxX = this._pBoxBounds.x + this._pBoxBounds.width;
-        var maxY = this._pBoxBounds.y;
-        var maxZ = this._pBoxBounds.z + this._pBoxBounds.depth;
-        this._pAabbPoints[0] = minX;
-        this._pAabbPoints[1] = minY;
-        this._pAabbPoints[2] = minZ;
-        this._pAabbPoints[3] = maxX;
-        this._pAabbPoints[4] = minY;
-        this._pAabbPoints[5] = minZ;
-        this._pAabbPoints[6] = minX;
-        this._pAabbPoints[7] = maxY;
-        this._pAabbPoints[8] = minZ;
-        this._pAabbPoints[9] = maxX;
-        this._pAabbPoints[10] = maxY;
-        this._pAabbPoints[11] = minZ;
-        this._pAabbPoints[12] = minX;
-        this._pAabbPoints[13] = minY;
-        this._pAabbPoints[14] = maxZ;
-        this._pAabbPoints[15] = maxX;
-        this._pAabbPoints[16] = minY;
-        this._pAabbPoints[17] = maxZ;
-        this._pAabbPoints[18] = minX;
-        this._pAabbPoints[19] = maxY;
-        this._pAabbPoints[20] = maxZ;
-        this._pAabbPoints[21] = maxX;
-        this._pAabbPoints[22] = maxY;
-        this._pAabbPoints[23] = maxZ;
-    };
-    DirectionalLight.assetType = "[light DirectionalLight]";
-    return DirectionalLight;
-})(LightBase);
-module.exports = DirectionalLight;
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/LightBase":"awayjs-display/lib/base/LightBase","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/entities/IEntity":[function(require,module,exports){
-
-},{}],"awayjs-display/lib/entities/LightProbe":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var SamplerCube = require("awayjs-core/lib/image/SamplerCube");
-var ErrorBase = require("awayjs-core/lib/errors/ErrorBase");
-var LightBase = require("awayjs-display/lib/base/LightBase");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var LightProbe = (function (_super) {
-    __extends(LightProbe, _super);
-    function LightProbe(diffuseMap, specularMap) {
-        if (specularMap === void 0) { specularMap = null; }
-        _super.call(this);
-        this.diffuseSampler = new SamplerCube();
-        this.specularSampler = new SamplerCube();
-        this._pIsEntity = true;
-        this.diffuseMap = diffuseMap;
-        this.specularMap = specularMap;
-        //default bounds type
-        this._boundsType = BoundsType.NULL;
-    }
-    Object.defineProperty(LightProbe.prototype, "assetType", {
-        get: function () {
-            return LightProbe.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    LightProbe.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
-        if (target === void 0) { target = null; }
-        throw new ErrorBase("Object projection matrices are not supported for LightProbe objects!");
-    };
-    LightProbe.assetType = "[light LightProbe]";
-    return LightProbe;
-})(LightBase);
-module.exports = LightProbe;
-
-},{"awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-display/lib/base/LightBase":"awayjs-display/lib/base/LightBase","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType"}],"awayjs-display/lib/entities/LineSegment":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
-var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
-/**
- * A Line Segment primitive.
- */
-var LineSegment = (function (_super) {
-    __extends(LineSegment, _super);
-    /**
-     * Create a line segment
-     *
-     * @param startPosition Start position of the line segment
-     * @param endPosition Ending position of the line segment
-     * @param thickness Thickness of the line
-     */
-    function LineSegment(material, startPosition, endPosition, thickness) {
-        var _this = this;
-        if (thickness === void 0) { thickness = 1; }
-        _super.call(this);
-        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-        this._pIsEntity = true;
-        this.material = material;
-        this._startPosition = startPosition;
-        this._endPosition = endPosition;
-        this._halfThickness = thickness * 0.5;
-        //default bounds type
-        this._boundsType = BoundsType.AXIS_ALIGNED_BOX;
-    }
-    Object.defineProperty(LineSegment.prototype, "animator", {
-        /**
-         * Defines the animator of the line segment. Act on the line segment's geometry. Defaults to null
-         */
-        get: function () {
-            return this._animator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "assetType", {
-        /**
-         *
-         */
-        get: function () {
-            return LineSegment.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "startPostion", {
-        /**
-         *
-         */
-        get: function () {
-            return this._startPosition;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "startPosition", {
-        set: function (value) {
-            if (this._startPosition == value)
-                return;
-            this._startPosition = value;
-            this.invalidateGraphics();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "endPosition", {
-        /**
-         *
-         */
-        get: function () {
-            return this._endPosition;
-        },
-        set: function (value) {
-            if (this._endPosition == value)
-                return;
-            this._endPosition = value;
-            this.invalidateGraphics();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "material", {
-        /**
-         *
-         */
-        get: function () {
-            return this._material;
-        },
-        set: function (value) {
-            if (this.material)
-                this.material.iRemoveOwner(this);
-            this._material = value;
-            if (this.material)
-                this.material.iAddOwner(this);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "thickness", {
-        /**
-         *
-         */
-        get: function () {
-            return this._halfThickness * 2;
-        },
-        set: function (value) {
-            if (this._halfThickness == value)
-                return;
-            this._halfThickness = value * 0.5;
-            this.invalidateGraphics();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "uvTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._uvTransform;
-        },
-        set: function (value) {
-            this._uvTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "colorTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._colorTransform; // || this._pParentMesh._colorTransform;
-        },
-        set: function (value) {
-            this._colorTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(LineSegment.prototype, "style", {
-        /**
-         * The style used to render the current LineSegment. If set to null, the default style of the material will be used instead.
-         */
-        get: function () {
-            return this._style;
-        },
-        set: function (value) {
-            if (this._style == value)
-                return;
-            if (this._style)
-                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._style = value;
-            if (this._style)
-                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this.invalidateRenderOwner();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @protected
-     */
-    LineSegment.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        this._pBoxBounds.x = Math.min(this._startPosition.x, this._endPosition.x);
-        this._pBoxBounds.y = Math.min(this._startPosition.y, this._endPosition.y);
-        this._pBoxBounds.z = Math.min(this._startPosition.z, this._endPosition.z);
-        this._pBoxBounds.width = Math.abs(this._startPosition.x - this._endPosition.x);
-        this._pBoxBounds.height = Math.abs(this._startPosition.y - this._endPosition.y);
-        this._pBoxBounds.depth = Math.abs(this._startPosition.z - this._endPosition.z);
-    };
-    LineSegment.prototype._pUpdateSphereBounds = function () {
-        _super.prototype._pUpdateSphereBounds.call(this);
-        this._pUpdateBoxBounds();
-        var halfWidth = (this._endPosition.x - this._startPosition.x) / 2;
-        var halfHeight = (this._endPosition.y - this._startPosition.y) / 2;
-        var halfDepth = (this._endPosition.z - this._startPosition.z) / 2;
-        this._pSphereBounds.x = this._startPosition.x + halfWidth;
-        this._pSphereBounds.y = this._startPosition.y + halfHeight;
-        this._pSphereBounds.z = this._startPosition.z + halfDepth;
-        this._pSphereBounds.radius = Math.sqrt(halfWidth * halfWidth + halfHeight * halfHeight + halfDepth * halfDepth);
-    };
-    /**
-     * @private
-     */
-    LineSegment.prototype.invalidateGraphics = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_ELEMENTS, this)); //TODO improve performance by only using one geometry for all line segments
-    };
-    LineSegment.prototype.invalidateRenderOwner = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this));
-    };
-    LineSegment.prototype._onInvalidateProperties = function (event) {
-        this.invalidateRenderOwner();
-    };
-    /**
-     * //TODO
-     *
-     * @param shortestCollisionDistance
-     * @param findClosest
-     * @returns {boolean}
-     *
-     * @internal
-     */
-    LineSegment.prototype._iTestCollision = function (shortestCollisionDistance) {
-        return false; //TODO: detect line collisions
-    };
-    LineSegment.prototype._acceptTraverser = function (traverser) {
-        traverser.applyRenderable(this);
-    };
-    LineSegment.assetType = "[asset LineSegment]";
-    return LineSegment;
-})(DisplayObject);
-module.exports = LineSegment;
-
-},{"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/entities/Mesh":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Point = require("awayjs-core/lib/geom/Point");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var Graphics = require("awayjs-display/lib/graphics/Graphics");
-var GraphicsEvent = require("awayjs-display/lib/events/GraphicsEvent");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-/**
- * Mesh is an instance of a Graphics, augmenting it with a presence in the scene graph, a material, and an animation
- * state. It consists out of Graphices, which in turn correspond to SubGeometries. Graphices allow different parts
- * of the graphics to be assigned different materials.
- */
-var Mesh = (function (_super) {
-    __extends(Mesh, _super);
-    /**
-     * Create a new Mesh object.
-     *
-     * @param graphics                    The graphics used by the mesh that provides it with its shape.
-     * @param material    [optional]        The material with which to render the Mesh.
-     */
-    function Mesh(material) {
-        var _this = this;
-        if (material === void 0) { material = null; }
-        _super.call(this);
-        this._castsShadows = true;
-        this._shareAnimationGraphics = true;
-        //temp point used in hit testing
-        this._tempPoint = new Point();
-        this._pIsEntity = true;
-        this._onGraphicsBoundsInvalidDelegate = function (event) { return _this.onGraphicsBoundsInvalid(event); };
-        this._graphics = new Graphics(this); //unique graphics object for each Mesh
-        this._graphics.addEventListener(GraphicsEvent.BOUNDS_INVALID, this._onGraphicsBoundsInvalidDelegate);
-        this.material = material;
-    }
-    Object.defineProperty(Mesh.prototype, "assetType", {
-        /**
-         *
-         */
-        get: function () {
-            return Mesh.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "castsShadows", {
-        /**
-         * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
-         */
-        get: function () {
-            return this._castsShadows;
-        },
-        set: function (value) {
-            this._castsShadows = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "graphics", {
-        /**
-         * The graphics used by the mesh that provides it with its shape.
-         */
-        get: function () {
-            if (this._iSourcePrefab)
-                this._iSourcePrefab._iValidate();
-            return this._graphics;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "animator", {
-        /**
-         * Defines the animator of the graphics object.  Default value is <code>null</code>.
-         */
-        get: function () {
-            return this._graphics.animator;
-        },
-        set: function (value) {
-            if (this._graphics.animator)
-                this._graphics.animator.removeOwner(this);
-            this._graphics.animator = value;
-            if (this._graphics.animator)
-                this._graphics.animator.addOwner(this);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "material", {
-        /**
-         * The material with which to render the Mesh.
-         */
-        get: function () {
-            return this._graphics.material;
-        },
-        set: function (value) {
-            this._graphics.material = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "shareAnimationGraphics", {
-        /**
-         * Indicates whether or not the mesh share the same animation graphics.
-         */
-        get: function () {
-            return this._shareAnimationGraphics;
-        },
-        set: function (value) {
-            this._shareAnimationGraphics = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "uvTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._graphics.uvTransform;
-        },
-        set: function (value) {
-            this._graphics.uvTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Mesh.prototype, "style", {
-        /**
-         *
-         */
-        get: function () {
-            return this._graphics.style;
-        },
-        set: function (value) {
-            this._graphics.style = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     */
-    Mesh.prototype.bakeTransformations = function () {
-        this._graphics.applyTransformation(this.transform.matrix3D);
-        this.transform.clearMatrix3D();
-    };
-    /**
-     * @inheritDoc
-     */
-    Mesh.prototype.dispose = function () {
-        this.disposeValues();
-        Mesh._meshes.push(this);
-    };
-    /**
-     * @inheritDoc
-     */
-    Mesh.prototype.disposeValues = function () {
-        _super.prototype.disposeValues.call(this);
-        this._graphics.dispose();
-    };
-    /**
-     * Clones this Mesh instance along with all it's children, while re-using the same
-     * material, graphics and animation set. The returned result will be a copy of this mesh,
-     * containing copies of all of it's children.
-     *
-     * Properties that are re-used (i.e. not cloned) by the new copy include name,
-     * graphics, and material. Properties that are cloned or created anew for the copy
-     * include subMeshes, children of the mesh, and the animator.
-     *
-     * If you want to copy just the mesh, reusing it's graphics and material while not
-     * cloning it's children, the simplest way is to create a new mesh manually:
-     *
-     * <code>
-     * var clone : Mesh = new Mesh(original.graphics, original.material);
-     * </code>
-     */
-    Mesh.prototype.clone = function () {
-        var newInstance = (Mesh._meshes.length) ? Mesh._meshes.pop() : new Mesh();
-        this.copyTo(newInstance);
-        return newInstance;
-    };
-    Mesh.prototype.copyTo = function (mesh) {
-        _super.prototype.copyTo.call(this, mesh);
-        mesh.castsShadows = this._castsShadows;
-        mesh.shareAnimationGraphics = this._shareAnimationGraphics;
-        this._graphics.copyTo(mesh.graphics);
-    };
-    /**
-     * //TODO
-     *
-     * @protected
-     */
-    Mesh.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
-    };
-    Mesh.prototype._pUpdateSphereBounds = function () {
-        _super.prototype._pUpdateSphereBounds.call(this);
-        var box = this.getBox();
-        if (!this._center)
-            this._center = new Vector3D();
-        this._center.x = box.x + box.width / 2;
-        this._center.y = box.y + box.height / 2;
-        this._center.z = box.z + box.depth / 2;
-        this._pSphereBounds = this._graphics.getSphereBounds(this._center, this._pSphereBounds);
-    };
-    /**
-     * //TODO
-     *
-     * @private
-     */
-    Mesh.prototype.onGraphicsBoundsInvalid = function (event) {
-        this._pInvalidateBounds();
-    };
-    /**
-     *
-     * @param renderer
-     *
-     * @internal
-     */
-    Mesh.prototype._acceptTraverser = function (traverser) {
-        this.graphics.acceptTraverser(traverser);
-    };
-    Mesh.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
-        if (this._graphics.count) {
-            this._tempPoint.setTo(x, y);
-            var local = this.globalToLocal(this._tempPoint, this._tempPoint);
-            var box;
-            //early out for box test
-            if (!(box = this.getBox()).contains(local.x, local.y, 0))
-                return false;
-            //early out for non-shape tests
-            if (!shapeFlag)
-                return true;
-            //ok do the graphics thing
-            if (this._graphics._hitTestPointInternal(local.x, local.y))
-                return true;
-        }
-        return _super.prototype._hitTestPointInternal.call(this, x, y, shapeFlag, masksFlag);
-    };
-    Mesh.prototype.clear = function () {
-        _super.prototype.clear.call(this);
-        this._graphics.clear();
-    };
-    Mesh._meshes = new Array();
-    Mesh.assetType = "[asset Mesh]";
-    return Mesh;
-})(DisplayObjectContainer);
-module.exports = Mesh;
-
-},{"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/events/GraphicsEvent":"awayjs-display/lib/events/GraphicsEvent","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics"}],"awayjs-display/lib/entities/MovieClip":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var TextField = require("awayjs-display/lib/entities/TextField");
-var MouseEvent = require("awayjs-display/lib/events/MouseEvent");
-var Timeline = require("awayjs-display/lib/base/Timeline");
-var FrameScriptManager = require("awayjs-display/lib/managers/FrameScriptManager");
-var MovieClip = (function (_super) {
-    __extends(MovieClip, _super);
-    function MovieClip(timeline) {
-        var _this = this;
-        if (timeline === void 0) { timeline = null; }
-        _super.call(this);
-        this._isButton = false;
-        this._time = 0; // the current time inside the animation
-        this._currentFrameIndex = -1; // the current frame
-        this._isPlaying = true; // false if paused or stopped
-        this._isInit = true;
-        this._potentialInstances = {};
-        this._depth_sessionIDs = {};
-        this._sessionID_childs = {};
-        /**
-         *
-         */
-        this.loop = true;
-        /**
-         * the current index of the current active frame
-         */
-        this.constructedKeyFrameIndex = -1;
-        this._enterFrame = new AssetEvent(AssetEvent.ENTER_FRAME, this);
-        this.inheritColorTransform = true;
-        this._onMouseOver = function (event) { return _this.currentFrameIndex = 1; };
-        this._onMouseOut = function (event) { return _this.currentFrameIndex = 0; };
-        this._onMouseDown = function (event) { return _this.currentFrameIndex = 2; };
-        this._onMouseUp = function (event) { return _this.currentFrameIndex = _this.currentFrameIndex == 0 ? 0 : 1; };
-        this._timeline = timeline || new Timeline();
-    }
-    Object.defineProperty(MovieClip.prototype, "adapter", {
-        /**
-         * adapter is used to provide MovieClip to scripts taken from different platforms
-         * setter typically managed by factory
-         */
-        get: function () {
-            return this._adapter;
-        },
-        set: function (value) {
-            this._adapter = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    MovieClip.prototype.dispose = function () {
-        this.disposeValues();
-        MovieClip._movieClips.push(this);
-    };
-    MovieClip.prototype.disposeValues = function () {
-        _super.prototype.disposeValues.call(this);
-        this._potentialInstances = {};
-        this._depth_sessionIDs = {};
-        this._sessionID_childs = {};
-    };
-    MovieClip.prototype.reset_textclones = function () {
-        if (this.timeline) {
-            for (var key in this._potentialInstances) {
-                if (this._potentialInstances[key] != null) {
-                    if (this._potentialInstances[key].isAsset(TextField)) {
-                        this._potentialInstances[key].text = this.timeline.getPotentialChildPrototype(key).text;
-                    }
-                    else if (this._potentialInstances[key].isAsset(MovieClip)) {
-                        this._potentialInstances[key].reset_textclones();
-                    }
-                }
-            }
-        }
-    };
-    Object.defineProperty(MovieClip.prototype, "isInit", {
-        get: function () {
-            return this._isInit;
-        },
-        set: function (value) {
-            this._isInit = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MovieClip.prototype, "timeline", {
-        get: function () {
-            return this._timeline;
-        },
-        set: function (value) {
-            this._timeline = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MovieClip.prototype, "numFrames", {
-        get: function () {
-            return this._timeline.numFrames;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    MovieClip.prototype.jumpToLabel = function (label) {
-        // the timeline.jumpTolabel will set currentFrameIndex
-        this._timeline.jumpToLabel(this, label);
-    };
-    MovieClip.prototype.reset = function () {
-        _super.prototype.reset.call(this);
-        // time only is relevant for the root mc, as it is the only one that executes the update function
-        this._time = 0;
-        if (this.adapter)
-            this.adapter.freeFromScript();
-        this.constructedKeyFrameIndex = -1;
-        for (var i = this.numChildren - 1; i >= 0; i--)
-            this.removeChildAt(i);
-        this._skipAdvance = MovieClip._skipAdvance;
-        var numFrames = this._timeline.keyframe_indices.length;
-        this._isPlaying = Boolean(numFrames > 1);
-        if (numFrames) {
-            this._currentFrameIndex = 0;
-            this._timeline.constructNextFrame(this, true, true);
-        }
-        else {
-            this._currentFrameIndex = -1;
-        }
-    };
-    MovieClip.prototype.resetSessionIDs = function () {
-        this._depth_sessionIDs = {};
-    };
-    Object.defineProperty(MovieClip.prototype, "currentFrameIndex", {
-        /*
-        * Setting the currentFrameIndex will move the playhead for this movieclip to the new position
-         */
-        get: function () {
-            return this._currentFrameIndex;
-        },
-        set: function (value) {
-            //if currentFrame is set greater than the available number of
-            //frames, the playhead is moved to the last frame in the timeline.
-            //But because the frame specified was not a keyframe, no scripts are
-            //executed, even if they exist on the last frame.
-            var skip_script = false;
-            var numFrames = this._timeline.keyframe_indices.length;
-            if (!numFrames)
-                return;
-            if (value < 0) {
-                value = 0;
-            }
-            else if (value >= numFrames) {
-                value = numFrames - 1;
-                skip_script = true;
-            }
-            if (this._currentFrameIndex == value)
-                return;
-            this._currentFrameIndex = value;
-            //changing current frame will ignore advance command for that
-            //update's advanceFrame function, unless advanceFrame has
-            //already been executed
-            this._skipAdvance = MovieClip._skipAdvance;
-            this._timeline.gotoFrame(this, value, skip_script);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    MovieClip.prototype.addButtonListeners = function () {
-        this._isButton = true;
-        this.stop();
-        this.addEventListener(MouseEvent.MOUSE_OVER, this._onMouseOver);
-        this.addEventListener(MouseEvent.MOUSE_OUT, this._onMouseOut);
-        this.addEventListener(MouseEvent.MOUSE_DOWN, this._onMouseDown);
-        this.addEventListener(MouseEvent.MOUSE_UP, this._onMouseUp);
-    };
-    MovieClip.prototype.removeButtonListeners = function () {
-        this.removeEventListener(MouseEvent.MOUSE_OVER, this._onMouseOver);
-        this.removeEventListener(MouseEvent.MOUSE_OUT, this._onMouseOut);
-        this.removeEventListener(MouseEvent.MOUSE_DOWN, this._onMouseDown);
-        this.removeEventListener(MouseEvent.MOUSE_UP, this._onMouseUp);
-    };
-    MovieClip.prototype.getChildAtSessionID = function (sessionID) {
-        return this._sessionID_childs[sessionID];
-    };
-    MovieClip.prototype.getSessionIDDepths = function () {
-        return this._depth_sessionIDs;
-    };
-    MovieClip.prototype.addChildAtDepth = function (child, depth, replace) {
-        if (replace === void 0) { replace = true; }
-        //this should be implemented for all display objects
-        child.inheritColorTransform = true;
-        child.reset(); // this takes care of transform and visibility
-        return _super.prototype.addChildAtDepth.call(this, child, depth, replace);
-    };
-    MovieClip.prototype._addTimelineChildAt = function (child, depth, sessionID) {
-        this._depth_sessionIDs[depth] = child._sessionID = sessionID;
-        this._sessionID_childs[sessionID] = child;
-        return this.addChildAtDepth(child, depth);
-    };
-    MovieClip.prototype.removeChildAtInternal = function (index) {
-        var child = this._children[index];
-        if (child.adapter)
-            child.adapter.freeFromScript();
-        this.adapter.unregisterScriptObject(child);
-        //check to make sure _depth_sessionIDs wasn't modified with a new child
-        if (this._depth_sessionIDs[child._depthID] == child._sessionID)
-            delete this._depth_sessionIDs[child._depthID];
-        delete this._sessionID_childs[child._sessionID];
-        child._sessionID = -1;
-        return _super.prototype.removeChildAtInternal.call(this, index);
-    };
-    Object.defineProperty(MovieClip.prototype, "assetType", {
-        get: function () {
-            return MovieClip.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Starts playback of animation from current position
-     */
-    MovieClip.prototype.play = function () {
-        if (this._timeline.keyframe_indices.length > 1)
-            this._isPlaying = true;
-    };
-    /**
-     * should be called right before the call to away3d-render.
-     */
-    MovieClip.prototype.update = function () {
-        MovieClip._skipAdvance = true;
-        this.advanceFrame();
-        MovieClip._skipAdvance = false;
-        // after we advanced the scenegraph, we might have some script that needs executing
-        FrameScriptManager.execute_queue();
-        // now we want to execute the onEnter
-        this.dispatchEvent(this._enterFrame);
-        // after we executed the onEnter, we might have some script that needs executing
-        FrameScriptManager.execute_queue();
-        // now we execute any intervals queued
-        FrameScriptManager.execute_intervals();
-        // finally, we execute any scripts that were added from intervals
-        FrameScriptManager.execute_queue();
-        //execute any disposes as a result of framescripts
-        FrameScriptManager.execute_dispose();
-    };
-    MovieClip.prototype.getPotentialChildInstance = function (id) {
-        if (!this._potentialInstances[id])
-            this._potentialInstances[id] = this._timeline.getPotentialChildInstance(id);
-        return this._potentialInstances[id];
-    };
-    /**
-     * Stop playback of animation and hold current position
-     */
-    MovieClip.prototype.stop = function () {
-        this._isPlaying = false;
-    };
-    MovieClip.prototype.clone = function () {
-        var newInstance = (MovieClip._movieClips.length) ? MovieClip._movieClips.pop() : new MovieClip(this._timeline);
-        this.copyTo(newInstance);
-        return newInstance;
-    };
-    MovieClip.prototype.copyTo = function (newInstance) {
-        _super.prototype.copyTo.call(this, newInstance);
-        newInstance.timeline = this._timeline;
-        newInstance.loop = this.loop;
-    };
-    MovieClip.prototype.advanceFrame = function () {
-        if (this._isPlaying && !this._skipAdvance) {
-            if (this._currentFrameIndex == this._timeline.keyframe_indices.length - 1) {
-                if (this.loop)
-                    this.currentFrameIndex = 0;
-                else
-                    this._isPlaying = false;
-            }
-            else {
-                this._currentFrameIndex++;
-                this._timeline.constructNextFrame(this);
-            }
-        }
-        var len = this._children.length;
-        var child;
-        for (var i = 0; i < len; ++i) {
-            child = this._children[i];
-            if (child.isAsset(MovieClip))
-                child.advanceFrame();
-        }
-        this._skipAdvance = false;
-    };
-    // DEBUG CODE:
-    MovieClip.prototype.logHierarchy = function (depth) {
-        if (depth === void 0) { depth = 0; }
-        this.printHierarchyName(depth, this);
-        var len = this._children.length;
-        var child;
-        for (var i = 0; i < len; i++) {
-            child = this._children[i];
-            if (child.isAsset(MovieClip))
-                child.logHierarchy(depth + 1);
-            else
-                this.printHierarchyName(depth + 1, child);
-        }
-    };
-    MovieClip.prototype.printHierarchyName = function (depth, target) {
-        var str = "";
-        for (var i = 0; i < depth; ++i)
-            str += "--";
-        str += " " + target.name + " = " + target.id;
-        console.log(str);
-    };
-    MovieClip.prototype.clear = function () {
-        for (var key in this._potentialInstances) {
-            var instance = this._potentialInstances[key];
-            //only dispose instances that are not used in script ie. do not have an instance name
-            if (instance.name == "") {
-                FrameScriptManager.add_child_to_dispose(instance);
-                delete this._potentialInstances[key];
-            }
-        }
-        _super.prototype.clear.call(this);
-    };
-    MovieClip._movieClips = new Array();
-    MovieClip.assetType = "[asset MovieClip]";
-    return MovieClip;
-})(DisplayObjectContainer);
-module.exports = MovieClip;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/base/Timeline":"awayjs-display/lib/base/Timeline","awayjs-display/lib/containers/DisplayObjectContainer":"awayjs-display/lib/containers/DisplayObjectContainer","awayjs-display/lib/entities/TextField":"awayjs-display/lib/entities/TextField","awayjs-display/lib/events/MouseEvent":"awayjs-display/lib/events/MouseEvent","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/entities/PointLight":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
-var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Vector3D = require("awayjs-core/lib/geom/Vector3D");
-var LightBase = require("awayjs-display/lib/base/LightBase");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var CubeMapShadowMapper = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
-var PointLight = (function (_super) {
-    __extends(PointLight, _super);
-    function PointLight() {
-        _super.call(this);
-        this._pRadius = 90000;
-        this._pFallOff = 100000;
-        this._pIsEntity = true;
-        this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
-        //default bounds type
-        this._boundsType = BoundsType.SPHERE;
-    }
-    Object.defineProperty(PointLight.prototype, "assetType", {
-        get: function () {
-            return PointLight.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PointLight.prototype.pCreateShadowMapper = function () {
-        return new CubeMapShadowMapper();
-    };
-    Object.defineProperty(PointLight.prototype, "radius", {
-        get: function () {
-            return this._pRadius;
-        },
-        set: function (value) {
-            this._pRadius = value;
-            if (this._pRadius < 0) {
-                this._pRadius = 0;
-            }
-            else if (this._pRadius > this._pFallOff) {
-                this._pFallOff = this._pRadius;
-                this._pInvalidateBounds();
-            }
-            this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PointLight.prototype.iFallOffFactor = function () {
-        return this._pFallOffFactor;
-    };
-    Object.defineProperty(PointLight.prototype, "fallOff", {
-        get: function () {
-            return this._pFallOff;
-        },
-        set: function (value) {
-            this._pFallOff = value;
-            if (this._pFallOff < 0)
-                this._pFallOff = 0;
-            if (this._pFallOff < this._pRadius)
-                this._pRadius = this._pFallOff;
-            this._pFallOffFactor = 1 / (this._pFallOff * this._pFallOff - this._pRadius * this._pRadius);
-            this._pInvalidateBounds();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PointLight.prototype._pUpdateSphereBounds = function () {
-        _super.prototype._pUpdateSphereBounds.call(this);
-        this._pSphereBounds.radius = this._pFallOff;
-    };
-    PointLight.prototype.iGetObjectProjectionMatrix = function (entity, camera, target) {
-        if (target === void 0) { target = null; }
-        var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
-        var m = new Matrix3D();
-        // todo: do not use lookAt on Light
-        m.copyFrom(entity.getRenderSceneTransform(camera));
-        m.append(this._pParent.inverseSceneTransform);
-        this.lookAt(m.position);
-        m.copyFrom(entity.getRenderSceneTransform(camera));
-        m.append(this.inverseSceneTransform);
-        var box = entity.getBox();
-        var v1 = m.deltaTransformVector(new Vector3D(box.left, box.bottom, box.front));
-        var v2 = m.deltaTransformVector(new Vector3D(box.right, box.top, box.back));
-        var d1 = v1.x * v1.x + v1.y * v1.y + v1.z * v1.z;
-        var d2 = v2.x * v2.x + v2.y * v2.y + v2.z * v2.z;
-        var d = Math.sqrt(d1 > d2 ? d1 : d2);
-        var zMin;
-        var zMax;
-        var z = m.rawData[14];
-        zMin = z - d;
-        zMax = z + d;
-        raw[5] = raw[0] = zMin / d;
-        raw[10] = zMax / (zMax - zMin);
-        raw[11] = 1;
-        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
-        raw[14] = -zMin * raw[10];
-        if (!target)
-            target = new Matrix3D();
-        target.copyRawDataFrom(raw);
-        target.prepend(m);
-        return target;
-    };
-    PointLight.assetType = "[light PointLight]";
-    return PointLight;
-})(LightBase);
-module.exports = PointLight;
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/LightBase":"awayjs-display/lib/base/LightBase","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper"}],"awayjs-display/lib/entities/Shape":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-/**
- * This class is used to create lightweight shapes using the ActionScript
- * drawing application program interface(API). The Shape class includes a
- * <code>graphics</code> property, which lets you access methods from the
- * Graphics class.
- *
- * <p>The Sprite class also includes a <code>graphics</code>property, and it
- * includes other features not available to the Shape class. For example, a
- * Sprite object is a display object container, whereas a Shape object is not
- * (and cannot contain child display objects). For this reason, Shape objects
- * consume less memory than Sprite objects that contain the same graphics.
- * However, a Sprite object supports user input events, while a Shape object
- * does not.</p>
- */
-var Shape = (function (_super) {
-    __extends(Shape, _super);
-    /**
-     * Creates a new Shape object.
-     */
-    function Shape() {
-        _super.call(this);
-    }
-    Object.defineProperty(Shape.prototype, "graphics", {
-        /**
-         * Specifies the Graphics object belonging to this Shape object, where vector
-         * drawing commands can occur.
-         */
-        get: function () {
-            return this._graphics;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Shape.prototype.clone = function () {
-        var clone = new Shape();
-        clone.pivot = this.pivot;
-        clone.transform.matrix3D = this.transform.matrix3D;
-        clone.name = name;
-        clone.maskMode = this.maskMode;
-        clone.masks = this.masks ? this.masks.concat() : null;
-        clone._graphics = this._graphics;
-        return clone;
-    };
-    return Shape;
-})(DisplayObject);
-module.exports = Shape;
-
-},{"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject"}],"awayjs-display/lib/entities/Skybox":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var BlendMode = require("awayjs-core/lib/image/BlendMode");
-var DisplayObject = require("awayjs-display/lib/base/DisplayObject");
-var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
-var RenderOwnerEvent = require("awayjs-display/lib/events/RenderOwnerEvent");
-var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
-var Style = require("awayjs-display/lib/base/Style");
-var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
-/**
- * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
- * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
- * the sky box is always as large as possible without being clipped.
- */
-var Skybox = (function (_super) {
-    __extends(Skybox, _super);
-    /**
-     * Create a new Skybox object.
-     *
-     * @param material	The material with which to render the Skybox.
-     */
-    function Skybox(image) {
-        var _this = this;
-        if (image === void 0) { image = null; }
-        _super.call(this);
-        this._textures = new Array();
-        this._pAlphaThreshold = 0;
-        this._pBlendMode = BlendMode.NORMAL;
-        this._curves = false;
-        this._imageRect = false;
-        this._style = new Style();
-        this._onTextureInvalidateDelegate = function (event) { return _this.onTextureInvalidate(event); };
-        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-        this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-        this._pIsEntity = true;
-        this._owners = new Array(this);
-        this._style.image = image;
-        this.texture = new SingleCubeTexture();
-        //default bounds type
-        this._boundsType = BoundsType.NULL;
-    }
-    Object.defineProperty(Skybox.prototype, "alphaThreshold", {
-        /**
-         * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-         * invisible or entirely opaque, often used with textures for foliage, etc.
-         * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-         */
-        get: function () {
-            return this._pAlphaThreshold;
-        },
-        set: function (value) {
-            if (value < 0)
-                value = 0;
-            else if (value > 1)
-                value = 1;
-            if (this._pAlphaThreshold == value)
-                return;
-            this._pAlphaThreshold = value;
-            this.invalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "curves", {
-        /**
-         * Indicates whether skybox should use curves. Defaults to false.
-         */
-        get: function () {
-            return this._curves;
-        },
-        set: function (value) {
-            if (this._curves == value)
-                return;
-            this._curves = value;
-            this.invalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "imageRect", {
-        /**
-         * Indicates whether or not the Skybox texture should use imageRects. Defaults to false.
-         */
-        get: function () {
-            return this._imageRect;
-        },
-        set: function (value) {
-            if (this._imageRect == value)
-                return;
-            this._imageRect = value;
-            this.invalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "lightPicker", {
-        /**
-         * The light picker used by the material to provide lights to the material if it supports lighting.
-         *
-         * @see LightPickerBase
-         * @see StaticLightPicker
-         */
-        get: function () {
-            return this._pLightPicker;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "animationSet", {
-        /**
-         *
-         */
-        get: function () {
-            return this._animationSet;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "blendMode", {
-        /**
-         * The blend mode to use when drawing this renderable. The following blend modes are supported:
-         * <ul>
-         * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
-         * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
-         * <li>BlendMode.MULTIPLY</li>
-         * <li>BlendMode.ADD</li>
-         * <li>BlendMode.ALPHA</li>
-         * </ul>
-         */
-        get: function () {
-            return this._pBlendMode;
-        },
-        set: function (value) {
-            if (this._pBlendMode == value)
-                return;
-            this._pBlendMode = value;
-            this.invalidate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "iOwners", {
-        /**
-         * A list of the IRenderableOwners that use this material
-         *
-         * @private
-         */
-        get: function () {
-            return this._owners;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "animator", {
-        get: function () {
-            return this._animator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "uvTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._uvTransform;
-        },
-        set: function (value) {
-            this._uvTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "colorTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._colorTransform; // || this._pParentMesh._colorTransform;
-        },
-        set: function (value) {
-            this._colorTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "texture", {
-        /**
-        * The cube texture to use as the skybox.
-        */
-        get: function () {
-            return this._texture;
-        },
-        set: function (value) {
-            if (this._texture == value)
-                return;
-            if (this._texture)
-                this.removeTexture(this._texture);
-            this._texture = value;
-            if (this._texture)
-                this.addTexture(this._texture);
-            this.invalidatePasses();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Skybox.prototype.getNumTextures = function () {
-        return this._textures.length;
-    };
-    Skybox.prototype.getTextureAt = function (index) {
-        return this._textures[index];
-    };
-    Object.defineProperty(Skybox.prototype, "style", {
-        /**
-         *
-         */
-        get: function () {
-            return this._style;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "assetType", {
-        get: function () {
-            return Skybox.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Skybox.prototype, "castsShadows", {
-        get: function () {
-            return false; //TODO
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
-     *
-     * @private
-     */
-    Skybox.prototype.invalidatePasses = function () {
-        this.dispatchEvent(new RenderOwnerEvent(RenderOwnerEvent.INVALIDATE_PASSES, this));
-    };
-    Skybox.prototype.invalidateRenderOwner = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this));
-    };
-    Skybox.prototype.addTexture = function (texture) {
-        this._textures.push(texture);
-        texture.addEventListener(AssetEvent.INVALIDATE, this._onTextureInvalidateDelegate);
-        this.onTextureInvalidate();
-    };
-    Skybox.prototype.removeTexture = function (texture) {
-        this._textures.splice(this._textures.indexOf(texture), 1);
-        texture.removeEventListener(AssetEvent.INVALIDATE, this._onTextureInvalidateDelegate);
-        this.onTextureInvalidate();
-    };
-    Skybox.prototype.onTextureInvalidate = function (event) {
-        if (event === void 0) { event = null; }
-        this.invalidate();
-    };
-    Skybox.prototype._onInvalidateProperties = function (event) {
-        this.invalidatePasses();
-    };
-    /**
-     * //TODO
-     *
-     * @param shortestCollisionDistance
-     * @returns {boolean}
-     *
-     * @internal
-     */
-    Skybox.prototype._iTestCollision = function (shortestCollisionDistance) {
-        return false;
-    };
-    Skybox.assetType = "[asset Skybox]";
-    return Skybox;
-})(DisplayObject);
-module.exports = Skybox;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/base/DisplayObject":"awayjs-display/lib/base/DisplayObject","awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/RenderOwnerEvent":"awayjs-display/lib/events/RenderOwnerEvent","awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/entities/TextField":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AttributesView = require("awayjs-core/lib/attributes/AttributesView");
-var Float3Attributes = require("awayjs-core/lib/attributes/Float3Attributes");
-var Float2Attributes = require("awayjs-core/lib/attributes/Float2Attributes");
-var Matrix = require("awayjs-core/lib/geom/Matrix");
-var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
-var Rectangle = require("awayjs-core/lib/geom/Rectangle");
-var HierarchicalProperties = require("awayjs-display/lib/base/HierarchicalProperties");
-var TextFieldType = require("awayjs-display/lib/text/TextFieldType");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
-var Graphics = require("awayjs-display/lib/graphics/Graphics");
-var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
-var Style = require("awayjs-display/lib/base/Style");
-/**
- * The TextField class is used to create display objects for text display and
- * input. <ph outputclass="flexonly">You can use the TextField class to
- * perform low-level text rendering. However, in Flex, you typically use the
- * Label, Text, TextArea, and TextInput controls to process text. <ph
- * outputclass="flashonly">You can give a text field an instance name in the
- * Property inspector and use the methods and properties of the TextField
- * class to manipulate it with ActionScript. TextField instance names are
- * displayed in the Movie Explorer and in the Insert Target Path dialog box in
- * the Actions panel.
- *
- * <p>To create a text field dynamically, use the <code>TextField()</code>
- * constructor.</p>
- *
- * <p>The methods of the TextField class let you set, select, and manipulate
- * text in a dynamic or input text field that you create during authoring or
- * at runtime. </p>
- *
- * <p>ActionScript provides several ways to format your text at runtime. The
- * TextFormat class lets you set character and paragraph formatting for
- * TextField objects. You can apply Cascading Style Sheets(CSS) styles to
- * text fields by using the <code>TextField.styleSheet</code> property and the
- * StyleSheet class. You can use CSS to style built-in HTML tags, define new
- * formatting tags, or apply styles. You can assign HTML formatted text, which
- * optionally uses CSS styles, directly to a text field. HTML text that you
- * assign to a text field can contain embedded media(movie clips, SWF files,
- * GIF files, PNG files, and JPEG files). The text wraps around the embedded
- * media in the same way that a web browser wraps text around media embedded
- * in an HTML document. </p>
- *
- * <p>Flash Player supports a subset of HTML tags that you can use to format
- * text. See the list of supported HTML tags in the description of the
- * <code>htmlText</code> property.</p>
- *
- * @event change                    Dispatched after a control value is
- *                                  modified, unlike the
- *                                  <code>textInput</code> event, which is
- *                                  dispatched before the value is modified.
- *                                  Unlike the W3C DOM Event Model version of
- *                                  the <code>change</code> event, which
- *                                  dispatches the event only after the
- *                                  control loses focus, the ActionScript 3.0
- *                                  version of the <code>change</code> event
- *                                  is dispatched any time the control
- *                                  changes. For example, if a user types text
- *                                  into a text field, a <code>change</code>
- *                                  event is dispatched after every keystroke.
- * @event link                      Dispatched when a user clicks a hyperlink
- *                                  in an HTML-enabled text field, where the
- *                                  URL begins with "event:". The remainder of
- *                                  the URL after "event:" is placed in the
- *                                  text property of the LINK event.
- *
- *                                  <p><b>Note:</b> The default behavior,
- *                                  adding the text to the text field, occurs
- *                                  only when Flash Player generates the
- *                                  event, which in this case happens when a
- *                                  user attempts to input text. You cannot
- *                                  put text into a text field by sending it
- *                                  <code>textInput</code> events.</p>
- * @event scroll                    Dispatched by a TextField object
- *                                  <i>after</i> the user scrolls.
- * @event textInput                 Flash Player dispatches the
- *                                  <code>textInput</code> event when a user
- *                                  enters one or more characters of text.
- *                                  Various text input methods can generate
- *                                  this event, including standard keyboards,
- *                                  input method editors(IMEs), voice or
- *                                  speech recognition systems, and even the
- *                                  act of pasting plain text with no
- *                                  formatting or style information.
- * @event textInteractionModeChange Flash Player dispatches the
- *                                  <code>textInteractionModeChange</code>
- *                                  event when a user changes the interaction
- *                                  mode of a text field. for example on
- *                                  Android, one can toggle from NORMAL mode
- *                                  to SELECTION mode using context menu
- *                                  options
- */
-var TextField = (function (_super) {
-    __extends(TextField, _super);
-    /**
-     * Creates a new TextField instance. After you create the TextField instance,
-     * call the <code>addChild()</code> or <code>addChildAt()</code> method of
-     * the parent DisplayObjectContainer object to add the TextField instance to
-     * the display list.
-     *
-     * <p>The default size for a text field is 100 x 100 pixels.</p>
-     */
-    function TextField() {
-        _super.call(this);
-        this._text = "";
-        this.type = TextFieldType.STATIC;
-    }
-    Object.defineProperty(TextField.prototype, "assetType", {
-        /**
-         *
-         * @returns {string}
-         */
-        get: function () {
-            return TextField.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "bottomScrollV", {
-        /**
-         * An integer(1-based index) that indicates the bottommost line that is
-         * currently visible in the specified text field. Think of the text field as
-         * a window onto a block of text. The <code>scrollV</code> property is the
-         * 1-based index of the topmost visible line in the window.
-         *
-         * <p>All the text between the lines indicated by <code>scrollV</code> and
-         * <code>bottomScrollV</code> is currently visible in the text field.</p>
-         */
-        get: function () {
-            return this._bottomScrollV;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "caretIndex", {
-        /**
-         * The index of the insertion point(caret) position. If no insertion point
-         * is displayed, the value is the position the insertion point would be if
-         * you restored focus to the field(typically where the insertion point last
-         * was, or 0 if the field has not had focus).
-         *
-         * <p>Selection span indexes are zero-based(for example, the first position
-         * is 0, the second position is 1, and so on).</p>
-         */
-        get: function () {
-            return this._caretIndex;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "length", {
-        /**
-         * The number of characters in a text field. A character such as tab
-         * (<code>\t</code>) counts as one character.
-         */
-        get: function () {
-            return this._length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * The maximum value of <code>scrollH</code>.
-     */
-    TextField.prototype.maxScrollH = function () {
-        return this._maxScrollH;
-    };
-    /**
-     * The maximum value of <code>scrollV</code>.
-     */
-    TextField.prototype.maxScrollV = function () {
-        return this._maxScrollV;
-    };
-    Object.defineProperty(TextField.prototype, "numLines", {
-        /**
-         * Defines the number of text lines in a multiline text field. If
-         * <code>wordWrap</code> property is set to <code>true</code>, the number of
-         * lines increases when text wraps.
-         */
-        get: function () {
-            return this._numLines;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "selectionBeginIndex", {
-        /**
-         * The zero-based character index value of the first character in the current
-         * selection. For example, the first character is 0, the second character is
-         * 1, and so on. If no text is selected, this property is the value of
-         * <code>caretIndex</code>.
-         */
-        get: function () {
-            return this._selectionBeginIndex;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "selectionEndIndex", {
-        /**
-         * The zero-based character index value of the last character in the current
-         * selection. For example, the first character is 0, the second character is
-         * 1, and so on. If no text is selected, this property is the value of
-         * <code>caretIndex</code>.
-         */
-        get: function () {
-            return this._selectionEndIndex;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "text", {
-        /**
-         * A string that is the current text in the text field. Lines are separated
-         * by the carriage return character(<code>'\r'</code>, ASCII 13). This
-         * property contains unformatted text in the text field, without HTML tags.
-         *
-         * <p>To get the text in HTML form, use the <code>htmlText</code>
-         * property.</p>
-         */
-        get: function () {
-            return this._text;
-        },
-        set: function (value) {
-            value = value.toString();
-            if (this._text == value)
-                return;
-            this._text = value;
-            this._textGraphicsDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textFormat", {
-        get: function () {
-            return this._textFormat;
-        },
-        set: function (value) {
-            if (this._textFormat == value)
-                return;
-            this._textFormat = value;
-            this._textGraphicsDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "graphics", {
-        /**
-         * The geometry used by the mesh that provides it with its shape.
-         */
-        get: function () {
-            if (this._textGraphicsDirty)
-                this.reConstruct();
-            return this._graphics;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textColor", {
-        get: function () {
-            return this._textColor;
-        },
-        set: function (value) {
-            this._textColor = value;
-            if (!this.transform.colorTransform)
-                this.transform.colorTransform = new ColorTransform();
-            this.transform.colorTransform.color = value;
-            this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textInteractionMode", {
-        /**
-         * The interaction mode property, Default value is
-         * TextInteractionMode.NORMAL. On mobile platforms, the normal mode implies
-         * that the text can be scrolled but not selected. One can switch to the
-         * selectable mode through the in-built context menu on the text field. On
-         * Desktop, the normal mode implies that the text is in scrollable as well as
-         * selection mode.
-         */
-        get: function () {
-            return this._textInteractionMode;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textWidth", {
-        /**
-         * The width of the text in pixels.
-         */
-        get: function () {
-            return this._textWidth;
-        },
-        set: function (value) {
-            this._textWidth = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textHeight", {
-        /**
-         * The width of the text in pixels.
-         */
-        get: function () {
-            return this._textHeight;
-        },
-        set: function (value) {
-            this._textHeight = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    TextField.prototype.dispose = function () {
-        this.disposeValues();
-        TextField._textFields.push(this);
-    };
-    /**
-     * @inheritDoc
-     */
-    TextField.prototype.disposeValues = function () {
-        _super.prototype.disposeValues.call(this);
-        this._textFormat = null;
-    };
-    /**
-     * Reconstructs the Graphics for this Text-field.
-     */
-    TextField.prototype.reConstruct = function () {
-        this._textGraphicsDirty = false;
-        if (this._textFormat == null)
-            return;
-        this._graphics.dispose();
-        this._graphics = new Graphics(this);
-        if (this._text == "")
-            return;
-        var vertices = new Array();
-        var char_scale = this._textFormat.size / this._textFormat.font_table.get_font_em_size();
-        var additional_margin_x = this._textFormat.font_table.offset_x;
-        var additional_margin_y = this._textFormat.font_table.offset_y;
-        var y_offset = additional_margin_y;
-        var prev_char = null;
-        var j = 0;
-        var k = 0;
-        var whitespace_width = (this._textFormat.font_table.get_whitespace_width() * char_scale);
-        var textlines = this.text.toString().split("\\n");
-        var final_lines_chars = [];
-        var final_lines_char_scale = [];
-        var final_lines_width = [];
-        for (var tl = 0; tl < textlines.length; tl++) {
-            final_lines_chars.push([]);
-            final_lines_char_scale.push([]);
-            final_lines_width.push(0);
-            var words = textlines[tl].split(" ");
-            for (var i = 0; i < words.length; i++) {
-                var word_width = 0;
-                var word_chars = [];
-                var word_chars_scale = [];
-                var c_cnt = 0;
-                for (var w = 0; w < words[i].length; w++) {
-                    char_scale = this._textFormat.size / this._textFormat.font_table.get_font_em_size();
-                    var this_char = this._textFormat.font_table.getChar(words[i].charCodeAt(w).toString());
-                    if (this_char == null) {
-                        if (this._textFormat.fallback_font_table) {
-                            char_scale = this._textFormat.size / this._textFormat.fallback_font_table.get_font_em_size();
-                            this_char = this._textFormat.fallback_font_table.getChar(words[i].charCodeAt(w).toString());
-                        }
-                    }
-                    if (this_char != null) {
-                        var this_subGeom = this_char.elements;
-                        if (this_subGeom != null) {
-                            // find kerning value that has been set for this char_code on previous char (if non exists, kerning_value will stay 0)
-                            var kerning_value = 0;
-                            if (prev_char != null) {
-                                for (var k = 0; k < prev_char.kerningCharCodes.length; k++) {
-                                    if (prev_char.kerningCharCodes[k] == words[i].charCodeAt(w)) {
-                                        kerning_value = prev_char.kerningValues[k];
-                                        break;
-                                    }
-                                }
-                            }
-                            word_width += ((this_char.char_width + kerning_value) * char_scale) + this._textFormat.letterSpacing;
-                        }
-                        else {
-                            // if no char-geometry was found, we insert a "space"
-                            word_width += whitespace_width;
-                        }
-                    }
-                    else {
-                        // if no char-geometry was found, we insert a "space"
-                        //x_offset += this._textFormat.font_table.get_font_em_size() * char_scale;
-                        word_width += whitespace_width;
-                    }
-                    word_chars_scale[c_cnt] = char_scale;
-                    word_chars[c_cnt++] = this_char;
-                }
-                if ((final_lines_width[final_lines_width.length - 1] + word_width) <= this.textWidth) {
-                    for (var fw = 0; fw < word_chars_scale.length; fw++) {
-                        final_lines_chars[final_lines_chars.length - 1].push(word_chars[fw]);
-                        final_lines_char_scale[final_lines_char_scale.length - 1].push(word_chars_scale[fw]);
-                    }
-                    final_lines_width[final_lines_width.length - 1] += word_width;
-                }
-                else {
-                    // word does not fit
-                    // todo respect multiline and autowrapping properties.
-                    // right now we just pretend everything has autowrapping and multiline
-                    final_lines_chars.push([]);
-                    final_lines_char_scale.push([]);
-                    final_lines_width.push(0);
-                    for (var fw = 0; fw < word_chars_scale.length; fw++) {
-                        final_lines_chars[final_lines_chars.length - 1].push(word_chars[fw]);
-                        final_lines_char_scale[final_lines_char_scale.length - 1].push(word_chars_scale[fw]);
-                    }
-                    final_lines_width[final_lines_width.length - 1] = word_width;
-                }
-                if (i < (words.length - 1)) {
-                    if ((final_lines_width[final_lines_width.length - 1] + whitespace_width) <= this.textWidth) {
-                        final_lines_chars[final_lines_chars.length - 1].push(null);
-                        final_lines_char_scale[final_lines_char_scale.length - 1].push(char_scale);
-                        final_lines_width[final_lines_width.length - 1] += whitespace_width;
-                    }
-                    else {
-                        final_lines_chars.push([null]);
-                        final_lines_char_scale.push([char_scale]);
-                        final_lines_width.push(whitespace_width);
-                    }
-                }
-            }
-        }
-        for (var i = 0; i < final_lines_chars.length; i++) {
-            var x_offset = additional_margin_x;
-            if (this._textFormat.align == "center") {
-                x_offset = (this._textWidth - final_lines_width[i]) / 2;
-            }
-            else if (this._textFormat.align == "right") {
-                x_offset = (this._textWidth - final_lines_width[i]) - additional_margin_x;
-            }
-            for (var t = 0; t < final_lines_chars[i].length; t++) {
-                var this_char = final_lines_chars[i][t];
-                char_scale = final_lines_char_scale[i][t];
-                if (this_char != null) {
-                    var elements = this_char.elements;
-                    if (elements != null) {
-                        var positions2 = elements.positions.get(elements.numVertices);
-                        var curveData2 = elements.getCustomAtributes("curves").get(elements.numVertices);
-                        for (var v = 0; v < elements.numVertices; v++) {
-                            vertices[j++] = (positions2[v * 2] * char_scale) + x_offset;
-                            vertices[j++] = (positions2[v * 2 + 1] * char_scale) + y_offset;
-                            vertices[j++] = curveData2[v * 3];
-                            vertices[j++] = curveData2[v * 3 + 1];
-                            vertices[j++] = curveData2[v * 3 + 2];
-                        }
-                        // find kerning value that has been set for this char_code on previous char (if non exists, kerning_value will stay 0)
-                        var kerning_value = 0;
-                        if (prev_char != null) {
-                            for (var k = 0; k < prev_char.kerningCharCodes.length; k++) {
-                                if (prev_char.kerningCharCodes[k] == this._text.charCodeAt(i)) {
-                                    kerning_value = prev_char.kerningValues[k];
-                                    break;
-                                }
-                            }
-                        }
-                        x_offset += ((this_char.char_width + kerning_value) * char_scale) + this._textFormat.letterSpacing;
-                    }
-                    else {
-                        // if no char-geometry was found, we insert a "space"
-                        x_offset += whitespace_width;
-                    }
-                }
-                else {
-                    x_offset += whitespace_width;
-                }
-            }
-            y_offset += (this._textFormat.font_table.get_font_em_size() * char_scale);
-        }
-        var attributesView = new AttributesView(Float32Array, 5);
-        attributesView.set(vertices);
-        var vertexBuffer = attributesView.buffer;
-        attributesView.dispose();
-        var curveElements = new TriangleElements(vertexBuffer);
-        curveElements.setPositions(new Float2Attributes(vertexBuffer));
-        curveElements.setCustomAttributes("curves", new Float3Attributes(vertexBuffer));
-        this._graphics.addGraphic(curveElements);
-        this.material = this._textFormat.material;
-        var sampler = new Sampler2D();
-        sampler.imageRect = new Rectangle(this._textFormat.uv_values[0], this._textFormat.uv_values[1], 0, 0);
-        this.material.imageRect = true;
-        this.style = new Style();
-        this.style.addSamplerAt(sampler, this.material.getTextureAt(0));
-        this.material.animateUVs = true;
-        this.uvTransform = new Matrix(1, 0, 0, 1, 0, 0); //matrix[0], matrix[2], matrix[1], matrix[3], matrix[4], matrix[5]);
-    };
-    /**
-     * Appends the string specified by the <code>newText</code> parameter to the
-     * end of the text of the text field. This method is more efficient than an
-     * addition assignment(<code>+=</code>) on a <code>text</code> property
-     * (such as <code>someTextField.text += moreText</code>), particularly for a
-     * text field that contains a significant amount of content.
-     *
-     * @param newText The string to append to the existing text.
-     */
-    TextField.prototype.appendText = function (newText) {
-        this._text += newText;
-    };
-    /**
-     * *tells the Textfield that a paragraph is defined completly.
-     * e.g. the textfield will start a new line for future added text.
-     */
-    TextField.prototype.closeParagraph = function () {
-        //TODO
-    };
-    /**
-     * Returns a rectangle that is the bounding box of the character.
-     *
-     * @param charIndex The zero-based index value for the character(for
-     *                  example, the first position is 0, the second position is
-     *                  1, and so on).
-     * @return A rectangle with <code>x</code> and <code>y</code> minimum and
-     *         maximum values defining the bounding box of the character.
-     */
-    TextField.prototype.getCharBoundaries = function (charIndex) {
-        return this._charBoundaries;
-    };
-    /**
-     * Returns the zero-based index value of the character at the point specified
-     * by the <code>x</code> and <code>y</code> parameters.
-     *
-     * @param x The <i>x</i> coordinate of the character.
-     * @param y The <i>y</i> coordinate of the character.
-     * @return The zero-based index value of the character(for example, the
-     *         first position is 0, the second position is 1, and so on). Returns
-     *         -1 if the point is not over any character.
-     */
-    TextField.prototype.getCharIndexAtPoint = function (x, y) {
-        return this._charIndexAtPoint;
-    };
-    /**
-     * Given a character index, returns the index of the first character in the
-     * same paragraph.
-     *
-     * @param charIndex The zero-based index value of the character(for example,
-     *                  the first character is 0, the second character is 1, and
-     *                  so on).
-     * @return The zero-based index value of the first character in the same
-     *         paragraph.
-     * @throws RangeError The character index specified is out of range.
-     */
-    TextField.prototype.getFirstCharInParagraph = function (charIndex /*int*/) {
-        return this._firstCharInParagraph;
-    };
-    /**
-     * Returns a DisplayObject reference for the given <code>id</code>, for an
-     * image or SWF file that has been added to an HTML-formatted text field by
-     * using an <code><img></code> tag. The <code><img></code> tag is in the
-     * following format:
-     *
-     * <p><pre xml:space="preserve"><code> <img src = 'filename.jpg' id =
-     * 'instanceName' ></code></pre></p>
-     *
-     * @param id The <code>id</code> to match(in the <code>id</code> attribute
-     *           of the <code><img></code> tag).
-     * @return The display object corresponding to the image or SWF file with the
-     *         matching <code>id</code> attribute in the <code><img></code> tag
-     *         of the text field. For media loaded from an external source, this
-     *         object is a Loader object, and, once loaded, the media object is a
-     *         child of that Loader object. For media embedded in the SWF file,
-     *         it is the loaded object. If no <code><img></code> tag with the
-     *         matching <code>id</code> exists, the method returns
-     *         <code>null</code>.
-     */
-    TextField.prototype.getImageReference = function (id) {
-        return this._imageReference;
-    };
-    /**
-     * Returns the zero-based index value of the line at the point specified by
-     * the <code>x</code> and <code>y</code> parameters.
-     *
-     * @param x The <i>x</i> coordinate of the line.
-     * @param y The <i>y</i> coordinate of the line.
-     * @return The zero-based index value of the line(for example, the first
-     *         line is 0, the second line is 1, and so on). Returns -1 if the
-     *         point is not over any line.
-     */
-    TextField.prototype.getLineIndexAtPoint = function (x, y) {
-        return this._lineIndexAtPoint;
-    };
-    /**
-     * Returns the zero-based index value of the line containing the character
-     * specified by the <code>charIndex</code> parameter.
-     *
-     * @param charIndex The zero-based index value of the character(for example,
-     *                  the first character is 0, the second character is 1, and
-     *                  so on).
-     * @return The zero-based index value of the line.
-     * @throws RangeError The character index specified is out of range.
-     */
-    TextField.prototype.getLineIndexOfChar = function (charIndex /*int*/) {
-        return this._lineIndexOfChar;
-    };
-    /**
-     * Returns the number of characters in a specific text line.
-     *
-     * @param lineIndex The line number for which you want the length.
-     * @return The number of characters in the line.
-     * @throws RangeError The line number specified is out of range.
-     */
-    TextField.prototype.getLineLength = function (lineIndex /*int*/) {
-        return this._lineLength;
-    };
-    /**
-     * Returns metrics information about a given text line.
-     *
-     * @param lineIndex The line number for which you want metrics information.
-     * @return A TextLineMetrics object.
-     * @throws RangeError The line number specified is out of range.
-     */
-    TextField.prototype.getLineMetrics = function (lineIndex /*int*/) {
-        return this._lineMetrics;
-    };
-    /**
-     * Returns the character index of the first character in the line that the
-     * <code>lineIndex</code> parameter specifies.
-     *
-     * @param lineIndex The zero-based index value of the line(for example, the
-     *                  first line is 0, the second line is 1, and so on).
-     * @return The zero-based index value of the first character in the line.
-     * @throws RangeError The line number specified is out of range.
-     */
-    TextField.prototype.getLineOffset = function (lineIndex /*int*/) {
-        return this._lineOffset;
-    };
-    /**
-     * Returns the text of the line specified by the <code>lineIndex</code>
-     * parameter.
-     *
-     * @param lineIndex The zero-based index value of the line(for example, the
-     *                  first line is 0, the second line is 1, and so on).
-     * @return The text string contained in the specified line.
-     * @throws RangeError The line number specified is out of range.
-     */
-    TextField.prototype.getLineText = function (lineIndex /*int*/) {
-        return this._lineText;
-    };
-    /**
-     * Given a character index, returns the length of the paragraph containing
-     * the given character. The length is relative to the first character in the
-     * paragraph(as returned by <code>getFirstCharInParagraph()</code>), not to
-     * the character index passed in.
-     *
-     * @param charIndex The zero-based index value of the character(for example,
-     *                  the first character is 0, the second character is 1, and
-     *                  so on).
-     * @return Returns the number of characters in the paragraph.
-     * @throws RangeError The character index specified is out of range.
-     */
-    TextField.prototype.getParagraphLength = function (charIndex /*int*/) {
-        return this._paragraphLength;
-    };
-    /**
-     * Returns a TextFormat object that contains formatting information for the
-     * range of text that the <code>beginIndex</code> and <code>endIndex</code>
-     * parameters specify. Only properties that are common to the entire text
-     * specified are set in the resulting TextFormat object. Any property that is
-     * <i>mixed</i>, meaning that it has different values at different points in
-     * the text, has a value of <code>null</code>.
-     *
-     * <p>If you do not specify values for these parameters, this method is
-     * applied to all the text in the text field. </p>
-     *
-     * <p>The following table describes three possible usages:</p>
-     *
-     * @return The TextFormat object that represents the formatting properties
-     *         for the specified text.
-     * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
-     *                    specified is out of range.
-     */
-    TextField.prototype.getTextFormat = function (beginIndex, endIndex) {
-        if (beginIndex === void 0) { beginIndex = -1; }
-        if (endIndex === void 0) { endIndex = -1; }
-        return this._textFormat;
-    };
-    /**
-     * Replaces the current selection with the contents of the <code>value</code>
-     * parameter. The text is inserted at the position of the current selection,
-     * using the current default character format and default paragraph format.
-     * The text is not treated as HTML.
-     *
-     * <p>You can use the <code>replaceSelectedText()</code> method to insert and
-     * delete text without disrupting the character and paragraph formatting of
-     * the rest of the text.</p>
-     *
-     * <p><b>Note:</b> This method does not work if a style sheet is applied to
-     * the text field.</p>
-     *
-     * @param value The string to replace the currently selected text.
-     * @throws Error This method cannot be used on a text field with a style
-     *               sheet.
-     */
-    TextField.prototype.replaceSelectedText = function (value) {
-    };
-    /**
-     * Replaces the range of characters that the <code>beginIndex</code> and
-     * <code>endIndex</code> parameters specify with the contents of the
-     * <code>newText</code> parameter. As designed, the text from
-     * <code>beginIndex</code> to <code>endIndex-1</code> is replaced.
-     *
-     * <p><b>Note:</b> This method does not work if a style sheet is applied to
-     * the text field.</p>
-     *
-     * @param beginIndex The zero-based index value for the start position of the
-     *                   replacement range.
-     * @param endIndex   The zero-based index position of the first character
-     *                   after the desired text span.
-     * @param newText    The text to use to replace the specified range of
-     *                   characters.
-     * @throws Error This method cannot be used on a text field with a style
-     *               sheet.
-     */
-    TextField.prototype.replaceText = function (beginIndex /*int*/, endIndex /*int*/, newText) {
-    };
-    /**
-     * Sets as selected the text designated by the index values of the first and
-     * last characters, which are specified with the <code>beginIndex</code> and
-     * <code>endIndex</code> parameters. If the two parameter values are the
-     * same, this method sets the insertion point, as if you set the
-     * <code>caretIndex</code> property.
-     *
-     * @param beginIndex The zero-based index value of the first character in the
-     *                   selection(for example, the first character is 0, the
-     *                   second character is 1, and so on).
-     * @param endIndex   The zero-based index value of the last character in the
-     *                   selection.
-     */
-    TextField.prototype.setSelection = function (beginIndex /*int*/, endIndex /*int*/) {
-    };
-    /**
-     * Applies the text formatting that the <code>format</code> parameter
-     * specifies to the specified text in a text field. The value of
-     * <code>format</code> must be a TextFormat object that specifies the desired
-     * text formatting changes. Only the non-null properties of
-     * <code>format</code> are applied to the text field. Any property of
-     * <code>format</code> that is set to <code>null</code> is not applied. By
-     * default, all of the properties of a newly created TextFormat object are
-     * set to <code>null</code>.
-     *
-     * <p><b>Note:</b> This method does not work if a style sheet is applied to
-     * the text field.</p>
-     *
-     * <p>The <code>setTextFormat()</code> method changes the text formatting
-     * applied to a range of characters or to the entire body of text in a text
-     * field. To apply the properties of format to all text in the text field, do
-     * not specify values for <code>beginIndex</code> and <code>endIndex</code>.
-     * To apply the properties of the format to a range of text, specify values
-     * for the <code>beginIndex</code> and the <code>endIndex</code> parameters.
-     * You can use the <code>length</code> property to determine the index
-     * values.</p>
-     *
-     * <p>The two types of formatting information in a TextFormat object are
-     * character level formatting and paragraph level formatting. Each character
-     * in a text field can have its own character formatting settings, such as
-     * font name, font size, bold, and italic.</p>
-     *
-     * <p>For paragraphs, the first character of the paragraph is examined for
-     * the paragraph formatting settings for the entire paragraph. Examples of
-     * paragraph formatting settings are left margin, right margin, and
-     * indentation.</p>
-     *
-     * <p>Any text inserted manually by the user, or replaced by the
-     * <code>replaceSelectedText()</code> method, receives the default text field
-     * formatting for new text, and not the formatting specified for the text
-     * insertion point. To set the default formatting for new text, use
-     * <code>defaultTextFormat</code>.</p>
-     *
-     * @param format A TextFormat object that contains character and paragraph
-     *               formatting information.
-     * @throws Error      This method cannot be used on a text field with a style
-     *                    sheet.
-     * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
-     *                    specified is out of range.
-     */
-    TextField.prototype.setTextFormat = function (format, beginIndex, endIndex) {
-        if (beginIndex === void 0) { beginIndex = -1; }
-        if (endIndex === void 0) { endIndex = -1; }
-    };
-    /**
-     * Returns true if an embedded font is available with the specified
-     * <code>fontName</code> and <code>fontStyle</code> where
-     * <code>Font.fontType</code> is <code>flash.text.FontType.EMBEDDED</code>.
-     * Starting with Flash Player 10, two kinds of embedded fonts can appear in a
-     * SWF file. Normal embedded fonts are only used with TextField objects. CFF
-     * embedded fonts are only used with the flash.text.engine classes. The two
-     * types are distinguished by the <code>fontType</code> property of the
-     * <code>Font</code> class, as returned by the <code>enumerateFonts()</code>
-     * function.
-     *
-     * <p>TextField cannot use a font of type <code>EMBEDDED_CFF</code>. If
-     * <code>embedFonts</code> is set to <code>true</code> and the only font
-     * available at run time with the specified name and style is of type
-     * <code>EMBEDDED_CFF</code>, Flash Player fails to render the text, as if no
-     * embedded font were available with the specified name and style.</p>
-     *
-     * <p>If both <code>EMBEDDED</code> and <code>EMBEDDED_CFF</code> fonts are
-     * available with the same name and style, the <code>EMBEDDED</code> font is
-     * selected and text renders with the <code>EMBEDDED</code> font.</p>
-     *
-     * @param fontName  The name of the embedded font to check.
-     * @param fontStyle Specifies the font style to check. Use
-     *                  <code>flash.text.FontStyle</code>
-     * @return <code>true</code> if a compatible embedded font is available,
-     *         otherwise <code>false</code>.
-     * @throws ArgumentError The <code>fontStyle</code> specified is not a member
-     *                       of <code>flash.text.FontStyle</code>.
-     */
-    TextField.isFontCompatible = function (fontName, fontStyle) {
-        return false;
-    };
-    TextField.prototype.clone = function () {
-        var newInstance = (TextField._textFields.length) ? TextField._textFields.pop() : new TextField();
-        this.copyTo(newInstance);
-        return newInstance;
-    };
-    TextField.prototype.copyTo = function (newInstance) {
-        _super.prototype.copyTo.call(this, newInstance);
-        newInstance.textWidth = this._textWidth;
-        newInstance.textHeight = this._textHeight;
-        newInstance.textFormat = this._textFormat;
-        //newInstance.textColor = this._textColor;
-        newInstance.text = this._text;
-    };
-    TextField._textFields = new Array();
-    TextField.assetType = "[asset TextField]";
-    return TextField;
-})(Mesh);
-module.exports = TextField;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/text/TextFieldType":"awayjs-display/lib/text/TextFieldType"}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
+},{}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -26738,7 +26682,7 @@ var MouseEvent = (function (_super) {
         result.screenY = this.screenY;
         result.view = this.view;
         result.object = this.object;
-        result.renderableOwner = this.renderableOwner;
+        result.renderable = this.renderable;
         result.material = this.material;
         result.uv = this.uv;
         result.localPosition = this.localPosition;
@@ -26818,51 +26762,7 @@ var MouseEvent = (function (_super) {
 })(EventBase);
 module.exports = MouseEvent;
 
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RenderOwnerEvent":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var EventBase = require("awayjs-core/lib/events/EventBase");
-var RenderOwnerEvent = (function (_super) {
-    __extends(RenderOwnerEvent, _super);
-    /**
-     * Create a new GraphicsEvent
-     * @param type The event type.
-     * @param dataType An optional data type of the vertex data being updated.
-     */
-    function RenderOwnerEvent(type, renderOwner) {
-        _super.call(this, type);
-        this._renderOwner = renderOwner;
-    }
-    Object.defineProperty(RenderOwnerEvent.prototype, "renderOwner", {
-        /**
-         * The renderobject owner of the renderable owner.
-         */
-        get: function () {
-            return this._renderOwner;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    RenderOwnerEvent.prototype.clone = function () {
-        return new RenderOwnerEvent(this.type, this._renderOwner);
-    };
-    RenderOwnerEvent.INVALIDATE_TEXTURE = "invalidateTexture";
-    RenderOwnerEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
-    RenderOwnerEvent.INVALIDATE_PASSES = "invalidatePasses";
-    return RenderOwnerEvent;
-})(EventBase);
-module.exports = RenderOwnerEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RenderableOwnerEvent":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RenderableEvent":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -26873,26 +26773,26 @@ var EventBase = require("awayjs-core/lib/events/EventBase");
 /**
  * Dispatched to notify changes in a sub geometry object's state.
  *
- * @class away.events.RenderableOwnerEvent
+ * @class away.events.RenderableEvent
  * @see away.core.base.Graphics
  */
-var RenderableOwnerEvent = (function (_super) {
-    __extends(RenderableOwnerEvent, _super);
+var RenderableEvent = (function (_super) {
+    __extends(RenderableEvent, _super);
     /**
      * Create a new GraphicsEvent
      * @param type The event type.
      * @param dataType An optional data type of the vertex data being updated.
      */
-    function RenderableOwnerEvent(type, renderableOwner) {
+    function RenderableEvent(type, renderable) {
         _super.call(this, type);
-        this._renderableOwner = renderableOwner;
+        this._renderable = renderable;
     }
-    Object.defineProperty(RenderableOwnerEvent.prototype, "renderableOwner", {
+    Object.defineProperty(RenderableEvent.prototype, "renderable", {
         /**
          * The renderobject owner of the renderable owner.
          */
         get: function () {
-            return this._renderableOwner;
+            return this._renderable;
         },
         enumerable: true,
         configurable: true
@@ -26902,20 +26802,20 @@ var RenderableOwnerEvent = (function (_super) {
      *
      * @return An exact duplicate of the current object.
      */
-    RenderableOwnerEvent.prototype.clone = function () {
-        return new RenderableOwnerEvent(this.type, this._renderableOwner);
+    RenderableEvent.prototype.clone = function () {
+        return new RenderableEvent(this.type, this._renderable);
     };
     /**
      * Dispatched when a Renderable owners's render object owner has been updated.
      */
-    RenderableOwnerEvent.INVALIDATE_RENDER_OWNER = "invalidateRenderableOwner";
+    RenderableEvent.INVALIDATE_RENDER_OWNER = "invalidateRenderable";
     /**
      *
      */
-    RenderableOwnerEvent.INVALIDATE_ELEMENTS = "invalidateElements";
-    return RenderableOwnerEvent;
+    RenderableEvent.INVALIDATE_ELEMENTS = "invalidateElements";
+    return RenderableEvent;
 })(EventBase);
-module.exports = RenderableOwnerEvent;
+module.exports = RenderableEvent;
 
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RendererEvent":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
@@ -27016,6 +26916,50 @@ var StyleEvent = (function (_super) {
 })(EventBase);
 module.exports = StyleEvent;
 
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/SurfaceEvent":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var EventBase = require("awayjs-core/lib/events/EventBase");
+var SurfaceEvent = (function (_super) {
+    __extends(SurfaceEvent, _super);
+    /**
+     * Create a new GraphicsEvent
+     * @param type The event type.
+     * @param dataType An optional data type of the vertex data being updated.
+     */
+    function SurfaceEvent(type, surface) {
+        _super.call(this, type);
+        this._surface = surface;
+    }
+    Object.defineProperty(SurfaceEvent.prototype, "surface", {
+        /**
+         * The surface of the renderable.
+         */
+        get: function () {
+            return this._surface;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    SurfaceEvent.prototype.clone = function () {
+        return new SurfaceEvent(this.type, this._surface);
+    };
+    SurfaceEvent.INVALIDATE_TEXTURE = "invalidateTexture";
+    SurfaceEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
+    SurfaceEvent.INVALIDATE_PASSES = "invalidatePasses";
+    return SurfaceEvent;
+})(EventBase);
+module.exports = SurfaceEvent;
+
 },{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/TouchEvent":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -27077,7 +27021,7 @@ var TouchEvent = (function (_super) {
         result.screenY = this.screenY;
         result.view = this.view;
         result.object = this.object;
-        result.renderableOwner = this.renderableOwner;
+        result.renderable = this.renderable;
         result.material = this.material;
         result.uv = this.uv;
         result.localPosition = this.localPosition;
@@ -27482,19 +27426,6 @@ var Graphics = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Graphics.prototype, "uvTransform", {
-        /*
-         *
-         */
-        get: function () {
-            return this._uvTransform;
-        },
-        set: function (value) {
-            this._uvTransform = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Graphics.prototype, "style", {
         /**
          *
@@ -27510,7 +27441,7 @@ var Graphics = (function (_super) {
             this._style = value;
             if (this._style)
                 this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._iInvalidateRenderOwners();
+            this._iInvalidateSurfaces();
         },
         enumerable: true,
         configurable: true
@@ -27546,10 +27477,9 @@ var Graphics = (function (_super) {
      *
      * @param elements
      */
-    Graphics.prototype.addGraphic = function (elements, material, style, uvTransform) {
+    Graphics.prototype.addGraphic = function (elements, material, style) {
         if (material === void 0) { material = null; }
         if (style === void 0) { style = null; }
-        if (uvTransform === void 0) { uvTransform = null; }
         var newGraphic;
         if (Graphic._available.length) {
             newGraphic = Graphic._available.pop();
@@ -27557,10 +27487,9 @@ var Graphics = (function (_super) {
             newGraphic.elements = elements;
             newGraphic.material = material;
             newGraphic.style = style;
-            newGraphic.uvTransform = uvTransform;
         }
         else {
-            newGraphic = new Graphic(this._graphics.length, this, elements, material, style, uvTransform);
+            newGraphic = new Graphic(this._graphics.length, this, elements, material, style);
         }
         this._graphics.push(newGraphic);
         elements.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
@@ -27587,12 +27516,11 @@ var Graphics = (function (_super) {
         graphics.style = this.style;
         graphics.particles = this.particles;
         graphics.numParticles = this.numParticles;
-        graphics.uvTransform = this.uvTransform;
         var graphic;
         var len = this._graphics.length;
         for (var i = 0; i < len; ++i) {
             graphic = this._graphics[i];
-            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle(), graphic._iGetExplicitUVTransform());
+            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle());
         }
         if (this._animator)
             graphics.animator = this._animator.clone();
@@ -27662,10 +27590,10 @@ var Graphics = (function (_super) {
         if (this.hasEventListener(GraphicsEvent.BOUNDS_INVALID))
             this.dispatchEvent(new GraphicsEvent(GraphicsEvent.BOUNDS_INVALID));
     };
-    Graphics.prototype._iInvalidateRenderOwners = function () {
+    Graphics.prototype._iInvalidateSurfaces = function () {
         var len = this._graphics.length;
         for (var i = 0; i < len; ++i)
-            this._graphics[i].invalidateRenderOwner();
+            this._graphics[i].invalidateSurface();
     };
     Graphics.prototype.invalidateElements = function () {
         var len = this._graphics.length;
@@ -27676,7 +27604,7 @@ var Graphics = (function (_super) {
         //TODO: handle lines as well
         var len = this._graphics.length;
         for (var i = 0; i < len; i++)
-            if (ElementsUtils.hitTestTriangleElements(x, y, 0, this._boxBounds, this._graphics[i].elements))
+            if (ElementsUtils.hitTestTriangleElements(x, y, 0, this.getBoxBounds(), this._graphics[i].elements))
                 return true;
         return false;
     };
@@ -27686,7 +27614,7 @@ var Graphics = (function (_super) {
             traverser.applyRenderable(this._graphics[i]);
     };
     Graphics.prototype._onInvalidateProperties = function (event) {
-        this._iInvalidateRenderOwners();
+        this._iInvalidateSurfaces();
     };
     Graphics.prototype._onInvalidateVertices = function (event) {
         if (event.attributesView != event.target.positions)
@@ -27706,7 +27634,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AssetBase = require("awayjs-core/lib/library/AssetBase");
-var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
+var RenderableEvent = require("awayjs-display/lib/events/RenderableEvent");
 var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
 /**
  * Graphic wraps a Elements as a scene graph instantiation. A Graphic is owned by a Mesh object.
@@ -27722,11 +27650,10 @@ var Graphic = (function (_super) {
     /**
      * Creates a new Graphic object
      */
-    function Graphic(index, parent, elements, material, style, uvTransform) {
+    function Graphic(index, parent, elements, material, style) {
         var _this = this;
         if (material === void 0) { material = null; }
         if (style === void 0) { style = null; }
-        if (uvTransform === void 0) { uvTransform = null; }
         _super.call(this);
         this._iIndex = 0;
         this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
@@ -27735,7 +27662,6 @@ var Graphic = (function (_super) {
         this.elements = elements;
         this.material = material;
         this.style = style;
-        this.uvTransform = uvTransform;
     }
     Object.defineProperty(Graphic.prototype, "assetType", {
         /**
@@ -27827,20 +27753,7 @@ var Graphic = (function (_super) {
             this._style = value;
             if (this._style)
                 this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this.invalidateRenderOwner();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphic.prototype, "uvTransform", {
-        /**
-         *
-         */
-        get: function () {
-            return this._uvTransform || this.parent.uvTransform;
-        },
-        set: function (value) {
-            this._uvTransform = value;
+            this.invalidateSurface();
         },
         enumerable: true,
         configurable: true
@@ -27855,10 +27768,10 @@ var Graphic = (function (_super) {
         Graphic._available.push(this);
     };
     Graphic.prototype.invalidateElements = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_ELEMENTS, this));
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_ELEMENTS, this));
     };
-    Graphic.prototype.invalidateRenderOwner = function () {
-        this.dispatchEvent(new RenderableOwnerEvent(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this));
+    Graphic.prototype.invalidateSurface = function () {
+        this.dispatchEvent(new RenderableEvent(RenderableEvent.INVALIDATE_RENDER_OWNER, this));
     };
     Graphic.prototype._iGetExplicitMaterial = function () {
         return this._material;
@@ -27866,11 +27779,8 @@ var Graphic = (function (_super) {
     Graphic.prototype._iGetExplicitStyle = function () {
         return this._style;
     };
-    Graphic.prototype._iGetExplicitUVTransform = function () {
-        return this._uvTransform;
-    };
     Graphic.prototype._onInvalidateProperties = function (event) {
-        this.invalidateRenderOwner();
+        this.invalidateSurface();
     };
     /**
      * //TODO
@@ -27890,7 +27800,7 @@ var Graphic = (function (_super) {
 })(AssetBase);
 module.exports = Graphic;
 
-},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":"awayjs-display/lib/events/RenderableOwnerEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/graphics/LineElements":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/graphics/LineElements":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -28629,7 +28539,7 @@ var Sampler2D = require("awayjs-core/lib/image/Sampler2D");
 var BitmapImage2D = require("awayjs-core/lib/image/BitmapImage2D");
 var BitmapImageCube = require("awayjs-core/lib/image/BitmapImageCube");
 var LineElements = require("awayjs-display/lib/graphics/LineElements");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
+var Skybox = require("awayjs-display/lib/display/Skybox");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
@@ -28637,14 +28547,14 @@ var Graphic = require("awayjs-display/lib/graphics/Graphic");
 var DefaultMaterialManager = (function () {
     function DefaultMaterialManager() {
     }
-    DefaultMaterialManager.getDefaultMaterial = function (renderableOwner) {
-        if (renderableOwner === void 0) { renderableOwner = null; }
-        if (renderableOwner != null && renderableOwner.isAsset(Graphic) && renderableOwner.elements.isAsset(LineElements)) {
+    DefaultMaterialManager.getDefaultMaterial = function (renderable) {
+        if (renderable === void 0) { renderable = null; }
+        if (renderable != null && renderable.isAsset(Graphic) && renderable.elements.isAsset(LineElements)) {
             if (!DefaultMaterialManager._defaultColorMaterial)
                 DefaultMaterialManager.createDefaultColorMaterial();
             return DefaultMaterialManager._defaultColorMaterial;
         }
-        if (renderableOwner != null && renderableOwner.isAsset(Skybox)) {
+        if (renderable != null && renderable.isAsset(Skybox)) {
             if (!DefaultMaterialManager._defaultCubeTextureMaterial)
                 DefaultMaterialManager.createDefaultCubeTextureMaterial();
             return DefaultMaterialManager._defaultCubeTextureMaterial;
@@ -28653,9 +28563,9 @@ var DefaultMaterialManager = (function () {
             DefaultMaterialManager.createDefaultTextureMaterial();
         return DefaultMaterialManager._defaultTextureMaterial;
     };
-    DefaultMaterialManager.getDefaultTexture = function (renderableOwner) {
-        if (renderableOwner === void 0) { renderableOwner = null; }
-        if (renderableOwner != null && renderableOwner.isAsset(Skybox)) {
+    DefaultMaterialManager.getDefaultTexture = function (renderable) {
+        if (renderable === void 0) { renderable = null; }
+        if (renderable != null && renderable.isAsset(Skybox)) {
             if (!DefaultMaterialManager._defaultCubeTexture)
                 DefaultMaterialManager.createDefaultCubeTexture();
             return DefaultMaterialManager._defaultCubeTexture;
@@ -28730,7 +28640,7 @@ var DefaultMaterialManager = (function () {
 })();
 module.exports = DefaultMaterialManager;
 
-},{"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/entities/Skybox":"awayjs-display/lib/entities/Skybox","awayjs-display/lib/graphics/Graphic":"awayjs-display/lib/graphics/Graphic","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/managers/FrameScriptManager":[function(require,module,exports){
+},{"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/display/Skybox":"awayjs-display/lib/display/Skybox","awayjs-display/lib/graphics/Graphic":"awayjs-display/lib/graphics/Graphic","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/managers/FrameScriptManager":[function(require,module,exports){
 var FrameScriptManager = (function () {
     function FrameScriptManager() {
     }
@@ -28952,7 +28862,7 @@ var MouseManager = (function () {
         if (collider) {
             // Object.
             event.object = collider.displayObject;
-            event.renderableOwner = collider.renderableOwner;
+            event.renderable = collider.renderable;
             // UV.
             event.uv = collider.uv;
             // Position.
@@ -29162,7 +29072,7 @@ var TouchManager = (function () {
         if (collider) {
             // Object.
             event.object = collider.displayObject;
-            event.renderableOwner = collider.renderableOwner;
+            event.renderable = collider.renderable;
             // UV.
             event.uv = collider.uv;
             // Position.
@@ -29364,7 +29274,7 @@ var ImageBase = require("awayjs-core/lib/image/ImageBase");
 var ColorTransform = require("awayjs-core/lib/geom/ColorTransform");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var AssetBase = require("awayjs-core/lib/library/AssetBase");
-var RenderOwnerEvent = require("awayjs-display/lib/events/RenderOwnerEvent");
+var SurfaceEvent = require("awayjs-display/lib/events/SurfaceEvent");
 var Style = require("awayjs-display/lib/base/Style");
 var StyleEvent = require("awayjs-display/lib/events/StyleEvent");
 /**
@@ -29724,11 +29634,11 @@ var MaterialBase = (function (_super) {
     // MATERIAL MANAGEMENT
     //
     /**
-     * Mark an IRenderableOwner as owner of this material.
+     * Mark an IRenderable as owner of this material.
      * Assures we're not using the same material across renderables with different animations, since the
      * Programs depend on animation. This method needs to be called when a material is assigned.
      *
-     * @param owner The IRenderableOwner that had this material assigned
+     * @param owner The IRenderable that had this material assigned
      *
      * @internal
      */
@@ -29749,10 +29659,10 @@ var MaterialBase = (function (_super) {
                 }
             }
         }
-        owner.invalidateRenderOwner();
+        owner.invalidateSurface();
     };
     /**
-     * Removes an IRenderableOwner as owner.
+     * Removes an IRenderable as owner.
      * @param owner
      *
      * @internal
@@ -29763,11 +29673,11 @@ var MaterialBase = (function (_super) {
             this._animationSet = null;
             this.invalidateAnimation();
         }
-        owner.invalidateRenderOwner();
+        owner.invalidateSurface();
     };
     Object.defineProperty(MaterialBase.prototype, "iOwners", {
         /**
-         * A list of the IRenderableOwners that use this material
+         * A list of the IRenderables that use this material
          *
          * @private
          */
@@ -29789,15 +29699,15 @@ var MaterialBase = (function (_super) {
      * @private
      */
     MaterialBase.prototype.invalidatePasses = function () {
-        this.dispatchEvent(new RenderOwnerEvent(RenderOwnerEvent.INVALIDATE_PASSES, this));
+        this.dispatchEvent(new SurfaceEvent(SurfaceEvent.INVALIDATE_PASSES, this));
     };
     MaterialBase.prototype.invalidateAnimation = function () {
-        this.dispatchEvent(new RenderOwnerEvent(RenderOwnerEvent.INVALIDATE_ANIMATION, this));
+        this.dispatchEvent(new SurfaceEvent(SurfaceEvent.INVALIDATE_ANIMATION, this));
     };
-    MaterialBase.prototype.invalidateRenderOwners = function () {
+    MaterialBase.prototype.invalidateSurfaces = function () {
         var len = this._owners.length;
         for (var i = 0; i < len; i++)
-            this._owners[i].invalidateRenderOwner();
+            this._owners[i].invalidateSurface();
     };
     /**
      * Called when the light picker's configuration changed.
@@ -29806,7 +29716,7 @@ var MaterialBase = (function (_super) {
         this.invalidate();
     };
     MaterialBase.prototype.invalidateTexture = function () {
-        this.dispatchEvent(new RenderOwnerEvent(RenderOwnerEvent.INVALIDATE_TEXTURE, this));
+        this.dispatchEvent(new SurfaceEvent(SurfaceEvent.INVALIDATE_TEXTURE, this));
     };
     MaterialBase.prototype.addTextureAt = function (texture, index) {
         var i = this._textures.indexOf(texture);
@@ -29834,7 +29744,7 @@ var MaterialBase = (function (_super) {
         if (event === void 0) { event = null; }
         this.invalidatePasses();
         //invalidate renderables for number of images getter (in case it has changed)
-        this.invalidateRenderOwners();
+        this.invalidateSurfaces();
     };
     MaterialBase.prototype._onInvalidateProperties = function (event) {
         this.invalidatePasses();
@@ -29843,7 +29753,7 @@ var MaterialBase = (function (_super) {
 })(AssetBase);
 module.exports = MaterialBase;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/ImageBase":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/events/RenderOwnerEvent":"awayjs-display/lib/events/RenderOwnerEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/ImageBase":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent"}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -30054,9 +29964,9 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var LightProbe = require("awayjs-display/lib/entities/LightProbe");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var LightProbe = require("awayjs-display/lib/display/LightProbe");
+var PointLight = require("awayjs-display/lib/display/PointLight");
 var LightEvent = require("awayjs-display/lib/events/LightEvent");
 var LightPickerBase = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
 /**
@@ -30195,7 +30105,7 @@ var StaticLightPicker = (function (_super) {
 })(LightPickerBase);
 module.exports = StaticLightPicker;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/entities/DirectionalLight":"awayjs-display/lib/entities/DirectionalLight","awayjs-display/lib/entities/LightProbe":"awayjs-display/lib/entities/LightProbe","awayjs-display/lib/entities/PointLight":"awayjs-display/lib/entities/PointLight","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent","awayjs-display/lib/materials/lightpickers/LightPickerBase":"awayjs-display/lib/materials/lightpickers/LightPickerBase"}],"awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","awayjs-display/lib/display/LightProbe":"awayjs-display/lib/display/LightProbe","awayjs-display/lib/display/PointLight":"awayjs-display/lib/display/PointLight","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent","awayjs-display/lib/materials/lightpickers/LightPickerBase":"awayjs-display/lib/materials/lightpickers/LightPickerBase"}],"awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -30206,7 +30116,7 @@ var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Rectangle = require("awayjs-core/lib/geom/Rectangle");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var FreeMatrixProjection = require("awayjs-core/lib/projections/FreeMatrixProjection");
-var Camera = require("awayjs-display/lib/entities/Camera");
+var Camera = require("awayjs-display/lib/display/Camera");
 var DirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 var CascadeShadowMapper = (function (_super) {
     __extends(CascadeShadowMapper, _super);
@@ -30387,7 +30297,7 @@ var CascadeShadowMapper = (function (_super) {
 })(DirectionalShadowMapper);
 module.exports = CascadeShadowMapper;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -30395,7 +30305,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var ImageCube = require("awayjs-core/lib/image/ImageCube");
-var Camera = require("awayjs-display/lib/entities/Camera");
+var Camera = require("awayjs-display/lib/display/Camera");
 var ShadowMapperBase = require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var CubeMapShadowMapper = (function (_super) {
@@ -30459,7 +30369,7 @@ var CubeMapShadowMapper = (function (_super) {
 })(ShadowMapperBase);
 module.exports = CubeMapShadowMapper;
 
-},{"awayjs-core/lib/image/ImageCube":undefined,"awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":[function(require,module,exports){
+},{"awayjs-core/lib/image/ImageCube":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -30470,7 +30380,7 @@ var Image2D = require("awayjs-core/lib/image/Image2D");
 var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var FreeMatrixProjection = require("awayjs-core/lib/projections/FreeMatrixProjection");
-var Camera = require("awayjs-display/lib/entities/Camera");
+var Camera = require("awayjs-display/lib/display/Camera");
 var ShadowMapperBase = require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var DirectionalShadowMapper = (function (_super) {
@@ -30641,7 +30551,7 @@ var DirectionalShadowMapper = (function (_super) {
 })(ShadowMapperBase);
 module.exports = DirectionalShadowMapper;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/entities/Camera":"awayjs-display/lib/entities/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture"}],"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture"}],"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -31588,11 +31498,11 @@ var JSPickingCollider = (function () {
      * @param findClosest
      */
     JSPickingCollider.prototype.testBillboardCollision = function (billboard, material, pickingCollisionVO, shortestCollisionDistance) {
-        pickingCollisionVO.renderableOwner = null;
+        pickingCollisionVO.renderable = null;
         //if (this._testGraphicCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
         //	shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
         //
-        //	pickingCollisionVO.renderableOwner = billboard;
+        //	pickingCollisionVO.renderable = billboard;
         //
         //	return true;
         //}
@@ -31914,7 +31824,7 @@ var PickingCollisionVO = (function () {
     }
     PickingCollisionVO.prototype.dispose = function () {
         this.displayObject = null;
-        this.renderableOwner = null;
+        this.renderable = null;
     };
     return PickingCollisionVO;
 })();
@@ -34029,7 +33939,7 @@ var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 var LineElements = require("awayjs-display/lib/graphics/LineElements");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var PrefabBase = require("awayjs-display/lib/prefabs/PrefabBase");
 /**
  * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
@@ -34182,7 +34092,7 @@ var PrimitivePrefabBase = (function (_super) {
 })(PrefabBase);
 module.exports = PrimitivePrefabBase;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/entities/Mesh":"awayjs-display/lib/entities/Mesh","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/Mesh":"awayjs-display/lib/display/Mesh","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -36653,7 +36563,7 @@ var ElementsUtils = (function () {
                         var uu = 0.5 * v + w;
                         var vv = w;
                         var d = uu * uu - vv;
-                        var az = positions[id0 * posDim + 2];
+                        var az = curves[id0 * curveDim];
                         if (d > 0 && az == -1) {
                             break precheck;
                             ;
@@ -36764,7 +36674,7 @@ var ElementsUtils = (function () {
                         var uu = 0.5 * v + w;
                         var vv = w;
                         var d = uu * uu - vv;
-                        var az = positions[id0 * posDim + 2];
+                        var az = curves[id0 * curveDim];
                         if (d > 0 && az == -1)
                             continue;
                         else if (d < 0 && az == 1)
@@ -36831,7 +36741,7 @@ var ElementsUtils = (function () {
                     var uu = 0.5 * v + w;
                     var vv = w;
                     var d = uu * uu - vv;
-                    var az = positions[id0 * posDim + 2];
+                    var az = curves[id0 * curveDim];
                     if (d > 0 && az == -1) {
                         continue;
                     }
@@ -36852,35 +36762,47 @@ var ElementsUtils = (function () {
         if (output == null)
             output = new Box();
         var pos;
-        var minX = output.x;
-        var minY = output.y;
-        var minZ = output.z;
-        var maxX = output.width + minX;
-        var maxY = output.height + minY;
-        var maxZ = output.depth + minZ;
+        var minX = 0, minY = 0, minZ = 0;
+        var maxX = 0, maxY = 0, maxZ = 0;
         var len = count * posDim;
         for (var i = 0; i < len; i += posDim) {
-            pos = positions[i];
-            if (pos < minX)
-                minX = pos;
-            else if (pos > maxX)
-                maxX = pos;
-            pos = positions[i + 1];
-            if (pos < minY)
-                minY = pos;
-            else if (pos > maxY)
-                maxY = pos;
-            if (posDim == 3) {
-                pos = positions[i + 2];
-                if (pos < minZ)
-                    minZ = pos;
-                else if (pos > maxZ)
-                    maxZ = pos;
+            if (i == 0) {
+                maxX = minX = positions[i];
+                maxY = minY = positions[i + 1];
+                maxZ = minZ = (posDim == 3) ? positions[i + 2] : 0;
+            }
+            else {
+                pos = positions[i];
+                if (pos < minX)
+                    minX = pos;
+                else if (pos > maxX)
+                    maxX = pos;
+                pos = positions[i + 1];
+                if (pos < minY)
+                    minY = pos;
+                else if (pos > maxY)
+                    maxY = pos;
+                if (posDim == 3) {
+                    pos = positions[i + 2];
+                    if (pos < minZ)
+                        minZ = pos;
+                    else if (pos > maxZ)
+                        maxZ = pos;
+                }
             }
         }
-        output.width = maxX - (output.x = minX);
-        output.height = maxY - (output.y = minY);
-        output.depth = maxZ - (output.z = minZ);
+        if (output.x > minX)
+            output.x = minX;
+        if (output.y > minY)
+            output.y = minY;
+        if (output.z > minZ)
+            output.z = minZ;
+        if (output.right < maxX)
+            output.right = maxX;
+        if (output.bottom < maxY)
+            output.bottom = maxY;
+        if (output.back < maxZ)
+            output.back = maxZ;
         return output;
     };
     ElementsUtils.getTriangleGraphicsSphereBounds = function (positionAttributes, center, output, count, offset) {
@@ -40203,7 +40125,7 @@ var ProgramSoftware = (function () {
         }
         var repeat = state.wrap == ContextGLWrapMode.REPEAT;
         var mipmap = state.mipfilter == ContextGLMipFilter.MIPLINEAR;
-        if (mipmap) {
+        if (mipmap && texture.getMipLevelsCount() > 1) {
             dux = Math.abs(dux);
             dvx = Math.abs(dvx);
             duy = Math.abs(duy);
@@ -41773,6 +41695,9 @@ var TextureSoftware = (function () {
     TextureSoftware.prototype.getData = function (miplevel) {
         return this._mipLevels[miplevel];
     };
+    TextureSoftware.prototype.getMipLevelsCount = function () {
+        return this._mipLevels.length;
+    };
     return TextureSoftware;
 })();
 module.exports = TextureSoftware;
@@ -42673,7 +42598,7 @@ var DistanceRenderer = require("awayjs-renderergl/lib/DistanceRenderer");
 var Filter3DRenderer = require("awayjs-renderergl/lib/Filter3DRenderer");
 var GL_SkyboxElements = require("awayjs-renderergl/lib/elements/GL_SkyboxElements");
 var RTTBufferManager = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+var SurfacePool = require("awayjs-renderergl/lib/surfaces/SurfacePool");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
  * materials assigned to them.
@@ -42709,7 +42634,7 @@ var DefaultRenderer = (function (_super) {
             this.height = window.innerHeight;
         else
             this._pRttBufferManager.viewHeight = this._height;
-        this._skyBoxRenderPool = new RenderPool(GL_SkyboxElements, this._pStage);
+        this._skyBoxSurfacePool = new SurfacePool(GL_SkyboxElements, this._pStage);
     }
     Object.defineProperty(DefaultRenderer.prototype, "antiAlias", {
         get: function () {
@@ -42855,7 +42780,7 @@ var DefaultRenderer = (function (_super) {
         var renderable = this.getAbstraction(entityCollector.skyBox);
         var camera = entityCollector.camera;
         this.updateSkyboxProjection(camera);
-        var render = this._skyBoxRenderPool.getAbstraction(renderable.render.renderOwner);
+        var render = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface);
         var pass = render.passes[0];
         this.activatePass(renderable, pass, camera);
         renderable._iRender(pass, camera, this._skyboxProjection);
@@ -42946,7 +42871,7 @@ var DefaultRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DefaultRenderer;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/render/RenderPool":"awayjs-renderergl/lib/render/RenderPool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -42954,7 +42879,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
-var DepthRender = require("awayjs-renderergl/lib/render/DepthRender");
+var GL_DepthSurface = require("awayjs-renderergl/lib/surfaces/GL_DepthSurface");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -42969,7 +42894,7 @@ var DepthRenderer = (function (_super) {
      */
     function DepthRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, stage, DepthRender);
+        _super.call(this, stage, GL_DepthSurface);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -42978,7 +42903,7 @@ var DepthRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DepthRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/render/DepthRender":"awayjs-renderergl/lib/render/DepthRender"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -42986,7 +42911,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
-var DistanceRender = require("awayjs-renderergl/lib/render/DistanceRender");
+var GL_DistanceSurface = require("awayjs-renderergl/lib/surfaces/GL_DistanceSurface");
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -43001,7 +42926,7 @@ var DistanceRenderer = (function (_super) {
      */
     function DistanceRenderer(stage) {
         if (stage === void 0) { stage = null; }
-        _super.call(this, stage, DistanceRender);
+        _super.call(this, stage, GL_DistanceSurface);
         this._iBackgroundR = 1;
         this._iBackgroundG = 1;
         this._iBackgroundB = 1;
@@ -43010,7 +42935,7 @@ var DistanceRenderer = (function (_super) {
 })(RendererBase);
 module.exports = DistanceRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/render/DistanceRender":"awayjs-renderergl/lib/render/DistanceRender"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
@@ -43127,6 +43052,7 @@ var Filter3DRenderer = (function () {
         for (var i = 0; i < this._filters.length; ++i) {
             this._filters[i].textureWidth = this._rttManager.textureWidth;
             this._filters[i].textureHeight = this._rttManager.textureHeight;
+            this._filters[i].rttManager = this._rttManager;
         }
         this._filterSizesInvalid = true;
     };
@@ -43157,7 +43083,7 @@ var ContextGLBlendFactor = require("awayjs-stagegl/lib/base/ContextGLBlendFactor
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var StageEvent = require("awayjs-stagegl/lib/events/StageEvent");
 var StageManager = require("awayjs-stagegl/lib/managers/StageManager");
-var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+var SurfacePool = require("awayjs-renderergl/lib/surfaces/SurfacePool");
 var ElementsPool = require("awayjs-renderergl/lib/elements/ElementsPool");
 var RenderableMergeSort = require("awayjs-renderergl/lib/sort/RenderableMergeSort");
 /**
@@ -43171,10 +43097,10 @@ var RendererBase = (function (_super) {
     /**
      * Creates a new RendererBase object.
      */
-    function RendererBase(stage, renderClass, forceSoftware, profile, mode) {
+    function RendererBase(stage, surfaceClassGL, forceSoftware, profile, mode) {
         var _this = this;
         if (stage === void 0) { stage = null; }
-        if (renderClass === void 0) { renderClass = null; }
+        if (surfaceClassGL === void 0) { surfaceClassGL = null; }
         if (forceSoftware === void 0) { forceSoftware = false; }
         if (profile === void 0) { profile = "baseline"; }
         if (mode === void 0) { mode = "auto"; }
@@ -43218,7 +43144,7 @@ var RendererBase = (function (_super) {
         if (this._pStage.context)
             this._pContext = this._pStage.context;
         for (var i in ElementsPool._abstractionClassPool)
-            this._objectPools[i] = new RenderPool(ElementsPool._abstractionClassPool[i], this._pStage, renderClass);
+            this._objectPools[i] = new SurfacePool(ElementsPool._abstractionClassPool[i], this._pStage, surfaceClassGL);
     }
     Object.defineProperty(RendererBase.prototype, "renderBlended", {
         get: function () {
@@ -43344,23 +43270,23 @@ var RendererBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    RendererBase.prototype.getAbstraction = function (renderableOwner) {
-        return this._abstractionPool[renderableOwner.id] || (this._abstractionPool[renderableOwner.id] = new RendererBase._abstractionClassPool[renderableOwner.assetType](renderableOwner, this));
+    RendererBase.prototype.getAbstraction = function (renderable) {
+        return this._abstractionPool[renderable.id] || (this._abstractionPool[renderable.id] = new RendererBase._abstractionClassPool[renderable.assetType](renderable, this));
     };
     /**
      *
      * @param image
      */
-    RendererBase.prototype.clearAbstraction = function (renderableOwner) {
-        this._abstractionPool[renderableOwner.id] = null;
+    RendererBase.prototype.clearAbstraction = function (renderable) {
+        this._abstractionPool[renderable.id] = null;
     };
     /**
      * //TODO
      *
      * @param elementsClass
-     * @returns RenderPool
+     * @returns SurfacePool
      */
-    RendererBase.prototype.getRenderPool = function (elements) {
+    RendererBase.prototype.getSurfacePool = function (elements) {
         return this._objectPools[elements.assetType];
     };
     /**
@@ -43370,7 +43296,7 @@ var RendererBase = (function (_super) {
     RendererBase.registerAbstraction = function (renderableClass, assetClass) {
         RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
     };
-    RendererBase.prototype.activatePass = function (renderable, pass, camera) {
+    RendererBase.prototype.activatePass = function (renderableGL, pass, camera) {
         for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
             this._pContext.setVertexBufferAt(i, null);
         for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
@@ -43385,12 +43311,12 @@ var RendererBase = (function (_super) {
         }
         //set program data
         this._pContext.setProgram(programData.program);
-        //activate shader object through renderable
-        renderable._iActivate(pass, camera);
+        //activate shader object through renderableGL
+        renderableGL._iActivate(pass, camera);
     };
-    RendererBase.prototype.deactivatePass = function (renderable, pass) {
+    RendererBase.prototype.deactivatePass = function (renderableGL, pass) {
         //deactivate shader object
-        renderable._iDeactivate(pass);
+        renderableGL._iDeactivate(pass);
         this._numUsedStreams = pass.shader.numUsedStreams;
         this._numUsedTextures = pass.shader.numUsedTextures;
     };
@@ -43553,7 +43479,7 @@ var RendererBase = (function (_super) {
         this._iEntryPoint = this._pCamera.scenePosition;
         this._pCameraForward = this._pCamera.transform.forwardVector;
         while (item) {
-            this._iApplyRenderableOwner(item.renderable);
+            this._iApplyRenderable(item.renderable);
             item = item.next;
         }
         //sort the resulting renderables
@@ -43616,35 +43542,35 @@ var RendererBase = (function (_super) {
         if (this._disableColor)
             this._pContext.setColorMask(true, true, true, true);
     };
-    //private drawCascadeRenderables(renderable:RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
+    //private drawCascadeRenderables(renderableGL:GL_RenderableBase, camera:Camera, cullPlanes:Array<Plane3D>)
     //{
-    //	var renderable2:RenderableBase;
-    //	var render:RenderBase;
+    //	var renderableGL2:GL_RenderableBase;
+    //	var render:GL_SurfaceBase;
     //	var pass:IPass;
     //
-    //	while (renderable) {
-    //		renderable2 = renderable;
-    //		render = renderable.render;
+    //	while (renderableGL) {
+    //		renderableGL2 = renderableGL;
+    //		render = renderableGL.render;
     //		pass = render.passes[0] //assuming only one pass per material
     //
-    //		this.activatePass(renderable, pass, camera);
+    //		this.activatePass(renderableGL, pass, camera);
     //
     //		do {
     //			// if completely in front, it will fall in a different cascade
     //			// do not use near and far planes
-    //			if (!cullPlanes || renderable2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
-    //				renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+    //			if (!cullPlanes || renderableGL2.sourceEntity.worldBounds.isInFrustum(cullPlanes, 4)) {
+    //				renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
     //			} else {
-    //				renderable2.cascaded = true;
+    //				renderableGL2.cascaded = true;
     //			}
     //
-    //			renderable2 = renderable2.next;
+    //			renderableGL2 = renderableGL2.next;
     //
-    //		} while (renderable2 && renderable2.render == render && !renderable2.cascaded);
+    //		} while (renderableGL2 && renderableGL2.render == render && !renderableGL2.cascaded);
     //
-    //		this.deactivatePass(renderable, pass);
+    //		this.deactivatePass(renderableGL, pass);
     //
-    //		renderable = renderable2;
+    //		renderableGL = renderableGL2;
     //	}
     //}
     /**
@@ -43653,11 +43579,11 @@ var RendererBase = (function (_super) {
      * @param renderables The renderables to draw.
      * @param entityCollector The EntityCollector containing all potentially visible information.
      */
-    RendererBase.prototype.drawRenderables = function (renderable, entityCollector) {
+    RendererBase.prototype.drawRenderables = function (renderableGL, entityCollector) {
         var i;
         var len;
-        var renderable2;
-        var render;
+        var renderableGL2;
+        var surfaceGL;
         var passes;
         var pass;
         var camera = entityCollector.camera;
@@ -43668,19 +43594,19 @@ var RendererBase = (function (_super) {
             gl.disable(gl.STENCIL_TEST);
         }
         this._maskConfig = 0;
-        while (renderable) {
-            render = renderable.render;
-            passes = render.passes;
+        while (renderableGL) {
+            surfaceGL = renderableGL.surfaceGL;
+            passes = surfaceGL.passes;
             // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
-            if (this._disableColor && render._renderOwner.alphaThreshold != 0) {
-                renderable2 = renderable;
+            if (this._disableColor && surfaceGL._surface.alphaThreshold != 0) {
+                renderableGL2 = renderableGL;
                 do {
-                    renderable2 = renderable2.next;
-                } while (renderable2 && renderable2.render == render);
+                    renderableGL2 = renderableGL2.next;
+                } while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL);
             }
             else {
-                if (this._activeMasksDirty || this._checkMasksConfig(renderable.masksConfig)) {
-                    this._activeMasksConfig = renderable.masksConfig;
+                if (this._activeMasksDirty || this._checkMasksConfig(renderableGL.masksConfig)) {
+                    this._activeMasksConfig = renderableGL.masksConfig;
                     if (!this._activeMasksConfig.length) {
                         // disable stencil
                         if (gl) {
@@ -43690,30 +43616,30 @@ var RendererBase = (function (_super) {
                         }
                     }
                     else {
-                        this._renderMasks(renderable.sourceEntity._iAssignedMasks());
+                        this._renderMasks(renderableGL.sourceEntity._iAssignedMasks());
                     }
                     this._activeMasksDirty = false;
                 }
                 //iterate through each shader object
                 len = passes.length;
                 for (i = 0; i < len; i++) {
-                    renderable2 = renderable;
+                    renderableGL2 = renderableGL;
                     pass = passes[i];
-                    this.activatePass(renderable, pass, camera);
+                    this.activatePass(renderableGL, pass, camera);
                     do {
-                        if (renderable2.maskId !== -1) {
+                        if (renderableGL2.maskId !== -1) {
                             if (i == 0)
-                                this._registerMask(renderable2);
+                                this._registerMask(renderableGL2);
                         }
                         else {
-                            renderable2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                            renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
                         }
-                        renderable2 = renderable2.next;
-                    } while (renderable2 && renderable2.render == render && !(this._activeMasksDirty = this._checkMasksConfig(renderable2.masksConfig)));
-                    this.deactivatePass(renderable, pass);
+                        renderableGL2 = renderableGL2.next;
+                    } while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
+                    this.deactivatePass(renderableGL, pass);
                 }
             }
-            renderable = renderable2;
+            renderableGL = renderableGL2;
         }
     };
     /**
@@ -43820,31 +43746,31 @@ var RendererBase = (function (_super) {
         }
         this.notifyScissorUpdate();
     };
-    RendererBase.prototype._iApplyRenderableOwner = function (renderableOwner) {
-        var renderable = this.getAbstraction(renderableOwner);
-        var render = renderable.render;
+    RendererBase.prototype._iApplyRenderable = function (renderable) {
+        var renderableGL = this.getAbstraction(renderable);
+        var surfaceGL = renderableGL.surfaceGL;
         //set local vars for faster referencing
-        renderable.renderId = render.renderId;
-        renderable.renderOrderId = render.renderOrderId;
-        renderable.cascaded = false;
-        var entity = renderable.sourceEntity;
+        renderableGL.surfaceID = surfaceGL.surfaceID;
+        renderableGL.renderOrderId = surfaceGL.renderOrderId;
+        renderableGL.cascaded = false;
+        var entity = renderableGL.sourceEntity;
         var position = entity.scenePosition;
         // project onto camera's z-axis
         position = this._iEntryPoint.subtract(position);
-        renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
-        renderable.maskId = entity._iAssignedMaskId();
-        renderable.masksConfig = entity._iMasksConfig();
+        renderableGL.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+        renderableGL.maskId = entity._iAssignedMaskId();
+        renderableGL.masksConfig = entity._iMasksConfig();
         //store reference to scene transform
-        renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-        if (render.requiresBlending) {
-            renderable.next = this._pBlendedRenderableHead;
-            this._pBlendedRenderableHead = renderable;
+        renderableGL.renderSceneTransform = renderableGL.sourceEntity.getRenderSceneTransform(this._pCamera);
+        if (surfaceGL.requiresBlending) {
+            renderableGL.next = this._pBlendedRenderableHead;
+            this._pBlendedRenderableHead = renderableGL;
         }
         else {
-            renderable.next = this._pOpaqueRenderableHead;
-            this._pOpaqueRenderableHead = renderable;
+            renderableGL.next = this._pOpaqueRenderableHead;
+            this._pOpaqueRenderableHead = renderableGL;
         }
-        this._pNumElements += renderable.elements.numElements;
+        this._pNumElements += renderableGL.elements.numElements;
     };
     RendererBase.prototype._registerMask = function (obj) {
         //console.log("registerMask");
@@ -43864,7 +43790,7 @@ var RendererBase = (function (_super) {
         gl.stencilOp(gl.REPLACE, gl.REPLACE, gl.REPLACE);
         var numLayers = masks.length;
         var numRenderables = this._registeredMasks.length;
-        var renderable;
+        var renderableGL;
         var children;
         var numChildren;
         var mask;
@@ -43879,11 +43805,11 @@ var RendererBase = (function (_super) {
             for (var j = 0; j < numChildren; ++j) {
                 mask = children[j];
                 for (var k = 0; k < numRenderables; ++k) {
-                    renderable = this._registeredMasks[k];
+                    renderableGL = this._registeredMasks[k];
                     //console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
-                    if (renderable.maskId == mask.id) {
+                    if (renderableGL.maskId == mask.id) {
                         //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-                        this._drawMask(renderable);
+                        this._drawMask(renderableGL);
                     }
                 }
             }
@@ -43893,15 +43819,15 @@ var RendererBase = (function (_super) {
         this._pContext.setColorMask(true, true, true, true);
         //this._stage.setRenderTarget(oldRenderTarget);
     };
-    RendererBase.prototype._drawMask = function (renderable) {
-        var render = renderable.render;
-        var passes = render.passes;
+    RendererBase.prototype._drawMask = function (renderableGL) {
+        var surfaceGL = renderableGL.surfaceGL;
+        var passes = surfaceGL.passes;
         var len = passes.length;
         var pass = passes[len - 1];
-        this.activatePass(renderable, pass, this._pCamera);
+        this.activatePass(renderableGL, pass, this._pCamera);
         // only render last pass for now
-        renderable._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
-        this.deactivatePass(renderable, pass);
+        renderableGL._iRender(pass, this._pCamera, this._pRttViewProjectionMatrix);
+        this.deactivatePass(renderableGL, pass);
     };
     RendererBase.prototype._checkMasksConfig = function (masksConfig) {
         if (this._activeMasksConfig.length != masksConfig.length)
@@ -43930,40 +43856,40 @@ var RendererBase = (function (_super) {
 })(EventDispatcher);
 module.exports = RendererBase;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/render/RenderPool":"awayjs-renderergl/lib/render/RenderPool","awayjs-renderergl/lib/sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/RendererGL":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-display/lib/traverse/EntityCollector":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/RendererGL":[function(require,module,exports){
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
-var Billboard = require("awayjs-display/lib/entities/Billboard");
-var LineSegment = require("awayjs-display/lib/entities/LineSegment");
+var Skybox = require("awayjs-display/lib/display/Skybox");
+var Billboard = require("awayjs-display/lib/display/Billboard");
+var LineSegment = require("awayjs-display/lib/display/LineSegment");
 var LineElements = require("awayjs-display/lib/graphics/LineElements");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 var Graphic = require("awayjs-display/lib/graphics/Graphic");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var RendererBase = require("awayjs-renderergl/lib/RendererBase");
-var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
-var BasicMaterialRender = require("awayjs-renderergl/lib/render/BasicMaterialRender");
-var SkyboxRender = require("awayjs-renderergl/lib/render/SkyboxRender");
-var BillboardRenderable = require("awayjs-renderergl/lib/renderables/BillboardRenderable");
-var LineSegmentRenderable = require("awayjs-renderergl/lib/renderables/LineSegmentRenderable");
-var GraphicRenderable = require("awayjs-renderergl/lib/renderables/GraphicRenderable");
-var SkyboxRenderable = require("awayjs-renderergl/lib/renderables/SkyboxRenderable");
+var SurfacePool = require("awayjs-renderergl/lib/surfaces/SurfacePool");
+var GL_BasicMaterialSurface = require("awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface");
+var GL_SkyboxSurface = require("awayjs-renderergl/lib/surfaces/GL_SkyboxSurface");
+var GL_BillboardRenderable = require("awayjs-renderergl/lib/renderables/GL_BillboardRenderable");
+var GL_LineSegmentRenderable = require("awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable");
+var GL_GraphicRenderable = require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
+var GL_SkyboxRenderable = require("awayjs-renderergl/lib/renderables/GL_SkyboxRenderable");
 var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
 var ElementsPool = require("awayjs-renderergl/lib/elements/ElementsPool");
 var GL_LineElements = require("awayjs-renderergl/lib/elements/GL_LineElements");
 var GL_TriangleElements = require("awayjs-renderergl/lib/elements/GL_TriangleElements");
 var GL_Single2DTexture = require("awayjs-renderergl/lib/textures/GL_Single2DTexture");
 var GL_SingleCubeTexture = require("awayjs-renderergl/lib/textures/GL_SingleCubeTexture");
-RenderPool.registerAbstraction(BasicMaterialRender, BasicMaterial);
-RenderPool.registerAbstraction(SkyboxRender, Skybox);
+SurfacePool.registerAbstraction(GL_BasicMaterialSurface, BasicMaterial);
+SurfacePool.registerAbstraction(GL_SkyboxSurface, Skybox);
 ElementsPool.registerAbstraction(GL_LineElements, LineElements);
 ElementsPool.registerAbstraction(GL_TriangleElements, TriangleElements);
 ShaderBase.registerAbstraction(GL_Single2DTexture, Single2DTexture);
 ShaderBase.registerAbstraction(GL_SingleCubeTexture, SingleCubeTexture);
-RendererBase.registerAbstraction(BillboardRenderable, Billboard);
-RendererBase.registerAbstraction(LineSegmentRenderable, LineSegment);
-RendererBase.registerAbstraction(GraphicRenderable, Graphic);
-RendererBase.registerAbstraction(SkyboxRenderable, Skybox);
+RendererBase.registerAbstraction(GL_BillboardRenderable, Billboard);
+RendererBase.registerAbstraction(GL_LineSegmentRenderable, LineSegment);
+RendererBase.registerAbstraction(GL_GraphicRenderable, Graphic);
+RendererBase.registerAbstraction(GL_SkyboxRenderable, Skybox);
 /**
  *
  * static shim
@@ -43975,7 +43901,7 @@ var renderergl = (function () {
 })();
 module.exports = renderergl;
 
-},{"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","awayjs-renderergl/lib/elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-renderergl/lib/render/BasicMaterialRender":"awayjs-renderergl/lib/render/BasicMaterialRender","awayjs-renderergl/lib/render/RenderPool":"awayjs-renderergl/lib/render/RenderPool","awayjs-renderergl/lib/render/SkyboxRender":"awayjs-renderergl/lib/render/SkyboxRender","awayjs-renderergl/lib/renderables/BillboardRenderable":"awayjs-renderergl/lib/renderables/BillboardRenderable","awayjs-renderergl/lib/renderables/GraphicRenderable":"awayjs-renderergl/lib/renderables/GraphicRenderable","awayjs-renderergl/lib/renderables/LineSegmentRenderable":"awayjs-renderergl/lib/renderables/LineSegmentRenderable","awayjs-renderergl/lib/renderables/SkyboxRenderable":"awayjs-renderergl/lib/renderables/SkyboxRenderable","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/textures/GL_Single2DTexture":"awayjs-renderergl/lib/textures/GL_Single2DTexture","awayjs-renderergl/lib/textures/GL_SingleCubeTexture":"awayjs-renderergl/lib/textures/GL_SingleCubeTexture"}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","awayjs-renderergl/lib/elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-renderergl/lib/renderables/GL_BillboardRenderable":"awayjs-renderergl/lib/renderables/GL_BillboardRenderable","awayjs-renderergl/lib/renderables/GL_GraphicRenderable":"awayjs-renderergl/lib/renderables/GL_GraphicRenderable","awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable","awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface","awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-renderergl/lib/textures/GL_Single2DTexture":"awayjs-renderergl/lib/textures/GL_Single2DTexture","awayjs-renderergl/lib/textures/GL_SingleCubeTexture":"awayjs-renderergl/lib/textures/GL_SingleCubeTexture"}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -51898,13 +51824,13 @@ module.exports = CrossfadeTransition;
 
 },{}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
 /**
- * @class away.pool.RenderPool
+ * @class away.pool.SurfacePool
  */
 var ElementsPool = (function () {
     /**
      * //TODO
      *
-     * @param renderClass
+     * @param surfaceClassGL
      */
     function ElementsPool(shader, elementsClass) {
         this._abstractionPool = new Object();
@@ -51914,7 +51840,7 @@ var ElementsPool = (function () {
     /**
      * //TODO
      *
-     * @param renderableOwner
+     * @param renderable
      * @returns IRenderable
      */
     ElementsPool.prototype.getAbstraction = function (elements) {
@@ -51923,7 +51849,7 @@ var ElementsPool = (function () {
     /**
      * //TODO
      *
-     * @param renderableOwner
+     * @param renderable
      */
     ElementsPool.prototype.clearAbstraction = function (elements) {
         delete this._abstractionPool[elements.id];
@@ -52171,10 +52097,10 @@ var GL_ElementsBase = (function (_super) {
      * //TODO
      *
      * @param pool
-     * @param renderableOwner
+     * @param renderable
      * @param level
      * @param indexOffset
-     * @returns {away.pool.GraphicRenderable}
+     * @returns {away.pool.GL_GraphicRenderable}
      * @protected
      */
     GL_ElementsBase.prototype._pGetOverflowElements = function () {
@@ -52256,7 +52182,7 @@ var GL_LineElements = (function (_super) {
      * //TODO
      *
      * @param pool
-     * @param renderableOwner
+     * @param renderable
      * @param level
      * @param indexOffset
      * @returns {away.pool.LineSubMeshRenderable}
@@ -52365,20 +52291,20 @@ var GL_TriangleElements = (function (_super) {
     GL_TriangleElements.prototype._render = function (sourceEntity, camera, viewProjection) {
         //set buffers
         //TODO: find a better way to update a concatenated buffer when autoderiving
-        if (this._shader.normalBufferIndex >= 0 && this._triangleElements.autoDeriveNormals)
+        if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
             this._triangleElements.normals;
-        if (this._shader.tangentBufferIndex >= 0 && this._triangleElements.autoDeriveTangents)
+        if (this._shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
             this._triangleElements.tangents;
         if (this._shader.curvesIndex >= 0)
             this.activateVertexBufferVO(this._shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
-        if (this._shader.uvBufferIndex >= 0)
-            this.activateVertexBufferVO(this._shader.uvBufferIndex, this._triangleElements.uvs || this._triangleElements.positions);
-        if (this._shader.secondaryUVBufferIndex >= 0)
-            this.activateVertexBufferVO(this._shader.secondaryUVBufferIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
-        if (this._shader.normalBufferIndex >= 0)
-            this.activateVertexBufferVO(this._shader.normalBufferIndex, this._triangleElements.normals);
-        if (this._shader.tangentBufferIndex >= 0)
-            this.activateVertexBufferVO(this._shader.tangentBufferIndex, this._triangleElements.tangents);
+        if (this._shader.uvIndex >= 0)
+            this.activateVertexBufferVO(this._shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
+        if (this._shader.secondaryUVIndex >= 0)
+            this.activateVertexBufferVO(this._shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
+        if (this._shader.normalIndex >= 0)
+            this.activateVertexBufferVO(this._shader.normalIndex, this._triangleElements.normals);
+        if (this._shader.tangentIndex >= 0)
+            this.activateVertexBufferVO(this._shader.tangentIndex, this._triangleElements.tangents);
         if (this._shader.jointIndexIndex >= 0)
             this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointIndices);
         if (this._shader.jointWeightIndex >= 0)
@@ -52410,10 +52336,10 @@ var GL_TriangleElements = (function (_super) {
      * //TODO
      *
      * @param pool
-     * @param renderableOwner
+     * @param renderable
      * @param level
      * @param indexOffset
-     * @returns {away.pool.GraphicRenderable}
+     * @returns {away.pool.GL_GraphicRenderable}
      * @protected
      */
     GL_TriangleElements.prototype._pGetOverflowElements = function () {
@@ -52867,6 +52793,18 @@ var Filter3DBase = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Filter3DBase.prototype, "rttManager", {
+        get: function () {
+            return this._rttManager;
+        },
+        set: function (value) {
+            this._rttManager = value;
+            for (var i = 0; i < this._tasks.length; ++i)
+                this._tasks[i].rttManager = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Filter3DBase.prototype, "textureHeight", {
         get: function () {
             return this._textureHeight;
@@ -53001,19 +52939,17 @@ var Filter3DFXAATask = (function (_super) {
         if (stepSize === void 0) { stepSize = -1; }
         _super.call(this);
         this._stepSize = 1;
-        this._data = new Float32Array(24);
+        this._data = new Float32Array(20);
         //luma
-        this._data.set([0.299, 0.587, 0.114, 1], 0); //0.212, 0.716, 0.072
+        this._data.set([0.299, 0.587, 0.114, 0], 0); //0.212, 0.716, 0.072
         //helpers
-        this._data.set([0.25, 0.5, 0.75, 4.3], 4);
+        this._data.set([0.25, 0.5, 0.75, 1], 4);
         //settings (screen x, screen y, ...)
-        this._data.set([1 / 1024, 1 / 1024, 1.75, 1 / 16], 8);
+        this._data.set([1 / 1024, 1 / 1024, -1, 1], 8);
         //deltas
-        this._data.set([0, -1, 1, 0], 12);
+        this._data.set([1 / 128, 1 / 8, 8, 0], 12);
         //deltas
         this._data.set([1.0 / 3.0 - 0.5, 2.0 / 3.0 - 0.5, 0.0 / 3.0 - 0.5, 3.0 / 3.0 - 0.5], 16);
-        //deltas
-        this._data.set([1 / 128, 1 / 8, 0, 8], 20);
         this.amount = amount;
         this.stepSize = stepSize;
     }
@@ -53047,25 +52983,25 @@ var Filter3DFXAATask = (function (_super) {
         configurable: true
     });
     Filter3DFXAATask.prototype.getFragmentCode = function () {
-        var uv_in = "v0";
-        var w = "fc2.z"; //	1.75
         var lum = "fc0"; //	0.299, 0.587, 0.114
-        var s = "fc2.w"; //	1/16
-        var div = "fc1.w"; //	4.3
+        var _0 = "fc0.w";
+        var _025 = "fc1.x";
+        var _05 = "fc1.y";
+        var _075 = "fc1.z";
+        var _1 = "fc1.w";
         var pix = "fc2.xy";
         var dx = "fc2.x"; // 1/1024
         var dy = "fc2.y"; // 1/1024
-        var mOne = "fc3.y"; // -1.0
-        var mul = "fc3.z"; // 1.0  -- one for now
+        var mOne = "fc2.z"; // -1.0
+        var mul = "fc2.w"; // 1.0  -- one for now
+        var fxaaReduceMin = "fc3.x"; //1/128
+        var fxaaReduceMul = "fc3.y"; //1/8
+        var fxaaSpanMax = "fc3.z"; //8
         var delta1 = "fc4.x"; //1.0/3.0 - 0.5
         var delta2 = "fc4.y"; //2.0/3.0 - 0.5
         var delta3 = "fc4.z"; //0.0/3.0 - 0.5
         var delta4 = "fc4.w"; //3.0/3.0 - 0.5
-        var _0 = "fc3.x";
-        var _025 = "fc1.x";
-        var _05 = "fc1.y";
-        var _075 = "fc1.z";
-        var _1 = "fc0.w";
+        var uv_in = "v0";
         var uv = "ft0.xy";
         var uvx = "ft0.x";
         var uvy = "ft0.y";
@@ -53086,9 +53022,6 @@ var Filter3DFXAATask = (function (_super) {
         var inverseDirAdjustment = "ft5.y";
         var result1 = "ft6";
         var result2 = "ft7";
-        var fxaaReduceMin = "fc5.x"; //1/128
-        var fxaaReduceMul = "fc5.y"; //1/8
-        var fxaaSpanMax = "fc5.w"; //8
         var lumaMin = "ft5.x";
         var lumaMax = "ft5.y";
         var sample = "fs0";
@@ -53191,9 +53124,10 @@ var Filter3DFXAATask = (function (_super) {
     };
     Filter3DFXAATask.prototype.updateBlurData = function () {
         // todo: must be normalized using view size ratio instead of texture
-        var invH = 1 / this._textureHeight;
-        this._data[0] = this._amount * .5 * invH;
-        this._data[1] = this._realStepSize * invH;
+        if (this._rttManager) {
+            this._data[8] = 1 / this._textureWidth;
+            this._data[9] = 1 / this._textureHeight;
+        }
     };
     Filter3DFXAATask.prototype.calculateStepSize = function () {
         this._realStepSize = 1; //this._stepSize > 0? this._stepSize : this._amount > Filter3DVBlurTask.MAX_AUTO_SAMPLES? this._amount/Filter3DVBlurTask.MAX_AUTO_SAMPLES : 1;
@@ -53332,6 +53266,19 @@ var Filter3DTaskBase = (function () {
         },
         set: function (value) {
             this._target = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Filter3DTaskBase.prototype, "rttManager", {
+        get: function () {
+            return this._rttManager;
+        },
+        set: function (value) {
+            if (this._rttManager == value)
+                return;
+            this._rttManager = value;
+            this._textureDimensionsInvalid = true;
         },
         enumerable: true,
         configurable: true
@@ -53749,7 +53696,7 @@ var ContextGLTriangleFace = require("awayjs-stagegl/lib/base/ContextGLTriangleFa
  *
  * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
  *
- * @see away.entities.Entity#shaderPickingDetails
+ * @see away.display.Entity#shaderPickingDetails
  *
  * @class away.pick.ShaderPicker
  */
@@ -53870,29 +53817,29 @@ var ShaderPicker = (function () {
      * @param renderables The renderables to draw.
      * @param camera The camera for which to render.
      */
-    ShaderPicker.prototype.drawRenderables = function (renderable, camera) {
+    ShaderPicker.prototype.drawRenderables = function (renderableGL, camera) {
         var matrix = Matrix3DUtils.CALCULATION_MATRIX;
         var viewProjection = camera.viewProjection;
-        while (renderable) {
-            // it's possible that the renderable was already removed from the scene
-            if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
-                renderable = renderable.next;
+        while (renderableGL) {
+            // it's possible that the renderableGL was already removed from the scene
+            if (!renderableGL.sourceEntity.scene || !renderableGL.sourceEntity._iIsMouseEnabled()) {
+                renderableGL = renderableGL.next;
                 continue;
             }
             this._potentialFound = true;
-            this._context.setCulling(renderable.render.renderOwner.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
-            this._interactives[this._interactiveId++] = renderable;
+            this._context.setCulling(renderableGL.surfaceGL.surface.bothSides ? ContextGLTriangleFace.NONE : ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
+            this._interactives[this._interactiveId++] = renderableGL;
             // color code so that reading from bitmapdata will contain the correct value
             this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
             this._id[2] = (this._interactiveId & 0xff) / 255; // on blue channel
-            matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
+            matrix.copyFrom(renderableGL.sourceEntity.getRenderSceneTransform(camera));
             matrix.append(viewProjection);
             this._context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
             this._context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-            //var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderable.elements).positions);
+            //var positionAttributes:GL_AttributesBuffer = <GL_AttributesBuffer> this._stage.getAbstraction((<TriangleElements> renderableGL.elements).positions);
             //positionAttributes.activate(0, positionAttributes.size, positionAttributes.dimensions, positionAttributes.offset);
             //elementsGL.getIndexBufferVO().draw(ContextGLDrawMode.TRIANGLES, 0, elementsGL.numIndices);
-            renderable = renderable.next;
+            renderableGL = renderableGL.next;
         }
     };
     ShaderPicker.prototype.updateRay = function (camera) {
@@ -54144,979 +54091,7 @@ var ShaderPicker = (function () {
 })();
 module.exports = ShaderPicker;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/render/BasicMaterialRender":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var BlendMode = require("awayjs-core/lib/image/BlendMode");
-var BasicMaterialPass = require("awayjs-renderergl/lib/render/passes/BasicMaterialPass");
-var RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-/**
- * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var BasicMaterialRender = (function (_super) {
-    __extends(BasicMaterialRender, _super);
-    function BasicMaterialRender(material, elementsClass, renderPool) {
-        _super.call(this, material, elementsClass, renderPool);
-        this._material = material;
-        this._pAddPass(this._pass = new BasicMaterialPass(this, material, elementsClass, this._stage));
-    }
-    BasicMaterialRender.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._material = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    BasicMaterialRender.prototype._pUpdateRender = function () {
-        _super.prototype._pUpdateRender.call(this);
-        this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
-        this._pass.preserveAlpha = this._material.preserveAlpha; //this._pRequiresBlending;
-        this._pass.shader.setBlendMode((this._renderOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
-        //this._pass.forceSeparateMVP = false;
-    };
-    return BasicMaterialRender;
-})(RenderBase);
-module.exports = BasicMaterialRender;
-
-},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/render/RenderBase":"awayjs-renderergl/lib/render/RenderBase","awayjs-renderergl/lib/render/passes/BasicMaterialPass":"awayjs-renderergl/lib/render/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/render/DepthRender":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
-var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-/**
- * DepthRender forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var DepthRender = (function (_super) {
-    __extends(DepthRender, _super);
-    /**
-     *
-     * @param pool
-     * @param renderOwner
-     * @param elementsClass
-     * @param stage
-     */
-    function DepthRender(renderOwner, elementsClass, renderPool) {
-        _super.call(this, renderOwner, elementsClass, renderPool);
-        this._shader = new ShaderBase(elementsClass, this, this._stage);
-        this._pAddPass(this);
-    }
-    DepthRender.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._textureVO = this._renderOwner.getTextureAt(0) ? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
-    };
-    DepthRender.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
-        shader.projectionDependencies++;
-        if (shader.alphaThreshold > 0)
-            shader.uvDependencies++;
-    };
-    DepthRender.prototype._iInitConstantData = function (shader) {
-        _super.prototype._iInitConstantData.call(this, shader);
-        var index = this._fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = 1.0;
-        data[index + 1] = 255.0;
-        data[index + 2] = 65025.0;
-        data[index + 3] = 16581375.0;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        var code = "";
-        var targetReg = sharedRegisters.shadedTarget;
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        //codeF += "mov ft1.w, fc1.w	\n" +
-        //    "mov ft0.w, fc0.x	\n";
-        if (this._textureVO && shader.alphaThreshold > 0) {
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        registerCache.removeFragmentTempUsage(temp1);
-        registerCache.removeFragmentTempUsage(temp2);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DepthRender.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        if (this._textureVO && this._shader.alphaThreshold > 0) {
-            this._textureVO.activate(this);
-            this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
-        }
-    };
-    return DepthRender;
-})(RenderPassBase);
-module.exports = DepthRender;
-
-},{"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/DistanceRender":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
-var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-/**
- * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
- * This is used to render omnidirectional shadow maps.
- */
-var DistanceRender = (function (_super) {
-    __extends(DistanceRender, _super);
-    /**
-     * Creates a new DistanceRender object.
-     *
-     * @param material The material to which this pass belongs.
-     */
-    function DistanceRender(renderOwner, elementsClass, renderPool) {
-        _super.call(this, renderOwner, elementsClass, renderPool);
-        this._shader = new ShaderBase(elementsClass, this, this._stage);
-        this._pAddPass(this);
-    }
-    DistanceRender.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._textureVO = this._renderOwner.getTextureAt(0) ? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
-    };
-    /**
-     * Initializes the unchanging constant data for this material.
-     */
-    DistanceRender.prototype._iInitConstantData = function (shader) {
-        _super.prototype._iInitConstantData.call(this, shader);
-        var index = this._fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index + 4] = 1.0 / 255.0;
-        data[index + 5] = 1.0 / 255.0;
-        data[index + 6] = 1.0 / 255.0;
-        data[index + 7] = 0.0;
-    };
-    DistanceRender.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
-        shader.projectionDependencies++;
-        shader.viewDirDependencies++;
-        if (shader.alphaThreshold > 0)
-            shader.uvDependencies++;
-        if (shader.viewDirDependencies > 0)
-            shader.globalPosDependencies++;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistanceRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        var code;
-        var targetReg = sharedRegisters.shadedTarget;
-        var dataReg1 = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        this._fragmentConstantsIndex = dataReg1.index * 4;
-        var temp1 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp1, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        // squared distance to view
-        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        if (this._textureVO && shader.alphaThreshold > 0) {
-            var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-            var cutOffReg = registerCache.getFreeFragmentConstant();
-            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
-        }
-        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DistanceRender.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        var f = camera.projection.far;
-        f = 1 / (2 * f * f);
-        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
-        var index = this._fragmentConstantsIndex;
-        var data = this._shader.fragmentConstantData;
-        data[index] = 1.0 * f;
-        data[index + 1] = 255.0 * f;
-        data[index + 2] = 65025.0 * f;
-        data[index + 3] = 16581375.0 * f;
-        if (this._textureVO && this._shader.alphaThreshold > 0) {
-            this._textureVO.activate(this);
-            data[index + 8] = this._shader.alphaThreshold;
-        }
-    };
-    return DistanceRender;
-})(RenderPassBase);
-module.exports = DistanceRender;
-
-},{"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/IRenderClass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/render/RenderBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AbstractionBase = require("awayjs-core/lib/library/AbstractionBase");
-var RenderOwnerEvent = require("awayjs-display/lib/events/RenderOwnerEvent");
-var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
-var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
-/**
- *
- * @class away.pool.Passes
- */
-var RenderBase = (function (_super) {
-    __extends(RenderBase, _super);
-    function RenderBase(renderOwner, elementsClass, renderPool) {
-        var _this = this;
-        _super.call(this, renderOwner, renderPool);
-        this.usages = 0;
-        this._forceSeparateMVP = false;
-        this._invalidAnimation = true;
-        this._invalidRender = true;
-        this._invalidImages = true;
-        this._passes = new Array();
-        this._imageIndices = new Object();
-        this._pRequiresBlending = false;
-        this.images = new Array();
-        this.samplers = new Array();
-        this._onInvalidateAnimationDelegate = function (event) { return _this.onInvalidateAnimation(event); };
-        this._onInvalidatePassesDelegate = function (event) { return _this.onInvalidatePasses(event); };
-        this.renderId = renderOwner.id;
-        this._renderOwner = renderOwner;
-        this._elementsClass = elementsClass;
-        this._stage = renderPool.stage;
-        this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
-        this._renderOwner.addEventListener(RenderOwnerEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
-        this._onPassInvalidateDelegate = function (event) { return _this.onPassInvalidate(event); };
-    }
-    Object.defineProperty(RenderBase.prototype, "requiresBlending", {
-        /**
-         * Indicates whether or not the renderable requires alpha blending during rendering.
-         */
-        get: function () {
-            return this._pRequiresBlending;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderBase.prototype, "renderOrderId", {
-        get: function () {
-            if (this._invalidAnimation)
-                this._updateAnimation();
-            return this._renderOrderId;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderBase.prototype, "passes", {
-        get: function () {
-            if (this._invalidAnimation)
-                this._updateAnimation();
-            return this._passes;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderBase.prototype, "renderOwner", {
-        get: function () {
-            return this._renderOwner;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderBase.prototype, "numImages", {
-        get: function () {
-            if (this._invalidImages)
-                this._updateImages();
-            return this._numImages;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RenderBase.prototype._iIncludeDependencies = function (shader) {
-        this._elementsClass._iIncludeDependencies(shader);
-        shader.alphaThreshold = this._renderOwner.alphaThreshold;
-        shader.useImageRect = this._renderOwner.imageRect;
-        shader.usesCurves = this._renderOwner.curves;
-        if (this._renderOwner instanceof MaterialBase) {
-            var material = this._renderOwner;
-            shader.useAlphaPremultiplied = material.alphaPremultiplied;
-            shader.useBothSides = material.bothSides;
-            shader.usesUVTransform = material.animateUVs;
-            shader.usesColorTransform = material.useColorTransform;
-        }
-    };
-    RenderBase.prototype.getImageIndex = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        if (this._invalidImages)
-            this._updateImages();
-        return this._imageIndices[texture.id][index];
-    };
-    /**
-     *
-     */
-    RenderBase.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._renderOwner = null;
-        this._elementsClass = null;
-        this._stage = null;
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++) {
-            this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
-            this._passes[i].dispose();
-        }
-        this._passes = null;
-    };
-    /**
-     *
-     */
-    RenderBase.prototype.onInvalidate = function (event) {
-        _super.prototype.onInvalidate.call(this, event);
-        this._invalidRender = true;
-        this._invalidAnimation = true;
-    };
-    /**
-     *
-     */
-    RenderBase.prototype.onInvalidatePasses = function (event) {
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++)
-            this._passes[i].invalidate();
-        this._invalidAnimation = true;
-        this._invalidImages = true;
-    };
-    /**
-     *
-     */
-    RenderBase.prototype.onInvalidateAnimation = function (event) {
-        this._invalidAnimation = true;
-    };
-    /**
-     *
-     * @param renderOwner
-     */
-    RenderBase.prototype._updateAnimation = function () {
-        if (this._invalidRender)
-            this._pUpdateRender();
-        this._invalidAnimation = false;
-        var enabledGPUAnimation = this._getEnabledGPUAnimation();
-        var renderOrderId = 0;
-        var mult = 1;
-        var shader;
-        var len = this._passes.length;
-        for (var i = 0; i < len; i++) {
-            shader = this._passes[i].shader;
-            if (shader.usesAnimation != enabledGPUAnimation) {
-                shader.usesAnimation = enabledGPUAnimation;
-                shader.invalidateProgram();
-            }
-            renderOrderId += shader.programData.id * mult;
-            mult *= 1000;
-        }
-        this._renderOrderId = renderOrderId;
-    };
-    RenderBase.prototype._updateImages = function () {
-        this._invalidImages = false;
-        var numTextures = this._renderOwner.getNumTextures();
-        var texture;
-        var numImages;
-        var images;
-        var image;
-        var sampler;
-        var index = 0;
-        for (var i = 0; i < numTextures; i++) {
-            texture = this._renderOwner.getTextureAt(i);
-            numImages = texture.getNumImages();
-            images = this._imageIndices[texture.id] = new Array();
-            for (var j = 0; j < numImages; j++) {
-                image = texture.getImageAt(j) || (this._renderOwner.style ? this._renderOwner.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
-                this.images[index] = this._stage.getAbstraction(image);
-                sampler = texture.getSamplerAt(j) || (this._renderOwner.style ? this._renderOwner.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
-                this.samplers[index] = this._stage.getAbstraction(sampler);
-                images[j] = index++;
-            }
-        }
-        this._numImages = index;
-    };
-    /**
-     * Performs any processing that needs to occur before any of its passes are used.
-     *
-     * @private
-     */
-    RenderBase.prototype._pUpdateRender = function () {
-        this._invalidRender = false;
-        //overrride to update shader object properties
-    };
-    /**
-     * Removes a pass from the renderOwner.
-     * @param pass The pass to be removed.
-     */
-    RenderBase.prototype._pRemovePass = function (pass) {
-        pass.removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
-        this._passes.splice(this._passes.indexOf(pass), 1);
-    };
-    /**
-     * Removes all passes from the renderOwner
-     */
-    RenderBase.prototype._pClearPasses = function () {
-        var len = this._passes.length;
-        for (var i = 0; i < len; ++i)
-            this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
-        this._passes.length = 0;
-    };
-    /**
-     * Adds a pass to the renderOwner
-     * @param pass
-     */
-    RenderBase.prototype._pAddPass = function (pass) {
-        this._passes.push(pass);
-        pass.addEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
-    };
-    /**
-     * Listener for when a pass's shader code changes. It recalculates the render order id.
-     */
-    RenderBase.prototype.onPassInvalidate = function (event) {
-        this._invalidAnimation = true;
-    };
-    /**
-     * test if animation will be able to run on gpu BEFORE compiling materials
-     * test if the shader objects supports animating the animation set in the vertex shader
-     * if any object using this material fails to support accelerated animations for any of the shader objects,
-     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
-     */
-    RenderBase.prototype._getEnabledGPUAnimation = function () {
-        if (this._renderOwner.animationSet) {
-            this._renderOwner.animationSet.resetGPUCompatibility();
-            var owners = this._renderOwner.iOwners;
-            var numOwners = owners.length;
-            var len = this._passes.length;
-            for (var i = 0; i < len; i++)
-                for (var j = 0; j < numOwners; j++)
-                    if (owners[j].animator)
-                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
-            return !this._renderOwner.animationSet.usesCPU;
-        }
-        return false;
-    };
-    return RenderBase;
-})(AbstractionBase);
-module.exports = RenderBase;
-
-},{"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderOwnerEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/render/RenderPassBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
-var RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
-/**
- * RenderPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
- * a render call per required renderable.
- */
-var RenderPassBase = (function (_super) {
-    __extends(RenderPassBase, _super);
-    function RenderPassBase() {
-        _super.apply(this, arguments);
-    }
-    Object.defineProperty(RenderPassBase.prototype, "shader", {
-        get: function () {
-            return this._shader;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RenderPassBase.prototype, "animationSet", {
-        get: function () {
-            return this._renderOwner.animationSet;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Marks the shader program as invalid, so it will be recompiled before the next render.
-     */
-    RenderPassBase.prototype.invalidate = function () {
-        this._shader.invalidateShader();
-        this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
-    };
-    RenderPassBase.prototype.dispose = function () {
-        if (this._shader) {
-            this._shader.dispose();
-            this._shader = null;
-        }
-    };
-    /**
-     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
-     * @param pass The pass used to render the renderable.
-     * @param renderable The IRenderable object to draw.
-     * @param stage The Stage object used for rendering.
-     * @param entityCollector The EntityCollector object that contains the visible scene data.
-     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-     * camera.viewProjection as it includes the scaling factors when rendering to textures.
-     *
-     * @internal
-     */
-    RenderPassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        this._shader._iRender(renderable, camera, viewProjection);
-    };
-    /**
-     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-     * @param stage The Stage object which is currently used for rendering.
-     * @param camera The camera from which the scene is viewed.
-     * @private
-     */
-    RenderPassBase.prototype._iActivate = function (camera) {
-        this._shader._iActivate(camera);
-    };
-    /**
-     * Clears the render state for the pass. This needs to be called before activating another pass.
-     * @param stage The Stage used for rendering
-     *
-     * @private
-     */
-    RenderPassBase.prototype._iDeactivate = function () {
-        this._shader._iDeactivate();
-    };
-    RenderPassBase.prototype._iInitConstantData = function (shader) {
-    };
-    RenderPassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    RenderPassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    return RenderPassBase;
-})(RenderBase);
-module.exports = RenderPassBase;
-
-},{"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-renderergl/lib/render/RenderBase":"awayjs-renderergl/lib/render/RenderBase"}],"awayjs-renderergl/lib/render/RenderPool":[function(require,module,exports){
-/**
- * @class away.pool.RenderPool
- */
-var RenderPool = (function () {
-    /**
-     * //TODO
-     *
-     * @param renderClass
-     */
-    function RenderPool(elementsClass, stage, renderClass) {
-        if (renderClass === void 0) { renderClass = null; }
-        this._abstractionPool = new Object();
-        this._elementsClass = elementsClass;
-        this._stage = stage;
-        this._renderClass = renderClass;
-    }
-    Object.defineProperty(RenderPool.prototype, "stage", {
-        get: function () {
-            return this._stage;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * //TODO
-     *
-     * @param elementsOwner
-     * @returns IElements
-     */
-    RenderPool.prototype.getAbstraction = function (renderOwner) {
-        return (this._abstractionPool[renderOwner.id] || (this._abstractionPool[renderOwner.id] = new (this._renderClass || RenderPool._abstractionClassPool[renderOwner.assetType])(renderOwner, this._elementsClass, this)));
-    };
-    /**
-     * //TODO
-     *
-     * @param elementsOwner
-     */
-    RenderPool.prototype.clearAbstraction = function (renderOwner) {
-        delete this._abstractionPool[renderOwner.id];
-    };
-    /**
-     *
-     * @param imageObjectClass
-     */
-    RenderPool.registerAbstraction = function (renderClass, assetClass) {
-        RenderPool._abstractionClassPool[assetClass.assetType] = renderClass;
-    };
-    RenderPool._abstractionClassPool = new Object();
-    return RenderPool;
-})();
-module.exports = RenderPool;
-
-},{}],"awayjs-renderergl/lib/render/SkyboxRender":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var BlendMode = require("awayjs-core/lib/image/BlendMode");
-var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var RenderPassBase = require("awayjs-renderergl/lib/render/RenderPassBase");
-var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-/**
- * SkyboxRender forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var SkyboxRender = (function (_super) {
-    __extends(SkyboxRender, _super);
-    function SkyboxRender(skybox, elementsClass, renderPool) {
-        _super.call(this, skybox, elementsClass, renderPool);
-        this._skybox = skybox;
-        this._shader = new ShaderBase(elementsClass, this, this._stage);
-        this._texture = this._shader.getAbstraction(this._skybox.texture);
-        this._pAddPass(this);
-    }
-    SkyboxRender.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._texture.onClear(new AssetEvent(AssetEvent.CLEAR, this._skybox.texture));
-        this._texture = null;
-        this._skybox = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxRender.prototype._pUpdateRender = function () {
-        _super.prototype._pUpdateRender.call(this);
-        this._pRequiresBlending = (this._renderOwner.blendMode != BlendMode.NORMAL);
-        this.shader.setBlendMode((this._renderOwner.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._renderOwner.blendMode);
-    };
-    SkyboxRender.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
-        shader.usesPositionFragment = true;
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
-    };
-    SkyboxRender.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
-        this._texture._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    SkyboxRender.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
-        this._texture.activate(this);
-    };
-    return SkyboxRender;
-})(RenderPassBase);
-module.exports = SkyboxRender;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/render/RenderPassBase":"awayjs-renderergl/lib/render/RenderPassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/render/passes/BasicMaterialPass":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-var PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
-/**
- * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
- * using material methods to define their appearance.
- */
-var BasicMaterialPass = (function (_super) {
-    __extends(BasicMaterialPass, _super);
-    function BasicMaterialPass(render, renderOwner, elementsClass, stage) {
-        _super.call(this, render, renderOwner, elementsClass, stage);
-        this._diffuseR = 1;
-        this._diffuseG = 1;
-        this._diffuseB = 1;
-        this._diffuseA = 1;
-        this._shader = new ShaderBase(elementsClass, this, this._stage);
-        this.invalidate();
-    }
-    BasicMaterialPass.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
-        if (this._textureVO != null)
-            shader.uvDependencies++;
-    };
-    BasicMaterialPass.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._textureVO = this._renderOwner.getTextureAt(0) ? this._shader.getAbstraction(this._renderOwner.getTextureAt(0)) : null;
-    };
-    BasicMaterialPass.prototype.dispose = function () {
-        if (this._textureVO) {
-            this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._renderOwner.getTextureAt(0)));
-            this._textureVO = null;
-        }
-        _super.prototype.dispose.call(this);
-    };
-    /**
-     * @inheritDoc
-     */
-    BasicMaterialPass.prototype._iGetFragmentCode = function (shader, regCache, sharedReg) {
-        var code = "";
-        var alphaReg;
-        if (this.preserveAlpha) {
-            alphaReg = regCache.getFreeFragmentSingleTemp();
-            regCache.addFragmentTempUsages(alphaReg, 1);
-            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
-        }
-        var targetReg = sharedReg.shadedTarget;
-        if (this._textureVO != null) {
-            code += this._textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
-            if (shader.alphaThreshold > 0) {
-                var cutOffReg = regCache.getFreeFragmentConstant();
-                this._fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else if (shader.colorBufferIndex != -1) {
-            code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
-        }
-        else {
-            var diffuseInputReg = regCache.getFreeFragmentConstant();
-            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
-            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
-        }
-        if (this.preserveAlpha) {
-            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
-            regCache.removeFragmentTempUsage(alphaReg);
-        }
-        return code;
-    };
-    BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
-        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
-        if (this._textureVO != null)
-            this._textureVO._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    BasicMaterialPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        if (this._textureVO != null) {
-            this._textureVO.activate(this._render);
-            if (this._shader.alphaThreshold > 0)
-                this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
-        }
-        else if (this._shader.colorBufferIndex == -1) {
-            var index = this._fragmentConstantsIndex;
-            var data = this._shader.fragmentConstantData;
-            data[index] = this._diffuseR;
-            data[index + 1] = this._diffuseG;
-            data[index + 2] = this._diffuseB;
-            data[index + 3] = this._diffuseA;
-        }
-    };
-    return BasicMaterialPass;
-})(PassBase);
-module.exports = BasicMaterialPass;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-renderergl/lib/render/passes/PassBase":"awayjs-renderergl/lib/render/passes/PassBase","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase"}],"awayjs-renderergl/lib/render/passes/ILightingPass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/render/passes/IPass":[function(require,module,exports){
-
-},{}],"awayjs-renderergl/lib/render/passes/PassBase":[function(require,module,exports){
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
-var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
-/**
- * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
- * a render call per required renderable.
- */
-var PassBase = (function (_super) {
-    __extends(PassBase, _super);
-    /**
-     * Creates a new PassBase object.
-     */
-    function PassBase(render, renderOwner, elementsClass, stage) {
-        _super.call(this);
-        this._preserveAlpha = true;
-        this._forceSeparateMVP = false;
-        this._render = render;
-        this._renderOwner = renderOwner;
-        this._elementsClass = elementsClass;
-        this._stage = stage;
-    }
-    Object.defineProperty(PassBase.prototype, "shader", {
-        get: function () {
-            return this._shader;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PassBase.prototype, "animationSet", {
-        get: function () {
-            return this._renderOwner.animationSet;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PassBase.prototype, "preserveAlpha", {
-        /**
-         * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
-         */
-        get: function () {
-            return this._preserveAlpha;
-        },
-        set: function (value) {
-            if (this._preserveAlpha == value)
-                return;
-            this._preserveAlpha = value;
-            this.invalidate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PassBase.prototype, "forceSeparateMVP", {
-        /**
-         * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
-         * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
-         * projection code.
-         */
-        get: function () {
-            return this._forceSeparateMVP;
-        },
-        set: function (value) {
-            if (this._forceSeparateMVP == value)
-                return;
-            this._forceSeparateMVP = value;
-            this.invalidate();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PassBase.prototype.getImageIndex = function (texture, index) {
-        if (index === void 0) { index = 0; }
-        return this._render.getImageIndex(texture, index);
-    };
-    /**
-     * Marks the shader program as invalid, so it will be recompiled before the next render.
-     */
-    PassBase.prototype.invalidate = function () {
-        this._shader.invalidateShader();
-        this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
-    };
-    /**
-     * Cleans up any resources used by the current object.
-     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
-     */
-    PassBase.prototype.dispose = function () {
-        this._render = null;
-        this._renderOwner = null;
-        this._elementsClass = null;
-        this._stage = null;
-        if (this._shader) {
-            this._shader.dispose();
-            this._shader = null;
-        }
-    };
-    /**
-     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
-     * @param pass The pass used to render the renderable.
-     * @param renderable The IRenderable object to draw.
-     * @param stage The Stage object used for rendering.
-     * @param entityCollector The EntityCollector object that contains the visible scene data.
-     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
-     * camera.viewProjection as it includes the scaling factors when rendering to textures.
-     *
-     * @internal
-     */
-    PassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        this._shader._iRender(renderable, camera, viewProjection);
-    };
-    /**
-     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
-     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-     * @param stage The Stage object which is currently used for rendering.
-     * @param camera The camera from which the scene is viewed.
-     * @private
-     */
-    PassBase.prototype._iActivate = function (camera) {
-        this._shader._iActivate(camera);
-    };
-    /**
-     * Clears the render state for the pass. This needs to be called before activating another pass.
-     * @param stage The Stage used for rendering
-     *
-     * @private
-     */
-    PassBase.prototype._iDeactivate = function () {
-        this._shader._iDeactivate();
-    };
-    PassBase.prototype._iIncludeDependencies = function (shader) {
-        this._render._iIncludeDependencies(shader);
-        if (this._forceSeparateMVP)
-            shader.globalPosDependencies++;
-    };
-    PassBase.prototype._iInitConstantData = function (shader) {
-    };
-    PassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    return PassBase;
-})(EventDispatcher);
-module.exports = PassBase;
-
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/renderables/BillboardRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55126,23 +54101,23 @@ var __extends = this.__extends || function (d, b) {
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+var GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
  * @class away.pool.RenderableListItem
  */
-var BillboardRenderable = (function (_super) {
-    __extends(BillboardRenderable, _super);
+var GL_Billboard = (function (_super) {
+    __extends(GL_Billboard, _super);
     /**
      * //TODO
      *
      * @param pool
      * @param billboard
      */
-    function BillboardRenderable(billboard, renderer) {
+    function GL_Billboard(billboard, renderer) {
         _super.call(this, billboard, billboard, renderer);
         this._billboard = billboard;
     }
-    BillboardRenderable.prototype.onClear = function (event) {
+    GL_Billboard.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         this._billboard = null;
     };
@@ -55151,18 +54126,18 @@ var BillboardRenderable = (function (_super) {
      *
      * @returns {away.base.TriangleElements}
      */
-    BillboardRenderable.prototype._pGetElements = function () {
+    GL_Billboard.prototype._pGetElements = function () {
         var texture = this._billboard.material.getTextureAt(0);
         var id = -1;
         if (texture)
-            id = ((this.renderableOwner.style ? this.renderableOwner.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager.getDefaultSampler()).id;
+            id = ((this.renderable.style ? this.renderable.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || DefaultMaterialManager.getDefaultSampler()).id;
         this._id = id;
-        var elements = BillboardRenderable._samplerElements[id];
+        var elements = GL_Billboard._samplerElements[id];
         var width = this._billboard.billboardWidth;
         var height = this._billboard.billboardHeight;
         var billboardRect = this._billboard.billboardRect;
         if (!elements) {
-            elements = BillboardRenderable._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
+            elements = GL_Billboard._samplerElements[id] = new TriangleElements(new AttributesBuffer(11, 4));
             elements.autoDeriveNormals = false;
             elements.autoDeriveTangents = false;
             elements.setIndices(Array(0, 1, 2, 0, 2, 3));
@@ -55176,27 +54151,27 @@ var BillboardRenderable = (function (_super) {
         }
         return elements;
     };
-    BillboardRenderable.prototype._pGetRenderOwner = function () {
+    GL_Billboard.prototype._pGetRenderOwner = function () {
         return this._billboard.material;
     };
-    BillboardRenderable._samplerElements = new Object();
-    return BillboardRenderable;
-})(RenderableBase);
-module.exports = BillboardRenderable;
+    GL_Billboard._samplerElements = new Object();
+    return GL_Billboard;
+})(GL_RenderableBase);
+module.exports = GL_Billboard;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase"}],"awayjs-renderergl/lib/renderables/GraphicRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_GraphicRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+var GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
- * @class away.pool.GraphicRenderable
+ * @class away.pool.GL_GraphicRenderable
  */
-var GraphicRenderable = (function (_super) {
-    __extends(GraphicRenderable, _super);
+var GL_GraphicRenderable = (function (_super) {
+    __extends(GL_GraphicRenderable, _super);
     /**
      * //TODO
      *
@@ -55205,11 +54180,11 @@ var GraphicRenderable = (function (_super) {
      * @param level
      * @param indexOffset
      */
-    function GraphicRenderable(graphic, renderer) {
+    function GL_GraphicRenderable(graphic, renderer) {
         _super.call(this, graphic, graphic.parent.sourceEntity, renderer);
         this.graphic = graphic;
     }
-    GraphicRenderable.prototype.onClear = function (event) {
+    GL_GraphicRenderable.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         this.graphic = null;
     };
@@ -55218,17 +54193,17 @@ var GraphicRenderable = (function (_super) {
      * @returns {ElementsBase}
      * @protected
      */
-    GraphicRenderable.prototype._pGetElements = function () {
+    GL_GraphicRenderable.prototype._pGetElements = function () {
         return this.graphic.elements;
     };
-    GraphicRenderable.prototype._pGetRenderOwner = function () {
+    GL_GraphicRenderable.prototype._pGetRenderOwner = function () {
         return this.graphic.material;
     };
-    return GraphicRenderable;
-})(RenderableBase);
-module.exports = GraphicRenderable;
+    return GL_GraphicRenderable;
+})(GL_RenderableBase);
+module.exports = GL_GraphicRenderable;
 
-},{"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase"}],"awayjs-renderergl/lib/renderables/LineSegmentRenderable":[function(require,module,exports){
+},{"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55236,12 +54211,12 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var LineElements = require("awayjs-display/lib/graphics/LineElements");
-var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+var GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
  * @class away.pool.LineSubMeshRenderable
  */
-var LineSegmentRenderable = (function (_super) {
-    __extends(LineSegmentRenderable, _super);
+var GL_LineSegmentRenderable = (function (_super) {
+    __extends(GL_LineSegmentRenderable, _super);
     /**
      * //TODO
      *
@@ -55250,11 +54225,11 @@ var LineSegmentRenderable = (function (_super) {
      * @param level
      * @param dataOffset
      */
-    function LineSegmentRenderable(lineSegment, renderer) {
+    function GL_LineSegmentRenderable(lineSegment, renderer) {
         _super.call(this, lineSegment, lineSegment, renderer);
         this._lineSegment = lineSegment;
     }
-    LineSegmentRenderable.prototype.onClear = function (event) {
+    GL_LineSegmentRenderable.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         this._lineSegment = null;
     };
@@ -55264,8 +54239,8 @@ var LineSegmentRenderable = (function (_super) {
      * @returns {base.LineElements}
      * @protected
      */
-    LineSegmentRenderable.prototype._pGetElements = function () {
-        var geometry = LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
+    GL_LineSegmentRenderable.prototype._pGetElements = function () {
+        var geometry = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements());
         var start = this._lineSegment.startPostion;
         var end = this._lineSegment.endPosition;
         var positions;
@@ -55288,28 +54263,28 @@ var LineSegmentRenderable = (function (_super) {
         geometry.setThickness(thickness);
         return geometry;
     };
-    LineSegmentRenderable.prototype._pGetRenderOwner = function () {
+    GL_LineSegmentRenderable.prototype._pGetRenderOwner = function () {
         return this._lineSegment.material;
     };
     /**
      * //TODO
      *
      * @param pool
-     * @param renderableOwner
+     * @param renderable
      * @param level
      * @param indexOffset
      * @returns {away.pool.LineSubMeshRenderable}
      * @private
      */
-    LineSegmentRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
-        return new LineSegmentRenderable(this.renderableOwner, this._renderer);
+    GL_LineSegmentRenderable.prototype._pGetOverflowRenderable = function (indexOffset) {
+        return new GL_LineSegmentRenderable(this.renderable, this._renderer);
     };
-    LineSegmentRenderable._lineGraphics = new Object();
-    return LineSegmentRenderable;
-})(RenderableBase);
-module.exports = LineSegmentRenderable;
+    GL_LineSegmentRenderable._lineGraphics = new Object();
+    return GL_LineSegmentRenderable;
+})(GL_RenderableBase);
+module.exports = GL_LineSegmentRenderable;
 
-},{"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase"}],"awayjs-renderergl/lib/renderables/RenderableBase":[function(require,module,exports){
+},{"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55319,25 +54294,25 @@ var __extends = this.__extends || function (d, b) {
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var AbstractionBase = require("awayjs-core/lib/library/AbstractionBase");
-var RenderableOwnerEvent = require("awayjs-display/lib/events/RenderableOwnerEvent");
+var RenderableEvent = require("awayjs-display/lib/events/RenderableEvent");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 /**
  * @class RenderableListItem
  */
-var RenderableBase = (function (_super) {
-    __extends(RenderableBase, _super);
+var GL_RenderableBase = (function (_super) {
+    __extends(GL_RenderableBase, _super);
     /**
      *
-     * @param renderableOwner
+     * @param renderable
      * @param sourceEntity
-     * @param renderOwner
+     * @param surface
      * @param renderer
      */
-    function RenderableBase(renderableOwner, sourceEntity, renderer) {
+    function GL_RenderableBase(renderable, sourceEntity, renderer) {
         var _this = this;
-        _super.call(this, renderableOwner, renderer);
+        _super.call(this, renderable, renderer);
         this._elementsDirty = true;
-        this._renderOwnerDirty = true;
+        this._surfaceDirty = true;
         this.images = new Array();
         this.samplers = new Array();
         this._onRenderOwnerUpdatedDelegate = function (event) { return _this._onRenderOwnerUpdated(event); };
@@ -55346,11 +54321,11 @@ var RenderableBase = (function (_super) {
         this._renderer = renderer;
         this._stage = renderer.stage;
         this.sourceEntity = sourceEntity;
-        this.renderableOwner = renderableOwner;
-        this.renderableOwner.addEventListener(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
-        this.renderableOwner.addEventListener(RenderableOwnerEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
+        this.renderable = renderable;
+        this.renderable.addEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+        this.renderable.addEventListener(RenderableEvent.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
     }
-    Object.defineProperty(RenderableBase.prototype, "elements", {
+    Object.defineProperty(GL_RenderableBase.prototype, "elements", {
         get: function () {
             if (this._elementsDirty)
                 this._updateElements();
@@ -55359,16 +54334,16 @@ var RenderableBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(RenderableBase.prototype, "render", {
+    Object.defineProperty(GL_RenderableBase.prototype, "surfaceGL", {
         get: function () {
-            if (this._renderOwnerDirty)
+            if (this._surfaceDirty)
                 this._updateRenderOwner();
-            return this._render;
+            return this._surfaceGL;
         },
         enumerable: true,
         configurable: true
     });
-    RenderableBase.prototype.onClear = function (event) {
+    GL_RenderableBase.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         this.next = null;
         this.masksConfig = null;
@@ -55376,34 +54351,34 @@ var RenderableBase = (function (_super) {
         this._renderer = null;
         this._stage = null;
         this.sourceEntity = null;
-        this.renderableOwner.removeEventListener(RenderableOwnerEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
-        this.renderableOwner = null;
-        this._render.usages--;
-        if (!this._render.usages)
-            this._render.onClear(new AssetEvent(AssetEvent.CLEAR, this._render.renderOwner));
-        this._render = null;
+        this.renderable.removeEventListener(RenderableEvent.INVALIDATE_RENDER_OWNER, this._onRenderOwnerUpdatedDelegate);
+        this.renderable = null;
+        this._surfaceGL.usages--;
+        if (!this._surfaceGL.usages)
+            this._surfaceGL.onClear(new AssetEvent(AssetEvent.CLEAR, this._surfaceGL.surface));
+        this._surfaceGL = null;
         this._elements = null;
     };
-    RenderableBase.prototype.onInvalidateElements = function (event) {
+    GL_RenderableBase.prototype.onInvalidateElements = function (event) {
         this._elementsDirty = true;
     };
-    RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
-        this._renderOwnerDirty = true;
+    GL_RenderableBase.prototype._onRenderOwnerUpdated = function (event) {
+        this._surfaceDirty = true;
     };
-    RenderableBase.prototype._pGetElements = function () {
+    GL_RenderableBase.prototype._pGetElements = function () {
         throw new AbstractMethodError();
     };
-    RenderableBase.prototype._pGetRenderOwner = function () {
+    GL_RenderableBase.prototype._pGetRenderOwner = function () {
         throw new AbstractMethodError();
     };
     /**
-     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
      * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
      * @param stage The Stage object which is currently used for rendering.
      * @param camera The camera from which the scene is viewed.
      * @private
      */
-    RenderableBase.prototype._iActivate = function (pass, camera) {
+    GL_RenderableBase.prototype._iActivate = function (pass, camera) {
         pass._iActivate(camera);
     };
     /**
@@ -55411,22 +54386,22 @@ var RenderableBase = (function (_super) {
      *
      * @private
      */
-    RenderableBase.prototype._iRender = function (pass, camera, viewProjection) {
+    GL_RenderableBase.prototype._iRender = function (pass, camera, viewProjection) {
         this._setRenderState(pass, camera, viewProjection);
         if (this._elementsDirty)
             this._updateElements();
-        pass.shader._elementsPool.getAbstraction((this.renderableOwner.animator) ? this.renderableOwner.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this.sourceEntity, camera, viewProjection);
+        pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this.sourceEntity, camera, viewProjection);
     };
-    RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
+    GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
         pass._iRender(this, camera, viewProjection);
     };
     /**
-     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * Clears the surface state for the pass. This needs to be called before activating another pass.
      * @param stage The Stage used for rendering
      *
      * @private
      */
-    RenderableBase.prototype._iDeactivate = function (pass) {
+    GL_RenderableBase.prototype._iDeactivate = function (pass) {
         pass._iDeactivate();
     };
     /**
@@ -55434,51 +54409,52 @@ var RenderableBase = (function (_super) {
      *
      * @private
      */
-    RenderableBase.prototype._updateElements = function () {
+    GL_RenderableBase.prototype._updateElements = function () {
         this._elements = this._pGetElements();
         this._elementsDirty = false;
     };
-    RenderableBase.prototype._updateRenderOwner = function () {
-        var renderOwner = this._pGetRenderOwner() || DefaultMaterialManager.getDefaultMaterial(this.renderableOwner);
-        var render = this._renderer.getRenderPool(this.elements).getAbstraction(renderOwner);
-        if (this._render != render) {
-            if (this._render) {
-                this._render.usages--;
-                //dispose current render object
-                if (!this._render.usages)
-                    this._render.onClear(new AssetEvent(AssetEvent.CLEAR, this._render.renderOwner));
+    GL_RenderableBase.prototype._updateRenderOwner = function () {
+        var surface = this._pGetRenderOwner() || DefaultMaterialManager.getDefaultMaterial(this.renderable);
+        var surfaceGL = this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
+        if (this._surfaceGL != surfaceGL) {
+            if (this._surfaceGL) {
+                this._surfaceGL.usages--;
+                //dispose current surfaceGL object
+                if (!this._surfaceGL.usages)
+                    this._surfaceGL.onClear(new AssetEvent(AssetEvent.CLEAR, this._surfaceGL.surface));
             }
-            this._render = render;
-            this._render.usages++;
+            this._surfaceGL = surfaceGL;
+            this._surfaceGL.usages++;
         }
         //create a cache of image & sampler objects for the renderable
-        var numImages = render.numImages;
+        var numImages = surfaceGL.numImages;
         this.images.length = numImages;
         this.samplers.length = numImages;
-        var numTextures = renderOwner.getNumTextures();
+        this.uvMatrix = this.renderable.style ? this.renderable.style.uvMatrix : surface.style ? surface.style.uvMatrix : null;
+        var numTextures = surface.getNumTextures();
         var texture;
         var numImages;
         var image;
         var sampler;
         var index;
         for (var i = 0; i < numTextures; i++) {
-            texture = renderOwner.getTextureAt(i);
+            texture = surface.getTextureAt(i);
             numImages = texture.getNumImages();
             for (var j = 0; j < numImages; j++) {
-                index = render.getImageIndex(texture, j);
-                image = this.renderableOwner.style ? this.renderableOwner.style.getImageAt(texture, j) : null;
+                index = surfaceGL.getImageIndex(texture, j);
+                image = this.renderable.style ? this.renderable.style.getImageAt(texture, j) : null;
                 this.images[index] = image ? this._stage.getAbstraction(image) : null;
-                sampler = this.renderableOwner.style ? this.renderableOwner.style.getSamplerAt(texture, j) : null;
+                sampler = this.renderable.style ? this.renderable.style.getSamplerAt(texture, j) : null;
                 this.samplers[index] = sampler ? this._stage.getAbstraction(sampler) : null;
             }
         }
-        this._renderOwnerDirty = false;
+        this._surfaceDirty = false;
     };
-    return RenderableBase;
+    return GL_RenderableBase;
 })(AbstractionBase);
-module.exports = RenderableBase;
+module.exports = GL_RenderableBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderableOwnerEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/SkyboxRenderable":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/RenderableEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -55488,19 +54464,19 @@ var __extends = this.__extends || function (d, b) {
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var RenderableBase = require("awayjs-renderergl/lib/renderables/RenderableBase");
+var GL_RenderableBase = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
 /**
- * @class away.pool.SkyboxRenderable
+ * @class away.pool.GL_SkyboxRenderable
  */
-var SkyboxRenderable = (function (_super) {
-    __extends(SkyboxRenderable, _super);
+var GL_SkyboxRenderable = (function (_super) {
+    __extends(GL_SkyboxRenderable, _super);
     /**
      * //TODO
      *
      * @param pool
      * @param skybox
      */
-    function SkyboxRenderable(skybox, renderer) {
+    function GL_SkyboxRenderable(skybox, renderer) {
         _super.call(this, skybox, skybox, renderer);
         this._skybox = skybox;
         this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
@@ -55511,10 +54487,10 @@ var SkyboxRenderable = (function (_super) {
      * @returns {away.base.TriangleElements}
      * @private
      */
-    SkyboxRenderable.prototype._pGetElements = function () {
-        var geometry = SkyboxRenderable._geometry;
+    GL_SkyboxRenderable.prototype._pGetElements = function () {
+        var geometry = GL_SkyboxRenderable._geometry;
         if (!geometry) {
-            geometry = SkyboxRenderable._geometry = new TriangleElements(new AttributesBuffer(11, 4));
+            geometry = GL_SkyboxRenderable._geometry = new TriangleElements(new AttributesBuffer(11, 4));
             geometry.autoDeriveNormals = false;
             geometry.autoDeriveTangents = false;
             geometry.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
@@ -55522,24 +54498,24 @@ var SkyboxRenderable = (function (_super) {
         }
         return geometry;
     };
-    SkyboxRenderable.prototype._pGetRenderOwner = function () {
+    GL_SkyboxRenderable.prototype._pGetRenderOwner = function () {
         return this._skybox;
     };
-    SkyboxRenderable._iIncludeDependencies = function (shader) {
+    GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
     };
     /**
      * @inheritDoc
      */
-    SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         return "mul vt0, va0, vc5\n" + "add vt0, vt0, vc4\n" + "m44 op, vt0, vc0\n";
     };
-    SkyboxRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_SkyboxRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     /**
      * @inheritDoc
      */
-    SkyboxRenderable.prototype._setRenderState = function (pass, camera, viewProjection) {
+    GL_SkyboxRenderable.prototype._setRenderState = function (pass, camera, viewProjection) {
         _super.prototype._setRenderState.call(this, pass, camera, viewProjection);
         var context = this._stage.context;
         var pos = camera.scenePosition;
@@ -55550,12 +54526,12 @@ var SkyboxRenderable = (function (_super) {
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, viewProjection, true);
         context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._vertexArray, 2);
     };
-    SkyboxRenderable.vertexAttributesOffset = 1;
-    return SkyboxRenderable;
-})(RenderableBase);
-module.exports = SkyboxRenderable;
+    GL_SkyboxRenderable.vertexAttributesOffset = 1;
+    return GL_SkyboxRenderable;
+})(GL_RenderableBase);
+module.exports = GL_SkyboxRenderable;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/renderables/RenderableBase":"awayjs-renderergl/lib/renderables/RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -56085,13 +55061,13 @@ var ShaderBase = (function () {
         this.commonsDataIndex = -1;
         this.cameraPositionIndex = -1;
         this.curvesIndex = -1;
-        this.uvBufferIndex = -1;
-        this.uvTransformIndex = -1;
+        this.uvIndex = -1;
+        this.uvMatrixIndex = -1;
         this.colorTransformIndex = -1;
-        this.secondaryUVBufferIndex = -1;
-        this.normalBufferIndex = -1;
+        this.secondaryUVIndex = -1;
+        this.normalIndex = -1;
         this.colorBufferIndex = -1;
-        this.tangentBufferIndex = -1;
+        this.tangentIndex = -1;
         this.sceneMatrixIndex = -1;
         this.sceneNormalMatrixIndex = -1;
         this.jointIndexIndex = -1;
@@ -56123,15 +55099,15 @@ var ShaderBase = (function () {
             this.fragmentConstantData[this.commonsDataIndex + 3] = 1;
         }
         //Initializes the default UV transformation matrix.
-        if (this.uvTransformIndex >= 0) {
-            this.vertexConstantData[this.uvTransformIndex] = 1;
-            this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 2] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-            this.vertexConstantData[this.uvTransformIndex + 6] = 0;
-            this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+        if (this.uvMatrixIndex >= 0) {
+            this.vertexConstantData[this.uvMatrixIndex] = 1;
+            this.vertexConstantData[this.uvMatrixIndex + 1] = 0;
+            this.vertexConstantData[this.uvMatrixIndex + 2] = 0;
+            this.vertexConstantData[this.uvMatrixIndex + 3] = 0;
+            this.vertexConstantData[this.uvMatrixIndex + 4] = 0;
+            this.vertexConstantData[this.uvMatrixIndex + 5] = 1;
+            this.vertexConstantData[this.uvMatrixIndex + 6] = 0;
+            this.vertexConstantData[this.uvMatrixIndex + 7] = 0;
         }
         //Initializes the default colorTransform.
         if (this.colorTransformIndex >= 0) {
@@ -56222,25 +55198,25 @@ var ShaderBase = (function () {
      * @param camera
      */
     ShaderBase.prototype._iRender = function (renderable, camera, viewProjection) {
-        if (renderable.renderableOwner.animator)
-            renderable.renderableOwner.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+        if (renderable.renderable.animator)
+            renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
         if (this.usesUVTransform) {
-            var uvTransform = renderable.renderableOwner.uvTransform;
-            if (uvTransform) {
-                this.vertexConstantData[this.uvTransformIndex] = uvTransform.a;
-                this.vertexConstantData[this.uvTransformIndex + 1] = uvTransform.b;
-                this.vertexConstantData[this.uvTransformIndex + 3] = uvTransform.tx;
-                this.vertexConstantData[this.uvTransformIndex + 4] = uvTransform.c;
-                this.vertexConstantData[this.uvTransformIndex + 5] = uvTransform.d;
-                this.vertexConstantData[this.uvTransformIndex + 7] = uvTransform.ty;
+            var uvMatrix = renderable.uvMatrix;
+            if (uvMatrix) {
+                this.vertexConstantData[this.uvMatrixIndex] = uvMatrix.a;
+                this.vertexConstantData[this.uvMatrixIndex + 1] = uvMatrix.b;
+                this.vertexConstantData[this.uvMatrixIndex + 3] = uvMatrix.tx;
+                this.vertexConstantData[this.uvMatrixIndex + 4] = uvMatrix.c;
+                this.vertexConstantData[this.uvMatrixIndex + 5] = uvMatrix.d;
+                this.vertexConstantData[this.uvMatrixIndex + 7] = uvMatrix.ty;
             }
             else {
-                this.vertexConstantData[this.uvTransformIndex] = 1;
-                this.vertexConstantData[this.uvTransformIndex + 1] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 3] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 4] = 0;
-                this.vertexConstantData[this.uvTransformIndex + 5] = 1;
-                this.vertexConstantData[this.uvTransformIndex + 7] = 0;
+                this.vertexConstantData[this.uvMatrixIndex] = 1;
+                this.vertexConstantData[this.uvMatrixIndex + 1] = 0;
+                this.vertexConstantData[this.uvMatrixIndex + 3] = 0;
+                this.vertexConstantData[this.uvMatrixIndex + 4] = 0;
+                this.vertexConstantData[this.uvMatrixIndex + 5] = 1;
+                this.vertexConstantData[this.uvMatrixIndex + 7] = 0;
             }
         }
         if (this.usesColorTransform) {
@@ -56800,18 +55776,18 @@ var CompilerBase = (function () {
      */
     CompilerBase.prototype.compileUVCode = function () {
         var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShader.uvBufferIndex = uvAttributeReg.index;
+        this._pShader.uvIndex = uvAttributeReg.index;
         var varying = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
         if (this._pShader.usesUVTransform) {
             // a, b, 0, tx
             // c, d, 0, ty
             var uvTransform1 = this._pRegisterCache.getFreeVertexConstant();
             var uvTransform2 = this._pRegisterCache.getFreeVertexConstant();
-            this._pShader.uvTransformIndex = uvTransform1.index * 4;
+            this._pShader.uvMatrixIndex = uvTransform1.index * 4;
             this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
         }
         else {
-            this._pShader.uvTransformIndex = -1;
+            this._pShader.uvMatrixIndex = -1;
             this._uvTarget = varying.toString();
             this._uvSource = uvAttributeReg.toString();
         }
@@ -56821,7 +55797,7 @@ var CompilerBase = (function () {
      */
     CompilerBase.prototype.compileSecondaryUVCode = function () {
         var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShader.secondaryUVBufferIndex = uvAttributeReg.index;
+        this._pShader.secondaryUVIndex = uvAttributeReg.index;
         this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
         this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
     };
@@ -56931,7 +55907,7 @@ var CompilerBase = (function () {
         //Needs to be created FIRST and in this order (for when using tangent space)
         if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {
             this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShader.tangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+            this._pShader.tangentIndex = this._pSharedRegisters.tangentInput.index;
             this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
             this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
             if (this._pShader.usesTangentSpace) {
@@ -56943,7 +55919,7 @@ var CompilerBase = (function () {
         }
         if (this._pShader.normalDependencies > 0) {
             this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShader.normalBufferIndex = this._pSharedRegisters.normalInput.index;
+            this._pShader.normalIndex = this._pSharedRegisters.normalInput.index;
             this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
             this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
             this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
@@ -57331,8 +56307,8 @@ var RenderableMergeSort = (function () {
             var aid = head.renderOrderId;
             var bid = headB.renderOrderId;
             if (aid == bid) {
-                var ma = head.renderId;
-                var mb = headB.renderId;
+                var ma = head.surfaceID;
+                var mb = headB.surfaceID;
                 if (ma == mb) {
                     if (head.zIndex < headB.zIndex)
                         cmp = 1;
@@ -57396,7 +56372,979 @@ var RenderableNullSort = (function () {
 })();
 module.exports = RenderableNullSort;
 
-},{}],"awayjs-renderergl/lib/textures/GL_Single2DTexture":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var BlendMode = require("awayjs-core/lib/image/BlendMode");
+var BasicMaterialPass = require("awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass");
+var GL_SurfaceBase = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+/**
+ * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var GL_BasicMaterialSurface = (function (_super) {
+    __extends(GL_BasicMaterialSurface, _super);
+    function GL_BasicMaterialSurface(material, elementsClass, renderPool) {
+        _super.call(this, material, elementsClass, renderPool);
+        this._material = material;
+        this._pAddPass(this._pass = new BasicMaterialPass(this, material, elementsClass, this._stage));
+    }
+    GL_BasicMaterialSurface.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._material = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_BasicMaterialSurface.prototype._pUpdateRender = function () {
+        _super.prototype._pUpdateRender.call(this);
+        this._pRequiresBlending = (this._material.blendMode != BlendMode.NORMAL || this._material.alphaBlending || (this._material.colorTransform && this._material.colorTransform.alphaMultiplier < 1));
+        this._pass.preserveAlpha = this._material.preserveAlpha; //this._pRequiresBlending;
+        this._pass.shader.setBlendMode((this._surface.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._material.blendMode);
+        //this._pass.forceSeparateMVP = false;
+    };
+    return GL_BasicMaterialSurface;
+})(GL_SurfaceBase);
+module.exports = GL_BasicMaterialSurface;
+
+},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/surfaces/GL_DepthSurface":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var GL_SurfacePassBase = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var GL_DepthSurface = (function (_super) {
+    __extends(GL_DepthSurface, _super);
+    /**
+     *
+     * @param pool
+     * @param surface
+     * @param elementsClass
+     * @param stage
+     */
+    function GL_DepthSurface(surface, elementsClass, renderPool) {
+        _super.call(this, surface, elementsClass, renderPool);
+        this._shader = new ShaderBase(elementsClass, this, this._stage);
+        this._pAddPass(this);
+    }
+    GL_DepthSurface.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._textureVO = this._surface.getTextureAt(0) ? this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
+    };
+    GL_DepthSurface.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.projectionDependencies++;
+        if (shader.alphaThreshold > 0)
+            shader.uvDependencies++;
+    };
+    GL_DepthSurface.prototype._iInitConstantData = function (shader) {
+        _super.prototype._iInitConstantData.call(this, shader);
+        var index = this._fragmentConstantsIndex;
+        var data = shader.fragmentConstantData;
+        data[index] = 1.0;
+        data[index + 1] = 255.0;
+        data[index + 2] = 65025.0;
+        data[index + 3] = 16581375.0;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_DepthSurface.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        var code = "";
+        var targetReg = sharedRegisters.shadedTarget;
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        code += "div " + temp1 + ", " + sharedRegisters.projectionFragment + ", " + sharedRegisters.projectionFragment + ".w\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        //codeF += "mov ft1.w, fc1.w	\n" +
+        //    "mov ft0.w, fc0.x	\n";
+        if (this._textureVO && shader.alphaThreshold > 0) {
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        registerCache.removeFragmentTempUsage(temp1);
+        registerCache.removeFragmentTempUsage(temp2);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_DepthSurface.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        if (this._textureVO && this._shader.alphaThreshold > 0) {
+            this._textureVO.activate(this);
+            this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
+        }
+    };
+    return GL_DepthSurface;
+})(GL_SurfacePassBase);
+module.exports = GL_DepthSurface;
+
+},{"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_DistanceSurface":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var GL_SurfacePassBase = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
+ * This is used to render omnidirectional shadow maps.
+ */
+var DistanceRender = (function (_super) {
+    __extends(DistanceRender, _super);
+    /**
+     * Creates a new DistanceRender object.
+     *
+     * @param material The material to which this pass belongs.
+     */
+    function DistanceRender(surface, elementsClass, renderPool) {
+        _super.call(this, surface, elementsClass, renderPool);
+        this._shader = new ShaderBase(elementsClass, this, this._stage);
+        this._pAddPass(this);
+    }
+    DistanceRender.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._textureVO = this._surface.getTextureAt(0) ? this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
+    };
+    /**
+     * Initializes the unchanging constant data for this material.
+     */
+    DistanceRender.prototype._iInitConstantData = function (shader) {
+        _super.prototype._iInitConstantData.call(this, shader);
+        var index = this._fragmentConstantsIndex;
+        var data = shader.fragmentConstantData;
+        data[index + 4] = 1.0 / 255.0;
+        data[index + 5] = 1.0 / 255.0;
+        data[index + 6] = 1.0 / 255.0;
+        data[index + 7] = 0.0;
+    };
+    DistanceRender.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.projectionDependencies++;
+        shader.viewDirDependencies++;
+        if (shader.alphaThreshold > 0)
+            shader.uvDependencies++;
+        if (shader.viewDirDependencies > 0)
+            shader.globalPosDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRender.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        var code;
+        var targetReg = sharedRegisters.shadedTarget;
+        var dataReg1 = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg1.index * 4;
+        var temp1 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp1, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        // squared distance to view
+        code = "dp3 " + temp1 + ".z, " + sharedRegisters.viewDirVarying + ".xyz, " + sharedRegisters.viewDirVarying + ".xyz\n" + "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" + "frc " + temp1 + ", " + temp1 + "\n" + "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
+        if (this._textureVO && shader.alphaThreshold > 0) {
+            var albedo = registerCache.getFreeFragmentVectorTemp();
+            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            var cutOffReg = registerCache.getFreeFragmentConstant();
+            code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n";
+        }
+        code += "sub " + targetReg + ", " + temp1 + ", " + temp2 + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DistanceRender.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        var f = camera.projection.far;
+        f = 1 / (2 * f * f);
+        // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
+        var index = this._fragmentConstantsIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = 1.0 * f;
+        data[index + 1] = 255.0 * f;
+        data[index + 2] = 65025.0 * f;
+        data[index + 3] = 16581375.0 * f;
+        if (this._textureVO && this._shader.alphaThreshold > 0) {
+            this._textureVO.activate(this);
+            data[index + 8] = this._shader.alphaThreshold;
+        }
+    };
+    return DistanceRender;
+})(GL_SurfacePassBase);
+module.exports = DistanceRender;
+
+},{"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var BlendMode = require("awayjs-core/lib/image/BlendMode");
+var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
+var GL_SurfacePassBase = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+/**
+ * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var GL_SkyboxSurface = (function (_super) {
+    __extends(GL_SkyboxSurface, _super);
+    function GL_SkyboxSurface(skybox, elementsClass, renderPool) {
+        _super.call(this, skybox, elementsClass, renderPool);
+        this._skybox = skybox;
+        this._shader = new ShaderBase(elementsClass, this, this._stage);
+        this._texture = this._shader.getAbstraction(this._skybox.texture);
+        this._pAddPass(this);
+    }
+    GL_SkyboxSurface.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._texture.onClear(new AssetEvent(AssetEvent.CLEAR, this._skybox.texture));
+        this._texture = null;
+        this._skybox = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_SkyboxSurface.prototype._pUpdateRender = function () {
+        _super.prototype._pUpdateRender.call(this);
+        this._pRequiresBlending = (this._surface.blendMode != BlendMode.NORMAL);
+        this.shader.setBlendMode((this._surface.blendMode == BlendMode.NORMAL && this._pRequiresBlending) ? BlendMode.LAYER : this._surface.blendMode);
+    };
+    GL_SkyboxSurface.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        shader.usesPositionFragment = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_SkyboxSurface.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
+    };
+    GL_SkyboxSurface.prototype._iRender = function (renderable, camera, viewProjection) {
+        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+        this._texture._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    GL_SkyboxSurface.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        this._stage.context.setDepthTest(false, ContextGLCompareMode.LESS);
+        this._texture.activate(this);
+    };
+    return GL_SkyboxSurface;
+})(GL_SurfacePassBase);
+module.exports = GL_SkyboxSurface;
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AbstractionBase = require("awayjs-core/lib/library/AbstractionBase");
+var SurfaceEvent = require("awayjs-display/lib/events/SurfaceEvent");
+var MaterialBase = require("awayjs-display/lib/materials/MaterialBase");
+var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
+var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
+/**
+ *
+ * @class away.pool.Passes
+ */
+var GL_SurfaceBase = (function (_super) {
+    __extends(GL_SurfaceBase, _super);
+    function GL_SurfaceBase(surface, elementsClass, renderPool) {
+        var _this = this;
+        _super.call(this, surface, renderPool);
+        this.usages = 0;
+        this._forceSeparateMVP = false;
+        this._invalidAnimation = true;
+        this._invalidRender = true;
+        this._invalidImages = true;
+        this._passes = new Array();
+        this._imageIndices = new Object();
+        this._pRequiresBlending = false;
+        this.images = new Array();
+        this.samplers = new Array();
+        this._onInvalidateAnimationDelegate = function (event) { return _this.onInvalidateAnimation(event); };
+        this._onInvalidatePassesDelegate = function (event) { return _this.onInvalidatePasses(event); };
+        this.surfaceID = surface.id;
+        this._surface = surface;
+        this._elementsClass = elementsClass;
+        this._stage = renderPool.stage;
+        this._surface.addEventListener(SurfaceEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._surface.addEventListener(SurfaceEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+        this._onPassInvalidateDelegate = function (event) { return _this.onPassInvalidate(event); };
+    }
+    Object.defineProperty(GL_SurfaceBase.prototype, "requiresBlending", {
+        /**
+         * Indicates whether or not the renderable requires alpha blending during rendering.
+         */
+        get: function () {
+            return this._pRequiresBlending;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SurfaceBase.prototype, "renderOrderId", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._renderOrderId;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SurfaceBase.prototype, "passes", {
+        get: function () {
+            if (this._invalidAnimation)
+                this._updateAnimation();
+            return this._passes;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SurfaceBase.prototype, "surface", {
+        get: function () {
+            return this._surface;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SurfaceBase.prototype, "numImages", {
+        get: function () {
+            if (this._invalidImages)
+                this._updateImages();
+            return this._numImages;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GL_SurfaceBase.prototype._iIncludeDependencies = function (shader) {
+        this._elementsClass._iIncludeDependencies(shader);
+        shader.alphaThreshold = this._surface.alphaThreshold;
+        shader.useImageRect = this._surface.imageRect;
+        shader.usesCurves = this._surface.curves;
+        if (this._surface instanceof MaterialBase) {
+            var material = this._surface;
+            shader.useAlphaPremultiplied = material.alphaPremultiplied;
+            shader.useBothSides = material.bothSides;
+            shader.usesUVTransform = material.animateUVs;
+            shader.usesColorTransform = material.useColorTransform;
+        }
+    };
+    GL_SurfaceBase.prototype.getImageIndex = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        if (this._invalidImages)
+            this._updateImages();
+        return this._imageIndices[texture.id][index];
+    };
+    /**
+     *
+     */
+    GL_SurfaceBase.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._surface = null;
+        this._elementsClass = null;
+        this._stage = null;
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++) {
+            this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
+            this._passes[i].dispose();
+        }
+        this._passes = null;
+    };
+    /**
+     *
+     */
+    GL_SurfaceBase.prototype.onInvalidate = function (event) {
+        _super.prototype.onInvalidate.call(this, event);
+        this._invalidRender = true;
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     */
+    GL_SurfaceBase.prototype.onInvalidatePasses = function (event) {
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++)
+            this._passes[i].invalidate();
+        this._invalidAnimation = true;
+        this._invalidImages = true;
+    };
+    /**
+     *
+     */
+    GL_SurfaceBase.prototype.onInvalidateAnimation = function (event) {
+        this._invalidAnimation = true;
+    };
+    /**
+     *
+     * @param surface
+     */
+    GL_SurfaceBase.prototype._updateAnimation = function () {
+        if (this._invalidRender)
+            this._pUpdateRender();
+        this._invalidAnimation = false;
+        var enabledGPUAnimation = this._getEnabledGPUAnimation();
+        var renderOrderId = 0;
+        var mult = 1;
+        var shader;
+        var len = this._passes.length;
+        for (var i = 0; i < len; i++) {
+            shader = this._passes[i].shader;
+            if (shader.usesAnimation != enabledGPUAnimation) {
+                shader.usesAnimation = enabledGPUAnimation;
+                shader.invalidateProgram();
+            }
+            renderOrderId += shader.programData.id * mult;
+            mult *= 1000;
+        }
+        this._renderOrderId = renderOrderId;
+    };
+    GL_SurfaceBase.prototype._updateImages = function () {
+        this._invalidImages = false;
+        var numTextures = this._surface.getNumTextures();
+        var texture;
+        var numImages;
+        var images;
+        var image;
+        var sampler;
+        var index = 0;
+        for (var i = 0; i < numTextures; i++) {
+            texture = this._surface.getTextureAt(i);
+            numImages = texture.getNumImages();
+            images = this._imageIndices[texture.id] = new Array();
+            for (var j = 0; j < numImages; j++) {
+                image = texture.getImageAt(j) || (this._surface.style ? this._surface.style.getImageAt(texture, j) : null) || DefaultMaterialManager.getDefaultImage2D();
+                this.images[index] = this._stage.getAbstraction(image);
+                sampler = texture.getSamplerAt(j) || (this._surface.style ? this._surface.style.getSamplerAt(texture, j) : null) || DefaultMaterialManager.getDefaultSampler();
+                this.samplers[index] = this._stage.getAbstraction(sampler);
+                images[j] = index++;
+            }
+        }
+        this._numImages = index;
+    };
+    /**
+     * Performs any processing that needs to occur before any of its passes are used.
+     *
+     * @private
+     */
+    GL_SurfaceBase.prototype._pUpdateRender = function () {
+        this._invalidRender = false;
+        //overrride to update shader object properties
+    };
+    /**
+     * Removes a pass from the surface.
+     * @param pass The pass to be removed.
+     */
+    GL_SurfaceBase.prototype._pRemovePass = function (pass) {
+        pass.removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
+        this._passes.splice(this._passes.indexOf(pass), 1);
+    };
+    /**
+     * Removes all passes from the surface
+     */
+    GL_SurfaceBase.prototype._pClearPasses = function () {
+        var len = this._passes.length;
+        for (var i = 0; i < len; ++i)
+            this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
+        this._passes.length = 0;
+    };
+    /**
+     * Adds a pass to the surface
+     * @param pass
+     */
+    GL_SurfaceBase.prototype._pAddPass = function (pass) {
+        this._passes.push(pass);
+        pass.addEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
+    };
+    /**
+     * Listener for when a pass's shader code changes. It recalculates the render order id.
+     */
+    GL_SurfaceBase.prototype.onPassInvalidate = function (event) {
+        this._invalidAnimation = true;
+    };
+    /**
+     * test if animation will be able to run on gpu BEFORE compiling materials
+     * test if the shader objects supports animating the animation set in the vertex shader
+     * if any object using this material fails to support accelerated animations for any of the shader objects,
+     * we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
+     */
+    GL_SurfaceBase.prototype._getEnabledGPUAnimation = function () {
+        if (this._surface.animationSet) {
+            this._surface.animationSet.resetGPUCompatibility();
+            var owners = this._surface.iOwners;
+            var numOwners = owners.length;
+            var len = this._passes.length;
+            for (var i = 0; i < len; i++)
+                for (var j = 0; j < numOwners; j++)
+                    if (owners[j].animator)
+                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
+            return !this._surface.animationSet.usesCPU;
+        }
+        return false;
+    };
+    return GL_SurfaceBase;
+})(AbstractionBase);
+module.exports = GL_SurfaceBase;
+
+},{"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/SurfaceEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
+var GL_SurfaceBase = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+/**
+ * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * a render call per required renderable.
+ */
+var GL_SurfacePassBase = (function (_super) {
+    __extends(GL_SurfacePassBase, _super);
+    function GL_SurfacePassBase() {
+        _super.apply(this, arguments);
+    }
+    Object.defineProperty(GL_SurfacePassBase.prototype, "shader", {
+        get: function () {
+            return this._shader;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_SurfacePassBase.prototype, "animationSet", {
+        get: function () {
+            return this._surface.animationSet;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Marks the shader program as invalid, so it will be recompiled before the next render.
+     */
+    GL_SurfacePassBase.prototype.invalidate = function () {
+        this._shader.invalidateShader();
+        this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
+    };
+    GL_SurfacePassBase.prototype.dispose = function () {
+        if (this._shader) {
+            this._shader.dispose();
+            this._shader = null;
+        }
+    };
+    /**
+     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
+     * @param pass The pass used to render the renderable.
+     * @param renderable The IRenderable object to draw.
+     * @param stage The Stage object used for rendering.
+     * @param entityCollector The EntityCollector object that contains the visible scene data.
+     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+     *
+     * @internal
+     */
+    GL_SurfacePassBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        this._shader._iRender(renderable, camera, viewProjection);
+    };
+    /**
+     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    GL_SurfacePassBase.prototype._iActivate = function (camera) {
+        this._shader._iActivate(camera);
+    };
+    /**
+     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * @param stage The Stage used for rendering
+     *
+     * @private
+     */
+    GL_SurfacePassBase.prototype._iDeactivate = function () {
+        this._shader._iDeactivate();
+    };
+    GL_SurfacePassBase.prototype._iInitConstantData = function (shader) {
+    };
+    GL_SurfacePassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    GL_SurfacePassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    GL_SurfacePassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    GL_SurfacePassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    GL_SurfacePassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    GL_SurfacePassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    return GL_SurfacePassBase;
+})(GL_SurfaceBase);
+module.exports = GL_SurfacePassBase;
+
+},{"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-renderergl/lib/surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase"}],"awayjs-renderergl/lib/surfaces/ISurfaceClassGL":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/surfaces/SurfacePool":[function(require,module,exports){
+/**
+ * @class away.pool.SurfacePool
+ */
+var SurfacePool = (function () {
+    /**
+     * //TODO
+     *
+     * @param surfaceClassGL
+     */
+    function SurfacePool(elementsClass, stage, surfaceClassGL) {
+        if (surfaceClassGL === void 0) { surfaceClassGL = null; }
+        this._abstractionPool = new Object();
+        this._elementsClass = elementsClass;
+        this._stage = stage;
+        this._surfaceClassGL = surfaceClassGL;
+    }
+    Object.defineProperty(SurfacePool.prototype, "stage", {
+        get: function () {
+            return this._stage;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * //TODO
+     *
+     * @param elementsOwner
+     * @returns IElements
+     */
+    SurfacePool.prototype.getAbstraction = function (surface) {
+        return (this._abstractionPool[surface.id] || (this._abstractionPool[surface.id] = new (this._surfaceClassGL || SurfacePool._abstractionClassPool[surface.assetType])(surface, this._elementsClass, this)));
+    };
+    /**
+     * //TODO
+     *
+     * @param elementsOwner
+     */
+    SurfacePool.prototype.clearAbstraction = function (surface) {
+        delete this._abstractionPool[surface.id];
+    };
+    /**
+     *
+     * @param imageObjectClass
+     */
+    SurfacePool.registerAbstraction = function (surfaceClassGL, assetClass) {
+        SurfacePool._abstractionClassPool[assetClass.assetType] = surfaceClassGL;
+    };
+    SurfacePool._abstractionClassPool = new Object();
+    return SurfacePool;
+})();
+module.exports = SurfacePool;
+
+},{}],"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
+var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var PassBase = require("awayjs-renderergl/lib/surfaces/passes/PassBase");
+/**
+ * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
+ * using material methods to define their appearance.
+ */
+var BasicMaterialPass = (function (_super) {
+    __extends(BasicMaterialPass, _super);
+    function BasicMaterialPass(render, surface, elementsClass, stage) {
+        _super.call(this, render, surface, elementsClass, stage);
+        this._diffuseR = 1;
+        this._diffuseG = 1;
+        this._diffuseB = 1;
+        this._diffuseA = 1;
+        this._shader = new ShaderBase(elementsClass, this, this._stage);
+        this.invalidate();
+    }
+    BasicMaterialPass.prototype._iIncludeDependencies = function (shader) {
+        _super.prototype._iIncludeDependencies.call(this, shader);
+        if (this._textureVO != null)
+            shader.uvDependencies++;
+    };
+    BasicMaterialPass.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._textureVO = this._surface.getTextureAt(0) ? this._shader.getAbstraction(this._surface.getTextureAt(0)) : null;
+    };
+    BasicMaterialPass.prototype.dispose = function () {
+        if (this._textureVO) {
+            this._textureVO.onClear(new AssetEvent(AssetEvent.CLEAR, this._surface.getTextureAt(0)));
+            this._textureVO = null;
+        }
+        _super.prototype.dispose.call(this);
+    };
+    /**
+     * @inheritDoc
+     */
+    BasicMaterialPass.prototype._iGetFragmentCode = function (shader, regCache, sharedReg) {
+        var code = "";
+        var alphaReg;
+        if (this.preserveAlpha) {
+            alphaReg = regCache.getFreeFragmentSingleTemp();
+            regCache.addFragmentTempUsages(alphaReg, 1);
+            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
+        }
+        var targetReg = sharedReg.shadedTarget;
+        if (this._textureVO != null) {
+            code += this._textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
+            if (shader.alphaThreshold > 0) {
+                var cutOffReg = regCache.getFreeFragmentConstant();
+                this._fragmentConstantsIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else if (shader.colorBufferIndex != -1) {
+            code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
+        }
+        else {
+            var diffuseInputReg = regCache.getFreeFragmentConstant();
+            this._fragmentConstantsIndex = diffuseInputReg.index * 4;
+            code += "mov " + targetReg + ", " + diffuseInputReg + "\n";
+        }
+        if (this.preserveAlpha) {
+            code += "mul " + sharedReg.shadedTarget + ".w, " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
+            regCache.removeFragmentTempUsage(alphaReg);
+        }
+        return code;
+    };
+    BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
+        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+        if (this._textureVO != null)
+            this._textureVO._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    BasicMaterialPass.prototype._iActivate = function (camera) {
+        _super.prototype._iActivate.call(this, camera);
+        if (this._textureVO != null) {
+            this._textureVO.activate(this._render);
+            if (this._shader.alphaThreshold > 0)
+                this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
+        }
+        else if (this._shader.colorBufferIndex == -1) {
+            var index = this._fragmentConstantsIndex;
+            var data = this._shader.fragmentConstantData;
+            data[index] = this._diffuseR;
+            data[index + 1] = this._diffuseG;
+            data[index + 2] = this._diffuseB;
+            data[index + 3] = this._diffuseA;
+        }
+    };
+    return BasicMaterialPass;
+})(PassBase);
+module.exports = BasicMaterialPass;
+
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase"}],"awayjs-renderergl/lib/surfaces/passes/ILightingPass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/surfaces/passes/IPass":[function(require,module,exports){
+
+},{}],"awayjs-renderergl/lib/surfaces/passes/PassBase":[function(require,module,exports){
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var EventDispatcher = require("awayjs-core/lib/events/EventDispatcher");
+var PassEvent = require("awayjs-renderergl/lib/events/PassEvent");
+/**
+ * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+ * a render call per required renderable.
+ */
+var PassBase = (function (_super) {
+    __extends(PassBase, _super);
+    /**
+     * Creates a new PassBase object.
+     */
+    function PassBase(render, surface, elementsClass, stage) {
+        _super.call(this);
+        this._preserveAlpha = true;
+        this._forceSeparateMVP = false;
+        this._render = render;
+        this._surface = surface;
+        this._elementsClass = elementsClass;
+        this._stage = stage;
+    }
+    Object.defineProperty(PassBase.prototype, "shader", {
+        get: function () {
+            return this._shader;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "animationSet", {
+        get: function () {
+            return this._surface.animationSet;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "preserveAlpha", {
+        /**
+         * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+         */
+        get: function () {
+            return this._preserveAlpha;
+        },
+        set: function (value) {
+            if (this._preserveAlpha == value)
+                return;
+            this._preserveAlpha = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "forceSeparateMVP", {
+        /**
+         * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
+         * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
+         * projection code.
+         */
+        get: function () {
+            return this._forceSeparateMVP;
+        },
+        set: function (value) {
+            if (this._forceSeparateMVP == value)
+                return;
+            this._forceSeparateMVP = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PassBase.prototype.getImageIndex = function (texture, index) {
+        if (index === void 0) { index = 0; }
+        return this._render.getImageIndex(texture, index);
+    };
+    /**
+     * Marks the shader program as invalid, so it will be recompiled before the next render.
+     */
+    PassBase.prototype.invalidate = function () {
+        this._shader.invalidateShader();
+        this.dispatchEvent(new PassEvent(PassEvent.INVALIDATE, this));
+    };
+    /**
+     * Cleans up any resources used by the current object.
+     * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+     */
+    PassBase.prototype.dispose = function () {
+        this._render = null;
+        this._surface = null;
+        this._elementsClass = null;
+        this._stage = null;
+        if (this._shader) {
+            this._shader.dispose();
+            this._shader = null;
+        }
+    };
+    /**
+     * Renders the current pass. Before calling pass, activatePass needs to be called with the same index.
+     * @param pass The pass used to render the renderable.
+     * @param renderable The IRenderable object to draw.
+     * @param stage The Stage object used for rendering.
+     * @param entityCollector The EntityCollector object that contains the visible scene data.
+     * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+     * camera.viewProjection as it includes the scaling factors when rendering to textures.
+     *
+     * @internal
+     */
+    PassBase.prototype._iRender = function (renderable, camera, viewProjection) {
+        this._shader._iRender(renderable, camera, viewProjection);
+    };
+    /**
+     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
+     * @param stage The Stage object which is currently used for rendering.
+     * @param camera The camera from which the scene is viewed.
+     * @private
+     */
+    PassBase.prototype._iActivate = function (camera) {
+        this._shader._iActivate(camera);
+    };
+    /**
+     * Clears the render state for the pass. This needs to be called before activating another pass.
+     * @param stage The Stage used for rendering
+     *
+     * @private
+     */
+    PassBase.prototype._iDeactivate = function () {
+        this._shader._iDeactivate();
+    };
+    PassBase.prototype._iIncludeDependencies = function (shader) {
+        this._render._iIncludeDependencies(shader);
+        if (this._forceSeparateMVP)
+            shader.globalPosDependencies++;
+    };
+    PassBase.prototype._iInitConstantData = function (shader) {
+    };
+    PassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    PassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+        return "";
+    };
+    return PassBase;
+})(EventDispatcher);
+module.exports = PassBase;
+
+},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/textures/GL_Single2DTexture":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -57642,7 +57590,7 @@ module.exports = GL_TextureBase;
 var AttributesBuffer = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Matrix3DUtils = require("awayjs-core/lib/geom/Matrix3DUtils");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 /**
  *  Class Merge merges two or more static meshes into one.<code>Merge</code>
  */
@@ -57920,7 +57868,7 @@ var GraphicVO = (function () {
 })();
 module.exports = Merge;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined}],"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform":[function(require,module,exports){
 /**
  * ...
  */
@@ -58184,10 +58132,10 @@ module.exports = PerspectiveMatrix3D;
 
 //# sourceMappingURL=awayjs-renderergl.js.map
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./methodmaterials.ts":[function(require,module,exports){
-var RenderPool = require("awayjs-renderergl/lib/render/RenderPool");
+var SurfacePool = require("awayjs-renderergl/lib/surfaces/SurfacePool");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
-var MethodMaterialRender = require("awayjs-methodmaterials/lib/render/MethodMaterialRender");
-RenderPool.registerAbstraction(MethodMaterialRender, MethodMaterial);
+var GL_MethodMaterialSurface = require("awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface");
+SurfacePool.registerAbstraction(GL_MethodMaterialSurface, MethodMaterial);
 /**
  *
  * static shim
@@ -58199,7 +58147,7 @@ var methodmaterials = (function () {
 })();
 module.exports = methodmaterials;
 
-},{"awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/render/MethodMaterialRender":"awayjs-methodmaterials/lib/render/MethodMaterialRender","awayjs-renderergl/lib/render/RenderPool":undefined}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
+},{"awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface":"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface","awayjs-renderergl/lib/surfaces/SurfacePool":undefined}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
 var MethodMaterialMode = (function () {
     function MethodMaterialMode() {
     }
@@ -58537,7 +58485,7 @@ var AmbientBasicMethod = (function (_super) {
      */
     AmbientBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
         if (!methodVO.textureGL) {
-            this._color = shader.numLights ? 0xFFFFFF : methodVO.pass._renderOwner.style.color;
+            this._color = shader.numLights ? 0xFFFFFF : methodVO.pass._surface.style.color;
             this.updateColor();
         }
     };
@@ -58745,7 +58693,7 @@ var CurveBasicMethod = (function (_super) {
      */
     CurveBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
         if (!methodVO.textureGL) {
-            this._color = methodVO.pass._renderOwner.style.color;
+            this._color = methodVO.pass._surface.style.color;
             this.updateColor();
         }
     };
@@ -58937,7 +58885,7 @@ var DiffuseBasicMethod = (function (_super) {
      */
     DiffuseBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
         if (shader.numLights > 0) {
-            this._ambientColor = methodVO.pass._renderOwner.style.color;
+            this._ambientColor = methodVO.pass._surface.style.color;
             this.updateAmbientColor();
         }
         else {
@@ -61936,7 +61884,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
 var ShadingMethodEvent = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
 var MethodVO = require("awayjs-methodmaterials/lib/data/MethodVO");
 var ShadowMapMethodBase = require("awayjs-methodmaterials/lib/methods/ShadowMapMethodBase");
@@ -62127,7 +62075,7 @@ var ShadowCascadeMethod = (function (_super) {
 })(ShadowMapMethodBase);
 module.exports = ShadowCascadeMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -62607,7 +62555,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AbstractMethodError = require("awayjs-core/lib/errors/AbstractMethodError");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
+var PointLight = require("awayjs-display/lib/display/PointLight");
 var ShadowMapMethodBase = require("awayjs-methodmaterials/lib/methods/ShadowMapMethodBase");
 /**
  * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
@@ -62799,7 +62747,7 @@ var ShadowMethodBase = (function (_super) {
 })(ShadowMapMethodBase);
 module.exports = ShadowMethodBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowNearMethod":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowNearMethod":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63960,7 +63908,7 @@ var SpecularPhongMethod = (function (_super) {
 })(SpecularBasicMethod);
 module.exports = SpecularPhongMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/render/MethodMaterialRender":[function(require,module,exports){
+},{"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -63970,26 +63918,26 @@ var __extends = this.__extends || function (d, b) {
 var BlendMode = require("awayjs-core/lib/image/BlendMode");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var ContextGLCompareMode = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var RenderBase = require("awayjs-renderergl/lib/render/RenderBase");
+var GL_SurfaceBase = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
 var MethodMaterialMode = require("awayjs-methodmaterials/lib/MethodMaterialMode");
-var MethodPassMode = require("awayjs-methodmaterials/lib/render/passes/MethodPassMode");
-var MethodPass = require("awayjs-methodmaterials/lib/render/passes/MethodPass");
+var MethodPassMode = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode");
+var MethodPass = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPass");
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
  * using material methods to define their appearance.
  */
-var MethodMaterialRender = (function (_super) {
-    __extends(MethodMaterialRender, _super);
+var GL_MethodMaterialSurface = (function (_super) {
+    __extends(GL_MethodMaterialSurface, _super);
     /**
      * Creates a new CompiledPass object.
      *
      * @param material The material to which this pass belongs.
      */
-    function MethodMaterialRender(material, elementsClass, pool) {
+    function GL_MethodMaterialSurface(material, elementsClass, pool) {
         _super.call(this, material, elementsClass, pool);
         this._material = material;
     }
-    Object.defineProperty(MethodMaterialRender.prototype, "numLights", {
+    Object.defineProperty(GL_MethodMaterialSurface.prototype, "numLights", {
         /**
          * The maximum total number of lights provided by the light picker.
          */
@@ -63999,7 +63947,7 @@ var MethodMaterialRender = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MethodMaterialRender.prototype, "numNonCasters", {
+    Object.defineProperty(GL_MethodMaterialSurface.prototype, "numNonCasters", {
         /**
          * The amount of lights that don't cast shadows.
          */
@@ -64012,7 +63960,7 @@ var MethodMaterialRender = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodMaterialRender.prototype._pUpdateRender = function () {
+    GL_MethodMaterialSurface.prototype._pUpdateRender = function () {
         _super.prototype._pUpdateRender.call(this);
         this.initPasses();
         this.setBlendAndCompareModes();
@@ -64030,7 +63978,7 @@ var MethodMaterialRender = (function (_super) {
     /**
      * Initializes all the passes and their dependent passes.
      */
-    MethodMaterialRender.prototype.initPasses = function () {
+    GL_MethodMaterialSurface.prototype.initPasses = function () {
         // let the effects pass handle everything if there are no lights, when there are effect methods applied
         // after shading, or when the material mode is single pass.
         if (this.numLights == 0 || this._material.numEffectMethods > 0 || this._material.mode == MethodMaterialMode.SINGLE_PASS)
@@ -64051,7 +63999,7 @@ var MethodMaterialRender = (function (_super) {
     /**
      * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
      */
-    MethodMaterialRender.prototype.setBlendAndCompareModes = function () {
+    GL_MethodMaterialSurface.prototype.setBlendAndCompareModes = function () {
         var forceSeparateMVP = Boolean(this._casterLightPass || this._pass);
         // caster light pass is always first if it exists, hence it uses normal blending
         if (this._casterLightPass) {
@@ -64097,7 +64045,7 @@ var MethodMaterialRender = (function (_super) {
             this._pass.shader.depthCompareMode = this._material.depthCompareMode;
         }
     };
-    MethodMaterialRender.prototype.initCasterLightPass = function () {
+    GL_MethodMaterialSurface.prototype.initCasterLightPass = function () {
         if (this._casterLightPass == null)
             this._casterLightPass = new MethodPass(MethodPassMode.LIGHTING, this, this._material, this._elementsClass, this._stage);
         this._casterLightPass.lightPicker = new StaticLightPicker([this._material.shadowMethod.castingLight]);
@@ -64107,12 +64055,12 @@ var MethodMaterialRender = (function (_super) {
         this._casterLightPass.normalMethod = this._material.normalMethod;
         this._casterLightPass.specularMethod = this._material.specularMethod;
     };
-    MethodMaterialRender.prototype.removeCasterLightPass = function () {
+    GL_MethodMaterialSurface.prototype.removeCasterLightPass = function () {
         this._casterLightPass.dispose();
         this._pRemovePass(this._casterLightPass);
         this._casterLightPass = null;
     };
-    MethodMaterialRender.prototype.initNonCasterLightPasses = function () {
+    GL_MethodMaterialSurface.prototype.initNonCasterLightPasses = function () {
         this.removeNonCasterLightPasses();
         var pass;
         var numDirLights = this._material.lightPicker.numDirectionalLights;
@@ -64143,14 +64091,14 @@ var MethodMaterialRender = (function (_super) {
             probeOffset += pass.numLightProbes;
         }
     };
-    MethodMaterialRender.prototype.removeNonCasterLightPasses = function () {
+    GL_MethodMaterialSurface.prototype.removeNonCasterLightPasses = function () {
         if (!this._nonCasterLightPasses)
             return;
         for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
             this._pRemovePass(this._nonCasterLightPasses[i]);
         this._nonCasterLightPasses = null;
     };
-    MethodMaterialRender.prototype.removeEffectPass = function () {
+    GL_MethodMaterialSurface.prototype.removeEffectPass = function () {
         if (this._pass.ambientMethod != this._material.ambientMethod)
             this._pass.ambientMethod.dispose();
         if (this._pass.diffuseMethod != this._material.diffuseMethod)
@@ -64162,7 +64110,7 @@ var MethodMaterialRender = (function (_super) {
         this._pRemovePass(this._pass);
         this._pass = null;
     };
-    MethodMaterialRender.prototype.initEffectPass = function () {
+    GL_MethodMaterialSurface.prototype.initEffectPass = function () {
         if (this._pass == null)
             this._pass = new MethodPass(MethodPassMode.SUPER_SHADER, this, this._material, this._elementsClass, this._stage);
         if (this._material.mode == MethodMaterialMode.SINGLE_PASS) {
@@ -64203,15 +64151,15 @@ var MethodMaterialRender = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodMaterialRender.prototype.onClear = function (event) {
+    GL_MethodMaterialSurface.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
         //TODO
     };
-    return MethodMaterialRender;
-})(RenderBase);
-module.exports = MethodMaterialRender;
+    return GL_MethodMaterialSurface;
+})(GL_SurfaceBase);
+module.exports = GL_MethodMaterialSurface;
 
-},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/render/passes/MethodPass":"awayjs-methodmaterials/lib/render/passes/MethodPass","awayjs-methodmaterials/lib/render/passes/MethodPassMode":"awayjs-methodmaterials/lib/render/passes/MethodPassMode","awayjs-renderergl/lib/render/RenderBase":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/render/passes/MethodPassMode":[function(require,module,exports){
+},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/surfaces/passes/MethodPass":"awayjs-methodmaterials/lib/surfaces/passes/MethodPass","awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-renderergl/lib/surfaces/GL_SurfaceBase":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":[function(require,module,exports){
 var PassMode = (function () {
     function PassMode() {
     }
@@ -64231,7 +64179,7 @@ var PassMode = (function () {
 })();
 module.exports = PassMode;
 
-},{}],"awayjs-methodmaterials/lib/render/passes/MethodPass":[function(require,module,exports){
+},{}],"awayjs-methodmaterials/lib/surfaces/passes/MethodPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64243,10 +64191,10 @@ var LightSources = require("awayjs-display/lib/materials/LightSources");
 var LightingShader = require("awayjs-renderergl/lib/shaders/LightingShader");
 var ShadingMethodEvent = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
 var ShaderBase = require("awayjs-renderergl/lib/shaders/ShaderBase");
-var PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+var PassBase = require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 var MethodVO = require("awayjs-methodmaterials/lib/data/MethodVO");
 var EffectColorTransformMethod = require("awayjs-methodmaterials/lib/methods/EffectColorTransformMethod");
-var MethodPassMode = require("awayjs-methodmaterials/lib/render/passes/MethodPassMode");
+var MethodPassMode = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode");
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
  * using material methods to define their appearance.
@@ -64964,7 +64912,7 @@ var MethodPass = (function (_super) {
 })(PassBase);
 module.exports = MethodPass;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/materials/LightSources":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/render/passes/MethodPassMode":"awayjs-methodmaterials/lib/render/passes/MethodPassMode","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined,"awayjs-renderergl/lib/render/passes/PassBase":undefined,"awayjs-renderergl/lib/shaders/LightingShader":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":undefined}],"awayjs-methodmaterials/lib/render/passes/SingleObjectDepthPass":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/materials/LightSources":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined,"awayjs-renderergl/lib/shaders/LightingShader":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/SingleObjectDepthPass":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -64976,7 +64924,7 @@ var Matrix3D = require("awayjs-core/lib/geom/Matrix3D");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var ContextGLDrawMode = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var PassBase = require("awayjs-renderergl/lib/render/passes/PassBase");
+var PassBase = require("awayjs-renderergl/lib/surfaces/passes/PassBase");
 /**
  * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
  * of view from a light.
@@ -65074,31 +65022,31 @@ var SingleObjectDepthPass = (function (_super) {
     };
     /**
      * Gets the depth maps rendered for this object from all lights.
-     * @param renderable The renderable for which to retrieve the depth maps.
+     * @param renderableGL The renderableGL for which to retrieve the depth maps.
      * @param stage3DProxy The Stage3DProxy object currently used for rendering.
      * @return A list of depth map textures for all supported lights.
      */
-    SingleObjectDepthPass.prototype._iGetDepthMap = function (renderable) {
-        return this._textures[renderable.renderableOwner.id];
+    SingleObjectDepthPass.prototype._iGetDepthMap = function (renderableGL) {
+        return this._textures[renderableGL.renderable.id];
     };
     /**
      * Retrieves the depth map projection maps for all lights.
-     * @param renderable The renderable for which to retrieve the projection maps.
+     * @param renderableGL The renderableGL for which to retrieve the projection maps.
      * @return A list of projection maps for all supported lights.
      */
-    SingleObjectDepthPass.prototype._iGetProjection = function (renderable) {
-        return this._projections[renderable.renderableOwner.id];
+    SingleObjectDepthPass.prototype._iGetProjection = function (renderableGL) {
+        return this._projections[renderableGL.renderable.id];
     };
     /**
      * @inheritDoc
      */
-    SingleObjectDepthPass.prototype._iRender = function (renderable, camera, viewProjection) {
+    SingleObjectDepthPass.prototype._iRender = function (renderableGL, camera, viewProjection) {
         var matrix;
         var context = this._stage.context;
         var len /*uint*/;
         var light;
-        var lights = this._renderOwner.lightPicker.allPickedLights;
-        var rId = renderable.renderableOwner.id;
+        var lights = this._surface.lightPicker.allPickedLights;
+        var rId = renderableGL.renderable.id;
         if (!this._textures[rId])
             this._textures[rId] = new Single2DTexture(new Image2D(this._textureSize, this._textureSize));
         if (!this._projections[rId])
@@ -65106,12 +65054,12 @@ var SingleObjectDepthPass = (function (_super) {
         len = lights.length;
         // local position = enough
         light = lights[0];
-        matrix = light.iGetObjectProjectionMatrix(renderable.sourceEntity, camera, this._projections[rId]);
+        matrix = light.iGetObjectProjectionMatrix(renderableGL.sourceEntity, camera, this._projections[rId]);
         this._stage.setRenderTarget(this._textures[rId], true);
         context.clear(1.0, 1.0, 1.0);
         context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
         context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
-        var elements = renderable.elements;
+        var elements = renderableGL.elements;
         var elementsGL = this._shader._elementsPool.getAbstraction(elements);
         elementsGL.activateVertexBufferVO(0, elements.positions);
         elementsGL.activateVertexBufferVO(1, elements.normals);
@@ -65131,7 +65079,7 @@ var SingleObjectDepthPass = (function (_super) {
 })(PassBase);
 module.exports = SingleObjectDepthPass;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/render/passes/PassBase":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}]},{},["./methodmaterials.ts"])
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}]},{},["./methodmaterials.ts"])
 
 
 //# sourceMappingURL=awayjs-methodmaterials.js.map
@@ -65384,7 +65332,7 @@ var __extends = this.__extends || function (d, b) {
 var AssetEvent = require("awayjs-core/lib/events/AssetEvent");
 var Point = require("awayjs-core/lib/geom/Point");
 var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
-var MovieClip = require("awayjs-display/lib/entities/MovieClip");
+var MovieClip = require("awayjs-display/lib/display/MovieClip");
 var MouseEvent = require("awayjs-display/lib/events/MouseEvent");
 var AS2SymbolAdapter = require("awayjs-player/lib/adapters/AS2SymbolAdapter");
 var AS2MCSoundProps = require("awayjs-player/lib/adapters/AS2MCSoundProps");
@@ -65685,7 +65633,7 @@ var AS2MovieClipAdapter = (function (_super) {
 })(AS2SymbolAdapter);
 module.exports = AS2MovieClipAdapter;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-display/lib/entities/MovieClip":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-player/lib/adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/adapters/AS2SharedObjectAdapter":[function(require,module,exports){
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-player/lib/adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/adapters/AS2SharedObjectAdapter":[function(require,module,exports){
 var AS2SharedObjectAdapter = (function () {
     function AS2SharedObjectAdapter(name) {
         this._object_name = name;
@@ -66162,7 +66110,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var AS2SymbolAdapter = require("awayjs-player/lib/adapters/AS2SymbolAdapter");
-var TextField = require("awayjs-display/lib/entities/TextField");
+var TextField = require("awayjs-display/lib/display/TextField");
 var AS2TextFieldAdapter = (function (_super) {
     __extends(AS2TextFieldAdapter, _super);
     function AS2TextFieldAdapter(adaptee, view) {
@@ -66206,7 +66154,7 @@ var AS2TextFieldAdapter = (function (_super) {
 })(AS2SymbolAdapter);
 module.exports = AS2TextFieldAdapter;
 
-},{"awayjs-display/lib/entities/TextField":undefined,"awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/bounds/AxisAlignedBoundingBox2D":[function(require,module,exports){
+},{"awayjs-display/lib/display/TextField":undefined,"awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/bounds/AxisAlignedBoundingBox2D":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -66278,8 +66226,8 @@ module.exports = AxisAlignedBoundingBox;
 },{"awayjs-display/lib/bounds/AxisAlignedBoundingBox":undefined}],"awayjs-player/lib/factories/AS2SceneGraphFactory":[function(require,module,exports){
 var AS2MovieClipAdapter = require("awayjs-player/lib/adapters/AS2MovieClipAdapter");
 var AS2TextFieldAdapter = require("awayjs-player/lib/adapters/AS2TextFieldAdapter");
-var TextField = require("awayjs-display/lib/entities/TextField");
-var MovieClip = require("awayjs-display/lib/entities/MovieClip");
+var TextField = require("awayjs-display/lib/display/TextField");
+var MovieClip = require("awayjs-display/lib/display/MovieClip");
 var AS2SceneGraphFactory = (function () {
     function AS2SceneGraphFactory(view) {
         this._view = view;
@@ -66298,7 +66246,7 @@ var AS2SceneGraphFactory = (function () {
 })();
 module.exports = AS2SceneGraphFactory;
 
-},{"awayjs-display/lib/entities/MovieClip":undefined,"awayjs-display/lib/entities/TextField":undefined,"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter"}]},{},[])
+},{"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/display/TextField":undefined,"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter"}]},{},[])
 
 
 //# sourceMappingURL=awayjs-player.js.map
@@ -66391,15 +66339,15 @@ var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProj
 var OrthographicProjection = require("awayjs-core/lib/projections/OrthographicProjection");
 var OrthographicOffCenterProjection = require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
 var ByteArray = require("awayjs-core/lib/utils/ByteArray");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
 var Graphics = require("awayjs-display/lib/graphics/Graphics");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
-var Camera = require("awayjs-display/lib/entities/Camera");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
-var Billboard = require("awayjs-display/lib/entities/Billboard");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var PointLight = require("awayjs-display/lib/display/PointLight");
+var Camera = require("awayjs-display/lib/display/Camera");
+var Mesh = require("awayjs-display/lib/display/Mesh");
+var Billboard = require("awayjs-display/lib/display/Billboard");
+var Skybox = require("awayjs-display/lib/display/Skybox");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var CubeMapShadowMapper = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
@@ -66476,7 +66424,7 @@ var AWDParser = (function (_super) {
         if (view === void 0) { view = null; }
         _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
         //set to "true" to have some console.logs in the Console
-        this._debug = true;
+        this._debug = false;
         this._debugTimers = true;
         this._startedParsing = false;
         this._texture_users = {};
@@ -66793,7 +66741,7 @@ var AWDParser = (function (_super) {
                     this.parseBillBoardLibraryBlock(this._cur_block_id);
                     isParsed = true;
                     break;
-                case 44:
+                case 4444:
                     this.parseAudioBlock(this._cur_block_id, factory);
                     isParsed = true;
                     break;
@@ -67167,7 +67115,7 @@ var AWDParser = (function (_super) {
         for (var materials_parsed = 0; materials_parsed < num_materials; materials_parsed++) {
             mat = (this._blocks[this._newBlockBytes.readUnsignedInt()].data || DefaultMaterialManager.getDefaultMaterial());
             //mat.preserveAlpha = true;
-            //mat.alphaBlending = true;
+            mat.alphaBlending = true;
             mat.useColorTransform = true;
             materials[materials_parsed] = mat;
             materialNames[materials_parsed] = mat.name;
@@ -67196,11 +67144,16 @@ var AWDParser = (function (_super) {
             graphic.style.addSamplerAt(sampler, graphic.material.getTextureAt(0));
             if (type == 3) {
                 graphic.material.animateUVs = true;
-                graphic.uvTransform = new Matrix(0, 0, 0, 0, this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+                graphic.style.uvMatrix = new Matrix(0, 0, 0, 0, this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+            }
+            else if (type == 4) {
+                var matrix = this.parseMatrix32RawData();
+                graphic.material.animateUVs = true;
+                graphic.style.uvMatrix = new Matrix(matrix[0], matrix[2], matrix[1], matrix[3], matrix[4], matrix[5]);
             }
             else if (type == 5) {
                 graphic.material.animateUVs = true;
-                graphic.uvTransform = new Matrix(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat(), 0, 0, this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+                graphic.style.uvMatrix = new Matrix(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat(), 0, 0, this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
             }
             else if (type == 6) {
                 var x = this._newBlockBytes.readFloat();
@@ -67211,7 +67164,7 @@ var AWDParser = (function (_super) {
                 graphic.material.imageRect = true;
                 graphic.material.animateUVs = true;
                 var matrix = this.parseMatrix32RawData();
-                graphic.uvTransform = new Matrix(matrix[0], matrix[2], matrix[1], matrix[3], matrix[4], matrix[5]);
+                graphic.style.uvMatrix = new Matrix(matrix[0], matrix[2], matrix[1], matrix[3], matrix[4], matrix[5]);
             }
             //check if curves are needed
             if (graphic.elements.getCustomAtributes("curves"))
@@ -67253,8 +67206,8 @@ var AWDParser = (function (_super) {
         this._blocks[blockID].extras = this.parseUserAttributes();
         this._pPauseAndRetrieveDependencies();
         //this._blocks[blockID].data = asset;todo
-        //if (this._debug)
-        console.log("Start parsing a " + ["external", "embed"][type] + " Audio file");
+        if (this._debug)
+            console.log("Start parsing a " + ["external", "embed"][type] + " Audio file");
     };
     //Block ID = 4
     AWDParser.prototype.parseTimeLine = function (blockID, factory) {
@@ -68114,8 +68067,8 @@ var AWDParser = (function (_super) {
             var basic_mat = new BasicMaterial();
             basic_mat.texture = diffuseTexture;
             basic_mat.bothSides = true;
-            basic_mat.preserveAlpha = true;
-            //basic_mat.alphaBlending = true;
+            //basic_mat.preserveAlpha = true;
+            basic_mat.alphaBlending = true;
             basic_mat.extra = this.parseUserAttributes();
             this._pFinalizeAsset(basic_mat, name);
             this._blocks[blockID].data = basic_mat;
@@ -69023,7 +68976,7 @@ var BitFlags = (function () {
 })();
 module.exports = AWDParser;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/base/Timeline":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock":"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock","awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/base/Timeline":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock":"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock","awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -69037,8 +68990,8 @@ var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var Graphics = require("awayjs-display/lib/graphics/Graphics");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var VertexClipNode = require("awayjs-renderergl/lib/animators/nodes/VertexClipNode");
 var VertexAnimationSet = require("awayjs-renderergl/lib/animators/VertexAnimationSet");
@@ -69413,7 +69366,7 @@ var MD2Parser = (function (_super) {
 })(ParserBase);
 module.exports = MD2Parser;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD5AnimParser":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD5AnimParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -69946,8 +69899,8 @@ var Vector3D = require("awayjs-core/lib/geom/Vector3D");
 var URLLoaderDataFormat = require("awayjs-core/lib/net/URLLoaderDataFormat");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var SkeletonAnimationSet = require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
 var Skeleton = require("awayjs-renderergl/lib/animators/data/Skeleton");
 var SkeletonJoint = require("awayjs-renderergl/lib/animators/data/SkeletonJoint");
@@ -70482,7 +70435,7 @@ var MeshData = (function () {
 })();
 module.exports = MD5MeshParser;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined}],"awayjs-parsers/lib/Max3DSParser":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined}],"awayjs-parsers/lib/Max3DSParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -70498,8 +70451,8 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -71166,7 +71119,7 @@ var VertexVO = (function () {
 })();
 module.exports = Max3DSParser;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined}],"awayjs-parsers/lib/OBJParser":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined}],"awayjs-parsers/lib/OBJParser":[function(require,module,exports){
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -71181,8 +71134,8 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var ParserBase = require("awayjs-core/lib/parsers/ParserBase");
 var ParserUtils = require("awayjs-core/lib/parsers/ParserUtils");
 var TriangleElements = require("awayjs-display/lib/graphics/TriangleElements");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var DefaultMaterialManager = require("awayjs-display/lib/managers/DefaultMaterialManager");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -72044,7 +71997,7 @@ var Vertex = (function () {
 })();
 module.exports = OBJParser;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":undefined}],"awayjs-parsers/lib/Parsers":[function(require,module,exports){
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":undefined}],"awayjs-parsers/lib/Parsers":[function(require,module,exports){
 var Loader = require("awayjs-core/lib/library/Loader");
 var AWDParser = require("awayjs-parsers/lib/AWDParser");
 var Max3DSParser = require("awayjs-parsers/lib/Max3DSParser");

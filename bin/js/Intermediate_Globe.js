@@ -47,16 +47,16 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var Scene = require("awayjs-display/lib/containers/Scene");
-var View = require("awayjs-display/lib/containers/View");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Scene = require("awayjs-display/lib/display/Scene");
+var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var OrientationMode = require("awayjs-display/lib/base/OrientationMode");
 var AlignmentMode = require("awayjs-display/lib/base/AlignmentMode");
-var Camera = require("awayjs-display/lib/entities/Camera");
-var Billboard = require("awayjs-display/lib/entities/Billboard");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
+var Camera = require("awayjs-display/lib/display/Camera");
+var Billboard = require("awayjs-display/lib/display/Billboard");
+var PointLight = require("awayjs-display/lib/display/PointLight");
+var Skybox = require("awayjs-display/lib/display/Skybox");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitiveSpherePrefab = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
@@ -484,7 +484,7 @@ window.onload = function () {
     new Intermediate_Globe();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageChannel":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/base/AlignmentMode":undefined,"awayjs-display/lib/base/OrientationMode":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/Scene":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/Billboard":undefined,"awayjs-display/lib/entities/Camera":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_Globe.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageChannel":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/base/AlignmentMode":undefined,"awayjs-display/lib/base/OrientationMode":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_Globe.ts"])
 
 
 //# sourceMappingURL=Intermediate_Globe.js.map

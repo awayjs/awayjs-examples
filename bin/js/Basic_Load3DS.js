@@ -44,11 +44,11 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var LoaderContainer = require("awayjs-display/lib/containers/LoaderContainer");
-var View = require("awayjs-display/lib/containers/View");
+var LoaderContainer = require("awayjs-display/lib/display/LoaderContainer");
+var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
@@ -230,7 +230,7 @@ window.onload = function () {
     new Basic_Load3DS();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/Max3DSParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Load3DS.ts"])
 
 
 //# sourceMappingURL=Basic_Load3DS.js.map

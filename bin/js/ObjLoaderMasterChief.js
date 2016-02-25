@@ -7,10 +7,10 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var Debug = require("awayjs-core/lib/utils/Debug");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var DisplayObjectContainer = require("awayjs-display/lib/containers/DisplayObjectContainer");
-var View = require("awayjs-display/lib/containers/View");
-var DirectionalLight = require("awayjs-display/lib/entities/DirectionalLight");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
+var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
+var View = require("awayjs-display/lib/View");
+var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
+var Mesh = require("awayjs-display/lib/display/Mesh");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -123,7 +123,7 @@ window.onload = function () {
     new ObjLoaderMasterChief(); // Start the demo
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/DisplayObjectContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/DirectionalLight":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
 
 
 //# sourceMappingURL=ObjLoaderMasterChief.js.map

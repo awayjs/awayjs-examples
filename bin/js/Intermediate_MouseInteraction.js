@@ -42,12 +42,12 @@ var AssetLibrary = require("awayjs-core/lib/library/AssetLibrary");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var Keyboard = require("awayjs-core/lib/ui/Keyboard");
-var View = require("awayjs-display/lib/containers/View");
+var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
-var LineSegment = require("awayjs-display/lib/entities/LineSegment");
-var Mesh = require("awayjs-display/lib/entities/Mesh");
-var PointLight = require("awayjs-display/lib/entities/PointLight");
+var LineSegment = require("awayjs-display/lib/display/LineSegment");
+var Mesh = require("awayjs-display/lib/display/Mesh");
+var PointLight = require("awayjs-display/lib/display/PointLight");
 var AwayMouseEvent = require("awayjs-display/lib/events/MouseEvent");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -487,7 +487,7 @@ window.onload = function () {
     new Intermediate_MouseInteraction();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/entities/LineSegment":undefined,"awayjs-display/lib/entities/Mesh":undefined,"awayjs-display/lib/entities/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
 
 
 //# sourceMappingURL=Intermediate_MouseInteraction.js.map

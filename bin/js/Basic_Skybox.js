@@ -43,8 +43,8 @@ var LoaderContext = require("awayjs-core/lib/library/LoaderContext");
 var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
-var View = require("awayjs-display/lib/containers/View");
-var Skybox = require("awayjs-display/lib/entities/Skybox");
+var View = require("awayjs-display/lib/View");
+var Skybox = require("awayjs-display/lib/display/Skybox");
 var PrimitiveTorusPrefab = require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 var SingleCubeTexture = require("awayjs-display/lib/textures/SingleCubeTexture");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
@@ -165,7 +165,7 @@ window.onload = function () {
     new Basic_SkyBox();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/entities/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Skybox.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_Skybox.ts"])
 
 
 //# sourceMappingURL=Basic_Skybox.js.map

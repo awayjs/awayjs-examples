@@ -42,8 +42,8 @@ var Keyboard = require("awayjs-core/lib/ui/Keyboard");
 var PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var AnimationNodeBase = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-var LoaderContainer = require("awayjs-display/lib/containers/LoaderContainer");
-var View = require("awayjs-display/lib/containers/View");
+var LoaderContainer = require("awayjs-display/lib/display/LoaderContainer");
+var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var AnimatorBase = require("awayjs-renderergl/lib/animators/AnimatorBase");
 var CrossfadeTransition = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
@@ -222,7 +222,7 @@ window.onload = function () {
     new Intermediate_AWDViewer();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/containers/LoaderContainer":undefined,"awayjs-display/lib/containers/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_AWDViewer.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_AWDViewer.ts"])
 
 
 //# sourceMappingURL=Intermediate_AWDViewer.js.map
