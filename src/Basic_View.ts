@@ -45,9 +45,9 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import View							= require("awayjs-display/lib/View");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
 

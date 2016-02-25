@@ -47,11 +47,11 @@ import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import LoaderContainer				= require("awayjs-display/lib/containers/LoaderContainer");
-import View							= require("awayjs-display/lib/containers/View");
+import LoaderContainer				= require("awayjs-display/lib/display/LoaderContainer");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");

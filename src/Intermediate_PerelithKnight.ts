@@ -49,11 +49,11 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Keyboard 					= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");

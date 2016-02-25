@@ -43,8 +43,8 @@ import PerspectiveProjection		= require("awayjs-core/lib/projections/Perspective
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import LoaderContainer				= require("awayjs-display/lib/containers/LoaderContainer");
-import View							= require("awayjs-display/lib/containers/View");
+import LoaderContainer				= require("awayjs-display/lib/display/LoaderContainer");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 
 import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");

@@ -64,16 +64,16 @@ import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
 import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import LoaderContainer					= require("awayjs-display/lib/containers/LoaderContainer");
-import View								= require("awayjs-display/lib/containers/View");
+import LoaderContainer					= require("awayjs-display/lib/display/LoaderContainer");
+import View								= require("awayjs-display/lib/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Graphics							= require("awayjs-display/lib/graphics/Graphics");
-import Mesh								= require("awayjs-display/lib/entities/Mesh");
-import Skybox							= require("awayjs-display/lib/entities/Skybox");
-import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
-import PointLight						= require("awayjs-display/lib/entities/PointLight");
-//	import CascadeShadowMapper				= require("awayjs-display/lib/entities/CascadeShadowMapper");
+import Mesh								= require("awayjs-display/lib/display/Mesh");
+import Skybox							= require("awayjs-display/lib/display/Skybox");
+import DirectionalLight					= require("awayjs-display/lib/display/DirectionalLight");
+import PointLight						= require("awayjs-display/lib/display/PointLight");
+//	import CascadeShadowMapper				= require("awayjs-display/lib/display/CascadeShadowMapper");
 import DirectionalShadowMapper			= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -92,6 +92,7 @@ import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectF
 
 import AWDParser						= require("awayjs-parsers/lib/AWDParser");
 import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+import Style = require("awayjs-display/lib/base/Style");
 
 class Advanced_MultiPassSponzaDemo
 {
@@ -288,8 +289,10 @@ class Advanced_MultiPassSponzaDemo
 			flameVO = this._flameData[i];
 			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGraphics.getNewObject();
 			mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			mesh.graphics.getGraphicAt(0).uvTransform = new Matrix();
-			mesh.graphics.getGraphicAt(0).uvTransform.scale(1/16, 1);
+			var graphic:Graphic = mesh.graphics.getGraphicAt(0);
+			graphic.style = new Style();
+			graphic.style.uvMatrix = new Matrix();
+			graphic.style.uvMatrix.scale(1/16, 1);
 			this._view.scene.addChild(mesh);
 			mesh.addChild(flameVO.light);
 		}
@@ -801,8 +804,8 @@ class Advanced_MultiPassSponzaDemo
 				continue;
 			
 			var graphic:Graphic = mesh.graphics.getGraphicAt(0);
-			graphic.uvTransform.tx += 1/16;
-			graphic.uvTransform.tx %= 1;
+			graphic.style.uvMatrix.tx += 1/16;
+			graphic.style.uvMatrix.tx %= 1;
 			mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;
 		}
 

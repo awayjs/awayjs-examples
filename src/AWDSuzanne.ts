@@ -8,10 +8,10 @@ import IAsset						= require("awayjs-core/lib/library/IAsset");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
 import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
 import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");

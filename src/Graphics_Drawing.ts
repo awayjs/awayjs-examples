@@ -48,9 +48,9 @@ import HierarchicalProperties			= require("awayjs-display/lib/base/HierarchicalP
 import Geometry						= require("awayjs-display/lib/base/Geometry");
 import Graphics						= require("awayjs-display/lib/draw/Graphics");
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Container					= require("awayjs-display/lib/containers/DisplayObjectContainer");
+import View							= require("awayjs-display/lib/View");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Container					= require("awayjs-display/lib/display/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 
@@ -62,13 +62,13 @@ import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import SceneGraphPartition					= require("awayjs-display/lib/partition/SceneGraphPartition");
-import MovieClip							= require("awayjs-display/lib/entities/MovieClip");
+import MovieClip							= require("awayjs-display/lib/display/MovieClip");
 
 import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
 import PerspectiveProjection				= require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera								= require("awayjs-display/lib/entities/Camera");
+import Camera								= require("awayjs-display/lib/display/Camera");
 
-import TextField							= require("awayjs-display/lib/entities/TextField");
+import TextField							= require("awayjs-display/lib/display/TextField");
 import TextFormat							= require("awayjs-display/lib/text/TextFormat");
 
 

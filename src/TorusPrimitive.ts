@@ -10,10 +10,10 @@ import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import View							= require("awayjs-display/lib/containers/View");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import View							= require("awayjs-display/lib/View");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -21,6 +21,7 @@ import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
 import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class TorusPrimitive
 {
@@ -104,10 +105,9 @@ class TorusPrimitive
 	 */
 	private initTorus()
 	{
-		this._torus = new PrimitiveTorusPrefab(220, 80, 32, 16, false);
+		this._torus = new PrimitiveTorusPrefab(this._material, ElementsType.TRIANGLE, 220, 80, 32, 16, false);
 
 		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh.material = this._material;
 
 		this._view.scene.addChild(this._mesh);
 	}

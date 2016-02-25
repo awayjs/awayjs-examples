@@ -48,12 +48,12 @@ import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import Graphics						= require("awayjs-display/lib/graphics/Graphics");
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import View							= require("awayjs-display/lib/containers/View");
+import Scene						= require("awayjs-display/lib/display/Scene");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
+import Camera						= require("awayjs-display/lib/display/Camera");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import PointLight					= require("awayjs-display/lib/display/PointLight");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");

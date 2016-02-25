@@ -13,17 +13,19 @@ import URLRequest					= require("awayjs-core/lib/net/URLRequest");
 import Debug                		= require("awayjs-core/lib/utils/Debug");
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import View							= require("awayjs-display/lib/containers/View");
+import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
+import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
+import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
+import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Skybox						= require("awayjs-display/lib/display/Skybox");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import ElementsType                 = require("awayjs-display/lib/graphics/ElementsType");
+import Style                        = require("awayjs-display/lib/base/Style");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -34,7 +36,6 @@ import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/Spec
 
 import AWDParser					= require("awayjs-parsers/lib/AWDParser");
 import OBJParser					= require("awayjs-parsers/lib/OBJParser");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class AircraftDemo
 {
@@ -182,7 +183,8 @@ class AircraftDemo
         this._seaGeom = new PrimitivePlanePrefab(this._seaMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1, true, false );
         this._seaMesh = <Mesh> this._seaGeom.getNewObject();
         this._seaMesh.graphics.scaleUV( 100, 100 );
-        this._seaMesh.uvTransform = new Matrix();
+        this._seaMesh.style = new Style();
+        this._seaMesh.style.uvMatrix = new Matrix();
         this._view.scene.addChild( new Skybox(this._skyboxImageCube));
         this._view.scene.addChild( this._seaMesh );
     }
@@ -256,7 +258,7 @@ class AircraftDemo
         }
         
         if (this._seaMaterial) {
-            this._seaMesh.uvTransform.ty -= 0.04;
+            this._seaMesh.style.uvMatrix.ty -= 0.04;
             
             /*
              this.waterMethod.water1OffsetX += .001;
