@@ -10,7 +10,7 @@ var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame
 var DisplayObjectContainer = require("awayjs-display/lib/display/DisplayObjectContainer");
 var View = require("awayjs-display/lib/View");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -18,7 +18,7 @@ var OBJParser = require("awayjs-parsers/lib/OBJParser");
 var ObjLoaderMasterChief = (function () {
     function ObjLoaderMasterChief() {
         var _this = this;
-        this.meshes = new Array();
+        this.sprites = new Array();
         this.spartan = new DisplayObjectContainer();
         this.spartanFlag = false;
         Debug.LOG_PI_ERRORS = false;
@@ -75,12 +75,12 @@ var ObjLoaderMasterChief = (function () {
             var d = loader.baseDependency.assets[c];
             console.log(d.name, event.url);
             switch (d.assetType) {
-                case Mesh.assetType:
+                case Sprite.assetType:
                     if (event.url == 'assets/Halo_3_SPARTAN4.obj') {
-                        var mesh = d;
-                        this.spartan.addChild(mesh);
+                        var sprite = d;
+                        this.spartan.addChild(sprite);
                         this.spartanFlag = true;
-                        this.meshes.push(mesh);
+                        this.sprites.push(sprite);
                     }
                     else if (event.url == 'assets/terrain.obj') {
                         this.terrain = d;
@@ -106,8 +106,8 @@ var ObjLoaderMasterChief = (function () {
         if (this.terrain && this.terrainMaterial)
             this.terrain.material = this.terrainMaterial;
         if (this.mat && this.spartanFlag)
-            for (var c = 0; c < this.meshes.length; c++)
-                this.meshes[c].material = this.mat;
+            for (var c = 0; c < this.sprites.length; c++)
+                this.sprites[c].material = this.mat;
         this.onResize();
     };
     ObjLoaderMasterChief.prototype.onResize = function (event) {
@@ -123,7 +123,7 @@ window.onload = function () {
     new ObjLoaderMasterChief(); // Start the demo
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/Debug":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/ObjLoaderMasterChief.ts"])
 
 
 //# sourceMappingURL=ObjLoaderMasterChief.js.map

@@ -72,8 +72,8 @@ var TorusPrimitive = (function () {
      */
     TorusPrimitive.prototype.initTorus = function () {
         this._torus = new PrimitiveTorusPrefab(this._material, ElementsType.TRIANGLE, 220, 80, 32, 16, false);
-        this._mesh = this._torus.getNewObject();
-        this._view.scene.addChild(this._mesh);
+        this._sprite = this._torus.getNewObject();
+        this._view.scene.addChild(this._sprite);
     };
     /**
      *
@@ -88,8 +88,8 @@ var TorusPrimitive = (function () {
      */
     TorusPrimitive.prototype.render = function (dt) {
         if (dt === void 0) { dt = null; }
-        if (this._mesh)
-            this._mesh.rotationY += 1;
+        if (this._sprite)
+            this._sprite.rotationY += 1;
         this._view.render();
     };
     /**

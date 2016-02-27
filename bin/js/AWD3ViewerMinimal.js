@@ -40,7 +40,7 @@ var LoaderEvent = require("awayjs-core/lib/events/LoaderEvent");
 var ParserEvent = require("awayjs-core/lib/events/ParserEvent");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/View");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var Billboard = require("awayjs-display/lib/display/Billboard");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var Loader = require("awayjs-display/lib/display/LoaderContainer");
@@ -147,9 +147,9 @@ var AWD3ViewerMinimal = (function () {
         if (event.asset.isAsset(TextField)) {
             var one_textfield = event.asset;
         }
-        else if (event.asset.isAsset(Mesh)) {
-            var one_mesh = event.asset;
-            one_mesh.debugVisible = true;
+        else if (event.asset.isAsset(Sprite)) {
+            var one_sprite = event.asset;
+            one_sprite.debugVisible = true;
         }
         else if (event.asset.isAsset(Billboard)) {
             var one_billboard = event.asset;
@@ -218,7 +218,7 @@ window.onload = function () {
     new AWD3ViewerMinimal();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/display/TextField":undefined,"awayjs-display/lib/partition/SceneGraphPartition":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWD3ViewerMinimal.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/projections/CoordinateSystem":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/display/TextField":undefined,"awayjs-display/lib/partition/SceneGraphPartition":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWD3ViewerMinimal.ts"])
 
 
 //# sourceMappingURL=AWD3ViewerMinimal.js.map

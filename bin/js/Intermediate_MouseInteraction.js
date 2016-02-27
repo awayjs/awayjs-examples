@@ -46,7 +46,7 @@ var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var BoundsType = require("awayjs-display/lib/bounds/BoundsType");
 var LineSegment = require("awayjs-display/lib/display/LineSegment");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var PointLight = require("awayjs-display/lib/display/PointLight");
 var AwayMouseEvent = require("awayjs-display/lib/events/MouseEvent");
 var BasicMaterial = require("awayjs-display/lib/materials/BasicMaterial");
@@ -171,7 +171,7 @@ var Intermediate_MouseInteraction = (function () {
      * Listener for asset complete event on loader
      */
     Intermediate_MouseInteraction.prototype.onAssetComplete = function (event) {
-        if (event.asset.isAsset(Mesh)) {
+        if (event.asset.isAsset(Sprite)) {
             this.initializeHeadModel(event.asset);
         }
     };
@@ -186,7 +186,7 @@ var Intermediate_MouseInteraction = (function () {
         model.pickingCollider = new JSPickingCollider();
         // Apply mouse interactivity.
         model.mouseEnabled = model.mouseChildren = true;
-        this.enableMeshMouseListeners(model);
+        this.enableSpriteMouseListeners(model);
         this._view.scene.addChild(model);
     };
     Intermediate_MouseInteraction.prototype.createABunchOfObjects = function () {
@@ -211,60 +211,60 @@ var Intermediate_MouseInteraction = (function () {
         }
     };
     Intermediate_MouseInteraction.prototype.createSimpleObject = function () {
-        var mesh;
+        var sprite;
         var boundsType;
-        // Chose a random mesh.
+        // Chose a random sprite.
         var randGeometry = Math.random();
         if (randGeometry > 0.75) {
-            mesh = this._cubePrefab.getNewObject();
+            sprite = this._cubePrefab.getNewObject();
         }
         else if (randGeometry > 0.5) {
-            mesh = this._spherePrefab.getNewObject();
-            boundsType = BoundsType.SPHERE; // better on spherical meshes with bound picking colliders
+            sprite = this._spherePrefab.getNewObject();
+            boundsType = BoundsType.SPHERE; // better on spherical sprites with bound picking colliders
         }
         else if (randGeometry > 0.25) {
-            mesh = this._cylinderPrefab.getNewObject();
+            sprite = this._cylinderPrefab.getNewObject();
         }
         else {
-            mesh = this._torusPrefab.getNewObject();
+            sprite = this._torusPrefab.getNewObject();
         }
         if (boundsType)
-            mesh.boundsType = boundsType;
-        // Randomly decide if the mesh has a triangle collider.
+            sprite.boundsType = boundsType;
+        // Randomly decide if the sprite has a triangle collider.
         var usesTriangleCollider = Math.random() > 0.5;
         if (usesTriangleCollider) {
-            // AS3 triangle pickers for meshes with low poly counts are faster than pixel bender ones.
-            //				mesh.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all meshes
-            mesh.pickingCollider = new JSPickingCollider();
+            // AS3 triangle pickers for sprites with low poly counts are faster than pixel bender ones.
+            //				sprite.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all sprites
+            sprite.pickingCollider = new JSPickingCollider();
         }
         // Enable mouse interactivity?
         var isMouseEnabled = Math.random() > 0.25;
-        mesh.mouseEnabled = mesh.mouseChildren = isMouseEnabled;
+        sprite.mouseEnabled = sprite.mouseChildren = isMouseEnabled;
         // Enable mouse listeners?
         var listensToMouseEvents = Math.random() > 0.25;
         if (isMouseEnabled && listensToMouseEvents) {
-            this.enableMeshMouseListeners(mesh);
+            this.enableSpriteMouseListeners(sprite);
         }
         // Apply material according to the random setup of the object.
-        this.choseMeshMaterial(mesh);
+        this.choseSpriteMaterial(sprite);
         // Add to scene and store.
-        this._view.scene.addChild(mesh);
-        return mesh;
+        this._view.scene.addChild(sprite);
+        return sprite;
     };
-    Intermediate_MouseInteraction.prototype.choseMeshMaterial = function (mesh) {
-        if (!mesh.mouseEnabled) {
-            mesh.material = this._blackMaterial;
+    Intermediate_MouseInteraction.prototype.choseSpriteMaterial = function (sprite) {
+        if (!sprite.mouseEnabled) {
+            sprite.material = this._blackMaterial;
         }
         else {
-            if (!mesh.hasEventListener(AwayMouseEvent.MOUSE_MOVE)) {
-                mesh.material = this._grayMaterial;
+            if (!sprite.hasEventListener(AwayMouseEvent.MOUSE_MOVE)) {
+                sprite.material = this._grayMaterial;
             }
             else {
-                if (mesh.pickingCollider != null) {
-                    mesh.material = this._redMaterial;
+                if (sprite.pickingCollider != null) {
+                    sprite.material = this._redMaterial;
                 }
                 else {
-                    mesh.material = this._blueMaterial;
+                    sprite.material = this._blueMaterial;
                 }
             }
         }
@@ -293,7 +293,7 @@ var Intermediate_MouseInteraction = (function () {
         var pos = this._camera.transform.position;
         this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
         var collidingObject = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
-        //var mesh:Mesh;
+        //var sprite:Sprite;
         if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) {
             this._scenePositionTracer.visible = this._sceneNormalTracer.visible = false;
             this._scenePositionTracer.transform.moveTo(0, 0, 0);
@@ -371,22 +371,22 @@ var Intermediate_MouseInteraction = (function () {
     // ---------------------------------------------------------------------
     // 3D mouse event handlers.
     // ---------------------------------------------------------------------
-    Intermediate_MouseInteraction.prototype.enableMeshMouseListeners = function (mesh) {
+    Intermediate_MouseInteraction.prototype.enableSpriteMouseListeners = function (sprite) {
         var _this = this;
-        mesh.addEventListener(AwayMouseEvent.MOUSE_OVER, function (event) { return _this.onMeshMouseOver(event); });
-        mesh.addEventListener(AwayMouseEvent.MOUSE_OUT, function (event) { return _this.onMeshMouseOut(event); });
-        mesh.addEventListener(AwayMouseEvent.MOUSE_MOVE, function (event) { return _this.onMeshMouseMove(event); });
-        mesh.addEventListener(AwayMouseEvent.MOUSE_DOWN, function (event) { return _this.onMeshMouseDown(event); });
+        sprite.addEventListener(AwayMouseEvent.MOUSE_OVER, function (event) { return _this.onSpriteMouseOver(event); });
+        sprite.addEventListener(AwayMouseEvent.MOUSE_OUT, function (event) { return _this.onSpriteMouseOut(event); });
+        sprite.addEventListener(AwayMouseEvent.MOUSE_MOVE, function (event) { return _this.onSpriteMouseMove(event); });
+        sprite.addEventListener(AwayMouseEvent.MOUSE_DOWN, function (event) { return _this.onSpriteMouseDown(event); });
     };
     /**
-     * mesh listener for mouse down interaction
+     * sprite listener for mouse down interaction
      */
-    Intermediate_MouseInteraction.prototype.onMeshMouseDown = function (event) {
-        //var mesh:Mesh = <Mesh> event.object;
+    Intermediate_MouseInteraction.prototype.onSpriteMouseDown = function (event) {
+        //var sprite:Sprite = <Sprite> event.object;
         //// Paint on the head's material.
-        //if( mesh == this._head ) {
+        //if( sprite == this._head ) {
         //	var uv:Point = event.uv;
-        //	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Mesh> event.object).material);
+        //	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Sprite> event.object).material);
         //	var bmd:BitmapData = Single2DTexture( textureMaterial.texture ).bitmapData;
         //	var x:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.x;
         //	var y:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.y;
@@ -397,31 +397,31 @@ var Intermediate_MouseInteraction = (function () {
         //}
     };
     /**
-     * mesh listener for mouse over interaction
+     * sprite listener for mouse over interaction
      */
-    Intermediate_MouseInteraction.prototype.onMeshMouseOver = function (event) {
-        var mesh = event.object;
-        mesh.debugVisible = true;
-        if (mesh != this._head)
-            mesh.material = this._whiteMaterial;
+    Intermediate_MouseInteraction.prototype.onSpriteMouseOver = function (event) {
+        var sprite = event.object;
+        sprite.debugVisible = true;
+        if (sprite != this._head)
+            sprite.material = this._whiteMaterial;
         this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
-        this.onMeshMouseMove(event);
+        this.onSpriteMouseMove(event);
     };
     /**
-     * mesh listener for mouse out interaction
+     * sprite listener for mouse out interaction
      */
-    Intermediate_MouseInteraction.prototype.onMeshMouseOut = function (event) {
-        var mesh = event.object;
-        mesh.debugVisible = false;
-        if (mesh != this._head)
-            this.choseMeshMaterial(mesh);
+    Intermediate_MouseInteraction.prototype.onSpriteMouseOut = function (event) {
+        var sprite = event.object;
+        sprite.debugVisible = false;
+        if (sprite != this._head)
+            this.choseSpriteMaterial(sprite);
         this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
         this._pickingPositionTracer.transform.moveTo(0, 0, 0);
     };
     /**
-     * mesh listener for mouse move interaction
+     * sprite listener for mouse move interaction
      */
-    Intermediate_MouseInteraction.prototype.onMeshMouseMove = function (event) {
+    Intermediate_MouseInteraction.prototype.onSpriteMouseMove = function (event) {
         var pos;
         // Show tracers.
         this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
@@ -487,7 +487,7 @@ window.onload = function () {
     new Intermediate_MouseInteraction();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/bounds/BoundsType":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-display/lib/pick/RaycastPicker":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/OBJParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Intermediate_MouseInteraction.ts"])
 
 
 //# sourceMappingURL=Intermediate_MouseInteraction.js.map

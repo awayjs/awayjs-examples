@@ -7,7 +7,7 @@ Demonstrates:
 
 How to setup a particle geometry and particle animationset in order to simulate fire.
 How to stagger particle animation instances with different animator objects running on different timers.
-How to apply fire lighting to a floor mesh using a multipass material.
+How to apply fire lighting to a floor sprite using a multipass material.
 
 Code by Rob Bateman & Liao Cheng
 rob@infiniteturtles.co.uk
@@ -52,7 +52,7 @@ var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
 var Camera = require("awayjs-display/lib/display/Camera");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var PointLight = require("awayjs-display/lib/display/PointLight");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -156,8 +156,8 @@ var Basic_Fire = (function () {
         var graphicsSet = new Array();
         for (var i = 0; i < 500; i++)
             graphicsSet.push(particle.graphics);
-        this.particleMesh = new Mesh(this.particleMaterial);
-        ParticleGraphicsHelper.generateGraphics(this.particleMesh.graphics, graphicsSet);
+        this.particleSprite = new Sprite(this.particleMaterial);
+        ParticleGraphicsHelper.generateGraphics(this.particleSprite.graphics, graphicsSet);
     };
     /**
      * Initialise the scene objects
@@ -170,17 +170,17 @@ var Basic_Fire = (function () {
         this.plane.y = -20;
         this.scene.addChild(this.plane);
         for (var i = 0; i < Basic_Fire.NUM_FIRES; i++) {
-            var particleMesh = this.particleMesh.clone();
+            var particleSprite = this.particleSprite.clone();
             var animator = new ParticleAnimator(this.fireAnimationSet);
-            particleMesh.animator = animator;
-            //position the mesh
+            particleSprite.animator = animator;
+            //position the sprite
             var degree = i / Basic_Fire.NUM_FIRES * Math.PI * 2;
-            particleMesh.x = Math.sin(degree) * 400;
-            particleMesh.z = Math.cos(degree) * 400;
-            particleMesh.y = 5;
+            particleSprite.x = Math.sin(degree) * 400;
+            particleSprite.z = Math.cos(degree) * 400;
+            particleSprite.y = 5;
             //create a fire object and add it to the fire object vector
-            this.fireObjects.push(new FireVO(particleMesh, animator));
-            this.view.scene.addChild(particleMesh);
+            this.fireObjects.push(new FireVO(particleSprite, animator));
+            this.view.scene.addChild(particleSprite);
         }
         //setup timer for triggering each particle aniamtor
         this.fireTimer = new Timer(1000, this.fireObjects.length);
@@ -244,7 +244,7 @@ var Basic_Fire = (function () {
         light.color = 0xFF3301;
         light.diffuse = 0;
         light.specular = 0;
-        light.transform.moveTo(fireObject.mesh.x, fireObject.mesh.y, fireObject.mesh.z);
+        light.transform.moveTo(fireObject.sprite.x, fireObject.sprite.y, fireObject.sprite.z);
         //add the lightsource to the fire object
         fireObject.light = light;
         //update the lightpicker
@@ -335,9 +335,9 @@ var Basic_Fire = (function () {
 * Data class for the fire objects
 */
 var FireVO = (function () {
-    function FireVO(mesh, animator) {
+    function FireVO(sprite, animator) {
         this.strength = 0;
-        this.mesh = mesh;
+        this.sprite = sprite;
         this.animator = animator;
     }
     return FireVO;
@@ -346,7 +346,7 @@ window.onload = function () {
     new Basic_Fire();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":undefined}]},{},["./src/Basic_Fire.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/TimerEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/Timer":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":undefined,"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":undefined}]},{},["./src/Basic_Fire.ts"])
 
 
 //# sourceMappingURL=Basic_Fire.js.map

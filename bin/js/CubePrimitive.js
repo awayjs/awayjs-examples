@@ -89,12 +89,12 @@ var CubePrimitive = (function () {
         matTx.lightPicker = this._lightPicker;
         this._cube = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
         this._torus = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
-        this._mesh = this._torus.getNewObject();
-        this._mesh2 = this._cube.getNewObject();
-        this._mesh2.x = 130;
-        this._mesh2.z = 40;
-        this._view.scene.addChild(this._mesh);
-        this._view.scene.addChild(this._mesh2);
+        this._sprite = this._torus.getNewObject();
+        this._sprite2 = this._cube.getNewObject();
+        this._sprite2.x = 130;
+        this._sprite2.z = 40;
+        this._view.scene.addChild(this._sprite);
+        this._view.scene.addChild(this._sprite2);
         this._raf = new RequestAnimationFrame(this.render, this);
         this._raf.start();
         window.onresize = function (event) { return _this.onResize(event); };
@@ -107,9 +107,9 @@ var CubePrimitive = (function () {
     CubePrimitive.prototype.render = function (dt) {
         if (dt === void 0) { dt = null; }
         this._view.camera.transform.rotate(this._cameraAxis, 1);
-        this._mesh.rotationY += 1;
-        this._mesh2.rotationX += 0.4;
-        this._mesh2.rotationY += 0.4;
+        this._sprite.rotationY += 1;
+        this._sprite2.rotationX += 0.4;
+        this._sprite2.rotationY += 0.4;
         this._view.render();
     };
     /**

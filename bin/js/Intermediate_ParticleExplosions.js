@@ -6,7 +6,7 @@ Particle explosions in Away3D using the Adobe AIR and Adobe Flash Player logos
 Demonstrates:
 
 How to split images into particles.
-How to share particle geometries and animation sets between meshes and animators.
+How to share particle geometries and animation sets between sprites and animators.
 How to manually update the playhead of a particle animator using the update() function.
 
 Code by Rob Bateman & Liao Cheng
@@ -47,7 +47,7 @@ var Scene = require("awayjs-display/lib/display/Scene");
 var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var Camera = require("awayjs-display/lib/display/Camera");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var PointLight = require("awayjs-display/lib/display/PointLight");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -199,22 +199,22 @@ var Intermediate_ParticleExplosions = (function () {
         var len = this.colorPoints.length;
         for (i = 0; i < len; i++)
             colorGraphicsSet.push(plane.graphics);
-        //create the particle mesh
-        this.colorParticleMesh = new Mesh(this.colorMaterial);
+        //create the particle sprite
+        this.colorParticleSprite = new Sprite(this.colorMaterial);
         //generate the particle geometries
-        ParticleGraphicsHelper.generateGraphics(this.colorParticleMesh.graphics, colorGraphicsSet);
+        ParticleGraphicsHelper.generateGraphics(this.colorParticleSprite.graphics, colorGraphicsSet);
         //initialise animators vectors
         this.colorAnimators = new Array(Intermediate_ParticleExplosions.NUM_ANIMATORS);
         var i = 0;
         for (i = 0; i < Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {
-            //clone the particle mesh
-            this.colorParticleMesh = this.colorParticleMesh.clone();
-            this.colorParticleMesh.rotationY = 45 * (i - 1);
-            this.scene.addChild(this.colorParticleMesh);
+            //clone the particle sprite
+            this.colorParticleSprite = this.colorParticleSprite.clone();
+            this.colorParticleSprite.rotationY = 45 * (i - 1);
+            this.scene.addChild(this.colorParticleSprite);
             //create and start the particle animator
             this.colorAnimators[i] = new ParticleAnimator(this.colorAnimationSet);
-            this.colorParticleMesh.animator = this.colorAnimators[i];
-            this.scene.addChild(this.colorParticleMesh);
+            this.colorParticleSprite.animator = this.colorAnimators[i];
+            this.scene.addChild(this.colorParticleSprite);
         }
     };
     /**
@@ -348,7 +348,7 @@ window.onload = function () {
     new Intermediate_ParticleExplosions();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":undefined,"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":undefined}]},{},["./src/Intermediate_ParticleExplosions.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Scene":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":undefined,"awayjs-renderergl/lib/animators/ParticleAnimator":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode":undefined,"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":undefined,"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":undefined}]},{},["./src/Intermediate_ParticleExplosions.ts"])
 
 
 //# sourceMappingURL=Intermediate_ParticleExplosions.js.map

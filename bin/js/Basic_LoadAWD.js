@@ -43,7 +43,7 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/View");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var DefaultRenderer = require("awayjs-renderergl/lib/DefaultRenderer");
 var MethodMaterial = require("awayjs-methodmaterials/lib/MethodMaterial");
@@ -130,12 +130,12 @@ var Basic_LoadAWD = (function () {
     Basic_LoadAWD.prototype.onAssetComplete = function (event) {
         var asset = event.asset;
         switch (asset.assetType) {
-            case Mesh.assetType:
-                var mesh = asset;
-                mesh.y = -300;
-                mesh.transform.scaleTo(900, 900, 900);
-                this._suzanne = mesh;
-                this._view.scene.addChild(mesh);
+            case Sprite.assetType:
+                var sprite = asset;
+                sprite.y = -300;
+                sprite.transform.scaleTo(900, 900, 900);
+                this._suzanne = sprite;
+                this._view.scene.addChild(sprite);
                 break;
             case MethodMaterial.assetType:
                 var material = asset;
@@ -159,7 +159,7 @@ window.onload = function () {
     new Basic_LoadAWD();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_LoadAWD.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/Basic_LoadAWD.ts"])
 
 
 //# sourceMappingURL=Basic_LoadAWD.js.map

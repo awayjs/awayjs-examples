@@ -7,7 +7,7 @@ Demonstrates:
 
 How to use the AssetLibrary class to load an embedded internal md2 model.
 How to clone an asset from the AssetLibrary and apply different mateirals.
-How to load animations into an animation set and apply to individual meshes.
+How to load animations into an animation set and apply to individual sprites.
 
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -49,7 +49,7 @@ var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame
 var View = require("awayjs-display/lib/View");
 var HoverController = require("awayjs-display/lib/controllers/HoverController");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 var Single2DTexture = require("awayjs-display/lib/textures/Single2DTexture");
@@ -66,7 +66,7 @@ var Intermediate_PerelithKnight = (function () {
      */
     function Intermediate_PerelithKnight() {
         var _this = this;
-        this._meshInitialised = false;
+        this._spriteInitialised = false;
         this._animationSetInitialised = false;
         this._sceneInitialised = false;
         //array of materials for random sampling
@@ -179,19 +179,19 @@ var Intermediate_PerelithKnight = (function () {
     Intermediate_PerelithKnight.prototype.onAssetComplete = function (event) {
         var asset = event.asset;
         switch (asset.assetType) {
-            case Mesh.assetType:
-                this._mesh = event.asset;
-                //adjust the mesh
-                this._mesh.y = 120;
-                this._mesh.transform.scaleTo(5, 5, 5);
-                this._meshInitialised = true;
+            case Sprite.assetType:
+                this._sprite = event.asset;
+                //adjust the sprite
+                this._sprite.y = 120;
+                this._sprite.transform.scaleTo(5, 5, 5);
+                this._spriteInitialised = true;
                 break;
             case AnimationSetBase.assetType:
                 this._animationSet = event.asset;
                 this._animationSetInitialised = true;
                 break;
         }
-        if (this._animationSetInitialised && this._meshInitialised && !this._sceneInitialised) {
+        if (this._animationSetInitialised && this._spriteInitialised && !this._sceneInitialised) {
             this._sceneInitialised = true;
             //create 20 x 20 different clones of the knight
             var numWide = 20;
@@ -199,8 +199,8 @@ var Intermediate_PerelithKnight = (function () {
             var k = 0;
             for (var i = 0; i < numWide; i++) {
                 for (var j = 0; j < numDeep; j++) {
-                    //clone mesh
-                    var clone = this._mesh.clone();
+                    //clone sprite
+                    var clone = this._sprite.clone();
                     clone.x = (i - (numWide - 1) / 2) * 5000 / numWide;
                     clone.z = (j - (numDeep - 1) / 2) * 5000 / numDeep;
                     clone.castsShadows = true;
@@ -338,7 +338,7 @@ window.onload = function () {
     new Intermediate_PerelithKnight();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/controllers/HoverController":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-parsers/lib/MD2Parser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined}]},{},["./src/Intermediate_PerelithKnight.ts"])
 
 
 //# sourceMappingURL=Intermediate_PerelithKnight.js.map

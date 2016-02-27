@@ -5,7 +5,7 @@ MD5 animation loading and interaction example in Away3d
 
 Demonstrates:
 
-How to load MD5 mesh and anim files with bones animation from embedded resources.
+How to load MD5 sprite and anim files with bones animation from embedded resources.
 How to map animation data after loading in order to playback an animation sequence.
 How to control the movement of a game character using keys.
 
@@ -53,9 +53,11 @@ var View = require("awayjs-display/lib/View");
 var LookAtController = require("awayjs-display/lib/controllers/LookAtController");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
 var Billboard = require("awayjs-display/lib/display/Billboard");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var PointLight = require("awayjs-display/lib/display/PointLight");
 var Skybox = require("awayjs-display/lib/display/Skybox");
+var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+var Style = require("awayjs-display/lib/base/Style");
 var NearDirectionalShadowMapper = require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var PrimitivePlanePrefab = require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -72,7 +74,6 @@ var ShadowNearMethod = require("awayjs-methodmaterials/lib/methods/ShadowNearMet
 var ShadowSoftMethod = require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
 var MD5AnimParser = require("awayjs-parsers/lib/MD5AnimParser");
 var MD5MeshParser = require("awayjs-parsers/lib/MD5MeshParser");
-var ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 var Intermediate_MD5Animation = (function () {
     /**
      * Constructor
@@ -230,7 +231,7 @@ var Intermediate_MD5Animation = (function () {
         //setup the url map for textures in the cubemap file
         var loaderContext = new LoaderContext();
         loaderContext.dependencyBaseUrl = "assets/skybox/";
-        //load hellknight mesh
+        //load hellknight sprite
         AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
         AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
         AssetLibrary.load(new URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
@@ -256,9 +257,9 @@ var Intermediate_MD5Animation = (function () {
         this._time += dt;
         this.cameraController.update();
         //update character animation
-        if (this.mesh) {
-            this.mesh.graphics.getGraphicAt(1).uvTransform.ty = this.mesh.graphics.getGraphicAt(2).uvTransform.ty = this.mesh.graphics.getGraphicAt(3).uvTransform.ty = (-this._time / 2000 % 1);
-            this.mesh.rotationY += this.currentRotationInc;
+        if (this.sprite) {
+            this.gobStyle.uvMatrix.ty = (-this._time / 2000 % 1);
+            this.sprite.rotationY += this.currentRotationInc;
         }
         this.count += 0.01;
         this.redLight.x = Math.sin(this.count) * 1500;
@@ -294,22 +295,23 @@ var Intermediate_MD5Animation = (function () {
             this.animator = new SkeletonAnimator(this.animationSet, this.skeleton);
             for (var i = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
                 AssetLibrary.load(new URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser());
-            this.mesh.animator = this.animator;
+            this.sprite.animator = this.animator;
         }
         else if (event.asset.isAsset(Skeleton)) {
             this.skeleton = event.asset;
         }
-        else if (event.asset.isAsset(Mesh)) {
-            //grab mesh object and assign our material object
-            this.mesh = event.asset;
-            this.mesh.graphics.getGraphicAt(0).material = this.bodyMaterial;
-            this.mesh.graphics.getGraphicAt(1).material = this.mesh.graphics.getGraphicAt(2).material = this.mesh.graphics.getGraphicAt(3).material = this.gobMaterial;
-            this.mesh.castsShadows = true;
-            this.mesh.rotationY = 180;
-            this.mesh.graphics.getGraphicAt(1).uvTransform = this.mesh.graphics.getGraphicAt(2).uvTransform = this.mesh.graphics.getGraphicAt(3).uvTransform = new Matrix();
-            this.scene.addChild(this.mesh);
-            //add our lookat object to the mesh
-            this.mesh.addChild(this.placeHolder);
+        else if (event.asset.isAsset(Sprite)) {
+            //grab sprite object and assign our material object
+            this.sprite = event.asset;
+            this.sprite.graphics.getGraphicAt(0).material = this.bodyMaterial;
+            this.sprite.graphics.getGraphicAt(1).material = this.sprite.graphics.getGraphicAt(2).material = this.sprite.graphics.getGraphicAt(3).material = this.gobMaterial;
+            this.sprite.castsShadows = true;
+            this.sprite.rotationY = 180;
+            this.gobStyle = this.sprite.graphics.getGraphicAt(1).style = this.sprite.graphics.getGraphicAt(2).style = this.sprite.graphics.getGraphicAt(3).style = new Style();
+            this.gobStyle.uvMatrix = new Matrix();
+            this.scene.addChild(this.sprite);
+            //add our lookat object to the sprite
+            this.sprite.addChild(this.placeHolder);
         }
     };
     /**
@@ -490,7 +492,7 @@ window.onload = function () {
     new Intermediate_MD5Animation();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/controllers/LookAtController":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/MD5AnimParser":undefined,"awayjs-parsers/lib/MD5MeshParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/animators/AnimationSetBase":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":undefined,"awayjs-renderergl/lib/events/AnimationStateEvent":undefined}]},{},["./src/Intermediate_MD5Animation.ts"])
 
 
 //# sourceMappingURL=Intermediate_MD5Animation.js.map
