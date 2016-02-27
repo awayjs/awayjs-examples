@@ -17,7 +17,7 @@ import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObje
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -54,7 +54,7 @@ class AircraftDemo
     
     //{ sea
     private _seaGeom:PrimitivePlanePrefab;
-    private _seaMesh:Mesh;
+    private _seaSprite:Sprite;
     private _seaNormalImage:BitmapImage2D;
     private _seaInitialized:boolean = false;
     private _seaMaterial:MethodMaterial;
@@ -181,12 +181,12 @@ class AircraftDemo
         this._seaMaterial.specularMethod = fresnelMethod;
         
         this._seaGeom = new PrimitivePlanePrefab(this._seaMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1, true, false );
-        this._seaMesh = <Mesh> this._seaGeom.getNewObject();
-        this._seaMesh.graphics.scaleUV( 100, 100 );
-        this._seaMesh.style = new Style();
-        this._seaMesh.style.uvMatrix = new Matrix();
+        this._seaSprite = <Sprite> this._seaGeom.getNewObject();
+        this._seaSprite.graphics.scaleUV( 100, 100 );
+        this._seaSprite.style = new Style();
+        this._seaSprite.style.uvMatrix = new Matrix();
         this._view.scene.addChild( new Skybox(this._skyboxImageCube));
-        this._view.scene.addChild( this._seaMesh );
+        this._view.scene.addChild( this._seaSprite );
     }
     
     public onResourceComplete(event:LoaderEvent)
@@ -204,9 +204,9 @@ class AircraftDemo
                 for (i = 0; i < numAssets; ++i) {
                     var asset:IAsset = loader.baseDependency.assets[i];
                     switch (asset.assetType) {
-                        case Mesh.assetType:
-                            var mesh:Mesh = <Mesh> asset;
-                            this._f14Geom.addChild(mesh);
+                        case Sprite.assetType:
+                            var sprite:Sprite = <Sprite> asset;
+                            this._f14Geom.addChild(sprite);
                             break;
                     }
                 }
@@ -258,7 +258,7 @@ class AircraftDemo
         }
         
         if (this._seaMaterial) {
-            this._seaMesh.style.uvMatrix.ty -= 0.04;
+            this._seaSprite.style.uvMatrix.ty -= 0.04;
             
             /*
              this.waterMethod.water1OffsetX += .001;

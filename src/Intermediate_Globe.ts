@@ -56,7 +56,7 @@ import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
 import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -99,9 +99,9 @@ class Intermediate_Globe
 
 	//scene objects
 	private sun:Billboard;
-	private earth:Mesh;
-	private clouds:Mesh;
-	private atmosphere:Mesh;
+	private earth:Sprite;
+	private clouds:Sprite;
+	private atmosphere:Sprite;
 	private tiltContainer:DisplayObjectContainer;
 	private orbitContainer:DisplayObjectContainer;
 	private skyBox:Skybox;
@@ -288,11 +288,11 @@ class Intermediate_Globe
 		this.sun.x = 10000;
 		this.orbitContainer.addChild(this.sun);
 
-		this.earth = <Mesh> new PrimitiveSpherePrefab(this.groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
+		this.earth = <Sprite> new PrimitiveSpherePrefab(this.groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
 
-		this.clouds = <Mesh> new PrimitiveSpherePrefab(this.cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
+		this.clouds = <Sprite> new PrimitiveSpherePrefab(this.cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
 
-		this.atmosphere = <Mesh> new PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
+		this.atmosphere = <Sprite> new PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
 		this.atmosphere.scaleX = -1;
 
 		this.tiltContainer = new DisplayObjectContainer();

@@ -46,7 +46,7 @@ import PerspectiveProjection		= require("awayjs-core/lib/projections/Perspective
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
@@ -68,7 +68,7 @@ class Basic_SkyBox
 
 	//scene objects
 	private _skyBox:Skybox;
-	private _torus:Mesh;
+	private _torus:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -130,7 +130,7 @@ class Basic_SkyBox
 	 */
 	private initObjects():void
 	{
-		this._torus = <Mesh> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
+		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.debugVisible = true;
 		this._view.scene.addChild(this._torus);
 	}

@@ -51,7 +51,7 @@ import LoaderContainer				= require("awayjs-display/lib/display/LoaderContainer"
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -81,7 +81,7 @@ class Basic_Load3DS
 	//scene objects
 	private _loader:LoaderContainer;
 	private _plane:PrimitivePlanePrefab;
-	private _ground:Mesh;
+	private _ground:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -165,7 +165,7 @@ class Basic_Load3DS
 		this._view.scene.addChild(this._loader);
 
 		this._plane = new PrimitivePlanePrefab(this._groundMaterial, ElementsType.TRIANGLE, 1000, 1000);
-		this._ground = <Mesh> this._plane.getNewObject();
+		this._ground = <Sprite> this._plane.getNewObject();
 		this._ground.castsShadows = false;
 		this._view.scene.addChild(this._ground);
 	}
@@ -220,9 +220,9 @@ class Basic_Load3DS
 
 		switch (asset.assetType)
 		{
-			case Mesh.assetType :
-				var mesh:Mesh = <Mesh> event.asset;
-				mesh.castsShadows = true;
+			case Sprite.assetType :
+				var sprite:Sprite = <Sprite> event.asset;
+				sprite.castsShadows = true;
 				break;
 			case MethodMaterial.assetType :
 				var material:MethodMaterial = <MethodMaterial> event.asset;

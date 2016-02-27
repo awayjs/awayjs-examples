@@ -49,7 +49,7 @@ import Geometry						= require("awayjs-display/lib/base/Geometry");
 import Graphics						= require("awayjs-display/lib/draw/Graphics");
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Container					= require("awayjs-display/lib/display/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
@@ -154,8 +154,8 @@ class Graphics_Drawing
 		root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
 
 		// Graphics is not wired into any Displayobjects yet.
-		// to have it produce geometry, for now we have to pass it a mesh when constructing it
-		var drawingMC = new Mesh(null);
+		// to have it produce geometry, for now we have to pass it a sprite when constructing it
+		var drawingMC = new Sprite(null);
 		var drawingGraphics = new Graphics(drawingMC);
 
 		// for now i did not find a way to activate this other than doing it in js (not in ts)

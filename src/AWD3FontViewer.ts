@@ -47,7 +47,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Geometry						= require("awayjs-display/lib/base/Geometry");
 import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Container					= require("awayjs-display/lib/display/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Loader						= require("awayjs-display/lib/display/Loader");
@@ -204,7 +204,7 @@ class AWD3FontViewer
 			var pos_x:number=position_x;
 			var pos_y:number=position_y;
 			for(var i:number =0; i<font_chars.length;i++){
-				var newmesh:Mesh=new Mesh(new Geometry());
+				var newsprite:Sprite=new Sprite(new Geometry());
 				if(k>=charcnt_sqr){
 					k=0;
 					pos_x=position_x;
@@ -215,17 +215,17 @@ class AWD3FontViewer
 				if(thischar!=null){
 					var thisGeom:SubGeometryBase=thischar.subgeom;
 					if(thisGeom!=null) {
-						newmesh.geometry.addSubGeometry(thisGeom);
+						newsprite.geometry.addSubGeometry(thisGeom);
 					}
 
 				}
 				//thischar.applyTransformation(transMatrix);
 				pos_x+=font_em_size;
-				newmesh.x=pos_x;
-				newmesh.y=pos_y;
-				newmesh.scaleX=newmesh.scaleY=newmesh.scaleZ=0.01;
-				//console.log("Font x = ", newmesh.x, "Font y = ", newmesh.y);
-				this._view.scene.addChild(newmesh);
+				newsprite.x=pos_x;
+				newsprite.y=pos_y;
+				newsprite.scaleX=newsprite.scaleY=newsprite.scaleZ=0.01;
+				//console.log("Font x = ", newsprite.x, "Font y = ", newsprite.y);
+				this._view.scene.addChild(newsprite);
 
 			}
 

@@ -52,7 +52,7 @@ import BoundsType					= require("awayjs-display/lib/bounds/BoundsType");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
 import LineSegment					= require("awayjs-display/lib/display/LineSegment");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
@@ -102,13 +102,13 @@ class Intermediate_MouseInteraction
 	private _lightPicker:StaticLightPicker;
 
 	//scene objects
-	private _pickingPositionTracer:Mesh;
-	private _scenePositionTracer:Mesh;
+	private _pickingPositionTracer:Sprite;
+	private _scenePositionTracer:Sprite;
 	private _pickingNormalTracer:LineSegment;
 	private _sceneNormalTracer:LineSegment;
 	private _previoiusCollidingObject:PickingCollisionVO;
 	private _raycastPicker:RaycastPicker = new RaycastPicker(false);
-	private _head:Mesh;
+	private _head:Sprite;
 	private _cubePrefab:PrimitiveCubePrefab;
 	private _spherePrefab:PrimitiveSpherePrefab;
 	private _cylinderPrefab:PrimitiveCylinderPrefab;
@@ -206,13 +206,13 @@ class Intermediate_MouseInteraction
 	private initObjects():void
 	{
 		// To trace mouse hit position.
-		this._pickingPositionTracer = <Mesh> new PrimitiveSpherePrefab(new MethodMaterial(0x00FF00, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
+		this._pickingPositionTracer = <Sprite> new PrimitiveSpherePrefab(new MethodMaterial(0x00FF00, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
 		this._pickingPositionTracer.visible = false;
 		this._pickingPositionTracer.mouseEnabled = false;
 		this._pickingPositionTracer.mouseChildren = false;
 		this._scene.addChild(this._pickingPositionTracer);
 
-		this._scenePositionTracer = <Mesh> new PrimitiveSpherePrefab(new MethodMaterial(0x0000FF, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
+		this._scenePositionTracer = <Sprite> new PrimitiveSpherePrefab(new MethodMaterial(0x0000FF, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
 		this._scenePositionTracer.visible = false;
 		this._scenePositionTracer.mouseEnabled = false;
 		this._scene.addChild(this._scenePositionTracer);
@@ -247,12 +247,12 @@ class Intermediate_MouseInteraction
 	 */
 	private onAssetComplete(event:AssetEvent):void
 	{
-		if (event.asset.isAsset(Mesh)) {
-			this.initializeHeadModel(<Mesh> event.asset);
+		if (event.asset.isAsset(Sprite)) {
+			this.initializeHeadModel(<Sprite> event.asset);
 		}
 	}
 
-	private initializeHeadModel( model:Mesh ):void
+	private initializeHeadModel( model:Sprite ):void
 	{
 		this._head = model;
 
@@ -266,7 +266,7 @@ class Intermediate_MouseInteraction
 
 		// Apply mouse interactivity.
 		model.mouseEnabled = model.mouseChildren = true;
-		this.enableMeshMouseListeners(model);
+		this.enableSpriteMouseListeners(model);
 
 		this._view.scene.addChild(model);
 	}
@@ -281,7 +281,7 @@ class Intermediate_MouseInteraction
 		for(var i:number = 0; i < 40; i++) {
 
 			// Create object.
-			var object:Mesh = this.createSimpleObject();
+			var object:Sprite = this.createSimpleObject();
 
 			// Random orientation.
 			//object.rotationX = 360*Math.random();
@@ -298,76 +298,76 @@ class Intermediate_MouseInteraction
 		}
 	}
 
-	private createSimpleObject():Mesh
+	private createSimpleObject():Sprite
 	{
 
-		var mesh:Mesh;
+		var sprite:Sprite;
 		var boundsType:string;
 
-		// Chose a random mesh.
+		// Chose a random sprite.
 		var randGeometry:number = Math.random();
 		if( randGeometry > 0.75 ) {
-			mesh = <Mesh> this._cubePrefab.getNewObject();
+			sprite = <Sprite> this._cubePrefab.getNewObject();
 		}
 		else if( randGeometry > 0.5 ) {
-			mesh = <Mesh> this._spherePrefab.getNewObject();
-			boundsType = BoundsType.SPHERE; // better on spherical meshes with bound picking colliders
+			sprite = <Sprite> this._spherePrefab.getNewObject();
+			boundsType = BoundsType.SPHERE; // better on spherical sprites with bound picking colliders
 		}
 		else if( randGeometry > 0.25 ) {
-			mesh = <Mesh> this._cylinderPrefab.getNewObject();
+			sprite = <Sprite> this._cylinderPrefab.getNewObject();
 
 		}
 		else {
-			mesh = <Mesh> this._torusPrefab.getNewObject();
+			sprite = <Sprite> this._torusPrefab.getNewObject();
 		}
 
 		if (boundsType)
-			mesh.boundsType = boundsType;
+			sprite.boundsType = boundsType;
 
-		// Randomly decide if the mesh has a triangle collider.
+		// Randomly decide if the sprite has a triangle collider.
 		var usesTriangleCollider:boolean = Math.random() > 0.5;
 		if( usesTriangleCollider ) {
-			// AS3 triangle pickers for meshes with low poly counts are faster than pixel bender ones.
-			//				mesh.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all meshes
-			mesh.pickingCollider = new JSPickingCollider();
-			//				mesh.pickingCollider = PickingColliderType.AS3_BEST_HIT; // slower and more accurate, best for meshes with folds
-			//				mesh.pickingCollider = PickingColliderType.AUTO_FIRST_ENCOUNTERED; // automatically decides when to use pixel bender or actionscript
+			// AS3 triangle pickers for sprites with low poly counts are faster than pixel bender ones.
+			//				sprite.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all sprites
+			sprite.pickingCollider = new JSPickingCollider();
+			//				sprite.pickingCollider = PickingColliderType.AS3_BEST_HIT; // slower and more accurate, best for sprites with folds
+			//				sprite.pickingCollider = PickingColliderType.AUTO_FIRST_ENCOUNTERED; // automatically decides when to use pixel bender or actionscript
 		}
 
 		// Enable mouse interactivity?
 		var isMouseEnabled:boolean = Math.random() > 0.25;
-		mesh.mouseEnabled = mesh.mouseChildren = isMouseEnabled;
+		sprite.mouseEnabled = sprite.mouseChildren = isMouseEnabled;
 
 		// Enable mouse listeners?
 		var listensToMouseEvents:boolean = Math.random() > 0.25;
 		if( isMouseEnabled && listensToMouseEvents ) {
-			this.enableMeshMouseListeners(mesh);
+			this.enableSpriteMouseListeners(sprite);
 		}
 
 		// Apply material according to the random setup of the object.
-		this.choseMeshMaterial(mesh);
+		this.choseSpriteMaterial(sprite);
 
 		// Add to scene and store.
-		this._view.scene.addChild(mesh);
+		this._view.scene.addChild(sprite);
 
-		return mesh;
+		return sprite;
 	}
 
-	private choseMeshMaterial(mesh:Mesh):void
+	private choseSpriteMaterial(sprite:Sprite):void
 	{
-		if( !mesh.mouseEnabled ) {
-			mesh.material = this._blackMaterial;
+		if( !sprite.mouseEnabled ) {
+			sprite.material = this._blackMaterial;
 		}
 		else {
-			if( !mesh.hasEventListener( AwayMouseEvent.MOUSE_MOVE ) ) {
-				mesh.material = this._grayMaterial;
+			if( !sprite.hasEventListener( AwayMouseEvent.MOUSE_MOVE ) ) {
+				sprite.material = this._grayMaterial;
 			}
 			else {
-				if( mesh.pickingCollider != null ) {
-					mesh.material = this._redMaterial;
+				if( sprite.pickingCollider != null ) {
+					sprite.material = this._redMaterial;
 				}
 				else {
-					mesh.material = this._blueMaterial;
+					sprite.material = this._blueMaterial;
 				}
 			}
 		}
@@ -403,7 +403,7 @@ class Intermediate_MouseInteraction
 		this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
 
 		var collidingObject:PickingCollisionVO = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
-		//var mesh:Mesh;
+		//var sprite:Sprite;
 
 		if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) { //equivalent to mouse out
 			this._scenePositionTracer.visible = this._sceneNormalTracer.visible = false;
@@ -494,24 +494,24 @@ class Intermediate_MouseInteraction
 	// 3D mouse event handlers.
 	// ---------------------------------------------------------------------
 
-	private enableMeshMouseListeners(mesh:Mesh):void
+	private enableSpriteMouseListeners(sprite:Sprite):void
 	{
-		mesh.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onMeshMouseOver(event));
-		mesh.addEventListener(AwayMouseEvent.MOUSE_OUT, (event:AwayMouseEvent) => this.onMeshMouseOut(event));
-		mesh.addEventListener(AwayMouseEvent.MOUSE_MOVE, (event:AwayMouseEvent) => this.onMeshMouseMove(event));
-		mesh.addEventListener(AwayMouseEvent.MOUSE_DOWN, (event:AwayMouseEvent) => this.onMeshMouseDown(event));
+		sprite.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onSpriteMouseOver(event));
+		sprite.addEventListener(AwayMouseEvent.MOUSE_OUT, (event:AwayMouseEvent) => this.onSpriteMouseOut(event));
+		sprite.addEventListener(AwayMouseEvent.MOUSE_MOVE, (event:AwayMouseEvent) => this.onSpriteMouseMove(event));
+		sprite.addEventListener(AwayMouseEvent.MOUSE_DOWN, (event:AwayMouseEvent) => this.onSpriteMouseDown(event));
 	}
 
 	/**
-	 * mesh listener for mouse down interaction
+	 * sprite listener for mouse down interaction
 	 */
-	private onMeshMouseDown(event:AwayMouseEvent):void
+	private onSpriteMouseDown(event:AwayMouseEvent):void
 	{
-		//var mesh:Mesh = <Mesh> event.object;
+		//var sprite:Sprite = <Sprite> event.object;
 		//// Paint on the head's material.
-		//if( mesh == this._head ) {
+		//if( sprite == this._head ) {
 		//	var uv:Point = event.uv;
-		//	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Mesh> event.object).material);
+		//	var textureMaterial:MethodMaterial = (<MethodMaterial> (<Sprite> event.object).material);
 		//	var bmd:BitmapData = Single2DTexture( textureMaterial.texture ).bitmapData;
 		//	var x:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.x;
 		//	var y:number = Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE*uv.y;
@@ -523,33 +523,33 @@ class Intermediate_MouseInteraction
 	}
 
 	/**
-	 * mesh listener for mouse over interaction
+	 * sprite listener for mouse over interaction
 	 */
-	private onMeshMouseOver(event:AwayMouseEvent):void
+	private onSpriteMouseOver(event:AwayMouseEvent):void
 	{
-		var mesh:Mesh = <Mesh> event.object;
-		mesh.debugVisible = true;
-		if( mesh != this._head ) mesh.material = this._whiteMaterial;
+		var sprite:Sprite = <Sprite> event.object;
+		sprite.debugVisible = true;
+		if( sprite != this._head ) sprite.material = this._whiteMaterial;
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
-		this.onMeshMouseMove(event);
+		this.onSpriteMouseMove(event);
 	}
 
 	/**
-	 * mesh listener for mouse out interaction
+	 * sprite listener for mouse out interaction
 	 */
-	private onMeshMouseOut(event:AwayMouseEvent):void
+	private onSpriteMouseOut(event:AwayMouseEvent):void
 	{
-		var mesh:Mesh = <Mesh> event.object;
-		mesh.debugVisible = false;
-		if( mesh != this._head ) this.choseMeshMaterial( mesh );
+		var sprite:Sprite = <Sprite> event.object;
+		sprite.debugVisible = false;
+		if( sprite != this._head ) this.choseSpriteMaterial( sprite );
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;
 		this._pickingPositionTracer.transform.moveTo(0, 0, 0);
 	}
 
 	/**
-	 * mesh listener for mouse move interaction
+	 * sprite listener for mouse move interaction
 	 */
-	private onMeshMouseMove(event:AwayMouseEvent):void
+	private onSpriteMouseMove(event:AwayMouseEvent):void
 	{
 		var pos:Vector3D;
 

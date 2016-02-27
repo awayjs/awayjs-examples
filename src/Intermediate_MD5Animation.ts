@@ -4,7 +4,7 @@ MD5 animation loading and interaction example in Away3d
 
 Demonstrates:
 
-How to load MD5 mesh and anim files with bones animation from embedded resources.
+How to load MD5 sprite and anim files with bones animation from embedded resources.
 How to map animation data after loading in order to playback an animation sequence.
 How to control the movement of a game character using keys.
 
@@ -44,7 +44,7 @@ import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
 import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
 import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
 import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import Matrix					= require("awayjs-core/lib/geom/Matrix");
+import Matrix						= require("awayjs-core/lib/geom/Matrix");
 import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
 import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
 import URLRequest					= require("awayjs-core/lib/net/URLRequest");
@@ -59,9 +59,11 @@ import LookAtController				= require("awayjs-display/lib/controllers/LookAtContr
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
 import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
+import Style						= require("awayjs-display/lib/base/Style");
 import NearDirectionalShadowMapper	= require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
@@ -85,7 +87,6 @@ import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowS
 
 import MD5AnimParser				= require("awayjs-parsers/lib/MD5AnimParser");
 import MD5MeshParser				= require("awayjs-parsers/lib/MD5MeshParser");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Intermediate_MD5Animation
 {
@@ -135,8 +136,9 @@ class Intermediate_MD5Animation
 
 	//scene objects
 	private placeHolder:DisplayObjectContainer;
-	private mesh:Mesh;
-	private ground:Mesh;
+	private sprite:Sprite;
+	private gobStyle:Style;
+	private ground:Sprite;
 	private skyBox:Skybox;
 
 	private _timer:RequestAnimationFrame;
@@ -301,7 +303,7 @@ class Intermediate_MD5Animation
 		AssetLibrary.enableParser(MD5AnimParser);
 
 		//create a rocky ground plane
-		this.ground = <Mesh> new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+		this.ground = <Sprite> new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
 		this.ground.graphics.scaleUV(200, 200);
 		this.ground.castsShadows = false;
 		this.scene.addChild(this.ground);
@@ -325,7 +327,7 @@ class Intermediate_MD5Animation
 		var loaderContext:LoaderContext = new LoaderContext();
 		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
-		//load hellknight mesh
+		//load hellknight sprite
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
@@ -359,9 +361,9 @@ class Intermediate_MD5Animation
 		this.cameraController.update();
 
 		//update character animation
-		if (this.mesh) {
-			this.mesh.graphics.getGraphicAt(1).uvTransform.ty = this.mesh.graphics.getGraphicAt(2).uvTransform.ty = this.mesh.graphics.getGraphicAt(3).uvTransform.ty = (-this._time/2000 % 1);
-			this.mesh.rotationY += this.currentRotationInc;
+		if (this.sprite) {
+			this.gobStyle.uvMatrix.ty = (-this._time/2000 % 1);
+			this.sprite.rotationY += this.currentRotationInc;
 		}
 
 		this.count += 0.01;
@@ -404,21 +406,22 @@ class Intermediate_MD5Animation
 			for (var i:number /*uint*/ = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
 				AssetLibrary.load(new URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser());
 
-			this.mesh.animator = this.animator;
+			this.sprite.animator = this.animator;
 		} else if (event.asset.isAsset(Skeleton)) {
 			this.skeleton = <Skeleton> event.asset;
-		} else if (event.asset.isAsset(Mesh)) {
-			//grab mesh object and assign our material object
-			this.mesh = <Mesh> event.asset;
-			this.mesh.graphics.getGraphicAt(0).material = this.bodyMaterial;
-			this.mesh.graphics.getGraphicAt(1).material = this.mesh.graphics.getGraphicAt(2).material = this.mesh.graphics.getGraphicAt(3).material = this.gobMaterial;
-			this.mesh.castsShadows = true;
-			this.mesh.rotationY = 180;
-			this.mesh.graphics.getGraphicAt(1).uvTransform = this.mesh.graphics.getGraphicAt(2).uvTransform = this.mesh.graphics.getGraphicAt(3).uvTransform = new Matrix();
-			this.scene.addChild(this.mesh);
+		} else if (event.asset.isAsset(Sprite)) {
+			//grab sprite object and assign our material object
+			this.sprite = <Sprite> event.asset;
+			this.sprite.graphics.getGraphicAt(0).material = this.bodyMaterial;
+			this.sprite.graphics.getGraphicAt(1).material = this.sprite.graphics.getGraphicAt(2).material = this.sprite.graphics.getGraphicAt(3).material = this.gobMaterial;
+			this.sprite.castsShadows = true;
+			this.sprite.rotationY = 180;
+			this.gobStyle = this.sprite.graphics.getGraphicAt(1).style = this.sprite.graphics.getGraphicAt(2).style = this.sprite.graphics.getGraphicAt(3).style = new Style();
+			this.gobStyle.uvMatrix = new Matrix();
+			this.scene.addChild(this.sprite);
 
-			//add our lookat object to the mesh
-			this.mesh.addChild(this.placeHolder);
+			//add our lookat object to the sprite
+			this.sprite.addChild(this.placeHolder);
 		}
 	}
 

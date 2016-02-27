@@ -6,7 +6,7 @@ Demonstrates:
 
 How to setup a particle geometry and particle animationset in order to simulate fire.
 How to stagger particle animation instances with different animator objects running on different timers.
-How to apply fire lighting to a floor mesh using a multipass material.
+How to apply fire lighting to a floor sprite using a multipass material.
 
 Code by Rob Bateman & Liao Cheng
 rob@infiniteturtles.co.uk
@@ -57,8 +57,9 @@ import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
 import Camera						= require("awayjs-display/lib/display/Camera");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
+import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -78,7 +79,6 @@ import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterial
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 import ParticleGraphicsHelper		= require("awayjs-renderergl/lib/utils/ParticleGraphicsHelper");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 
 class Basic_Fire
 {
@@ -100,11 +100,11 @@ class Basic_Fire
 
 	//particle objects
 	private fireAnimationSet:ParticleAnimationSet;
-	private particleMesh:Mesh;
+	private particleSprite:Sprite;
 	private fireTimer:Timer;
 
 	//scene objects
-	private plane:Mesh;
+	private plane:Sprite;
 	private fireObjects:Array<FireVO> = new Array<FireVO>();
 
 	//navigation variables
@@ -215,15 +215,15 @@ class Basic_Fire
 		this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
 		//create the original particle geometry
-		var particle:Mesh = <Mesh> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
+		var particle:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
 
 		//combine them into a list
 		var graphicsSet:Array<Graphics> = new Array<Graphics>();
 		for (var i:number /*int*/ = 0; i < 500; i++)
 			graphicsSet.push(particle.graphics);
 
-		this.particleMesh = new Mesh(this.particleMaterial);
-		ParticleGraphicsHelper.generateGraphics(this.particleMesh.graphics, graphicsSet);
+		this.particleSprite = new Sprite(this.particleMaterial);
+		ParticleGraphicsHelper.generateGraphics(this.particleSprite.graphics, graphicsSet);
 	}
 
 	/**
@@ -231,28 +231,28 @@ class Basic_Fire
 	 */
 	private initObjects():void
 	{
-		this.plane = <Mesh> new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+		this.plane = <Sprite> new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 		this.plane.material = this.planeMaterial;
 		this.plane.graphics.scaleUV(2, 2);
 		this.plane.y = -20;
 
 		this.scene.addChild(this.plane);
 
-		//create fire object meshes from geomtry and material, and apply particle animators to each
+		//create fire object sprites from geomtry and material, and apply particle animators to each
 		for (var i:number /*int*/ = 0; i < Basic_Fire.NUM_FIRES; i++) {
-			var particleMesh:Mesh = this.particleMesh.clone();
+			var particleSprite:Sprite = this.particleSprite.clone();
 			var animator:ParticleAnimator = new ParticleAnimator(this.fireAnimationSet);
-			particleMesh.animator = animator;
+			particleSprite.animator = animator;
 
-			//position the mesh
+			//position the sprite
 			var degree:number = i / Basic_Fire.NUM_FIRES * Math.PI * 2;
-			particleMesh.x = Math.sin(degree) * 400;
-			particleMesh.z = Math.cos(degree) * 400;
-			particleMesh.y = 5;
+			particleSprite.x = Math.sin(degree) * 400;
+			particleSprite.z = Math.cos(degree) * 400;
+			particleSprite.y = 5;
 
 			//create a fire object and add it to the fire object vector
-			this.fireObjects.push(new FireVO(particleMesh, animator));
-			this.view.scene.addChild(particleMesh);
+			this.fireObjects.push(new FireVO(particleSprite, animator));
+			this.view.scene.addChild(particleSprite);
 		}
 
 		//setup timer for triggering each particle aniamtor
@@ -336,7 +336,7 @@ class Basic_Fire
 		light.color = 0xFF3301;
 		light.diffuse = 0;
 		light.specular = 0;
-		light.transform.moveTo(fireObject.mesh.x, fireObject.mesh.y, fireObject.mesh.z);
+		light.transform.moveTo(fireObject.sprite.x, fireObject.sprite.y, fireObject.sprite.z);
 
 		//add the lightsource to the fire object
 		fireObject.light = light;
@@ -452,14 +452,14 @@ class Basic_Fire
 */
 class FireVO
 {
-	public mesh:Mesh;
+	public sprite:Sprite;
 	public animator:ParticleAnimator;
 	public light:PointLight;
 	public strength:number = 0;
 
-	constructor(mesh:Mesh, animator:ParticleAnimator)
+	constructor(sprite:Sprite, animator:ParticleAnimator)
 	{
-		this.mesh = mesh;
+		this.sprite = sprite;
 		this.animator = animator;
 	}
 }

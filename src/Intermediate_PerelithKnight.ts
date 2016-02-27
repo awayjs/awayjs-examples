@@ -6,7 +6,7 @@ Demonstrates:
 
 How to use the AssetLibrary class to load an embedded internal md2 model.
 How to clone an asset from the AssetLibrary and apply different mateirals.
-How to load animations into an animation set and apply to individual meshes.
+How to load animations into an animation set and apply to individual sprites.
 
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -53,7 +53,7 @@ import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -73,7 +73,7 @@ import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
 class Intermediate_PerelithKnight
 {
 
-    private _meshInitialised:boolean = false;
+    private _spriteInitialised:boolean = false;
     private _animationSetInitialised:boolean = false;
     private _sceneInitialised:boolean = false;
 
@@ -97,8 +97,8 @@ class Intermediate_PerelithKnight
     private _shadowMapMethod:ShadowFilteredMethod;
 
     //scene objects
-    private _floor:Mesh;
-    private _mesh:Mesh;
+    private _floor:Sprite;
+    private _sprite:Sprite;
 
     //navigation variables
     private _timer:RequestAnimationFrame;
@@ -197,7 +197,7 @@ class Intermediate_PerelithKnight
         }
 
         //setup the floor
-        this._floor = <Mesh> new PrimitivePlanePrefab(this._floorMaterial, ElementsType.TRIANGLE, 5000, 5000).getNewObject();
+        this._floor = <Sprite> new PrimitivePlanePrefab(this._floorMaterial, ElementsType.TRIANGLE, 5000, 5000).getNewObject();
         this._floor.graphics.scaleUV(5, 5);
 
         //setup the scene
@@ -251,14 +251,14 @@ class Intermediate_PerelithKnight
 
         switch (asset.assetType)
         {
-            case Mesh.assetType :
-                this._mesh = <Mesh> event.asset;
+            case Sprite.assetType :
+                this._sprite = <Sprite> event.asset;
 
-                //adjust the mesh
-                this._mesh.y = 120;
-                this._mesh.transform.scaleTo(5, 5, 5);
+                //adjust the sprite
+                this._sprite.y = 120;
+                this._sprite.transform.scaleTo(5, 5, 5);
 
-                this._meshInitialised = true;
+                this._spriteInitialised = true;
 
 
                 break;
@@ -268,7 +268,7 @@ class Intermediate_PerelithKnight
                 break;
         }
 
-        if ( this._animationSetInitialised && this._meshInitialised && ! this._sceneInitialised)
+        if ( this._animationSetInitialised && this._spriteInitialised && ! this._sceneInitialised)
         {
             this._sceneInitialised = true;
             //create 20 x 20 different clones of the knight
@@ -277,8 +277,8 @@ class Intermediate_PerelithKnight
             var k:number /*uint*/ = 0;
             for (var i:number /*uint*/  = 0; i < numWide; i++) {
                 for (var j:number /*uint*/  = 0; j < numDeep; j++) {
-                    //clone mesh
-                    var clone:Mesh = <Mesh> this._mesh.clone();
+                    //clone sprite
+                    var clone:Sprite = <Sprite> this._sprite.clone();
                     clone.x = (i-(numWide-1)/2)*5000/numWide;
                     clone.z = (j-(numDeep-1)/2)*5000/numDeep;
                     clone.castsShadows = true;

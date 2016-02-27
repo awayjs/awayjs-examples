@@ -11,7 +11,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
 import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
 import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
@@ -28,7 +28,7 @@ class AWDSuzanne
 	private _renderer:DefaultRenderer;
 	private _view:View;
 	private _timer:RequestAnimationFrame;
-	private _suzane:Mesh;
+	private _suzane:Sprite;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
 	private _lookAtPosition:Vector3D = new Vector3D();
@@ -133,18 +133,18 @@ class AWDSuzanne
 			var asset:IAsset = loader.baseDependency.assets[ i ];
 
 			switch(asset.assetType) {
-				case Mesh.assetType:
+				case Sprite.assetType:
 
-					var mesh:Mesh = <Mesh> asset;
+					var sprite:Sprite = <Sprite> asset;
 
-					this._suzane = mesh;
+					this._suzane = sprite;
 					(<MethodMaterial> this._suzane.material).lightPicker = this._lightPicker;
 					this._suzane.y = -100;
 					this._mouseOutMaterial = <MethodMaterial> this._suzane.material;
 
 					for (var c:number = 0; c < 80; c++) {
 
-						var clone:Mesh = <Mesh> mesh.clone();
+						var clone:Sprite = <Sprite> sprite.clone();
 						var scale:number = this.getRandom(50, 200);
 						clone.x = this.getRandom(-2000, 2000);
 						clone.y = this.getRandom(-2000, 2000);
@@ -156,12 +156,12 @@ class AWDSuzanne
 						this._view.scene.addChild(clone);
 					}
 
-					mesh.transform.scaleTo(500, 500, 500);
-					mesh.pickingCollider = new JSPickingCollider();
+					sprite.transform.scaleTo(500, 500, 500);
+					sprite.pickingCollider = new JSPickingCollider();
 
-					mesh.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
-					mesh.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
-					this._view.scene.addChild(mesh);
+					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
+					sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
+					this._view.scene.addChild(sprite);
 
 					break;
 			}
@@ -170,14 +170,14 @@ class AWDSuzanne
 
 	private onMouseOver(event:MouseEvent)
 	{
-		(<Mesh> event.object).material = this._mouseOverMaterial;
+		(<Sprite> event.object).material = this._mouseOverMaterial;
 
 		console.log("mouseover");
 	}
 
 	private onMouseOut(event:MouseEvent)
 	{
-		(<Mesh> event.object).material = this._mouseOutMaterial;
+		(<Sprite> event.object).material = this._mouseOutMaterial;
 
 		console.log("mouseout");
 	}

@@ -51,7 +51,7 @@ import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
@@ -88,10 +88,10 @@ class Basic_Shading
 	private _lightPicker:StaticLightPicker;
 
 	//scene objects
-	private _plane:Mesh;
-	private _sphere:Mesh;
-	private _cube:Mesh;
-	private _torus:Mesh;
+	private _plane:Sprite;
+	private _sphere:Sprite;
+	private _cube:Sprite;
+	private _torus:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -193,27 +193,27 @@ class Basic_Shading
 	 */
 	private initObjects():void
 	{
-		this._plane = <Mesh> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 		this._plane.graphics.scaleUV(2, 2);
 		this._plane.y = -20;
 
 		this._scene.addChild(this._plane);
 
-		this._sphere = <Mesh> new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
+		this._sphere = <Sprite> new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
 		this._sphere.x = 300;
 		this._sphere.y = 160;
 		this._sphere.z = 300;
 
 		this._scene.addChild(this._sphere);
 
-		this._cube = <Mesh> new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
+		this._cube = <Sprite> new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
 		this._cube.x = 300;
 		this._cube.y = 160;
 		this._cube.z = -250;
 
 		this._scene.addChild(this._cube);
 
-		this._torus = <Mesh> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
+		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.graphics.scaleUV(10, 5);
 		this._torus.x = -250;
 		this._torus.y = 160;

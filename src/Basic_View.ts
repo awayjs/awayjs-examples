@@ -46,7 +46,7 @@ import PerspectiveProjection		= require("awayjs-core/lib/projections/Perspective
 import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View							= require("awayjs-display/lib/View");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
 import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -68,7 +68,7 @@ class Basic_View
 	private _planeMaterial:MethodMaterial;
 
 	//scene objects
-	private _plane:Mesh;
+	private _plane:Sprite;
 
 	//tick for frame update
 	private _timer:RequestAnimationFrame;
@@ -90,7 +90,7 @@ class Basic_View
 		this._planeMaterial = new MethodMaterial();
 
 		//setup the scene
-		this._plane = <Mesh> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
+		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
 		this._view.scene.addChild(this._plane);
 
 		//setup the render loop

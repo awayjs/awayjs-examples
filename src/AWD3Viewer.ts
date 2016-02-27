@@ -46,7 +46,7 @@ import Keyboard								= require("awayjs-core/lib/ui/Keyboard");
 import RequestAnimationFrame				= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
 import View									= require("awayjs-display/lib/View");
-import Mesh									= require("awayjs-display/lib/display/Mesh");
+import Sprite								= require("awayjs-display/lib/display/Sprite");
 import Billboard							= require("awayjs-display/lib/display/Billboard");
 import Container							= require("awayjs-display/lib/display/DisplayObjectContainer");
 import HoverController						= require("awayjs-display/lib/controllers/HoverController");
@@ -373,10 +373,10 @@ class AWD3Viewer
 			//console.log("orginal textfield_text = "+one_textfield.text);
 			//one_textfield.text="new text";
 		}
-		else if(event.asset.isAsset(Mesh)) {
-			var one_mesh:Mesh = <Mesh> event.asset;
-			one_mesh.debugVisible = true;
-			//this.loaded_display_objects.push(one_mesh);
+		else if(event.asset.isAsset(Sprite)) {
+			var one_sprite:Sprite = <Sprite> event.asset;
+			one_sprite.debugVisible = true;
+			//this.loaded_display_objects.push(one_sprite);
 		}
 		else if(event.asset.isAsset(Billboard)) {
 			var one_billboard:Billboard = <Billboard> event.asset;

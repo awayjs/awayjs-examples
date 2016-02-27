@@ -13,7 +13,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import Scene						= require("awayjs-display/lib/display/Scene");
 import View							= require("awayjs-display/lib/View");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
@@ -29,8 +29,8 @@ class CubePrimitive
 	private _view:View;
 	private _cube:PrimitiveCubePrefab;
 	private _torus:PrimitiveTorusPrefab;
-	private _mesh:Mesh;
-	private _mesh2:Mesh;
+	private _sprite:Sprite;
+	private _sprite2:Sprite;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
 	private _cameraAxis:Vector3D;
@@ -124,13 +124,13 @@ class CubePrimitive
 		this._cube = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
 		this._torus = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
 
-		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh2 = <Mesh> this._cube.getNewObject();
-		this._mesh2.x = 130;
-		this._mesh2.z = 40;
+		this._sprite = <Sprite> this._torus.getNewObject();
+		this._sprite2 = <Sprite> this._cube.getNewObject();
+		this._sprite2.x = 130;
+		this._sprite2.z = 40;
 
-		this._view.scene.addChild(this._mesh);
-		this._view.scene.addChild(this._mesh2);
+		this._view.scene.addChild(this._sprite);
+		this._view.scene.addChild(this._sprite2);
 
 		this._raf = new RequestAnimationFrame(this.render, this);
 		this._raf.start();
@@ -146,9 +146,9 @@ class CubePrimitive
 	public render(dt:number = null):void
 	{
 		this._view.camera.transform.rotate(this._cameraAxis, 1);
-		this._mesh.rotationY += 1;
-		this._mesh2.rotationX += 0.4;
-		this._mesh2.rotationY += 0.4;
+		this._sprite.rotationY += 1;
+		this._sprite2.rotationX += 0.4;
+		this._sprite2.rotationY += 0.4;
 		this._view.render();
 	}
 

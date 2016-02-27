@@ -20,7 +20,7 @@ import View							= require("awayjs-display/lib/View");
 import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import Skybox						= require("awayjs-display/lib/display/Skybox");
 import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -33,7 +33,7 @@ import PickingCollisionVO			= require("awayjs-display/lib/pick/PickingCollisionV
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 
 import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
-import CurveSubMesh                 = require("awayjs-display/lib/base/CurveSubMesh");
+import CurveSubSprite                 = require("awayjs-display/lib/base/CurveSubSprite");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
 
@@ -46,7 +46,7 @@ class CurveDemo
 	private _view:View;
 	private _cameraController:HoverController;
 	private _torus:PrimitiveTorusPrefab;
-	private _mesh:Mesh;
+	private _sprite:Sprite;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
 	private _texture:Single2DTexture;
@@ -169,32 +169,32 @@ class CurveDemo
 
 			var hitChild:boolean = child.hitTestPoint(p.x, p.y, true);
 			console.log("hitChild", hitChild);
-			var mesh:Mesh = <Mesh>child;
-			if(mesh)
+			var sprite:Sprite = <Sprite>child;
+			if(sprite)
 			{
 
-				if(mesh.pickingCollider)
+				if(sprite.pickingCollider)
 				{
-					//mesh.pickingCollider.
+					//sprite.pickingCollider.
 				}
-				//console.log(mesh.geometry.subGeometries[0]._pIndices.length);
+				//console.log(sprite.geometry.subGeometries[0]._pIndices.length);
 				var hit:boolean = false;
-				for(var j:number = 0; j < mesh.geometry.subGeometries.length; j++)
+				for(var j:number = 0; j < sprite.geometry.subGeometries.length; j++)
 				{
-					var sub:CurveSubGeometry = <CurveSubGeometry> mesh.geometry.subGeometries[j];
-					hit = this.hittestMesh(p.x, p.y, sub);
+					var sub:CurveSubGeometry = <CurveSubGeometry> sprite.geometry.subGeometries[j];
+					hit = this.hittestSprite(p.x, p.y, sub);
 					if(hit) break;
 				}
 				console.log("HIT::",hit);
 				if(hit)
 				{
-					var ct:ColorTransform = mesh.transform.colorTransform;
+					var ct:ColorTransform = sprite.transform.colorTransform;
 					ct.alphaMultiplier = 0.2;
-					mesh.transform.colorTransform = ct;
+					sprite.transform.colorTransform = ct;
 				}else{
-					var ct:ColorTransform = mesh.transform.colorTransform;
+					var ct:ColorTransform = sprite.transform.colorTransform;
 					ct.alphaMultiplier = 1;
-					mesh.transform.colorTransform = ct;
+					sprite.transform.colorTransform = ct;
 				}
 
 
@@ -223,7 +223,7 @@ class CurveDemo
 			console.log("picking worked", collidingObject.index);
 		}
 	}
-	private hittestMesh(px:number, py:number, sub:CurveSubGeometry):boolean
+	private hittestSprite(px:number, py:number, sub:CurveSubGeometry):boolean
 	{
 		var posDim:number = sub.positions.dimensions;
 		var curveDim:number = sub.curves.dimensions;
@@ -507,18 +507,18 @@ class CurveDemo
 
 		var geom:Geometry = new Geometry();
 		geom.addSubGeometry(curveSubGeometry);
-		var curveMesh:Mesh = new Mesh(geom);
+		var curveSprite:Sprite = new Sprite(geom);
 
-		curveMesh.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+		curveSprite.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
 
 		var curveMaterial:BasicMaterial = new BasicMaterial(0xFFFFFF, 0.5);
 		curveMaterial.preserveAlpha = true;
 		curveMaterial.alphaBlending = true;
 		curveMaterial.useColorTransform = true;
 
-		curveMesh.material = curveMaterial;
-		//this._view.scene.addChild(curveMesh);
-		this._container.addChild(curveMesh);
+		curveSprite.material = curveMaterial;
+		//this._view.scene.addChild(curveSprite);
+		this._container.addChild(curveSprite);
 	}
 	private addTexturedTris()
 	{
@@ -566,12 +566,12 @@ class CurveDemo
 
 		var geom:Geometry = new Geometry();
 		geom.addSubGeometry(curveSubGeometry);
-		var curveMesh:Mesh = new Mesh(geom);
+		var curveSprite:Sprite = new Sprite(geom);
 
-		curveMesh._pPickingCollider = new JSPickingCollider();
-		curveMesh.mouseEnabled = true;
-		curveMesh.mouseChildren = true;
-		curveMesh.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onMeshMouseOver(event));
+		curveSprite._pPickingCollider = new JSPickingCollider();
+		curveSprite.mouseEnabled = true;
+		curveSprite.mouseChildren = true;
+		curveSprite.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onSpriteMouseOver(event));
 
 		var curveMaterial:BasicMaterial = new BasicMaterial(this._texture);
 		curveMaterial.preserveAlpha = true;
@@ -579,20 +579,20 @@ class CurveDemo
 		//curveMaterial.blendMode = BlendMode.ALPHA;
 		//curveMaterial.alphaPremultiplied = false;
 		//curveMaterial.alphaThreshold = 0;
-		curveMesh.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
-		//curveMesh.subMeshes[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,0);
-		curveMesh.material = curveMaterial;
+		curveSprite.transform.colorTransform =  new ColorTransform(1,1,1,1, 0,0,0,0);
+		//curveSprite.subSpritees[0].colorTransform = new ColorTransform(1,1,1,1, 0,0,0,0);
+		curveSprite.material = curveMaterial;
 		curveMaterial.useColorTransform = true;
-		//this._view.scene.addChild(curveMesh);
-		this._container.addChild(curveMesh);
+		//this._view.scene.addChild(curveSprite);
+		this._container.addChild(curveSprite);
 	}
 
 	/**
-	 * mesh listener for mouse over interaction
+	 * sprite listener for mouse over interaction
 	 */
-	private onMeshMouseOver(event:AwayMouseEvent):void
+	private onSpriteMouseOver(event:AwayMouseEvent):void
 	{
-		var mesh:Mesh = <Mesh> event.object;
+		var sprite:Sprite = <Sprite> event.object;
 		console.log("MESH MOUSE OVER");
 	}
 
@@ -611,8 +611,8 @@ class CurveDemo
 	 */
 	public render(dt:number = null)
 	{
-		if (this._mesh)
-			this._mesh.rotationY += 1;
+		if (this._sprite)
+			this._sprite.rotationY += 1;
 
 		this._view.render();
 	}

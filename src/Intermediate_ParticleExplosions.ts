@@ -5,7 +5,7 @@ Particle explosions in Away3D using the Adobe AIR and Adobe Flash Player logos
 Demonstrates:
 
 How to split images into particles.
-How to share particle geometries and animation sets between meshes and animators.
+How to share particle geometries and animation sets between sprites and animators.
 How to manually update the playhead of a particle animator using the update() function.
 
 Code by Rob Bateman & Liao Cheng
@@ -52,7 +52,7 @@ import Scene						= require("awayjs-display/lib/display/Scene");
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import Camera						= require("awayjs-display/lib/display/Camera");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
@@ -111,7 +111,7 @@ class Intermediate_ParticleExplosions
 	private colorAnimationSet:ParticleAnimationSet;
 	
 	//scene objects
-	private colorParticleMesh:Mesh;
+	private colorParticleSprite:Sprite;
 	private colorAnimators:Array<ParticleAnimator>;
 	
 	//navigation variables
@@ -278,7 +278,7 @@ class Intermediate_ParticleExplosions
 	private initObjects():void
 	{
 		//setup the base graphics for one particle
-		var plane:Mesh = <Mesh> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false)).getNewObject();
+		var plane:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false)).getNewObject();
 
 		//combine them into a list
 		var colorGraphicsSet:Array<Graphics> = new Array<Graphics>();
@@ -286,26 +286,26 @@ class Intermediate_ParticleExplosions
 		for (i = 0; i < len; i++)
 			colorGraphicsSet.push(plane.graphics);
 
-		//create the particle mesh
-		this.colorParticleMesh = new Mesh(this.colorMaterial);
+		//create the particle sprite
+		this.colorParticleSprite = new Sprite(this.colorMaterial);
 
 		//generate the particle geometries
-		ParticleGraphicsHelper.generateGraphics(this.colorParticleMesh.graphics, colorGraphicsSet);
+		ParticleGraphicsHelper.generateGraphics(this.colorParticleSprite.graphics, colorGraphicsSet);
 		
 		//initialise animators vectors
 		this.colorAnimators = new Array<ParticleAnimator>(Intermediate_ParticleExplosions.NUM_ANIMATORS);
 		
 		var i:number /*uint*/ = 0;
 		for (i=0; i<Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {
-			//clone the particle mesh
-			this.colorParticleMesh = <Mesh> this.colorParticleMesh.clone();
-			this.colorParticleMesh.rotationY = 45*(i-1);
-			this.scene.addChild(this.colorParticleMesh);
+			//clone the particle sprite
+			this.colorParticleSprite = <Sprite> this.colorParticleSprite.clone();
+			this.colorParticleSprite.rotationY = 45*(i-1);
+			this.scene.addChild(this.colorParticleSprite);
 
 			//create and start the particle animator
 			this.colorAnimators[i] = new ParticleAnimator(this.colorAnimationSet);
-			this.colorParticleMesh.animator = this.colorAnimators[i];
-			this.scene.addChild(this.colorParticleMesh);
+			this.colorParticleSprite.animator = this.colorAnimators[i];
+			this.scene.addChild(this.colorParticleSprite);
 		}
 	}
 	

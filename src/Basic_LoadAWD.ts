@@ -46,7 +46,7 @@ import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationF
 import View							= require("awayjs-display/lib/View");
 import HoverController				= require("awayjs-display/lib/controllers/HoverController");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 
 import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
@@ -65,7 +65,7 @@ class Basic_LoadAWD
 	private _lightPicker:StaticLightPicker;
 
 	//scene objects
-	private _suzanne:Mesh;
+	private _suzanne:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -178,13 +178,13 @@ class Basic_LoadAWD
 
 		switch (asset.assetType)
 		{
-			case Mesh.assetType :
-				var mesh:Mesh = <Mesh> asset;
-				mesh.y = -300;
-				mesh.transform.scaleTo(900, 900, 900);
+			case Sprite.assetType :
+				var sprite:Sprite = <Sprite> asset;
+				sprite.y = -300;
+				sprite.transform.scaleTo(900, 900, 900);
 
-				this._suzanne = mesh;
-				this._view.scene.addChild(mesh);
+				this._suzanne = sprite;
+				this._view.scene.addChild(sprite);
 				break;
 			case MethodMaterial.assetType:
 				var material:MethodMaterial = <MethodMaterial> asset;

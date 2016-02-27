@@ -60,7 +60,7 @@ import HoverController				= require("awayjs-display/lib/controllers/HoverControl
 import Camera						= require("awayjs-display/lib/display/Camera");
 import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
 import PointLight					= require("awayjs-display/lib/display/PointLight");
-import Mesh							= require("awayjs-display/lib/display/Mesh");
+import Sprite						= require("awayjs-display/lib/display/Sprite");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
 import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
@@ -100,7 +100,7 @@ class Intermediate_MonsterHeadShading
 	private _redLight:PointLight;
 	private _directionalLight:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
-	private _headModel:Mesh;
+	private _headModel:Sprite;
 	private _advancedMethod:Boolean = true;
 
 	//loading variables
@@ -358,8 +358,8 @@ class Intermediate_MonsterHeadShading
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.isAsset(Mesh)) {
-			this._headModel = <Mesh> event.asset;
+		if (event.asset.isAsset(Sprite)) {
+			this._headModel = <Sprite> event.asset;
 			this._headModel.graphics.scale(4);
 			this._headModel.y = -20;
 			this._scene.addChild(this._headModel);

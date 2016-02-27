@@ -69,7 +69,7 @@ import View								= require("awayjs-display/lib/View");
 import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
 import Graphic							= require("awayjs-display/lib/graphics/Graphic");
 import Graphics							= require("awayjs-display/lib/graphics/Graphics");
-import Mesh								= require("awayjs-display/lib/display/Mesh");
+import Sprite							= require("awayjs-display/lib/display/Sprite");
 import Skybox							= require("awayjs-display/lib/display/Skybox");
 import DirectionalLight					= require("awayjs-display/lib/display/DirectionalLight");
 import PointLight						= require("awayjs-display/lib/display/PointLight");
@@ -110,7 +110,7 @@ class Advanced_MultiPassSponzaDemo
 	private _normalTextureStrings:Array<string> = Array<string>("arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null,                "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.jpg", null,       "thorn_ddn.jpg", "vase_ddn.jpg",  null,               null,             "vase_round_ddn.jpg");
 	private _specularTextureStrings:Array<string> = Array<string>("arch_spec.jpg", null,            "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null,                "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg",      "curtain_spec.jpg", "curtain_spec.jpg",       "details_spec.jpg", "fabric_spec.jpg",      "fabric_spec.jpg", "fabric_spec.jpg",       "flagpole_spec.jpg", "floor_a_spec.jpg", null,          null,       null,            "thorn_spec.jpg", null,           null,               "vase_plant_spec.jpg", "vase_round_spec.jpg");
 	private _numTexStrings:Array<number /*uint*/> = Array<number /*uint*/>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	private _meshReference:Mesh[] = new Array<Mesh>(25);
+	private _spriteReference:Sprite[] = new Array<Sprite>(25);
 	
 	//flame data objects
 	private _flameData:Array<FlameVO> = Array<FlameVO>(new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44));
@@ -120,10 +120,10 @@ class Advanced_MultiPassSponzaDemo
 	private _multiMaterialDictionary:Object = new Object();
 	private _singleMaterialDictionary:Object = new Object();
 	
-	//private meshDictionary:Dictionary = new Dictionary();
-	private vaseMeshes:Array<Mesh> = new Array<Mesh>();
-	private poleMeshes:Array<Mesh> = new Array<Mesh>();
-	private colMeshes:Array<Mesh> = new Array<Mesh>();
+	//private spriteDictionary:Dictionary = new Dictionary();
+	private vaseSpritees:Array<Sprite> = new Array<Sprite>();
+	private poleSpritees:Array<Sprite> = new Array<Sprite>();
+	private colSpritees:Array<Sprite> = new Array<Sprite>();
 	
 	//engien variablesf
 	private _view:View;
@@ -157,7 +157,7 @@ class Advanced_MultiPassSponzaDemo
 	private _loadingText:string;
 	
 	//scene variables
-	private _meshes:Array<Mesh> = new Array<Mesh>();
+	private _sprites:Array<Sprite> = new Array<Sprite>();
 	private _flameGraphics:PrimitivePlanePrefab;
 			
 	//rotation variables
@@ -281,20 +281,20 @@ class Advanced_MultiPassSponzaDemo
 		//create skybox
 		this._view.scene.addChild(new Skybox(this._skyMap));
 		
-		//create flame meshes
+		//create flame sprites
 		this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
 		var flameVO:FlameVO;
 		var len:number = this._flameData.length;
 		for (var i:number = 0; i < len; i++) {
 			flameVO = this._flameData[i];
-			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGraphics.getNewObject();
-			mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			var graphic:Graphic = mesh.graphics.getGraphicAt(0);
+			var sprite:Sprite = flameVO.sprite = <Sprite> this._flameGraphics.getNewObject();
+			sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
+			var graphic:Graphic = sprite.graphics.getGraphicAt(0);
 			graphic.style = new Style();
 			graphic.style.uvMatrix = new Matrix();
 			graphic.style.uvMatrix.scale(1/16, 1);
-			this._view.scene.addChild(mesh);
-			mesh.addChild(flameVO.light);
+			this._view.scene.addChild(sprite);
+			sprite.addChild(flameVO.light);
 		}
 	}
 		
@@ -330,19 +330,19 @@ class Advanced_MultiPassSponzaDemo
 	 */
 //		private updateMaterialPass(materialDictionary:Dictionary)
 //		{
-//			var mesh:Mesh;
+//			var sprite:Sprite;
 //			var name:string;
-//			var len:number = this._meshes.length;
+//			var len:number = this._sprites.length;
 //			for (var i:number = 0; i < len; i++) {
-//				mesh = this._meshes[i];
-//				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+//				sprite = this._sprites[i];
+//				if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
 //					continue;
-//				name = mesh.material.name;
+//				name = sprite.material.name;
 //				var textureIndex:number = this._materialNameStrings.indexOf(name);
 //				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
 //					continue;
 //
-//				mesh.material = materialDictionary[name];
+//				sprite.material = materialDictionary[name];
 //			}
 //		}
 	
@@ -540,9 +540,9 @@ class Advanced_MultiPassSponzaDemo
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.isAsset(Mesh)) {
-			//store meshes
-			this._meshes.push(<Mesh> event.asset);
+		if (event.asset.isAsset(Sprite)) {
+			//store sprites
+			this._sprites.push(<Sprite> event.asset);
 		}
 	}
 	
@@ -558,18 +558,18 @@ class Advanced_MultiPassSponzaDemo
 		loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		
 		//reassign materials
-		var mesh:Mesh;
+		var sprite:Sprite;
 		var name:string;
 
-		var len:number = this._meshes.length;
+		var len:number = this._sprites.length;
 		for (var i:number = 0; i < len; i++) {
-			mesh = this._meshes[i];
-			if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+			sprite = this._sprites[i];
+			if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
 				continue;
 
-			var num:number = Number(mesh.name.substring(7));
+			var num:number = Number(sprite.name.substring(7));
 
-			name = mesh.material.name;
+			name = sprite.material.name;
 
 			if (name == "column_c" && (num < 22 || num > 33))
 				continue;
@@ -577,45 +577,45 @@ class Advanced_MultiPassSponzaDemo
 			var colNum:number = (num - 125);
 			if (name == "column_b") {
 				if (colNum  >=0 && colNum < 132 && (colNum % 11) < 10) {
-					this.colMeshes.push(mesh);
+					this.colSpritees.push(sprite);
 					continue;
 				} else {
-					this.colMeshes.push(mesh);
+					this.colSpritees.push(sprite);
 					var colMerge:Merge = new Merge();
-					var colMesh:Mesh = new Mesh();
-					colMerge.applyToMeshes(colMesh, this.colMeshes);
-					mesh = colMesh;
-					this.colMeshes = new Array<Mesh>();
+					var colSprite:Sprite = new Sprite();
+					colMerge.applyToSpritees(colSprite, this.colSpritees);
+					sprite = colSprite;
+					this.colSpritees = new Array<Sprite>();
 				}
 			}
 
 			var vaseNum:number = (num - 334);
 			if (name == "vase_hanging" && (vaseNum % 9) < 5) {
 				if (vaseNum  >=0 && vaseNum < 370 && (vaseNum % 9) < 4) {
-					this.vaseMeshes.push(mesh);
+					this.vaseSpritees.push(sprite);
 					continue;
 				} else {
-					this.vaseMeshes.push(mesh);
+					this.vaseSpritees.push(sprite);
 					var vaseMerge:Merge = new Merge();
-					var vaseMesh:Mesh = new Mesh();
-					vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
-					mesh = vaseMesh;
-					this.vaseMeshes = new Array<Mesh>();
+					var vaseSprite:Sprite = new Sprite();
+					vaseMerge.applyToSpritees(vaseSprite, this.vaseSpritees);
+					sprite = vaseSprite;
+					this.vaseSpritees = new Array<Sprite>();
 				}
 			}
 
 			var poleNum:number = num - 290;
 			if (name == "flagpole") {
 				if (poleNum >=0 && poleNum < 320 && (poleNum % 3) < 2) {
-					this.poleMeshes.push(mesh);
+					this.poleSpritees.push(sprite);
 					continue;
 				} else if (poleNum >=0) {
-					this.poleMeshes.push(mesh);
+					this.poleSpritees.push(sprite);
 					var poleMerge:Merge = new Merge();
-					var poleMesh:Mesh = new Mesh();
-					poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
-					mesh = poleMesh;
-					this.poleMeshes = new Array<Mesh>();
+					var poleSprite:Sprite = new Sprite();
+					poleMerge.applyToSpritees(poleSprite, this.poleSpritees);
+					sprite = poleSprite;
+					this.poleSpritees = new Array<Sprite>();
 				}
 			}
 			
@@ -702,19 +702,19 @@ class Advanced_MultiPassSponzaDemo
 				this._multiMaterialDictionary[name] = multiMaterial;
 			}
 			/*
-			if (_meshReference[textureIndex]) {
-				var m:Mesh = mesh.clone() as Mesh;
+			if (_spriteReference[textureIndex]) {
+				var m:Sprite = sprite.clone() as Sprite;
 				m.material = multiMaterial;
 				_view.scene.addChild(m);
 				continue;
 			}
 			*/
 			//default to multipass material
-			mesh.material = multiMaterial;
+			sprite.material = multiMaterial;
 
-			this._view.scene.addChild(mesh);
+			this._view.scene.addChild(sprite);
 
-			this._meshReference[textureIndex] = mesh;
+			this._spriteReference[textureIndex] = sprite;
 		}
 		
 		var z:number /*uint*/ = 0;
@@ -797,16 +797,16 @@ class Advanced_MultiPassSponzaDemo
 			light.radius = 200+Math.random()*30;
 			light.diffuse = .9+Math.random()*.1;
 			
-			//update flame mesh
-			var mesh : Mesh = flameVO.mesh;
+			//update flame sprite
+			var sprite : Sprite = flameVO.sprite;
 			
-			if (!mesh)
+			if (!sprite)
 				continue;
 			
-			var graphic:Graphic = mesh.graphics.getGraphicAt(0);
+			var graphic:Graphic = sprite.graphics.getGraphicAt(0);
 			graphic.style.uvMatrix.tx += 1/16;
 			graphic.style.uvMatrix.tx %= 1;
-			mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;
+			sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z)*180/Math.PI;
 		}
 
 		this._view.render();
@@ -912,7 +912,7 @@ class FlameVO
 {
 	public position:Vector3D;
 	public color:number /*uint*/;
-	public mesh:Mesh;
+	public sprite:Sprite;
 	public light:PointLight;
 
 	constructor(position:Vector3D, color:number /*uint*/)
