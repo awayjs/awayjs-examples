@@ -57,7 +57,7 @@ import PointLight					= require("awayjs-display/lib/display/PointLight");
 import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
 import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
 import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PickingCollisionVO			= require("awayjs-display/lib/pick/PickingCollisionVO");
+import PickingCollision				= require("awayjs-display/lib/pick/PickingCollision");
 import RaycastPicker				= require("awayjs-display/lib/pick/RaycastPicker");
 import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
 import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
@@ -106,7 +106,7 @@ class Intermediate_MouseInteraction
 	private _scenePositionTracer:Sprite;
 	private _pickingNormalTracer:LineSegment;
 	private _sceneNormalTracer:LineSegment;
-	private _previoiusCollidingObject:PickingCollisionVO;
+	private _previoiusCollidingObject:PickingCollision;
 	private _raycastPicker:RaycastPicker = new RaycastPicker(false);
 	private _head:Sprite;
 	private _cubePrefab:PrimitiveCubePrefab;
@@ -402,7 +402,7 @@ class Intermediate_MouseInteraction
 		var pos:Vector3D = this._camera.transform.position;
 		this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
 
-		var collidingObject:PickingCollisionVO = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
+		var collidingObject:PickingCollision = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
 		//var sprite:Sprite;
 
 		if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) { //equivalent to mouse out
@@ -415,13 +415,13 @@ class Intermediate_MouseInteraction
 			this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
 
 			// Update position tracer.
-			pos = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+			pos = collidingObject.entity.sceneTransform.transformVector(collidingObject.position);
 			this._scenePositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
 
 			// Update normal tracer.
 			pos = this._scenePositionTracer.transform.position;
 			this._sceneNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
-			var normal:Vector3D = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
+			var normal:Vector3D = collidingObject.entity.sceneTransform.deltaTransformVector(collidingObject.normal);
 			normal.normalize();
 			normal.scaleBy( 25 );
 			this._sceneNormalTracer.endPosition = normal.clone();
@@ -527,7 +527,7 @@ class Intermediate_MouseInteraction
 	 */
 	private onSpriteMouseOver(event:AwayMouseEvent):void
 	{
-		var sprite:Sprite = <Sprite> event.object;
+		var sprite:Sprite = <Sprite> event.entity;
 		sprite.debugVisible = true;
 		if( sprite != this._head ) sprite.material = this._whiteMaterial;
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = true;
@@ -539,7 +539,7 @@ class Intermediate_MouseInteraction
 	 */
 	private onSpriteMouseOut(event:AwayMouseEvent):void
 	{
-		var sprite:Sprite = <Sprite> event.object;
+		var sprite:Sprite = <Sprite> event.entity;
 		sprite.debugVisible = false;
 		if( sprite != this._head ) this.choseSpriteMaterial( sprite );
 		this._pickingPositionTracer.visible = this._pickingNormalTracer.visible = false;

@@ -170,14 +170,14 @@ class AWDSuzanne
 
 	private onMouseOver(event:MouseEvent)
 	{
-		(<Sprite> event.object).material = this._mouseOverMaterial;
+		(<Sprite> event.entity).material = this._mouseOverMaterial;
 
 		console.log("mouseover");
 	}
 
 	private onMouseOut(event:MouseEvent)
 	{
-		(<Sprite> event.object).material = this._mouseOutMaterial;
+		(<Sprite> event.entity).material = this._mouseOutMaterial;
 
 		console.log("mouseout");
 	}
