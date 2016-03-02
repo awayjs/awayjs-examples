@@ -64,7 +64,7 @@ var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame
 var LoaderContainer = require("awayjs-display/lib/display/LoaderContainer");
 var View = require("awayjs-display/lib/View");
 var FirstPersonController = require("awayjs-display/lib/controllers/FirstPersonController");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var Skybox = require("awayjs-display/lib/display/Skybox");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
 var PointLight = require("awayjs-display/lib/display/PointLight");
@@ -96,17 +96,17 @@ var Advanced_MultiPassSponzaDemo = (function () {
         this._normalTextureStrings = Array("arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null, "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null, null, null, null, null, null, null, null, null, null, "lion2_ddn.jpg", null, "thorn_ddn.jpg", "vase_ddn.jpg", null, null, "vase_round_ddn.jpg");
         this._specularTextureStrings = Array("arch_spec.jpg", null, "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null, "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg", "curtain_spec.jpg", "curtain_spec.jpg", "details_spec.jpg", "fabric_spec.jpg", "fabric_spec.jpg", "fabric_spec.jpg", "flagpole_spec.jpg", "floor_a_spec.jpg", null, null, null, "thorn_spec.jpg", null, null, "vase_plant_spec.jpg", "vase_round_spec.jpg");
         this._numTexStrings = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        this._meshReference = new Array(25);
+        this._spriteReference = new Array(25);
         //flame data objects
         this._flameData = Array(new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44));
         //material dictionaries to hold instances
         this._textureDictionary = new Object();
         this._multiMaterialDictionary = new Object();
         this._singleMaterialDictionary = new Object();
-        //private meshDictionary:Dictionary = new Dictionary();
-        this.vaseMeshes = new Array();
-        this.poleMeshes = new Array();
-        this.colMeshes = new Array();
+        //private spriteDictionary:Dictionary = new Dictionary();
+        this.vaseSpritees = new Array();
+        this.poleSpritees = new Array();
+        this.colSpritees = new Array();
         //gui variables
         this._singlePassMaterial = false;
         this._multiPassMaterial = true;
@@ -120,7 +120,7 @@ var Advanced_MultiPassSponzaDemo = (function () {
         this._currentTexture = 0;
         this._n = 0;
         //scene variables
-        this._meshes = new Array();
+        this._sprites = new Array();
         //rotation variables
         this._move = false;
         //movement variables
@@ -205,20 +205,20 @@ var Advanced_MultiPassSponzaDemo = (function () {
     Advanced_MultiPassSponzaDemo.prototype.initObjects = function () {
         //create skybox
         this._view.scene.addChild(new Skybox(this._skyMap));
-        //create flame meshes
+        //create flame sprites
         this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
         var flameVO;
         var len = this._flameData.length;
         for (var i = 0; i < len; i++) {
             flameVO = this._flameData[i];
-            var mesh = flameVO.mesh = this._flameGraphics.getNewObject();
-            mesh.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-            var graphic = mesh.graphics.getGraphicAt(0);
+            var sprite = flameVO.sprite = this._flameGraphics.getNewObject();
+            sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
+            var graphic = sprite.graphics.getGraphicAt(0);
             graphic.style = new Style();
             graphic.style.uvMatrix = new Matrix();
             graphic.style.uvMatrix.scale(1 / 16, 1);
-            this._view.scene.addChild(mesh);
-            mesh.addChild(flameVO.light);
+            this._view.scene.addChild(sprite);
+            sprite.addChild(flameVO.light);
         }
     };
     /**
@@ -248,19 +248,19 @@ var Advanced_MultiPassSponzaDemo = (function () {
      */
     //		private updateMaterialPass(materialDictionary:Dictionary)
     //		{
-    //			var mesh:Mesh;
+    //			var sprite:Sprite;
     //			var name:string;
-    //			var len:number = this._meshes.length;
+    //			var len:number = this._sprites.length;
     //			for (var i:number = 0; i < len; i++) {
-    //				mesh = this._meshes[i];
-    //				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+    //				sprite = this._sprites[i];
+    //				if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
     //					continue;
-    //				name = mesh.material.name;
+    //				name = sprite.material.name;
     //				var textureIndex:number = this._materialNameStrings.indexOf(name);
     //				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
     //					continue;
     //
-    //				mesh.material = materialDictionary[name];
+    //				sprite.material = materialDictionary[name];
     //			}
     //		}
     /**
@@ -424,9 +424,9 @@ var Advanced_MultiPassSponzaDemo = (function () {
      * Listener for asset complete event on loader
      */
     Advanced_MultiPassSponzaDemo.prototype.onAssetComplete = function (event) {
-        if (event.asset.isAsset(Mesh)) {
-            //store meshes
-            this._meshes.push(event.asset);
+        if (event.asset.isAsset(Sprite)) {
+            //store sprites
+            this._sprites.push(event.asset);
         }
     };
     /**
@@ -439,60 +439,60 @@ var Advanced_MultiPassSponzaDemo = (function () {
         loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
         loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
         //reassign materials
-        var mesh;
+        var sprite;
         var name;
-        var len = this._meshes.length;
+        var len = this._sprites.length;
         for (var i = 0; i < len; i++) {
-            mesh = this._meshes[i];
-            if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+            sprite = this._sprites[i];
+            if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
                 continue;
-            var num = Number(mesh.name.substring(7));
-            name = mesh.material.name;
+            var num = Number(sprite.name.substring(7));
+            name = sprite.material.name;
             if (name == "column_c" && (num < 22 || num > 33))
                 continue;
             var colNum = (num - 125);
             if (name == "column_b") {
                 if (colNum >= 0 && colNum < 132 && (colNum % 11) < 10) {
-                    this.colMeshes.push(mesh);
+                    this.colSpritees.push(sprite);
                     continue;
                 }
                 else {
-                    this.colMeshes.push(mesh);
+                    this.colSpritees.push(sprite);
                     var colMerge = new Merge();
-                    var colMesh = new Mesh();
-                    colMerge.applyToMeshes(colMesh, this.colMeshes);
-                    mesh = colMesh;
-                    this.colMeshes = new Array();
+                    var colSprite = new Sprite();
+                    colMerge.applyToSpritees(colSprite, this.colSpritees);
+                    sprite = colSprite;
+                    this.colSpritees = new Array();
                 }
             }
             var vaseNum = (num - 334);
             if (name == "vase_hanging" && (vaseNum % 9) < 5) {
                 if (vaseNum >= 0 && vaseNum < 370 && (vaseNum % 9) < 4) {
-                    this.vaseMeshes.push(mesh);
+                    this.vaseSpritees.push(sprite);
                     continue;
                 }
                 else {
-                    this.vaseMeshes.push(mesh);
+                    this.vaseSpritees.push(sprite);
                     var vaseMerge = new Merge();
-                    var vaseMesh = new Mesh();
-                    vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
-                    mesh = vaseMesh;
-                    this.vaseMeshes = new Array();
+                    var vaseSprite = new Sprite();
+                    vaseMerge.applyToSpritees(vaseSprite, this.vaseSpritees);
+                    sprite = vaseSprite;
+                    this.vaseSpritees = new Array();
                 }
             }
             var poleNum = num - 290;
             if (name == "flagpole") {
                 if (poleNum >= 0 && poleNum < 320 && (poleNum % 3) < 2) {
-                    this.poleMeshes.push(mesh);
+                    this.poleSpritees.push(sprite);
                     continue;
                 }
                 else if (poleNum >= 0) {
-                    this.poleMeshes.push(mesh);
+                    this.poleSpritees.push(sprite);
                     var poleMerge = new Merge();
-                    var poleMesh = new Mesh();
-                    poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
-                    mesh = poleMesh;
-                    this.poleMeshes = new Array();
+                    var poleSprite = new Sprite();
+                    poleMerge.applyToSpritees(poleSprite, this.poleSpritees);
+                    sprite = poleSprite;
+                    this.poleSpritees = new Array();
                 }
             }
             if (name == "flagpole" && (num == 260 || num == 261 || num == 263 || num == 265 || num == 268 || num == 269 || num == 271 || num == 273))
@@ -566,17 +566,17 @@ var Advanced_MultiPassSponzaDemo = (function () {
                 this._multiMaterialDictionary[name] = multiMaterial;
             }
             /*
-            if (_meshReference[textureIndex]) {
-                var m:Mesh = mesh.clone() as Mesh;
+            if (_spriteReference[textureIndex]) {
+                var m:Sprite = sprite.clone() as Sprite;
                 m.material = multiMaterial;
                 _view.scene.addChild(m);
                 continue;
             }
             */
             //default to multipass material
-            mesh.material = multiMaterial;
-            this._view.scene.addChild(mesh);
-            this._meshReference[textureIndex] = mesh;
+            sprite.material = multiMaterial;
+            this._view.scene.addChild(sprite);
+            this._spriteReference[textureIndex] = sprite;
         }
         var z = 0;
         while (z < this._numTexStrings.length) {
@@ -639,14 +639,14 @@ var Advanced_MultiPassSponzaDemo = (function () {
             light.fallOff = 380 + Math.random() * 20;
             light.radius = 200 + Math.random() * 30;
             light.diffuse = .9 + Math.random() * .1;
-            //update flame mesh
-            var mesh = flameVO.mesh;
-            if (!mesh)
+            //update flame sprite
+            var sprite = flameVO.sprite;
+            if (!sprite)
                 continue;
-            var graphic = mesh.graphics.getGraphicAt(0);
+            var graphic = sprite.graphics.getGraphicAt(0);
             graphic.style.uvMatrix.tx += 1 / 16;
             graphic.style.uvMatrix.tx %= 1;
-            mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z) * 180 / Math.PI;
+            sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z) * 180 / Math.PI;
         }
         this._view.render();
     };
@@ -744,7 +744,7 @@ window.onload = function () {
     new Advanced_MultiPassSponzaDemo();
 };
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
+},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/library/LoaderContext":undefined,"awayjs-core/lib/net/URLLoader":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/ui/Keyboard":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/controllers/FirstPersonController":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/LoaderContainer":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined,"awayjs-renderergl/lib/tools/commands/Merge":undefined}]},{},["./src/Advanced_MultiPassSponzaDemo.ts"])
 
 
 //# sourceMappingURL=Advanced_MultiPassSponzaDemo.js.map

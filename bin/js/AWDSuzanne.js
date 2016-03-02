@@ -6,7 +6,7 @@ var URLRequest = require("awayjs-core/lib/net/URLRequest");
 var RequestAnimationFrame = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var View = require("awayjs-display/lib/View");
 var DirectionalLight = require("awayjs-display/lib/display/DirectionalLight");
-var Mesh = require("awayjs-display/lib/display/Mesh");
+var Sprite = require("awayjs-display/lib/display/Sprite");
 var JSPickingCollider = require("awayjs-display/lib/pick/JSPickingCollider");
 var MouseEvent = require("awayjs-display/lib/events/MouseEvent");
 var StaticLightPicker = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
@@ -96,14 +96,14 @@ var AWDSuzanne = (function () {
         for (var i = 0; i < numAssets; ++i) {
             var asset = loader.baseDependency.assets[i];
             switch (asset.assetType) {
-                case Mesh.assetType:
-                    var mesh = asset;
-                    this._suzane = mesh;
+                case Sprite.assetType:
+                    var sprite = asset;
+                    this._suzane = sprite;
                     this._suzane.material.lightPicker = this._lightPicker;
                     this._suzane.y = -100;
                     this._mouseOutMaterial = this._suzane.material;
                     for (var c = 0; c < 80; c++) {
-                        var clone = mesh.clone();
+                        var clone = sprite.clone();
                         var scale = this.getRandom(50, 200);
                         clone.x = this.getRandom(-2000, 2000);
                         clone.y = this.getRandom(-2000, 2000);
@@ -114,21 +114,21 @@ var AWDSuzanne = (function () {
                         clone.addEventListener(MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
                         this._view.scene.addChild(clone);
                     }
-                    mesh.transform.scaleTo(500, 500, 500);
-                    mesh.pickingCollider = new JSPickingCollider();
-                    mesh.addEventListener(MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
-                    mesh.addEventListener(MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
-                    this._view.scene.addChild(mesh);
+                    sprite.transform.scaleTo(500, 500, 500);
+                    sprite.pickingCollider = new JSPickingCollider();
+                    sprite.addEventListener(MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
+                    sprite.addEventListener(MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
+                    this._view.scene.addChild(sprite);
                     break;
             }
         }
     };
     AWDSuzanne.prototype.onMouseOver = function (event) {
-        event.object.material = this._mouseOverMaterial;
+        event.entity.material = this._mouseOverMaterial;
         console.log("mouseover");
     };
     AWDSuzanne.prototype.onMouseOut = function (event) {
-        event.object.material = this._mouseOutMaterial;
+        event.entity.material = this._mouseOutMaterial;
         console.log("mouseout");
     };
     /**
@@ -146,7 +146,7 @@ window.onload = function () {
     new AWDSuzanne();
 };
 
-},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Mesh":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWDSuzanne.ts"])
+},{"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-display/lib/View":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/pick/JSPickingCollider":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-parsers/lib/AWDParser":undefined,"awayjs-renderergl/lib/DefaultRenderer":undefined}]},{},["./src/AWDSuzanne.ts"])
 
 
 //# sourceMappingURL=AWDSuzanne.js.map

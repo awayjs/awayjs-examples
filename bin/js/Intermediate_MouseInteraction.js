@@ -302,12 +302,12 @@ var Intermediate_MouseInteraction = (function () {
             // Show tracers.
             this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
             // Update position tracer.
-            pos = collidingObject.displayObject.sceneTransform.transformVector(collidingObject.localPosition);
+            pos = collidingObject.entity.sceneTransform.transformVector(collidingObject.position);
             this._scenePositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
             // Update normal tracer.
             pos = this._scenePositionTracer.transform.position;
             this._sceneNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
-            var normal = collidingObject.displayObject.sceneTransform.deltaTransformVector(collidingObject.localNormal);
+            var normal = collidingObject.entity.sceneTransform.deltaTransformVector(collidingObject.normal);
             normal.normalize();
             normal.scaleBy(25);
             this._sceneNormalTracer.endPosition = normal.clone();
@@ -400,7 +400,7 @@ var Intermediate_MouseInteraction = (function () {
      * sprite listener for mouse over interaction
      */
     Intermediate_MouseInteraction.prototype.onSpriteMouseOver = function (event) {
-        var sprite = event.object;
+        var sprite = event.entity;
         sprite.debugVisible = true;
         if (sprite != this._head)
             sprite.material = this._whiteMaterial;
@@ -411,7 +411,7 @@ var Intermediate_MouseInteraction = (function () {
      * sprite listener for mouse out interaction
      */
     Intermediate_MouseInteraction.prototype.onSpriteMouseOut = function (event) {
-        var sprite = event.object;
+        var sprite = event.entity;
         sprite.debugVisible = false;
         if (sprite != this._head)
             this.choseSpriteMaterial(sprite);
