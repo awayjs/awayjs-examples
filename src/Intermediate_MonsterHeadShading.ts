@@ -39,42 +39,39 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
-import SpecularImage2D				= require("awayjs-core/lib/image/SpecularImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import URLLoaderEvent				= require("awayjs-core/lib/events/URLLoaderEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
+import SpecularImage2D				from "awayjs-core/lib/image/SpecularImage2D";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import URLLoaderEvent				from "awayjs-core/lib/events/URLLoaderEvent";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import LoaderContext				from "awayjs-core/lib/library/LoaderContext";
+import URLLoader					from "awayjs-core/lib/net/URLLoader";
+import URLLoaderDataFormat			from "awayjs-core/lib/net/URLLoaderDataFormat";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import ParserUtils					from "awayjs-core/lib/parsers/ParserUtils";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import Scene						= require("awayjs-display/lib/display/Scene");
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
+import Scene						from "awayjs-display/lib/display/Scene";
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import Camera						from "awayjs-display/lib/display/Camera";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import DirectionalShadowMapper		from "awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import DiffuseGradientMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseGradientMethod");
-import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
-import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import MethodMaterialMode			from "awayjs-methodmaterials/lib/MethodMaterialMode";
+import SpecularFresnelMethod		from "awayjs-methodmaterials/lib/methods/SpecularFresnelMethod";
+import ShadowSoftMethod				from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
 
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import AWDParser					from "awayjs-parsers/lib/AWDParser";
 
 class Intermediate_MonsterHeadShading
 {
@@ -190,7 +187,7 @@ class Intermediate_MonsterHeadShading
 		this._directionalLight.ambient = 1;
 		this._directionalLight.specular = .3;
 		this._directionalLight.ambientColor = 0x101025;
-		this._directionalLight.castsShadows = true;
+		this._directionalLight.shadowsEnabled = true;
 		(<DirectionalShadowMapper> this._directionalLight.shadowMapper).lightOffset = 1000;
 		this._scene.addChild(this._directionalLight);
 

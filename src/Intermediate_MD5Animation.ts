@@ -38,55 +38,53 @@ THE SOFTWARE.
 
 */
 
-import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import Matrix						= require("awayjs-core/lib/geom/Matrix");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import Matrix						from "awayjs-core/lib/geom/Matrix";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import LoaderContext				from "awayjs-core/lib/library/LoaderContext";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import Keyboard						from "awayjs-core/lib/ui/Keyboard";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
-import Scene						= require("awayjs-display/lib/display/Scene");
-import View							= require("awayjs-display/lib/View");
-import LookAtController				= require("awayjs-display/lib/controllers/LookAtController");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
-import Style						= require("awayjs-display/lib/base/Style");
-import NearDirectionalShadowMapper	= require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import AnimationNodeBase			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
+import DisplayObjectContainer		from "awayjs-display/lib/display/DisplayObjectContainer";
+import Scene						from "awayjs-display/lib/display/Scene";
+import View							from "awayjs-display/lib/View";
+import LookAtController				from "awayjs-display/lib/controllers/LookAtController";
+import Camera						from "awayjs-display/lib/display/Camera";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import Billboard					from "awayjs-display/lib/display/Billboard";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import Skybox						from "awayjs-display/lib/display/Skybox";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import Style						from "awayjs-display/lib/base/Style";
+import NearDirectionalShadowMapper	from "awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import SkeletonAnimationSet			= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
-import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
-import Skeleton						= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
-import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
-import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationStateEvent");
+import AnimationSetBase				from "awayjs-renderergl/lib/animators/AnimationSetBase";
+import SkeletonAnimationSet			from "awayjs-renderergl/lib/animators/SkeletonAnimationSet";
+import SkeletonAnimator				from "awayjs-renderergl/lib/animators/SkeletonAnimator";
+import Skeleton						from "awayjs-renderergl/lib/animators/data/Skeleton";
+import SkeletonClipNode				from "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode";
+import CrossfadeTransition			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition";
+import AnimationStateEvent			from "awayjs-renderergl/lib/events/AnimationStateEvent";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import EffectFogMethod				= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
-import ShadowNearMethod				= require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
-import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import EffectFogMethod				from "awayjs-methodmaterials/lib/methods/EffectFogMethod";
+import ShadowNearMethod				from "awayjs-methodmaterials/lib/methods/ShadowNearMethod";
+import ShadowSoftMethod				from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
 
-import MD5AnimParser				= require("awayjs-parsers/lib/MD5AnimParser");
-import MD5MeshParser				= require("awayjs-parsers/lib/MD5MeshParser");
+import MD5AnimParser				from "awayjs-parsers/lib/MD5AnimParser";
+import MD5MeshParser				from "awayjs-parsers/lib/MD5MeshParser";
 
 class Intermediate_MD5Animation
 {

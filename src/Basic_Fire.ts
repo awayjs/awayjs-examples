@@ -37,48 +37,46 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import Timer						= require("awayjs-core/lib/utils/Timer");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
+import BlendMode					from "awayjs-core/lib/image/BlendMode";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import TimerEvent					from "awayjs-core/lib/events/TimerEvent";
+import ColorTransform				from "awayjs-core/lib/geom/ColorTransform";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import IAsset						from "awayjs-core/lib/library/IAsset";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import Timer						from "awayjs-core/lib/utils/Timer";
 
-import Graphics						= require("awayjs-display/lib/graphics/Graphics");
-import Scene						= require("awayjs-display/lib/display/Scene");
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import ElementsType					= require("awayjs-display/lib/graphics/ElementsType");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
+import Graphics						from "awayjs-display/lib/graphics/Graphics";
+import Scene						from "awayjs-display/lib/display/Scene";
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import Camera						from "awayjs-display/lib/display/Camera";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-import ParticlePropertiesMode		= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
-import ParticleScaleNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleScaleNode");
-import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode");
-import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
+import ParticleAnimationSet			from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
+import ParticleAnimator				from "awayjs-renderergl/lib/animators/ParticleAnimator";
+import ParticleProperties			from "awayjs-renderergl/lib/animators/data/ParticleProperties";
+import ParticlePropertiesMode		from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
+import ParticleBillboardNode		from "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode";
+import ParticleScaleNode			from "awayjs-renderergl/lib/animators/nodes/ParticleScaleNode";
+import ParticleVelocityNode			from "awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode";
+import ParticleColorNode			from "awayjs-renderergl/lib/animators/nodes/ParticleColorNode";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import MethodMaterialMode			from "awayjs-methodmaterials/lib/MethodMaterialMode";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ParticleGraphicsHelper		= require("awayjs-renderergl/lib/utils/ParticleGraphicsHelper");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import ParticleGraphicsHelper		from "awayjs-renderergl/lib/utils/ParticleGraphicsHelper";
 
 class Basic_Fire
 {

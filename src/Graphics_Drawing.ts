@@ -33,46 +33,22 @@
  THE SOFTWARE.
 
  */
-import AS2MovieClipAdapter = require("awayjs-player/lib/adapters/AS2MovieClipAdapter");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import ColorTransform						= require("awayjs-core/lib/geom/ColorTransform");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
-import OrthographicProjection		= require("awayjs-core/lib/projections/OrthographicProjection");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import HierarchicalProperties			= require("awayjs-display/lib/base/HierarchicalProperties");
-import Geometry						= require("awayjs-display/lib/base/Geometry");
-import Graphics						= require("awayjs-display/lib/draw/Graphics");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import View							= require("awayjs-display/lib/View");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Container					= require("awayjs-display/lib/display/DisplayObjectContainer");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
+import AS2MovieClipAdapter			from "awayjs-player/lib/adapters/AS2MovieClipAdapter";
+import OrthographicProjection		from "awayjs-core/lib/projections/OrthographicProjection";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import Graphics						from "awayjs-display/lib/draw/Graphics";
+import View							from "awayjs-display/lib/View";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
 
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import SceneGraphPartition			from "awayjs-display/lib/partition/SceneGraphPartition";
+import MovieClip					from "awayjs-display/lib/display/MovieClip";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
-import SceneGraphPartition					= require("awayjs-display/lib/partition/SceneGraphPartition");
-import MovieClip							= require("awayjs-display/lib/display/MovieClip");
-
-import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection				= require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera								= require("awayjs-display/lib/display/Camera");
-
-import TextField							= require("awayjs-display/lib/display/TextField");
-import TextFormat							= require("awayjs-display/lib/text/TextFormat");
-
-
-import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import CoordinateSystem				from "awayjs-core/lib/projections/CoordinateSystem";
+import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
+import Camera						from "awayjs-display/lib/display/Camera";
 
 class Graphics_Drawing
 {

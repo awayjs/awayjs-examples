@@ -45,54 +45,51 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D					= require("awayjs-core/lib/image/BitmapImage2D");
-import BitmapImageCube					= require("awayjs-core/lib/image/BitmapImageCube");
-import Sampler2D						= require("awayjs-core/lib/image/Sampler2D");
-import SpecularImage2D					= require("awayjs-core/lib/image/SpecularImage2D");
-import BlendMode						= require("awayjs-core/lib/image/BlendMode");
-import URLLoaderEvent					= require("awayjs-core/lib/events/URLLoaderEvent");
-import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
-import Matrix							= require("awayjs-core/lib/geom/Matrix");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext					= require("awayjs-core/lib/library/LoaderContext");
-import URLLoader						= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest						= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
-import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D					from "awayjs-core/lib/image/BitmapImage2D";
+import BitmapImageCube					from "awayjs-core/lib/image/BitmapImageCube";
+import Sampler2D						from "awayjs-core/lib/image/Sampler2D";
+import SpecularImage2D					from "awayjs-core/lib/image/SpecularImage2D";
+import BlendMode						from "awayjs-core/lib/image/BlendMode";
+import URLLoaderEvent					from "awayjs-core/lib/events/URLLoaderEvent";
+import AssetEvent						from "awayjs-core/lib/events/AssetEvent";
+import LoaderEvent						from "awayjs-core/lib/events/LoaderEvent";
+import Matrix							from "awayjs-core/lib/geom/Matrix";
+import Vector3D							from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary						from "awayjs-core/lib/library/AssetLibrary";
+import LoaderContext					from "awayjs-core/lib/library/LoaderContext";
+import URLLoader						from "awayjs-core/lib/net/URLLoader";
+import URLLoaderDataFormat				from "awayjs-core/lib/net/URLLoaderDataFormat";
+import URLRequest						from "awayjs-core/lib/net/URLRequest";
+import ParserUtils						from "awayjs-core/lib/parsers/ParserUtils";
+import Keyboard							from "awayjs-core/lib/ui/Keyboard";
+import RequestAnimationFrame			from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import LoaderContainer					= require("awayjs-display/lib/display/LoaderContainer");
-import View								= require("awayjs-display/lib/View");
-import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
-import Graphic							= require("awayjs-display/lib/graphics/Graphic");
-import Graphics							= require("awayjs-display/lib/graphics/Graphics");
-import Sprite							= require("awayjs-display/lib/display/Sprite");
-import Skybox							= require("awayjs-display/lib/display/Skybox");
-import DirectionalLight					= require("awayjs-display/lib/display/DirectionalLight");
-import PointLight						= require("awayjs-display/lib/display/PointLight");
-//	import CascadeShadowMapper				= require("awayjs-display/lib/display/CascadeShadowMapper");
-import DirectionalShadowMapper			= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Cast								= require("awayjs-display/lib/utils/Cast");
-import SingleCubeTexture				= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
+import LoaderContainer					from "awayjs-display/lib/display/LoaderContainer";
+import View								from "awayjs-display/lib/View";
+import FirstPersonController			from "awayjs-display/lib/controllers/FirstPersonController";
+import Graphic							from "awayjs-display/lib/graphics/Graphic";
+import Sprite							from "awayjs-display/lib/display/Sprite";
+import Skybox							from "awayjs-display/lib/display/Skybox";
+import DirectionalLight					from "awayjs-display/lib/display/DirectionalLight";
+import PointLight						from "awayjs-display/lib/display/PointLight";
+//	import CascadeShadowMapper				from "awayjs-display/lib/display/CascadeShadowMapper";
+import DirectionalShadowMapper			from "awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper";
+import StaticLightPicker				from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PrimitivePlanePrefab				from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import Single2DTexture					from "awayjs-display/lib/textures/Single2DTexture";
 
-import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
-import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
+import Merge							from "awayjs-renderergl/lib/tools/commands/Merge";
+import DefaultRenderer					from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial					= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode				= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import ShadowCascadeMethod				= require("awayjs-methodmaterials/lib/methods/ShadowCascadeMethod");
-import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
+import MethodMaterial					from "awayjs-methodmaterials/lib/MethodMaterial";
+import MethodMaterialMode				from "awayjs-methodmaterials/lib/MethodMaterialMode";
+import ShadowCascadeMethod				from "awayjs-methodmaterials/lib/methods/ShadowCascadeMethod";
+import ShadowSoftMethod					from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
+import EffectFogMethod					from "awayjs-methodmaterials/lib/methods/EffectFogMethod";
 
-import AWDParser						= require("awayjs-parsers/lib/AWDParser");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
-import Style = require("awayjs-display/lib/base/Style");
+import AWDParser						from "awayjs-parsers/lib/AWDParser";
+import ElementsType						from "awayjs-display/lib/graphics/ElementsType";
+import Style							from "awayjs-display/lib/base/Style";
 
 class Advanced_MultiPassSponzaDemo
 {
@@ -240,7 +237,6 @@ class Advanced_MultiPassSponzaDemo
 //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 //			this._cascadeShadowMapper.lightOffset = 20000;
 		this._directionalLight = new DirectionalLight(-1, -15, 1);
-		this._directionalLight.castsShadows = true;
 //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
 		this._directionalLight.color = 0xeedddd;
 		this._directionalLight.ambient = .35;

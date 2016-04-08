@@ -35,43 +35,40 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import Loader						= require("awayjs-core/lib/library/Loader");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import Loader						from "awayjs-core/lib/library/Loader";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import Keyboard						from "awayjs-core/lib/ui/Keyboard";
 
-import Scene						= require("awayjs-display/lib/display/Scene");
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import BoundsType					= require("awayjs-display/lib/bounds/BoundsType");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import LineSegment					= require("awayjs-display/lib/display/LineSegment");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PickingCollision				= require("awayjs-display/lib/pick/PickingCollision");
-import RaycastPicker				= require("awayjs-display/lib/pick/RaycastPicker");
-import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-import PrimitiveCylinderPrefab		= require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
-import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import Scene						from "awayjs-display/lib/display/Scene";
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import BoundsType					from "awayjs-display/lib/bounds/BoundsType";
+import Camera						from "awayjs-display/lib/display/Camera";
+import LineSegment					from "awayjs-display/lib/display/LineSegment";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PickingCollision				from "awayjs-display/lib/pick/PickingCollision";
+import RaycastPicker				from "awayjs-display/lib/pick/RaycastPicker";
+import JSPickingCollider			from "awayjs-display/lib/pick/JSPickingCollider";
+import PrimitiveCubePrefab			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
+import PrimitiveCylinderPrefab		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
+import PrimitiveSpherePrefab		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
+import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
 
-import OBJParser					= require("awayjs-parsers/lib/OBJParser");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+import OBJParser					from "awayjs-parsers/lib/OBJParser";
 
 /**
  *

@@ -34,41 +34,31 @@
 
  */
 
-import AssetLibrary							= require("awayjs-core/lib/library/AssetLibrary");
-import AssetEvent							= require("awayjs-core/lib/events/AssetEvent");
-import URLRequest							= require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent							= require("awayjs-core/lib/events/LoaderEvent");
-import ParserEvent							= require("awayjs-core/lib/events/ParserEvent");
-import Vector3D								= require("awayjs-core/lib/geom/Vector3D");
-import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
-import OrthographicProjection				= require("awayjs-core/lib/projections/OrthographicProjection");
-import Keyboard								= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame				= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import AssetEvent							from "awayjs-core/lib/events/AssetEvent";
+import URLRequest							from "awayjs-core/lib/net/URLRequest";
+import LoaderEvent							from "awayjs-core/lib/events/LoaderEvent";
+import ParserEvent							from "awayjs-core/lib/events/ParserEvent";
+import OrthographicProjection				from "awayjs-core/lib/projections/OrthographicProjection";
+import RequestAnimationFrame				from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View									= require("awayjs-display/lib/View");
-import Sprite								= require("awayjs-display/lib/display/Sprite");
-import Billboard							= require("awayjs-display/lib/display/Billboard");
-import Container							= require("awayjs-display/lib/display/DisplayObjectContainer");
-import HoverController						= require("awayjs-display/lib/controllers/HoverController");
-import Loader								= require("awayjs-display/lib/display/LoaderContainer");
-import ColorMaterial						= require("awayjs-display/lib/materials/BasicMaterial");
-import PrimitiveCubePrefab					= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-import DisplayObject						= require("awayjs-display/lib/display/DisplayObject");
+import View									from "awayjs-display/lib/View";
+import Sprite								from "awayjs-display/lib/display/Sprite";
+import Billboard							from "awayjs-display/lib/display/Billboard";
+import HoverController						from "awayjs-display/lib/controllers/HoverController";
+import Loader								from "awayjs-display/lib/display/LoaderContainer";
 
-import DefaultRenderer					    = require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer					    from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial						= require("awayjs-methodmaterials/lib/MethodMaterial");
 
-import AWDParser							= require("awayjs-parsers/lib/AWDParser");
-import SceneGraphPartition					= require("awayjs-display/lib/partition/SceneGraphPartition");
-import MovieClip							= require("awayjs-display/lib/display/MovieClip");
+import AWDParser							from "awayjs-parsers/lib/AWDParser";
+import SceneGraphPartition					from "awayjs-display/lib/partition/SceneGraphPartition";
+import MovieClip							from "awayjs-display/lib/display/MovieClip";
 
-import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection				= require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera								= require("awayjs-display/lib/display/Camera");
+import CoordinateSystem						from "awayjs-core/lib/projections/CoordinateSystem";
+import PerspectiveProjection				from "awayjs-core/lib/projections/PerspectiveProjection";
+import Camera								from "awayjs-display/lib/display/Camera";
 
-import TextField							= require("awayjs-display/lib/display/TextField");
-import TextFormat							= require("awayjs-display/lib/text/TextFormat");
+import TextField							from "awayjs-display/lib/display/TextField";
 
 class AWD3ViewerMinimal
 {
@@ -138,8 +128,8 @@ class AWD3ViewerMinimal
         this._renderer.renderableSorter = null;//new RenderableSort2D();
         this._view = new View(this._renderer);
         this._view.backgroundColor = 0x000000;
-        this._stage_width = 550;
-        this._stage_height = 400;
+        this._stage_width = 200;
+        this._stage_height = 200;
 
         //for plugin preview-runtime:
 /*
@@ -175,7 +165,7 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/TextTest.awd"), null, null, new AWDParser(this._view));
 
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));

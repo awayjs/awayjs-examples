@@ -13,7 +13,16 @@ var watchify = require('watchify');
 var package = require('./package.json');
 var livereload = require('gulp-livereload');
 var tsify = require('tsify');
+//var webpack = require('webpack-stream');
+var ts = require('gulp-typescript');
+
 var watch;
+
+var tsProject = ts.createProject({
+    module: 'amd',
+    target: 'ES5',
+    noExternalResolve: 'false'
+});
 
 function _package(filename, callback) {
     console.log('package ' + filename);
@@ -22,10 +31,10 @@ function _package(filename, callback) {
         entries: './src/' + filename + '.ts',
         cache: {},
         packageCache: {},
-        fullPaths: true
+        fullPaths: false
     });
 
-    b.plugin('tsify', {target:'ES5', sourceRoot:'./', noExternalResolve: true, declarationFiles: './node_modules/awayjs-**/build/*.d.ts'});
+    b.plugin('tsify', {target:'ES5', sourceRoot:'./', moduleResolution:'classic'});
 
     glob('./node_modules/awayjs-**/lib/**/*.ts', {}, function (error, files) {
         files.forEach(function (file) {
@@ -128,6 +137,37 @@ gulp.task('package-awayjs', function(){
         .pipe(gulp.dest('./bin/js/'));
 });
 
+// var closureCompiler = require('google-closure-compiler').gulp();
+//
+// gulp.task('js-compile', function () {
+//     return gulp.src('./bin/js/Basic_View.js')
+//         .pipe(closureCompiler({
+//             compilation_level: 'SIMPLE',
+//             warning_level: 'VERBOSE',
+//             language_in: 'ECMASCRIPT6_STRICT',
+//             language_out: 'ECMASCRIPT5_STRICT',
+//             output_wrapper: '(function(){\n%output%\n}).call(this)',
+//             js_output_file: 'Basic_View.min.js'
+//         }))
+//         .pipe(gulp.dest('./bin/js'));
+// });
+
+// gulp.task('webpack', function () {
+//     return gulp.src('./src/Basic_View.ts')
+//         .pipe(webpack(require('./webpack.config.js')))
+//         .pipe(gulp.dest('./bin/js'));
+// });
+
+gulp.task("gulp-typescript", function () {
+    var tsResult = gulp.src('./src/Basic_View.ts')
+        .pipe(ts({
+            module: 'system',
+            target: 'ES5',
+            noExternalResolve: false
+        }));
+
+    return tsResult.js.pipe(gulp.dest('./bin/js/'));
+});
 
 function unixStylePath(filePath) {
     return filePath.split(path.sep).join('/');

@@ -35,51 +35,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
-import BitmapImageChannel			= require("awayjs-core/lib/image/BitmapImageChannel");
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import Point						= require("awayjs-core/lib/geom/Point");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
+import BitmapImageChannel			from "awayjs-core/lib/image/BitmapImageChannel";
+import BlendMode					from "awayjs-core/lib/image/BlendMode";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import ColorTransform				from "awayjs-core/lib/geom/ColorTransform";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import Point						from "awayjs-core/lib/geom/Point";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import LoaderContext				from "awayjs-core/lib/library/LoaderContext";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
-import Scene						= require("awayjs-display/lib/display/Scene");
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
-import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
-import Camera						= require("awayjs-display/lib/display/Camera");
-import Billboard					= require("awayjs-display/lib/display/Billboard");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import PointLight					= require("awayjs-display/lib/display/PointLight");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
+import DisplayObjectContainer		from "awayjs-display/lib/display/DisplayObjectContainer";
+import Scene						from "awayjs-display/lib/display/Scene";
+import View							from "awayjs-display/lib/View";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import OrientationMode				from "awayjs-display/lib/base/OrientationMode";
+import AlignmentMode				from "awayjs-display/lib/base/AlignmentMode";
+import Camera						from "awayjs-display/lib/display/Camera";
+import Billboard					from "awayjs-display/lib/display/Billboard";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PointLight					from "awayjs-display/lib/display/PointLight";
+import Skybox						from "awayjs-display/lib/display/Skybox";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PrimitiveSpherePrefab		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import ShaderBase					from "awayjs-renderergl/lib/shaders/ShaderBase";
+import ShaderRegisterElement		from "awayjs-renderergl/lib/shaders/ShaderRegisterElement";
+import ShaderRegisterCache			from "awayjs-renderergl/lib/shaders/ShaderRegisterCache";
+import ShaderRegisterData			from "awayjs-renderergl/lib/shaders/ShaderRegisterData";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodVO						= require("awayjs-methodmaterials/lib/data/MethodVO");
-import DiffuseCompositeMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
-import SpecularCompositeMethod		= require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
-import DiffuseBasicMethod			= require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
-import SpecularBasicMethod			= require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
-import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
-import SpecularPhongMethod			= require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import MethodVO						from "awayjs-methodmaterials/lib/data/MethodVO";
+import DiffuseCompositeMethod		from "awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod";
+import SpecularCompositeMethod		from "awayjs-methodmaterials/lib/methods/SpecularCompositeMethod";
+import DiffuseBasicMethod			from "awayjs-methodmaterials/lib/methods/DiffuseBasicMethod";
+import SpecularBasicMethod			from "awayjs-methodmaterials/lib/methods/SpecularBasicMethod";
+import SpecularFresnelMethod		from "awayjs-methodmaterials/lib/methods/SpecularFresnelMethod";
+import SpecularPhongMethod			from "awayjs-methodmaterials/lib/methods/SpecularPhongMethod";
 
 class Intermediate_Globe
 {

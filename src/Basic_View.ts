@@ -36,28 +36,23 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import LoaderEvent			= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import IAsset						from "awayjs-core/lib/library/IAsset";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							= require("awayjs-display/lib/View");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
+import View							from "awayjs-display/lib/View";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
 
-import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
-import ContextMode					= require("awayjs-stagegl/lib/base/ContextMode");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import ElementsType = require("awayjs-display/lib/graphics/ElementsType");
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
 
 class Basic_View
 {
@@ -65,7 +60,7 @@ class Basic_View
 	private _view:View;
 
 	//material objects
-	private _planeMaterial:MethodMaterial;
+	private _planeMaterial:BasicMaterial;
 
 	//scene objects
 	private _plane:Sprite;
@@ -87,7 +82,7 @@ class Basic_View
 		this._view.camera.lookAt(new Vector3D());
 
 		//setup the materials
-		this._planeMaterial = new MethodMaterial();
+		this._planeMaterial = new BasicMaterial();
 
 		//setup the scene
 		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
@@ -133,7 +128,7 @@ class Basic_View
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}

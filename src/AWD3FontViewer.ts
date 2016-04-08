@@ -34,43 +34,33 @@
 
  */
 
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
-import OrthographicProjection		= require("awayjs-core/lib/projections/OrthographicProjection");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import OrthographicProjection		from "awayjs-core/lib/projections/OrthographicProjection";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import Geometry						= require("awayjs-display/lib/base/Geometry");
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import View							= require("awayjs-display/lib/View");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Container					= require("awayjs-display/lib/display/DisplayObjectContainer");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Loader						= require("awayjs-display/lib/display/Loader");
-import ColorMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import RenderableNullSort			= require("awayjs-display/lib/sort/RenderableNullSort");
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+import Geometry						from "awayjs-display/lib/base/Geometry";
+import SubGeometryBase				from "awayjs-display/lib/base/SubGeometryBase";
+import View							from "awayjs-display/lib/View";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import Loader						from "awayjs-display/lib/display/Loader";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
 
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
-import Partition2D					= require("awayjs-player/lib/partition/Partition2D");
-import MovieClip					= require("awayjs-player/lib/display/MovieClip");
+import AWDParser					from "awayjs-parsers/lib/AWDParser";
+import MovieClip					from "awayjs-player/lib/display/MovieClip";
 
-import CoordinateSystem = require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection = require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera = require("awayjs-display/lib/display/Camera");
+import CoordinateSystem from "awayjs-core/lib/projections/CoordinateSystem";
+import PerspectiveProjection from "awayjs-core/lib/projections/PerspectiveProjection";
+import Camera from "awayjs-display/lib/display/Camera";
 
-import Font					= require("awayjs-display/lib/text/Font");
-import TesselatedFontTable					= require("awayjs-display/lib/text/TesselatedFontTable");
-import TesselatedFontChar					= require("awayjs-display/lib/text/TesselatedFontChar");
-import Matrix3D							= require("awayjs-core/lib/geom/Matrix3D");
+import Font					from "awayjs-display/lib/text/Font";
+import TesselatedFontTable					from "awayjs-display/lib/text/TesselatedFontTable";
+import TesselatedFontChar					from "awayjs-display/lib/text/TesselatedFontChar";
 
 class AWD3FontViewer
 {

@@ -1,41 +1,36 @@
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import BitmapImageCube				= require("awayjs-core/lib/image/BitmapImageCube");
-import Sampler2D					= require("awayjs-core/lib/image/Sampler2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Matrix				       	= require("awayjs-core/lib/geom/Matrix");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import Loader			        	= require("awayjs-core/lib/library/Loader");
-import LoaderContext			    = require("awayjs-core/lib/library/LoaderContext");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Debug                		= require("awayjs-core/lib/utils/Debug");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
+import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
+import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
+import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
+import Matrix				       	from "awayjs-core/lib/geom/Matrix";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
+import Loader			        	from "awayjs-core/lib/library/Loader";
+import IAsset						from "awayjs-core/lib/library/IAsset";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import Debug                		from "awayjs-core/lib/utils/Debug";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
-import View							= require("awayjs-display/lib/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import ElementsType                 = require("awayjs-display/lib/graphics/ElementsType");
-import Style                        = require("awayjs-display/lib/base/Style");
+import DisplayObjectContainer		from "awayjs-display/lib/display/DisplayObjectContainer";
+import View							from "awayjs-display/lib/View";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import Skybox						from "awayjs-display/lib/display/Skybox";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import ElementsType                 from "awayjs-display/lib/graphics/ElementsType";
+import Style                        from "awayjs-display/lib/base/Style";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import EffectEnvMapMethod   		= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
-import NormalSimpleWaterMethod		= require("awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod");
-import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import EffectEnvMapMethod   		from "awayjs-methodmaterials/lib/methods/EffectEnvMapMethod";
+import NormalSimpleWaterMethod		from "awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod";
+import SpecularFresnelMethod		from "awayjs-methodmaterials/lib/methods/SpecularFresnelMethod";
 
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
-import OBJParser					= require("awayjs-parsers/lib/OBJParser");
+import OBJParser					from "awayjs-parsers/lib/OBJParser";
 
 class AircraftDemo
 {

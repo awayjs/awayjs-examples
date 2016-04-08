@@ -1,44 +1,34 @@
-import AttributesBuffer             = require("awayjs-core/lib/attributes/AttributesBuffer");
-import BlendMode					= require("awayjs-core/lib/image/BlendMode");
-import AwayEvent					= require("awayjs-core/lib/events/Event");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import BitmapImage2D				= require("awayjs-core/lib/image/BitmapImage2D");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import AttributesBuffer             from "awayjs-core/lib/attributes/AttributesBuffer";
+import AwayEvent					from "awayjs-core/lib/events/Event";
+import Vector3D						from "awayjs-core/lib/geom/Vector3D";
+import ColorTransform				from "awayjs-core/lib/geom/ColorTransform";
+import URLLoader					from "awayjs-core/lib/net/URLLoader";
+import URLLoaderDataFormat			from "awayjs-core/lib/net/URLLoaderDataFormat";
+import URLRequest					from "awayjs-core/lib/net/URLRequest";
+import ParserUtils					from "awayjs-core/lib/parsers/ParserUtils";
+import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import SubGeometryBase				= require("awayjs-display/lib/base/SubGeometryBase");
-import CurveSubGeometry             = require("awayjs-display/lib/base/CurveSubGeometry");
-import Geometry						= require("awayjs-display/lib/base/Geometry");
-import View							= require("awayjs-display/lib/View");
-import DisplayObjectContainer		= require("awayjs-display/lib/display/DisplayObjectContainer");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/display/DirectionalLight");
-import Sprite						= require("awayjs-display/lib/display/Sprite");
-import Skybox						= require("awayjs-display/lib/display/Skybox");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import MaterialBase		        	= require("awayjs-display/lib/materials/MaterialBase");
-import BasicMaterial				= require("awayjs-display/lib/materials/BasicMaterial");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
-import RaycastPicker				= require("awayjs-display/lib/pick/RaycastPicker");
-import PickingCollisionVO			= require("awayjs-display/lib/pick/PickingCollisionVO");
-import AwayMouseEvent				= require("awayjs-display/lib/events/MouseEvent");
+import CurveSubGeometry             from "awayjs-display/lib/base/CurveSubGeometry";
+import Geometry						from "awayjs-display/lib/base/Geometry";
+import View							from "awayjs-display/lib/View";
+import DisplayObjectContainer		from "awayjs-display/lib/display/DisplayObjectContainer";
+import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
+import Sprite						from "awayjs-display/lib/display/Sprite";
+import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
+import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
+import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import JSPickingCollider			from "awayjs-display/lib/pick/JSPickingCollider";
+import RaycastPicker				from "awayjs-display/lib/pick/RaycastPicker";
+import PickingCollisionVO			from "awayjs-display/lib/pick/PickingCollisionVO";
+import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
 
-import DisplayObject				= require("awayjs-display/lib/base/DisplayObject");
-import CurveSubSprite                 = require("awayjs-display/lib/base/CurveSubSprite");
+import DisplayObject				from "awayjs-display/lib/base/DisplayObject";
 
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
+import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-//import MethodRendererPool			= require("awayjs-methodmaterials/lib/pool/MethodRendererPool");
+import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
 
 
 class CurveDemo
