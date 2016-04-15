@@ -6,6 +6,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     
     entry: {
+
         Advanced_MultiPassSponzaDemo: './src/Advanced_MultiPassSponzaDemo.ts',
         AircraftDemo: './src/AircraftDemo.ts',
         AWD3ViewerMinimal: './src/AWD3ViewerMinimal.ts',
@@ -26,15 +27,16 @@ module.exports = {
         Intermediate_PerelithKnight: './src/Intermediate_PerelithKnight.ts',
         ObjLoaderMasterChief: './src/ObjLoaderMasterChief.ts',
         TorusPrimitive: './src/TorusPrimitive.ts',
-        awayjs: [
-            'awayjs-core',
-            'awayjs-display',
-            'awayjs-stagegl',
-            'awayjs-renderergl',
-            'awayjs-methodmaterials',
-            'awayjs-player',
-            'awayjs-parsers'
-        ]
+        Graphics_Drawing: './src/Graphics_Drawing.ts',
+         awayjs: [
+         'awayjs-core',
+         'awayjs-display',
+         'awayjs-stagegl',
+         'awayjs-renderergl',
+         'awayjs-methodmaterials',
+         'awayjs-player',
+         'awayjs-parsers'
+         ]
     },
     devtool: 'source-map',
     output: {
