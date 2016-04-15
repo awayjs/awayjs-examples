@@ -36,7 +36,7 @@
 import AS2MovieClipAdapter			from "awayjs-player/lib/adapters/AS2MovieClipAdapter";
 import OrthographicProjection		from "awayjs-core/lib/projections/OrthographicProjection";
 import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Graphics						from "awayjs-display/lib/draw/Graphics";
+import Graphics						from "awayjs-display/lib/graphics/Graphics";
 import View							from "awayjs-display/lib/View";
 import Sprite						from "awayjs-display/lib/display/Sprite";
 import HoverController				from "awayjs-display/lib/controllers/HoverController";
@@ -49,6 +49,12 @@ import MovieClip					from "awayjs-display/lib/display/MovieClip";
 import CoordinateSystem				from "awayjs-core/lib/projections/CoordinateSystem";
 import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
 import Camera						from "awayjs-display/lib/display/Camera";
+import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
+import ColorTransform 				from "awayjs-core/lib/geom/ColorTransform";
+
+import GraphicsFactoryHelper		from "awayjs-display/lib/draw/GraphicsFactoryHelper";
+import CapsStyle  					from "awayjs-display/lib/draw/CapsStyle";
+import JointStyle  					from "awayjs-display/lib/draw/JointStyle";
 
 class Graphics_Drawing
 {
@@ -75,6 +81,9 @@ class Graphics_Drawing
 	private _camera_ortho: Camera;
 	private _stage_width: number;
 	private _stage_height: number;
+	private drawingMC: Sprite;
+	private _activePoint: Sprite;
+	private _points: Array<Sprite>;
 
 	/**
 	 * Constructor
@@ -131,44 +140,133 @@ class Graphics_Drawing
 
 		// Graphics is not wired into any Displayobjects yet.
 		// to have it produce geometry, for now we have to pass it a sprite when constructing it
-		var drawingMC = new Sprite(null);
-		var drawingGraphics = new Graphics(drawingMC);
+		this.drawingMC = new Sprite(null);
 
+		this._activePoint=null;
 		// for now i did not find a way to activate this other than doing it in js (not in ts)
 		// so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
-		//Graphics._tess_obj=new TESS();
 
-		// color do not work yet
-		drawingGraphics.beginFill(0xFF0000, 1);
+		GraphicsFactoryHelper._tess_obj= null;//new TESS();
+		this._view.scene.addChild(this.drawingMC );
 
-		// strokes not at a showable state yet
-		//drawingGraphics.lineStyle(10, 0x000000, 1);
+		this._points=new Array<Sprite>();
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
+		var thisCircleGraphic:Graphics=new Graphics();
+		thisCircleGraphic.beginFill(0xFF0000, 1);
+		thisCircleGraphic.drawCircle(0,0,30);
+		thisCircleGraphic.endFill();
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
 
-		// draw some shape
-		drawingGraphics.moveTo(100, 100);
-		drawingGraphics.lineTo(200, 100);
-		drawingGraphics.lineTo(200, 200);
-		drawingGraphics.curveTo(150, 150, 100, 200);
-		drawingGraphics.curveTo(0, 150, 100, 100);
-		// draw a hole into the shape:
-		drawingGraphics.moveTo(110, 110);
-		drawingGraphics.lineTo(130, 110);
-		drawingGraphics.lineTo(130, 130);
-		drawingGraphics.lineTo(110, 130);
-		drawingGraphics.moveTo(110, 110);
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
+		var thisCircleGraphicsmall:Graphics = new Graphics();
+		thisCircleGraphicsmall.beginFill(0xFF0000, 1);
+		thisCircleGraphicsmall.drawCircle(0, 0, 10);
+		thisCircleGraphicsmall.endFill();
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
+		var batman_logo:Array<Array<any> >=[];
+		var cnt=0;
+		batman_logo[cnt++]=["l", 50, 50];
+		batman_logo[cnt++]=["l", 290, 50];
+		batman_logo[cnt++]=["c1", 290, 150];
+		batman_logo[cnt++]=["c2", 450, 150];
+		batman_logo[cnt++]=["l", 460, 60];
+		batman_logo[cnt++]=["l", 470, 100];
+		batman_logo[cnt++]=["l", 530, 100];
+		batman_logo[cnt++]=["l", 540, 60];
+		batman_logo[cnt++]=["l", 550, 150];
+		batman_logo[cnt++]=["c1", 710, 150];
+		batman_logo[cnt++]=["c2", 710, 50];
+		batman_logo[cnt++]=["l", 950, 50];
+		batman_logo[cnt++]=["c1", 800, 120];
+		batman_logo[cnt++]=["c2", 825, 250];
+		batman_logo[cnt++]=["c1", 630, 280];
+		batman_logo[cnt++]=["c2", 500, 450];
+		batman_logo[cnt++]=["c1", 370, 280];
+		batman_logo[cnt++]=["c2", 175, 250];
+		batman_logo[cnt++]=["c1", 200, 120];
+		var i = 0;
+		for (i = 0; i < batman_logo.length; i++) {
+			this._points[i] = new Sprite();
+			this._points[i].name=batman_logo[i][0];
+			this._points[i].x = batman_logo[i][1];
+			this._points[i].y = batman_logo[i][2];
 
-		drawingGraphics.beginFill(0xFF0000, 1);
-		drawingGraphics.drawCircle(300, 150, 80);
-		drawingGraphics.drawCircle(550, 150, 160);
-		drawingGraphics.drawRect(100, 250, 50, 50);
-		drawingGraphics.drawRoundRect(100, 350, 200, 100, 20);
-		drawingGraphics.drawEllipse(550, 400, 200, 100);
-		drawingGraphics.endFill();
+		}
+		this.draw_shape();
+		for (i = 0; i <  batman_logo.length; i++) {
+			var thisshape=thisCircleGraphic;
+			if(this._points[i].name=="c1"){
+				thisshape=thisCircleGraphicsmall;
+			}
+			this._points[i].graphics.copyFrom(thisshape);
+			this._points[i].visible=false;
+			this._view.scene.addChild(this._points[i]);
+			this._points[i].addEventListener(AwayMouseEvent.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
+		}
 
-		this._view.scene.addChild(drawingMC);
+		this._view.scene.addEventListener(AwayMouseEvent.MOUSE_MOVE, (event:AwayMouseEvent) => this.onMouseMove(event));
+		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+		this.draw_shape();
 
 	}
 
+	private onPointDown(event:AwayMouseEvent): void{
+		this._activePoint = (<Sprite> event.target);
+		this._activePoint.x=event.scenePosition.x;
+		this._activePoint.y=event.scenePosition.y;
+	}
+	private onMouseUp(event:MouseEvent): void{
+		this._activePoint = null;
+		//this.draw_shape();
+	}
+	private onMouseMove(event:AwayMouseEvent): void{
+		if (this._activePoint){
+			this._activePoint.x=event.scenePosition.x;
+			this._activePoint.y=event.scenePosition.y;
+		}
+	}
+
+	private draw_shape(): void{
+
+		this.drawingMC.graphics.clear()
+
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
+
+		this.drawingMC.graphics.beginFill(0xFF0000, 1);
+		this.drawingMC.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+		this.drawingMC.graphics.moveTo(this._points[0].x, this._points[0].y);
+		var i = 1;
+		var tmpspite:Sprite=null;
+		for (i = 1; i < this._points.length; i++) {
+			if(this._points[i].name=="c1"){
+				tmpspite=this._points[i];
+			}
+			else if (this._points[i].name=="c2"){
+				this.drawingMC.graphics.curveTo(tmpspite.x, tmpspite.y, this._points[i].x, this._points[i].y);
+				tmpspite=null;
+			}
+			else if (this._points[i].name=="l") {
+				this.drawingMC.graphics.lineTo(this._points[i].x, this._points[i].y);
+				tmpspite=null;
+			}
+		}
+		if(tmpspite){
+			this.drawingMC.graphics.curveTo(tmpspite.x, tmpspite.y, this._points[0].x, this._points[0].y);
+		}
+		else{
+			this.drawingMC.graphics.lineTo(this._points[0].x, this._points[0].y);
+		}
+		this.drawingMC.graphics.endFill();
+		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
+
+		var new_ct:ColorTransform = this.drawingMC.transform.colorTransform || (this.drawingMC.transform.colorTransform = new ColorTransform());
+		new_ct.redMultiplier = 1;
+		new_ct.greenMultiplier = 1;
+		new_ct.blueMultiplier = 0;
+		new_ct.alphaMultiplier = 1;
+
+		this.drawingMC.transform.invalidateColorTransform();
+	}
 	/**
 	 * Initialise the listeners
 	 */
