@@ -39,22 +39,22 @@ webpackJsonp([8],[
 	
 	*/
 	"use strict";
-	var SamplerCube_1 = __webpack_require__(220);
+	var SamplerCube_1 = __webpack_require__(231);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
-	var LoaderContext_1 = __webpack_require__(318);
+	var AssetLibrary_1 = __webpack_require__(307);
+	var LoaderContext_1 = __webpack_require__(329);
 	var URLRequest_1 = __webpack_require__(3);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var Skybox_1 = __webpack_require__(89);
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(231);
-	var SingleCubeTexture_1 = __webpack_require__(91);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var EffectEnvMapMethod_1 = __webpack_require__(275);
+	var Skybox_1 = __webpack_require__(95);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
+	var SingleCubeTexture_1 = __webpack_require__(98);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var EffectEnvMapMethod_1 = __webpack_require__(286);
 	var Basic_SkyBox = (function () {
 	    /**
 	     * Constructor

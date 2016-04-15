@@ -1,0 +1,34 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 4" itemID="56c835a3-00000016" lastModified="1455961515">
+  <timeline>
+    <DOMTimeline name="Symbol 4">
+      <layers>
+        <DOMLayer name="Layer 1" color="#4F80FF" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape>
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#FFFFFF"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!1239 470[1239 664 1057 802!1057 802[962 874 876 906!876 906[780 940 656 940!656 940[524 940 400 906!400 906[269 869 181 802!181 802[0 664 0 470!0 470[0 275 181 137!181 137[362 0 619 0!619 0[876 0 1057 137!1057 137[1239 275 1239 470"/>
+                    <Edge cubics="!1057 137(;1178,229 1239,341 1239,470q1057 137Q1239 275q1239 470);"/>
+                    <Edge cubics="!1239 470(;1239,599 1178,710 1057,802q1239 470Q1239 664q1057 802);"/>
+                    <Edge cubics="!0 470(;0,341 60,229 181,137q0 470Q0 275q181 137);"/>
+                    <Edge cubics="!181 802(;60,710 0,599 0,470q181 802Q0 664q0 470);"/>
+                    <Edge cubics="!181 137(;302,45 449,0 619,0q181 137Q362 0q619 0);"/>
+                    <Edge cubics="!656 940(;486,940 302,894 181,802q656 940Q524 940q400 906Q269 869q181 802);"/>
+                    <Edge cubics="!619 0(;791,0 936,45 1057,137q619 0Q876 0q1057 137);"/>
+                    <Edge cubics="!1057 802(;936,894 827,940 656,940q1057 802Q962 874q876 906Q780 940q656 940);"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

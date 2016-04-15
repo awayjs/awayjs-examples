@@ -1,4 +1,4 @@
-webpackJsonp([15],[
+webpackJsonp([16],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -39,32 +39,32 @@ webpackJsonp([15],[
 	
 	*/
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImage2D_1 = __webpack_require__(80);
 	var AssetEvent_1 = __webpack_require__(1);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
-	var Keyboard_1 = __webpack_require__(319);
+	var Keyboard_1 = __webpack_require__(330);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(98);
+	var HoverController_1 = __webpack_require__(111);
 	var BoundsType_1 = __webpack_require__(31);
-	var LineSegment_1 = __webpack_require__(355);
+	var LineSegment_1 = __webpack_require__(365);
 	var Sprite_1 = __webpack_require__(57);
-	var PointLight_1 = __webpack_require__(216);
+	var PointLight_1 = __webpack_require__(227);
 	var MouseEvent_1 = __webpack_require__(55);
-	var ElementsType_1 = __webpack_require__(224);
-	var BasicMaterial_1 = __webpack_require__(94);
-	var StaticLightPicker_1 = __webpack_require__(218);
+	var ElementsType_1 = __webpack_require__(235);
+	var BasicMaterial_1 = __webpack_require__(101);
+	var StaticLightPicker_1 = __webpack_require__(229);
 	var RaycastPicker_1 = __webpack_require__(44);
-	var JSPickingCollider_1 = __webpack_require__(315);
-	var PrimitiveCubePrefab_1 = __webpack_require__(228);
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(227);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(230);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(231);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var OBJParser_1 = __webpack_require__(324);
+	var JSPickingCollider_1 = __webpack_require__(326);
+	var PrimitiveCubePrefab_1 = __webpack_require__(239);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var OBJParser_1 = __webpack_require__(334);
 	/**
 	 *
 	 */

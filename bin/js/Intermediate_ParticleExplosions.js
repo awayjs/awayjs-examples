@@ -1,4 +1,4 @@
-webpackJsonp([16],[
+webpackJsonp([17],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -44,28 +44,28 @@ webpackJsonp([16],[
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ColorTransform_1 = __webpack_require__(19);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var Scene_1 = __webpack_require__(11);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(98);
+	var HoverController_1 = __webpack_require__(111);
 	var Camera_1 = __webpack_require__(45);
 	var Sprite_1 = __webpack_require__(57);
-	var PointLight_1 = __webpack_require__(216);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePlanePrefab_1 = __webpack_require__(229);
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticleAnimator_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleBillboardNode_1 = __webpack_require__(336);
-	var ParticleBezierCurveNode_1 = __webpack_require__(356);
-	var ParticleInitialColorNode_1 = __webpack_require__(358);
-	var ParticlePositionNode_1 = __webpack_require__(360);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var ParticleGraphicsHelper_1 = __webpack_require__(344);
-	var MethodMaterial_1 = __webpack_require__(256);
+	var PointLight_1 = __webpack_require__(227);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePlanePrefab_1 = __webpack_require__(240);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticleAnimator_1 = __webpack_require__(345);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleBillboardNode_1 = __webpack_require__(346);
+	var ParticleBezierCurveNode_1 = __webpack_require__(366);
+	var ParticleInitialColorNode_1 = __webpack_require__(368);
+	var ParticlePositionNode_1 = __webpack_require__(370);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var ParticleGraphicsHelper_1 = __webpack_require__(354);
+	var MethodMaterial_1 = __webpack_require__(267);
 	var Intermediate_ParticleExplosions = (function () {
 	    /**
 	     * Constructor

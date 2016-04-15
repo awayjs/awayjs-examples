@@ -1,4 +1,4 @@
-webpackJsonp([11],[
+webpackJsonp([12],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -40,20 +40,20 @@ webpackJsonp([11],[
 	"use strict";
 	var AssetEvent_1 = __webpack_require__(1);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	var URLRequest_1 = __webpack_require__(3);
-	var Keyboard_1 = __webpack_require__(319);
+	var Keyboard_1 = __webpack_require__(330);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
-	var AnimationNodeBase_1 = __webpack_require__(249);
-	var LoaderContainer_1 = __webpack_require__(101);
+	var AnimationNodeBase_1 = __webpack_require__(260);
+	var LoaderContainer_1 = __webpack_require__(114);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(98);
-	var AnimatorBase_1 = __webpack_require__(237);
-	var CrossfadeTransition_1 = __webpack_require__(347);
-	var AnimationStateEvent_1 = __webpack_require__(244);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var AWDParser_1 = __webpack_require__(201);
+	var HoverController_1 = __webpack_require__(111);
+	var AnimatorBase_1 = __webpack_require__(248);
+	var CrossfadeTransition_1 = __webpack_require__(357);
+	var AnimationStateEvent_1 = __webpack_require__(255);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var AWDParser_1 = __webpack_require__(214);
 	var Intermediate_AWDViewer = (function () {
 	    /**
 	     * Constructor

@@ -30,7 +30,7 @@
 /******/ 	// "0" means "already loaded"
 /******/ 	// Array means "loading", array contains callbacks
 /******/ 	var installedChunks = {
-/******/ 		20:0
+/******/ 		21:0
 /******/ 	};
 /******/
 /******/ 	// The require function
@@ -76,7 +76,7 @@
 /******/ 			script.charset = 'utf-8';
 /******/ 			script.async = true;
 /******/
-/******/ 			script.src = __webpack_require__.p + "" + chunkId + "." + ({"0":"AWD3ViewerMinimal","1":"AWDSuzanne","2":"Advanced_MultiPassSponzaDemo","3":"AircraftDemo","4":"Basic_Fire","5":"Basic_Load3DS","6":"Basic_LoadAWD","7":"Basic_Shading","8":"Basic_Skybox","9":"Basic_View","10":"CubePrimitive","11":"Intermediate_AWDViewer","12":"Intermediate_Globe","13":"Intermediate_MD5Animation","14":"Intermediate_MonsterHeadShading","15":"Intermediate_MouseInteraction","16":"Intermediate_ParticleExplosions","17":"Intermediate_PerelithKnight","18":"ObjLoaderMasterChief","19":"TorusPrimitive"}[chunkId]||chunkId) + ".js";
+/******/ 			script.src = __webpack_require__.p + "" + chunkId + "." + ({"0":"AWD3ViewerMinimal","1":"AWDSuzanne","2":"Advanced_MultiPassSponzaDemo","3":"AircraftDemo","4":"Basic_Fire","5":"Basic_Load3DS","6":"Basic_LoadAWD","7":"Basic_Shading","8":"Basic_Skybox","9":"Basic_View","10":"CubePrimitive","11":"Graphics_Drawing","12":"Intermediate_AWDViewer","13":"Intermediate_Globe","14":"Intermediate_MD5Animation","15":"Intermediate_MonsterHeadShading","16":"Intermediate_MouseInteraction","17":"Intermediate_ParticleExplosions","18":"Intermediate_PerelithKnight","19":"ObjLoaderMasterChief","20":"TorusPrimitive"}[chunkId]||chunkId) + ".js";
 /******/ 			head.appendChild(script);
 /******/ 		}
 /******/ 	};
@@ -98,13 +98,13 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(363);
-	__webpack_require__(399);
-	__webpack_require__(454);
-	__webpack_require__(475);
-	__webpack_require__(543);
-	__webpack_require__(557);
-	module.exports = __webpack_require__(569);
+	__webpack_require__(373);
+	__webpack_require__(409);
+	__webpack_require__(458);
+	__webpack_require__(479);
+	__webpack_require__(547);
+	__webpack_require__(561);
+	module.exports = __webpack_require__(573);
 
 
 /***/ },
@@ -7838,7 +7838,9 @@
 	    PartitionBase.prototype.traverse = function (traverser) {
 	        if (this._updatesMade)
 	            this.updateEntities();
-	        this._rootNode.acceptTraverser(traverser);
+	        if (this._rootNode) {
+	            this._rootNode.acceptTraverser(traverser);
+	        }
 	    };
 	    PartitionBase.prototype.iMarkForUpdate = function (node) {
 	        var t = this._updateQueue;
@@ -10236,12 +10238,21 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var Point_1 = __webpack_require__(26);
 	var Box_1 = __webpack_require__(17);
 	var AssetBase_1 = __webpack_require__(27);
 	var Graphic_1 = __webpack_require__(59);
 	var ElementsEvent_1 = __webpack_require__(62);
 	var StyleEvent_1 = __webpack_require__(61);
 	var ElementsUtils_1 = __webpack_require__(63);
+	var GraphicsPath_1 = __webpack_require__(69);
+	var GraphicsFactoryFills_1 = __webpack_require__(76);
+	var GraphicsFactoryStrokes_1 = __webpack_require__(108);
+	var PartialImplementationError_1 = __webpack_require__(109);
+	var JointStyle_1 = __webpack_require__(74);
+	var CapsStyle_1 = __webpack_require__(75);
+	var GraphicsStrokeStyle_1 = __webpack_require__(73);
+	var GraphicsFillStyle_1 = __webpack_require__(72);
 	/**
 	 *
 	 * Graphics is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
@@ -10267,6 +10278,12 @@
 	        this._boxBoundsInvalid = true;
 	        this._sphereBoundsInvalid = true;
 	        this._graphics = new Array();
+	        this._current_position = new Point_1.default();
+	        this._current_position = new Point_1.default();
+	        this._queued_fill_pathes = [];
+	        this._queued_stroke_pathes = [];
+	        this._active_fill_path = null;
+	        this._active_stroke_path = null;
 	        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
 	        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
 	    }
@@ -10325,6 +10342,26 @@
 	            if (this._style)
 	                this._style.addEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
 	            this._iInvalidateSurfaces();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Graphics.prototype, "queued_stroke_pathes", {
+	        get: function () {
+	            return this._queued_stroke_pathes;
+	        },
+	        set: function (value) {
+	            this._queued_stroke_pathes = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Graphics.prototype, "queued_fill_pathes", {
+	        get: function () {
+	            return this._queued_fill_pathes;
+	        },
+	        set: function (value) {
+	            this._queued_fill_pathes = value;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -10421,8 +10458,10 @@
 	            this._graphics[i].elements.scale(scale);
 	    };
 	    Graphics.prototype.clear = function () {
-	        for (var i = this._graphics.length - 1; i >= 0; i--)
+	        for (var i = this._graphics.length - 1; i >= 0; i--) {
 	            this._graphics[i].clear();
+	            this._graphics[i].dispose();
+	        }
 	    };
 	    /**
 	     * Clears all resources used by the Graphics object, including SubGeometries.
@@ -10505,6 +10544,949 @@
 	        if (event.attributesView != event.target.positions)
 	            return;
 	        this.invalidate();
+	    };
+	    Graphics.prototype.draw_fills = function () {
+	        GraphicsFactoryFills_1.default.draw_pathes(this);
+	    };
+	    Graphics.prototype.draw_strokes = function () {
+	        GraphicsFactoryStrokes_1.default.draw_pathes(this);
+	    };
+	    /**
+	     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
+	     * tiled to fill the area. The fill remains in effect until you call the
+	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+	     * method. Calling the <code>clear()</code> method clears the fill.
+	     *
+	     * <p>The application renders the fill whenever three or more points are
+	     * drawn, or when the <code>endFill()</code> method is called. </p>
+	     *
+	     * @param bitmap A transparent or opaque bitmap image that contains the bits
+	     *               to be displayed.
+	     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+	     *               can use to define transformations on the bitmap. For
+	     *               example, you can use the following matrix to rotate a bitmap
+	     *               by 45 degrees(pi/4 radians):
+	     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
+	     *               pattern. If <code>false</code>, the bitmap image does not
+	     *               repeat, and the edges of the bitmap are used for any fill
+	     *               area that extends beyond the bitmap.
+	     *
+	     *               <p>For example, consider the following bitmap(a 20 x
+	     *               20-pixel checkerboard pattern):</p>
+	     *
+	     *               <p>When <code>repeat</code> is set to <code>true</code>(as
+	     *               in the following example), the bitmap fill repeats the
+	     *               bitmap:</p>
+	     *
+	     *               <p>When <code>repeat</code> is set to <code>false</code>,
+	     *               the bitmap fill uses the edge pixels for the fill area
+	     *               outside the bitmap:</p>
+	     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
+	     *               by using a nearest-neighbor algorithm and look pixelated. If
+	     *               <code>true</code>, upscaled bitmap images are rendered by
+	     *               using a bilinear algorithm. Rendering by using the nearest
+	     *               neighbor algorithm is faster.
+	     */
+	    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
+	        if (matrix === void 0) { matrix = null; }
+	        if (repeat === void 0) { repeat = true; }
+	        if (smooth === void 0) { smooth = false; }
+	        this.draw_fills();
+	        // start a new fill path
+	        this._active_fill_path = new GraphicsPath_1.default();
+	        // todo: create bitmap fill style
+	        this._active_fill_path.style = new GraphicsFillStyle_1.default(0xffffff, 1);
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_fill_pathes.push(this._active_fill_path);
+	    };
+	    /**
+	     * Specifies a simple one-color fill that subsequent calls to other Graphics
+	     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
+	     * when drawing. The fill remains in effect until you call the
+	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+	     * method. Calling the <code>clear()</code> method clears the fill.
+	     *
+	     * <p>The application renders the fill whenever three or more points are
+	     * drawn, or when the <code>endFill()</code> method is called.</p>
+	     *
+	     * @param color The color of the fill(0xRRGGBB).
+	     * @param alpha The alpha value of the fill(0.0 to 1.0).
+	     */
+	    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
+	        if (alpha === void 0) { alpha = 1; }
+	        this.draw_fills();
+	        // start a new fill path
+	        this._active_fill_path = new GraphicsPath_1.default();
+	        this._active_fill_path.style = new GraphicsFillStyle_1.default(color, alpha);
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_fill_pathes.push(this._active_fill_path);
+	    };
+	    /**
+	     * Specifies a gradient fill used by subsequent calls to other Graphics
+	     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
+	     * the object. The fill remains in effect until you call the
+	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+	     * method. Calling the <code>clear()</code> method clears the fill.
+	     *
+	     * <p>The application renders the fill whenever three or more points are
+	     * drawn, or when the <code>endFill()</code> method is called. </p>
+	     *
+	     * @param type                A value from the GradientType class that
+	     *                            specifies which gradient type to use:
+	     *                            <code>GradientType.LINEAR</code> or
+	     *                            <code>GradientType.RADIAL</code>.
+	     * @param colors              An array of RGB hexadecimal color values used
+	     *                            in the gradient; for example, red is 0xFF0000,
+	     *                            blue is 0x0000FF, and so on. You can specify
+	     *                            up to 15 colors. For each color, specify a
+	     *                            corresponding value in the alphas and ratios
+	     *                            parameters.
+	     * @param alphas              An array of alpha values for the corresponding
+	     *                            colors in the colors array; valid values are 0
+	     *                            to 1. If the value is less than 0, the default
+	     *                            is 0. If the value is greater than 1, the
+	     *                            default is 1.
+	     * @param ratios              An array of color distribution ratios; valid
+	     *                            values are 0-255. This value defines the
+	     *                            percentage of the width where the color is
+	     *                            sampled at 100%. The value 0 represents the
+	     *                            left position in the gradient box, and 255
+	     *                            represents the right position in the gradient
+	     *                            box.
+	     * @param matrix              A transformation matrix as defined by the
+	     *                            flash.geom.Matrix class. The flash.geom.Matrix
+	     *                            class includes a
+	     *                            <code>createGradientBox()</code> method, which
+	     *                            lets you conveniently set up the matrix for use
+	     *                            with the <code>beginGradientFill()</code>
+	     *                            method.
+	     * @param spreadMethod        A value from the SpreadMethod class that
+	     *                            specifies which spread method to use, either:
+	     *                            <code>SpreadMethod.PAD</code>,
+	     *                            <code>SpreadMethod.REFLECT</code>, or
+	     *                            <code>SpreadMethod.REPEAT</code>.
+	     *
+	     *                            <p>For example, consider a simple linear
+	     *                            gradient between two colors:</p>
+	     *
+	     *                            <p>This example uses
+	     *                            <code>SpreadMethod.PAD</code> for the spread
+	     *                            method, and the gradient fill looks like the
+	     *                            following:</p>
+	     *
+	     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
+	     *                            for the spread method, the gradient fill looks
+	     *                            like the following:</p>
+	     *
+	     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
+	     *                            for the spread method, the gradient fill looks
+	     *                            like the following:</p>
+	     * @param interpolationMethod A value from the InterpolationMethod class that
+	     *                            specifies which value to use:
+	     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
+	     *                            <code>InterpolationMethod.RGB</code>
+	     *
+	     *                            <p>For example, consider a simple linear
+	     *                            gradient between two colors(with the
+	     *                            <code>spreadMethod</code> parameter set to
+	     *                            <code>SpreadMethod.REFLECT</code>). The
+	     *                            different interpolation methods affect the
+	     *                            appearance as follows: </p>
+	     * @param focalPointRatio     A number that controls the location of the
+	     *                            focal point of the gradient. 0 means that the
+	     *                            focal point is in the center. 1 means that the
+	     *                            focal point is at one border of the gradient
+	     *                            circle. -1 means that the focal point is at the
+	     *                            other border of the gradient circle. A value
+	     *                            less than -1 or greater than 1 is rounded to -1
+	     *                            or 1. For example, the following example shows
+	     *                            a <code>focalPointRatio</code> set to 0.75:
+	     * @throws ArgumentError If the <code>type</code> parameter is not valid.
+	     */
+	    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+	        if (matrix === void 0) { matrix = null; }
+	        if (spreadMethod === void 0) { spreadMethod = "pad"; }
+	        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
+	        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+	        this.draw_fills();
+	        // start a new fill path
+	        this._active_fill_path = new GraphicsPath_1.default();
+	        // todo: create gradient fill style
+	        this._active_fill_path.style = new GraphicsFillStyle_1.default(colors[0], alphas[0]);
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_fill_pathes.push(this._active_fill_path);
+	    };
+	    /**
+	     * Copies all of drawing commands from the source Graphics object into the
+	     * calling Graphics object.
+	     *
+	     * @param sourceGraphics The Graphics object from which to copy the drawing
+	     *                       commands.
+	     */
+	    Graphics.prototype.copyFrom = function (sourceGraphics) {
+	        sourceGraphics.copyTo(this);
+	    };
+	    /**
+	     * Draws a cubic Bezier curve from the current drawing position to the
+	     * specified anchor point. Cubic Bezier curves consist of two anchor points
+	     * and two control points. The curve interpolates the two anchor points and
+	     * curves toward the two control points.
+	     *
+	     * The four points you use to draw a cubic Bezier curve with the
+	     * <code>cubicCurveTo()</code> method are as follows:
+	     *
+	     * <ul>
+	     *   <li>The current drawing position is the first anchor point. </li>
+	     *   <li>The anchorX and anchorY parameters specify the second anchor point.
+	     *   </li>
+	     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
+	     *   specify the first control point.</li>
+	     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
+	     *   specify the second control point.</li>
+	     * </ul>
+	     *
+	     * If you call the <code>cubicCurveTo()</code> method before calling the
+	     * <code>moveTo()</code> method, your curve starts at position (0, 0).
+	     *
+	     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
+	     * the current drawing position to (<code>anchorX</code>,
+	     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
+	     * the current drawing position remains unchanged.
+	     *
+	     * If your movie clip contains content created with the Flash drawing tools,
+	     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
+	     * underneath that content.
+	     *
+	     * @param controlX1 Specifies the horizontal position of the first control
+	     *                  point relative to the registration point of the parent
+	     *                  display object.
+	     * @param controlY1 Specifies the vertical position of the first control
+	     *                  point relative to the registration point of the parent
+	     *                  display object.
+	     * @param controlX2 Specifies the horizontal position of the second control
+	     *                  point relative to the registration point of the parent
+	     *                  display object.
+	     * @param controlY2 Specifies the vertical position of the second control
+	     *                  point relative to the registration point of the parent
+	     *                  display object.
+	     * @param anchorX   Specifies the horizontal position of the anchor point
+	     *                  relative to the registration point of the parent display
+	     *                  object.
+	     * @param anchorY   Specifies the vertical position of the anchor point
+	     *                  relative to the registration point of the parent display
+	     *                  object.
+	     */
+	    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
+	        throw new PartialImplementationError_1.default("cubicCurveTo");
+	        /*
+	         t = 0.5; // given example value
+	         x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
+	         y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
+	
+	         this.queued_command_types.push(Graphics.CMD_BEZIER);
+	         this.queued_command_data.push(controlX1);
+	         this.queued_command_data.push(controlY1);
+	         this.queued_command_data.push(controlX2);
+	         this.queued_command_data.push(controlY2);
+	         this.queued_command_data.push(anchorX);
+	         this.queued_command_data.push(anchorY);
+	
+	         // todo: somehow convert cubic bezier curve into 2 quadric curves...
+	
+	         this.draw_direction+=0;
+	         */
+	    };
+	    /**
+	     * Draws a curve using the current line style from the current drawing
+	     * position to(anchorX, anchorY) and using the control point that
+	     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
+	     * drawing position is then set to(<code>anchorX</code>,
+	     * <code>anchorY</code>). If the movie clip in which you are drawing contains
+	     * content created with the Flash drawing tools, calls to the
+	     * <code>curveTo()</code> method are drawn underneath this content. If you
+	     * call the <code>curveTo()</code> method before any calls to the
+	     * <code>moveTo()</code> method, the default of the current drawing position
+	     * is(0, 0). If any of the parameters are missing, this method fails and the
+	     * current drawing position is not changed.
+	     *
+	     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
+	     * consist of two anchor points and one control point. The curve interpolates
+	     * the two anchor points and curves toward the control point. </p>
+	     *
+	     * @param controlX A number that specifies the horizontal position of the
+	     *                 control point relative to the registration point of the
+	     *                 parent display object.
+	     * @param controlY A number that specifies the vertical position of the
+	     *                 control point relative to the registration point of the
+	     *                 parent display object.
+	     * @param anchorX  A number that specifies the horizontal position of the
+	     *                 next anchor point relative to the registration point of
+	     *                 the parent display object.
+	     * @param anchorY  A number that specifies the vertical position of the next
+	     *                 anchor point relative to the registration point of the
+	     *                 parent display object.
+	     */
+	    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
+	        }
+	        this._current_position.x = anchorX;
+	        this._current_position.y = anchorY;
+	    };
+	    /**
+	     * Draws a circle. Set the line style, fill, or both before you call the
+	     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
+	     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	     * method.
+	     *
+	     * @param x      The <i>x</i> location of the center of the circle relative
+	     *               to the registration point of the parent display object(in
+	     *               pixels).
+	     * @param y      The <i>y</i> location of the center of the circle relative
+	     *               to the registration point of the parent display object(in
+	     *               pixels).
+	     * @param radius The radius of the circle(in pixels).
+	     */
+	    Graphics.prototype.drawCircle = function (x, y, radius) {
+	        // todo: directly create triangles instead of draw commands ?
+	        var radius2 = radius * 1.065;
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.moveTo(x - radius, y);
+	            for (var i = 8; i >= 0; i--) {
+	                var degree = (i) * (360 / 8) * Math.PI / 180;
+	                var degree2 = degree + ((360 / 16) * Math.PI / 180);
+	                this._active_fill_path.curveTo(x - (Math.cos(degree2) * radius2), y + (Math.sin(degree2) * radius2), x - (Math.cos(degree) * radius), y + (Math.sin(degree) * radius));
+	            }
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.moveTo(x, y + radius);
+	            var radius2 = radius * 0.93;
+	            this._active_stroke_path.curveTo(x - (radius2), y + (radius2), x - radius, y);
+	            this._active_stroke_path.curveTo(x - (radius2), y - (radius2), x, y - radius);
+	            this._active_stroke_path.curveTo(x + (radius2), y - (radius2), x + radius, y);
+	            this._active_stroke_path.curveTo(x + (radius2), y + (radius2), x, y + radius);
+	        }
+	    };
+	    /**
+	     * Draws an ellipse. Set the line style, fill, or both before you call the
+	     * <code>drawEllipse()</code> method, by calling the
+	     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+	     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+	     * <code>beginBitmapFill()</code> method.
+	     *
+	     * @param x      The <i>x</i> location of the top-left of the bounding-box of
+	     *               the ellipse relative to the registration point of the parent
+	     *               display object(in pixels).
+	     * @param y      The <i>y</i> location of the top left of the bounding-box of
+	     *               the ellipse relative to the registration point of the parent
+	     *               display object(in pixels).
+	     * @param width  The width of the ellipse(in pixels).
+	     * @param height The height of the ellipse(in pixels).
+	     */
+	    Graphics.prototype.drawEllipse = function (x, y, width, height) {
+	        width /= 2;
+	        height /= 2;
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.moveTo(x, y + height);
+	            this._active_fill_path.curveTo(x - (width), y + (height), x - width, y);
+	            this._active_fill_path.curveTo(x - (width), y - (height), x, y - height);
+	            this._active_fill_path.curveTo(x + (width), y - (height), x + width, y);
+	            this._active_fill_path.curveTo(x + (width), y + (height), x, y + height);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.moveTo(x, y + height);
+	            this._active_stroke_path.curveTo(x - (width), y + (height), x - width, y);
+	            this._active_stroke_path.curveTo(x - (width), y - (height), x, y - height);
+	            this._active_stroke_path.curveTo(x + (width), y - (height), x + width, y);
+	            this._active_stroke_path.curveTo(x + (width), y + (height), x, y + height);
+	        }
+	    };
+	    /**
+	     * Submits a series of IGraphicsData instances for drawing. This method
+	     * accepts a Vector containing objects including paths, fills, and strokes
+	     * that implement the IGraphicsData interface. A Vector of IGraphicsData
+	     * instances can refer to a part of a shape, or a complex fully defined set
+	     * of data for rendering a complete shape.
+	     *
+	     * <p> Graphics paths can contain other graphics paths. If the
+	     * <code>graphicsData</code> Vector includes a path, that path and all its
+	     * sub-paths are rendered during this operation. </p>
+	     *
+	     */
+	    Graphics.prototype.drawGraphicsData = function (graphicsData) {
+	        //this.draw_fills();
+	        /*
+	         for (var i:number=0; i<graphicsData.length; i++){
+	         //todo
+	         if(graphicsData[i].dataType=="beginFill"){
+	
+	         }
+	         else if(graphicsData[i].dataType=="endFill"){
+	
+	         }
+	         else if(graphicsData[i].dataType=="endFill"){
+	
+	         }
+	         else if(graphicsData[i].dataType=="Path"){
+	
+	         }
+	
+	         }
+	         */
+	    };
+	    /**
+	     * Submits a series of commands for drawing. The <code>drawPath()</code>
+	     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
+	     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
+	     * single call. The <code>drawPath()</code> method parameters combine drawing
+	     * commands with x- and y-coordinate value pairs and a drawing direction. The
+	     * drawing commands are values from the GraphicsPathCommand class. The x- and
+	     * y-coordinate value pairs are Numbers in an array where each pair defines a
+	     * coordinate location. The drawing direction is a value from the
+	     * GraphicsPathWinding class.
+	     *
+	     * <p> Generally, drawings render faster with <code>drawPath()</code> than
+	     * with a series of individual <code>lineTo()</code> and
+	     * <code>curveTo()</code> methods. </p>
+	     *
+	     * <p> The <code>drawPath()</code> method uses a uses a floating computation
+	     * so rotation and scaling of shapes is more accurate and gives better
+	     * results. However, curves submitted using the <code>drawPath()</code>
+	     * method can have small sub-pixel alignment errors when used in conjunction
+	     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
+	     *
+	     * <p> The <code>drawPath()</code> method also uses slightly different rules
+	     * for filling and drawing lines. They are: </p>
+	     *
+	     * <ul>
+	     *   <li>When a fill is applied to rendering a path:
+	     * <ul>
+	     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
+	     * stroke rendering will still occur, consistent with the rules for strokes
+	     * below.)</li>
+	     *   <li>A sub-path that isn't closed(the end point is not equal to the
+	     * begin point) is implicitly closed.</li>
+	     * </ul>
+	     * </li>
+	     *   <li>When a stroke is applied to rendering a path:
+	     * <ul>
+	     *   <li>The sub-paths can be composed of any number of points.</li>
+	     *   <li>The sub-path is never implicitly closed.</li>
+	     * </ul>
+	     * </li>
+	     * </ul>
+	     *
+	     * @param winding Specifies the winding rule using a value defined in the
+	     *                GraphicsPathWinding class.
+	     */
+	    Graphics.prototype.drawPath = function (commands, data, winding) {
+	        //todo
+	        /*
+	         if(this._active_fill_path!=null){
+	         this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
+	         }
+	         if(this._active_stroke_path!=null){
+	         this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
+	         }
+	         this._current_position.x=anchorX;
+	         this._current_position.y=anchorY;
+	         */
+	    };
+	    /**
+	     * Draws a rectangle. Set the line style, fill, or both before you call the
+	     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
+	     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	     * method.
+	     *
+	     * @param x      A number indicating the horizontal position relative to the
+	     *               registration point of the parent display object(in pixels).
+	     * @param y      A number indicating the vertical position relative to the
+	     *               registration point of the parent display object(in pixels).
+	     * @param width  The width of the rectangle(in pixels).
+	     * @param height The height of the rectangle(in pixels).
+	     * @throws ArgumentError If the <code>width</code> or <code>height</code>
+	     *                       parameters are not a number
+	     *                      (<code>Number.NaN</code>).
+	     */
+	    Graphics.prototype.drawRect = function (x, y, width, height) {
+	        //todo: directly create triangles instead of drawing commands ?
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.moveTo(x, y);
+	            this._active_fill_path.lineTo(x + width, y);
+	            this._active_fill_path.lineTo(x + width, y + height);
+	            this._active_fill_path.lineTo(x, y + height);
+	            this._active_fill_path.lineTo(x, y);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.moveTo(x, y);
+	            this._active_stroke_path.lineTo(x + width, y);
+	            this._active_stroke_path.lineTo(x + width, y + height);
+	            this._active_stroke_path.lineTo(x, y + height);
+	            this._active_stroke_path.lineTo(x, y);
+	        }
+	    };
+	    /**
+	     * Draws a rounded rectangle. Set the line style, fill, or both before you
+	     * call the <code>drawRoundRect()</code> method, by calling the
+	     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+	     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+	     * <code>beginBitmapFill()</code> method.
+	     *
+	     * @param x             A number indicating the horizontal position relative
+	     *                      to the registration point of the parent display
+	     *                      object(in pixels).
+	     * @param y             A number indicating the vertical position relative to
+	     *                      the registration point of the parent display object
+	     *                     (in pixels).
+	     * @param width         The width of the round rectangle(in pixels).
+	     * @param height        The height of the round rectangle(in pixels).
+	     * @param ellipseWidth  The width of the ellipse used to draw the rounded
+	     *                      corners(in pixels).
+	     * @param ellipseHeight The height of the ellipse used to draw the rounded
+	     *                      corners(in pixels). Optional; if no value is
+	     *                      specified, the default value matches that provided
+	     *                      for the <code>ellipseWidth</code> parameter.
+	     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
+	     *                       <code>ellipseWidth</code> or
+	     *                       <code>ellipseHeight</code> parameters are not a
+	     *                       number(<code>Number.NaN</code>).
+	     */
+	    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
+	        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
+	        //todo: directly create triangles instead of drawing commands ?
+	        if (!ellipseHeight) {
+	            ellipseHeight = ellipseWidth;
+	        }
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.moveTo(x + ellipseWidth, y);
+	            this._active_fill_path.lineTo(x + width - ellipseWidth, y);
+	            this._active_fill_path.curveTo(x + width, y, x + width, y + ellipseHeight);
+	            this._active_fill_path.lineTo(x + width, y + height - ellipseHeight);
+	            this._active_fill_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
+	            this._active_fill_path.lineTo(x + ellipseWidth, y + height);
+	            this._active_fill_path.curveTo(x, y + height, x, y + height - ellipseHeight);
+	            this._active_fill_path.lineTo(x, y + ellipseHeight);
+	            this._active_fill_path.curveTo(x, y, x + ellipseWidth, y);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.moveTo(x + ellipseWidth, y);
+	            this._active_stroke_path.lineTo(x + width - ellipseWidth, y);
+	            this._active_stroke_path.curveTo(x + width, y, x + width, y + ellipseHeight);
+	            this._active_stroke_path.lineTo(x + width, y + height - ellipseHeight);
+	            this._active_stroke_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
+	            this._active_stroke_path.lineTo(x + ellipseWidth, y + height);
+	            this._active_stroke_path.curveTo(x, y + height, x, y + height - ellipseHeight);
+	            this._active_stroke_path.lineTo(x, y + ellipseHeight);
+	            this._active_stroke_path.curveTo(x, y, x + ellipseWidth, y);
+	        }
+	    };
+	    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
+	    /**
+	     * Renders a set of triangles, typically to distort bitmaps and give them a
+	     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
+	     * either the current fill, or a bitmap fill, to the triangle faces using a
+	     * set of(u,v) coordinates.
+	     *
+	     * <p> Any type of fill can be used, but if the fill has a transform matrix
+	     * that transform matrix is ignored. </p>
+	     *
+	     * <p> A <code>uvtData</code> parameter improves texture mapping when a
+	     * bitmap fill is used. </p>
+	     *
+	     * @param culling Specifies whether to render triangles that face in a
+	     *                specified direction. This parameter prevents the rendering
+	     *                of triangles that cannot be seen in the current view. This
+	     *                parameter can be set to any value defined by the
+	     *                TriangleCulling class.
+	     */
+	    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
+	        if (indices === void 0) { indices = null; }
+	        if (uvtData === void 0) { uvtData = null; }
+	        if (culling === void 0) { culling = null; }
+	        if (this._active_fill_path != null) {
+	        }
+	        if (this._active_stroke_path != null) {
+	        }
+	    };
+	    /**
+	     * Applies a fill to the lines and curves that were added since the last call
+	     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+	     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
+	     * specified in the previous call to the <code>beginFill()</code>,
+	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+	     * method. If the current drawing position does not equal the previous
+	     * position specified in a <code>moveTo()</code> method and a fill is
+	     * defined, the path is closed with a line and then filled.
+	     *
+	     */
+	    Graphics.prototype.endFill = function () {
+	        this.draw_strokes();
+	        this.draw_fills();
+	        this._active_fill_path = null;
+	        this._active_stroke_path = null;
+	    };
+	    /**
+	     * Specifies a bitmap to use for the line stroke when drawing lines.
+	     *
+	     * <p>The bitmap line style is used for subsequent calls to Graphics methods
+	     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+	     * method. The line style remains in effect until you call the
+	     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+	     * the <code>lineBitmapStyle()</code> method again with different parameters.
+	     * </p>
+	     *
+	     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
+	     * drawing a path to specify different styles for different line segments
+	     * within a path. </p>
+	     *
+	     * <p>Call the <code>lineStyle()</code> method before you call the
+	     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
+	     * value of the line style is <code>undefined</code>.</p>
+	     *
+	     * <p>Calls to the <code>clear()</code> method set the line style back to
+	     * <code>undefined</code>. </p>
+	     *
+	     * @param bitmap The bitmap to use for the line stroke.
+	     * @param matrix An optional transformation matrix as defined by the
+	     *               flash.geom.Matrix class. The matrix can be used to scale or
+	     *               otherwise manipulate the bitmap before applying it to the
+	     *               line style.
+	     * @param repeat Whether to repeat the bitmap in a tiled fashion.
+	     * @param smooth Whether smoothing should be applied to the bitmap.
+	     */
+	    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
+	        if (matrix === void 0) { matrix = null; }
+	        if (repeat === void 0) { repeat = true; }
+	        if (smooth === void 0) { smooth = false; }
+	        // start a new stroke path
+	        this._active_stroke_path = new GraphicsPath_1.default();
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_stroke_pathes.push(this._active_stroke_path);
+	    };
+	    /**
+	     * Specifies a gradient to use for the stroke when drawing lines.
+	     *
+	     * <p>The gradient line style is used for subsequent calls to Graphics
+	     * methods such as the <code>lineTo()</code> methods or the
+	     * <code>drawCircle()</code> method. The line style remains in effect until
+	     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
+	     * methods, or the <code>lineGradientStyle()</code> method again with
+	     * different parameters. </p>
+	     *
+	     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
+	     * of drawing a path to specify different styles for different line segments
+	     * within a path. </p>
+	     *
+	     * <p>Call the <code>lineStyle()</code> method before you call the
+	     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
+	     * value of the line style is <code>undefined</code>.</p>
+	     *
+	     * <p>Calls to the <code>clear()</code> method set the line style back to
+	     * <code>undefined</code>. </p>
+	     *
+	     * @param type                A value from the GradientType class that
+	     *                            specifies which gradient type to use, either
+	     *                            GradientType.LINEAR or GradientType.RADIAL.
+	     * @param colors              An array of RGB hexadecimal color values used
+	     *                            in the gradient; for example, red is 0xFF0000,
+	     *                            blue is 0x0000FF, and so on. You can specify
+	     *                            up to 15 colors. For each color, specify a
+	     *                            corresponding value in the alphas and ratios
+	     *                            parameters.
+	     * @param alphas              An array of alpha values for the corresponding
+	     *                            colors in the colors array; valid values are 0
+	     *                            to 1. If the value is less than 0, the default
+	     *                            is 0. If the value is greater than 1, the
+	     *                            default is 1.
+	     * @param ratios              An array of color distribution ratios; valid
+	     *                            values are 0-255. This value defines the
+	     *                            percentage of the width where the color is
+	     *                            sampled at 100%. The value 0 represents the
+	     *                            left position in the gradient box, and 255
+	     *                            represents the right position in the gradient
+	     *                            box.
+	     * @param matrix              A transformation matrix as defined by the
+	     *                            flash.geom.Matrix class. The flash.geom.Matrix
+	     *                            class includes a
+	     *                            <code>createGradientBox()</code> method, which
+	     *                            lets you conveniently set up the matrix for use
+	     *                            with the <code>lineGradientStyle()</code>
+	     *                            method.
+	     * @param spreadMethod        A value from the SpreadMethod class that
+	     *                            specifies which spread method to use:
+	     * @param interpolationMethod A value from the InterpolationMethod class that
+	     *                            specifies which value to use. For example,
+	     *                            consider a simple linear gradient between two
+	     *                            colors(with the <code>spreadMethod</code>
+	     *                            parameter set to
+	     *                            <code>SpreadMethod.REFLECT</code>). The
+	     *                            different interpolation methods affect the
+	     *                            appearance as follows:
+	     * @param focalPointRatio     A number that controls the location of the
+	     *                            focal point of the gradient. The value 0 means
+	     *                            the focal point is in the center. The value 1
+	     *                            means the focal point is at one border of the
+	     *                            gradient circle. The value -1 means that the
+	     *                            focal point is at the other border of the
+	     *                            gradient circle. Values less than -1 or greater
+	     *                            than 1 are rounded to -1 or 1. The following
+	     *                            image shows a gradient with a
+	     *                            <code>focalPointRatio</code> of -0.75:
+	     */
+	    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+	        if (matrix === void 0) { matrix = null; }
+	        if (spreadMethod === void 0) { spreadMethod = null; }
+	        if (interpolationMethod === void 0) { interpolationMethod = null; }
+	        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+	        // start a new stroke path
+	        this._active_stroke_path = new GraphicsPath_1.default();
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_stroke_pathes.push(this._active_stroke_path);
+	    };
+	    /**
+	     * Specifies a shader to use for the line stroke when drawing lines.
+	     *
+	     * <p>The shader line style is used for subsequent calls to Graphics methods
+	     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+	     * method. The line style remains in effect until you call the
+	     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+	     * the <code>lineBitmapStyle()</code> method again with different parameters.
+	     * </p>
+	     *
+	     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
+	     * drawing a path to specify different styles for different line segments
+	     * within a path. </p>
+	     *
+	     * <p>Call the <code>lineStyle()</code> method before you call the
+	     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
+	     * value of the line style is <code>undefined</code>.</p>
+	     *
+	     * <p>Calls to the <code>clear()</code> method set the line style back to
+	     * <code>undefined</code>. </p>
+	     *
+	     * @param shader The shader to use for the line stroke.
+	     * @param matrix An optional transformation matrix as defined by the
+	     *               flash.geom.Matrix class. The matrix can be used to scale or
+	     *               otherwise manipulate the bitmap before applying it to the
+	     *               line style.
+	     */
+	    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
+	    //		{
+	    //
+	    //		}
+	    /**
+	     * Specifies a line style used for subsequent calls to Graphics methods such
+	     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+	     * method. The line style remains in effect until you call the
+	     * <code>lineGradientStyle()</code> method, the
+	     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
+	     * method with different parameters.
+	     *
+	     * <p>You can call the <code>lineStyle()</code> method in the middle of
+	     * drawing a path to specify different styles for different line segments
+	     * within the path.</p>
+	     *
+	     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
+	     * style back to <code>undefined</code>.</p>
+	     *
+	     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
+	     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
+	     *
+	     * @param thickness    An integer that indicates the thickness of the line in
+	     *                     points; valid values are 0-255. If a number is not
+	     *                     specified, or if the parameter is undefined, a line is
+	     *                     not drawn. If a value of less than 0 is passed, the
+	     *                     default is 0. The value 0 indicates hairline
+	     *                     thickness; the maximum thickness is 255. If a value
+	     *                     greater than 255 is passed, the default is 255.
+	     * @param color        A hexadecimal color value of the line; for example,
+	     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
+	     *                     value is not indicated, the default is 0x000000
+	     *                    (black). Optional.
+	     * @param alpha        A number that indicates the alpha value of the color
+	     *                     of the line; valid values are 0 to 1. If a value is
+	     *                     not indicated, the default is 1(solid). If the value
+	     *                     is less than 0, the default is 0. If the value is
+	     *                     greater than 1, the default is 1.
+	     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+	     *                     specifies whether to hint strokes to full pixels. This
+	     *                     affects both the position of anchors of a curve and
+	     *                     the line stroke size itself. With
+	     *                     <code>pixelHinting</code> set to <code>true</code>,
+	     *                     line widths are adjusted to full pixel widths. With
+	     *                     <code>pixelHinting</code> set to <code>false</code>,
+	     *                     disjoints can appear for curves and straight lines.
+	     *                     For example, the following illustrations show how
+	     *                     Flash Player or Adobe AIR renders two rounded
+	     *                     rectangles that are identical, except that the
+	     *                     <code>pixelHinting</code> parameter used in the
+	     *                     <code>lineStyle()</code> method is set differently
+	     *                    (the images are scaled by 200%, to emphasize the
+	     *                     difference):
+	     *
+	     *                     <p>If a value is not supplied, the line does not use
+	     *                     pixel hinting.</p>
+	     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
+	     *                     LineScaleMode class that specifies which scale mode to
+	     *                     use:
+	     *                     <ul>
+	     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
+	     *                     scale the line thickness when the object is scaled
+	     *                    (the default). </li>
+	     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
+	     *                     the line thickness. </li>
+	     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
+	     *                     scale the line thickness if the object is scaled
+	     *                     vertically <i>only</i>. For example, consider the
+	     *                     following circles, drawn with a one-pixel line, and
+	     *                     each with the <code>scaleMode</code> parameter set to
+	     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
+	     *                     left is scaled vertically only, and the circle on the
+	     *                     right is scaled both vertically and horizontally:
+	     *                     </li>
+	     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
+	     *                     scale the line thickness if the object is scaled
+	     *                     horizontally <i>only</i>. For example, consider the
+	     *                     following circles, drawn with a one-pixel line, and
+	     *                     each with the <code>scaleMode</code> parameter set to
+	     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
+	     *                     the left is scaled horizontally only, and the circle
+	     *                     on the right is scaled both vertically and
+	     *                     horizontally:   </li>
+	     *                     </ul>
+	     * @param caps        (Not supported in Flash Lite 4) A value from the
+	     *                     CapsStyle class that specifies the type of caps at the
+	     *                     end of lines. Valid values are:
+	     *                     <code>CapsStyle.NONE</code>,
+	     *                     <code>CapsStyle.ROUND</code>, and
+	     *                     <code>CapsStyle.SQUARE</code>. If a value is not
+	     *                     indicated, Flash uses round caps.
+	     *
+	     *                     <p>For example, the following illustrations show the
+	     *                     different <code>capsStyle</code> settings. For each
+	     *                     setting, the illustration shows a blue line with a
+	     *                     thickness of 30(for which the <code>capsStyle</code>
+	     *                     applies), and a superimposed black line with a
+	     *                     thickness of 1(for which no <code>capsStyle</code>
+	     *                     applies): </p>
+	     * @param joints      (Not supported in Flash Lite 4) A value from the
+	     *                     JointStyle class that specifies the type of joint
+	     *                     appearance used at angles. Valid values are:
+	     *                     <code>JointStyle.BEVEL</code>,
+	     *                     <code>JointStyle.MITER</code>, and
+	     *                     <code>JointStyle.ROUND</code>. If a value is not
+	     *                     indicated, Flash uses round joints.
+	     *
+	     *                     <p>For example, the following illustrations show the
+	     *                     different <code>joints</code> settings. For each
+	     *                     setting, the illustration shows an angled blue line
+	     *                     with a thickness of 30(for which the
+	     *                     <code>jointStyle</code> applies), and a superimposed
+	     *                     angled black line with a thickness of 1(for which no
+	     *                     <code>jointStyle</code> applies): </p>
+	     *
+	     *                     <p><b>Note:</b> For <code>joints</code> set to
+	     *                     <code>JointStyle.MITER</code>, you can use the
+	     *                     <code>miterLimit</code> parameter to limit the length
+	     *                     of the miter.</p>
+	     * @param miterLimit  (Not supported in Flash Lite 4) A number that
+	     *                     indicates the limit at which a miter is cut off. Valid
+	     *                     values range from 1 to 255(and values outside that
+	     *                     range are rounded to 1 or 255). This value is only
+	     *                     used if the <code>jointStyle</code> is set to
+	     *                     <code>"miter"</code>. The <code>miterLimit</code>
+	     *                     value represents the length that a miter can extend
+	     *                     beyond the point at which the lines meet to form a
+	     *                     joint. The value expresses a factor of the line
+	     *                     <code>thickness</code>. For example, with a
+	     *                     <code>miterLimit</code> factor of 2.5 and a
+	     *                     <code>thickness</code> of 10 pixels, the miter is cut
+	     *                     off at 25 pixels.
+	     *
+	     *                     <p>For example, consider the following angled lines,
+	     *                     each drawn with a <code>thickness</code> of 20, but
+	     *                     with <code>miterLimit</code> set to 1, 2, and 4.
+	     *                     Superimposed are black reference lines showing the
+	     *                     meeting points of the joints:</p>
+	     *
+	     *                     <p>Notice that a given <code>miterLimit</code> value
+	     *                     has a specific maximum angle for which the miter is
+	     *                     cut off. The following table lists some examples:</p>
+	     */
+	    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, capstyle, jointstyle, miterLimit) {
+	        if (thickness === void 0) { thickness = 0; }
+	        if (color === void 0) { color = 0; }
+	        if (alpha === void 0) { alpha = 1; }
+	        if (pixelHinting === void 0) { pixelHinting = false; }
+	        if (scaleMode === void 0) { scaleMode = null; }
+	        if (capstyle === void 0) { capstyle = CapsStyle_1.default.NONE; }
+	        if (jointstyle === void 0) { jointstyle = JointStyle_1.default.MITER; }
+	        if (miterLimit === void 0) { miterLimit = 100; }
+	        // start a new stroke path
+	        this._active_stroke_path = new GraphicsPath_1.default();
+	        this._active_stroke_path.style = new GraphicsStrokeStyle_1.default(color, alpha, thickness, jointstyle, capstyle, miterLimit);
+	        if (this._current_position.x != 0 || this._current_position.y != 0)
+	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+	        this._queued_stroke_pathes.push(this._active_stroke_path);
+	    };
+	    /**
+	     * Draws a line using the current line style from the current drawing
+	     * position to(<code>x</code>, <code>y</code>); the current drawing position
+	     * is then set to(<code>x</code>, <code>y</code>). If the display object in
+	     * which you are drawing contains content that was created with the Flash
+	     * drawing tools, calls to the <code>lineTo()</code> method are drawn
+	     * underneath the content. If you call <code>lineTo()</code> before any calls
+	     * to the <code>moveTo()</code> method, the default position for the current
+	     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
+	     * method fails and the current drawing position is not changed.
+	     *
+	     * @param x A number that indicates the horizontal position relative to the
+	     *          registration point of the parent display object(in pixels).
+	     * @param y A number that indicates the vertical position relative to the
+	     *          registration point of the parent display object(in pixels).
+	     */
+	    Graphics.prototype.lineTo = function (x, y) {
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.lineTo(x, y);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.lineTo(x, y);
+	        }
+	        this._current_position.x = x;
+	        this._current_position.y = y;
+	    };
+	    /**
+	     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
+	     * any of the parameters are missing, this method fails and the current
+	     * drawing position is not changed.
+	     *
+	     * @param x A number that indicates the horizontal position relative to the
+	     *          registration point of the parent display object(in pixels).
+	     * @param y A number that indicates the vertical position relative to the
+	     *          registration point of the parent display object(in pixels).
+	     */
+	    Graphics.prototype.moveTo = function (x, y) {
+	        if (this._active_fill_path != null) {
+	            this._active_fill_path.moveTo(x, y);
+	        }
+	        if (this._active_stroke_path != null) {
+	            this._active_stroke_path.moveTo(x, y);
+	        }
+	        this._current_position.x = x;
+	        this._current_position.y = y;
 	    };
 	    Graphics.assetType = "[asset Graphics]";
 	    return Graphics;
@@ -12210,292 +13192,791 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Rectangle_1 = __webpack_require__(51);
-	var DisplayObject_1 = __webpack_require__(16);
-	var BoundsType_1 = __webpack_require__(31);
-	var RenderableEvent_1 = __webpack_require__(60);
-	var SurfaceEvent_1 = __webpack_require__(70);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var StyleEvent_1 = __webpack_require__(61);
+	var GraphicsPathWinding_1 = __webpack_require__(70);
+	var GraphicsPathCommand_1 = __webpack_require__(71);
+	var GraphicsFillStyle_1 = __webpack_require__(72);
+	var GraphicsStrokeStyle_1 = __webpack_require__(73);
+	var Point_1 = __webpack_require__(26);
 	/**
-	 * The Billboard class represents display objects that represent bitmap images.
-	 * These can be images that you load with the <code>flash.Assets</code> or
-	 * <code>flash.display.Loader</code> classes, or they can be images that you
-	 * create with the <code>Billboard()</code> constructor.
-	 *
-	 * <p>The <code>Billboard()</code> constructor allows you to create a Billboard
-	 * object that contains a reference to a Image2D object. After you create a
-	 * Billboard object, use the <code>addChild()</code> or <code>addChildAt()</code>
-	 * method of the parent DisplayObjectContainer instance to place the bitmap on
-	 * the display list.</p>
-	 *
-	 * <p>A Billboard object can share its Image2D reference among several Billboard
-	 * objects, independent of translation or rotation properties. Because you can
-	 * create multiple Billboard objects that reference the same Image2D object,
-	 * multiple display objects can use the same complex Image2D object without
-	 * incurring the memory overhead of a Image2D object for each display
-	 * object instance.</p>
-	 *
-	 * <p>A Image2D object can be drawn to the screen by a Billboard object in one
-	 * of two ways: by using the default hardware renderer with a single hardware surface,
-	 * or by using the slower software renderer when 3D acceleration is not available.</p>
-	 *
-	 * <p>If you would prefer to perform a batch rendering command, rather than using a
-	 * single surface for each Billboard object, you can also draw to the screen using the
-	 * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
-	 * available to <code>flash.display.Tilesheet</code> and <code>flash.display.Graphics
-	 * objects.</code></p>
-	 *
-	 * <p><b>Note:</b> The Billboard class is not a subclass of the InteractiveObject
-	 * class, so it cannot dispatch mouse events. However, you can use the
-	 * <code>addEventListener()</code> method of the display object container that
-	 * contains the Billboard object.</p>
+	
+	 * Defines the values to use for specifying path-drawing commands.
+	 * The values in this class are used by the Graphics.drawPath() method,
+	 *or stored in the commands vector of a GraphicsPath object.
 	 */
-	var Billboard = (function (_super) {
-	    __extends(Billboard, _super);
-	    function Billboard(material, pixelSnapping, smoothing) {
-	        var _this = this;
-	        if (pixelSnapping === void 0) { pixelSnapping = "auto"; }
-	        if (smoothing === void 0) { smoothing = false; }
-	        _super.call(this);
-	        this._pIsEntity = true;
-	        this.onInvalidateTextureDelegate = function (event) { return _this.onInvalidateTexture(event); };
-	        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-	        this.material = material;
-	        this._updateDimensions();
-	        //default bounds type
-	        this._boundsType = BoundsType_1.default.AXIS_ALIGNED_BOX;
+	var GraphicsPath = (function () {
+	    function GraphicsPath(commands, data, winding_rule) {
+	        if (commands === void 0) { commands = null; }
+	        if (data === void 0) { data = null; }
+	        if (winding_rule === void 0) { winding_rule = GraphicsPathWinding_1.default.EVEN_ODD; }
+	        this._data = [];
+	        this._commands = [];
+	        this._style = null;
+	        if (commands != null && data != null) {
+	            this._data[0] = data;
+	            this._commands[0] = commands;
+	        }
+	        else {
+	            this._data[0] = [];
+	            this._commands[0] = [];
+	        }
+	        this._startPoint = new Point_1.default();
+	        this._cur_point = new Point_1.default();
+	        this._winding_rule = winding_rule;
+	        this._winding_directions = [];
 	    }
-	    Object.defineProperty(Billboard.prototype, "animator", {
-	        /**
-	         * Defines the animator of the sprite. Act on the sprite's geometry. Defaults to null
-	         */
+	    Object.defineProperty(GraphicsPath.prototype, "data_type", {
 	        get: function () {
-	            return this._animator;
+	            return GraphicsPath.data_type;
 	        },
 	        enumerable: true,
 	        configurable: true
 	    });
-	    Object.defineProperty(Billboard.prototype, "assetType", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return Billboard.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Billboard.prototype, "billboardRect", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._billboardRect;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Billboard.prototype, "billboardHeight", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._billboardHeight;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Billboard.prototype, "billboardWidth", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._billboardWidth;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Billboard.prototype, "material", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._material;
-	        },
-	        set: function (value) {
-	            if (value == this._material)
-	                return;
-	            if (this._material) {
-	                this._material.iRemoveOwner(this);
-	                this._material.removeEventListener(SurfaceEvent_1.default.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
-	            }
-	            this._material = value;
-	            if (this._material) {
-	                this._material.iAddOwner(this);
-	                this._material.addEventListener(SurfaceEvent_1.default.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * @protected
-	     */
-	    Billboard.prototype._pUpdateBoxBounds = function () {
-	        _super.prototype._pUpdateBoxBounds.call(this);
-	        this._pBoxBounds.width = this._billboardRect.width;
-	        this._pBoxBounds.height = this._billboardRect.height;
-	    };
-	    Billboard.prototype.clone = function () {
-	        var clone = new Billboard(this.material);
-	        return clone;
-	    };
-	    Object.defineProperty(Billboard.prototype, "style", {
-	        /**
-	         * The style used to render the current Billboard. If set to null, the default style of the material will be used instead.
-	         */
+	    Object.defineProperty(GraphicsPath.prototype, "style", {
 	        get: function () {
 	            return this._style;
 	        },
 	        set: function (value) {
-	            if (this._style == value)
-	                return;
-	            if (this._style)
-	                this._style.removeEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
 	            this._style = value;
-	            if (this._style)
-	                this._style.addEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-	            this._onInvalidateProperties();
 	        },
 	        enumerable: true,
 	        configurable: true
 	    });
-	    /**
-	     * //TODO
-	     *
-	     * @param shortestCollisionDistance
-	     * @returns {boolean}
-	     *
-	     * @internal
-	     */
-	    Billboard.prototype._iTestCollision = function (pickingCollision, pickingCollider) {
-	        return pickingCollider.testBillboardCollision(this, this.material, pickingCollision);
+	    GraphicsPath.prototype.fill = function () {
+	        if (this._style == null)
+	            return null;
+	        if (this._style.data_type == GraphicsFillStyle_1.default.data_type)
+	            return this._style;
+	        return null;
 	    };
-	    /**
-	     * @private
-	     */
-	    Billboard.prototype.onInvalidateTexture = function (event) {
-	        this._updateDimensions();
+	    GraphicsPath.prototype.stroke = function () {
+	        if (this._style == null)
+	            return null;
+	        if (this._style.data_type == GraphicsStrokeStyle_1.default.data_type)
+	            return this._style;
+	        return null;
 	    };
-	    Billboard.prototype._acceptTraverser = function (traverser) {
-	        traverser.applyRenderable(this);
-	    };
-	    Billboard.prototype._updateDimensions = function () {
-	        var texture = this.material.getTextureAt(0);
-	        var image = texture ? ((this._style ? this._style.getImageAt(texture) : null) || (this.material.style ? this.material.style.getImageAt(texture) : null) || texture.getImageAt(0)) : null;
-	        if (image) {
-	            var sampler = ((this._style ? this._style.getSamplerAt(texture) : null) || (this.material.style ? this.material.style.getSamplerAt(texture) : null) || texture.getSamplerAt(0) || DefaultMaterialManager_1.default.getDefaultSampler());
-	            if (sampler.imageRect) {
-	                this._billboardWidth = sampler.imageRect.width * image.width;
-	                this._billboardHeight = sampler.imageRect.height * image.height;
-	            }
-	            else {
-	                this._billboardWidth = image.rect.width;
-	                this._billboardHeight = image.rect.height;
-	            }
-	            this._billboardRect = sampler.frameRect || new Rectangle_1.default(0, 0, this._billboardWidth, this._billboardHeight);
+	    Object.defineProperty(GraphicsPath.prototype, "commands", {
+	        get: function () {
+	            return this._commands;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsPath.prototype, "data", {
+	        get: function () {
+	            return this._data;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    GraphicsPath.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+	        if (this._commands[this._commands.length - 1].length == 0) {
+	            // every contour must start with a moveTo command, so we make sure we have correct startpoint
+	            this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.MOVE_TO);
+	            this._data[this._data.length - 1].push(this._cur_point.x);
+	            this._data[this._data.length - 1].push(this._cur_point.y);
 	        }
-	        else {
-	            this._billboardWidth = 1;
-	            this._billboardHeight = 1;
-	            this._billboardRect = new Rectangle_1.default(0, 0, 1, 1);
+	        this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.CURVE_TO);
+	        /*
+	         if(this.isFill){
+	         this._tmp_point.x=anchorX-this._cur_point.x;
+	         this._tmp_point.y=anchorY-this._cur_point.y;
+	         this._tmp_point.normalize();
+	
+	         var testpoint:Point=new Point(this._tmp_point.x, this._tmp_point.y);
+	         testpoint.normalize();
+	         var degree_anchor:number=Math.acos(this._tmp_point.x * this._direction.x + this._tmp_point.y * this._direction.y) * 180 / Math.PI;
+	         if(degree_anchor>180)degree_anchor-=360;
+	         //var degree_anchor:number=Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
+	         this._draw_directions[this._draw_directions.length-1]+=degree_anchor;
+	         this._tmp_point.x=controlX-this._cur_point.x;
+	         this._tmp_point.y=controlY-this._cur_point.y;
+	         this._tmp_point.normalize();
+	         //angle = atan2( a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y );
+	         var degree_control:number=(Math.atan2(this._tmp_point.x* testpoint.y - this._tmp_point.y* testpoint.x, this._tmp_point.x* testpoint.x + this._tmp_point.y* testpoint.y));
+	         if(degree_control>180)degree_control-=360;
+	         //var degree_control:number=(Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI);
+	         console.log("degree_control "+degree_control);
+	         console.log("degree_anchor "+degree_anchor);
+	         console.log("this._draw_directions[this._draw_directions.length-1] "+this._draw_directions[this._draw_directions.length-1]);
+	         this._direction.x=testpoint.x;
+	         this._direction.y=testpoint.y;
+	         if((degree_control)<0)
+	         this._data[this._data.length-1].push(1);
+	         else
+	         this._data[this._data.length-1].push(2);
+	
+	         }
+	         else{
+	         this._data[this._data.length-1].push(1);
+	         }
+	         */
+	        this._data[this._data.length - 1].push(controlX);
+	        this._data[this._data.length - 1].push(controlY);
+	        this._data[this._data.length - 1].push(anchorX);
+	        this._data[this._data.length - 1].push(anchorY);
+	        this._cur_point.x = anchorX;
+	        this._cur_point.y = anchorY;
+	    };
+	    GraphicsPath.prototype.lineTo = function (x, y) {
+	        if (this._commands[this._commands.length - 1].length == 0) {
+	            // every contour must start with a moveTo command, so we make sure we have correct startpoint
+	            this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.MOVE_TO);
+	            this._data[this._data.length - 1].push(this._cur_point.x);
+	            this._data[this._data.length - 1].push(this._cur_point.y);
 	        }
-	        this._pInvalidateBounds();
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this));
+	        this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.LINE_TO);
+	        this._data[this._data.length - 1].push(x);
+	        this._data[this._data.length - 1].push(y);
+	        this._cur_point.x = x;
+	        this._cur_point.y = y;
 	    };
-	    Billboard.prototype.invalidateSurface = function () {
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	    GraphicsPath.prototype.moveTo = function (x, y) {
+	        // whenever a moveTo command apears, we start a new contour
+	        if (this._commands[this._commands.length - 1].length > 0) {
+	            this._commands.push([GraphicsPathCommand_1.default.MOVE_TO]);
+	            this._data.push([x, y]);
+	        }
+	        this._startPoint.x = x;
+	        this._startPoint.y = y;
+	        this._cur_point.x = x;
+	        this._cur_point.y = y;
 	    };
-	    Billboard.prototype._onInvalidateProperties = function (event) {
-	        if (event === void 0) { event = null; }
-	        this.invalidateSurface();
-	        this._updateDimensions();
+	    GraphicsPath.prototype.wideLineTo = function (x, y) {
+	        // not used
+	        /*
+	         this._commands.push(GraphicsPathCommand.WIDE_LINE_TO);
+	         this._data.push(0);
+	         this._data.push(0);
+	         this._data.push(x);
+	         this._data.push(y);
+	         */
 	    };
-	    Billboard.assetType = "[asset Billboard]";
-	    return Billboard;
-	}(DisplayObject_1.default));
+	    GraphicsPath.prototype.wideMoveTo = function (x, y) {
+	        // not used
+	        /*
+	         this._commands.push(GraphicsPathCommand.WIDE_MOVE_TO);
+	         this._data.push(0);
+	         this._data.push(0);
+	         this._data.push(x);
+	         this._data.push(y);
+	         */
+	    };
+	    GraphicsPath.data_type = "[graphicsdata path]";
+	    return GraphicsPath;
+	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Billboard;
+	exports.default = GraphicsPath;
 
 
 /***/ },
 /* 70 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var EventBase_1 = __webpack_require__(2);
-	var SurfaceEvent = (function (_super) {
-	    __extends(SurfaceEvent, _super);
-	    /**
-	     * Create a new GraphicsEvent
-	     * @param type The event type.
-	     * @param dataType An optional data type of the vertex data being updated.
-	     */
-	    function SurfaceEvent(type, surface) {
-	        _super.call(this, type);
-	        this._surface = surface;
+	/**
+	 * The GraphicsPathWinding class provides values for the
+	 * <code>flash.display.GraphicsPath.winding</code> property and the
+	 * <code>flash.display.Graphics.drawPath()</code> method to determine the
+	 * direction to draw a path. A clockwise path is positively wound, and a
+	 * counter-clockwise path is negatively wound:
+	 *
+	 * <p> When paths intersect or overlap, the winding direction determines the
+	 * rules for filling the areas created by the intersection or overlap:</p>
+	 */
+	var GraphicsPathWinding = (function () {
+	    function GraphicsPathWinding() {
 	    }
-	    Object.defineProperty(SurfaceEvent.prototype, "surface", {
-	        /**
-	         * The surface of the renderable.
-	         */
-	        get: function () {
-	            return this._surface;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Clones the event.
-	     *
-	     * @return An exact duplicate of the current object.
-	     */
-	    SurfaceEvent.prototype.clone = function () {
-	        return new SurfaceEvent(this.type, this._surface);
-	    };
-	    SurfaceEvent.INVALIDATE_TEXTURE = "invalidateTexture";
-	    SurfaceEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
-	    SurfaceEvent.INVALIDATE_PASSES = "invalidatePasses";
-	    return SurfaceEvent;
-	}(EventBase_1.default));
+	    GraphicsPathWinding.EVEN_ODD = "evenOdd";
+	    GraphicsPathWinding.NON_ZERO = "nonZero";
+	    return GraphicsPathWinding;
+	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = SurfaceEvent;
+	exports.default = GraphicsPathWinding;
 
 
 /***/ },
 /* 71 */
+/***/ function(module, exports) {
+
+	"use strict";
+	/**
+	 * Defines the values to use for specifying path-drawing commands.
+	 * The values in this class are used by the Graphics.drawPath() method,
+	 *or stored in the commands vector of a GraphicsPath object.
+	 */
+	var GraphicsPathCommand = (function () {
+	    function GraphicsPathCommand() {
+	    }
+	    /**
+	     * Represents the default "do nothing" command.
+	     */
+	    GraphicsPathCommand.NO_OP = 0;
+	    /**
+	     * Specifies a drawing command that moves the current drawing position
+	     * to the x- and y-coordinates specified in the data vector.
+	     */
+	    GraphicsPathCommand.MOVE_TO = 1;
+	    /**
+	     * Specifies a drawing command that draws a line from the current drawing position
+	     * to the x- and y-coordinates specified in the data vector.
+	     */
+	    GraphicsPathCommand.LINE_TO = 2;
+	    /**
+	     *  Specifies a drawing command that draws a curve from the current drawing position
+	     *  to the x- and y-coordinates specified in the data vector, using a control point.
+	     */
+	    GraphicsPathCommand.CURVE_TO = 3;
+	    /**
+	     *  Specifies a drawing command that draws a curve from the current drawing position
+	     *  to the x- and y-coordinates specified in the data vector, using a control point.
+	     */
+	    GraphicsPathCommand.BUILD_JOINT = 13;
+	    GraphicsPathCommand.BUILD_ROUND_JOINT = 14;
+	    /**
+	     * Specifies a "line to" drawing command,
+	     * but uses two sets of coordinates (four values) instead of one set.
+	     */
+	    GraphicsPathCommand.WIDE_LINE_TO = 4;
+	    /**
+	     *   Specifies a "move to" drawing command,
+	     *   but uses two sets of coordinates (four values) instead of one set.
+	     */
+	    GraphicsPathCommand.WIDE_MOVE_TO = 5;
+	    /**
+	     * Specifies a drawing command that draws a curve from the current drawing position
+	     * to the x- and y-coordinates specified in the data vector, using 2 control points.
+	     */
+	    GraphicsPathCommand.CUBIC_CURVE = 6;
+	    return GraphicsPathCommand;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsPathCommand;
+
+
+/***/ },
+/* 72 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var GraphicsFillStyle = (function () {
+	    function GraphicsFillStyle(color, alpha) {
+	        if (color === void 0) { color = 0xffffff; }
+	        if (alpha === void 0) { alpha = 1; }
+	        this._color = color;
+	        this._alpha = alpha;
+	    }
+	    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
+	        get: function () {
+	            return GraphicsFillStyle.data_type;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
+	    return GraphicsFillStyle;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsFillStyle;
+
+
+/***/ },
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(72);
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var BitmapImageCube_1 = __webpack_require__(83);
-	var LineElements_1 = __webpack_require__(85);
-	var Skybox_1 = __webpack_require__(89);
-	var BasicMaterial_1 = __webpack_require__(94);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var SingleCubeTexture_1 = __webpack_require__(91);
+	var JointStyle_1 = __webpack_require__(74);
+	var CapsStyle_1 = __webpack_require__(75);
+	var GraphicsStrokeStyle = (function () {
+	    function GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miter_limit) {
+	        if (color === void 0) { color = 0xffffff; }
+	        if (alpha === void 0) { alpha = 1; }
+	        if (thickness === void 0) { thickness = 10; }
+	        if (jointstyle === void 0) { jointstyle = JointStyle_1.default.ROUND; }
+	        if (capstyle === void 0) { capstyle = CapsStyle_1.default.SQUARE; }
+	        if (miter_limit === void 0) { miter_limit = 10; }
+	        this._color = color;
+	        this._alpha = alpha;
+	        this._thickness = thickness;
+	        this._jointstyle = jointstyle;
+	        this._capstyle = capstyle;
+	        this._miter_limit = miter_limit;
+	    }
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "data_type", {
+	        get: function () {
+	            return GraphicsStrokeStyle.data_type;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "color", {
+	        get: function () {
+	            return this._color;
+	        },
+	        set: function (value) {
+	            this._color = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "alpha", {
+	        get: function () {
+	            return this._alpha;
+	        },
+	        set: function (value) {
+	            this._alpha = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "half_thickness", {
+	        get: function () {
+	            return this._thickness / 2;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "thickness", {
+	        get: function () {
+	            return this._thickness;
+	        },
+	        set: function (value) {
+	            this._thickness = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "jointstyle", {
+	        get: function () {
+	            return this._jointstyle;
+	        },
+	        set: function (value) {
+	            this._jointstyle = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "miter_limit", {
+	        get: function () {
+	            return this._miter_limit;
+	        },
+	        set: function (value) {
+	            this._miter_limit = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GraphicsStrokeStyle.prototype, "capstyle", {
+	        get: function () {
+	            return this._capstyle;
+	        },
+	        set: function (value) {
+	            this._capstyle = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    GraphicsStrokeStyle.data_type = "[graphicsdata StrokeStyle]";
+	    return GraphicsStrokeStyle;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsStrokeStyle;
+
+
+/***/ },
+/* 74 */
+/***/ function(module, exports) {
+
+	"use strict";
+	/**
+	 * The JointStyle class is an enumeration of constant values that specify the
+	 * joint style to use in drawing lines. These constants are provided for use
+	 * as values in the <code>joints</code> parameter of the
+	 * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
+	 * three types of joints: miter, round, and bevel, as the following example
+	 * shows:
+	 */
+	var JointStyle = (function () {
+	    function JointStyle() {
+	    }
+	    /**
+	     * Specifies beveled joints in the <code>joints</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    JointStyle.BEVEL = 2;
+	    /**
+	     * Specifies mitered joints in the <code>joints</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    JointStyle.MITER = 0;
+	    /**
+	     * Specifies round joints in the <code>joints</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    JointStyle.ROUND = 1;
+	    return JointStyle;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = JointStyle;
+
+
+/***/ },
+/* 75 */
+/***/ function(module, exports) {
+
+	"use strict";
+	/**
+	 * The CapsStyle class is an enumeration of constant values that specify the
+	 * caps style to use in drawing lines. The constants are provided for use as
+	 * values in the <code>caps</code> parameter of the
+	 * <code>flash.display.Graphics.lineStyle()</code> method. You can specify the
+	 * following three types of caps:
+	 */
+	var CapsStyle = (function () {
+	    function CapsStyle() {
+	    }
+	    /**
+	     * Used to specify round caps in the <code>caps</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    CapsStyle.ROUND = 1;
+	    /**
+	     * Used to specify no caps in the <code>caps</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    CapsStyle.NONE = 0;
+	    /**
+	     * Used to specify square caps in the <code>caps</code> parameter of the
+	     * <code>flash.display.Graphics.lineStyle()</code> method.
+	     */
+	    CapsStyle.SQUARE = 2;
+	    return CapsStyle;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = CapsStyle;
+
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var GraphicsPathCommand_1 = __webpack_require__(71);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var Point_1 = __webpack_require__(26);
+	var AttributesView_1 = __webpack_require__(66);
+	var Float3Attributes_1 = __webpack_require__(65);
+	var Float2Attributes_1 = __webpack_require__(105);
+	var MathConsts_1 = __webpack_require__(22);
+	var GraphicsFactoryHelper_1 = __webpack_require__(106);
+	var TriangleElements_1 = __webpack_require__(107);
+	/**
+	 * The Graphics class contains a set of methods that you can use to create a
+	 * vector shape. Display objects that support drawing include Sprite and Shape
+	 * objects. Each of these classes includes a <code>graphics</code> property
+	 * that is a Graphics object. The following are among those helper functions
+	 * provided for ease of use: <code>drawRect()</code>,
+	 * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+	 * <code>drawEllipse()</code>.
+	 *
+	 * <p>You cannot create a Graphics object directly from ActionScript code. If
+	 * you call <code>new Graphics()</code>, an exception is thrown.</p>
+	 *
+	 * <p>The Graphics class is final; it cannot be subclassed.</p>
+	 */
+	var GraphicsFactoryFills = (function () {
+	    function GraphicsFactoryFills() {
+	    }
+	    GraphicsFactoryFills.draw_pathes = function (targetGraphic) {
+	        var len = targetGraphic.queued_fill_pathes.length;
+	        var cp = 0;
+	        for (cp = 0; cp < len; cp++) {
+	            var one_path = targetGraphic.queued_fill_pathes[cp];
+	            //one_path.finalizeContour();
+	            var contour_commands = one_path.commands;
+	            var contour_data = one_path.data;
+	            var commands;
+	            var data;
+	            var i = 0;
+	            var k = 0;
+	            var vert_cnt = 0;
+	            var data_cnt = 0;
+	            var draw_direction = 0;
+	            var contours_vertices = [[]];
+	            var final_vert_list = [];
+	            var final_vert_cnt = 0;
+	            var lastPoint = new Point_1.default();
+	            var last_dir_vec = new Point_1.default();
+	            var end_point = new Point_1.default();
+	            for (k = 0; k < contour_commands.length; k++) {
+	                contours_vertices.push([]);
+	                vert_cnt = 0;
+	                data_cnt = 0;
+	                commands = contour_commands[k];
+	                data = contour_data[k];
+	                draw_direction = 0;
+	                var new_dir = 0;
+	                var new_dir_1 = 0;
+	                var new_dir_2 = 0;
+	                var dir_delta = 0;
+	                var last_direction = 0;
+	                var tmp_dir_point = new Point_1.default();
+	                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
+	                    data[data.length] == data[0];
+	                    data[data.length] == data[1];
+	                }
+	                lastPoint.x = data[0];
+	                lastPoint.y = data[1];
+	                if (commands[1] == GraphicsPathCommand_1.default.LINE_TO) {
+	                    last_dir_vec.x = data[2] - lastPoint.x;
+	                    last_dir_vec.y = data[3] - lastPoint.y;
+	                }
+	                else if (commands[1] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                    last_dir_vec.x = data[4] - lastPoint.x;
+	                    last_dir_vec.y = data[5] - lastPoint.y;
+	                }
+	                data_cnt = 2;
+	                last_dir_vec.normalize();
+	                last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                for (i = 1; i < commands.length; i++) {
+	                    end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+	                    if (commands[i] == GraphicsPathCommand_1.default.MOVE_TO) {
+	                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+	                    }
+	                    else if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                        end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+	                    }
+	                    //get the directional vector and the direction for this segment
+	                    tmp_dir_point.x = end_point.x - lastPoint.x;
+	                    tmp_dir_point.y = end_point.y - lastPoint.y;
+	                    tmp_dir_point.normalize();
+	                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                    // get the difference in angle to the last segment
+	                    dir_delta = new_dir - last_direction;
+	                    if (dir_delta > 180) {
+	                        dir_delta -= 360;
+	                    }
+	                    if (dir_delta < -180) {
+	                        dir_delta += 360;
+	                    }
+	                    draw_direction += dir_delta;
+	                    last_direction = new_dir;
+	                    lastPoint.x = end_point.x;
+	                    lastPoint.y = end_point.y;
+	                }
+	                lastPoint.x = data[0];
+	                lastPoint.y = data[1];
+	                data_cnt = 2;
+	                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+	                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+	                //console.log("Draw directions complete: "+draw_direction);
+	                for (i = 1; i < commands.length; i++) {
+	                    switch (commands[i]) {
+	                        case GraphicsPathCommand_1.default.MOVE_TO:
+	                            console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+	                            break;
+	                        case GraphicsPathCommand_1.default.LINE_TO:
+	                            lastPoint.x = data[data_cnt++];
+	                            lastPoint.y = data[data_cnt++];
+	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+	                            break;
+	                        case GraphicsPathCommand_1.default.CURVE_TO:
+	                            var control_x = data[data_cnt++];
+	                            var control_y = data[data_cnt++];
+	                            var end_x = data[data_cnt++];
+	                            var end_y = data[data_cnt++];
+	                            tmp_dir_point.x = control_x - lastPoint.x;
+	                            tmp_dir_point.y = control_y - lastPoint.y;
+	                            tmp_dir_point.normalize();
+	                            new_dir_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                            tmp_dir_point.x = end_x - lastPoint.x;
+	                            tmp_dir_point.y = end_y - lastPoint.y;
+	                            tmp_dir_point.normalize();
+	                            new_dir_2 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                            // get the difference in angle to the last segment
+	                            var curve_direction = new_dir_2 - new_dir_1;
+	                            if (curve_direction > 180) {
+	                                curve_direction -= 360;
+	                            }
+	                            if (curve_direction < -180) {
+	                                curve_direction += 360;
+	                            }
+	                            if ((curve_direction == 0) && (curve_direction == 180) && (curve_direction == -180)) {
+	                                lastPoint.x = end_x;
+	                                lastPoint.y = end_y;
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+	                                break;
+	                            }
+	                            var curve_attr_1 = -1;
+	                            if (draw_direction < 0) {
+	                                if (curve_direction > 0) {
+	                                    //convex
+	                                    //console.log("convex");
+	                                    curve_attr_1 = 1;
+	                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+	                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+	                                }
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+	                            }
+	                            else {
+	                                if (curve_direction < 0) {
+	                                    //convex
+	                                    //console.log("convex");
+	                                    curve_attr_1 = 1;
+	                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+	                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+	                                }
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+	                            }
+	                            if (GraphicsFactoryHelper_1.default.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
+	                                final_vert_list[final_vert_cnt++] = end_x;
+	                                final_vert_list[final_vert_cnt++] = end_y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = control_x;
+	                                final_vert_list[final_vert_cnt++] = control_y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 0.5;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = lastPoint.x;
+	                                final_vert_list[final_vert_cnt++] = lastPoint.y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                            }
+	                            else {
+	                                final_vert_list[final_vert_cnt++] = lastPoint.x;
+	                                final_vert_list[final_vert_cnt++] = lastPoint.y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = control_x;
+	                                final_vert_list[final_vert_cnt++] = control_y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 0.5;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = end_x;
+	                                final_vert_list[final_vert_cnt++] = end_y;
+	                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                                final_vert_list[final_vert_cnt++] = 1.0;
+	                                final_vert_list[final_vert_cnt++] = 0.0;
+	                            }
+	                            lastPoint.x = end_x;
+	                            lastPoint.y = end_y;
+	                            break;
+	                        case GraphicsPathCommand_1.default.CUBIC_CURVE:
+	                            //todo
+	                            break;
+	                    }
+	                }
+	            }
+	            var verts = [];
+	            var all_verts = [];
+	            var vertIndicess = [];
+	            var elems = [];
+	            for (k = 0; k < contours_vertices.length; k++) {
+	                var vertices = contours_vertices[k];
+	                //for (i = 0; i < vertices.length / 2; ++i)
+	                //console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
+	                var verticesF32 = new Float32Array(vertices);
+	                //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
+	                //console.log("in vertices", vertices);
+	                //var tess = new TESS();
+	                if (GraphicsFactoryHelper_1.default._tess_obj == null) {
+	                    console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
+	                    return;
+	                }
+	                GraphicsFactoryHelper_1.default._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
+	            }
+	            GraphicsFactoryHelper_1.default._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
+	            //console.log("out vertices", Graphics._tess_obj.getVertices());
+	            verts = GraphicsFactoryHelper_1.default._tess_obj.getVertices();
+	            elems = GraphicsFactoryHelper_1.default._tess_obj.getElements();
+	            //console.log("out elements", Graphics._tess_obj.getElements());
+	            var numVerts = verts.length / 2;
+	            var numElems = elems.length / 3;
+	            for (i = 0; i < numVerts; ++i)
+	                all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
+	            for (i = 0; i < numElems; ++i) {
+	                var p1 = elems[i * 3];
+	                var p2 = elems[i * 3 + 1];
+	                var p3 = elems[i * 3 + 2];
+	                final_vert_list[final_vert_cnt++] = all_verts[p3].x;
+	                final_vert_list[final_vert_cnt++] = all_verts[p3].y;
+	                final_vert_list[final_vert_cnt++] = 1;
+	                final_vert_list[final_vert_cnt++] = 2.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	                final_vert_list[final_vert_cnt++] = 1.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	                final_vert_list[final_vert_cnt++] = all_verts[p2].x;
+	                final_vert_list[final_vert_cnt++] = all_verts[p2].y;
+	                final_vert_list[final_vert_cnt++] = 1;
+	                final_vert_list[final_vert_cnt++] = 2.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	                final_vert_list[final_vert_cnt++] = 1.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	                final_vert_list[final_vert_cnt++] = all_verts[p1].x;
+	                final_vert_list[final_vert_cnt++] = all_verts[p1].y;
+	                final_vert_list[final_vert_cnt++] = 1;
+	                final_vert_list[final_vert_cnt++] = 2.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	                final_vert_list[final_vert_cnt++] = 1.0;
+	                final_vert_list[final_vert_cnt++] = 0.0;
+	            }
+	            //for (i = 0; i < final_vert_list.length/7; ++i)
+	            //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
+	            var attributesView = new AttributesView_1.default(Float32Array, 7);
+	            attributesView.set(final_vert_list);
+	            var attributesBuffer = attributesView.buffer;
+	            attributesView.dispose();
+	            var elements = new TriangleElements_1.default(attributesBuffer);
+	            elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
+	            elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
+	            elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
+	            var material = DefaultMaterialManager_1.default.getDefaultMaterial();
+	            material.bothSides = true;
+	            material.useColorTransform = true;
+	            material.curves = true;
+	            var thisGraphic = targetGraphic.addGraphic(elements, material);
+	        }
+	        targetGraphic.queued_fill_pathes.length = 0;
+	    };
+	    return GraphicsFactoryFills;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsFactoryFills;
+
+
+/***/ },
+/* 77 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var Sampler2D_1 = __webpack_require__(78);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImageCube_1 = __webpack_require__(89);
+	var LineElements_1 = __webpack_require__(91);
+	var Skybox_1 = __webpack_require__(95);
+	var BasicMaterial_1 = __webpack_require__(101);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var SingleCubeTexture_1 = __webpack_require__(98);
 	var Graphic_1 = __webpack_require__(59);
 	var DefaultMaterialManager = (function () {
 	    function DefaultMaterialManager() {
@@ -12596,7 +14077,7 @@
 
 
 /***/ },
-/* 72 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12605,7 +14086,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerBase_1 = __webpack_require__(73);
+	var SamplerBase_1 = __webpack_require__(79);
 	/**
 	 * The Sampler2D class represents display objects that represent bitmap images.
 	 * These can be images that you load with the <code>flash.Assets</code> or
@@ -12732,7 +14213,7 @@
 
 
 /***/ },
-/* 73 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12796,7 +14277,7 @@
 
 
 /***/ },
-/* 74 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12805,10 +14286,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(75);
+	var Image2D_1 = __webpack_require__(81);
 	var ColorUtils_1 = __webpack_require__(20);
-	var BitmapImageUtils_1 = __webpack_require__(78);
-	var CPUCanvas_1 = __webpack_require__(79);
+	var BitmapImageUtils_1 = __webpack_require__(84);
+	var CPUCanvas_1 = __webpack_require__(85);
 	/**
 	 * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
 	 * object. You can use the methods of the BitmapImage2D class to create
@@ -13456,7 +14937,7 @@
 
 
 /***/ },
-/* 75 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -13465,9 +14946,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageBase_1 = __webpack_require__(76);
+	var ImageBase_1 = __webpack_require__(82);
 	var Rectangle_1 = __webpack_require__(51);
-	var ImageUtils_1 = __webpack_require__(77);
+	var ImageUtils_1 = __webpack_require__(83);
 	var Image2D = (function (_super) {
 	    __extends(Image2D, _super);
 	    /**
@@ -13580,7 +15061,7 @@
 
 
 /***/ },
-/* 76 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -13617,7 +15098,7 @@
 
 
 /***/ },
-/* 77 */
+/* 83 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13657,7 +15138,7 @@
 
 
 /***/ },
-/* 78 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -13698,12 +15179,12 @@
 
 
 /***/ },
-/* 79 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CPURenderingContext2D_1 = __webpack_require__(80);
-	var ImageData_1 = __webpack_require__(82);
+	var CPURenderingContext2D_1 = __webpack_require__(86);
+	var ImageData_1 = __webpack_require__(88);
 	var CPUCanvas = (function () {
 	    function CPUCanvas() {
 	        this.width = 1;
@@ -13750,12 +15231,12 @@
 
 
 /***/ },
-/* 80 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var Matrix_1 = __webpack_require__(81);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var Matrix_1 = __webpack_require__(87);
 	var Point_1 = __webpack_require__(26);
 	//TODO: implement all methods
 	var CPURenderingContext2D = (function () {
@@ -13794,6 +15275,8 @@
 	    };
 	    CPURenderingContext2D.prototype.createRadialGradient = function (x0, y0, r0, x1, y1, r1) {
 	        return undefined;
+	    };
+	    CPURenderingContext2D.prototype.ellipse = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise) {
 	    };
 	    CPURenderingContext2D.prototype.lineTo = function (x, y) {
 	    };
@@ -14116,7 +15599,7 @@
 
 
 /***/ },
-/* 81 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14633,7 +16116,7 @@
 
 
 /***/ },
-/* 82 */
+/* 88 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -14650,7 +16133,7 @@
 
 
 /***/ },
-/* 83 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14659,11 +16142,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var ImageCube_1 = __webpack_require__(84);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var ImageCube_1 = __webpack_require__(90);
 	var Rectangle_1 = __webpack_require__(51);
 	var ColorUtils_1 = __webpack_require__(20);
-	var BitmapImageUtils_1 = __webpack_require__(78);
+	var BitmapImageUtils_1 = __webpack_require__(84);
 	/**
 	 * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
 	 * object. You can use the methods of the BitmapImage2D class to create
@@ -15321,7 +16804,7 @@
 
 
 /***/ },
-/* 84 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15330,8 +16813,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageBase_1 = __webpack_require__(76);
-	var ImageUtils_1 = __webpack_require__(77);
+	var ImageBase_1 = __webpack_require__(82);
+	var ImageUtils_1 = __webpack_require__(83);
 	var ImageCube = (function (_super) {
 	    __extends(ImageCube, _super);
 	    /**
@@ -15396,7 +16879,7 @@
 
 
 /***/ },
-/* 85 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15407,8 +16890,8 @@
 	};
 	var AttributesView_1 = __webpack_require__(66);
 	var Byte4Attributes_1 = __webpack_require__(68);
-	var Float1Attributes_1 = __webpack_require__(86);
-	var ElementsBase_1 = __webpack_require__(87);
+	var Float1Attributes_1 = __webpack_require__(92);
+	var ElementsBase_1 = __webpack_require__(93);
 	var ElementsUtils_1 = __webpack_require__(63);
 	/**
 	 * @class LineElements
@@ -15644,7 +17127,7 @@
 
 
 /***/ },
-/* 86 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15693,7 +17176,7 @@
 
 
 /***/ },
-/* 87 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15704,7 +17187,7 @@
 	};
 	var AttributesView_1 = __webpack_require__(66);
 	var Float3Attributes_1 = __webpack_require__(65);
-	var Short3Attributes_1 = __webpack_require__(88);
+	var Short3Attributes_1 = __webpack_require__(94);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetBase_1 = __webpack_require__(27);
 	var ElementsEvent_1 = __webpack_require__(62);
@@ -15905,7 +17388,7 @@
 
 
 /***/ },
-/* 88 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15955,7 +17438,7 @@
 
 
 /***/ },
-/* 89 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15965,13 +17448,13 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var BlendMode_1 = __webpack_require__(90);
+	var BlendMode_1 = __webpack_require__(96);
 	var DisplayObject_1 = __webpack_require__(16);
 	var BoundsType_1 = __webpack_require__(31);
 	var RenderableEvent_1 = __webpack_require__(60);
-	var SurfaceEvent_1 = __webpack_require__(70);
-	var SingleCubeTexture_1 = __webpack_require__(91);
-	var Style_1 = __webpack_require__(93);
+	var SurfaceEvent_1 = __webpack_require__(97);
+	var SingleCubeTexture_1 = __webpack_require__(98);
+	var Style_1 = __webpack_require__(100);
 	var StyleEvent_1 = __webpack_require__(61);
 	/**
 	 * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
@@ -16214,7 +17697,7 @@
 
 
 /***/ },
-/* 90 */
+/* 96 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -16399,7 +17882,7 @@
 
 
 /***/ },
-/* 91 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16408,7 +17891,56 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBase_1 = __webpack_require__(92);
+	var EventBase_1 = __webpack_require__(2);
+	var SurfaceEvent = (function (_super) {
+	    __extends(SurfaceEvent, _super);
+	    /**
+	     * Create a new GraphicsEvent
+	     * @param type The event type.
+	     * @param dataType An optional data type of the vertex data being updated.
+	     */
+	    function SurfaceEvent(type, surface) {
+	        _super.call(this, type);
+	        this._surface = surface;
+	    }
+	    Object.defineProperty(SurfaceEvent.prototype, "surface", {
+	        /**
+	         * The surface of the renderable.
+	         */
+	        get: function () {
+	            return this._surface;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Clones the event.
+	     *
+	     * @return An exact duplicate of the current object.
+	     */
+	    SurfaceEvent.prototype.clone = function () {
+	        return new SurfaceEvent(this.type, this._surface);
+	    };
+	    SurfaceEvent.INVALIDATE_TEXTURE = "invalidateTexture";
+	    SurfaceEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
+	    SurfaceEvent.INVALIDATE_PASSES = "invalidatePasses";
+	    return SurfaceEvent;
+	}(EventBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = SurfaceEvent;
+
+
+/***/ },
+/* 98 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var TextureBase_1 = __webpack_require__(99);
 	var SingleCubeTexture = (function (_super) {
 	    __extends(SingleCubeTexture, _super);
 	    function SingleCubeTexture(imageCube) {
@@ -16468,7 +18000,7 @@
 
 
 /***/ },
-/* 92 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16524,7 +18056,7 @@
 
 
 /***/ },
-/* 93 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16646,7 +18178,7 @@
 
 
 /***/ },
-/* 94 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16655,9 +18187,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(75);
-	var MaterialBase_1 = __webpack_require__(95);
-	var Single2DTexture_1 = __webpack_require__(96);
+	var Image2D_1 = __webpack_require__(81);
+	var MaterialBase_1 = __webpack_require__(102);
+	var Single2DTexture_1 = __webpack_require__(103);
 	/**
 	 * BasicMaterial forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -16727,7 +18259,7 @@
 
 
 /***/ },
-/* 95 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16736,13 +18268,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(90);
-	var ImageBase_1 = __webpack_require__(76);
+	var BlendMode_1 = __webpack_require__(96);
+	var ImageBase_1 = __webpack_require__(82);
 	var ColorTransform_1 = __webpack_require__(19);
 	var AssetEvent_1 = __webpack_require__(1);
 	var AssetBase_1 = __webpack_require__(27);
-	var SurfaceEvent_1 = __webpack_require__(70);
-	var Style_1 = __webpack_require__(93);
+	var SurfaceEvent_1 = __webpack_require__(97);
+	var Style_1 = __webpack_require__(100);
 	var StyleEvent_1 = __webpack_require__(61);
 	/**
 	 * MaterialBase forms an abstract base class for any material.
@@ -17223,7 +18755,7 @@
 
 
 /***/ },
-/* 96 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17233,9 +18765,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ErrorBase_1 = __webpack_require__(14);
-	var ImageUtils_1 = __webpack_require__(77);
-	var MappingMode_1 = __webpack_require__(97);
-	var TextureBase_1 = __webpack_require__(92);
+	var ImageUtils_1 = __webpack_require__(83);
+	var MappingMode_1 = __webpack_require__(104);
+	var TextureBase_1 = __webpack_require__(99);
 	var Single2DTexture = (function (_super) {
 	    __extends(Single2DTexture, _super);
 	    function Single2DTexture(image2D) {
@@ -17310,7 +18842,7 @@
 
 
 /***/ },
-/* 97 */
+/* 104 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -17340,7 +18872,1480 @@
 
 
 /***/ },
-/* 98 */
+/* 105 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(66);
+	var Float2Attributes = (function (_super) {
+	    __extends(Float2Attributes, _super);
+	    function Float2Attributes(attributesBufferLength) {
+	        _super.call(this, Float32Array, 2, attributesBufferLength);
+	    }
+	    Object.defineProperty(Float2Attributes.prototype, "assetType", {
+	        /**
+	         *
+	         * @returns {string}
+	         */
+	        get: function () {
+	            return Float2Attributes.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Float2Attributes.prototype.set = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        _super.prototype.set.call(this, values, offset);
+	    };
+	    Float2Attributes.prototype.get = function (count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        return _super.prototype.get.call(this, count, offset);
+	    };
+	    Float2Attributes.prototype._internalClone = function (attributesBuffer) {
+	        return (this._cloneCache = new Float2Attributes(attributesBuffer));
+	    };
+	    Float2Attributes.prototype.clone = function (attributesBuffer) {
+	        if (attributesBuffer === void 0) { attributesBuffer = null; }
+	        return _super.prototype.clone.call(this, attributesBuffer);
+	    };
+	    Float2Attributes.assetType = "[attributes Float2Attributes]";
+	    return Float2Attributes;
+	}(AttributesView_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Float2Attributes;
+
+
+/***/ },
+/* 106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var CapsStyle_1 = __webpack_require__(75);
+	var Point_1 = __webpack_require__(26);
+	var MathConsts_1 = __webpack_require__(22);
+	/**
+	 * The Graphics class contains a set of methods that you can use to create a
+	 * vector shape. Display objects that support drawing include Sprite and Shape
+	 * objects. Each of these classes includes a <code>graphics</code> property
+	 * that is a Graphics object. The following are among those helper functions
+	 * provided for ease of use: <code>drawRect()</code>,
+	 * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+	 * <code>drawEllipse()</code>.
+	 *
+	 * <p>You cannot create a Graphics object directly from ActionScript code. If
+	 * you call <code>new Graphics()</code>, an exception is thrown.</p>
+	 *
+	 * <p>The Graphics class is final; it cannot be subclassed.</p>
+	 */
+	var GraphicsFactoryHelper = (function () {
+	    function GraphicsFactoryHelper() {
+	    }
+	    GraphicsFactoryHelper.isClockWiseXY = function (point1x, point1y, point2x, point2y, point3x, point3y) {
+	        var num = (point1x - point2x) * (point3y - point2y) - (point1y - point2y) * (point3x - point2x);
+	        if (num < 0)
+	            return false;
+	        return true;
+	    };
+	    GraphicsFactoryHelper.getSign = function (ax, ay, cx, cy, bx, by) {
+	        return (ax - bx) * (cy - by) - (ay - by) * (cx - bx);
+	    };
+	    GraphicsFactoryHelper.pointInTri = function (ax, ay, bx, by, cx, cy, xx, xy) {
+	        var b1 = GraphicsFactoryHelper.getSign(ax, ay, xx, xy, bx, by) > 0;
+	        var b2 = GraphicsFactoryHelper.getSign(bx, by, xx, xy, cx, cy) > 0;
+	        var b3 = GraphicsFactoryHelper.getSign(cx, cy, xx, xy, ax, ay) > 0;
+	        return ((b1 == b2) && (b2 == b3));
+	    };
+	    GraphicsFactoryHelper.getControlXForCurveX = function (a, c, b) {
+	        return c;
+	    };
+	    GraphicsFactoryHelper.getControlYForCurveY = function (a, c, b) {
+	        return c;
+	    };
+	    GraphicsFactoryHelper.drawPoint = function (startX, startY, vertices) {
+	        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX + 2, startY - 2, startX + 2, startY + 2, 0, vertices);
+	        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX - 2, startY + 2, startX + 2, startY + 2, 0, vertices);
+	    };
+	    GraphicsFactoryHelper.addTriangle = function (startX, startY, controlX, controlY, endX, endY, tri_type, vertices) {
+	        var final_vert_cnt = vertices.length;
+	        if (tri_type == 0) {
+	            vertices[final_vert_cnt++] = startX;
+	            vertices[final_vert_cnt++] = startY;
+	            vertices[final_vert_cnt++] = 1;
+	            vertices[final_vert_cnt++] = 2.0;
+	            vertices[final_vert_cnt++] = 0.0;
+	            vertices[final_vert_cnt++] = controlX;
+	            vertices[final_vert_cnt++] = controlY;
+	            vertices[final_vert_cnt++] = 1;
+	            vertices[final_vert_cnt++] = 2.0;
+	            vertices[final_vert_cnt++] = 0.0;
+	            vertices[final_vert_cnt++] = endX;
+	            vertices[final_vert_cnt++] = endY;
+	            vertices[final_vert_cnt++] = 1;
+	            vertices[final_vert_cnt++] = 2.0;
+	            vertices[final_vert_cnt++] = 0.0;
+	        }
+	        else {
+	            vertices[final_vert_cnt++] = startX;
+	            vertices[final_vert_cnt++] = startY;
+	            vertices[final_vert_cnt++] = tri_type;
+	            vertices[final_vert_cnt++] = 1.0;
+	            vertices[final_vert_cnt++] = 1.0;
+	            vertices[final_vert_cnt++] = controlX;
+	            vertices[final_vert_cnt++] = controlY;
+	            vertices[final_vert_cnt++] = tri_type;
+	            vertices[final_vert_cnt++] = 0.5;
+	            vertices[final_vert_cnt++] = 0.0;
+	            vertices[final_vert_cnt++] = endX;
+	            vertices[final_vert_cnt++] = endY;
+	            vertices[final_vert_cnt++] = tri_type;
+	            vertices[final_vert_cnt++] = 0.0;
+	            vertices[final_vert_cnt++] = 0.0;
+	        }
+	    };
+	    GraphicsFactoryHelper.createCap = function (startX, startY, start_le, start_ri, dir_vec, capstyle, cap_position, thickness, vertices) {
+	        if (capstyle == CapsStyle_1.default.ROUND) {
+	            //console.log("add round cap");
+	            var tmp1_x = startX + (cap_position * (dir_vec.x * thickness));
+	            var tmp1_y = startY + (cap_position * (dir_vec.y * thickness));
+	            tmp1_x = tmp1_x * 2 - start_le.x / 2 - start_ri.x / 2;
+	            tmp1_y = tmp1_y * 2 - start_le.y / 2 - start_ri.y / 2;
+	            GraphicsFactoryHelper.addTriangle(start_le.x, start_le.y, tmp1_x, tmp1_y, start_ri.x, start_ri.y, -1, vertices);
+	        }
+	        else if (capstyle == CapsStyle_1.default.SQUARE) {
+	            //console.log("add square cap");
+	            var tmp1_x = start_le.x + (cap_position * (dir_vec.x * thickness));
+	            var tmp1_y = start_le.y + (cap_position * (dir_vec.y * thickness));
+	            var tmp2_x = start_ri.x + (cap_position * (dir_vec.x * thickness));
+	            var tmp2_y = start_ri.y + (cap_position * (dir_vec.y * thickness));
+	            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, tmp1_x, tmp1_y, start_le.x, start_le.y, 0, vertices);
+	            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, start_le.x, start_le.y, start_ri.x, start_ri.y, 0, vertices);
+	        }
+	    };
+	    GraphicsFactoryHelper.getLineFormularData = function (a, b) {
+	        var tmp_x = b.x - a.x;
+	        var tmp_y = b.y - a.y;
+	        var return_point = new Point_1.default();
+	        if ((tmp_x != 0) && (tmp_y != 0))
+	            return_point.x = tmp_y / tmp_x;
+	        return_point.y = -(return_point.x * a.x - a.y);
+	        return return_point;
+	    };
+	    GraphicsFactoryHelper.getQuadricBezierPosition = function (t, start, control, end) {
+	        var xt = 1 - t;
+	        return xt * xt * start + 2 * xt * t * control + t * t * end;
+	    };
+	    GraphicsFactoryHelper.subdivideCurve = function (startx, starty, cx, cy, endx, endy, startx2, starty2, cx2, cy2, endx2, endy2, array_out, array2_out) {
+	        var angle_1 = Math.atan2(cy - starty, cx - startx) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	        var angle_2 = Math.atan2(endy - cy, endx - cx) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	        var angle_delta = angle_2 - angle_1;
+	        //console.log("angle_delta "+angle_delta);
+	        if (angle_delta > 180) {
+	            angle_delta -= 360;
+	        }
+	        if (angle_delta < -180) {
+	            angle_delta += 360;
+	        }
+	        if (Math.abs(angle_delta) >= 150) {
+	            array_out.push(startx, starty, cx, cy, endx, endy);
+	            array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
+	            return;
+	        }
+	        var b1 = false;
+	        var b2 = false;
+	        if (angle_delta < 0) {
+	            // curve is curved to right side. right side is convex
+	            b1 = GraphicsFactoryHelper.getSign(startx, starty, cx2, cy2, endx, endy) > 0;
+	            b2 = GraphicsFactoryHelper.getSign(startx, starty, cx, cy, endx, endy) > 0;
+	            b1 = (((starty - endy) * (cx - startx) + (endx - startx) * (cy - starty)) * ((starty - endy) * (cx2 - startx) + (endx - startx) * (cy2 - starty))) < 0;
+	        }
+	        else {
+	            // curve is curved to left side. left side is convex
+	            b1 = GraphicsFactoryHelper.getSign(startx2, starty2, cx2, cy2, endx2, endy2) > 0;
+	            b2 = GraphicsFactoryHelper.getSign(startx2, starty2, cx, cy, endx2, endy2) > 0;
+	            b1 = (((starty2 - endy) * (cx - startx2) + (endx2 - startx2) * (cy - starty2)) * ((starty2 - endy2) * (cx2 - startx2) + (endx2 - startx2) * (cy2 - starty2))) < 0;
+	        }
+	        if (b1) {
+	            array_out.push(startx, starty, cx, cy, endx, endy);
+	            array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
+	            return;
+	        }
+	        // triangles overlap. we must subdivide:
+	        var c1x = startx + (cx - startx) * 0.5; // new controlpoint 1.1
+	        var c1y = starty + (cy - starty) * 0.5;
+	        var c2x = cx + (endx - cx) * 0.5; // new controlpoint 1.2
+	        var c2y = cy + (endy - cy) * 0.5;
+	        var ax = c1x + (c2x - c1x) * 0.5; // new middlepoint 1
+	        var ay = c1y + (c2y - c1y) * 0.5;
+	        var c1x2 = startx2 + (cx2 - startx2) * 0.5; // new controlpoint 2.1
+	        var c1y2 = starty2 + (cy2 - starty2) * 0.5;
+	        var c2x2 = cx2 + (endx2 - cx2) * 0.5; // new controlpoint 2.2
+	        var c2y2 = cy2 + (endy2 - cy2) * 0.5;
+	        var ax2 = c1x2 + (c2x2 - c1x2) * 0.5; // new middlepoint 2
+	        var ay2 = c1y2 + (c2y2 - c1y2) * 0.5;
+	        GraphicsFactoryHelper.subdivideCurve(startx, starty, c1x, c1y, ax, ay, startx2, starty2, c1x2, c1y2, ax2, ay2, array_out, array2_out);
+	        GraphicsFactoryHelper.subdivideCurve(ax, ay, c2x, c2y, endx, endy, ax2, ay2, c2x2, c2y2, endx2, endy2, array_out, array2_out);
+	    };
+	    return GraphicsFactoryHelper;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsFactoryHelper;
+
+
+/***/ },
+/* 107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(66);
+	var Float3Attributes_1 = __webpack_require__(65);
+	var Float2Attributes_1 = __webpack_require__(105);
+	var ElementsBase_1 = __webpack_require__(93);
+	var ElementsUtils_1 = __webpack_require__(63);
+	/**
+	 * @class away.base.TriangleElements
+	 */
+	var TriangleElements = (function (_super) {
+	    __extends(TriangleElements, _super);
+	    function TriangleElements() {
+	        _super.apply(this, arguments);
+	        this._numVertices = 0;
+	        this._faceNormalsDirty = true;
+	        this._faceTangentsDirty = true;
+	        this._autoDeriveNormals = true;
+	        this._autoDeriveTangents = true;
+	        //used for hittesting geometry
+	        this.cells = new Array();
+	        this.lastCollisionIndex = -1;
+	    }
+	    Object.defineProperty(TriangleElements.prototype, "assetType", {
+	        get: function () {
+	            return TriangleElements.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "numVertices", {
+	        get: function () {
+	            return this._numVertices;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "useCondensedIndices", {
+	        /**
+	         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+	         * by condensing the number of joint index values required per sprite. Only applicable to
+	         * skeleton animations that utilise more than one sprite object. Defaults to false.
+	         */
+	        get: function () {
+	            return this._useCondensedIndices;
+	        },
+	        set: function (value) {
+	            if (this._useCondensedIndices == value)
+	                return;
+	            this._useCondensedIndices = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "jointsPerVertex", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._jointsPerVertex;
+	        },
+	        set: function (value) {
+	            if (this._jointsPerVertex == value)
+	                return;
+	            this._jointsPerVertex = value;
+	            if (this._jointIndices)
+	                this._jointIndices.dimensions = this._jointsPerVertex;
+	            if (this._jointWeights)
+	                this._jointWeights.dimensions = this._jointsPerVertex;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "autoDeriveNormals", {
+	        /**
+	         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+	         * explicitly.
+	         */
+	        get: function () {
+	            return this._autoDeriveNormals;
+	        },
+	        set: function (value) {
+	            if (this._autoDeriveNormals == value)
+	                return;
+	            this._autoDeriveNormals = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "autoDeriveTangents", {
+	        /**
+	         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+	         * explicitly.
+	         */
+	        get: function () {
+	            return this._autoDeriveTangents;
+	        },
+	        set: function (value) {
+	            if (this._autoDeriveTangents == value)
+	                return;
+	            this._autoDeriveTangents = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "positions", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            if (!this._positions)
+	                this.setPositions(new Float3Attributes_1.default(this._concatenatedBuffer));
+	            return this._positions;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "normals", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            if (!this._normals || this._verticesDirty[this._normals.id])
+	                this.setNormals(this._normals);
+	            return this._normals;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "tangents", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            if (!this._tangents || this._verticesDirty[this._tangents.id])
+	                this.setTangents(this._tangents);
+	            return this._tangents;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "faceNormals", {
+	        /**
+	         * The raw data of the face normals, in the same order as the faces are listed in the index list.
+	         */
+	        get: function () {
+	            if (this._faceNormalsDirty)
+	                this.updateFaceNormals();
+	            return this._faceNormals;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "faceTangents", {
+	        /**
+	         * The raw data of the face tangets, in the same order as the faces are listed in the index list.
+	         */
+	        get: function () {
+	            if (this._faceTangentsDirty)
+	                this.updateFaceTangents();
+	            return this._faceTangents;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "uvs", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._uvs;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "jointIndices", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._jointIndices;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "jointWeights", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._jointWeights;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(TriangleElements.prototype, "condensedIndexLookUp", {
+	        get: function () {
+	            return this._condensedIndexLookUp;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    TriangleElements.prototype.getBoxBounds = function (target) {
+	        if (target === void 0) { target = null; }
+	        return ElementsUtils_1.default.getTriangleGraphicsBoxBounds(this.positions, target, this._numVertices);
+	    };
+	    TriangleElements.prototype.getSphereBounds = function (center, target) {
+	        if (target === void 0) { target = null; }
+	        return ElementsUtils_1.default.getTriangleGraphicsSphereBounds(this.positions, center, target, this._numVertices);
+	    };
+	    TriangleElements.prototype.hitTestPoint = function (x, y, z) {
+	        return true;
+	    };
+	    TriangleElements.prototype.setPositions = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (values == this._positions)
+	            return;
+	        if (values instanceof AttributesView_1.default) {
+	            this.clearVertices(this._positions);
+	            this._positions = values;
+	        }
+	        else if (values) {
+	            if (!this._positions)
+	                this._positions = new Float3Attributes_1.default(this._concatenatedBuffer);
+	            this._positions.set(values, offset);
+	        }
+	        else {
+	            this.clearVertices(this._positions);
+	            this._positions = new Float3Attributes_1.default(this._concatenatedBuffer); //positions cannot be null
+	        }
+	        this._numVertices = this._positions.count;
+	        if (this._autoDeriveNormals)
+	            this.invalidateVertices(this._normals);
+	        if (this._autoDeriveTangents)
+	            this.invalidateVertices(this._tangents);
+	        this.invalidateVertices(this._positions);
+	        this._verticesDirty[this._positions.id] = false;
+	    };
+	    TriangleElements.prototype.setNormals = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (!this._autoDeriveNormals) {
+	            if (values == this._normals)
+	                return;
+	            if (values instanceof Float3Attributes_1.default) {
+	                this.clearVertices(this._normals);
+	                this._normals = values;
+	            }
+	            else if (values) {
+	                if (!this._normals)
+	                    this._normals = new Float3Attributes_1.default(this._concatenatedBuffer);
+	                this._normals.set(values, offset);
+	            }
+	            else if (this._normals) {
+	                this.clearVertices(this._normals);
+	                this._normals = null;
+	                return;
+	            }
+	        }
+	        else {
+	            this._normals = ElementsUtils_1.default.generateNormals(this.indices, this.faceNormals, this._normals, this._concatenatedBuffer);
+	        }
+	        this.invalidateVertices(this._normals);
+	        this._verticesDirty[this._normals.id] = false;
+	    };
+	    TriangleElements.prototype.setTangents = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (!this._autoDeriveTangents) {
+	            if (values == this._tangents)
+	                return;
+	            if (values instanceof Float3Attributes_1.default) {
+	                this.clearVertices(this._tangents);
+	                this._tangents = values;
+	            }
+	            else if (values) {
+	                if (!this._tangents)
+	                    this._tangents = new Float3Attributes_1.default(this._concatenatedBuffer);
+	                this._tangents.set(values, offset);
+	            }
+	            else if (this._tangents) {
+	                this.clearVertices(this._tangents);
+	                this._tangents = null;
+	                return;
+	            }
+	        }
+	        else {
+	            this._tangents = ElementsUtils_1.default.generateTangents(this.indices, this.faceTangents, this.faceNormals, this._tangents, this._concatenatedBuffer);
+	        }
+	        this.invalidateVertices(this._tangents);
+	        this._verticesDirty[this._tangents.id] = false;
+	    };
+	    TriangleElements.prototype.setUVs = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (values == this._uvs)
+	            return;
+	        if (values instanceof AttributesView_1.default) {
+	            this.clearVertices(this._uvs);
+	            this._uvs = values;
+	        }
+	        else if (values) {
+	            if (!this._uvs)
+	                this._uvs = new Float2Attributes_1.default(this._concatenatedBuffer);
+	            this._uvs.set(values, offset);
+	        }
+	        else if (this._uvs) {
+	            this.clearVertices(this._uvs);
+	            this._uvs = null;
+	            return;
+	        }
+	        this.invalidateVertices(this._uvs);
+	        this._verticesDirty[this._uvs.id] = false;
+	    };
+	    TriangleElements.prototype.setJointIndices = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (values == this._jointIndices)
+	            return;
+	        if (values instanceof AttributesView_1.default) {
+	            this.clearVertices(this._jointIndices);
+	            this._jointIndices = values;
+	        }
+	        else if (values) {
+	            if (!this._jointIndices)
+	                this._jointIndices = new AttributesView_1.default(Float32Array, this._jointsPerVertex, this._concatenatedBuffer);
+	            if (this._useCondensedIndices) {
+	                var i = 0;
+	                var oldIndex;
+	                var newIndex = 0;
+	                var dic = new Object();
+	                this._condensedIndexLookUp = new Array();
+	                while (i < values.length) {
+	                    oldIndex = values[i];
+	                    // if we encounter a new index, assign it a new condensed index
+	                    if (dic[oldIndex] == undefined) {
+	                        dic[oldIndex] = newIndex;
+	                        this._condensedIndexLookUp[newIndex++] = oldIndex;
+	                    }
+	                    //reset value to dictionary lookup
+	                    values[i++] = dic[oldIndex];
+	                }
+	            }
+	            this._jointIndices.set(values, offset);
+	        }
+	        else if (this._jointIndices) {
+	            this.clearVertices(this._jointIndices);
+	            this._jointIndices = null;
+	            return;
+	        }
+	        this.invalidateVertices(this._jointIndices);
+	        this._verticesDirty[this._jointIndices.id] = false;
+	    };
+	    TriangleElements.prototype.setJointWeights = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (values == this._jointWeights)
+	            return;
+	        if (values instanceof AttributesView_1.default) {
+	            this.clearVertices(this._jointWeights);
+	            this._jointWeights = values;
+	        }
+	        else if (values) {
+	            if (!this._jointWeights)
+	                this._jointWeights = new AttributesView_1.default(Float32Array, this._jointsPerVertex, this._concatenatedBuffer);
+	            this._jointWeights.set(values, offset);
+	        }
+	        else if (this._jointWeights) {
+	            this.clearVertices(this._jointWeights);
+	            this._jointWeights = null;
+	            return;
+	        }
+	        this.invalidateVertices(this._jointWeights);
+	        this._verticesDirty[this._jointWeights.id] = false;
+	    };
+	    /**
+	     *
+	     */
+	    TriangleElements.prototype.dispose = function () {
+	        _super.prototype.dispose.call(this);
+	        if (this._positions) {
+	            this._positions.dispose();
+	            this._positions = null;
+	        }
+	        if (this._normals) {
+	            this._normals.dispose();
+	            this._normals = null;
+	        }
+	        if (this._tangents) {
+	            this._tangents.dispose();
+	            this._tangents = null;
+	        }
+	        if (this._uvs) {
+	            this._uvs.dispose();
+	            this._uvs = null;
+	        }
+	        if (this._jointIndices) {
+	            this._jointIndices.dispose();
+	            this._jointIndices = null;
+	        }
+	        if (this._jointWeights) {
+	            this._jointWeights.dispose();
+	            this._jointWeights = null;
+	        }
+	        if (this._faceNormals) {
+	            this._faceNormals.dispose();
+	            this._faceNormals = null;
+	        }
+	        if (this._faceTangents) {
+	            this._faceTangents.dispose();
+	            this._faceTangents = null;
+	        }
+	    };
+	    TriangleElements.prototype.setIndices = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        _super.prototype.setIndices.call(this, values, offset);
+	        this._faceNormalsDirty = true;
+	        this._faceTangentsDirty = true;
+	        if (this._autoDeriveNormals)
+	            this.invalidateVertices(this._normals);
+	        if (this._autoDeriveTangents)
+	            this.invalidateVertices(this._tangents);
+	    };
+	    TriangleElements.prototype.copyTo = function (elements) {
+	        _super.prototype.copyTo.call(this, elements);
+	        //temp disable auto derives
+	        elements.autoDeriveNormals = false;
+	        elements.autoDeriveTangents = false;
+	        elements.setPositions(this.positions.clone());
+	        if (this.normals)
+	            elements.setNormals(this.normals.clone());
+	        if (this.tangents)
+	            elements.setTangents(this.tangents.clone());
+	        if (this.uvs)
+	            elements.setUVs(this.uvs.clone());
+	        elements.jointsPerVertex = this._jointsPerVertex;
+	        if (this.jointIndices)
+	            elements.setJointIndices(this.jointIndices.clone());
+	        if (this.jointWeights)
+	            elements.setJointWeights(this.jointWeights.clone());
+	        //return auto derives to cloned values
+	        elements.autoDeriveNormals = this._autoDeriveNormals;
+	        elements.autoDeriveTangents = this._autoDeriveTangents;
+	    };
+	    /**
+	     * Clones the current object
+	     * @return An exact duplicate of the current object.
+	     */
+	    TriangleElements.prototype.clone = function () {
+	        var clone = new TriangleElements(this._concatenatedBuffer ? this._concatenatedBuffer.clone() : null);
+	        this.copyTo(clone);
+	        return clone;
+	    };
+	    TriangleElements.prototype.scaleUV = function (scaleU, scaleV) {
+	        if (scaleU === void 0) { scaleU = 1; }
+	        if (scaleV === void 0) { scaleV = 1; }
+	        if (this.uvs)
+	            ElementsUtils_1.default.scaleUVs(scaleU, scaleV, this.uvs, this._numVertices);
+	    };
+	    /**
+	     * Scales the geometry.
+	     * @param scale The amount by which to scale.
+	     */
+	    TriangleElements.prototype.scale = function (scale) {
+	        ElementsUtils_1.default.scale(scale, this.positions, this._numVertices);
+	    };
+	    TriangleElements.prototype.applyTransformation = function (transform) {
+	        ElementsUtils_1.default.applyTransformation(transform, this.positions, this.normals, this.tangents, this._numVertices);
+	    };
+	    /**
+	     * Updates the tangents for each face.
+	     */
+	    TriangleElements.prototype.updateFaceTangents = function () {
+	        this._faceTangents = ElementsUtils_1.default.generateFaceTangents(this.indices, this.positions, this.uvs || this.positions, this._faceTangents, this.numElements);
+	        this._faceTangentsDirty = false;
+	    };
+	    /**
+	     * Updates the normals for each face.
+	     */
+	    TriangleElements.prototype.updateFaceNormals = function () {
+	        this._faceNormals = ElementsUtils_1.default.generateFaceNormals(this.indices, this.positions, this._faceNormals, this.numElements);
+	        this._faceNormalsDirty = false;
+	    };
+	    TriangleElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
+	        return pickingCollider.testTriangleCollision(this, material, pickingCollision);
+	    };
+	    TriangleElements.assetType = "[asset TriangleElements]";
+	    return TriangleElements;
+	}(ElementsBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = TriangleElements;
+
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var MathConsts_1 = __webpack_require__(22);
+	var JointStyle_1 = __webpack_require__(74);
+	var GraphicsPathCommand_1 = __webpack_require__(71);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var Point_1 = __webpack_require__(26);
+	var AttributesView_1 = __webpack_require__(66);
+	var Float3Attributes_1 = __webpack_require__(65);
+	var Float2Attributes_1 = __webpack_require__(105);
+	var GraphicsFactoryHelper_1 = __webpack_require__(106);
+	var TriangleElements_1 = __webpack_require__(107);
+	/**
+	 * The Graphics class contains a set of methods that you can use to create a
+	 * vector shape. Display objects that support drawing include Sprite and Shape
+	 * objects. Each of these classes includes a <code>graphics</code> property
+	 * that is a Graphics object. The following are among those helper functions
+	 * provided for ease of use: <code>drawRect()</code>,
+	 * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+	 * <code>drawEllipse()</code>.
+	 *
+	 * <p>You cannot create a Graphics object directly from ActionScript code. If
+	 * you call <code>new Graphics()</code>, an exception is thrown.</p>
+	 *
+	 * <p>The Graphics class is final; it cannot be subclassed.</p>
+	 */
+	var GraphicsFactoryStrokes = (function () {
+	    function GraphicsFactoryStrokes() {
+	    }
+	    GraphicsFactoryStrokes.draw_pathes = function (targetGraphic) {
+	        var len = targetGraphic.queued_stroke_pathes.length;
+	        var contour_commands;
+	        var contour_data;
+	        var strokeStyle;
+	        var one_path;
+	        var commands;
+	        var data;
+	        var i = 0;
+	        var k = 0;
+	        var vert_cnt = 0;
+	        var data_cnt = 0;
+	        var final_vert_list = [];
+	        var final_vert_cnt = 0;
+	        var lastPoint = new Point_1.default();
+	        var start_point = new Point_1.default();
+	        var end_point = new Point_1.default();
+	        var start_left = new Point_1.default();
+	        var start_right = new Point_1.default();
+	        var ctr_left = new Point_1.default();
+	        var ctr_right = new Point_1.default();
+	        var ctr_left2 = new Point_1.default();
+	        var ctr_right2 = new Point_1.default();
+	        var end_left = new Point_1.default();
+	        var end_right = new Point_1.default();
+	        var tmp_point = new Point_1.default();
+	        var tmp_point2 = new Point_1.default();
+	        var tmp_point3 = new Point_1.default();
+	        var closed = false;
+	        var last_dir_vec = new Point_1.default();
+	        var cp = 0;
+	        for (cp = 0; cp < len; cp++) {
+	            one_path = targetGraphic.queued_stroke_pathes[cp];
+	            contour_commands = one_path.commands;
+	            contour_data = one_path.data;
+	            strokeStyle = one_path.stroke();
+	            var tessVerts = [];
+	            for (k = 0; k < contour_commands.length; k++) {
+	                commands = contour_commands[k];
+	                data = contour_data[k];
+	                vert_cnt = 0;
+	                data_cnt = 0;
+	                var new_dir = 0;
+	                var dir_delta = 0;
+	                var last_direction = 0;
+	                var tmp_dir_point = new Point_1.default();
+	                closed = true;
+	                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1]))
+	                    closed = false;
+	                else {
+	                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+	                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+	                    last_dir_vec.normalize();
+	                    last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                }
+	                data_cnt = 0;
+	                lastPoint.x = data[data_cnt++];
+	                lastPoint.y = data[data_cnt++];
+	                var new_cmds = [];
+	                var new_pnts = [];
+	                var new_cmds_cnt = 0;
+	                var new_pnts_cnt = 0;
+	                var prev_normal = new Point_1.default();
+	                var le_point = new Point_1.default();
+	                var curve_end_point = new Point_1.default();
+	                var ri_point = new Point_1.default();
+	                var ctr_point = new Point_1.default();
+	                prev_normal.x = -1 * last_dir_vec.y;
+	                prev_normal.y = last_dir_vec.x;
+	                for (i = 1; i < commands.length; i++) {
+	                    if (commands[i] == GraphicsPathCommand_1.default.MOVE_TO) {
+	                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+	                        continue;
+	                    }
+	                    //console.log("");
+	                    //console.log("segment "+i+"lastPoint x = "+lastPoint.x+" y = "+lastPoint.y)
+	                    end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+	                    //console.log("segment "+i+"end_point x = "+end_point.x+" y = "+end_point.y)
+	                    if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                        curve_end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+	                    }
+	                    //get the directional vector and the direction for this segment
+	                    tmp_dir_point.x = end_point.x - lastPoint.x;
+	                    tmp_dir_point.y = end_point.y - lastPoint.y;
+	                    tmp_dir_point.normalize();
+	                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                    // get the difference in angle to the last segment
+	                    dir_delta = new_dir - last_direction;
+	                    if (dir_delta > 180) {
+	                        dir_delta -= 360;
+	                    }
+	                    if (dir_delta < -180) {
+	                        dir_delta += 360;
+	                    }
+	                    last_direction = new_dir;
+	                    //console.log("segment "+i+" direction: "+dir_delta);
+	                    // rotate direction around 90 degree
+	                    tmp_point.x = -1 * tmp_dir_point.y;
+	                    tmp_point.y = tmp_dir_point.x;
+	                    ri_point = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+	                    le_point = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+	                    var add_segment = false;
+	                    // check if this is the first segment, and the path is not closed
+	                    // in this case, we can just set the points to the contour points
+	                    if ((i == 1) && (!closed)) {
+	                        //console.log("segment "+i+"Path is not closed, we can just add the first segment")
+	                        add_segment = true;
+	                    }
+	                    else {
+	                        // we need to figure out if we need to add a joint or not
+	                        if ((dir_delta == 0) || (dir_delta == 180)) {
+	                            // check if this and the prev segment was a line. if yes, than they can be merged
+	                            if ((i != 1) && (commands[i] == GraphicsPathCommand_1.default.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand_1.default.LINE_TO)) {
+	                                //console.log("straight line can be merged in prev straight line");
+	                                add_segment = false;
+	                            }
+	                            else {
+	                                add_segment = true;
+	                            }
+	                        }
+	                        if (dir_delta == 180) {
+	                            console.log("path goes straight back (180�). DO we need to handle this edge case different ? !");
+	                        }
+	                        else if (dir_delta != 0) {
+	                            add_segment = true;
+	                            var half_angle = (180 - (dir_delta));
+	                            if (dir_delta < 0) {
+	                                half_angle = (-180 - (dir_delta));
+	                            }
+	                            half_angle = half_angle * -0.5 * MathConsts_1.default.DEGREES_TO_RADIANS;
+	                            var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+	                            tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
+	                            tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
+	                            tmp_point2.normalize();
+	                            var merged_pnt_ri = new Point_1.default(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
+	                            var merged_pnt_le = new Point_1.default(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
+	                            if (dir_delta > 0) {
+	                                ri_point = merged_pnt_ri;
+	                                var contour_le = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+	                                var contour_prev_le = new Point_1.default(lastPoint.x - (prev_normal.x * strokeStyle.half_thickness), lastPoint.y - (prev_normal.y * strokeStyle.half_thickness));
+	                                le_point = contour_le;
+	                            }
+	                            else {
+	                                le_point = merged_pnt_le;
+	                                var contour_ri = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+	                                var contour_prev_ri = new Point_1.default(lastPoint.x + (prev_normal.x * strokeStyle.half_thickness), lastPoint.y + (prev_normal.y * strokeStyle.half_thickness));
+	                                ri_point = contour_ri;
+	                            }
+	                            var addJoints = true;
+	                            if (strokeStyle.jointstyle == JointStyle_1.default.MITER) {
+	                                var distance_miter = (Math.sqrt((distance * distance) - (strokeStyle.half_thickness * strokeStyle.half_thickness)) / strokeStyle.half_thickness);
+	                                if (distance_miter <= strokeStyle.miter_limit) {
+	                                    addJoints = false;
+	                                    ri_point = merged_pnt_ri;
+	                                    le_point = merged_pnt_le;
+	                                }
+	                                else {
+	                                    if (dir_delta > 0) {
+	                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        tmp_point3.x = prev_normal.y * -1;
+	                                        tmp_point3.y = prev_normal.x;
+	                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                    }
+	                                    else {
+	                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        tmp_point3.x = prev_normal.y * -1;
+	                                        tmp_point3.y = prev_normal.x;
+	                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+	                                    }
+	                                }
+	                            }
+	                            if (addJoints) {
+	                                new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle_1.default.ROUND) ? GraphicsPathCommand_1.default.BUILD_JOINT : GraphicsPathCommand_1.default.BUILD_ROUND_JOINT;
+	                                if (dir_delta > 0) {
+	                                    new_pnts[new_pnts_cnt++] = merged_pnt_ri;
+	                                    new_pnts[new_pnts_cnt++] = contour_prev_le;
+	                                    new_pnts[new_pnts_cnt++] = contour_le;
+	                                }
+	                                else {
+	                                    new_pnts[new_pnts_cnt++] = contour_prev_ri;
+	                                    new_pnts[new_pnts_cnt++] = merged_pnt_le;
+	                                    new_pnts[new_pnts_cnt++] = contour_ri;
+	                                }
+	                                if (strokeStyle.jointstyle == JointStyle_1.default.ROUND) {
+	                                    new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
+	                                    if (dir_delta > 0) {
+	                                        new_pnts[new_pnts_cnt++] = contour_prev_le;
+	                                        new_pnts[new_pnts_cnt++] = contour_le;
+	                                    }
+	                                    else {
+	                                        new_pnts[new_pnts_cnt++] = contour_prev_ri;
+	                                        new_pnts[new_pnts_cnt++] = contour_ri;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                    prev_normal.x = tmp_point.x;
+	                    prev_normal.y = tmp_point.y;
+	                    if (add_segment) {
+	                        if (commands[i] == GraphicsPathCommand_1.default.LINE_TO) {
+	                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.LINE_TO;
+	                            new_pnts[new_pnts_cnt++] = ri_point;
+	                            new_pnts[new_pnts_cnt++] = le_point;
+	                        }
+	                        else if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                            tmp_dir_point.x = curve_end_point.x - end_point.x;
+	                            tmp_dir_point.y = curve_end_point.y - end_point.y;
+	                            tmp_dir_point.normalize();
+	                            new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                            dir_delta = new_dir - last_direction;
+	                            last_direction = new_dir;
+	                            tmp_point.x = -1 * tmp_dir_point.y;
+	                            tmp_point.y = tmp_dir_point.x;
+	                            if ((dir_delta != 0) && (dir_delta != 180)) {
+	                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.CURVE_TO;
+	                                new_pnts[new_pnts_cnt++] = ri_point;
+	                                new_pnts[new_pnts_cnt++] = le_point;
+	                                new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x, lastPoint.y);
+	                                new_pnts[new_pnts_cnt++] = new Point_1.default(end_point.x, end_point.y);
+	                                new_pnts[new_pnts_cnt++] = curve_end_point;
+	                            }
+	                            else {
+	                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.LINE_TO;
+	                                new_pnts[new_pnts_cnt++] = ri_point;
+	                                new_pnts[new_pnts_cnt++] = le_point;
+	                            }
+	                            prev_normal.x = tmp_point.x;
+	                            prev_normal.y = tmp_point.y;
+	                            lastPoint = curve_end_point;
+	                        }
+	                    }
+	                    if (commands[i] == GraphicsPathCommand_1.default.LINE_TO) {
+	                        lastPoint = end_point;
+	                    }
+	                    if (i == commands.length - 1) {
+	                        if (!closed) {
+	                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.NO_OP;
+	                            new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+	                            new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+	                        }
+	                        else {
+	                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.NO_OP;
+	                            new_pnts[new_pnts_cnt++] = new_pnts[0];
+	                            new_pnts[new_pnts_cnt++] = new_pnts[1];
+	                        }
+	                    }
+	                }
+	                // first we draw all the curves:
+	                new_cmds_cnt = 0;
+	                new_pnts_cnt = 0;
+	                for (i = 0; i < new_cmds.length; i++) {
+	                    if (new_cmds[i] == GraphicsPathCommand_1.default.LINE_TO) {
+	                        new_pnts_cnt += 2;
+	                    }
+	                    else if (new_cmds[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                        start_right = new_pnts[new_pnts_cnt++];
+	                        start_left = new_pnts[new_pnts_cnt++];
+	                        start_point = new_pnts[new_pnts_cnt++];
+	                        ctr_point = new_pnts[new_pnts_cnt++];
+	                        end_point = new_pnts[new_pnts_cnt++];
+	                        end_right = new_pnts[new_pnts_cnt];
+	                        end_left = new_pnts[new_pnts_cnt + 1];
+	                        // get the directional vector for the first part of the curve
+	                        tmp_dir_point.x = ctr_point.x - start_point.x;
+	                        tmp_dir_point.y = ctr_point.y - start_point.y;
+	                        tmp_point3.x = ctr_point.x - start_point.x;
+	                        tmp_point3.y = ctr_point.y - start_point.y;
+	                        var length1 = tmp_point3.length;
+	                        tmp_dir_point.normalize();
+	                        // get the directional vector for the second part of the curve
+	                        tmp_point2.x = end_point.x - ctr_point.x;
+	                        tmp_point2.y = end_point.y - ctr_point.y;
+	                        var length2 = tmp_point2.length;
+	                        tmp_point2.normalize();
+	                        var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
+	                        if (length1 > length2) {
+	                            length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
+	                        }
+	                        // get angle to positive x-axis for both dir-vectors, than get the difference between those
+	                        var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                        var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+	                        dir_delta = angle_2 - angle_1;
+	                        if (dir_delta > 180) {
+	                            dir_delta -= 360;
+	                        }
+	                        if (dir_delta < -180) {
+	                            dir_delta += 360;
+	                        }
+	                        if (dir_delta == 0) {
+	                            console.log("This is not a curve, we can just draw it like a straight line");
+	                        }
+	                        //console.log("segment : '"+i+"' direction:"+dir_delta);
+	                        var dirNumber = 1;
+	                        if (dir_delta < 0) {
+	                            dirNumber = -1;
+	                        }
+	                        var half_angle = dir_delta * 0.5 * MathConsts_1.default.DEGREES_TO_RADIANS;
+	                        var lengthpos = Math.abs(length1 * Math.sin(half_angle));
+	                        var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+	                        tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
+	                        tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
+	                        tmp_point3.normalize();
+	                        var merged_pnt_ri = new Point_1.default(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
+	                        var merged_pnt_le = new Point_1.default(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
+	                        var curve_x = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
+	                        var curve_y = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
+	                        var curve_2x = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
+	                        var curve_2y = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
+	                        tmp_point3.x = -1 * (curve_y - curve_2y);
+	                        tmp_point3.y = curve_x - curve_2x;
+	                        tmp_point3.normalize();
+	                        //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
+	                        // move the point on the curve to use correct thickness
+	                        ctr_right.x = curve_x + (dirNumber * tmp_point3.x * strokeStyle.half_thickness);
+	                        ctr_right.y = curve_y + (dirNumber * tmp_point3.y * strokeStyle.half_thickness);
+	                        ctr_left.x = curve_x - (dirNumber * tmp_point3.x * strokeStyle.half_thickness);
+	                        ctr_left.y = curve_y - (dirNumber * tmp_point3.y * strokeStyle.half_thickness);
+	                        //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+	                        //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+	                        // calculate the actual controlpoints
+	                        ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
+	                        ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
+	                        ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
+	                        ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
+	                        //ctr_right=merged_pnt_ri;
+	                        //ctr_left=merged_pnt_le;
+	                        /*
+	                        // controlpoints version2:
+	                        tmp_dir_point.x = start_left.x-start_right.x;
+	                        tmp_dir_point.y = start_left.y-start_right.y;
+	                        tmp_point2.x = end_left.x-end_right.x;
+	                        tmp_point2.y = end_left.y-end_right.y;
+	
+	                        ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
+	                        ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
+	                        var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
+	
+	                        ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
+	                        ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
+	                        var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
+	                        */
+	                        /*
+	                                                GraphicsFactoryHelper.drawPoint(start_right.x, start_right.y , final_vert_list);
+	                                                GraphicsFactoryHelper.drawPoint(start_left.x, start_left.y , final_vert_list);
+	                                                GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+	                                                GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+	                                                GraphicsFactoryHelper.drawPoint(end_right.x, end_right.y , final_vert_list);
+	                                                GraphicsFactoryHelper.drawPoint(end_left.x, end_left.y , final_vert_list);
+	                        */
+	                        var subdivided = [];
+	                        var subdivided2 = [];
+	                        GraphicsFactoryHelper_1.default.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
+	                        if (dir_delta > 0) {
+	                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+	                                // right curved
+	                                // concave curves:
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 1, final_vert_list);
+	                                // fills
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list);
+	                                // convex curves:
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -1, final_vert_list);
+	                            }
+	                        }
+	                        else {
+	                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+	                                // left curved
+	                                // convex curves:
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -1, final_vert_list);
+	                                // fills
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list);
+	                                // concave curves:
+	                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 1, final_vert_list);
+	                            }
+	                        }
+	                    }
+	                    else if (new_cmds[i] >= GraphicsPathCommand_1.default.BUILD_JOINT) {
+	                        new_pnts_cnt += 3;
+	                        //GraphicsFactoryHelper.addTriangle(start_right.x,  start_right.y,  start_left.x,  start_left.y,  end_right.x,  end_right.y, 0, final_vert_list);
+	                        if (new_cmds[i] == GraphicsPathCommand_1.default.BUILD_ROUND_JOINT) {
+	                            end_left = new_pnts[new_pnts_cnt++]; // concave curves:
+	                            start_right = new_pnts[new_pnts_cnt++];
+	                            start_left = new_pnts[new_pnts_cnt++];
+	                            //console.log("add round tri");
+	                            GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, end_left.x, end_left.y, start_left.x, start_left.y, -1, final_vert_list);
+	                        }
+	                    }
+	                }
+	                // now we draw all the normal triangles.
+	                // we do it in 2 steps, to prevent curves cut anything out of underlying normal tris
+	                new_cmds_cnt = 0;
+	                new_pnts_cnt = 0;
+	                for (i = 0; i < new_cmds.length; i++) {
+	                    if (new_cmds[i] == GraphicsPathCommand_1.default.LINE_TO) {
+	                        start_right = new_pnts[new_pnts_cnt++];
+	                        start_left = new_pnts[new_pnts_cnt++];
+	                        end_right = new_pnts[new_pnts_cnt];
+	                        end_left = new_pnts[new_pnts_cnt + 1];
+	                        GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
+	                        GraphicsFactoryHelper_1.default.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list);
+	                    }
+	                    else if (new_cmds[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+	                        new_pnts_cnt += 5;
+	                    }
+	                    else if (new_cmds[i] >= GraphicsPathCommand_1.default.BUILD_JOINT) {
+	                        end_right = new_pnts[new_pnts_cnt++];
+	                        start_right = new_pnts[new_pnts_cnt++];
+	                        start_left = new_pnts[new_pnts_cnt++];
+	                        GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
+	                        if (new_cmds[i] == GraphicsPathCommand_1.default.BUILD_ROUND_JOINT) {
+	                            new_pnts_cnt += 3;
+	                        }
+	                    }
+	                }
+	                if (!closed) {
+	                    last_dir_vec.x = data[2] - data[0];
+	                    last_dir_vec.y = data[3] - data[1];
+	                    last_dir_vec.normalize();
+	                    GraphicsFactoryHelper_1.default.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -1, strokeStyle.half_thickness, final_vert_list);
+	                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+	                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+	                    last_dir_vec.normalize();
+	                    GraphicsFactoryHelper_1.default.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 1, strokeStyle.half_thickness, final_vert_list);
+	                }
+	            }
+	            //console.log("final_vert_cnt "+(final_vert_cnt/5));
+	            // todo: handle material / submesh settings, and check if a material / submesh already exists for this settings
+	            var attributesView = new AttributesView_1.default(Float32Array, 5);
+	            attributesView.set(final_vert_list);
+	            var attributesBuffer = attributesView.buffer;
+	            attributesView.dispose();
+	            var elements = new TriangleElements_1.default(attributesBuffer);
+	            elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
+	            elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
+	            //elements.setUVs(new Float2Attributes(attributesBuffer));
+	            //curve_sub_geom.setUVs(new Float2Attributes(attributesBuffer));
+	            var material = DefaultMaterialManager_1.default.getDefaultMaterial();
+	            material.bothSides = true;
+	            material.useColorTransform = true;
+	            material.curves = true;
+	            targetGraphic.addGraphic(elements, material);
+	        }
+	        targetGraphic.queued_stroke_pathes.length = 0;
+	    };
+	    return GraphicsFactoryStrokes;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GraphicsFactoryStrokes;
+
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var ErrorBase_1 = __webpack_require__(14);
+	/**
+	 * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+	 * by a concrete subclass.
+	 */
+	var PartialImplementationError = (function (_super) {
+	    __extends(PartialImplementationError, _super);
+	    /**
+	     * Create a new AbstractMethodError.
+	     * @param message An optional message to override the default error message.
+	     * @param id The id of the error.
+	     */
+	    function PartialImplementationError(dependency, id) {
+	        if (dependency === void 0) { dependency = ''; }
+	        if (id === void 0) { id = 0; }
+	        _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
+	    }
+	    return PartialImplementationError;
+	}(ErrorBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = PartialImplementationError;
+
+
+/***/ },
+/* 110 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Rectangle_1 = __webpack_require__(51);
+	var DisplayObject_1 = __webpack_require__(16);
+	var BoundsType_1 = __webpack_require__(31);
+	var RenderableEvent_1 = __webpack_require__(60);
+	var SurfaceEvent_1 = __webpack_require__(97);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var StyleEvent_1 = __webpack_require__(61);
+	/**
+	 * The Billboard class represents display objects that represent bitmap images.
+	 * These can be images that you load with the <code>flash.Assets</code> or
+	 * <code>flash.display.Loader</code> classes, or they can be images that you
+	 * create with the <code>Billboard()</code> constructor.
+	 *
+	 * <p>The <code>Billboard()</code> constructor allows you to create a Billboard
+	 * object that contains a reference to a Image2D object. After you create a
+	 * Billboard object, use the <code>addChild()</code> or <code>addChildAt()</code>
+	 * method of the parent DisplayObjectContainer instance to place the bitmap on
+	 * the display list.</p>
+	 *
+	 * <p>A Billboard object can share its Image2D reference among several Billboard
+	 * objects, independent of translation or rotation properties. Because you can
+	 * create multiple Billboard objects that reference the same Image2D object,
+	 * multiple display objects can use the same complex Image2D object without
+	 * incurring the memory overhead of a Image2D object for each display
+	 * object instance.</p>
+	 *
+	 * <p>A Image2D object can be drawn to the screen by a Billboard object in one
+	 * of two ways: by using the default hardware renderer with a single hardware surface,
+	 * or by using the slower software renderer when 3D acceleration is not available.</p>
+	 *
+	 * <p>If you would prefer to perform a batch rendering command, rather than using a
+	 * single surface for each Billboard object, you can also draw to the screen using the
+	 * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
+	 * available to <code>flash.display.Tilesheet</code> and <code>flash.display.Graphics
+	 * objects.</code></p>
+	 *
+	 * <p><b>Note:</b> The Billboard class is not a subclass of the InteractiveObject
+	 * class, so it cannot dispatch mouse events. However, you can use the
+	 * <code>addEventListener()</code> method of the display object container that
+	 * contains the Billboard object.</p>
+	 */
+	var Billboard = (function (_super) {
+	    __extends(Billboard, _super);
+	    function Billboard(material, pixelSnapping, smoothing) {
+	        var _this = this;
+	        if (pixelSnapping === void 0) { pixelSnapping = "auto"; }
+	        if (smoothing === void 0) { smoothing = false; }
+	        _super.call(this);
+	        this._pIsEntity = true;
+	        this.onInvalidateTextureDelegate = function (event) { return _this.onInvalidateTexture(event); };
+	        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+	        this.material = material;
+	        this._updateDimensions();
+	        //default bounds type
+	        this._boundsType = BoundsType_1.default.AXIS_ALIGNED_BOX;
+	    }
+	    Object.defineProperty(Billboard.prototype, "animator", {
+	        /**
+	         * Defines the animator of the sprite. Act on the sprite's geometry. Defaults to null
+	         */
+	        get: function () {
+	            return this._animator;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Billboard.prototype, "assetType", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return Billboard.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Billboard.prototype, "billboardRect", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._billboardRect;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Billboard.prototype, "billboardHeight", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._billboardHeight;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Billboard.prototype, "billboardWidth", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._billboardWidth;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Billboard.prototype, "material", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._material;
+	        },
+	        set: function (value) {
+	            if (value == this._material)
+	                return;
+	            if (this._material) {
+	                this._material.iRemoveOwner(this);
+	                this._material.removeEventListener(SurfaceEvent_1.default.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
+	            }
+	            this._material = value;
+	            if (this._material) {
+	                this._material.iAddOwner(this);
+	                this._material.addEventListener(SurfaceEvent_1.default.INVALIDATE_TEXTURE, this.onInvalidateTextureDelegate);
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * @protected
+	     */
+	    Billboard.prototype._pUpdateBoxBounds = function () {
+	        _super.prototype._pUpdateBoxBounds.call(this);
+	        this._pBoxBounds.width = this._billboardRect.width;
+	        this._pBoxBounds.height = this._billboardRect.height;
+	    };
+	    Billboard.prototype.clone = function () {
+	        var clone = new Billboard(this.material);
+	        return clone;
+	    };
+	    Object.defineProperty(Billboard.prototype, "style", {
+	        /**
+	         * The style used to render the current Billboard. If set to null, the default style of the material will be used instead.
+	         */
+	        get: function () {
+	            return this._style;
+	        },
+	        set: function (value) {
+	            if (this._style == value)
+	                return;
+	            if (this._style)
+	                this._style.removeEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+	            this._style = value;
+	            if (this._style)
+	                this._style.addEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+	            this._onInvalidateProperties();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * //TODO
+	     *
+	     * @param shortestCollisionDistance
+	     * @returns {boolean}
+	     *
+	     * @internal
+	     */
+	    Billboard.prototype._iTestCollision = function (pickingCollision, pickingCollider) {
+	        return pickingCollider.testBillboardCollision(this, this.material, pickingCollision);
+	    };
+	    /**
+	     * @private
+	     */
+	    Billboard.prototype.onInvalidateTexture = function (event) {
+	        this._updateDimensions();
+	    };
+	    Billboard.prototype._acceptTraverser = function (traverser) {
+	        traverser.applyRenderable(this);
+	    };
+	    Billboard.prototype._updateDimensions = function () {
+	        var texture = this.material.getTextureAt(0);
+	        var image = texture ? ((this._style ? this._style.getImageAt(texture) : null) || (this.material.style ? this.material.style.getImageAt(texture) : null) || texture.getImageAt(0)) : null;
+	        if (image) {
+	            var sampler = ((this._style ? this._style.getSamplerAt(texture) : null) || (this.material.style ? this.material.style.getSamplerAt(texture) : null) || texture.getSamplerAt(0) || DefaultMaterialManager_1.default.getDefaultSampler());
+	            if (sampler.imageRect) {
+	                this._billboardWidth = sampler.imageRect.width * image.width;
+	                this._billboardHeight = sampler.imageRect.height * image.height;
+	            }
+	            else {
+	                this._billboardWidth = image.rect.width;
+	                this._billboardHeight = image.rect.height;
+	            }
+	            this._billboardRect = sampler.frameRect || new Rectangle_1.default(0, 0, this._billboardWidth, this._billboardHeight);
+	        }
+	        else {
+	            this._billboardWidth = 1;
+	            this._billboardHeight = 1;
+	            this._billboardRect = new Rectangle_1.default(0, 0, 1, 1);
+	        }
+	        this._pInvalidateBounds();
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this));
+	    };
+	    Billboard.prototype.invalidateSurface = function () {
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	    };
+	    Billboard.prototype._onInvalidateProperties = function (event) {
+	        if (event === void 0) { event = null; }
+	        this.invalidateSurface();
+	        this._updateDimensions();
+	    };
+	    Billboard.assetType = "[asset Billboard]";
+	    return Billboard;
+	}(DisplayObject_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Billboard;
+
+
+/***/ },
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17351,7 +20356,7 @@
 	};
 	var MathConsts_1 = __webpack_require__(22);
 	var Vector3D_1 = __webpack_require__(18);
-	var LookAtController_1 = __webpack_require__(99);
+	var LookAtController_1 = __webpack_require__(112);
 	/**
 	 * Extended camera used to hover round a specified target object.
 	 *
@@ -17645,7 +20650,7 @@
 
 
 /***/ },
-/* 99 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17655,7 +20660,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ControllerBase_1 = __webpack_require__(100);
+	var ControllerBase_1 = __webpack_require__(113);
 	var DisplayObjectEvent_1 = __webpack_require__(37);
 	var LookAtController = (function (_super) {
 	    __extends(LookAtController, _super);
@@ -17725,7 +20730,7 @@
 
 
 /***/ },
-/* 100 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17792,7 +20797,7 @@
 
 
 /***/ },
-/* 101 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17801,10 +20806,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AssetLibraryBundle_1 = __webpack_require__(102);
-	var Loader_1 = __webpack_require__(104);
+	var AssetLibraryBundle_1 = __webpack_require__(115);
+	var Loader_1 = __webpack_require__(117);
 	var AssetEvent_1 = __webpack_require__(1);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ParserEvent_1 = __webpack_require__(6);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
@@ -18359,7 +21364,7 @@
 
 
 /***/ },
-/* 102 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18368,14 +21373,14 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AssetLibraryIterator_1 = __webpack_require__(103);
-	var Loader_1 = __webpack_require__(104);
-	var ConflictPrecedence_1 = __webpack_require__(110);
-	var ConflictStrategy_1 = __webpack_require__(111);
+	var AssetLibraryIterator_1 = __webpack_require__(116);
+	var Loader_1 = __webpack_require__(117);
+	var ConflictPrecedence_1 = __webpack_require__(123);
+	var ConflictStrategy_1 = __webpack_require__(124);
 	var AssetBase_1 = __webpack_require__(27);
 	var ErrorBase_1 = __webpack_require__(14);
 	var AssetEvent_1 = __webpack_require__(1);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ParserEvent_1 = __webpack_require__(6);
@@ -18827,7 +21832,7 @@
 
 
 /***/ },
-/* 103 */
+/* 116 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -18896,7 +21901,7 @@
 
 
 /***/ },
-/* 104 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18905,14 +21910,14 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoader_1 = __webpack_require__(105);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoader_1 = __webpack_require__(118);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var AssetEvent_1 = __webpack_require__(1);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ParserEvent_1 = __webpack_require__(6);
-	var ResourceDependency_1 = __webpack_require__(109);
+	var ResourceDependency_1 = __webpack_require__(122);
 	/**
 	 * Dispatched when any asset finishes parsing. Also see specific events for each
 	 * individual asset type (meshes, materials et c.)
@@ -19483,7 +22488,7 @@
 
 
 /***/ },
-/* 105 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19492,11 +22497,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequestMethod_1 = __webpack_require__(4);
-	var URLVariables_1 = __webpack_require__(107);
+	var URLVariables_1 = __webpack_require__(120);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	/**
 	 * The URLLoader is used to load a single file, as part of a resource.
 	 *
@@ -19829,7 +22834,7 @@
 
 
 /***/ },
-/* 106 */
+/* 119 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -19868,7 +22873,7 @@
 
 
 /***/ },
-/* 107 */
+/* 120 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -19939,7 +22944,7 @@
 
 
 /***/ },
-/* 108 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19983,7 +22988,7 @@
 
 
 /***/ },
-/* 109 */
+/* 122 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -20150,7 +23155,7 @@
 
 
 /***/ },
-/* 110 */
+/* 123 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -20183,13 +23188,13 @@
 
 
 /***/ },
-/* 111 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ErrorConflictStrategy_1 = __webpack_require__(112);
-	var IgnoreConflictStrategy_1 = __webpack_require__(114);
-	var NumSuffixConflictStrategy_1 = __webpack_require__(115);
+	var ErrorConflictStrategy_1 = __webpack_require__(125);
+	var IgnoreConflictStrategy_1 = __webpack_require__(127);
+	var NumSuffixConflictStrategy_1 = __webpack_require__(128);
 	/**
 	 * Enumeration class for bundled conflict strategies. Set one of these values (or an
 	 * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
@@ -20229,7 +23234,7 @@
 
 
 /***/ },
-/* 112 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20238,7 +23243,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(113);
+	var ConflictStrategyBase_1 = __webpack_require__(126);
 	var ErrorBase_1 = __webpack_require__(14);
 	var ErrorConflictStrategy = (function (_super) {
 	    __extends(ErrorConflictStrategy, _super);
@@ -20258,11 +23263,11 @@
 
 
 /***/ },
-/* 113 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ConflictPrecedence_1 = __webpack_require__(110);
+	var ConflictPrecedence_1 = __webpack_require__(123);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetEvent_1 = __webpack_require__(1);
 	/**
@@ -20323,7 +23328,7 @@
 
 
 /***/ },
-/* 114 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20332,7 +23337,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(113);
+	var ConflictStrategyBase_1 = __webpack_require__(126);
 	var IgnoreConflictStrategy = (function (_super) {
 	    __extends(IgnoreConflictStrategy, _super);
 	    function IgnoreConflictStrategy() {
@@ -20352,7 +23357,7 @@
 
 
 /***/ },
-/* 115 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20361,7 +23366,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(113);
+	var ConflictStrategyBase_1 = __webpack_require__(126);
 	var NumSuffixConflictStrategy = (function (_super) {
 	    __extends(NumSuffixConflictStrategy, _super);
 	    function NumSuffixConflictStrategy(separator) {
@@ -20413,7 +23418,7 @@
 
 
 /***/ },
-/* 116 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20422,18 +23427,18 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImage2D_1 = __webpack_require__(80);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var ContextGLClearMask_1 = __webpack_require__(118);
-	var RendererBase_1 = __webpack_require__(119);
-	var DepthRenderer_1 = __webpack_require__(181);
-	var DistanceRenderer_1 = __webpack_require__(193);
-	var Filter3DRenderer_1 = __webpack_require__(195);
-	var GL_SkyboxElements_1 = __webpack_require__(198);
-	var RTTBufferManager_1 = __webpack_require__(197);
-	var SurfacePool_1 = __webpack_require__(178);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var ContextGLClearMask_1 = __webpack_require__(131);
+	var RendererBase_1 = __webpack_require__(132);
+	var DepthRenderer_1 = __webpack_require__(194);
+	var DistanceRenderer_1 = __webpack_require__(206);
+	var Filter3DRenderer_1 = __webpack_require__(208);
+	var GL_SkyboxElements_1 = __webpack_require__(211);
+	var RTTBufferManager_1 = __webpack_require__(210);
+	var SurfacePool_1 = __webpack_require__(191);
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -20748,7 +23753,7 @@
 
 
 /***/ },
-/* 117 */
+/* 130 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -20770,7 +23775,7 @@
 
 
 /***/ },
-/* 118 */
+/* 131 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -20788,7 +23793,7 @@
 
 
 /***/ },
-/* 119 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20804,14 +23809,14 @@
 	var Vector3D_1 = __webpack_require__(18);
 	var EventDispatcher_1 = __webpack_require__(29);
 	var RendererEvent_1 = __webpack_require__(53);
-	var AGALMiniAssembler_1 = __webpack_require__(120);
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var StageEvent_1 = __webpack_require__(132);
-	var StageManager_1 = __webpack_require__(133);
-	var SurfacePool_1 = __webpack_require__(178);
-	var ElementsPool_1 = __webpack_require__(179);
-	var RenderableMergeSort_1 = __webpack_require__(180);
+	var AGALMiniAssembler_1 = __webpack_require__(133);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var StageEvent_1 = __webpack_require__(145);
+	var StageManager_1 = __webpack_require__(146);
+	var SurfacePool_1 = __webpack_require__(191);
+	var ElementsPool_1 = __webpack_require__(192);
+	var RenderableMergeSort_1 = __webpack_require__(193);
 	/**
 	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
 	 * contents of a partition
@@ -21627,14 +24632,14 @@
 
 
 /***/ },
-/* 120 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var OpcodeMap_1 = __webpack_require__(121);
-	var Part_1 = __webpack_require__(125);
-	var RegMap_1 = __webpack_require__(128);
-	var SamplerMap_1 = __webpack_require__(129);
+	var OpcodeMap_1 = __webpack_require__(134);
+	var Part_1 = __webpack_require__(138);
+	var RegMap_1 = __webpack_require__(141);
+	var SamplerMap_1 = __webpack_require__(142);
 	var AGALMiniAssembler = (function () {
 	    function AGALMiniAssembler() {
 	        this.r = {};
@@ -21918,11 +24923,11 @@
 
 
 /***/ },
-/* 121 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Opcode_1 = __webpack_require__(122);
+	var Opcode_1 = __webpack_require__(135);
 	var OpcodeMap = (function () {
 	    function OpcodeMap() {
 	    }
@@ -21979,12 +24984,12 @@
 
 
 /***/ },
-/* 122 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Flags_1 = __webpack_require__(123);
-	var FS_1 = __webpack_require__(124);
+	var Flags_1 = __webpack_require__(136);
+	var FS_1 = __webpack_require__(137);
 	/**
 	 *
 	 */
@@ -22011,7 +25016,7 @@
 
 
 /***/ },
-/* 123 */
+/* 136 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22025,7 +25030,7 @@
 
 
 /***/ },
-/* 124 */
+/* 137 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22039,11 +25044,11 @@
 
 
 /***/ },
-/* 125 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ByteArray_1 = __webpack_require__(126);
+	var ByteArray_1 = __webpack_require__(139);
 	var Part = (function () {
 	    function Part(name, version) {
 	        if (name === void 0) { name = null; }
@@ -22061,7 +25066,7 @@
 
 
 /***/ },
-/* 126 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22070,7 +25075,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ByteArrayBase_1 = __webpack_require__(127);
+	var ByteArrayBase_1 = __webpack_require__(140);
 	var ByteArray = (function (_super) {
 	    __extends(ByteArray, _super);
 	    function ByteArray(maxlength) {
@@ -22303,7 +25308,7 @@
 
 
 /***/ },
-/* 127 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22451,7 +25456,7 @@
 
 
 /***/ },
-/* 128 */
+/* 141 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22512,11 +25517,11 @@
 
 
 /***/ },
-/* 129 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler_1 = __webpack_require__(130);
+	var Sampler_1 = __webpack_require__(143);
 	var SamplerMap = (function () {
 	    /*
 	     public static map =     [ new Sampler( 8, 0xf, 0 ),
@@ -22629,7 +25634,7 @@
 
 
 /***/ },
-/* 130 */
+/* 143 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22646,7 +25651,7 @@
 
 
 /***/ },
-/* 131 */
+/* 144 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22670,7 +25675,7 @@
 
 
 /***/ },
-/* 132 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22729,7 +25734,7 @@
 
 
 /***/ },
-/* 133 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22740,8 +25745,8 @@
 	};
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ArgumentError_1 = __webpack_require__(13);
-	var Stage_1 = __webpack_require__(134);
-	var StageEvent_1 = __webpack_require__(132);
+	var Stage_1 = __webpack_require__(147);
+	var StageEvent_1 = __webpack_require__(145);
 	/**
 	 * The StageManager class provides a multiton object that handles management for Stage objects.
 	 *
@@ -22882,7 +25887,7 @@
 
 
 /***/ },
-/* 134 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22893,17 +25898,17 @@
 	};
 	var EventDispatcher_1 = __webpack_require__(29);
 	var Rectangle_1 = __webpack_require__(51);
-	var CSS_1 = __webpack_require__(135);
-	var ContextMode_1 = __webpack_require__(136);
-	var ContextGLMipFilter_1 = __webpack_require__(137);
-	var ContextGLTextureFilter_1 = __webpack_require__(138);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ContextGLWrapMode_1 = __webpack_require__(140);
-	var ContextWebGL_1 = __webpack_require__(141);
-	var ContextStage3D_1 = __webpack_require__(161);
-	var ContextSoftware_1 = __webpack_require__(169);
-	var StageEvent_1 = __webpack_require__(132);
-	var ProgramDataPool_1 = __webpack_require__(176);
+	var CSS_1 = __webpack_require__(148);
+	var ContextMode_1 = __webpack_require__(149);
+	var ContextGLMipFilter_1 = __webpack_require__(150);
+	var ContextGLTextureFilter_1 = __webpack_require__(151);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ContextGLWrapMode_1 = __webpack_require__(153);
+	var ContextWebGL_1 = __webpack_require__(154);
+	var ContextStage3D_1 = __webpack_require__(174);
+	var ContextSoftware_1 = __webpack_require__(182);
+	var StageEvent_1 = __webpack_require__(145);
+	var ProgramDataPool_1 = __webpack_require__(189);
 	/**
 	 * Stage provides a proxy class to handle the creation and attachment of the Context
 	 * (and in turn the back buffer) it uses. Stage should never be created directly,
@@ -23383,7 +26388,7 @@
 
 
 /***/ },
-/* 135 */
+/* 148 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23463,7 +26468,7 @@
 
 
 /***/ },
-/* 136 */
+/* 149 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23482,7 +26487,7 @@
 
 
 /***/ },
-/* 137 */
+/* 150 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23499,7 +26504,7 @@
 
 
 /***/ },
-/* 138 */
+/* 151 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23515,7 +26520,7 @@
 
 
 /***/ },
-/* 139 */
+/* 152 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23549,7 +26554,7 @@
 
 
 /***/ },
-/* 140 */
+/* 153 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23565,30 +26570,30 @@
 
 
 /***/ },
-/* 141 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Rectangle_1 = __webpack_require__(51);
-	var ByteArray_1 = __webpack_require__(126);
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
-	var ContextGLDrawMode_1 = __webpack_require__(142);
-	var ContextGLClearMask_1 = __webpack_require__(118);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var ContextGLMipFilter_1 = __webpack_require__(137);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var ContextGLStencilAction_1 = __webpack_require__(144);
-	var ContextGLTextureFilter_1 = __webpack_require__(138);
-	var ContextGLTriangleFace_1 = __webpack_require__(145);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ContextGLWrapMode_1 = __webpack_require__(140);
-	var CubeTextureWebGL_1 = __webpack_require__(146);
-	var IndexBufferWebGL_1 = __webpack_require__(148);
-	var ProgramWebGL_1 = __webpack_require__(149);
-	var TextureWebGL_1 = __webpack_require__(158);
-	var SamplerState_1 = __webpack_require__(159);
-	var VertexBufferWebGL_1 = __webpack_require__(160);
+	var ByteArray_1 = __webpack_require__(139);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLClearMask_1 = __webpack_require__(131);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var ContextGLMipFilter_1 = __webpack_require__(150);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLStencilAction_1 = __webpack_require__(157);
+	var ContextGLTextureFilter_1 = __webpack_require__(151);
+	var ContextGLTriangleFace_1 = __webpack_require__(158);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ContextGLWrapMode_1 = __webpack_require__(153);
+	var CubeTextureWebGL_1 = __webpack_require__(159);
+	var IndexBufferWebGL_1 = __webpack_require__(161);
+	var ProgramWebGL_1 = __webpack_require__(162);
+	var TextureWebGL_1 = __webpack_require__(171);
+	var SamplerState_1 = __webpack_require__(172);
+	var VertexBufferWebGL_1 = __webpack_require__(173);
 	var ContextWebGL = (function () {
 	    function ContextWebGL(canvas) {
 	        this._blendFactorDictionary = new Object();
@@ -24029,7 +27034,7 @@
 
 
 /***/ },
-/* 142 */
+/* 155 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24045,7 +27050,7 @@
 
 
 /***/ },
-/* 143 */
+/* 156 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24062,7 +27067,7 @@
 
 
 /***/ },
-/* 144 */
+/* 157 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24084,7 +27089,7 @@
 
 
 /***/ },
-/* 145 */
+/* 158 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24102,7 +27107,7 @@
 
 
 /***/ },
-/* 146 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24111,7 +27116,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBaseWebGL_1 = __webpack_require__(147);
+	var TextureBaseWebGL_1 = __webpack_require__(160);
 	var CubeTextureWebGL = (function (_super) {
 	    __extends(CubeTextureWebGL, _super);
 	    function CubeTextureWebGL(gl, size) {
@@ -24160,7 +27165,7 @@
 
 
 /***/ },
-/* 147 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24187,7 +27192,7 @@
 
 
 /***/ },
-/* 148 */
+/* 161 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24235,12 +27240,12 @@
 
 
 /***/ },
-/* 149 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AGALTokenizer_1 = __webpack_require__(150);
-	var AGLSLParser_1 = __webpack_require__(157);
+	var AGALTokenizer_1 = __webpack_require__(163);
+	var AGLSLParser_1 = __webpack_require__(170);
 	var ProgramWebGL = (function () {
 	    function ProgramWebGL(gl) {
 	        this._uniforms = [[], [], []];
@@ -24304,14 +27309,14 @@
 
 
 /***/ },
-/* 150 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Description_1 = __webpack_require__(151);
-	var Header_1 = __webpack_require__(152);
-	var Mapping_1 = __webpack_require__(153);
-	var Token_1 = __webpack_require__(155);
+	var Description_1 = __webpack_require__(164);
+	var Header_1 = __webpack_require__(165);
+	var Mapping_1 = __webpack_require__(166);
+	var Token_1 = __webpack_require__(168);
 	var AGALTokenizer = (function () {
 	    function AGALTokenizer() {
 	    }
@@ -24431,11 +27436,11 @@
 
 
 /***/ },
-/* 151 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Header_1 = __webpack_require__(152);
+	var Header_1 = __webpack_require__(165);
 	var Description = (function () {
 	    function Description() {
 	        this.regread = [
@@ -24471,7 +27476,7 @@
 
 
 /***/ },
-/* 152 */
+/* 165 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24488,11 +27493,11 @@
 
 
 /***/ },
-/* 153 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var OpLUT_1 = __webpack_require__(154);
+	var OpLUT_1 = __webpack_require__(167);
 	var Mapping = (function () {
 	    //TODO: get rid of hack that fixes including definition file
 	    function Mapping(include) {
@@ -24540,7 +27545,7 @@
 
 
 /***/ },
-/* 154 */
+/* 167 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24565,11 +27570,11 @@
 
 
 /***/ },
-/* 155 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Destination_1 = __webpack_require__(156);
+	var Destination_1 = __webpack_require__(169);
 	var Token = (function () {
 	    function Token() {
 	        this.dest = new Destination_1.default();
@@ -24584,7 +27589,7 @@
 
 
 /***/ },
-/* 156 */
+/* 169 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24612,11 +27617,11 @@
 
 
 /***/ },
-/* 157 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Mapping_1 = __webpack_require__(153);
+	var Mapping_1 = __webpack_require__(166);
 	var AGLSLParser = (function () {
 	    function AGLSLParser() {
 	    }
@@ -24857,7 +27862,7 @@
 
 
 /***/ },
-/* 158 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -24866,7 +27871,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBaseWebGL_1 = __webpack_require__(147);
+	var TextureBaseWebGL_1 = __webpack_require__(160);
 	var TextureWebGL = (function (_super) {
 	    __extends(TextureWebGL, _super);
 	    function TextureWebGL(gl, width, height) {
@@ -24945,7 +27950,7 @@
 
 
 /***/ },
-/* 159 */
+/* 172 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24959,7 +27964,7 @@
 
 
 /***/ },
-/* 160 */
+/* 173 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -25015,20 +28020,20 @@
 
 
 /***/ },
-/* 161 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	//import swfobject					from "awayjs-stagegl/lib/swfobject";
-	var ContextGLClearMask_1 = __webpack_require__(118);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var CubeTextureFlash_1 = __webpack_require__(162);
-	var IndexBufferFlash_1 = __webpack_require__(165);
-	var OpCodes_1 = __webpack_require__(163);
-	var ProgramFlash_1 = __webpack_require__(166);
-	var TextureFlash_1 = __webpack_require__(167);
-	var VertexBufferFlash_1 = __webpack_require__(168);
+	//import swfobject					from "../swfobject";
+	var ContextGLClearMask_1 = __webpack_require__(131);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var CubeTextureFlash_1 = __webpack_require__(175);
+	var IndexBufferFlash_1 = __webpack_require__(178);
+	var OpCodes_1 = __webpack_require__(176);
+	var ProgramFlash_1 = __webpack_require__(179);
+	var TextureFlash_1 = __webpack_require__(180);
+	var VertexBufferFlash_1 = __webpack_require__(181);
 	var ContextStage3D = (function () {
 	    //TODO: get rid of hack that fixes including definition file
 	    function ContextStage3D(container, callback) {
@@ -25358,7 +28363,7 @@
 
 
 /***/ },
-/* 162 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25367,9 +28372,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ByteArrayBase_1 = __webpack_require__(127);
-	var OpCodes_1 = __webpack_require__(163);
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var ByteArrayBase_1 = __webpack_require__(140);
+	var OpCodes_1 = __webpack_require__(176);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	var CubeTextureFlash = (function (_super) {
 	    __extends(CubeTextureFlash, _super);
 	    function CubeTextureFlash(context, size, format, forRTT, streaming) {
@@ -25423,7 +28428,7 @@
 
 
 /***/ },
-/* 163 */
+/* 176 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -25481,7 +28486,7 @@
 
 
 /***/ },
-/* 164 */
+/* 177 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -25504,7 +28509,7 @@
 
 
 /***/ },
-/* 165 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25513,8 +28518,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var OpCodes_1 = __webpack_require__(163);
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var OpCodes_1 = __webpack_require__(176);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	var IndexBufferFlash = (function (_super) {
 	    __extends(IndexBufferFlash, _super);
 	    function IndexBufferFlash(context, numIndices) {
@@ -25551,7 +28556,7 @@
 
 
 /***/ },
-/* 166 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25560,9 +28565,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextStage3D_1 = __webpack_require__(161);
-	var OpCodes_1 = __webpack_require__(163);
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var ContextStage3D_1 = __webpack_require__(174);
+	var OpCodes_1 = __webpack_require__(176);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	var ProgramFlash = (function (_super) {
 	    __extends(ProgramFlash, _super);
 	    function ProgramFlash(context) {
@@ -25590,7 +28595,7 @@
 
 
 /***/ },
-/* 167 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25599,9 +28604,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ByteArrayBase_1 = __webpack_require__(127);
-	var OpCodes_1 = __webpack_require__(163);
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var ByteArrayBase_1 = __webpack_require__(140);
+	var OpCodes_1 = __webpack_require__(176);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	var TextureFlash = (function (_super) {
 	    __extends(TextureFlash, _super);
 	    function TextureFlash(context, width, height, format, forRTT, streaming) {
@@ -25660,7 +28665,7 @@
 
 
 /***/ },
-/* 168 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25669,8 +28674,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var OpCodes_1 = __webpack_require__(163);
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var OpCodes_1 = __webpack_require__(176);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	var VertexBufferFlash = (function (_super) {
 	    __extends(VertexBufferFlash, _super);
 	    function VertexBufferFlash(context, numVertices, dataPerVertex) {
@@ -25715,28 +28720,28 @@
 
 
 /***/ },
-/* 169 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImage2D_1 = __webpack_require__(80);
 	var Matrix3D_1 = __webpack_require__(23);
-	var Matrix_1 = __webpack_require__(81);
+	var Matrix_1 = __webpack_require__(87);
 	var Point_1 = __webpack_require__(26);
 	var Vector3D_1 = __webpack_require__(18);
 	var Rectangle_1 = __webpack_require__(51);
 	var ColorUtils_1 = __webpack_require__(20);
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
-	var ContextGLClearMask_1 = __webpack_require__(118);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var ContextGLTriangleFace_1 = __webpack_require__(145);
-	var IndexBufferSoftware_1 = __webpack_require__(170);
-	var VertexBufferSoftware_1 = __webpack_require__(171);
-	var TextureSoftware_1 = __webpack_require__(172);
-	var ProgramSoftware_1 = __webpack_require__(173);
-	var SoftwareSamplerState_1 = __webpack_require__(175);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
+	var ContextGLClearMask_1 = __webpack_require__(131);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLTriangleFace_1 = __webpack_require__(158);
+	var IndexBufferSoftware_1 = __webpack_require__(183);
+	var VertexBufferSoftware_1 = __webpack_require__(184);
+	var TextureSoftware_1 = __webpack_require__(185);
+	var ProgramSoftware_1 = __webpack_require__(186);
+	var SoftwareSamplerState_1 = __webpack_require__(188);
 	var ContextSoftware = (function () {
 	    function ContextSoftware(canvas) {
 	        this._backBufferRect = new Rectangle_1.default();
@@ -26273,7 +29278,7 @@
 
 
 /***/ },
-/* 170 */
+/* 183 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26320,7 +29325,7 @@
 
 
 /***/ },
-/* 171 */
+/* 184 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26386,7 +29391,7 @@
 
 
 /***/ },
-/* 172 */
+/* 185 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26432,19 +29437,19 @@
 
 
 /***/ },
-/* 173 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AGALTokenizer_1 = __webpack_require__(150);
-	var ProgramVOSoftware_1 = __webpack_require__(174);
+	var AGALTokenizer_1 = __webpack_require__(163);
+	var ProgramVOSoftware_1 = __webpack_require__(187);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var SoftwareSamplerState_1 = __webpack_require__(175);
-	var ContextGLTextureFilter_1 = __webpack_require__(138);
-	var ContextGLMipFilter_1 = __webpack_require__(137);
-	var ContextGLWrapMode_1 = __webpack_require__(140);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var SoftwareSamplerState_1 = __webpack_require__(188);
+	var ContextGLTextureFilter_1 = __webpack_require__(151);
+	var ContextGLMipFilter_1 = __webpack_require__(150);
+	var ContextGLWrapMode_1 = __webpack_require__(153);
 	var ProgramSoftware = (function () {
 	    function ProgramSoftware() {
 	    }
@@ -27479,7 +30484,7 @@
 
 
 /***/ },
-/* 174 */
+/* 187 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27501,13 +30506,13 @@
 
 
 /***/ },
-/* 175 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ContextGLTextureFilter_1 = __webpack_require__(138);
-	var ContextGLMipFilter_1 = __webpack_require__(137);
-	var ContextGLWrapMode_1 = __webpack_require__(140);
+	var ContextGLTextureFilter_1 = __webpack_require__(151);
+	var ContextGLMipFilter_1 = __webpack_require__(150);
+	var ContextGLWrapMode_1 = __webpack_require__(153);
 	/**
 	 * The same as SamplerState, but with strings
 	 * TODO: replace two similar classes with one
@@ -27525,11 +30530,11 @@
 
 
 /***/ },
-/* 176 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ProgramData_1 = __webpack_require__(177);
+	var ProgramData_1 = __webpack_require__(190);
 	/**
 	 * @class away.pool.ProgramDataPool
 	 */
@@ -27568,7 +30573,7 @@
 
 
 /***/ },
-/* 177 */
+/* 190 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27607,7 +30612,7 @@
 
 
 /***/ },
-/* 178 */
+/* 191 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27666,7 +30671,7 @@
 
 
 /***/ },
-/* 179 */
+/* 192 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27716,7 +30721,7 @@
 
 
 /***/ },
-/* 180 */
+/* 193 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27865,7 +30870,7 @@
 
 
 /***/ },
-/* 181 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27874,8 +30879,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var RendererBase_1 = __webpack_require__(119);
-	var GL_DepthSurface_1 = __webpack_require__(182);
+	var RendererBase_1 = __webpack_require__(132);
+	var GL_DepthSurface_1 = __webpack_require__(195);
 	/**
 	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
 	 *
@@ -27913,7 +30918,7 @@
 
 
 /***/ },
-/* 182 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27922,8 +30927,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SurfacePassBase_1 = __webpack_require__(183);
-	var ShaderBase_1 = __webpack_require__(187);
+	var GL_SurfacePassBase_1 = __webpack_require__(196);
+	var ShaderBase_1 = __webpack_require__(200);
 	/**
 	 * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -28013,7 +31018,7 @@
 
 
 /***/ },
-/* 183 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28022,8 +31027,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PassEvent_1 = __webpack_require__(184);
-	var GL_SurfaceBase_1 = __webpack_require__(185);
+	var PassEvent_1 = __webpack_require__(197);
+	var GL_SurfaceBase_1 = __webpack_require__(198);
 	/**
 	 * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
@@ -28120,7 +31125,7 @@
 
 
 /***/ },
-/* 184 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28163,7 +31168,7 @@
 
 
 /***/ },
-/* 185 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28172,11 +31177,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AbstractionBase_1 = __webpack_require__(186);
-	var SurfaceEvent_1 = __webpack_require__(70);
-	var MaterialBase_1 = __webpack_require__(95);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var PassEvent_1 = __webpack_require__(184);
+	var AbstractionBase_1 = __webpack_require__(199);
+	var SurfaceEvent_1 = __webpack_require__(97);
+	var MaterialBase_1 = __webpack_require__(102);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var PassEvent_1 = __webpack_require__(197);
 	/**
 	 *
 	 * @class away.pool.Passes
@@ -28422,7 +31427,7 @@
 
 
 /***/ },
-/* 186 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28473,17 +31478,17 @@
 
 
 /***/ },
-/* 187 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BlendMode_1 = __webpack_require__(90);
+	var BlendMode_1 = __webpack_require__(96);
 	var ArgumentError_1 = __webpack_require__(13);
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var ContextGLTriangleFace_1 = __webpack_require__(145);
-	var ElementsPool_1 = __webpack_require__(179);
-	var CompilerBase_1 = __webpack_require__(188);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var ContextGLTriangleFace_1 = __webpack_require__(158);
+	var ElementsPool_1 = __webpack_require__(192);
+	var CompilerBase_1 = __webpack_require__(201);
 	/**
 	 * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
 	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -28864,12 +31869,12 @@
 
 
 /***/ },
-/* 188 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ShaderRegisterCache_1 = __webpack_require__(189);
-	var ShaderRegisterData_1 = __webpack_require__(192);
+	var ShaderRegisterCache_1 = __webpack_require__(202);
+	var ShaderRegisterData_1 = __webpack_require__(205);
 	/**
 	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
 	 * material. Concrete subclasses are used by the default materials.
@@ -29236,12 +32241,12 @@
 
 
 /***/ },
-/* 189 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var RegisterPool_1 = __webpack_require__(190);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var RegisterPool_1 = __webpack_require__(203);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * ShaderRegister Cache provides the usage management system for all registers during shading compilers.
 	 */
@@ -29515,11 +32520,11 @@
 
 
 /***/ },
-/* 190 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are
 	 * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
@@ -29676,7 +32681,7 @@
 
 
 /***/ },
-/* 191 */
+/* 204 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29736,7 +32741,7 @@
 
 
 /***/ },
-/* 192 */
+/* 205 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29754,7 +32759,7 @@
 
 
 /***/ },
-/* 193 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -29763,8 +32768,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var RendererBase_1 = __webpack_require__(119);
-	var GL_DistanceSurface_1 = __webpack_require__(194);
+	var RendererBase_1 = __webpack_require__(132);
+	var GL_DistanceSurface_1 = __webpack_require__(207);
 	/**
 	 * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
 	 *
@@ -29802,7 +32807,7 @@
 
 
 /***/ },
-/* 194 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -29811,8 +32816,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SurfacePassBase_1 = __webpack_require__(183);
-	var ShaderBase_1 = __webpack_require__(187);
+	var GL_SurfacePassBase_1 = __webpack_require__(196);
+	var ShaderBase_1 = __webpack_require__(200);
 	/**
 	 * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
 	 * This is used to render omnidirectional shadow maps.
@@ -29908,15 +32913,15 @@
 
 
 /***/ },
-/* 195 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ContextGLDrawMode_1 = __webpack_require__(142);
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var RTTEvent_1 = __webpack_require__(196);
-	var RTTBufferManager_1 = __webpack_require__(197);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var RTTEvent_1 = __webpack_require__(209);
+	var RTTBufferManager_1 = __webpack_require__(210);
 	/**
 	 * @class away.render.Filter3DRenderer
 	 */
@@ -30044,7 +33049,7 @@
 
 
 /***/ },
-/* 196 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30087,7 +33092,7 @@
 
 
 /***/ },
-/* 197 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30098,8 +33103,8 @@
 	};
 	var Rectangle_1 = __webpack_require__(51);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var ImageUtils_1 = __webpack_require__(77);
-	var RTTEvent_1 = __webpack_require__(196);
+	var ImageUtils_1 = __webpack_require__(83);
+	var RTTEvent_1 = __webpack_require__(209);
 	var RTTBufferManager = (function (_super) {
 	    __extends(RTTBufferManager, _super);
 	    function RTTBufferManager(stage) {
@@ -30313,7 +33318,7 @@
 
 
 /***/ },
-/* 198 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30322,7 +33327,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_TriangleElements_1 = __webpack_require__(199);
+	var GL_TriangleElements_1 = __webpack_require__(212);
 	/**
 	 *
 	 * @class away.pool.GL_SkyboxElements
@@ -30353,7 +33358,7 @@
 
 
 /***/ },
-/* 199 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30363,9 +33368,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var ContextGLDrawMode_1 = __webpack_require__(142);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var GL_ElementsBase_1 = __webpack_require__(200);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var GL_ElementsBase_1 = __webpack_require__(213);
 	/**
 	 *
 	 * @class away.pool.GL_TriangleElements
@@ -30472,7 +33477,7 @@
 
 
 /***/ },
-/* 200 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30481,7 +33486,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetEvent_1 = __webpack_require__(1);
 	var ElementsEvent_1 = __webpack_require__(62);
@@ -30716,7 +33721,7 @@
 
 
 /***/ },
-/* 201 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30727,93 +33732,93 @@
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
 	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(202);
+	var Float2Attributes_1 = __webpack_require__(105);
 	var Byte4Attributes_1 = __webpack_require__(68);
-	var BitmapImageCube_1 = __webpack_require__(83);
-	var BlendMode_1 = __webpack_require__(90);
-	var Sampler2D_1 = __webpack_require__(72);
+	var BitmapImageCube_1 = __webpack_require__(89);
+	var BlendMode_1 = __webpack_require__(96);
+	var Sampler2D_1 = __webpack_require__(78);
 	var ColorTransform_1 = __webpack_require__(19);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
 	var PerspectiveProjection_1 = __webpack_require__(48);
-	var OrthographicProjection_1 = __webpack_require__(207);
-	var OrthographicOffCenterProjection_1 = __webpack_require__(208);
-	var ByteArray_1 = __webpack_require__(126);
+	var OrthographicProjection_1 = __webpack_require__(219);
+	var OrthographicOffCenterProjection_1 = __webpack_require__(220);
+	var ByteArray_1 = __webpack_require__(139);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Graphics_1 = __webpack_require__(58);
-	var TriangleElements_1 = __webpack_require__(209);
-	var DirectionalLight_1 = __webpack_require__(210);
-	var PointLight_1 = __webpack_require__(216);
+	var TriangleElements_1 = __webpack_require__(107);
+	var DirectionalLight_1 = __webpack_require__(221);
+	var PointLight_1 = __webpack_require__(227);
 	var Camera_1 = __webpack_require__(45);
 	var Sprite_1 = __webpack_require__(57);
-	var Billboard_1 = __webpack_require__(69);
-	var Skybox_1 = __webpack_require__(89);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var CubeMapShadowMapper_1 = __webpack_require__(217);
-	var DirectionalShadowMapper_1 = __webpack_require__(213);
-	var PrefabBase_1 = __webpack_require__(222);
-	var PrimitiveCapsulePrefab_1 = __webpack_require__(223);
-	var PrimitiveConePrefab_1 = __webpack_require__(226);
-	var PrimitiveCubePrefab_1 = __webpack_require__(228);
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(227);
-	var PrimitivePlanePrefab_1 = __webpack_require__(229);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(230);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(231);
-	var SingleCubeTexture_1 = __webpack_require__(91);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var VertexAnimationSet_1 = __webpack_require__(232);
-	var VertexAnimator_1 = __webpack_require__(236);
-	var SkeletonAnimationSet_1 = __webpack_require__(239);
-	var SkeletonAnimator_1 = __webpack_require__(240);
-	var JointPose_1 = __webpack_require__(241);
-	var Skeleton_1 = __webpack_require__(245);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var SkeletonJoint_1 = __webpack_require__(246);
-	var SkeletonClipNode_1 = __webpack_require__(247);
-	var VertexClipNode_1 = __webpack_require__(253);
-	var MethodMaterialMode_1 = __webpack_require__(255);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var AmbientEnvMapMethod_1 = __webpack_require__(264);
-	var DiffuseDepthMethod_1 = __webpack_require__(265);
-	var DiffuseCelMethod_1 = __webpack_require__(266);
-	var DiffuseGradientMethod_1 = __webpack_require__(268);
-	var DiffuseLightMapMethod_1 = __webpack_require__(269);
-	var DiffuseWrapMethod_1 = __webpack_require__(270);
-	var EffectAlphaMaskMethod_1 = __webpack_require__(271);
-	var EffectColorMatrixMethod_1 = __webpack_require__(273);
-	var EffectColorTransformMethod_1 = __webpack_require__(274);
-	var EffectEnvMapMethod_1 = __webpack_require__(275);
-	var EffectFogMethod_1 = __webpack_require__(276);
-	var EffectFresnelEnvMapMethod_1 = __webpack_require__(277);
-	var EffectLightMapMethod_1 = __webpack_require__(278);
-	var EffectRimLightMethod_1 = __webpack_require__(279);
-	var NormalSimpleWaterMethod_1 = __webpack_require__(280);
-	var ShadowDitheredMethod_1 = __webpack_require__(281);
-	var ShadowFilteredMethod_1 = __webpack_require__(284);
-	var SpecularFresnelMethod_1 = __webpack_require__(285);
-	var ShadowHardMethod_1 = __webpack_require__(287);
-	var SpecularAnisotropicMethod_1 = __webpack_require__(288);
-	var SpecularCelMethod_1 = __webpack_require__(289);
-	var SpecularPhongMethod_1 = __webpack_require__(290);
-	var ShadowNearMethod_1 = __webpack_require__(291);
-	var ShadowSoftMethod_1 = __webpack_require__(292);
-	var BasicMaterial_1 = __webpack_require__(94);
-	var AS2SceneGraphFactory_1 = __webpack_require__(294);
-	var Timeline_1 = __webpack_require__(300);
-	var AssetLibrary_1 = __webpack_require__(296);
-	var Font_1 = __webpack_require__(304);
-	var TextFormat_1 = __webpack_require__(307);
-	var AWDBlock_1 = __webpack_require__(308);
+	var Billboard_1 = __webpack_require__(110);
+	var Skybox_1 = __webpack_require__(95);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var CubeMapShadowMapper_1 = __webpack_require__(228);
+	var DirectionalShadowMapper_1 = __webpack_require__(224);
+	var PrefabBase_1 = __webpack_require__(233);
+	var PrimitiveCapsulePrefab_1 = __webpack_require__(234);
+	var PrimitiveConePrefab_1 = __webpack_require__(237);
+	var PrimitiveCubePrefab_1 = __webpack_require__(239);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
+	var PrimitivePlanePrefab_1 = __webpack_require__(240);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
+	var SingleCubeTexture_1 = __webpack_require__(98);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var VertexAnimationSet_1 = __webpack_require__(243);
+	var VertexAnimator_1 = __webpack_require__(247);
+	var SkeletonAnimationSet_1 = __webpack_require__(250);
+	var SkeletonAnimator_1 = __webpack_require__(251);
+	var JointPose_1 = __webpack_require__(252);
+	var Skeleton_1 = __webpack_require__(256);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var SkeletonJoint_1 = __webpack_require__(257);
+	var SkeletonClipNode_1 = __webpack_require__(258);
+	var VertexClipNode_1 = __webpack_require__(264);
+	var MethodMaterialMode_1 = __webpack_require__(266);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var AmbientEnvMapMethod_1 = __webpack_require__(275);
+	var DiffuseDepthMethod_1 = __webpack_require__(276);
+	var DiffuseCelMethod_1 = __webpack_require__(277);
+	var DiffuseGradientMethod_1 = __webpack_require__(279);
+	var DiffuseLightMapMethod_1 = __webpack_require__(280);
+	var DiffuseWrapMethod_1 = __webpack_require__(281);
+	var EffectAlphaMaskMethod_1 = __webpack_require__(282);
+	var EffectColorMatrixMethod_1 = __webpack_require__(284);
+	var EffectColorTransformMethod_1 = __webpack_require__(285);
+	var EffectEnvMapMethod_1 = __webpack_require__(286);
+	var EffectFogMethod_1 = __webpack_require__(287);
+	var EffectFresnelEnvMapMethod_1 = __webpack_require__(288);
+	var EffectLightMapMethod_1 = __webpack_require__(289);
+	var EffectRimLightMethod_1 = __webpack_require__(290);
+	var NormalSimpleWaterMethod_1 = __webpack_require__(291);
+	var ShadowDitheredMethod_1 = __webpack_require__(292);
+	var ShadowFilteredMethod_1 = __webpack_require__(295);
+	var SpecularFresnelMethod_1 = __webpack_require__(296);
+	var ShadowHardMethod_1 = __webpack_require__(298);
+	var SpecularAnisotropicMethod_1 = __webpack_require__(299);
+	var SpecularCelMethod_1 = __webpack_require__(300);
+	var SpecularPhongMethod_1 = __webpack_require__(301);
+	var ShadowNearMethod_1 = __webpack_require__(302);
+	var ShadowSoftMethod_1 = __webpack_require__(303);
+	var BasicMaterial_1 = __webpack_require__(101);
+	var AS2SceneGraphFactory_1 = __webpack_require__(305);
+	var Timeline_1 = __webpack_require__(311);
+	var AssetLibrary_1 = __webpack_require__(307);
+	var Font_1 = __webpack_require__(315);
+	var TextFormat_1 = __webpack_require__(318);
+	var AWDBlock_1 = __webpack_require__(319);
 	var Rectangle_1 = __webpack_require__(51);
-	var Style_1 = __webpack_require__(93);
-	var Matrix_1 = __webpack_require__(81);
-	var MappingMode_1 = __webpack_require__(97);
-	var ElementsType_1 = __webpack_require__(224);
+	var Style_1 = __webpack_require__(100);
+	var Matrix_1 = __webpack_require__(87);
+	var MappingMode_1 = __webpack_require__(104);
+	var ElementsType_1 = __webpack_require__(235);
 	/**
 	 * AWDParser provides a parser for the AWD data type.
 	 */
@@ -33474,56 +36479,7 @@
 
 
 /***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float2Attributes = (function (_super) {
-	    __extends(Float2Attributes, _super);
-	    function Float2Attributes(attributesBufferLength) {
-	        _super.call(this, Float32Array, 2, attributesBufferLength);
-	    }
-	    Object.defineProperty(Float2Attributes.prototype, "assetType", {
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        get: function () {
-	            return Float2Attributes.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Float2Attributes.prototype.set = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        _super.prototype.set.call(this, values, offset);
-	    };
-	    Float2Attributes.prototype.get = function (count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        return _super.prototype.get.call(this, count, offset);
-	    };
-	    Float2Attributes.prototype._internalClone = function (attributesBuffer) {
-	        return (this._cloneCache = new Float2Attributes(attributesBuffer));
-	    };
-	    Float2Attributes.prototype.clone = function (attributesBuffer) {
-	        if (attributesBuffer === void 0) { attributesBuffer = null; }
-	        return _super.prototype.clone.call(this, attributesBuffer);
-	    };
-	    Float2Attributes.assetType = "[attributes Float2Attributes]";
-	    return Float2Attributes;
-	}(AttributesView_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Float2Attributes;
-
-
-/***/ },
-/* 203 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33536,11 +36492,11 @@
 	var AssetEvent_1 = __webpack_require__(1);
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ParserEvent_1 = __webpack_require__(6);
-	var TimerEvent_1 = __webpack_require__(204);
-	var ParserUtils_1 = __webpack_require__(205);
-	var ResourceDependency_1 = __webpack_require__(109);
-	var ImageUtils_1 = __webpack_require__(77);
-	var Timer_1 = __webpack_require__(206);
+	var TimerEvent_1 = __webpack_require__(216);
+	var ParserUtils_1 = __webpack_require__(217);
+	var ResourceDependency_1 = __webpack_require__(122);
+	var ImageUtils_1 = __webpack_require__(83);
+	var Timer_1 = __webpack_require__(218);
 	var getTimer_1 = __webpack_require__(8);
 	/**
 	 * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
@@ -33845,7 +36801,7 @@
 
 
 /***/ },
-/* 204 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33875,12 +36831,12 @@
 
 
 /***/ },
-/* 205 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var ByteArray_1 = __webpack_require__(126);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var ByteArray_1 = __webpack_require__(139);
 	var ParserUtils = (function () {
 	    function ParserUtils() {
 	    }
@@ -34032,7 +36988,7 @@
 
 
 /***/ },
-/* 206 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34043,7 +36999,7 @@
 	};
 	var ErrorBase_1 = __webpack_require__(14);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var TimerEvent_1 = __webpack_require__(204);
+	var TimerEvent_1 = __webpack_require__(216);
 	var Timer = (function (_super) {
 	    __extends(Timer, _super);
 	    function Timer(delay, repeatCount) {
@@ -34128,7 +37084,7 @@
 
 
 /***/ },
-/* 207 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34234,7 +37190,7 @@
 
 
 /***/ },
-/* 208 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34345,503 +37301,7 @@
 
 
 /***/ },
-/* 209 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(202);
-	var ElementsBase_1 = __webpack_require__(87);
-	var ElementsUtils_1 = __webpack_require__(63);
-	/**
-	 * @class away.base.TriangleElements
-	 */
-	var TriangleElements = (function (_super) {
-	    __extends(TriangleElements, _super);
-	    function TriangleElements() {
-	        _super.apply(this, arguments);
-	        this._numVertices = 0;
-	        this._faceNormalsDirty = true;
-	        this._faceTangentsDirty = true;
-	        this._autoDeriveNormals = true;
-	        this._autoDeriveTangents = true;
-	        //used for hittesting geometry
-	        this.cells = new Array();
-	        this.lastCollisionIndex = -1;
-	    }
-	    Object.defineProperty(TriangleElements.prototype, "assetType", {
-	        get: function () {
-	            return TriangleElements.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "numVertices", {
-	        get: function () {
-	            return this._numVertices;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "useCondensedIndices", {
-	        /**
-	         * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
-	         * by condensing the number of joint index values required per sprite. Only applicable to
-	         * skeleton animations that utilise more than one sprite object. Defaults to false.
-	         */
-	        get: function () {
-	            return this._useCondensedIndices;
-	        },
-	        set: function (value) {
-	            if (this._useCondensedIndices == value)
-	                return;
-	            this._useCondensedIndices = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "jointsPerVertex", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._jointsPerVertex;
-	        },
-	        set: function (value) {
-	            if (this._jointsPerVertex == value)
-	                return;
-	            this._jointsPerVertex = value;
-	            if (this._jointIndices)
-	                this._jointIndices.dimensions = this._jointsPerVertex;
-	            if (this._jointWeights)
-	                this._jointWeights.dimensions = this._jointsPerVertex;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "autoDeriveNormals", {
-	        /**
-	         * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
-	         * explicitly.
-	         */
-	        get: function () {
-	            return this._autoDeriveNormals;
-	        },
-	        set: function (value) {
-	            if (this._autoDeriveNormals == value)
-	                return;
-	            this._autoDeriveNormals = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "autoDeriveTangents", {
-	        /**
-	         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
-	         * explicitly.
-	         */
-	        get: function () {
-	            return this._autoDeriveTangents;
-	        },
-	        set: function (value) {
-	            if (this._autoDeriveTangents == value)
-	                return;
-	            this._autoDeriveTangents = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "positions", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            if (!this._positions)
-	                this.setPositions(new Float3Attributes_1.default(this._concatenatedBuffer));
-	            return this._positions;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "normals", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            if (!this._normals || this._verticesDirty[this._normals.id])
-	                this.setNormals(this._normals);
-	            return this._normals;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "tangents", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            if (!this._tangents || this._verticesDirty[this._tangents.id])
-	                this.setTangents(this._tangents);
-	            return this._tangents;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "faceNormals", {
-	        /**
-	         * The raw data of the face normals, in the same order as the faces are listed in the index list.
-	         */
-	        get: function () {
-	            if (this._faceNormalsDirty)
-	                this.updateFaceNormals();
-	            return this._faceNormals;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "faceTangents", {
-	        /**
-	         * The raw data of the face tangets, in the same order as the faces are listed in the index list.
-	         */
-	        get: function () {
-	            if (this._faceTangentsDirty)
-	                this.updateFaceTangents();
-	            return this._faceTangents;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "uvs", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._uvs;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "jointIndices", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._jointIndices;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "jointWeights", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._jointWeights;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "condensedIndexLookUp", {
-	        get: function () {
-	            return this._condensedIndexLookUp;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    TriangleElements.prototype.getBoxBounds = function (target) {
-	        if (target === void 0) { target = null; }
-	        return ElementsUtils_1.default.getTriangleGraphicsBoxBounds(this.positions, target, this._numVertices);
-	    };
-	    TriangleElements.prototype.getSphereBounds = function (center, target) {
-	        if (target === void 0) { target = null; }
-	        return ElementsUtils_1.default.getTriangleGraphicsSphereBounds(this.positions, center, target, this._numVertices);
-	    };
-	    TriangleElements.prototype.hitTestPoint = function (x, y, z) {
-	        return true;
-	    };
-	    TriangleElements.prototype.setPositions = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (values == this._positions)
-	            return;
-	        if (values instanceof AttributesView_1.default) {
-	            this.clearVertices(this._positions);
-	            this._positions = values;
-	        }
-	        else if (values) {
-	            if (!this._positions)
-	                this._positions = new Float3Attributes_1.default(this._concatenatedBuffer);
-	            this._positions.set(values, offset);
-	        }
-	        else {
-	            this.clearVertices(this._positions);
-	            this._positions = new Float3Attributes_1.default(this._concatenatedBuffer); //positions cannot be null
-	        }
-	        this._numVertices = this._positions.count;
-	        if (this._autoDeriveNormals)
-	            this.invalidateVertices(this._normals);
-	        if (this._autoDeriveTangents)
-	            this.invalidateVertices(this._tangents);
-	        this.invalidateVertices(this._positions);
-	        this._verticesDirty[this._positions.id] = false;
-	    };
-	    TriangleElements.prototype.setNormals = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (!this._autoDeriveNormals) {
-	            if (values == this._normals)
-	                return;
-	            if (values instanceof Float3Attributes_1.default) {
-	                this.clearVertices(this._normals);
-	                this._normals = values;
-	            }
-	            else if (values) {
-	                if (!this._normals)
-	                    this._normals = new Float3Attributes_1.default(this._concatenatedBuffer);
-	                this._normals.set(values, offset);
-	            }
-	            else if (this._normals) {
-	                this.clearVertices(this._normals);
-	                this._normals = null;
-	                return;
-	            }
-	        }
-	        else {
-	            this._normals = ElementsUtils_1.default.generateNormals(this.indices, this.faceNormals, this._normals, this._concatenatedBuffer);
-	        }
-	        this.invalidateVertices(this._normals);
-	        this._verticesDirty[this._normals.id] = false;
-	    };
-	    TriangleElements.prototype.setTangents = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (!this._autoDeriveTangents) {
-	            if (values == this._tangents)
-	                return;
-	            if (values instanceof Float3Attributes_1.default) {
-	                this.clearVertices(this._tangents);
-	                this._tangents = values;
-	            }
-	            else if (values) {
-	                if (!this._tangents)
-	                    this._tangents = new Float3Attributes_1.default(this._concatenatedBuffer);
-	                this._tangents.set(values, offset);
-	            }
-	            else if (this._tangents) {
-	                this.clearVertices(this._tangents);
-	                this._tangents = null;
-	                return;
-	            }
-	        }
-	        else {
-	            this._tangents = ElementsUtils_1.default.generateTangents(this.indices, this.faceTangents, this.faceNormals, this._tangents, this._concatenatedBuffer);
-	        }
-	        this.invalidateVertices(this._tangents);
-	        this._verticesDirty[this._tangents.id] = false;
-	    };
-	    TriangleElements.prototype.setUVs = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (values == this._uvs)
-	            return;
-	        if (values instanceof AttributesView_1.default) {
-	            this.clearVertices(this._uvs);
-	            this._uvs = values;
-	        }
-	        else if (values) {
-	            if (!this._uvs)
-	                this._uvs = new Float2Attributes_1.default(this._concatenatedBuffer);
-	            this._uvs.set(values, offset);
-	        }
-	        else if (this._uvs) {
-	            this.clearVertices(this._uvs);
-	            this._uvs = null;
-	            return;
-	        }
-	        this.invalidateVertices(this._uvs);
-	        this._verticesDirty[this._uvs.id] = false;
-	    };
-	    TriangleElements.prototype.setJointIndices = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (values == this._jointIndices)
-	            return;
-	        if (values instanceof AttributesView_1.default) {
-	            this.clearVertices(this._jointIndices);
-	            this._jointIndices = values;
-	        }
-	        else if (values) {
-	            if (!this._jointIndices)
-	                this._jointIndices = new AttributesView_1.default(Float32Array, this._jointsPerVertex, this._concatenatedBuffer);
-	            if (this._useCondensedIndices) {
-	                var i = 0;
-	                var oldIndex;
-	                var newIndex = 0;
-	                var dic = new Object();
-	                this._condensedIndexLookUp = new Array();
-	                while (i < values.length) {
-	                    oldIndex = values[i];
-	                    // if we encounter a new index, assign it a new condensed index
-	                    if (dic[oldIndex] == undefined) {
-	                        dic[oldIndex] = newIndex;
-	                        this._condensedIndexLookUp[newIndex++] = oldIndex;
-	                    }
-	                    //reset value to dictionary lookup
-	                    values[i++] = dic[oldIndex];
-	                }
-	            }
-	            this._jointIndices.set(values, offset);
-	        }
-	        else if (this._jointIndices) {
-	            this.clearVertices(this._jointIndices);
-	            this._jointIndices = null;
-	            return;
-	        }
-	        this.invalidateVertices(this._jointIndices);
-	        this._verticesDirty[this._jointIndices.id] = false;
-	    };
-	    TriangleElements.prototype.setJointWeights = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (values == this._jointWeights)
-	            return;
-	        if (values instanceof AttributesView_1.default) {
-	            this.clearVertices(this._jointWeights);
-	            this._jointWeights = values;
-	        }
-	        else if (values) {
-	            if (!this._jointWeights)
-	                this._jointWeights = new AttributesView_1.default(Float32Array, this._jointsPerVertex, this._concatenatedBuffer);
-	            this._jointWeights.set(values, offset);
-	        }
-	        else if (this._jointWeights) {
-	            this.clearVertices(this._jointWeights);
-	            this._jointWeights = null;
-	            return;
-	        }
-	        this.invalidateVertices(this._jointWeights);
-	        this._verticesDirty[this._jointWeights.id] = false;
-	    };
-	    /**
-	     *
-	     */
-	    TriangleElements.prototype.dispose = function () {
-	        _super.prototype.dispose.call(this);
-	        if (this._positions) {
-	            this._positions.dispose();
-	            this._positions = null;
-	        }
-	        if (this._normals) {
-	            this._normals.dispose();
-	            this._normals = null;
-	        }
-	        if (this._tangents) {
-	            this._tangents.dispose();
-	            this._tangents = null;
-	        }
-	        if (this._uvs) {
-	            this._uvs.dispose();
-	            this._uvs = null;
-	        }
-	        if (this._jointIndices) {
-	            this._jointIndices.dispose();
-	            this._jointIndices = null;
-	        }
-	        if (this._jointWeights) {
-	            this._jointWeights.dispose();
-	            this._jointWeights = null;
-	        }
-	        if (this._faceNormals) {
-	            this._faceNormals.dispose();
-	            this._faceNormals = null;
-	        }
-	        if (this._faceTangents) {
-	            this._faceTangents.dispose();
-	            this._faceTangents = null;
-	        }
-	    };
-	    TriangleElements.prototype.setIndices = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        _super.prototype.setIndices.call(this, values, offset);
-	        this._faceNormalsDirty = true;
-	        this._faceTangentsDirty = true;
-	        if (this._autoDeriveNormals)
-	            this.invalidateVertices(this._normals);
-	        if (this._autoDeriveTangents)
-	            this.invalidateVertices(this._tangents);
-	    };
-	    TriangleElements.prototype.copyTo = function (elements) {
-	        _super.prototype.copyTo.call(this, elements);
-	        //temp disable auto derives
-	        elements.autoDeriveNormals = false;
-	        elements.autoDeriveTangents = false;
-	        elements.setPositions(this.positions.clone());
-	        if (this.normals)
-	            elements.setNormals(this.normals.clone());
-	        if (this.tangents)
-	            elements.setTangents(this.tangents.clone());
-	        if (this.uvs)
-	            elements.setUVs(this.uvs.clone());
-	        elements.jointsPerVertex = this._jointsPerVertex;
-	        if (this.jointIndices)
-	            elements.setJointIndices(this.jointIndices.clone());
-	        if (this.jointWeights)
-	            elements.setJointWeights(this.jointWeights.clone());
-	        //return auto derives to cloned values
-	        elements.autoDeriveNormals = this._autoDeriveNormals;
-	        elements.autoDeriveTangents = this._autoDeriveTangents;
-	    };
-	    /**
-	     * Clones the current object
-	     * @return An exact duplicate of the current object.
-	     */
-	    TriangleElements.prototype.clone = function () {
-	        var clone = new TriangleElements(this._concatenatedBuffer ? this._concatenatedBuffer.clone() : null);
-	        this.copyTo(clone);
-	        return clone;
-	    };
-	    TriangleElements.prototype.scaleUV = function (scaleU, scaleV) {
-	        if (scaleU === void 0) { scaleU = 1; }
-	        if (scaleV === void 0) { scaleV = 1; }
-	        if (this.uvs)
-	            ElementsUtils_1.default.scaleUVs(scaleU, scaleV, this.uvs, this._numVertices);
-	    };
-	    /**
-	     * Scales the geometry.
-	     * @param scale The amount by which to scale.
-	     */
-	    TriangleElements.prototype.scale = function (scale) {
-	        ElementsUtils_1.default.scale(scale, this.positions, this._numVertices);
-	    };
-	    TriangleElements.prototype.applyTransformation = function (transform) {
-	        ElementsUtils_1.default.applyTransformation(transform, this.positions, this.normals, this.tangents, this._numVertices);
-	    };
-	    /**
-	     * Updates the tangents for each face.
-	     */
-	    TriangleElements.prototype.updateFaceTangents = function () {
-	        this._faceTangents = ElementsUtils_1.default.generateFaceTangents(this.indices, this.positions, this.uvs || this.positions, this._faceTangents, this.numElements);
-	        this._faceTangentsDirty = false;
-	    };
-	    /**
-	     * Updates the normals for each face.
-	     */
-	    TriangleElements.prototype.updateFaceNormals = function () {
-	        this._faceNormals = ElementsUtils_1.default.generateFaceNormals(this.indices, this.positions, this._faceNormals, this.numElements);
-	        this._faceNormalsDirty = false;
-	    };
-	    TriangleElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
-	        return pickingCollider.testTriangleCollision(this, material, pickingCollision);
-	    };
-	    TriangleElements.assetType = "[asset TriangleElements]";
-	    return TriangleElements;
-	}(ElementsBase_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = TriangleElements;
-
-
-/***/ },
-/* 210 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34853,10 +37313,10 @@
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var LightBase_1 = __webpack_require__(211);
+	var LightBase_1 = __webpack_require__(222);
 	var HierarchicalProperties_1 = __webpack_require__(30);
 	var BoundsType_1 = __webpack_require__(31);
-	var DirectionalShadowMapper_1 = __webpack_require__(213);
+	var DirectionalShadowMapper_1 = __webpack_require__(224);
 	var DirectionalLight = (function (_super) {
 	    __extends(DirectionalLight, _super);
 	    function DirectionalLight(xDir, yDir, zDir) {
@@ -35008,7 +37468,7 @@
 
 
 /***/ },
-/* 211 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35019,7 +37479,7 @@
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
-	var LightEvent_1 = __webpack_require__(212);
+	var LightEvent_1 = __webpack_require__(223);
 	var LightBase = (function (_super) {
 	    __extends(LightBase, _super);
 	    function LightBase() {
@@ -35173,7 +37633,7 @@
 
 
 /***/ },
-/* 212 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35200,7 +37660,7 @@
 
 
 /***/ },
-/* 213 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35209,13 +37669,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(75);
+	var Image2D_1 = __webpack_require__(81);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var FreeMatrixProjection_1 = __webpack_require__(214);
+	var FreeMatrixProjection_1 = __webpack_require__(225);
 	var Camera_1 = __webpack_require__(45);
-	var ShadowMapperBase_1 = __webpack_require__(215);
-	var Single2DTexture_1 = __webpack_require__(96);
+	var ShadowMapperBase_1 = __webpack_require__(226);
+	var Single2DTexture_1 = __webpack_require__(103);
 	var DirectionalShadowMapper = (function (_super) {
 	    __extends(DirectionalShadowMapper, _super);
 	    function DirectionalShadowMapper() {
@@ -35384,7 +37844,7 @@
 
 
 /***/ },
-/* 214 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35446,7 +37906,7 @@
 
 
 /***/ },
-/* 215 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35551,7 +38011,7 @@
 
 
 /***/ },
-/* 216 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35563,9 +38023,9 @@
 	var Matrix3D_1 = __webpack_require__(23);
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Vector3D_1 = __webpack_require__(18);
-	var LightBase_1 = __webpack_require__(211);
+	var LightBase_1 = __webpack_require__(222);
 	var BoundsType_1 = __webpack_require__(31);
-	var CubeMapShadowMapper_1 = __webpack_require__(217);
+	var CubeMapShadowMapper_1 = __webpack_require__(228);
 	var PointLight = (function (_super) {
 	    __extends(PointLight, _super);
 	    function PointLight() {
@@ -35668,7 +38128,7 @@
 
 
 /***/ },
-/* 217 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35677,10 +38137,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageCube_1 = __webpack_require__(84);
+	var ImageCube_1 = __webpack_require__(90);
 	var Camera_1 = __webpack_require__(45);
-	var ShadowMapperBase_1 = __webpack_require__(215);
-	var SingleCubeTexture_1 = __webpack_require__(91);
+	var ShadowMapperBase_1 = __webpack_require__(226);
+	var SingleCubeTexture_1 = __webpack_require__(98);
 	var CubeMapShadowMapper = (function (_super) {
 	    __extends(CubeMapShadowMapper, _super);
 	    function CubeMapShadowMapper() {
@@ -35741,7 +38201,7 @@
 
 
 /***/ },
-/* 218 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35751,11 +38211,11 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var DirectionalLight_1 = __webpack_require__(210);
-	var LightProbe_1 = __webpack_require__(219);
-	var PointLight_1 = __webpack_require__(216);
-	var LightEvent_1 = __webpack_require__(212);
-	var LightPickerBase_1 = __webpack_require__(221);
+	var DirectionalLight_1 = __webpack_require__(221);
+	var LightProbe_1 = __webpack_require__(230);
+	var PointLight_1 = __webpack_require__(227);
+	var LightEvent_1 = __webpack_require__(223);
+	var LightPickerBase_1 = __webpack_require__(232);
 	/**
 	 * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
 	 * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
@@ -35895,7 +38355,7 @@
 
 
 /***/ },
-/* 219 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35904,9 +38364,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerCube_1 = __webpack_require__(220);
+	var SamplerCube_1 = __webpack_require__(231);
 	var ErrorBase_1 = __webpack_require__(14);
-	var LightBase_1 = __webpack_require__(211);
+	var LightBase_1 = __webpack_require__(222);
 	var BoundsType_1 = __webpack_require__(31);
 	var LightProbe = (function (_super) {
 	    __extends(LightProbe, _super);
@@ -35941,7 +38401,7 @@
 
 
 /***/ },
-/* 220 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35950,7 +38410,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerBase_1 = __webpack_require__(73);
+	var SamplerBase_1 = __webpack_require__(79);
 	/**
 	 * The Bitmap class represents display objects that represent bitmap images.
 	 * These can be images that you load with the <code>flash.Assets</code> or
@@ -36002,7 +38462,7 @@
 
 
 /***/ },
-/* 221 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36211,7 +38671,7 @@
 
 
 /***/ },
-/* 222 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36264,7 +38724,7 @@
 
 
 /***/ },
-/* 223 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36273,8 +38733,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A Capsule primitive sprite.
 	 */
@@ -36536,7 +38996,7 @@
 
 
 /***/ },
-/* 224 */
+/* 235 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -36558,7 +39018,7 @@
 
 
 /***/ },
-/* 225 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36569,11 +39029,11 @@
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var ElementsType_1 = __webpack_require__(224);
-	var TriangleElements_1 = __webpack_require__(209);
-	var LineElements_1 = __webpack_require__(85);
+	var ElementsType_1 = __webpack_require__(235);
+	var TriangleElements_1 = __webpack_require__(107);
+	var LineElements_1 = __webpack_require__(91);
 	var Sprite_1 = __webpack_require__(57);
-	var PrefabBase_1 = __webpack_require__(222);
+	var PrefabBase_1 = __webpack_require__(233);
 	/**
 	 * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
 	 */
@@ -36728,7 +39188,7 @@
 
 
 /***/ },
-/* 226 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36737,7 +39197,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(227);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
 	/**
 	 * A UV Cone primitive sprite.
 	 */
@@ -36783,7 +39243,7 @@
 
 
 /***/ },
-/* 227 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36792,8 +39252,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A Cylinder primitive sprite.
 	 */
@@ -37365,7 +39825,7 @@
 
 
 /***/ },
-/* 228 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37374,8 +39834,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A Cube primitive prefab.
 	 */
@@ -37908,7 +40368,7 @@
 
 
 /***/ },
-/* 229 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37917,8 +40377,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A Plane primitive sprite.
 	 */
@@ -38217,7 +40677,7 @@
 
 
 /***/ },
-/* 230 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38226,8 +40686,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A UV Sphere primitive sprite.
 	 */
@@ -38516,7 +40976,7 @@
 
 
 /***/ },
-/* 231 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38525,8 +40985,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(224);
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	/**
 	 * A UV Cylinder primitive sprite.
 	 */
@@ -38780,7 +41240,7 @@
 
 
 /***/ },
-/* 232 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38789,8 +41249,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(233);
-	var VertexAnimationMode_1 = __webpack_require__(235);
+	var AnimationSetBase_1 = __webpack_require__(244);
+	var VertexAnimationMode_1 = __webpack_require__(246);
 	/**
 	 * The animation data set used by vertex-based animators, containing vertex animation state data.
 	 *
@@ -38954,7 +41414,7 @@
 
 
 /***/ },
-/* 233 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38965,7 +41425,7 @@
 	};
 	var AssetBase_1 = __webpack_require__(27);
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AnimationSetError_1 = __webpack_require__(234);
+	var AnimationSetError_1 = __webpack_require__(245);
 	/**
 	 * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
 	 *
@@ -39129,7 +41589,7 @@
 
 
 /***/ },
-/* 234 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39151,7 +41611,7 @@
 
 
 /***/ },
-/* 235 */
+/* 246 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -39178,7 +41638,7 @@
 
 
 /***/ },
-/* 236 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39187,10 +41647,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TriangleElements_1 = __webpack_require__(209);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var AnimatorBase_1 = __webpack_require__(237);
-	var VertexAnimationMode_1 = __webpack_require__(235);
+	var TriangleElements_1 = __webpack_require__(107);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var AnimatorBase_1 = __webpack_require__(248);
+	var VertexAnimationMode_1 = __webpack_require__(246);
 	/**
 	 * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -39334,7 +41794,7 @@
 
 
 /***/ },
-/* 237 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39347,7 +41807,7 @@
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var getTimer_1 = __webpack_require__(8);
-	var AnimatorEvent_1 = __webpack_require__(238);
+	var AnimatorEvent_1 = __webpack_require__(249);
 	/**
 	 * Dispatched when playback of an animation inside the animator object starts.
 	 *
@@ -39665,7 +42125,7 @@
 
 
 /***/ },
-/* 238 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39724,7 +42184,7 @@
 
 
 /***/ },
-/* 239 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39733,7 +42193,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(233);
+	var AnimationSetBase_1 = __webpack_require__(244);
 	/**
 	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
 	 *
@@ -39836,7 +42296,7 @@
 
 
 /***/ },
-/* 240 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39846,11 +42306,11 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ElementsEvent_1 = __webpack_require__(62);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var AnimatorBase_1 = __webpack_require__(237);
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationStateEvent_1 = __webpack_require__(244);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var AnimatorBase_1 = __webpack_require__(248);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationStateEvent_1 = __webpack_require__(255);
 	/**
 	 * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -40381,12 +42841,12 @@
 
 
 /***/ },
-/* 241 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Matrix3D_1 = __webpack_require__(23);
-	var Quaternion_1 = __webpack_require__(242);
+	var Quaternion_1 = __webpack_require__(253);
 	var Vector3D_1 = __webpack_require__(18);
 	/**
 	 * Contains transformation data for a skeleton joint, used for skeleton animation.
@@ -40444,7 +42904,7 @@
 
 
 /***/ },
-/* 242 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40781,7 +43241,7 @@
 
 
 /***/ },
-/* 243 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40791,7 +43251,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var JointPose_1 = __webpack_require__(241);
+	var JointPose_1 = __webpack_require__(252);
 	/**
 	 * A collection of pose objects, determining the pose for an entire skeleton.
 	 * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
@@ -40899,7 +43359,7 @@
 
 
 /***/ },
-/* 244 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40977,7 +43437,7 @@
 
 
 /***/ },
-/* 245 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41076,7 +43536,7 @@
 
 
 /***/ },
-/* 246 */
+/* 257 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -41104,7 +43564,7 @@
 
 
 /***/ },
-/* 247 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41113,8 +43573,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationClipNodeBase_1 = __webpack_require__(248);
-	var SkeletonClipState_1 = __webpack_require__(250);
+	var AnimationClipNodeBase_1 = __webpack_require__(259);
+	var SkeletonClipState_1 = __webpack_require__(261);
 	/**
 	 * A skeleton animation node containing time-based animation data as individual skeleton poses.
 	 */
@@ -41194,7 +43654,7 @@
 
 
 /***/ },
-/* 248 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41204,7 +43664,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var AnimationNodeBase_1 = __webpack_require__(249);
+	var AnimationNodeBase_1 = __webpack_require__(260);
 	/**
 	 * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
 	 */
@@ -41315,7 +43775,7 @@
 
 
 /***/ },
-/* 249 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41366,7 +43826,7 @@
 
 
 /***/ },
-/* 250 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41376,9 +43836,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationClipState_1 = __webpack_require__(251);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationClipState_1 = __webpack_require__(262);
 	/**
 	 *
 	 */
@@ -41533,7 +43993,7 @@
 
 
 /***/ },
-/* 251 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41542,8 +44002,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationStateBase_1 = __webpack_require__(252);
-	var AnimationStateEvent_1 = __webpack_require__(244);
+	var AnimationStateBase_1 = __webpack_require__(263);
+	var AnimationStateEvent_1 = __webpack_require__(255);
 	/**
 	 *
 	 */
@@ -41690,7 +44150,7 @@
 
 
 /***/ },
-/* 252 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41769,7 +44229,7 @@
 
 
 /***/ },
-/* 253 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41779,8 +44239,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var AnimationClipNodeBase_1 = __webpack_require__(248);
-	var VertexClipState_1 = __webpack_require__(254);
+	var AnimationClipNodeBase_1 = __webpack_require__(259);
+	var VertexClipState_1 = __webpack_require__(265);
 	/**
 	 * A vertex animation node containing time-based animation data as individual geometry obejcts.
 	 */
@@ -41853,7 +44313,7 @@
 
 
 /***/ },
-/* 254 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41862,7 +44322,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationClipState_1 = __webpack_require__(251);
+	var AnimationClipState_1 = __webpack_require__(262);
 	/**
 	 *
 	 */
@@ -41923,7 +44383,7 @@
 
 
 /***/ },
-/* 255 */
+/* 266 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -41945,7 +44405,7 @@
 
 
 /***/ },
-/* 256 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41954,15 +44414,15 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(75);
-	var MaterialBase_1 = __webpack_require__(95);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var MethodMaterialMode_1 = __webpack_require__(255);
-	var AmbientBasicMethod_1 = __webpack_require__(257);
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
-	var NormalBasicMethod_1 = __webpack_require__(262);
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var Image2D_1 = __webpack_require__(81);
+	var MaterialBase_1 = __webpack_require__(102);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var MethodMaterialMode_1 = __webpack_require__(266);
+	var AmbientBasicMethod_1 = __webpack_require__(268);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var NormalBasicMethod_1 = __webpack_require__(273);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	/**
 	 * MethodMaterial forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -42195,7 +44655,7 @@
 
 
 /***/ },
-/* 257 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42205,7 +44665,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
 	 */
@@ -42362,7 +44822,7 @@
 
 
 /***/ },
-/* 258 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42372,7 +44832,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var ShadingMethodEvent_1 = __webpack_require__(259);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
 	/**
 	 * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
 	 * the final shading program.
@@ -42560,7 +45020,7 @@
 
 
 /***/ },
-/* 259 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42583,7 +45043,7 @@
 
 
 /***/ },
-/* 260 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42593,7 +45053,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightingMethodBase_1 = __webpack_require__(261);
+	var LightingMethodBase_1 = __webpack_require__(272);
 	/**
 	 * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
 	 */
@@ -42890,7 +45350,7 @@
 
 
 /***/ },
-/* 261 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42899,7 +45359,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * LightingMethodBase provides an abstract base method for shading methods that uses lights.
 	 * Used for diffuse and specular shaders only.
@@ -42961,7 +45421,7 @@
 
 
 /***/ },
-/* 262 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42970,7 +45430,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * NormalBasicMethod is the default method for standard tangent-space normal mapping.
 	 */
@@ -43072,7 +45532,7 @@
 
 
 /***/ },
-/* 263 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43082,7 +45542,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightingMethodBase_1 = __webpack_require__(261);
+	var LightingMethodBase_1 = __webpack_require__(272);
 	/**
 	 * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
 	 * version of Phong specularity).
@@ -43351,7 +45811,7 @@
 
 
 /***/ },
-/* 264 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43361,7 +45821,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var AmbientBasicMethod_1 = __webpack_require__(257);
+	var AmbientBasicMethod_1 = __webpack_require__(268);
 	/**
 	 * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
 	 * approximate global lighting rather than lights.
@@ -43403,7 +45863,7 @@
 
 
 /***/ },
-/* 265 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43412,7 +45872,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * DiffuseDepthMethod provides a debug method to visualise depth maps
 	 */
@@ -43478,7 +45938,7 @@
 
 
 /***/ },
-/* 266 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43487,7 +45947,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(267);
+	var DiffuseCompositeMethod_1 = __webpack_require__(278);
 	/**
 	 * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
 	 */
@@ -43603,7 +46063,7 @@
 
 
 /***/ },
-/* 267 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43612,8 +46072,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(259);
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
 	 * calculated diffuse reflection strength.
@@ -43806,7 +46266,7 @@
 
 
 /***/ },
-/* 268 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43815,7 +46275,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
 	 * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
@@ -43934,7 +46394,7 @@
 
 
 /***/ },
-/* 269 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43943,7 +46403,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(267);
+	var DiffuseCompositeMethod_1 = __webpack_require__(278);
 	/**
 	 * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
 	 * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
@@ -44086,7 +46546,7 @@
 
 
 /***/ },
-/* 270 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44095,7 +46555,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
 	 * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
@@ -44188,7 +46648,7 @@
 
 
 /***/ },
-/* 271 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44197,7 +46657,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
 	 * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
@@ -44292,7 +46752,7 @@
 
 
 /***/ },
-/* 272 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44302,7 +46762,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
 	 * and are in essence post-process effects on the materials.
@@ -44340,7 +46800,7 @@
 
 
 /***/ },
-/* 273 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44349,7 +46809,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
 	 */
@@ -44435,7 +46895,7 @@
 
 
 /***/ },
-/* 274 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44444,7 +46904,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
 	 * ColorTransform object.
@@ -44505,7 +46965,7 @@
 
 
 /***/ },
-/* 275 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44514,7 +46974,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
 	 */
@@ -44655,7 +47115,7 @@
 
 
 /***/ },
-/* 276 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44664,7 +47124,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectFogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -44782,7 +47242,7 @@
 
 
 /***/ },
-/* 277 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44791,7 +47251,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
 	 * stronger as the viewing angle becomes more grazing.
@@ -44977,7 +47437,7 @@
 
 
 /***/ },
-/* 278 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44986,7 +47446,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
 	 * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
@@ -45121,7 +47581,7 @@
 
 
 /***/ },
-/* 279 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45130,7 +47590,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
 	 */
@@ -45284,7 +47744,7 @@
 
 
 /***/ },
-/* 280 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45293,7 +47753,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var NormalBasicMethod_1 = __webpack_require__(262);
+	var NormalBasicMethod_1 = __webpack_require__(273);
 	/**
 	 * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
 	 */
@@ -45467,7 +47927,7 @@
 
 
 /***/ },
-/* 281 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45476,9 +47936,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	/**
 	 * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
 	 */
@@ -45728,7 +48188,7 @@
 
 
 /***/ },
-/* 282 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45738,8 +48198,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var PointLight_1 = __webpack_require__(216);
-	var ShadowMapMethodBase_1 = __webpack_require__(283);
+	var PointLight_1 = __webpack_require__(227);
+	var ShadowMapMethodBase_1 = __webpack_require__(294);
 	/**
 	 * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
 	 */
@@ -45935,7 +48395,7 @@
 
 
 /***/ },
-/* 283 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45944,7 +48404,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * ShadowMapMethodBase provides an abstract base method for shadow map methods.
 	 */
@@ -46018,7 +48478,7 @@
 
 
 /***/ },
-/* 284 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46027,7 +48487,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	/**
 	 * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
 	 * results of neighbouring pixels.
@@ -46159,7 +48619,7 @@
 
 
 /***/ },
-/* 285 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46168,7 +48628,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularCompositeMethod_1 = __webpack_require__(286);
+	var SpecularCompositeMethod_1 = __webpack_require__(297);
 	/**
 	 * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
 	 */
@@ -46292,7 +48752,7 @@
 
 
 /***/ },
-/* 286 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46301,8 +48761,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(259);
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	/**
 	 * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
 	 * calculated specular reflection strength.
@@ -46499,7 +48959,7 @@
 
 
 /***/ },
-/* 287 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46508,7 +48968,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	/**
 	 * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
 	 */
@@ -46580,7 +49040,7 @@
 
 
 /***/ },
-/* 288 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46589,7 +49049,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	/**
 	 * SpecularAnisotropicMethod provides a specular method resulting in anisotropic highlights. These are typical for
 	 * surfaces with microfacet details such as tiny grooves. In particular, this uses the Heidrich-Seidel distrubution.
@@ -46664,7 +49124,7 @@
 
 
 /***/ },
-/* 289 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46673,7 +49133,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularCompositeMethod_1 = __webpack_require__(286);
+	var SpecularCompositeMethod_1 = __webpack_require__(297);
 	/**
 	 * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
 	 */
@@ -46767,7 +49227,7 @@
 
 
 /***/ },
-/* 290 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46776,7 +49236,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	/**
 	 * SpecularPhongMethod provides a specular method that provides Phong highlights.
 	 */
@@ -46843,7 +49303,7 @@
 
 
 /***/ },
-/* 291 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46852,8 +49312,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(259);
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	// TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 	/**
 	 * ShadowNearMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
@@ -47040,7 +49500,7 @@
 
 
 /***/ },
-/* 292 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47049,8 +49509,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PoissonLookup_1 = __webpack_require__(293);
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var PoissonLookup_1 = __webpack_require__(304);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	/**
 	 * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
 	 */
@@ -47221,7 +49681,7 @@
 
 
 /***/ },
-/* 293 */
+/* 304 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -47278,14 +49738,14 @@
 
 
 /***/ },
-/* 294 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AS2MovieClipAdapter_1 = __webpack_require__(295);
-	var AS2TextFieldAdapter_1 = __webpack_require__(303);
-	var TextField_1 = __webpack_require__(298);
-	var MovieClip_1 = __webpack_require__(297);
+	var AS2MovieClipAdapter_1 = __webpack_require__(306);
+	var AS2TextFieldAdapter_1 = __webpack_require__(314);
+	var TextField_1 = __webpack_require__(309);
+	var MovieClip_1 = __webpack_require__(308);
 	var AS2SceneGraphFactory = (function () {
 	    function AS2SceneGraphFactory(view) {
 	        this._view = view;
@@ -47307,7 +49767,7 @@
 
 
 /***/ },
-/* 295 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47318,18 +49778,18 @@
 	};
 	var AssetEvent_1 = __webpack_require__(1);
 	var Point_1 = __webpack_require__(26);
-	var AssetLibrary_1 = __webpack_require__(296);
-	var MovieClip_1 = __webpack_require__(297);
+	var AssetLibrary_1 = __webpack_require__(307);
+	var MovieClip_1 = __webpack_require__(308);
 	var MouseEvent_1 = __webpack_require__(55);
-	var AS2SymbolAdapter_1 = __webpack_require__(301);
-	var AS2MCSoundProps_1 = __webpack_require__(302);
-	var includeString = 'var Color			from "awayjs-player/lib/adapters/AS2ColorAdapter";\n' +
-	    'var System				from "awayjs-player/lib/adapters/AS2SystemAdapter";\n' +
-	    'var Sound				from "awayjs-player/lib/adapters/AS2SoundAdapter";\n' +
-	    'var Key				from "awayjs-player/lib/adapters/AS2KeyAdapter";\n' +
-	    'var Mouse				from "awayjs-player/lib/adapters/AS2MouseAdapter";\n' +
-	    'var Stage				from "awayjs-player/lib/adapters/AS2StageAdapter";\n' +
-	    'var SharedObject		from "awayjs-player/lib/adapters/AS2SharedObjectAdapter";\n' +
+	var AS2SymbolAdapter_1 = __webpack_require__(312);
+	var AS2MCSoundProps_1 = __webpack_require__(313);
+	var includeString = 'var Color			= require("awayjs-player/lib/adapters/AS2ColorAdapter").default;\n' +
+	    'var System				= require("awayjs-player/lib/adapters/AS2SystemAdapter").default;\n' +
+	    'var Sound				= require("awayjs-player/lib/adapters/AS2SoundAdapter").default;\n' +
+	    'var Key				= require("awayjs-player/lib/adapters/AS2KeyAdapter").default;\n' +
+	    'var Mouse				= require("awayjs-player/lib/adapters/AS2MouseAdapter").default;\n' +
+	    'var Stage				= require("awayjs-player/lib/adapters/AS2StageAdapter").default;\n' +
+	    'var SharedObject		= require("awayjs-player/lib/adapters/AS2SharedObjectAdapter").default;\n' +
 	    'var int = function(value) {return Math.floor(value) | 0;}\n' +
 	    'var string = function(value) {return value.toString();}\n' +
 	    'var getURL = function(value) {return value;}\n';
@@ -47382,7 +49842,7 @@
 	            var sibling = document.scripts[0];
 	            sibling.parentNode.insertBefore(tag, sibling).parentNode.removeChild(tag);
 	            var script = __framescript__;
-	            delete window['__framescript__'];
+	            window['__framescript__'] = null;
 	        }
 	        catch (err) {
 	            console.log("Syntax error in script:\n", str);
@@ -47628,12 +50088,12 @@
 
 
 /***/ },
-/* 296 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AssetLibraryBundle_1 = __webpack_require__(102);
-	var Loader_1 = __webpack_require__(104);
+	var AssetLibraryBundle_1 = __webpack_require__(115);
+	var Loader_1 = __webpack_require__(117);
 	/**
 	 * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
 	 * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
@@ -47845,7 +50305,7 @@
 
 
 /***/ },
-/* 297 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47856,9 +50316,9 @@
 	};
 	var AssetEvent_1 = __webpack_require__(1);
 	var Sprite_1 = __webpack_require__(57);
-	var TextField_1 = __webpack_require__(298);
+	var TextField_1 = __webpack_require__(309);
 	var MouseEvent_1 = __webpack_require__(55);
-	var Timeline_1 = __webpack_require__(300);
+	var Timeline_1 = __webpack_require__(311);
 	var FrameScriptManager_1 = __webpack_require__(56);
 	var MovieClip = (function (_super) {
 	    __extends(MovieClip, _super);
@@ -48180,7 +50640,7 @@
 
 
 /***/ },
-/* 298 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48190,16 +50650,16 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesView_1 = __webpack_require__(66);
-	var Float2Attributes_1 = __webpack_require__(202);
+	var Float2Attributes_1 = __webpack_require__(105);
 	var Byte4Attributes_1 = __webpack_require__(68);
-	var Matrix_1 = __webpack_require__(81);
+	var Matrix_1 = __webpack_require__(87);
 	var ColorTransform_1 = __webpack_require__(19);
-	var Sampler2D_1 = __webpack_require__(72);
+	var Sampler2D_1 = __webpack_require__(78);
 	var HierarchicalProperties_1 = __webpack_require__(30);
-	var Style_1 = __webpack_require__(93);
-	var TextFieldType_1 = __webpack_require__(299);
+	var Style_1 = __webpack_require__(100);
+	var TextFieldType_1 = __webpack_require__(310);
 	var Sprite_1 = __webpack_require__(57);
-	var TriangleElements_1 = __webpack_require__(209);
+	var TriangleElements_1 = __webpack_require__(107);
 	/**
 	 * The TextField class is used to create display objects for text display and
 	 * input. <ph outputclass="flexonly">You can use the TextField class to
@@ -49072,7 +51532,7 @@
 
 
 /***/ },
-/* 299 */
+/* 310 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -49104,7 +51564,7 @@
 
 
 /***/ },
-/* 300 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49480,7 +51940,7 @@
 
 
 /***/ },
-/* 301 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49755,7 +52215,7 @@
 
 
 /***/ },
-/* 302 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49823,7 +52283,7 @@
 
 
 /***/ },
-/* 303 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49832,8 +52292,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AS2SymbolAdapter_1 = __webpack_require__(301);
-	var TextField_1 = __webpack_require__(298);
+	var AS2SymbolAdapter_1 = __webpack_require__(312);
+	var TextField_1 = __webpack_require__(309);
 	var AS2TextFieldAdapter = (function (_super) {
 	    __extends(AS2TextFieldAdapter, _super);
 	    function AS2TextFieldAdapter(adaptee, view) {
@@ -49880,7 +52340,7 @@
 
 
 /***/ },
-/* 304 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49890,7 +52350,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var TesselatedFontTable_1 = __webpack_require__(305);
+	var TesselatedFontTable_1 = __webpack_require__(316);
 	/**
 	 * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
 	 *
@@ -49959,7 +52419,7 @@
 
 
 /***/ },
-/* 305 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49969,7 +52429,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var TesselatedFontChar_1 = __webpack_require__(306);
+	var TesselatedFontChar_1 = __webpack_require__(317);
 	/**
 	 * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
 	 *
@@ -50080,7 +52540,7 @@
 
 
 /***/ },
-/* 306 */
+/* 317 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -50129,7 +52589,7 @@
 
 
 /***/ },
-/* 307 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50259,11 +52719,11 @@
 
 
 /***/ },
-/* 308 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AWD3Utils_1 = __webpack_require__(309);
+	var AWD3Utils_1 = __webpack_require__(320);
 	var AWDBlock = (function () {
 	    function AWDBlock(this_id, this_type) {
 	        this.type = this_type;
@@ -50294,7 +52754,7 @@
 
 
 /***/ },
-/* 309 */
+/* 320 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -50336,7 +52796,7 @@
 
 
 /***/ },
-/* 310 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50345,7 +52805,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SceneGraphNode_1 = __webpack_require__(311);
+	var SceneGraphNode_1 = __webpack_require__(322);
 	var PartitionBase_1 = __webpack_require__(43);
 	/**
 	 * @class away.partition.Partition
@@ -50422,7 +52882,7 @@
 
 
 /***/ },
-/* 311 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50431,7 +52891,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DisplayObjectNode_1 = __webpack_require__(312);
+	var DisplayObjectNode_1 = __webpack_require__(323);
 	/**
 	 * Maintains scenegraph heirarchy when collecting nodes
 	 */
@@ -50518,7 +52978,7 @@
 
 
 /***/ },
-/* 312 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50527,9 +52987,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AbstractionBase_1 = __webpack_require__(186);
-	var AxisAlignedBoundingBox_1 = __webpack_require__(313);
-	var BoundingSphere_1 = __webpack_require__(314);
+	var AbstractionBase_1 = __webpack_require__(199);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
+	var BoundingSphere_1 = __webpack_require__(325);
 	var BoundsType_1 = __webpack_require__(31);
 	var NullBounds_1 = __webpack_require__(40);
 	var DisplayObjectEvent_1 = __webpack_require__(37);
@@ -50632,7 +53092,7 @@
 
 
 /***/ },
-/* 313 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50642,9 +53102,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var PlaneClassification_1 = __webpack_require__(41);
-	var ElementsType_1 = __webpack_require__(224);
+	var ElementsType_1 = __webpack_require__(235);
 	var BoundingVolumeBase_1 = __webpack_require__(42);
-	var PrimitiveCubePrefab_1 = __webpack_require__(228);
+	var PrimitiveCubePrefab_1 = __webpack_require__(239);
 	/**
 	 * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
 	 * This is useful for most sprites.
@@ -50761,7 +53221,7 @@
 
 
 /***/ },
-/* 314 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50771,9 +53231,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var PlaneClassification_1 = __webpack_require__(41);
-	var ElementsType_1 = __webpack_require__(224);
+	var ElementsType_1 = __webpack_require__(235);
 	var BoundingVolumeBase_1 = __webpack_require__(42);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(230);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
 	var BoundingSphere = (function (_super) {
 	    __extends(BoundingSphere, _super);
 	    function BoundingSphere(entity) {
@@ -50860,7 +53320,7 @@
 
 
 /***/ },
-/* 315 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51196,7 +53656,7 @@
 
 
 /***/ },
-/* 316 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51205,9 +53665,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var BitmapImageChannel_1 = __webpack_require__(317);
-	var Image2D_1 = __webpack_require__(75);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImageChannel_1 = __webpack_require__(328);
+	var Image2D_1 = __webpack_require__(81);
 	var Point_1 = __webpack_require__(26);
 	/**
 	 *
@@ -51356,7 +53816,7 @@
 
 
 /***/ },
-/* 317 */
+/* 328 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -51374,7 +53834,7 @@
 
 
 /***/ },
-/* 318 */
+/* 329 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -51532,7 +53992,7 @@
 
 
 /***/ },
-/* 319 */
+/* 330 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -52359,7 +54819,7 @@
 
 
 /***/ },
-/* 320 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52369,7 +54829,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var MathConsts_1 = __webpack_require__(22);
-	var ControllerBase_1 = __webpack_require__(100);
+	var ControllerBase_1 = __webpack_require__(113);
 	/**
 	 * Extended camera used to hover round a specified target object.
 	 *
@@ -52596,13 +55056,13 @@
 
 
 /***/ },
-/* 321 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var AttributesBuffer_1 = __webpack_require__(64);
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var TriangleElements_1 = __webpack_require__(209);
+	var TriangleElements_1 = __webpack_require__(107);
 	var Sprite_1 = __webpack_require__(57);
 	/**
 	 *  Class Merge merges two or more static sprites into one.<code>Merge</code>
@@ -52885,11 +55345,11 @@
 
 
 /***/ },
-/* 322 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var PartialImplementationError_1 = __webpack_require__(323);
+	var PartialImplementationError_1 = __webpack_require__(109);
 	/**
 	 *
 	 */
@@ -52941,7 +55401,7 @@
 
 
 /***/ },
-/* 323 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52950,54 +55410,21 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ErrorBase_1 = __webpack_require__(14);
-	/**
-	 * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
-	 * by a concrete subclass.
-	 */
-	var PartialImplementationError = (function (_super) {
-	    __extends(PartialImplementationError, _super);
-	    /**
-	     * Create a new AbstractMethodError.
-	     * @param message An optional message to override the default error message.
-	     * @param id The id of the error.
-	     */
-	    function PartialImplementationError(dependency, id) {
-	        if (dependency === void 0) { dependency = ''; }
-	        if (id === void 0) { id = 0; }
-	        _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
-	    }
-	    return PartialImplementationError;
-	}(ErrorBase_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = PartialImplementationError;
-
-
-/***/ },
-/* 324 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Sampler2D_1 = __webpack_require__(72);
+	var Sampler2D_1 = __webpack_require__(78);
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
-	var TriangleElements_1 = __webpack_require__(209);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
+	var TriangleElements_1 = __webpack_require__(107);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var MethodMaterialMode_1 = __webpack_require__(255);
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var MethodMaterialMode_1 = __webpack_require__(266);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	/**
 	 * OBJParser provides a parser for the OBJ data type.
 	 */
@@ -53858,7 +56285,7 @@
 
 
 /***/ },
-/* 325 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53867,13 +56294,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(233);
-	var AnimationRegisterCache_1 = __webpack_require__(326);
-	var AnimationElements_1 = __webpack_require__(327);
-	var ParticleAnimationData_1 = __webpack_require__(328);
-	var ParticleProperties_1 = __webpack_require__(329);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleTimeNode_1 = __webpack_require__(331);
+	var AnimationSetBase_1 = __webpack_require__(244);
+	var AnimationRegisterCache_1 = __webpack_require__(336);
+	var AnimationElements_1 = __webpack_require__(337);
+	var ParticleAnimationData_1 = __webpack_require__(338);
+	var ParticleProperties_1 = __webpack_require__(339);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleTimeNode_1 = __webpack_require__(341);
 	/**
 	 * The animation data set used by particle-based animators, containing particle animation data.
 	 *
@@ -54170,7 +56597,7 @@
 
 
 /***/ },
-/* 326 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54179,8 +56606,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShaderRegisterCache_1 = __webpack_require__(189);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ShaderRegisterCache_1 = __webpack_require__(202);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * ...
 	 */
@@ -54369,7 +56796,7 @@
 
 
 /***/ },
-/* 327 */
+/* 337 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -54448,7 +56875,7 @@
 
 
 /***/ },
-/* 328 */
+/* 338 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -54472,7 +56899,7 @@
 
 
 /***/ },
-/* 329 */
+/* 339 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -54490,7 +56917,7 @@
 
 
 /***/ },
-/* 330 */
+/* 340 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -54519,7 +56946,7 @@
 
 
 /***/ },
-/* 331 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54528,9 +56955,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleTimeState_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleTimeState_1 = __webpack_require__(343);
 	/**
 	 * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
 	 */
@@ -54614,7 +57041,7 @@
 
 
 /***/ },
-/* 332 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54623,7 +57050,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(249);
+	var AnimationNodeBase_1 = __webpack_require__(260);
 	/**
 	 * Provides an abstract base class for particle animation nodes.
 	 */
@@ -54746,7 +57173,7 @@
 
 
 /***/ },
-/* 333 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54755,8 +57182,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -54782,7 +57209,7 @@
 
 
 /***/ },
-/* 334 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54791,7 +57218,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	/**
 	 * ...
 	 */
@@ -54866,7 +57293,7 @@
 
 
 /***/ },
-/* 335 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54875,10 +57302,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var AnimatorBase_1 = __webpack_require__(237);
-	var AnimationElements_1 = __webpack_require__(327);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var AnimatorBase_1 = __webpack_require__(248);
+	var AnimationElements_1 = __webpack_require__(337);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
 	/**
 	 * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -54999,7 +57426,7 @@
 
 
 /***/ },
-/* 336 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55008,9 +57435,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleBillboardState_1 = __webpack_require__(337);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleBillboardState_1 = __webpack_require__(347);
 	/**
 	 * A particle animation node that controls the rotation of a particle to always face the camera.
 	 */
@@ -55064,7 +57491,7 @@
 
 
 /***/ },
-/* 337 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55076,7 +57503,7 @@
 	var MathConsts_1 = __webpack_require__(22);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Orientation3D_1 = __webpack_require__(24);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -55145,7 +57572,7 @@
 
 
 /***/ },
-/* 338 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55154,9 +57581,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleScaleState_1 = __webpack_require__(339);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleScaleState_1 = __webpack_require__(349);
 	/**
 	 * A particle animation node used to control the scale variation of a particle over time.
 	 */
@@ -55245,7 +57672,7 @@
 
 
 /***/ },
-/* 339 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55255,9 +57682,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -55365,7 +57792,7 @@
 
 
 /***/ },
-/* 340 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55375,9 +57802,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleVelocityState_1 = __webpack_require__(341);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleVelocityState_1 = __webpack_require__(351);
 	/**
 	 * A particle animation node used to set the starting velocity of a particle.
 	 */
@@ -55438,7 +57865,7 @@
 
 
 /***/ },
-/* 341 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55447,9 +57874,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -55501,7 +57928,7 @@
 
 
 /***/ },
-/* 342 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55511,10 +57938,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ColorTransform_1 = __webpack_require__(19);
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleColorState_1 = __webpack_require__(343);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleColorState_1 = __webpack_require__(353);
 	/**
 	 * A particle animation node used to control the color variation of a particle over time.
 	 */
@@ -55684,7 +58111,7 @@
 
 
 /***/ },
-/* 343 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55694,9 +58121,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 * @author ...
@@ -55849,15 +58276,15 @@
 
 
 /***/ },
-/* 344 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var AttributesBuffer_1 = __webpack_require__(64);
 	var Point_1 = __webpack_require__(26);
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticleData_1 = __webpack_require__(345);
-	var TriangleElements_1 = __webpack_require__(209);
+	var ParticleData_1 = __webpack_require__(355);
+	var TriangleElements_1 = __webpack_require__(107);
 	/**
 	 * ...
 	 */
@@ -56032,7 +58459,7 @@
 
 
 /***/ },
-/* 345 */
+/* 355 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56046,7 +58473,7 @@
 
 
 /***/ },
-/* 346 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56056,20 +58483,20 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImage2D_1 = __webpack_require__(80);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
-	var TriangleElements_1 = __webpack_require__(209);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
+	var TriangleElements_1 = __webpack_require__(107);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var MethodMaterialMode_1 = __webpack_require__(255);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var MethodMaterialMode_1 = __webpack_require__(266);
 	/**
 	 * Max3DSParser provides a parser for the 3ds data type.
 	 */
@@ -56745,11 +59172,11 @@
 
 
 /***/ },
-/* 347 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CrossfadeTransitionNode_1 = __webpack_require__(348);
+	var CrossfadeTransitionNode_1 = __webpack_require__(358);
 	/**
 	 *
 	 */
@@ -56773,7 +59200,7 @@
 
 
 /***/ },
-/* 348 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56782,8 +59209,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SkeletonBinaryLERPNode_1 = __webpack_require__(349);
-	var CrossfadeTransitionState_1 = __webpack_require__(351);
+	var SkeletonBinaryLERPNode_1 = __webpack_require__(359);
+	var CrossfadeTransitionState_1 = __webpack_require__(361);
 	/**
 	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -56803,7 +59230,7 @@
 
 
 /***/ },
-/* 349 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56812,8 +59239,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(249);
-	var SkeletonBinaryLERPState_1 = __webpack_require__(350);
+	var AnimationNodeBase_1 = __webpack_require__(260);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
 	/**
 	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -56839,7 +59266,7 @@
 
 
 /***/ },
-/* 350 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56848,9 +59275,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	/**
 	 *
 	 */
@@ -56961,7 +59388,7 @@
 
 
 /***/ },
-/* 351 */
+/* 361 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56970,8 +59397,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SkeletonBinaryLERPState_1 = __webpack_require__(350);
-	var AnimationStateEvent_1 = __webpack_require__(244);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
+	var AnimationStateEvent_1 = __webpack_require__(255);
 	/**
 	 *
 	 */
@@ -57001,7 +59428,7 @@
 
 
 /***/ },
-/* 352 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57010,7 +59437,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DirectionalShadowMapper_1 = __webpack_require__(213);
+	var DirectionalShadowMapper_1 = __webpack_require__(224);
 	var NearDirectionalShadowMapper = (function (_super) {
 	    __extends(NearDirectionalShadowMapper, _super);
 	    function NearDirectionalShadowMapper(coverageRatio) {
@@ -57052,7 +59479,7 @@
 
 
 /***/ },
-/* 353 */
+/* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57061,13 +59488,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Quaternion_1 = __webpack_require__(242);
+	var Quaternion_1 = __webpack_require__(253);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
-	var ParserBase_1 = __webpack_require__(203);
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var SkeletonClipNode_1 = __webpack_require__(247);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var ParserBase_1 = __webpack_require__(215);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var SkeletonClipNode_1 = __webpack_require__(258);
 	/**
 	 * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
 	 *
@@ -57578,7 +60005,7 @@
 
 
 /***/ },
-/* 354 */
+/* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57588,16 +60015,16 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var Quaternion_1 = __webpack_require__(242);
+	var Quaternion_1 = __webpack_require__(253);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
-	var ParserBase_1 = __webpack_require__(203);
-	var TriangleElements_1 = __webpack_require__(209);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var ParserBase_1 = __webpack_require__(215);
+	var TriangleElements_1 = __webpack_require__(107);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var SkeletonAnimationSet_1 = __webpack_require__(239);
-	var Skeleton_1 = __webpack_require__(245);
-	var SkeletonJoint_1 = __webpack_require__(246);
+	var SkeletonAnimationSet_1 = __webpack_require__(250);
+	var Skeleton_1 = __webpack_require__(256);
+	var SkeletonJoint_1 = __webpack_require__(257);
 	// todo: create animation system, parse skeleton
 	/**
 	 * MD5MeshParser provides a parser for the md5mesh data type, providing the graphics of the md5 format.
@@ -58132,7 +60559,7 @@
 
 
 /***/ },
-/* 355 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58337,7 +60764,7 @@
 
 
 /***/ },
-/* 356 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58347,10 +60774,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleBezierCurveState_1 = __webpack_require__(357);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleBezierCurveState_1 = __webpack_require__(367);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time along a bezier curve.
 	 */
@@ -58447,7 +60874,7 @@
 
 
 /***/ },
-/* 357 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58456,9 +60883,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -58519,7 +60946,7 @@
 
 
 /***/ },
-/* 358 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58529,10 +60956,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ColorTransform_1 = __webpack_require__(19);
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleInitialColorState_1 = __webpack_require__(359);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleInitialColorState_1 = __webpack_require__(369);
 	/**
 	 *
 	 */
@@ -58611,7 +61038,7 @@
 
 
 /***/ },
-/* 359 */
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58621,9 +61048,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	*
 	*/
@@ -58694,7 +61121,7 @@
 
 
 /***/ },
-/* 360 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58704,9 +61131,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticlePositionState_1 = __webpack_require__(361);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticlePositionState_1 = __webpack_require__(371);
 	/**
 	 * A particle animation node used to set the starting position of a particle.
 	 */
@@ -58761,7 +61188,7 @@
 
 
 /***/ },
-/* 361 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58770,9 +61197,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 * @author ...
@@ -58828,7 +61255,7 @@
 
 
 /***/ },
-/* 362 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58838,19 +61265,19 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
 	var Graphics_1 = __webpack_require__(58);
-	var TriangleElements_1 = __webpack_require__(209);
+	var TriangleElements_1 = __webpack_require__(107);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var VertexClipNode_1 = __webpack_require__(253);
-	var VertexAnimationSet_1 = __webpack_require__(232);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var MethodMaterialMode_1 = __webpack_require__(255);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var VertexClipNode_1 = __webpack_require__(264);
+	var VertexAnimationSet_1 = __webpack_require__(243);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var MethodMaterialMode_1 = __webpack_require__(266);
 	/**
 	 * MD2Parser provides a parser for the MD2 data type.
 	 */
@@ -59225,35 +61652,35 @@
 
 
 /***/ },
-/* 363 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var attributes = __webpack_require__(364);
+	var attributes = __webpack_require__(374);
 	exports.attributes = attributes;
-	var audio = __webpack_require__(369);
+	var audio = __webpack_require__(379);
 	exports.audio = audio;
-	var errors = __webpack_require__(374);
+	var errors = __webpack_require__(384);
 	exports.errors = errors;
-	var events = __webpack_require__(376);
+	var events = __webpack_require__(386);
 	exports.events = events;
-	var geom = __webpack_require__(377);
+	var geom = __webpack_require__(387);
 	exports.geom = geom;
-	var image = __webpack_require__(378);
+	var image = __webpack_require__(388);
 	exports.image = image;
-	var library = __webpack_require__(379);
+	var library = __webpack_require__(389);
 	exports.library = library;
-	var managers = __webpack_require__(382);
+	var managers = __webpack_require__(392);
 	exports.managers = managers;
-	var net = __webpack_require__(383);
+	var net = __webpack_require__(393);
 	exports.net = net;
-	var parsers = __webpack_require__(385);
+	var parsers = __webpack_require__(395);
 	exports.parsers = parsers;
-	var projections = __webpack_require__(392);
+	var projections = __webpack_require__(402);
 	exports.projections = projections;
-	var ui = __webpack_require__(394);
+	var ui = __webpack_require__(404);
 	exports.ui = ui;
-	var utils = __webpack_require__(395);
+	var utils = __webpack_require__(405);
 	exports.utils = utils;
 	library.Loader.enableParser(parsers.Image2DParser);
 	library.Loader.enableParser(parsers.ImageCubeParser);
@@ -59262,7 +61689,7 @@
 
 
 /***/ },
-/* 364 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59270,30 +61697,30 @@
 	exports.AttributesView = AttributesView_1.default;
 	var AttributesBuffer_1 = __webpack_require__(64);
 	exports.AttributesBuffer = AttributesBuffer_1.default;
-	var Byte1Attributes_1 = __webpack_require__(365);
+	var Byte1Attributes_1 = __webpack_require__(375);
 	exports.Byte1Attributes = Byte1Attributes_1.default;
-	var Byte2Attributes_1 = __webpack_require__(366);
+	var Byte2Attributes_1 = __webpack_require__(376);
 	exports.Byte2Attributes = Byte2Attributes_1.default;
-	var Byte3Attributes_1 = __webpack_require__(367);
+	var Byte3Attributes_1 = __webpack_require__(377);
 	exports.Byte3Attributes = Byte3Attributes_1.default;
 	var Byte4Attributes_1 = __webpack_require__(68);
 	exports.Byte4Attributes = Byte4Attributes_1.default;
-	var Float1Attributes_1 = __webpack_require__(86);
+	var Float1Attributes_1 = __webpack_require__(92);
 	exports.Float1Attributes = Float1Attributes_1.default;
-	var Float2Attributes_1 = __webpack_require__(202);
+	var Float2Attributes_1 = __webpack_require__(105);
 	exports.Float2Attributes = Float2Attributes_1.default;
 	var Float3Attributes_1 = __webpack_require__(65);
 	exports.Float3Attributes = Float3Attributes_1.default;
 	var Float4Attributes_1 = __webpack_require__(67);
 	exports.Float4Attributes = Float4Attributes_1.default;
-	var Short2Attributes_1 = __webpack_require__(368);
+	var Short2Attributes_1 = __webpack_require__(378);
 	exports.Short2Attributes = Short2Attributes_1.default;
-	var Short3Attributes_1 = __webpack_require__(88);
+	var Short3Attributes_1 = __webpack_require__(94);
 	exports.Short3Attributes = Short3Attributes_1.default;
 
 
 /***/ },
-/* 365 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59343,7 +61770,7 @@
 
 
 /***/ },
-/* 366 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59393,7 +61820,7 @@
 
 
 /***/ },
-/* 367 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59443,7 +61870,7 @@
 
 
 /***/ },
-/* 368 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59493,16 +61920,16 @@
 
 
 /***/ },
-/* 369 */
+/* 379 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var WaveAudio_1 = __webpack_require__(370);
+	var WaveAudio_1 = __webpack_require__(380);
 	exports.WaveAudio = WaveAudio_1.default;
 
 
 /***/ },
-/* 370 */
+/* 380 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59511,7 +61938,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AudioManager_1 = __webpack_require__(371);
+	var AudioManager_1 = __webpack_require__(381);
 	var AssetBase_1 = __webpack_require__(27);
 	// TODO: Audio should probably be an interface containing play/stop/seek functionality
 	var WaveAudio = (function (_super) {
@@ -59597,12 +62024,12 @@
 
 
 /***/ },
-/* 371 */
+/* 381 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StreamingAudioChannel_1 = __webpack_require__(372);
-	var WebAudioChannel_1 = __webpack_require__(373);
+	var StreamingAudioChannel_1 = __webpack_require__(382);
+	var WebAudioChannel_1 = __webpack_require__(383);
 	var AudioManager = (function () {
 	    function AudioManager() {
 	    }
@@ -59636,7 +62063,7 @@
 
 
 /***/ },
-/* 372 */
+/* 382 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -59773,7 +62200,7 @@
 
 
 /***/ },
-/* 373 */
+/* 383 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -59905,7 +62332,7 @@
 
 
 /***/ },
-/* 374 */
+/* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59913,18 +62340,18 @@
 	exports.AbstractMethodError = AbstractMethodError_1.default;
 	var ArgumentError_1 = __webpack_require__(13);
 	exports.ArgumentError = ArgumentError_1.default;
-	var DocumentError_1 = __webpack_require__(375);
+	var DocumentError_1 = __webpack_require__(385);
 	exports.DocumentError = DocumentError_1.default;
 	var ErrorBase_1 = __webpack_require__(14);
 	exports.ErrorBase = ErrorBase_1.default;
-	var PartialImplementationError_1 = __webpack_require__(323);
+	var PartialImplementationError_1 = __webpack_require__(109);
 	exports.PartialImplementationError = PartialImplementationError_1.default;
 	var RangeError_1 = __webpack_require__(15);
 	exports.RangeError = RangeError_1.default;
 
 
 /***/ },
-/* 375 */
+/* 385 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59949,7 +62376,7 @@
 
 
 /***/ },
-/* 376 */
+/* 386 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59965,14 +62392,14 @@
 	exports.ParserEvent = ParserEvent_1.default;
 	var ProjectionEvent_1 = __webpack_require__(47);
 	exports.ProjectionEvent = ProjectionEvent_1.default;
-	var TimerEvent_1 = __webpack_require__(204);
+	var TimerEvent_1 = __webpack_require__(216);
 	exports.TimerEvent = TimerEvent_1.default;
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	exports.URLLoaderEvent = URLLoaderEvent_1.default;
 
 
 /***/ },
-/* 377 */
+/* 387 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59982,7 +62409,7 @@
 	exports.ColorTransform = ColorTransform_1.default;
 	var MathConsts_1 = __webpack_require__(22);
 	exports.MathConsts = MathConsts_1.default;
-	var Matrix_1 = __webpack_require__(81);
+	var Matrix_1 = __webpack_require__(87);
 	exports.Matrix = Matrix_1.default;
 	var Matrix3D_1 = __webpack_require__(23);
 	exports.Matrix3D = Matrix3D_1.default;
@@ -59996,9 +62423,9 @@
 	exports.PlaneClassification = PlaneClassification_1.default;
 	var Point_1 = __webpack_require__(26);
 	exports.Point = Point_1.default;
-	var PoissonLookup_1 = __webpack_require__(293);
+	var PoissonLookup_1 = __webpack_require__(304);
 	exports.PoissonLookup = PoissonLookup_1.default;
-	var Quaternion_1 = __webpack_require__(242);
+	var Quaternion_1 = __webpack_require__(253);
 	exports.Quaternion = Quaternion_1.default;
 	var Rectangle_1 = __webpack_require__(51);
 	exports.Rectangle = Rectangle_1.default;
@@ -60009,79 +62436,79 @@
 
 
 /***/ },
-/* 378 */
+/* 388 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImage2D_1 = __webpack_require__(80);
 	exports.BitmapImage2D = BitmapImage2D_1.default;
-	var BitmapImageChannel_1 = __webpack_require__(317);
+	var BitmapImageChannel_1 = __webpack_require__(328);
 	exports.BitmapImageChannel = BitmapImageChannel_1.default;
-	var BitmapImageCube_1 = __webpack_require__(83);
+	var BitmapImageCube_1 = __webpack_require__(89);
 	exports.BitmapImageCube = BitmapImageCube_1.default;
-	var BlendMode_1 = __webpack_require__(90);
+	var BlendMode_1 = __webpack_require__(96);
 	exports.BlendMode = BlendMode_1.default;
-	var CPUCanvas_1 = __webpack_require__(79);
+	var CPUCanvas_1 = __webpack_require__(85);
 	exports.CPUCanvas = CPUCanvas_1.default;
-	var CPURenderingContext2D_1 = __webpack_require__(80);
+	var CPURenderingContext2D_1 = __webpack_require__(86);
 	exports.CPURenderingContext2D = CPURenderingContext2D_1.default;
-	var Image2D_1 = __webpack_require__(75);
+	var Image2D_1 = __webpack_require__(81);
 	exports.Image2D = Image2D_1.default;
-	var ImageBase_1 = __webpack_require__(76);
+	var ImageBase_1 = __webpack_require__(82);
 	exports.ImageBase = ImageBase_1.default;
-	var ImageCube_1 = __webpack_require__(84);
+	var ImageCube_1 = __webpack_require__(90);
 	exports.ImageCube = ImageCube_1.default;
-	var ImageData_1 = __webpack_require__(82);
+	var ImageData_1 = __webpack_require__(88);
 	exports.ImageData = ImageData_1.default;
-	var Sampler2D_1 = __webpack_require__(72);
+	var Sampler2D_1 = __webpack_require__(78);
 	exports.Sampler2D = Sampler2D_1.default;
-	var SamplerBase_1 = __webpack_require__(73);
+	var SamplerBase_1 = __webpack_require__(79);
 	exports.SamplerBase = SamplerBase_1.default;
-	var SamplerCube_1 = __webpack_require__(220);
+	var SamplerCube_1 = __webpack_require__(231);
 	exports.SamplerCube = SamplerCube_1.default;
-	var SpecularImage2D_1 = __webpack_require__(316);
+	var SpecularImage2D_1 = __webpack_require__(327);
 	exports.SpecularImage2D = SpecularImage2D_1.default;
 
 
 /***/ },
-/* 379 */
+/* 389 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	exports.AbstractionBase = AbstractionBase_1.default;
 	var AssetBase_1 = __webpack_require__(27);
 	exports.AssetBase = AssetBase_1.default;
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	exports.AssetLibrary = AssetLibrary_1.default;
-	var AssetLibraryBundle_1 = __webpack_require__(102);
+	var AssetLibraryBundle_1 = __webpack_require__(115);
 	exports.AssetLibraryBundle = AssetLibraryBundle_1.default;
-	var AssetLibraryIterator_1 = __webpack_require__(103);
+	var AssetLibraryIterator_1 = __webpack_require__(116);
 	exports.AssetLibraryIterator = AssetLibraryIterator_1.default;
-	var ConflictPrecedence_1 = __webpack_require__(110);
+	var ConflictPrecedence_1 = __webpack_require__(123);
 	exports.ConflictPrecedence = ConflictPrecedence_1.default;
-	var ConflictStrategy_1 = __webpack_require__(111);
+	var ConflictStrategy_1 = __webpack_require__(124);
 	exports.ConflictStrategy = ConflictStrategy_1.default;
-	var ConflictStrategyBase_1 = __webpack_require__(113);
+	var ConflictStrategyBase_1 = __webpack_require__(126);
 	exports.ConflictStrategyBase = ConflictStrategyBase_1.default;
-	var ErrorConflictStrategy_1 = __webpack_require__(112);
+	var ErrorConflictStrategy_1 = __webpack_require__(125);
 	exports.ErrorConflictStrategy = ErrorConflictStrategy_1.default;
-	var IDUtil_1 = __webpack_require__(380);
+	var IDUtil_1 = __webpack_require__(390);
 	exports.IDUtil = IDUtil_1.default;
-	var IgnoreConflictStrategy_1 = __webpack_require__(114);
+	var IgnoreConflictStrategy_1 = __webpack_require__(127);
 	exports.IgnoreConflictStrategy = IgnoreConflictStrategy_1.default;
-	var Loader_1 = __webpack_require__(104);
+	var Loader_1 = __webpack_require__(117);
 	exports.Loader = Loader_1.default;
-	var LoaderContext_1 = __webpack_require__(318);
+	var LoaderContext_1 = __webpack_require__(329);
 	exports.LoaderContext = LoaderContext_1.default;
-	var LoaderInfo_1 = __webpack_require__(381);
+	var LoaderInfo_1 = __webpack_require__(391);
 	exports.LoaderInfo = LoaderInfo_1.default;
-	var NumSuffixConflictStrategy_1 = __webpack_require__(115);
+	var NumSuffixConflictStrategy_1 = __webpack_require__(128);
 	exports.NumSuffixConflictStrategy = NumSuffixConflictStrategy_1.default;
 
 
 /***/ },
-/* 380 */
+/* 390 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -60146,7 +62573,7 @@
 
 
 /***/ },
-/* 381 */
+/* 391 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60402,39 +62829,39 @@
 
 
 /***/ },
-/* 382 */
+/* 392 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AudioManager_1 = __webpack_require__(371);
+	var AudioManager_1 = __webpack_require__(381);
 	exports.AudioManager = AudioManager_1.default;
-	var StreamingAudioChannel_1 = __webpack_require__(372);
+	var StreamingAudioChannel_1 = __webpack_require__(382);
 	exports.StreamingAudioChannel = StreamingAudioChannel_1.default;
-	var WebAudioChannel_1 = __webpack_require__(373);
+	var WebAudioChannel_1 = __webpack_require__(383);
 	exports.WebAudioChannel = WebAudioChannel_1.default;
 
 
 /***/ },
-/* 383 */
+/* 393 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CrossDomainPolicy_1 = __webpack_require__(384);
+	var CrossDomainPolicy_1 = __webpack_require__(394);
 	exports.CrossDomainPolicy = CrossDomainPolicy_1.default;
-	var URLLoader_1 = __webpack_require__(105);
+	var URLLoader_1 = __webpack_require__(118);
 	exports.URLLoader = URLLoader_1.default;
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	exports.URLLoaderDataFormat = URLLoaderDataFormat_1.default;
 	var URLRequest_1 = __webpack_require__(3);
 	exports.URLRequest = URLRequest_1.default;
 	var URLRequestMethod_1 = __webpack_require__(4);
 	exports.URLRequestMethod = URLRequestMethod_1.default;
-	var URLVariables_1 = __webpack_require__(107);
+	var URLVariables_1 = __webpack_require__(120);
 	exports.URLVariables = URLVariables_1.default;
 
 
 /***/ },
-/* 384 */
+/* 394 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -60450,30 +62877,30 @@
 
 
 /***/ },
-/* 385 */
+/* 395 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2DParser_1 = __webpack_require__(386);
+	var Image2DParser_1 = __webpack_require__(396);
 	exports.Image2DParser = Image2DParser_1.default;
-	var ImageCubeParser_1 = __webpack_require__(387);
+	var ImageCubeParser_1 = __webpack_require__(397);
 	exports.ImageCubeParser = ImageCubeParser_1.default;
-	var ParserBase_1 = __webpack_require__(203);
+	var ParserBase_1 = __webpack_require__(215);
 	exports.ParserBase = ParserBase_1.default;
-	var ParserDataFormat_1 = __webpack_require__(388);
+	var ParserDataFormat_1 = __webpack_require__(398);
 	exports.ParserDataFormat = ParserDataFormat_1.default;
-	var ParserUtils_1 = __webpack_require__(205);
+	var ParserUtils_1 = __webpack_require__(217);
 	exports.ParserUtils = ParserUtils_1.default;
-	var ResourceDependency_1 = __webpack_require__(109);
+	var ResourceDependency_1 = __webpack_require__(122);
 	exports.ResourceDependency = ResourceDependency_1.default;
-	var TextureAtlasParser_1 = __webpack_require__(389);
+	var TextureAtlasParser_1 = __webpack_require__(399);
 	exports.TextureAtlasParser = TextureAtlasParser_1.default;
-	var WaveAudioParser_1 = __webpack_require__(391);
+	var WaveAudioParser_1 = __webpack_require__(401);
 	exports.WaveAudioParser = WaveAudioParser_1.default;
 
 
 /***/ },
-/* 386 */
+/* 396 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60482,10 +62909,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
-	var ByteArray_1 = __webpack_require__(126);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
+	var ByteArray_1 = __webpack_require__(139);
 	/**
 	 * Image2DParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
@@ -60598,7 +63025,7 @@
 
 
 /***/ },
-/* 387 */
+/* 397 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60607,10 +63034,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImageCube_1 = __webpack_require__(83);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var BitmapImageCube_1 = __webpack_require__(89);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
+	var ParserBase_1 = __webpack_require__(215);
 	/**
 	 * ImageCubeParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -60726,7 +63153,7 @@
 
 
 /***/ },
-/* 388 */
+/* 398 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -60755,7 +63182,7 @@
 
 
 /***/ },
-/* 389 */
+/* 399 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60764,13 +63191,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Sampler2D_1 = __webpack_require__(72);
+	var Sampler2D_1 = __webpack_require__(78);
 	var Rectangle_1 = __webpack_require__(51);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(203);
-	var ParserUtils_1 = __webpack_require__(205);
-	var XmlUtils_1 = __webpack_require__(390);
+	var ParserBase_1 = __webpack_require__(215);
+	var ParserUtils_1 = __webpack_require__(217);
+	var XmlUtils_1 = __webpack_require__(400);
 	/**
 	 * TextureAtlasParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -60907,7 +63334,7 @@
 
 
 /***/ },
-/* 390 */
+/* 400 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -60969,8 +63396,7 @@
 	        return attribute.value;
 	    };
 	    XmlUtils.writeAttributeValue = function (node, attrName, attrValue) {
-	        var attribute = new Attr();
-	        attribute.name = attrName;
+	        var attribute = document.createAttribute(attrName);
 	        attribute.value = attrValue;
 	        attribute = node.attributes.setNamedItem(attribute);
 	        console.log("XmlUltils - writeAttributeValue() - name: " + attribute.name + ", value: " + attribute.value);
@@ -60990,7 +63416,7 @@
 
 
 /***/ },
-/* 391 */
+/* 401 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60999,10 +63425,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var WaveAudio_1 = __webpack_require__(370);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
-	var ParserBase_1 = __webpack_require__(203);
-	var ByteArray_1 = __webpack_require__(126);
+	var WaveAudio_1 = __webpack_require__(380);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var ParserBase_1 = __webpack_require__(215);
+	var ByteArray_1 = __webpack_require__(139);
 	var WaveAudioParser = (function (_super) {
 	    __extends(WaveAudioParser, _super);
 	    function WaveAudioParser() {
@@ -61058,19 +63484,19 @@
 
 
 /***/ },
-/* 392 */
+/* 402 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var CoordinateSystem_1 = __webpack_require__(49);
 	exports.CoordinateSystem = CoordinateSystem_1.default;
-	var FreeMatrixProjection_1 = __webpack_require__(214);
+	var FreeMatrixProjection_1 = __webpack_require__(225);
 	exports.FreeMatrixProjection = FreeMatrixProjection_1.default;
-	var ObliqueNearPlaneProjection_1 = __webpack_require__(393);
+	var ObliqueNearPlaneProjection_1 = __webpack_require__(403);
 	exports.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection_1.default;
-	var OrthographicOffCenterProjection_1 = __webpack_require__(208);
+	var OrthographicOffCenterProjection_1 = __webpack_require__(220);
 	exports.OrthographicOffCenterProjection = OrthographicOffCenterProjection_1.default;
-	var OrthographicProjection_1 = __webpack_require__(207);
+	var OrthographicProjection_1 = __webpack_require__(219);
 	exports.OrthographicProjection = OrthographicProjection_1.default;
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	exports.PerspectiveProjection = PerspectiveProjection_1.default;
@@ -61079,7 +63505,7 @@
 
 
 /***/ },
-/* 393 */
+/* 403 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61196,51 +63622,51 @@
 
 
 /***/ },
-/* 394 */
+/* 404 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Keyboard_1 = __webpack_require__(319);
+	var Keyboard_1 = __webpack_require__(330);
 	exports.Keyboard = Keyboard_1.default;
 
 
 /***/ },
-/* 395 */
+/* 405 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImageUtils_1 = __webpack_require__(78);
+	var BitmapImageUtils_1 = __webpack_require__(84);
 	exports.BitmapImageUtils = BitmapImageUtils_1.default;
-	var ByteArray_1 = __webpack_require__(126);
+	var ByteArray_1 = __webpack_require__(139);
 	exports.ByteArray = ByteArray_1.default;
-	var ByteArrayBase_1 = __webpack_require__(127);
+	var ByteArrayBase_1 = __webpack_require__(140);
 	exports.ByteArrayBase = ByteArrayBase_1.default;
-	var ByteArrayBuffer_1 = __webpack_require__(396);
+	var ByteArrayBuffer_1 = __webpack_require__(406);
 	exports.ByteArrayBuffer = ByteArrayBuffer_1.default;
 	var ColorUtils_1 = __webpack_require__(20);
 	exports.ColorUtils = ColorUtils_1.default;
-	var CSS_1 = __webpack_require__(135);
+	var CSS_1 = __webpack_require__(148);
 	exports.CSS = CSS_1.default;
-	var Debug_1 = __webpack_require__(322);
+	var Debug_1 = __webpack_require__(333);
 	exports.Debug = Debug_1.default;
-	var Extensions_1 = __webpack_require__(397);
+	var Extensions_1 = __webpack_require__(407);
 	exports.Extensions = Extensions_1.default;
 	var getTimer_1 = __webpack_require__(8);
 	exports.getTimer = getTimer_1.default;
-	var ImageUtils_1 = __webpack_require__(77);
+	var ImageUtils_1 = __webpack_require__(83);
 	exports.ImageUtils = ImageUtils_1.default;
-	var MipmapGenerator_1 = __webpack_require__(398);
+	var MipmapGenerator_1 = __webpack_require__(408);
 	exports.MipmapGenerator = MipmapGenerator_1.default;
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	exports.RequestAnimationFrame = RequestAnimationFrame_1.default;
-	var Timer_1 = __webpack_require__(206);
+	var Timer_1 = __webpack_require__(218);
 	exports.Timer = Timer_1.default;
-	var XmlUtils_1 = __webpack_require__(390);
+	var XmlUtils_1 = __webpack_require__(400);
 	exports.XmlUtils = XmlUtils_1.default;
 
 
 /***/ },
-/* 396 */
+/* 406 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61249,7 +63675,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ByteArrayBase_1 = __webpack_require__(127);
+	var ByteArrayBase_1 = __webpack_require__(140);
 	var ByteArrayBuffer = (function (_super) {
 	    __extends(ByteArrayBuffer, _super);
 	    function ByteArrayBuffer() {
@@ -61366,7 +63792,7 @@
 
 
 /***/ },
-/* 397 */
+/* 407 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -61384,12 +63810,12 @@
 
 
 /***/ },
-/* 398 */
+/* 408 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var Matrix_1 = __webpack_require__(81);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var Matrix_1 = __webpack_require__(87);
 	var Rectangle_1 = __webpack_require__(51);
 	var MipmapGenerator = (function () {
 	    function MipmapGenerator() {
@@ -61624,47 +64050,47 @@
 
 
 /***/ },
-/* 399 */
+/* 409 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var adapters = __webpack_require__(400);
+	var adapters = __webpack_require__(410);
 	exports.adapters = adapters;
-	var animators = __webpack_require__(401);
+	var animators = __webpack_require__(411);
 	exports.animators = animators;
-	var base = __webpack_require__(402);
+	var base = __webpack_require__(412);
 	exports.base = base;
-	var bounds = __webpack_require__(403);
+	var bounds = __webpack_require__(413);
 	exports.bounds = bounds;
-	var controllers = __webpack_require__(404);
+	var controllers = __webpack_require__(414);
 	exports.controllers = controllers;
-	var display = __webpack_require__(407);
+	var display = __webpack_require__(417);
 	exports.display = display;
-	var draw = __webpack_require__(409);
+	var draw = __webpack_require__(419);
 	exports.draw = draw;
-	var errors = __webpack_require__(422);
+	var errors = __webpack_require__(426);
 	exports.errors = errors;
-	var events = __webpack_require__(424);
+	var events = __webpack_require__(428);
 	exports.events = events;
-	var factories = __webpack_require__(427);
+	var factories = __webpack_require__(431);
 	exports.factories = factories;
-	var graphics = __webpack_require__(428);
+	var graphics = __webpack_require__(432);
 	exports.graphics = graphics;
-	var managers = __webpack_require__(429);
+	var managers = __webpack_require__(433);
 	exports.managers = managers;
-	var materials = __webpack_require__(431);
+	var materials = __webpack_require__(435);
 	exports.materials = materials;
-	var partition = __webpack_require__(434);
+	var partition = __webpack_require__(438);
 	exports.partition = partition;
-	var pick = __webpack_require__(441);
+	var pick = __webpack_require__(445);
 	exports.pick = pick;
-	var prefabs = __webpack_require__(442);
+	var prefabs = __webpack_require__(446);
 	exports.prefabs = prefabs;
-	var text = __webpack_require__(444);
+	var text = __webpack_require__(448);
 	exports.text = text;
-	var textures = __webpack_require__(451);
+	var textures = __webpack_require__(455);
 	exports.textures = textures;
-	var utils = __webpack_require__(452);
+	var utils = __webpack_require__(456);
 	exports.utils = utils;
 	var View_1 = __webpack_require__(9);
 	exports.View = View_1.default;
@@ -61682,25 +64108,25 @@
 
 
 /***/ },
-/* 400 */
+/* 410 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 401 */
+/* 411 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ParticleData_1 = __webpack_require__(345);
+	var ParticleData_1 = __webpack_require__(355);
 	exports.ParticleData = ParticleData_1.default;
-	var AnimationNodeBase_1 = __webpack_require__(249);
+	var AnimationNodeBase_1 = __webpack_require__(260);
 	exports.AnimationNodeBase = AnimationNodeBase_1.default;
 
 
 /***/ },
-/* 402 */
+/* 412 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61710,9 +64136,9 @@
 	exports.HierarchicalProperties = HierarchicalProperties_1.default;
 	var OrientationMode_1 = __webpack_require__(33);
 	exports.OrientationMode = OrientationMode_1.default;
-	var Style_1 = __webpack_require__(93);
+	var Style_1 = __webpack_require__(100);
 	exports.Style = Style_1.default;
-	var Timeline_1 = __webpack_require__(300);
+	var Timeline_1 = __webpack_require__(311);
 	exports.Timeline = Timeline_1.default;
 	var TouchPoint_1 = __webpack_require__(10);
 	exports.TouchPoint = TouchPoint_1.default;
@@ -61721,13 +64147,13 @@
 
 
 /***/ },
-/* 403 */
+/* 413 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AxisAlignedBoundingBox_1 = __webpack_require__(313);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
 	exports.AxisAlignedBoundingBox = AxisAlignedBoundingBox_1.default;
-	var BoundingSphere_1 = __webpack_require__(314);
+	var BoundingSphere_1 = __webpack_require__(325);
 	exports.BoundingSphere = BoundingSphere_1.default;
 	var BoundingVolumeBase_1 = __webpack_require__(42);
 	exports.BoundingVolumeBase = BoundingVolumeBase_1.default;
@@ -61738,26 +64164,26 @@
 
 
 /***/ },
-/* 404 */
+/* 414 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ControllerBase_1 = __webpack_require__(100);
+	var ControllerBase_1 = __webpack_require__(113);
 	exports.ControllerBase = ControllerBase_1.default;
-	var FirstPersonController_1 = __webpack_require__(320);
+	var FirstPersonController_1 = __webpack_require__(331);
 	exports.FirstPersonController = FirstPersonController_1.default;
-	var FollowController_1 = __webpack_require__(405);
+	var FollowController_1 = __webpack_require__(415);
 	exports.FollowController = FollowController_1.default;
-	var HoverController_1 = __webpack_require__(98);
+	var HoverController_1 = __webpack_require__(111);
 	exports.HoverController = HoverController_1.default;
-	var LookAtController_1 = __webpack_require__(99);
+	var LookAtController_1 = __webpack_require__(112);
 	exports.LookAtController = LookAtController_1.default;
-	var SpringController_1 = __webpack_require__(406);
+	var SpringController_1 = __webpack_require__(416);
 	exports.SpringController = SpringController_1.default;
 
 
 /***/ },
-/* 405 */
+/* 415 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61766,7 +64192,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var HoverController_1 = __webpack_require__(98);
+	var HoverController_1 = __webpack_require__(111);
 	/**
 	 * Controller used to follow behind an object on the XZ plane, with an optional
 	 * elevation (tiltAngle).
@@ -61796,7 +64222,7 @@
 
 
 /***/ },
-/* 406 */
+/* 416 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61806,7 +64232,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var LookAtController_1 = __webpack_require__(99);
+	var LookAtController_1 = __webpack_require__(112);
 	/**
 	 * Uses spring physics to animate the target object towards a position that is
 	 * defined as the lookAtTarget object's position plus the vector defined by the
@@ -61866,46 +64292,46 @@
 
 
 /***/ },
-/* 407 */
+/* 417 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Billboard_1 = __webpack_require__(69);
+	var Billboard_1 = __webpack_require__(110);
 	exports.Billboard = Billboard_1.default;
 	var Camera_1 = __webpack_require__(45);
 	exports.Camera = Camera_1.default;
-	var DirectionalLight_1 = __webpack_require__(210);
+	var DirectionalLight_1 = __webpack_require__(221);
 	exports.DirectionalLight = DirectionalLight_1.default;
 	var DisplayObject_1 = __webpack_require__(16);
 	exports.DisplayObject = DisplayObject_1.default;
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	exports.DisplayObjectContainer = DisplayObjectContainer_1.default;
-	var LightBase_1 = __webpack_require__(211);
+	var LightBase_1 = __webpack_require__(222);
 	exports.LightBase = LightBase_1.default;
-	var LightProbe_1 = __webpack_require__(219);
+	var LightProbe_1 = __webpack_require__(230);
 	exports.LightProbe = LightProbe_1.default;
-	var LineSegment_1 = __webpack_require__(355);
+	var LineSegment_1 = __webpack_require__(365);
 	exports.LineSegment = LineSegment_1.default;
-	var LoaderContainer_1 = __webpack_require__(101);
+	var LoaderContainer_1 = __webpack_require__(114);
 	exports.LoaderContainer = LoaderContainer_1.default;
-	var MovieClip_1 = __webpack_require__(297);
+	var MovieClip_1 = __webpack_require__(308);
 	exports.MovieClip = MovieClip_1.default;
-	var PointLight_1 = __webpack_require__(216);
+	var PointLight_1 = __webpack_require__(227);
 	exports.PointLight = PointLight_1.default;
 	var Scene_1 = __webpack_require__(11);
 	exports.Scene = Scene_1.default;
-	var Shape_1 = __webpack_require__(408);
+	var Shape_1 = __webpack_require__(418);
 	exports.Shape = Shape_1.default;
-	var Skybox_1 = __webpack_require__(89);
+	var Skybox_1 = __webpack_require__(95);
 	exports.Skybox = Skybox_1.default;
 	var Sprite_1 = __webpack_require__(57);
 	exports.Sprite = Sprite_1.default;
-	var TextField_1 = __webpack_require__(298);
+	var TextField_1 = __webpack_require__(309);
 	exports.TextField = TextField_1.default;
 
 
 /***/ },
-/* 408 */
+/* 418 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62136,74 +64562,46 @@
 
 
 /***/ },
-/* 409 */
+/* 419 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CapsStyle_1 = __webpack_require__(410);
+	var CapsStyle_1 = __webpack_require__(75);
 	exports.CapsStyle = CapsStyle_1.default;
-	var GradientType_1 = __webpack_require__(411);
+	var GradientType_1 = __webpack_require__(420);
 	exports.GradientType = GradientType_1.default;
-	var Graphics_1 = __webpack_require__(412);
-	exports.Graphics = Graphics_1.default;
-	var GraphicsPath_1 = __webpack_require__(413);
+	var GraphicsFactoryFills_1 = __webpack_require__(76);
+	exports.GraphicsFactoryFills = GraphicsFactoryFills_1.default;
+	var GraphicsFactoryHelper_1 = __webpack_require__(106);
+	exports.GraphicsFactoryHelper = GraphicsFactoryHelper_1.default;
+	var GraphicsFactoryStrokes_1 = __webpack_require__(108);
+	exports.GraphicsFactoryStrokes = GraphicsFactoryStrokes_1.default;
+	var GraphicsFillStyle_1 = __webpack_require__(72);
+	exports.GraphicsFillStyle = GraphicsFillStyle_1.default;
+	var GraphicsStrokeStyle_1 = __webpack_require__(73);
+	exports.GraphicsStrokeStyle = GraphicsStrokeStyle_1.default;
+	var GraphicsPath_1 = __webpack_require__(69);
 	exports.GraphicsPath = GraphicsPath_1.default;
-	var GraphicsPathCommand_1 = __webpack_require__(415);
+	var GraphicsPathCommand_1 = __webpack_require__(71);
 	exports.GraphicsPathCommand = GraphicsPathCommand_1.default;
-	var GraphicsPathWinding_1 = __webpack_require__(414);
+	var GraphicsPathWinding_1 = __webpack_require__(70);
 	exports.GraphicsPathWinding = GraphicsPathWinding_1.default;
-	var InterpolationMethod_1 = __webpack_require__(416);
+	var InterpolationMethod_1 = __webpack_require__(421);
 	exports.InterpolationMethod = InterpolationMethod_1.default;
-	var JointStyle_1 = __webpack_require__(417);
+	var JointStyle_1 = __webpack_require__(74);
 	exports.JointStyle = JointStyle_1.default;
-	var LineScaleMode_1 = __webpack_require__(418);
+	var LineScaleMode_1 = __webpack_require__(422);
 	exports.LineScaleMode = LineScaleMode_1.default;
-	var PixelSnapping_1 = __webpack_require__(419);
+	var PixelSnapping_1 = __webpack_require__(423);
 	exports.PixelSnapping = PixelSnapping_1.default;
-	var SpreadMethod_1 = __webpack_require__(420);
+	var SpreadMethod_1 = __webpack_require__(424);
 	exports.SpreadMethod = SpreadMethod_1.default;
-	var TriangleCulling_1 = __webpack_require__(421);
+	var TriangleCulling_1 = __webpack_require__(425);
 	exports.TriangleCulling = TriangleCulling_1.default;
 
 
 /***/ },
-/* 410 */
-/***/ function(module, exports) {
-
-	"use strict";
-	/**
-	 * The CapsStyle class is an enumeration of constant values that specify the
-	 * caps style to use in drawing lines. The constants are provided for use as
-	 * values in the <code>caps</code> parameter of the
-	 * <code>flash.display.Graphics.lineStyle()</code> method. You can specify the
-	 * following three types of caps:
-	 */
-	var CapsStyle = (function () {
-	    function CapsStyle() {
-	    }
-	    /**
-	     * Used to specify round caps in the <code>caps</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    CapsStyle.ROUND = "round";
-	    /**
-	     * Used to specify no caps in the <code>caps</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    CapsStyle.NONE = "none";
-	    /**
-	     * Used to specify square caps in the <code>caps</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    CapsStyle.SQUARE = "square";
-	    return CapsStyle;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = CapsStyle;
-
-
-/***/ },
-/* 411 */
+/* 420 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62231,2051 +64629,7 @@
 
 
 /***/ },
-/* 412 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var GraphicsPath_1 = __webpack_require__(413);
-	var GraphicsPathCommand_1 = __webpack_require__(415);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var Point_1 = __webpack_require__(26);
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(202);
-	var PartialImplementationError_1 = __webpack_require__(323);
-	var TriangleElements_1 = __webpack_require__(209);
-	/**
-	 * The Graphics class contains a set of methods that you can use to create a
-	 * vector shape. Display objects that support drawing include Sprite and Shape
-	 * objects. Each of these classes includes a <code>graphics</code> property
-	 * that is a Graphics object. The following are among those helper functions
-	 * provided for ease of use: <code>drawRect()</code>,
-	 * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
-	 * <code>drawEllipse()</code>.
-	 *
-	 * <p>You cannot create a Graphics object directly from ActionScript code. If
-	 * you call <code>new Graphics()</code>, an exception is thrown.</p>
-	 *
-	 * <p>The Graphics class is final; it cannot be subclassed.</p>
-	 */
-	var Graphics = (function () {
-	    function Graphics(target) {
-	        this._current_position = new Point_1.default();
-	        this._target = target;
-	        this._queued_fill_pathes = [];
-	        this._queued_stroke_pathes = [];
-	        this._active_fill_path = null;
-	        this._active_stroke_path = null;
-	        this._current_position = new Point_1.default();
-	    }
-	    /**
-	     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
-	     * tiled to fill the area. The fill remains in effect until you call the
-	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	     * method. Calling the <code>clear()</code> method clears the fill.
-	     *
-	     * <p>The application renders the fill whenever three or more points are
-	     * drawn, or when the <code>endFill()</code> method is called. </p>
-	     *
-	     * @param bitmap A transparent or opaque bitmap image that contains the bits
-	     *               to be displayed.
-	     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-	     *               can use to define transformations on the bitmap. For
-	     *               example, you can use the following matrix to rotate a bitmap
-	     *               by 45 degrees(pi/4 radians):
-	     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
-	     *               pattern. If <code>false</code>, the bitmap image does not
-	     *               repeat, and the edges of the bitmap are used for any fill
-	     *               area that extends beyond the bitmap.
-	     *
-	     *               <p>For example, consider the following bitmap(a 20 x
-	     *               20-pixel checkerboard pattern):</p>
-	     *
-	     *               <p>When <code>repeat</code> is set to <code>true</code>(as
-	     *               in the following example), the bitmap fill repeats the
-	     *               bitmap:</p>
-	     *
-	     *               <p>When <code>repeat</code> is set to <code>false</code>,
-	     *               the bitmap fill uses the edge pixels for the fill area
-	     *               outside the bitmap:</p>
-	     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
-	     *               by using a nearest-neighbor algorithm and look pixelated. If
-	     *               <code>true</code>, upscaled bitmap images are rendered by
-	     *               using a bilinear algorithm. Rendering by using the nearest
-	     *               neighbor algorithm is faster.
-	     */
-	    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
-	        if (matrix === void 0) { matrix = null; }
-	        if (repeat === void 0) { repeat = true; }
-	        if (smooth === void 0) { smooth = false; }
-	        this.draw_fill();
-	        // start a new fill path
-	        this._active_fill_path = new GraphicsPath_1.default();
-	        this._active_fill_path.isFill = true;
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_fill_pathes.push(this._active_fill_path);
-	    };
-	    /**
-	     * Specifies a simple one-color fill that subsequent calls to other Graphics
-	     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
-	     * when drawing. The fill remains in effect until you call the
-	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	     * method. Calling the <code>clear()</code> method clears the fill.
-	     *
-	     * <p>The application renders the fill whenever three or more points are
-	     * drawn, or when the <code>endFill()</code> method is called.</p>
-	     *
-	     * @param color The color of the fill(0xRRGGBB).
-	     * @param alpha The alpha value of the fill(0.0 to 1.0).
-	     */
-	    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
-	        if (alpha === void 0) { alpha = 1; }
-	        this.draw_fill();
-	        // start a new fill path
-	        this._active_fill_path = new GraphicsPath_1.default();
-	        this._active_fill_path.isFill = true;
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_fill_pathes.push(this._active_fill_path);
-	    };
-	    /**
-	     * Specifies a gradient fill used by subsequent calls to other Graphics
-	     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
-	     * the object. The fill remains in effect until you call the
-	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	     * method. Calling the <code>clear()</code> method clears the fill.
-	     *
-	     * <p>The application renders the fill whenever three or more points are
-	     * drawn, or when the <code>endFill()</code> method is called. </p>
-	     *
-	     * @param type                A value from the GradientType class that
-	     *                            specifies which gradient type to use:
-	     *                            <code>GradientType.LINEAR</code> or
-	     *                            <code>GradientType.RADIAL</code>.
-	     * @param colors              An array of RGB hexadecimal color values used
-	     *                            in the gradient; for example, red is 0xFF0000,
-	     *                            blue is 0x0000FF, and so on. You can specify
-	     *                            up to 15 colors. For each color, specify a
-	     *                            corresponding value in the alphas and ratios
-	     *                            parameters.
-	     * @param alphas              An array of alpha values for the corresponding
-	     *                            colors in the colors array; valid values are 0
-	     *                            to 1. If the value is less than 0, the default
-	     *                            is 0. If the value is greater than 1, the
-	     *                            default is 1.
-	     * @param ratios              An array of color distribution ratios; valid
-	     *                            values are 0-255. This value defines the
-	     *                            percentage of the width where the color is
-	     *                            sampled at 100%. The value 0 represents the
-	     *                            left position in the gradient box, and 255
-	     *                            represents the right position in the gradient
-	     *                            box.
-	     * @param matrix              A transformation matrix as defined by the
-	     *                            flash.geom.Matrix class. The flash.geom.Matrix
-	     *                            class includes a
-	     *                            <code>createGradientBox()</code> method, which
-	     *                            lets you conveniently set up the matrix for use
-	     *                            with the <code>beginGradientFill()</code>
-	     *                            method.
-	     * @param spreadMethod        A value from the SpreadMethod class that
-	     *                            specifies which spread method to use, either:
-	     *                            <code>SpreadMethod.PAD</code>,
-	     *                            <code>SpreadMethod.REFLECT</code>, or
-	     *                            <code>SpreadMethod.REPEAT</code>.
-	     *
-	     *                            <p>For example, consider a simple linear
-	     *                            gradient between two colors:</p>
-	     *
-	     *                            <p>This example uses
-	     *                            <code>SpreadMethod.PAD</code> for the spread
-	     *                            method, and the gradient fill looks like the
-	     *                            following:</p>
-	     *
-	     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
-	     *                            for the spread method, the gradient fill looks
-	     *                            like the following:</p>
-	     *
-	     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
-	     *                            for the spread method, the gradient fill looks
-	     *                            like the following:</p>
-	     * @param interpolationMethod A value from the InterpolationMethod class that
-	     *                            specifies which value to use:
-	     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
-	     *                            <code>InterpolationMethod.RGB</code>
-	     *
-	     *                            <p>For example, consider a simple linear
-	     *                            gradient between two colors(with the
-	     *                            <code>spreadMethod</code> parameter set to
-	     *                            <code>SpreadMethod.REFLECT</code>). The
-	     *                            different interpolation methods affect the
-	     *                            appearance as follows: </p>
-	     * @param focalPointRatio     A number that controls the location of the
-	     *                            focal point of the gradient. 0 means that the
-	     *                            focal point is in the center. 1 means that the
-	     *                            focal point is at one border of the gradient
-	     *                            circle. -1 means that the focal point is at the
-	     *                            other border of the gradient circle. A value
-	     *                            less than -1 or greater than 1 is rounded to -1
-	     *                            or 1. For example, the following example shows
-	     *                            a <code>focalPointRatio</code> set to 0.75:
-	     * @throws ArgumentError If the <code>type</code> parameter is not valid.
-	     */
-	    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-	        if (matrix === void 0) { matrix = null; }
-	        if (spreadMethod === void 0) { spreadMethod = "pad"; }
-	        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
-	        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-	        this.draw_fill();
-	        // start a new fill path
-	        this._active_fill_path = new GraphicsPath_1.default();
-	        this._active_fill_path.isFill = true;
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_fill_pathes.push(this._active_fill_path);
-	    };
-	    /**
-	     * Specifies a shader fill used by subsequent calls to other Graphics methods
-	     * (such as <code>lineTo()</code> or <code>drawCircle()</code>) for the
-	     * object. The fill remains in effect until you call the
-	     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-	     * method. Calling the <code>clear()</code> method clears the fill.
-	     *
-	     * <p>The application renders the fill whenever three or more points are
-	     * drawn, or when the <code>endFill()</code> method is called.</p>
-	     *
-	     * <p>Shader fills are not supported under GPU rendering; filled areas will
-	     * be colored cyan.</p>
-	     *
-	     * @param shader The shader to use for the fill. This Shader instance is not
-	     *               required to specify an image input. However, if an image
-	     *               input is specified in the shader, the input must be provided
-	     *               manually. To specify the input, set the <code>input</code>
-	     *               property of the corresponding ShaderInput property of the
-	     *               <code>Shader.data</code> property.
-	     *
-	     *               <p>When you pass a Shader instance as an argument the shader
-	     *               is copied internally. The drawing fill operation uses that
-	     *               internal copy, not a reference to the original shader. Any
-	     *               changes made to the shader, such as changing a parameter
-	     *               value, input, or bytecode, are not applied to the copied
-	     *               shader that's used for the fill.</p>
-	     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-	     *               can use to define transformations on the shader. For
-	     *               example, you can use the following matrix to rotate a shader
-	     *               by 45 degrees(pi/4 radians):
-	     *
-	     *               <p>The coordinates received in the shader are based on the
-	     *               matrix that is specified for the <code>matrix</code>
-	     *               parameter. For a default(<code>null</code>) matrix, the
-	     *               coordinates in the shader are local pixel coordinates which
-	     *               can be used to sample an input.</p>
-	     * @throws ArgumentError When the shader output type is not compatible with
-	     *                       this operation(the shader must specify a
-	     *                       <code>pixel3</code> or <code>pixel4</code> output).
-	     * @throws ArgumentError When the shader specifies an image input that isn't
-	     *                       provided.
-	     * @throws ArgumentError When a ByteArray or Vector.<Number> instance is used
-	     *                       as an input and the <code>width</code> and
-	     *                       <code>height</code> properties aren't specified for
-	     *                       the ShaderInput, or the specified values don't match
-	     *                       the amount of data in the input object. See the
-	     *                       <code>ShaderInput.input</code> property for more
-	     *                       information.
-	     */
-	    //		public beginShaderFill(shader:Shader, matrix:Matrix = null)
-	    //		{
-	    //
-	    //		}
-	    /**
-	     * Clears the graphics that were drawn to this Graphics object, and resets
-	     * fill and line style settings.
-	     *
-	     */
-	    Graphics.prototype.clear = function () {
-	        // todo: do this the correct way
-	        this._target.graphics.dispose();
-	    };
-	    /**
-	     * Copies all of drawing commands from the source Graphics object into the
-	     * calling Graphics object.
-	     *
-	     * @param sourceGraphics The Graphics object from which to copy the drawing
-	     *                       commands.
-	     */
-	    Graphics.prototype.copyFrom = function (sourceGraphics) {
-	        sourceGraphics._target.graphics.copyTo(this._target.graphics);
-	    };
-	    /**
-	     * Draws a cubic Bezier curve from the current drawing position to the
-	     * specified anchor point. Cubic Bezier curves consist of two anchor points
-	     * and two control points. The curve interpolates the two anchor points and
-	     * curves toward the two control points.
-	     *
-	     * The four points you use to draw a cubic Bezier curve with the
-	     * <code>cubicCurveTo()</code> method are as follows:
-	     *
-	     * <ul>
-	     *   <li>The current drawing position is the first anchor point. </li>
-	     *   <li>The anchorX and anchorY parameters specify the second anchor point.
-	     *   </li>
-	     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
-	     *   specify the first control point.</li>
-	     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
-	     *   specify the second control point.</li>
-	     * </ul>
-	     *
-	     * If you call the <code>cubicCurveTo()</code> method before calling the
-	     * <code>moveTo()</code> method, your curve starts at position (0, 0).
-	     *
-	     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
-	     * the current drawing position to (<code>anchorX</code>,
-	     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
-	     * the current drawing position remains unchanged.
-	     *
-	     * If your movie clip contains content created with the Flash drawing tools,
-	     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
-	     * underneath that content.
-	     *
-	     * @param controlX1 Specifies the horizontal position of the first control
-	     *                  point relative to the registration point of the parent
-	     *                  display object.
-	     * @param controlY1 Specifies the vertical position of the first control
-	     *                  point relative to the registration point of the parent
-	     *                  display object.
-	     * @param controlX2 Specifies the horizontal position of the second control
-	     *                  point relative to the registration point of the parent
-	     *                  display object.
-	     * @param controlY2 Specifies the vertical position of the second control
-	     *                  point relative to the registration point of the parent
-	     *                  display object.
-	     * @param anchorX   Specifies the horizontal position of the anchor point
-	     *                  relative to the registration point of the parent display
-	     *                  object.
-	     * @param anchorY   Specifies the vertical position of the anchor point
-	     *                  relative to the registration point of the parent display
-	     *                  object.
-	     */
-	    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
-	        throw new PartialImplementationError_1.default("cubicCurveTo");
-	        /*
-	         t = 0.5; // given example value
-	         x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
-	         y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
-	
-	         this.queued_command_types.push(Graphics.CMD_BEZIER);
-	         this.queued_command_data.push(controlX1);
-	         this.queued_command_data.push(controlY1);
-	         this.queued_command_data.push(controlX2);
-	         this.queued_command_data.push(controlY2);
-	         this.queued_command_data.push(anchorX);
-	         this.queued_command_data.push(anchorY);
-	
-	         // todo: somehow convert cubic bezier curve into 2 quadric curves...
-	
-	         this.draw_direction+=0;
-	         */
-	    };
-	    /**
-	     * Draws a curve using the current line style from the current drawing
-	     * position to(anchorX, anchorY) and using the control point that
-	     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
-	     * drawing position is then set to(<code>anchorX</code>,
-	     * <code>anchorY</code>). If the movie clip in which you are drawing contains
-	     * content created with the Flash drawing tools, calls to the
-	     * <code>curveTo()</code> method are drawn underneath this content. If you
-	     * call the <code>curveTo()</code> method before any calls to the
-	     * <code>moveTo()</code> method, the default of the current drawing position
-	     * is(0, 0). If any of the parameters are missing, this method fails and the
-	     * current drawing position is not changed.
-	     *
-	     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
-	     * consist of two anchor points and one control point. The curve interpolates
-	     * the two anchor points and curves toward the control point. </p>
-	     *
-	     * @param controlX A number that specifies the horizontal position of the
-	     *                 control point relative to the registration point of the
-	     *                 parent display object.
-	     * @param controlY A number that specifies the vertical position of the
-	     *                 control point relative to the registration point of the
-	     *                 parent display object.
-	     * @param anchorX  A number that specifies the horizontal position of the
-	     *                 next anchor point relative to the registration point of
-	     *                 the parent display object.
-	     * @param anchorY  A number that specifies the vertical position of the next
-	     *                 anchor point relative to the registration point of the
-	     *                 parent display object.
-	     */
-	    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
-	        }
-	        this._current_position.x = anchorX;
-	        this._current_position.y = anchorY;
-	        /*
-	        this.queued_command_types.push(Graphics.CMD_CURVE);
-	        this.queued_command_data.push(controlX);
-	        this.queued_command_data.push(controlY);
-	        this.queued_command_data.push(anchorX);
-	        this.queued_command_data.push(anchorY);
-	        */
-	    };
-	    /**
-	     * Draws a circle. Set the line style, fill, or both before you call the
-	     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
-	     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-	     * method.
-	     *
-	     * @param x      The <i>x</i> location of the center of the circle relative
-	     *               to the registration point of the parent display object(in
-	     *               pixels).
-	     * @param y      The <i>y</i> location of the center of the circle relative
-	     *               to the registration point of the parent display object(in
-	     *               pixels).
-	     * @param radius The radius of the circle(in pixels).
-	     */
-	    Graphics.prototype.drawCircle = function (x, y, radius) {
-	        var radius2 = radius * 1.065;
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.moveTo(x - radius, y);
-	            for (var i = 8; i >= 0; i--) {
-	                var degree = (i) * (360 / 8) * Math.PI / 180;
-	                var degree2 = degree + ((360 / 16) * Math.PI / 180);
-	                this._active_fill_path.curveTo(x - (Math.cos(degree2) * radius2), y + (Math.sin(degree2) * radius2), x - (Math.cos(degree) * radius), y + (Math.sin(degree) * radius));
-	            }
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.moveTo(x, y + radius);
-	            var radius2 = radius * 0.93;
-	            this._active_stroke_path.curveTo(x - (radius2), y + (radius2), x - radius, y);
-	            this._active_stroke_path.curveTo(x - (radius2), y - (radius2), x, y - radius);
-	            this._active_stroke_path.curveTo(x + (radius2), y - (radius2), x + radius, y);
-	            this._active_stroke_path.curveTo(x + (radius2), y + (radius2), x, y + radius);
-	        }
-	    };
-	    /**
-	     * Draws an ellipse. Set the line style, fill, or both before you call the
-	     * <code>drawEllipse()</code> method, by calling the
-	     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-	     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	     * <code>beginBitmapFill()</code> method.
-	     *
-	     * @param x      The <i>x</i> location of the top-left of the bounding-box of
-	     *               the ellipse relative to the registration point of the parent
-	     *               display object(in pixels).
-	     * @param y      The <i>y</i> location of the top left of the bounding-box of
-	     *               the ellipse relative to the registration point of the parent
-	     *               display object(in pixels).
-	     * @param width  The width of the ellipse(in pixels).
-	     * @param height The height of the ellipse(in pixels).
-	     */
-	    Graphics.prototype.drawEllipse = function (x, y, width, height) {
-	        width /= 2;
-	        height /= 2;
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.moveTo(x, y + height);
-	            this._active_fill_path.curveTo(x - (width), y + (height), x - width, y);
-	            this._active_fill_path.curveTo(x - (width), y - (height), x, y - height);
-	            this._active_fill_path.curveTo(x + (width), y - (height), x + width, y);
-	            this._active_fill_path.curveTo(x + (width), y + (height), x, y + height);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.moveTo(x, y + height);
-	            this._active_stroke_path.curveTo(x - (width), y + (height), x - width, y);
-	            this._active_stroke_path.curveTo(x - (width), y - (height), x, y - height);
-	            this._active_stroke_path.curveTo(x + (width), y - (height), x + width, y);
-	            this._active_stroke_path.curveTo(x + (width), y + (height), x, y + height);
-	        }
-	    };
-	    /**
-	     * Submits a series of IGraphicsData instances for drawing. This method
-	     * accepts a Vector containing objects including paths, fills, and strokes
-	     * that implement the IGraphicsData interface. A Vector of IGraphicsData
-	     * instances can refer to a part of a shape, or a complex fully defined set
-	     * of data for rendering a complete shape.
-	     *
-	     * <p> Graphics paths can contain other graphics paths. If the
-	     * <code>graphicsData</code> Vector includes a path, that path and all its
-	     * sub-paths are rendered during this operation. </p>
-	     *
-	     */
-	    Graphics.prototype.drawGraphicsData = function (graphicsData) {
-	        //this.draw_fill();
-	        /*
-	         for (var i:number=0; i<graphicsData.length; i++){
-	         //todo
-	         if(graphicsData[i].dataType=="beginFill"){
-	
-	         }
-	         else if(graphicsData[i].dataType=="endFill"){
-	
-	         }
-	         else if(graphicsData[i].dataType=="endFill"){
-	
-	         }
-	         else if(graphicsData[i].dataType=="Path"){
-	
-	         }
-	
-	         }
-	         */
-	    };
-	    /**
-	     * Submits a series of commands for drawing. The <code>drawPath()</code>
-	     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
-	     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
-	     * single call. The <code>drawPath()</code> method parameters combine drawing
-	     * commands with x- and y-coordinate value pairs and a drawing direction. The
-	     * drawing commands are values from the GraphicsPathCommand class. The x- and
-	     * y-coordinate value pairs are Numbers in an array where each pair defines a
-	     * coordinate location. The drawing direction is a value from the
-	     * GraphicsPathWinding class.
-	     *
-	     * <p> Generally, drawings render faster with <code>drawPath()</code> than
-	     * with a series of individual <code>lineTo()</code> and
-	     * <code>curveTo()</code> methods. </p>
-	     *
-	     * <p> The <code>drawPath()</code> method uses a uses a floating computation
-	     * so rotation and scaling of shapes is more accurate and gives better
-	     * results. However, curves submitted using the <code>drawPath()</code>
-	     * method can have small sub-pixel alignment errors when used in conjunction
-	     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
-	     *
-	     * <p> The <code>drawPath()</code> method also uses slightly different rules
-	     * for filling and drawing lines. They are: </p>
-	     *
-	     * <ul>
-	     *   <li>When a fill is applied to rendering a path:
-	     * <ul>
-	     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
-	     * stroke rendering will still occur, consistent with the rules for strokes
-	     * below.)</li>
-	     *   <li>A sub-path that isn't closed(the end point is not equal to the
-	     * begin point) is implicitly closed.</li>
-	     * </ul>
-	     * </li>
-	     *   <li>When a stroke is applied to rendering a path:
-	     * <ul>
-	     *   <li>The sub-paths can be composed of any number of points.</li>
-	     *   <li>The sub-path is never implicitly closed.</li>
-	     * </ul>
-	     * </li>
-	     * </ul>
-	     *
-	     * @param winding Specifies the winding rule using a value defined in the
-	     *                GraphicsPathWinding class.
-	     */
-	    Graphics.prototype.drawPath = function (commands, data, winding) {
-	        //todo
-	        /*
-	         if(this._active_fill_path!=null){
-	         this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
-	         }
-	         if(this._active_stroke_path!=null){
-	         this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
-	         }
-	         this._current_position.x=anchorX;
-	         this._current_position.y=anchorY;
-	         */
-	    };
-	    /**
-	     * Draws a rectangle. Set the line style, fill, or both before you call the
-	     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
-	     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-	     * method.
-	     *
-	     * @param x      A number indicating the horizontal position relative to the
-	     *               registration point of the parent display object(in pixels).
-	     * @param y      A number indicating the vertical position relative to the
-	     *               registration point of the parent display object(in pixels).
-	     * @param width  The width of the rectangle(in pixels).
-	     * @param height The height of the rectangle(in pixels).
-	     * @throws ArgumentError If the <code>width</code> or <code>height</code>
-	     *                       parameters are not a number
-	     *                      (<code>Number.NaN</code>).
-	     */
-	    Graphics.prototype.drawRect = function (x, y, width, height) {
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.moveTo(x, y);
-	            this._active_fill_path.lineTo(x + width, y);
-	            this._active_fill_path.lineTo(x + width, y + height);
-	            this._active_fill_path.lineTo(x, y + height);
-	            this._active_fill_path.lineTo(x, y);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.moveTo(x, y);
-	            this._active_stroke_path.lineTo(x + width, y);
-	            this._active_stroke_path.lineTo(x + width, y + height);
-	            this._active_stroke_path.lineTo(x, y + height);
-	            this._active_stroke_path.lineTo(x, y);
-	        }
-	    };
-	    /**
-	     * Draws a rounded rectangle. Set the line style, fill, or both before you
-	     * call the <code>drawRoundRect()</code> method, by calling the
-	     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-	     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	     * <code>beginBitmapFill()</code> method.
-	     *
-	     * @param x             A number indicating the horizontal position relative
-	     *                      to the registration point of the parent display
-	     *                      object(in pixels).
-	     * @param y             A number indicating the vertical position relative to
-	     *                      the registration point of the parent display object
-	     *                     (in pixels).
-	     * @param width         The width of the round rectangle(in pixels).
-	     * @param height        The height of the round rectangle(in pixels).
-	     * @param ellipseWidth  The width of the ellipse used to draw the rounded
-	     *                      corners(in pixels).
-	     * @param ellipseHeight The height of the ellipse used to draw the rounded
-	     *                      corners(in pixels). Optional; if no value is
-	     *                      specified, the default value matches that provided
-	     *                      for the <code>ellipseWidth</code> parameter.
-	     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
-	     *                       <code>ellipseWidth</code> or
-	     *                       <code>ellipseHeight</code> parameters are not a
-	     *                       number(<code>Number.NaN</code>).
-	     */
-	    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
-	        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
-	        if (!ellipseHeight) {
-	            ellipseHeight = ellipseWidth;
-	        }
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.moveTo(x + ellipseWidth, y);
-	            this._active_fill_path.lineTo(x + width - ellipseWidth, y);
-	            this._active_fill_path.curveTo(x + width, y, x + width, y + ellipseHeight);
-	            this._active_fill_path.lineTo(x + width, y + height - ellipseHeight);
-	            this._active_fill_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
-	            this._active_fill_path.lineTo(x + ellipseWidth, y + height);
-	            this._active_fill_path.curveTo(x, y + height, x, y + height - ellipseHeight);
-	            this._active_fill_path.lineTo(x, y + ellipseHeight);
-	            this._active_fill_path.curveTo(x, y, x + ellipseWidth, y);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.moveTo(x + ellipseWidth, y);
-	            this._active_stroke_path.lineTo(x + width - ellipseWidth, y);
-	            this._active_stroke_path.curveTo(x + width, y, x + width, y + ellipseHeight);
-	            this._active_stroke_path.lineTo(x + width, y + height - ellipseHeight);
-	            this._active_stroke_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
-	            this._active_stroke_path.lineTo(x + ellipseWidth, y + height);
-	            this._active_stroke_path.curveTo(x, y + height, x, y + height - ellipseHeight);
-	            this._active_stroke_path.lineTo(x, y + ellipseHeight);
-	            this._active_stroke_path.curveTo(x, y, x + ellipseWidth, y);
-	        }
-	    };
-	    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
-	    /**
-	     * Renders a set of triangles, typically to distort bitmaps and give them a
-	     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
-	     * either the current fill, or a bitmap fill, to the triangle faces using a
-	     * set of(u,v) coordinates.
-	     *
-	     * <p> Any type of fill can be used, but if the fill has a transform matrix
-	     * that transform matrix is ignored. </p>
-	     *
-	     * <p> A <code>uvtData</code> parameter improves texture mapping when a
-	     * bitmap fill is used. </p>
-	     *
-	     * @param culling Specifies whether to render triangles that face in a
-	     *                specified direction. This parameter prevents the rendering
-	     *                of triangles that cannot be seen in the current view. This
-	     *                parameter can be set to any value defined by the
-	     *                TriangleCulling class.
-	     */
-	    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
-	        if (indices === void 0) { indices = null; }
-	        if (uvtData === void 0) { uvtData = null; }
-	        if (culling === void 0) { culling = null; }
-	        if (this._active_fill_path != null) {
-	        }
-	        if (this._active_stroke_path != null) {
-	        }
-	    };
-	    /**
-	     * Applies a fill to the lines and curves that were added since the last call
-	     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-	     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
-	     * specified in the previous call to the <code>beginFill()</code>,
-	     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-	     * method. If the current drawing position does not equal the previous
-	     * position specified in a <code>moveTo()</code> method and a fill is
-	     * defined, the path is closed with a line and then filled.
-	     *
-	     */
-	    Graphics.prototype.endFill = function () {
-	        this.draw_strokes();
-	        this.draw_fill();
-	        this._active_fill_path = null;
-	        this._active_stroke_path = null;
-	    };
-	    /**
-	     * Specifies a bitmap to use for the line stroke when drawing lines.
-	     *
-	     * <p>The bitmap line style is used for subsequent calls to Graphics methods
-	     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-	     * method. The line style remains in effect until you call the
-	     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-	     * the <code>lineBitmapStyle()</code> method again with different parameters.
-	     * </p>
-	     *
-	     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
-	     * drawing a path to specify different styles for different line segments
-	     * within a path. </p>
-	     *
-	     * <p>Call the <code>lineStyle()</code> method before you call the
-	     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
-	     * value of the line style is <code>undefined</code>.</p>
-	     *
-	     * <p>Calls to the <code>clear()</code> method set the line style back to
-	     * <code>undefined</code>. </p>
-	     *
-	     * @param bitmap The bitmap to use for the line stroke.
-	     * @param matrix An optional transformation matrix as defined by the
-	     *               flash.geom.Matrix class. The matrix can be used to scale or
-	     *               otherwise manipulate the bitmap before applying it to the
-	     *               line style.
-	     * @param repeat Whether to repeat the bitmap in a tiled fashion.
-	     * @param smooth Whether smoothing should be applied to the bitmap.
-	     */
-	    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
-	        if (matrix === void 0) { matrix = null; }
-	        if (repeat === void 0) { repeat = true; }
-	        if (smooth === void 0) { smooth = false; }
-	        // start a new stroke path
-	        this._active_stroke_path = new GraphicsPath_1.default();
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_stroke_pathes.push(this._active_stroke_path);
-	    };
-	    /**
-	     * Specifies a gradient to use for the stroke when drawing lines.
-	     *
-	     * <p>The gradient line style is used for subsequent calls to Graphics
-	     * methods such as the <code>lineTo()</code> methods or the
-	     * <code>drawCircle()</code> method. The line style remains in effect until
-	     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
-	     * methods, or the <code>lineGradientStyle()</code> method again with
-	     * different parameters. </p>
-	     *
-	     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
-	     * of drawing a path to specify different styles for different line segments
-	     * within a path. </p>
-	     *
-	     * <p>Call the <code>lineStyle()</code> method before you call the
-	     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
-	     * value of the line style is <code>undefined</code>.</p>
-	     *
-	     * <p>Calls to the <code>clear()</code> method set the line style back to
-	     * <code>undefined</code>. </p>
-	     *
-	     * @param type                A value from the GradientType class that
-	     *                            specifies which gradient type to use, either
-	     *                            GradientType.LINEAR or GradientType.RADIAL.
-	     * @param colors              An array of RGB hexadecimal color values used
-	     *                            in the gradient; for example, red is 0xFF0000,
-	     *                            blue is 0x0000FF, and so on. You can specify
-	     *                            up to 15 colors. For each color, specify a
-	     *                            corresponding value in the alphas and ratios
-	     *                            parameters.
-	     * @param alphas              An array of alpha values for the corresponding
-	     *                            colors in the colors array; valid values are 0
-	     *                            to 1. If the value is less than 0, the default
-	     *                            is 0. If the value is greater than 1, the
-	     *                            default is 1.
-	     * @param ratios              An array of color distribution ratios; valid
-	     *                            values are 0-255. This value defines the
-	     *                            percentage of the width where the color is
-	     *                            sampled at 100%. The value 0 represents the
-	     *                            left position in the gradient box, and 255
-	     *                            represents the right position in the gradient
-	     *                            box.
-	     * @param matrix              A transformation matrix as defined by the
-	     *                            flash.geom.Matrix class. The flash.geom.Matrix
-	     *                            class includes a
-	     *                            <code>createGradientBox()</code> method, which
-	     *                            lets you conveniently set up the matrix for use
-	     *                            with the <code>lineGradientStyle()</code>
-	     *                            method.
-	     * @param spreadMethod        A value from the SpreadMethod class that
-	     *                            specifies which spread method to use:
-	     * @param interpolationMethod A value from the InterpolationMethod class that
-	     *                            specifies which value to use. For example,
-	     *                            consider a simple linear gradient between two
-	     *                            colors(with the <code>spreadMethod</code>
-	     *                            parameter set to
-	     *                            <code>SpreadMethod.REFLECT</code>). The
-	     *                            different interpolation methods affect the
-	     *                            appearance as follows:
-	     * @param focalPointRatio     A number that controls the location of the
-	     *                            focal point of the gradient. The value 0 means
-	     *                            the focal point is in the center. The value 1
-	     *                            means the focal point is at one border of the
-	     *                            gradient circle. The value -1 means that the
-	     *                            focal point is at the other border of the
-	     *                            gradient circle. Values less than -1 or greater
-	     *                            than 1 are rounded to -1 or 1. The following
-	     *                            image shows a gradient with a
-	     *                            <code>focalPointRatio</code> of -0.75:
-	     */
-	    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-	        if (matrix === void 0) { matrix = null; }
-	        if (spreadMethod === void 0) { spreadMethod = null; }
-	        if (interpolationMethod === void 0) { interpolationMethod = null; }
-	        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-	        // start a new stroke path
-	        this._active_stroke_path = new GraphicsPath_1.default();
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_stroke_pathes.push(this._active_stroke_path);
-	    };
-	    /**
-	     * Specifies a shader to use for the line stroke when drawing lines.
-	     *
-	     * <p>The shader line style is used for subsequent calls to Graphics methods
-	     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-	     * method. The line style remains in effect until you call the
-	     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-	     * the <code>lineBitmapStyle()</code> method again with different parameters.
-	     * </p>
-	     *
-	     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
-	     * drawing a path to specify different styles for different line segments
-	     * within a path. </p>
-	     *
-	     * <p>Call the <code>lineStyle()</code> method before you call the
-	     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
-	     * value of the line style is <code>undefined</code>.</p>
-	     *
-	     * <p>Calls to the <code>clear()</code> method set the line style back to
-	     * <code>undefined</code>. </p>
-	     *
-	     * @param shader The shader to use for the line stroke.
-	     * @param matrix An optional transformation matrix as defined by the
-	     *               flash.geom.Matrix class. The matrix can be used to scale or
-	     *               otherwise manipulate the bitmap before applying it to the
-	     *               line style.
-	     */
-	    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
-	    //		{
-	    //
-	    //		}
-	    /**
-	     * Specifies a line style used for subsequent calls to Graphics methods such
-	     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-	     * method. The line style remains in effect until you call the
-	     * <code>lineGradientStyle()</code> method, the
-	     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
-	     * method with different parameters.
-	     *
-	     * <p>You can call the <code>lineStyle()</code> method in the middle of
-	     * drawing a path to specify different styles for different line segments
-	     * within the path.</p>
-	     *
-	     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
-	     * style back to <code>undefined</code>.</p>
-	     *
-	     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
-	     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
-	     *
-	     * @param thickness    An integer that indicates the thickness of the line in
-	     *                     points; valid values are 0-255. If a number is not
-	     *                     specified, or if the parameter is undefined, a line is
-	     *                     not drawn. If a value of less than 0 is passed, the
-	     *                     default is 0. The value 0 indicates hairline
-	     *                     thickness; the maximum thickness is 255. If a value
-	     *                     greater than 255 is passed, the default is 255.
-	     * @param color        A hexadecimal color value of the line; for example,
-	     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
-	     *                     value is not indicated, the default is 0x000000
-	     *                    (black). Optional.
-	     * @param alpha        A number that indicates the alpha value of the color
-	     *                     of the line; valid values are 0 to 1. If a value is
-	     *                     not indicated, the default is 1(solid). If the value
-	     *                     is less than 0, the default is 0. If the value is
-	     *                     greater than 1, the default is 1.
-	     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
-	     *                     specifies whether to hint strokes to full pixels. This
-	     *                     affects both the position of anchors of a curve and
-	     *                     the line stroke size itself. With
-	     *                     <code>pixelHinting</code> set to <code>true</code>,
-	     *                     line widths are adjusted to full pixel widths. With
-	     *                     <code>pixelHinting</code> set to <code>false</code>,
-	     *                     disjoints can appear for curves and straight lines.
-	     *                     For example, the following illustrations show how
-	     *                     Flash Player or Adobe AIR renders two rounded
-	     *                     rectangles that are identical, except that the
-	     *                     <code>pixelHinting</code> parameter used in the
-	     *                     <code>lineStyle()</code> method is set differently
-	     *                    (the images are scaled by 200%, to emphasize the
-	     *                     difference):
-	     *
-	     *                     <p>If a value is not supplied, the line does not use
-	     *                     pixel hinting.</p>
-	     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
-	     *                     LineScaleMode class that specifies which scale mode to
-	     *                     use:
-	     *                     <ul>
-	     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
-	     *                     scale the line thickness when the object is scaled
-	     *                    (the default). </li>
-	     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
-	     *                     the line thickness. </li>
-	     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
-	     *                     scale the line thickness if the object is scaled
-	     *                     vertically <i>only</i>. For example, consider the
-	     *                     following circles, drawn with a one-pixel line, and
-	     *                     each with the <code>scaleMode</code> parameter set to
-	     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
-	     *                     left is scaled vertically only, and the circle on the
-	     *                     right is scaled both vertically and horizontally:
-	     *                     </li>
-	     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
-	     *                     scale the line thickness if the object is scaled
-	     *                     horizontally <i>only</i>. For example, consider the
-	     *                     following circles, drawn with a one-pixel line, and
-	     *                     each with the <code>scaleMode</code> parameter set to
-	     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
-	     *                     the left is scaled horizontally only, and the circle
-	     *                     on the right is scaled both vertically and
-	     *                     horizontally:   </li>
-	     *                     </ul>
-	     * @param caps        (Not supported in Flash Lite 4) A value from the
-	     *                     CapsStyle class that specifies the type of caps at the
-	     *                     end of lines. Valid values are:
-	     *                     <code>CapsStyle.NONE</code>,
-	     *                     <code>CapsStyle.ROUND</code>, and
-	     *                     <code>CapsStyle.SQUARE</code>. If a value is not
-	     *                     indicated, Flash uses round caps.
-	     *
-	     *                     <p>For example, the following illustrations show the
-	     *                     different <code>capsStyle</code> settings. For each
-	     *                     setting, the illustration shows a blue line with a
-	     *                     thickness of 30(for which the <code>capsStyle</code>
-	     *                     applies), and a superimposed black line with a
-	     *                     thickness of 1(for which no <code>capsStyle</code>
-	     *                     applies): </p>
-	     * @param joints      (Not supported in Flash Lite 4) A value from the
-	     *                     JointStyle class that specifies the type of joint
-	     *                     appearance used at angles. Valid values are:
-	     *                     <code>JointStyle.BEVEL</code>,
-	     *                     <code>JointStyle.MITER</code>, and
-	     *                     <code>JointStyle.ROUND</code>. If a value is not
-	     *                     indicated, Flash uses round joints.
-	     *
-	     *                     <p>For example, the following illustrations show the
-	     *                     different <code>joints</code> settings. For each
-	     *                     setting, the illustration shows an angled blue line
-	     *                     with a thickness of 30(for which the
-	     *                     <code>jointStyle</code> applies), and a superimposed
-	     *                     angled black line with a thickness of 1(for which no
-	     *                     <code>jointStyle</code> applies): </p>
-	     *
-	     *                     <p><b>Note:</b> For <code>joints</code> set to
-	     *                     <code>JointStyle.MITER</code>, you can use the
-	     *                     <code>miterLimit</code> parameter to limit the length
-	     *                     of the miter.</p>
-	     * @param miterLimit  (Not supported in Flash Lite 4) A number that
-	     *                     indicates the limit at which a miter is cut off. Valid
-	     *                     values range from 1 to 255(and values outside that
-	     *                     range are rounded to 1 or 255). This value is only
-	     *                     used if the <code>jointStyle</code> is set to
-	     *                     <code>"miter"</code>. The <code>miterLimit</code>
-	     *                     value represents the length that a miter can extend
-	     *                     beyond the point at which the lines meet to form a
-	     *                     joint. The value expresses a factor of the line
-	     *                     <code>thickness</code>. For example, with a
-	     *                     <code>miterLimit</code> factor of 2.5 and a
-	     *                     <code>thickness</code> of 10 pixels, the miter is cut
-	     *                     off at 25 pixels.
-	     *
-	     *                     <p>For example, consider the following angled lines,
-	     *                     each drawn with a <code>thickness</code> of 20, but
-	     *                     with <code>miterLimit</code> set to 1, 2, and 4.
-	     *                     Superimposed are black reference lines showing the
-	     *                     meeting points of the joints:</p>
-	     *
-	     *                     <p>Notice that a given <code>miterLimit</code> value
-	     *                     has a specific maximum angle for which the miter is
-	     *                     cut off. The following table lists some examples:</p>
-	     */
-	    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit) {
-	        if (thickness === void 0) { thickness = 0; }
-	        if (color === void 0) { color = 0; }
-	        if (alpha === void 0) { alpha = 1; }
-	        if (pixelHinting === void 0) { pixelHinting = false; }
-	        if (scaleMode === void 0) { scaleMode = null; }
-	        if (caps === void 0) { caps = null; }
-	        if (joints === void 0) { joints = null; }
-	        if (miterLimit === void 0) { miterLimit = 3; }
-	        // start a new stroke path
-	        this._active_stroke_path = new GraphicsPath_1.default();
-	        if (this._current_position.x != 0 || this._current_position.y != 0)
-	            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-	        this._queued_stroke_pathes.push(this._active_stroke_path);
-	    };
-	    /**
-	     * Draws a line using the current line style from the current drawing
-	     * position to(<code>x</code>, <code>y</code>); the current drawing position
-	     * is then set to(<code>x</code>, <code>y</code>). If the display object in
-	     * which you are drawing contains content that was created with the Flash
-	     * drawing tools, calls to the <code>lineTo()</code> method are drawn
-	     * underneath the content. If you call <code>lineTo()</code> before any calls
-	     * to the <code>moveTo()</code> method, the default position for the current
-	     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
-	     * method fails and the current drawing position is not changed.
-	     *
-	     * @param x A number that indicates the horizontal position relative to the
-	     *          registration point of the parent display object(in pixels).
-	     * @param y A number that indicates the vertical position relative to the
-	     *          registration point of the parent display object(in pixels).
-	     */
-	    Graphics.prototype.lineTo = function (x, y) {
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.lineTo(x, y);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.lineTo(x, y);
-	        }
-	        this._current_position.x = x;
-	        this._current_position.y = y;
-	    };
-	    /**
-	     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
-	     * any of the parameters are missing, this method fails and the current
-	     * drawing position is not changed.
-	     *
-	     * @param x A number that indicates the horizontal position relative to the
-	     *          registration point of the parent display object(in pixels).
-	     * @param y A number that indicates the vertical position relative to the
-	     *          registration point of the parent display object(in pixels).
-	     */
-	    Graphics.prototype.moveTo = function (x, y) {
-	        if (this._active_fill_path != null) {
-	            this._active_fill_path.moveTo(x, y);
-	        }
-	        if (this._active_stroke_path != null) {
-	            this._active_stroke_path.moveTo(x, y);
-	        }
-	        this._current_position.x = x;
-	        this._current_position.y = y;
-	    };
-	    Graphics.prototype.draw_strokes = function () {
-	        if (this._active_stroke_path == null)
-	            return;
-	        this._active_stroke_path.finalizeContour();
-	        var contour_commands = this._active_stroke_path.commands;
-	        var contour_data = this._active_stroke_path.data;
-	        var contour_closed = this._active_stroke_path.contours_closed;
-	        var commands;
-	        var data;
-	        var i = 0;
-	        var k = 0;
-	        var vert_cnt = 0;
-	        var data_cnt = 0;
-	        var draw_started = false;
-	        var final_vert_list = [];
-	        var final_vert_cnt = 0;
-	        var lastPoint = new Point_1.default();
-	        var start_point = new Point_1.default();
-	        var end_point = new Point_1.default();
-	        var start_left = new Point_1.default();
-	        var start_right = new Point_1.default();
-	        var ctr_left = new Point_1.default();
-	        var ctr_right = new Point_1.default();
-	        var ctr_left2 = new Point_1.default();
-	        var ctr_right2 = new Point_1.default();
-	        var end_left = new Point_1.default();
-	        var end_right = new Point_1.default();
-	        var tmp_point = new Point_1.default();
-	        var tmp_point2 = new Point_1.default();
-	        var first_point = new Point_1.default();
-	        var first_point_set = false;
-	        var closed = false;
-	        var thickness = 3;
-	        var tessVerts = [];
-	        Graphics._tess_obj.newTess(1024 * 512);
-	        for (k = 0; k < contour_commands.length; k++) {
-	            var contour_points = [];
-	            var contour_types = [];
-	            commands = contour_commands[k];
-	            data = contour_data[k];
-	            closed = contour_closed[k];
-	            vert_cnt = 0;
-	            data_cnt = 0;
-	            draw_started = false;
-	            first_point_set = false;
-	            for (i = 0; i < commands.length; i++) {
-	                switch (commands[i]) {
-	                    case GraphicsPathCommand_1.default.MOVE_TO:
-	                        lastPoint.x = data[data_cnt++];
-	                        lastPoint.y = data[data_cnt++];
-	                        break;
-	                    case GraphicsPathCommand_1.default.LINE_TO:
-	                        contour_types.push(GraphicsPathCommand_1.default.LINE_TO);
-	                        end_point.x = data[data_cnt++];
-	                        end_point.y = data[data_cnt++];
-	                        tmp_point.x = -1 * (end_point.y - lastPoint.y);
-	                        tmp_point.y = end_point.x - lastPoint.x;
-	                        tmp_point.normalize();
-	                        // rotate point
-	                        start_left.x = lastPoint.x + (tmp_point.x * thickness);
-	                        start_left.y = lastPoint.y + (tmp_point.y * thickness);
-	                        start_right.x = lastPoint.x - (tmp_point.x * thickness);
-	                        start_right.y = lastPoint.y - (tmp_point.y * thickness);
-	                        // rotate point
-	                        end_left.x = end_point.x + (tmp_point.x * thickness);
-	                        end_left.y = end_point.y + (tmp_point.y * thickness);
-	                        end_right.x = end_point.x - (tmp_point.x * thickness);
-	                        end_right.y = end_point.y - (tmp_point.y * thickness);
-	                        lastPoint.x = end_point.x;
-	                        lastPoint.y = end_point.y;
-	                        contour_points.push(new Point_1.default(start_right.x, start_right.y));
-	                        contour_points.push(new Point_1.default(start_left.x, start_left.y));
-	                        contour_points.push(new Point_1.default(end_right.x, end_right.y));
-	                        contour_points.push(new Point_1.default(end_left.x, end_left.y));
-	                        break;
-	                    case GraphicsPathCommand_1.default.CURVE_TO:
-	                        contour_types.push(GraphicsPathCommand_1.default.CURVE_TO);
-	                        contour_types.push(GraphicsPathCommand_1.default.CURVE_TO_2);
-	                        var curve_direction = data[data_cnt++];
-	                        var control_x = data[data_cnt++];
-	                        var control_y = data[data_cnt++];
-	                        var end_x = data[data_cnt++];
-	                        var end_y = data[data_cnt++];
-	                        tmp_point.x = -1 * (control_y - lastPoint.y);
-	                        tmp_point.y = control_x - lastPoint.x;
-	                        tmp_point.normalize();
-	                        // rotate point
-	                        start_left.x = lastPoint.x + (tmp_point.x * thickness);
-	                        start_left.y = lastPoint.y + (tmp_point.y * thickness);
-	                        start_right.x = lastPoint.x - (tmp_point.x * thickness);
-	                        start_right.y = lastPoint.y - (tmp_point.y * thickness);
-	                        // rotate point
-	                        ctr_left.x = control_x + (tmp_point.x * thickness);
-	                        ctr_left.y = control_y + (tmp_point.y * thickness);
-	                        ctr_right.x = control_x - (tmp_point.x * thickness);
-	                        ctr_right.y = control_y - (tmp_point.y * thickness);
-	                        contour_points.push(new Point_1.default(start_right.x, start_right.y));
-	                        contour_points.push(new Point_1.default(start_left.x, start_left.y));
-	                        contour_points.push(new Point_1.default(ctr_right.x, ctr_right.y));
-	                        contour_points.push(new Point_1.default(ctr_left.x, ctr_left.y));
-	                        tmp_point.x = -1 * (end_y - control_y);
-	                        tmp_point.y = end_x - control_x;
-	                        tmp_point.normalize();
-	                        ctr_left2.x = control_x + (tmp_point.x * thickness);
-	                        ctr_left2.y = control_y + (tmp_point.y * thickness);
-	                        ctr_right2.x = control_x - (tmp_point.x * thickness);
-	                        ctr_right2.y = control_y - (tmp_point.y * thickness);
-	                        end_left.x = end_x + (tmp_point.x * thickness);
-	                        end_left.y = end_y + (tmp_point.y * thickness);
-	                        end_right.x = end_x - (tmp_point.x * thickness);
-	                        end_right.y = end_y - (tmp_point.y * thickness);
-	                        contour_points.push(new Point_1.default(ctr_right2.x, ctr_right2.y));
-	                        contour_points.push(new Point_1.default(ctr_left2.x, ctr_left2.y));
-	                        contour_points.push(new Point_1.default(end_right.x, end_right.y));
-	                        contour_points.push(new Point_1.default(end_left.x, end_left.y));
-	                        lastPoint.x = end_x;
-	                        lastPoint.y = end_y;
-	                        break;
-	                }
-	            }
-	            var con_length = contour_points.length / 4;
-	            var next_start_right = new Point_1.default();
-	            var next_start_left = new Point_1.default();
-	            var next_end_right = new Point_1.default();
-	            var next_end_left = new Point_1.default();
-	            var prevLeft;
-	            var prevRight;
-	            for (i = 0; i < con_length; i++) {
-	                start_right = contour_points[i * 4];
-	                start_left = contour_points[i * 4 + 1];
-	                end_right = contour_points[i * 4 + 2];
-	                end_left = contour_points[i * 4 + 3];
-	                var nextIdx = i + 1;
-	                if (i >= con_length - 1) {
-	                    // last segment
-	                    if (closed) {
-	                        nextIdx = 0;
-	                    }
-	                    else {
-	                        nextIdx = -1;
-	                    }
-	                }
-	                if (nextIdx >= 0) {
-	                    next_start_right = contour_points[nextIdx * 4];
-	                    next_start_left = contour_points[nextIdx * 4 + 1];
-	                    next_end_right = contour_points[nextIdx * 4 + 2];
-	                    next_end_left = contour_points[nextIdx * 4 + 3];
-	                    var cur_vertical = false;
-	                    var next_vertical = false;
-	                    var cur_horizontal = false;
-	                    var next_horizontal = false;
-	                    tmp_point.x = end_right.x - start_right.x;
-	                    tmp_point.y = end_right.y - start_right.y;
-	                    var factor1 = 0;
-	                    var offsetY1 = 0;
-	                    if (tmp_point.x == 0)
-	                        cur_vertical = true;
-	                    else if (tmp_point.y == 0)
-	                        cur_horizontal = true;
-	                    else {
-	                        factor1 = tmp_point.y / tmp_point.x;
-	                        offsetY1 = -(factor1 * start_right.x - start_right.y);
-	                    }
-	                    tmp_point.x = next_end_right.x - next_start_right.x;
-	                    tmp_point.y = next_end_right.y - next_start_right.y;
-	                    var factor2 = 0;
-	                    var offsetY2 = 0;
-	                    if (tmp_point.x == 0)
-	                        next_vertical = true;
-	                    else if (tmp_point.y == 0)
-	                        next_horizontal = true;
-	                    else {
-	                        factor2 = tmp_point.y / tmp_point.x;
-	                        offsetY2 = -(factor2 * next_start_right.x - next_start_right.y);
-	                    }
-	                    tmp_point.x = end_left.x - start_left.x;
-	                    tmp_point.y = end_left.y - start_left.y;
-	                    var factor3 = 0;
-	                    var offsetY3 = 0;
-	                    if (tmp_point.x == 0)
-	                        cur_vertical = true;
-	                    else if (tmp_point.y == 0)
-	                        cur_horizontal = true;
-	                    else {
-	                        factor3 = tmp_point.y / tmp_point.x;
-	                        offsetY3 = -(factor3 * start_left.x - start_left.y);
-	                    }
-	                    tmp_point.x = next_end_left.x - next_start_left.x;
-	                    tmp_point.y = next_end_left.y - next_start_left.y;
-	                    var factor4 = 0;
-	                    var offsetY4 = 0;
-	                    if (tmp_point.x == 0)
-	                        next_vertical = true;
-	                    else if (tmp_point.y == 0)
-	                        next_horizontal = true;
-	                    else {
-	                        factor4 = tmp_point.y / tmp_point.x;
-	                        offsetY4 = -(factor4 * next_start_left.x - next_start_left.y);
-	                    }
-	                    if ((cur_vertical && cur_horizontal) || (next_horizontal && next_vertical))
-	                        console.log("ERROR");
-	                    if ((factor1 == factor2) || (factor3 == factor4)) {
-	                        console.log("STRAIGHT LINE factor same");
-	                        console.log("factor = " + factor1);
-	                        console.log("factor = " + factor2);
-	                        console.log("factor = " + factor3);
-	                        console.log("factor = " + factor4);
-	                    }
-	                    //else
-	                    if ((cur_horizontal && next_horizontal) || (cur_vertical && next_vertical))
-	                        console.log("STRAIGHT LINE");
-	                    else {
-	                        if ((cur_vertical) && (next_horizontal)) {
-	                            console.log("(cur_vertical)&&(next_horizontal)");
-	                            next_start_right.x = end_right.x;
-	                            end_right.y = next_start_right.y;
-	                            next_start_left.x = end_left.x;
-	                            end_left.y = next_start_left.y;
-	                        }
-	                        else if ((cur_vertical) && (!next_horizontal)) {
-	                            console.log("(cur_vertical)&&(!next_horizontal)");
-	                            next_start_right.x = end_right.x = start_right.x;
-	                            next_start_right.y = end_right.y = factor2 * start_right.x + offsetY2;
-	                            next_start_left.x = end_left.x = start_left.x;
-	                            next_start_left.y = end_left.y = factor4 * start_left.x + offsetY4;
-	                        }
-	                        else if ((!cur_vertical) && (next_horizontal)) {
-	                            console.log("(!cur_vertical)&&(next_horizontal)");
-	                            next_start_right.y = end_right.y = next_start_right.y;
-	                            next_start_right.x = end_right.x = (next_start_right.y - offsetY1) / factor1;
-	                            next_start_left.y = end_left.y = next_start_left.y;
-	                            next_start_left.x = end_left.x = (next_start_left.y - offsetY3) / factor3;
-	                        }
-	                        else if ((next_vertical) && (cur_horizontal)) {
-	                            console.log("(next_vertical)&&(cur_horizontal)");
-	                            end_right.x = next_start_right.x;
-	                            next_start_right.y = end_right.y;
-	                            end_left.x = next_start_left.x;
-	                            next_start_left.y = end_left.y;
-	                        }
-	                        else if ((next_vertical) && (!cur_horizontal)) {
-	                            console.log("(next_vertical)&&(!cur_horizontal)");
-	                            next_start_right.x = end_right.x = next_start_right.x;
-	                            next_start_right.y = end_right.y = factor1 * next_start_right.x + offsetY1;
-	                            next_start_left.x = end_left.x = next_start_left.x;
-	                            next_start_left.y = end_left.y = factor3 * next_start_left.x + offsetY3;
-	                        }
-	                        else if ((!next_vertical) && (cur_horizontal)) {
-	                            console.log("(!next_vertical)&&(!cur_horizontal)");
-	                            next_start_right.y = end_right.y;
-	                            next_start_right.x = end_right.x = (end_right.y - offsetY2) / factor2;
-	                            next_start_left.y = end_left.y;
-	                            next_start_left.x = end_left.x = (end_left.y - offsetY4) / factor4;
-	                        }
-	                        else {
-	                            console.log("else");
-	                            console.log("factor1 - factor2 " + (factor1 - factor2));
-	                            console.log("offsetY1 - offsetY2 " + (offsetY1 - offsetY2));
-	                            console.log("factor3 - factor4 " + (factor3 - factor4));
-	                            console.log("offsetY3 - offsetY4 " + (offsetY3 - offsetY4));
-	                            next_start_right.x = end_right.x = -((offsetY1 - offsetY2) / (factor1 - factor2));
-	                            next_start_right.y = end_right.y = factor1 * end_right.x + offsetY1;
-	                            next_start_left.x = end_left.x = -((offsetY3 - offsetY4) / (factor3 - factor4));
-	                            next_start_left.y = end_left.y = factor3 * end_left.x + offsetY3;
-	                        }
-	                    }
-	                    next_start_right.x = end_right.x;
-	                    next_start_right.y = end_right.y;
-	                    next_start_left.x = end_left.x;
-	                    next_start_left.y = end_left.y;
-	                }
-	            }
-	            for (i = 0; i < con_length; i++) {
-	                if (contour_types[i] == GraphicsPathCommand_1.default.CURVE_TO_2)
-	                    continue;
-	                start_right = contour_points[i * 4];
-	                start_left = contour_points[i * 4 + 1];
-	                if (contour_types[i] == GraphicsPathCommand_1.default.CURVE_TO) {
-	                    i++;
-	                    ctr_right = contour_points[i * 4];
-	                    ctr_left = contour_points[i * 4 + 1];
-	                    end_right = contour_points[i * 4 + 2];
-	                    end_left = contour_points[i * 4 + 3];
-	                    var finished_curves = [];
-	                    var finished_curves_types = [];
-	                    var test_concave_curves = [];
-	                    var test_convex_curves = [];
-	                    var curve_sign = this.getSign(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y) > 0;
-	                    var curve_sign2 = -1;
-	                    var curve_sign3 = 1;
-	                    tessVerts.length = 0;
-	                    if (curve_sign) {
-	                        var subdivided = [];
-	                        var subdivided2 = [];
-	                        this.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
-	                        for (var sc = 0; sc < subdivided.length / 6; sc++) {
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6], subdivided[sc * 6 + 1]));
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 2], subdivided[sc * 6 + 3]));
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]));
-	                            finished_curves_types.push(-1);
-	                            tessVerts.push(subdivided[sc * 6], subdivided[sc * 6 + 1]);
-	                            tessVerts.push(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]);
-	                        }
-	                        for (var sc = (subdivided2.length / 6) - 1; sc >= 0; sc--) {
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]));
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]));
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6], subdivided2[sc * 6 + 1]));
-	                            finished_curves_types.push(1);
-	                            tessVerts.push(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]);
-	                            tessVerts.push(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]);
-	                            tessVerts.push(subdivided2[sc * 6], subdivided2[sc * 6 + 1]);
-	                        }
-	                    }
-	                    else {
-	                        var subdivided = [];
-	                        var subdivided2 = [];
-	                        this.subdivideCurve(start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, subdivided, subdivided2);
-	                        for (var sc = 0; sc < subdivided.length / 6; sc++) {
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6], subdivided[sc * 6 + 1]));
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 2], subdivided[sc * 6 + 3]));
-	                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]));
-	                            finished_curves_types.push(-1);
-	                            tessVerts.push(subdivided[sc * 6], subdivided[sc * 6 + 1]);
-	                            tessVerts.push(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]);
-	                        }
-	                        for (var sc = (subdivided2.length / 6) - 1; sc >= 0; sc--) {
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]));
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]));
-	                            finished_curves.push(new Point_1.default(subdivided2[sc * 6], subdivided2[sc * 6 + 1]));
-	                            finished_curves_types.push(1);
-	                            tessVerts.push(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]);
-	                            tessVerts.push(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]);
-	                            tessVerts.push(subdivided2[sc * 6], subdivided2[sc * 6 + 1]);
-	                        }
-	                    }
-	                    if (tessVerts.length > 0) {
-	                        var verticesF32 = new Float32Array(tessVerts);
-	                        if (Graphics._tess_obj == null) {
-	                            console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
-	                            return;
-	                        }
-	                        Graphics._tess_obj.addContour(verticesF32, 2, 8, tessVerts.length / 2);
-	                    }
-	                    var t = 0;
-	                    for (t = 0; t < finished_curves_types.length; t++) {
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3].x;
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3].y;
-	                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 1].x;
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 1].y;
-	                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-	                        final_vert_list[final_vert_cnt++] = 0.5;
-	                        final_vert_list[final_vert_cnt++] = 0.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 2].x;
-	                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 2].y;
-	                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-	                        final_vert_list[final_vert_cnt++] = 0.0;
-	                        final_vert_list[final_vert_cnt++] = 0.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                        final_vert_list[final_vert_cnt++] = 1.0;
-	                    }
-	                }
-	                else {
-	                    end_right = contour_points[i * 4 + 2];
-	                    end_left = contour_points[i * 4 + 3];
-	                    final_vert_list[final_vert_cnt++] = start_right.x;
-	                    final_vert_list[final_vert_cnt++] = start_right.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = start_left.x;
-	                    final_vert_list[final_vert_cnt++] = start_left.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = end_left.x;
-	                    final_vert_list[final_vert_cnt++] = end_left.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = start_right.x;
-	                    final_vert_list[final_vert_cnt++] = start_right.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = end_left.x;
-	                    final_vert_list[final_vert_cnt++] = end_left.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = end_right.x;
-	                    final_vert_list[final_vert_cnt++] = end_right.y;
-	                    final_vert_list[final_vert_cnt++] = 1;
-	                    final_vert_list[final_vert_cnt++] = 2.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                    final_vert_list[final_vert_cnt++] = 0.0;
-	                }
-	            }
-	        }
-	        /*
-	         for (i = 0; i < final_vert_list.length/7; ++i)
-	         console.log("final verts stroke "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-	         */
-	        Graphics._tess_obj.tesselate(4 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-	        var verts = [];
-	        var all_verts = [];
-	        var vertIndicess = [];
-	        var elems = [];
-	        verts = Graphics._tess_obj.getVertices();
-	        elems = Graphics._tess_obj.getElements();
-	        var numVerts = verts.length / 2;
-	        var numElems = elems.length / 3;
-	        for (i = 0; i < numVerts; ++i)
-	            all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
-	        for (i = 0; i < numElems; ++i) {
-	            var p1 = elems[i * 3];
-	            var p2 = elems[i * 3 + 1];
-	            var p3 = elems[i * 3 + 2];
-	            final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	        }
-	        // todo: handle material / subsprite settings, and check if a material / subsprite already exists for this settings
-	        var attributesView = new AttributesView_1.default(Float32Array, 7);
-	        attributesView.set(final_vert_list);
-	        var attributesBuffer = attributesView.buffer;
-	        attributesView.dispose();
-	        var elements = new TriangleElements_1.default(attributesBuffer);
-	        elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
-	        elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
-	        elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
-	        var material = DefaultMaterialManager_1.default.getDefaultMaterial();
-	        material.bothSides = true;
-	        material.useColorTransform = true;
-	        material.curves = true;
-	        this._target.graphics.addGraphic(elements, material);
-	        this._active_stroke_path = null;
-	    };
-	    Graphics.prototype.isClockWiseXY = function (point1x, point1y, point2x, point2y, point3x, point3y) {
-	        return ((point1x - point2x) * (point3y - point2y) - (point1y - point2y) * (point3x - point2x) < 0);
-	    };
-	    Graphics.prototype.getSign = function (ax, ay, cx, cy, bx, by) {
-	        /*if(this.isClockWiseXY(ax, ay, bx, by, cx, cy)) {
-	         return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
-	         }*/
-	        return (ax - bx) * (cy - by) - (ay - by) * (cx - bx);
-	    };
-	    Graphics.prototype.pointInTri = function (ax, ay, bx, by, cx, cy, xx, xy) {
-	        var b1 = this.getSign(ax, ay, xx, xy, bx, by) > 0;
-	        var b2 = this.getSign(bx, by, xx, xy, cx, cy) > 0;
-	        var b3 = this.getSign(cx, cy, xx, xy, ax, ay) > 0;
-	        return ((b1 == b2) && (b2 == b3));
-	    };
-	    Graphics.prototype.subdivideCurve = function (startx, starty, cx, cy, endx, endy, startx2, starty2, cx2, cy2, endx2, endy2, array_out, array2_out) {
-	        /*
-	         if(!this.pointInTri(startx2, starty2, cx2, cy2, endx2, endy2, cx, cy)){
-	         }
-	         */
-	        array_out.push(startx, starty, cx, cy, endx, endy);
-	        array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
-	        return;
-	        // var c1x = startx + (cx - startx) * 0.5;
-	        // var c1y = starty + (cy - starty) * 0.5;
-	        // var c2x = cx + (endx - cx) * 0.5;
-	        // var c2y = cy + (endy - cy) * 0.5;
-	        // var ax = c1x + (c2x - c1x) * 0.5;
-	        // var ay = c1y + (c2y - c1y) * 0.5;
-	        //
-	        // var c1x2 = startx2 + (cx2 - startx2) * 0.5;
-	        // var c1y2 = starty2 + (cy2 - starty2) * 0.5;
-	        // var c2x2 = cx2 + (endx2 - cx2) * 0.5;
-	        // var c2y2 = cy2 + (endy2 - cy2) * 0.5;
-	        // var ax2 = c1x2 + (c2x2 - c1x2) * 0.5;
-	        // var ay2 = c1y2 + (c2y2 - c1y2) * 0.5;
-	        // if(this.pointInTri(startx2, starty2, c1x2, c1y2, ax2, ay2, c1x, c1y)){
-	        // 	this.subdivideCurve(startx, starty, c1x, c1y, ax, ay, startx2, starty2, c1x2, c1y2, ax2, ay2, array_out, array2_out);
-	        // }
-	        // else{
-	        // 	array_out.push(startx, starty, c1x, c1y, ax, ay);
-	        // 	array2_out.push(startx2, starty2, c1x2, c1y2, ax2, ay2);
-	        // }
-	        //
-	        // if(this.pointInTri(ax2, ay2, c2x2, c2y2,  endx2, endy2, c2x, c2y)){
-	        // 	this.subdivideCurve(ax, ay, c2x, c2y, endx, endy, ax2, ay2, c2x2, c2y2, endx2, endy2, array_out, array2_out);
-	        // }
-	        // else{
-	        // 	array_out.push(ax, ay, c2x, c2y, endx, endy);
-	        // 	array2_out.push(ax2, ay2, c2x2, c2y2, endx2, endy2);
-	        // }
-	    };
-	    Graphics.prototype.draw_fill = function () {
-	        if (this._active_fill_path == null)
-	            return;
-	        this._active_fill_path.finalizeContour();
-	        var contour_commands = this._active_fill_path.commands;
-	        var contour_data = this._active_fill_path.data;
-	        var contour_draw_directions = this._active_fill_path.draw_directions;
-	        var commands;
-	        var data;
-	        var i = 0;
-	        var k = 0;
-	        var vert_cnt = 0;
-	        var data_cnt = 0;
-	        var draw_direction = 0;
-	        var contours_vertices = [[]];
-	        var final_vert_list = [];
-	        var final_vert_cnt = 0;
-	        var lastPoint = new Point_1.default();
-	        for (k = 0; k < contour_commands.length; k++) {
-	            contours_vertices.push([]);
-	            vert_cnt = 0;
-	            data_cnt = 0;
-	            commands = contour_commands[k];
-	            data = contour_data[k];
-	            draw_direction = contour_draw_directions[k];
-	            for (i = 0; i < commands.length; i++) {
-	                switch (commands[i]) {
-	                    case GraphicsPathCommand_1.default.MOVE_TO:
-	                        lastPoint.x = data[data_cnt++];
-	                        lastPoint.y = data[data_cnt++];
-	                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-	                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-	                        break;
-	                    case GraphicsPathCommand_1.default.LINE_TO:
-	                        lastPoint.x = data[data_cnt++];
-	                        lastPoint.y = data[data_cnt++];
-	                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-	                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-	                        break;
-	                    case GraphicsPathCommand_1.default.CURVE_TO:
-	                        var curve_direction = data[data_cnt++];
-	                        var control_x = data[data_cnt++];
-	                        var control_y = data[data_cnt++];
-	                        var end_x = data[data_cnt++];
-	                        var end_y = data[data_cnt++];
-	                        var curve_attr_1 = -1;
-	                        if (draw_direction > 0) {
-	                            if (curve_direction == 1) {
-	                                //convex
-	                                //console.log("convex";
-	                                curve_attr_1 = 1;
-	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
-	                            }
-	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-	                        }
-	                        else {
-	                            if (curve_direction == 2) {
-	                                //convex
-	                                //console.log("convex";
-	                                curve_attr_1 = 1;
-	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-	                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
-	                            }
-	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-	                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-	                        }
-	                        if (!this.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
-	                            final_vert_list[final_vert_cnt++] = end_x;
-	                            final_vert_list[final_vert_cnt++] = end_y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = control_x;
-	                            final_vert_list[final_vert_cnt++] = control_y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 0.5;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = lastPoint.x;
-	                            final_vert_list[final_vert_cnt++] = lastPoint.y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                        }
-	                        else {
-	                            final_vert_list[final_vert_cnt++] = lastPoint.x;
-	                            final_vert_list[final_vert_cnt++] = lastPoint.y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = control_x;
-	                            final_vert_list[final_vert_cnt++] = control_y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 0.5;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = end_x;
-	                            final_vert_list[final_vert_cnt++] = end_y;
-	                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                            final_vert_list[final_vert_cnt++] = 1.0;
-	                            final_vert_list[final_vert_cnt++] = 0.0;
-	                        }
-	                        lastPoint.x = end_x;
-	                        lastPoint.y = end_y;
-	                        break;
-	                    case GraphicsPathCommand_1.default.CUBIC_CURVE:
-	                        //todo
-	                        break;
-	                }
-	            }
-	        }
-	        var verts = [];
-	        var all_verts = [];
-	        var vertIndicess = [];
-	        var elems = [];
-	        Graphics._tess_obj.newTess(1024 * 512);
-	        for (k = 0; k < contours_vertices.length; k++) {
-	            var vertices = contours_vertices[k];
-	            /*
-	             for (i = 0; i < vertices.length / 2; ++i)
-	             console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
-	             */
-	            var verticesF32 = new Float32Array(vertices);
-	            //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
-	            //console.log("in vertices", vertices);
-	            //var tess = new TESS();
-	            if (Graphics._tess_obj == null) {
-	                console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
-	                return;
-	            }
-	            Graphics._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
-	        }
-	        Graphics._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-	        //console.log("out vertices", Graphics._tess_obj.getVertices());
-	        verts = Graphics._tess_obj.getVertices();
-	        elems = Graphics._tess_obj.getElements();
-	        //console.log("out elements", Graphics._tess_obj.getElements());
-	        var numVerts = verts.length / 2;
-	        var numElems = elems.length / 3;
-	        for (i = 0; i < numVerts; ++i)
-	            all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
-	        for (i = 0; i < numElems; ++i) {
-	            var p1 = elems[i * 3];
-	            var p2 = elems[i * 3 + 1];
-	            var p3 = elems[i * 3 + 2];
-	            final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-	            final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-	            final_vert_list[final_vert_cnt++] = 1;
-	            final_vert_list[final_vert_cnt++] = 2.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	            final_vert_list[final_vert_cnt++] = 1.0;
-	            final_vert_list[final_vert_cnt++] = 0.0;
-	        }
-	        //for (i = 0; i < final_vert_list.length/7; ++i)
-	        //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-	        var attributesView = new AttributesView_1.default(Float32Array, 7);
-	        attributesView.set(final_vert_list);
-	        var attributesBuffer = attributesView.buffer;
-	        attributesView.dispose();
-	        var elements = new TriangleElements_1.default(attributesBuffer);
-	        elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
-	        elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
-	        elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
-	        var material = DefaultMaterialManager_1.default.getDefaultMaterial();
-	        material.bothSides = true;
-	        material.useColorTransform = true;
-	        material.curves = true;
-	        this._target.graphics.addGraphic(elements, material);
-	        this._active_fill_path = null;
-	    };
-	    return Graphics;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Graphics;
-
-
-/***/ },
-/* 413 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var GraphicsPathWinding_1 = __webpack_require__(414);
-	var GraphicsPathCommand_1 = __webpack_require__(415);
-	var Point_1 = __webpack_require__(26);
-	/**
-	
-	 * Defines the values to use for specifying path-drawing commands.
-	 * The values in this class are used by the Graphics.drawPath() method,
-	 *or stored in the commands vector of a GraphicsPath object.
-	 */
-	var GraphicsPath = (function () {
-	    function GraphicsPath(commands, data, winding) {
-	        if (commands === void 0) { commands = null; }
-	        if (data === void 0) { data = null; }
-	        if (winding === void 0) { winding = GraphicsPathWinding_1.default.EVEN_ODD; }
-	        this._data = [];
-	        this._commands = [];
-	        this._draw_directions = [0];
-	        this._contours_closed = [false];
-	        if (commands != null && data != null) {
-	            this._data[0] = data;
-	            this._commands[0] = commands;
-	        }
-	        else {
-	            this._data[0] = [];
-	            this._commands[0] = [];
-	        }
-	        this._direction = new Point_1.default(0, -1);
-	        this._startPoint = new Point_1.default();
-	        this._cur_point = new Point_1.default();
-	        this._tmp_point = new Point_1.default();
-	        this.isFill = false;
-	        this._winding = winding;
-	    }
-	    Object.defineProperty(GraphicsPath.prototype, "draw_directions", {
-	        get: function () {
-	            return this._draw_directions;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(GraphicsPath.prototype, "contours_closed", {
-	        get: function () {
-	            return this._contours_closed;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(GraphicsPath.prototype, "isFill", {
-	        get: function () {
-	            return this._isFill;
-	        },
-	        set: function (value) {
-	            this._isFill = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(GraphicsPath.prototype, "commands", {
-	        get: function () {
-	            return this._commands;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(GraphicsPath.prototype, "data", {
-	        get: function () {
-	            return this._data;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    GraphicsPath.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-	        if (this._commands[this._commands.length - 1].length == 0) {
-	            // every contour must start with a moveTo command, so we make sure we have correct startpoint
-	            this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.MOVE_TO);
-	            this._data[this._data.length - 1].push(this._cur_point.x);
-	            this._data[this._data.length - 1].push(this._cur_point.y);
-	        }
-	        this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.CURVE_TO);
-	        if (this.isFill) {
-	            this._tmp_point.x = anchorX - this._cur_point.x;
-	            this._tmp_point.y = anchorY - this._cur_point.y;
-	            this._tmp_point.normalize();
-	            var testpoint = new Point_1.default(this._tmp_point.x, this._tmp_point.y);
-	            testpoint.normalize();
-	            var degree_anchor = Math.acos(this._tmp_point.x * this._direction.x + this._tmp_point.y * this._direction.y) * 180 / Math.PI;
-	            if (degree_anchor > 180)
-	                degree_anchor -= 360;
-	            //var degree_anchor:number=Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
-	            this._draw_directions[this._draw_directions.length - 1] += degree_anchor;
-	            this._tmp_point.x = controlX - this._cur_point.x;
-	            this._tmp_point.y = controlY - this._cur_point.y;
-	            this._tmp_point.normalize();
-	            //angle = atan2( a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y );
-	            var degree_control = (Math.atan2(this._tmp_point.x * testpoint.y - this._tmp_point.y * testpoint.x, this._tmp_point.x * testpoint.x + this._tmp_point.y * testpoint.y));
-	            if (degree_control > 180)
-	                degree_control -= 360;
-	            //var degree_control:number=(Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI);
-	            console.log("degree_control " + degree_control);
-	            console.log("degree_anchor " + degree_anchor);
-	            console.log("this._draw_directions[this._draw_directions.length-1] " + this._draw_directions[this._draw_directions.length - 1]);
-	            this._direction.x = testpoint.x;
-	            this._direction.y = testpoint.y;
-	            if ((degree_control) < 0)
-	                this._data[this._data.length - 1].push(1);
-	            else
-	                this._data[this._data.length - 1].push(2);
-	        }
-	        else {
-	            this._data[this._data.length - 1].push(1);
-	        }
-	        this._cur_point.x = anchorX;
-	        this._cur_point.y = anchorY;
-	        this._data[this._data.length - 1].push(controlX);
-	        this._data[this._data.length - 1].push(controlY);
-	        this._data[this._data.length - 1].push(anchorX);
-	        this._data[this._data.length - 1].push(anchorY);
-	    };
-	    GraphicsPath.prototype.lineTo = function (x, y) {
-	        if (this._commands[this._commands.length - 1].length == 0) {
-	            // every contour must start with a moveTo command, so we make sure we have correct startpoint
-	            this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.MOVE_TO);
-	            this._data[this._data.length - 1].push(this._cur_point.x);
-	            this._data[this._data.length - 1].push(this._cur_point.y);
-	        }
-	        this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.LINE_TO);
-	        this._data[this._data.length - 1].push(x);
-	        this._data[this._data.length - 1].push(y);
-	        if (this.isFill) {
-	            this._tmp_point.x = x - this._cur_point.x;
-	            this._tmp_point.y = y - this._cur_point.y;
-	            this._tmp_point.normalize();
-	            this._direction.x = this._tmp_point.x;
-	            this._direction.y = this._tmp_point.y;
-	            var degree_anchor = Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
-	            this._draw_directions[this._draw_directions.length - 1] += degree_anchor;
-	        }
-	        this._cur_point.x = x;
-	        this._cur_point.y = y;
-	    };
-	    GraphicsPath.prototype.moveTo = function (x, y) {
-	        if (this._commands[this._commands.length - 1].length > 0) {
-	            this.finalizeContour();
-	            this._draw_directions.push(0);
-	            this._contours_closed.push(false);
-	            this._commands.push([]);
-	            this._data.push([]);
-	        }
-	        this._startPoint.x = x;
-	        this._startPoint.y = y;
-	        this._cur_point.x = x;
-	        this._cur_point.y = y;
-	    };
-	    GraphicsPath.prototype.finalizeContour = function () {
-	        if ((this._startPoint.x != this._cur_point.x) || (this._startPoint.y != this._cur_point.y)) {
-	            if (this.isFill) {
-	                this.lineTo(this._startPoint.x, this._startPoint.y);
-	            }
-	        }
-	        else {
-	            this._contours_closed[this._contours_closed.length - 1] = true;
-	        }
-	    };
-	    GraphicsPath.prototype.wideLineTo = function (x, y) {
-	        // not used
-	        /*
-	         this._commands.push(GraphicsPathCommand.WIDE_LINE_TO);
-	         this._data.push(0);
-	         this._data.push(0);
-	         this._data.push(x);
-	         this._data.push(y);
-	         */
-	    };
-	    GraphicsPath.prototype.wideMoveTo = function (x, y) {
-	        // not used
-	        /*
-	         this._commands.push(GraphicsPathCommand.WIDE_MOVE_TO);
-	         this._data.push(0);
-	         this._data.push(0);
-	         this._data.push(x);
-	         this._data.push(y);
-	         */
-	    };
-	    return GraphicsPath;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GraphicsPath;
-
-
-/***/ },
-/* 414 */
-/***/ function(module, exports) {
-
-	"use strict";
-	/**
-	 * The GraphicsPathWinding class provides values for the
-	 * <code>flash.display.GraphicsPath.winding</code> property and the
-	 * <code>flash.display.Graphics.drawPath()</code> method to determine the
-	 * direction to draw a path. A clockwise path is positively wound, and a
-	 * counter-clockwise path is negatively wound:
-	 *
-	 * <p> When paths intersect or overlap, the winding direction determines the
-	 * rules for filling the areas created by the intersection or overlap:</p>
-	 */
-	var GraphicsPathWinding = (function () {
-	    function GraphicsPathWinding() {
-	    }
-	    GraphicsPathWinding.EVEN_ODD = "evenOdd";
-	    GraphicsPathWinding.NON_ZERO = "nonZero";
-	    return GraphicsPathWinding;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GraphicsPathWinding;
-
-
-/***/ },
-/* 415 */
-/***/ function(module, exports) {
-
-	"use strict";
-	/**
-	* Defines the values to use for specifying path-drawing commands.
-	* The values in this class are used by the Graphics.drawPath() method,
-	 *or stored in the commands vector of a GraphicsPath object.
-	 */
-	var GraphicsPathCommand = (function () {
-	    function GraphicsPathCommand() {
-	    }
-	    /**
-	     * Represents the default "do nothing" command.
-	     */
-	    GraphicsPathCommand.NO_OP = 0;
-	    /**
-	     * Specifies a drawing command that moves the current drawing position
-	     * to the x- and y-coordinates specified in the data vector.
-	     */
-	    GraphicsPathCommand.MOVE_TO = 1;
-	    /**
-	     * Specifies a drawing command that draws a line from the current drawing position
-	     * to the x- and y-coordinates specified in the data vector.
-	     */
-	    GraphicsPathCommand.LINE_TO = 2;
-	    /**
-	     *  Specifies a drawing command that draws a curve from the current drawing position
-	     *  to the x- and y-coordinates specified in the data vector, using a control point.
-	     */
-	    GraphicsPathCommand.CURVE_TO = 3;
-	    /**
-	     *  Specifies a drawing command that draws a curve from the current drawing position
-	     *  to the x- and y-coordinates specified in the data vector, using a control point.
-	     */
-	    GraphicsPathCommand.CURVE_TO_2 = 13;
-	    /**
-	     * Specifies a "line to" drawing command,
-	     * but uses two sets of coordinates (four values) instead of one set.
-	     */
-	    GraphicsPathCommand.WIDE_LINE_TO = 4;
-	    /**
-	     *   Specifies a "move to" drawing command,
-	     *   but uses two sets of coordinates (four values) instead of one set.
-	     */
-	    GraphicsPathCommand.WIDE_MOVE_TO = 5;
-	    /**
-	     * Specifies a drawing command that draws a curve from the current drawing position
-	     * to the x- and y-coordinates specified in the data vector, using 2 control points.
-	     */
-	    GraphicsPathCommand.CUBIC_CURVE = 6;
-	    return GraphicsPathCommand;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GraphicsPathCommand;
-
-
-/***/ },
-/* 416 */
+/* 421 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64322,44 +64676,7 @@
 
 
 /***/ },
-/* 417 */
-/***/ function(module, exports) {
-
-	"use strict";
-	/**
-	 * The JointStyle class is an enumeration of constant values that specify the
-	 * joint style to use in drawing lines. These constants are provided for use
-	 * as values in the <code>joints</code> parameter of the
-	 * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
-	 * three types of joints: miter, round, and bevel, as the following example
-	 * shows:
-	 */
-	var JointStyle = (function () {
-	    function JointStyle() {
-	    }
-	    /**
-	     * Specifies beveled joints in the <code>joints</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    JointStyle.BEVEL = "bevel";
-	    /**
-	     * Specifies mitered joints in the <code>joints</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    JointStyle.MITER = "miter";
-	    /**
-	     * Specifies round joints in the <code>joints</code> parameter of the
-	     * <code>flash.display.Graphics.lineStyle()</code> method.
-	     */
-	    JointStyle.ROUND = "round";
-	    return JointStyle;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = JointStyle;
-
-
-/***/ },
-/* 418 */
+/* 422 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64408,7 +64725,7 @@
 
 
 /***/ },
-/* 419 */
+/* 423 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64448,7 +64765,7 @@
 
 
 /***/ },
-/* 420 */
+/* 424 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64482,7 +64799,7 @@
 
 
 /***/ },
-/* 421 */
+/* 425 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64530,16 +64847,16 @@
 
 
 /***/ },
-/* 422 */
+/* 426 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CastError_1 = __webpack_require__(423);
+	var CastError_1 = __webpack_require__(427);
 	exports.CastError = CastError_1.default;
 
 
 /***/ },
-/* 423 */
+/* 427 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64561,7 +64878,7 @@
 
 
 /***/ },
-/* 424 */
+/* 428 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64571,7 +64888,7 @@
 	exports.DisplayObjectEvent = DisplayObjectEvent_1.default;
 	var ElementsEvent_1 = __webpack_require__(62);
 	exports.ElementsEvent = ElementsEvent_1.default;
-	var LightEvent_1 = __webpack_require__(212);
+	var LightEvent_1 = __webpack_require__(223);
 	exports.LightEvent = LightEvent_1.default;
 	var MouseEvent_1 = __webpack_require__(55);
 	exports.MouseEvent = MouseEvent_1.default;
@@ -64579,20 +64896,20 @@
 	exports.RenderableEvent = RenderableEvent_1.default;
 	var RendererEvent_1 = __webpack_require__(53);
 	exports.RendererEvent = RendererEvent_1.default;
-	var ResizeEvent_1 = __webpack_require__(425);
+	var ResizeEvent_1 = __webpack_require__(429);
 	exports.ResizeEvent = ResizeEvent_1.default;
 	var StyleEvent_1 = __webpack_require__(61);
 	exports.StyleEvent = StyleEvent_1.default;
-	var SurfaceEvent_1 = __webpack_require__(70);
+	var SurfaceEvent_1 = __webpack_require__(97);
 	exports.SurfaceEvent = SurfaceEvent_1.default;
-	var TouchEvent_1 = __webpack_require__(426);
+	var TouchEvent_1 = __webpack_require__(430);
 	exports.TouchEvent = TouchEvent_1.default;
 	var TransformEvent_1 = __webpack_require__(35);
 	exports.TransformEvent = TransformEvent_1.default;
 
 
 /***/ },
-/* 425 */
+/* 429 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64641,7 +64958,7 @@
 
 
 /***/ },
-/* 426 */
+/* 430 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64764,53 +65081,53 @@
 
 
 /***/ },
-/* 427 */
+/* 431 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 428 */
+/* 432 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ElementsBase_1 = __webpack_require__(87);
+	var ElementsBase_1 = __webpack_require__(93);
 	exports.ElementsBase = ElementsBase_1.default;
-	var ElementsType_1 = __webpack_require__(224);
+	var ElementsType_1 = __webpack_require__(235);
 	exports.ElementsType = ElementsType_1.default;
 	var Graphic_1 = __webpack_require__(59);
 	exports.Graphic = Graphic_1.default;
 	var Graphics_1 = __webpack_require__(58);
 	exports.Graphics = Graphics_1.default;
-	var LineElements_1 = __webpack_require__(85);
+	var LineElements_1 = __webpack_require__(91);
 	exports.LineElements = LineElements_1.default;
-	var TriangleElements_1 = __webpack_require__(209);
+	var TriangleElements_1 = __webpack_require__(107);
 	exports.TriangleElements = TriangleElements_1.default;
 
 
 /***/ },
-/* 429 */
+/* 433 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
 	exports.DefaultMaterialManager = DefaultMaterialManager_1.default;
 	var FrameScriptManager_1 = __webpack_require__(56);
 	exports.FrameScriptManager = FrameScriptManager_1.default;
 	var MouseManager_1 = __webpack_require__(54);
 	exports.MouseManager = MouseManager_1.default;
-	var TouchManager_1 = __webpack_require__(430);
+	var TouchManager_1 = __webpack_require__(434);
 	exports.TouchManager = TouchManager_1.default;
 
 
 /***/ },
-/* 430 */
+/* 434 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Vector3D_1 = __webpack_require__(18);
-	var TouchEvent_1 = __webpack_require__(426);
+	var TouchEvent_1 = __webpack_require__(430);
 	var TouchManager = (function () {
 	    function TouchManager() {
 	        var _this = this;
@@ -64989,34 +65306,34 @@
 
 
 /***/ },
-/* 431 */
+/* 435 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var LightPickerBase_1 = __webpack_require__(221);
+	var LightPickerBase_1 = __webpack_require__(232);
 	exports.LightPickerBase = LightPickerBase_1.default;
-	var StaticLightPicker_1 = __webpack_require__(218);
+	var StaticLightPicker_1 = __webpack_require__(229);
 	exports.StaticLightPicker = StaticLightPicker_1.default;
-	var CascadeShadowMapper_1 = __webpack_require__(432);
+	var CascadeShadowMapper_1 = __webpack_require__(436);
 	exports.CascadeShadowMapper = CascadeShadowMapper_1.default;
-	var CubeMapShadowMapper_1 = __webpack_require__(217);
+	var CubeMapShadowMapper_1 = __webpack_require__(228);
 	exports.CubeMapShadowMapper = CubeMapShadowMapper_1.default;
-	var DirectionalShadowMapper_1 = __webpack_require__(213);
+	var DirectionalShadowMapper_1 = __webpack_require__(224);
 	exports.DirectionalShadowMapper = DirectionalShadowMapper_1.default;
-	var NearDirectionalShadowMapper_1 = __webpack_require__(352);
+	var NearDirectionalShadowMapper_1 = __webpack_require__(362);
 	exports.NearDirectionalShadowMapper = NearDirectionalShadowMapper_1.default;
-	var ShadowMapperBase_1 = __webpack_require__(215);
+	var ShadowMapperBase_1 = __webpack_require__(226);
 	exports.ShadowMapperBase = ShadowMapperBase_1.default;
-	var BasicMaterial_1 = __webpack_require__(94);
+	var BasicMaterial_1 = __webpack_require__(101);
 	exports.BasicMaterial = BasicMaterial_1.default;
-	var LightSources_1 = __webpack_require__(433);
+	var LightSources_1 = __webpack_require__(437);
 	exports.LightSources = LightSources_1.default;
-	var MaterialBase_1 = __webpack_require__(95);
+	var MaterialBase_1 = __webpack_require__(102);
 	exports.MaterialBase = MaterialBase_1.default;
 
 
 /***/ },
-/* 432 */
+/* 436 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65028,9 +65345,9 @@
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Rectangle_1 = __webpack_require__(51);
 	var AssetEvent_1 = __webpack_require__(1);
-	var FreeMatrixProjection_1 = __webpack_require__(214);
+	var FreeMatrixProjection_1 = __webpack_require__(225);
 	var Camera_1 = __webpack_require__(45);
-	var DirectionalShadowMapper_1 = __webpack_require__(213);
+	var DirectionalShadowMapper_1 = __webpack_require__(224);
 	var CascadeShadowMapper = (function (_super) {
 	    __extends(CascadeShadowMapper, _super);
 	    function CascadeShadowMapper(numCascades) {
@@ -65210,7 +65527,7 @@
 
 
 /***/ },
-/* 433 */
+/* 437 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65250,38 +65567,38 @@
 
 
 /***/ },
-/* 434 */
+/* 438 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var BasicPartition_1 = __webpack_require__(38);
 	exports.BasicPartition = BasicPartition_1.default;
-	var CameraNode_1 = __webpack_require__(435);
+	var CameraNode_1 = __webpack_require__(439);
 	exports.CameraNode = CameraNode_1.default;
-	var DirectionalLightNode_1 = __webpack_require__(437);
+	var DirectionalLightNode_1 = __webpack_require__(441);
 	exports.DirectionalLightNode = DirectionalLightNode_1.default;
-	var DisplayObjectNode_1 = __webpack_require__(312);
+	var DisplayObjectNode_1 = __webpack_require__(323);
 	exports.DisplayObjectNode = DisplayObjectNode_1.default;
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	exports.EntityNode = EntityNode_1.default;
-	var LightProbeNode_1 = __webpack_require__(438);
+	var LightProbeNode_1 = __webpack_require__(442);
 	exports.LightProbeNode = LightProbeNode_1.default;
 	var NodeBase_1 = __webpack_require__(39);
 	exports.NodeBase = NodeBase_1.default;
 	var PartitionBase_1 = __webpack_require__(43);
 	exports.PartitionBase = PartitionBase_1.default;
-	var PointLightNode_1 = __webpack_require__(439);
+	var PointLightNode_1 = __webpack_require__(443);
 	exports.PointLightNode = PointLightNode_1.default;
-	var SceneGraphNode_1 = __webpack_require__(311);
+	var SceneGraphNode_1 = __webpack_require__(322);
 	exports.SceneGraphNode = SceneGraphNode_1.default;
-	var SceneGraphPartition_1 = __webpack_require__(310);
+	var SceneGraphPartition_1 = __webpack_require__(321);
 	exports.SceneGraphPartition = SceneGraphPartition_1.default;
-	var SkyboxNode_1 = __webpack_require__(440);
+	var SkyboxNode_1 = __webpack_require__(444);
 	exports.SkyboxNode = SkyboxNode_1.default;
 
 
 /***/ },
-/* 435 */
+/* 439 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65290,7 +65607,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	/**
 	 * @class away.partition.CameraNode
 	 */
@@ -65312,7 +65629,7 @@
 
 
 /***/ },
-/* 436 */
+/* 440 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65322,7 +65639,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var DisplayObjectNode_1 = __webpack_require__(312);
+	var DisplayObjectNode_1 = __webpack_require__(323);
 	/**
 	 * @class away.partition.EntityNode
 	 */
@@ -65413,7 +65730,7 @@
 
 
 /***/ },
-/* 437 */
+/* 441 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65422,7 +65739,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	/**
 	 * @class away.partition.DirectionalLightNode
 	 */
@@ -65452,7 +65769,7 @@
 
 
 /***/ },
-/* 438 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65461,7 +65778,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	/**
 	 * @class away.partition.LightProbeNode
 	 */
@@ -65491,7 +65808,7 @@
 
 
 /***/ },
-/* 439 */
+/* 443 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65500,7 +65817,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	/**
 	 * @class away.partition.PointLightNode
 	 */
@@ -65530,7 +65847,7 @@
 
 
 /***/ },
-/* 440 */
+/* 444 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65539,7 +65856,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(436);
+	var EntityNode_1 = __webpack_require__(440);
 	/**
 	 * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
 	 *
@@ -65576,11 +65893,11 @@
 
 
 /***/ },
-/* 441 */
+/* 445 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var JSPickingCollider_1 = __webpack_require__(315);
+	var JSPickingCollider_1 = __webpack_require__(326);
 	exports.JSPickingCollider = JSPickingCollider_1.default;
 	var PickingCollision_1 = __webpack_require__(36);
 	exports.PickingCollision = PickingCollision_1.default;
@@ -65589,34 +65906,34 @@
 
 
 /***/ },
-/* 442 */
+/* 446 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var PrefabBase_1 = __webpack_require__(222);
+	var PrefabBase_1 = __webpack_require__(233);
 	exports.PrefabBase = PrefabBase_1.default;
-	var PrimitiveCapsulePrefab_1 = __webpack_require__(223);
+	var PrimitiveCapsulePrefab_1 = __webpack_require__(234);
 	exports.PrimitiveCapsulePrefab = PrimitiveCapsulePrefab_1.default;
-	var PrimitiveConePrefab_1 = __webpack_require__(226);
+	var PrimitiveConePrefab_1 = __webpack_require__(237);
 	exports.PrimitiveConePrefab = PrimitiveConePrefab_1.default;
-	var PrimitiveCubePrefab_1 = __webpack_require__(228);
+	var PrimitiveCubePrefab_1 = __webpack_require__(239);
 	exports.PrimitiveCubePrefab = PrimitiveCubePrefab_1.default;
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(227);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
 	exports.PrimitiveCylinderPrefab = PrimitiveCylinderPrefab_1.default;
-	var PrimitivePlanePrefab_1 = __webpack_require__(229);
+	var PrimitivePlanePrefab_1 = __webpack_require__(240);
 	exports.PrimitivePlanePrefab = PrimitivePlanePrefab_1.default;
-	var PrimitivePolygonPrefab_1 = __webpack_require__(443);
+	var PrimitivePolygonPrefab_1 = __webpack_require__(447);
 	exports.PrimitivePolygonPrefab = PrimitivePolygonPrefab_1.default;
-	var PrimitivePrefabBase_1 = __webpack_require__(225);
+	var PrimitivePrefabBase_1 = __webpack_require__(236);
 	exports.PrimitivePrefabBase = PrimitivePrefabBase_1.default;
-	var PrimitiveSpherePrefab_1 = __webpack_require__(230);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
 	exports.PrimitiveSpherePrefab = PrimitiveSpherePrefab_1.default;
-	var PrimitiveTorusPrefab_1 = __webpack_require__(231);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
 	exports.PrimitiveTorusPrefab = PrimitiveTorusPrefab_1.default;
 
 
 /***/ },
-/* 443 */
+/* 447 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65625,7 +65942,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(227);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
 	/**
 	 * A UV RegularPolygon primitive sprite.
 	 */
@@ -65692,36 +66009,36 @@
 
 
 /***/ },
-/* 444 */
+/* 448 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AntiAliasType_1 = __webpack_require__(445);
+	var AntiAliasType_1 = __webpack_require__(449);
 	exports.AntiAliasType = AntiAliasType_1.default;
-	var Font_1 = __webpack_require__(304);
+	var Font_1 = __webpack_require__(315);
 	exports.Font = Font_1.default;
-	var GridFitType_1 = __webpack_require__(446);
+	var GridFitType_1 = __webpack_require__(450);
 	exports.GridFitType = GridFitType_1.default;
-	var TesselatedFontChar_1 = __webpack_require__(306);
+	var TesselatedFontChar_1 = __webpack_require__(317);
 	exports.TesselatedFontChar = TesselatedFontChar_1.default;
-	var TesselatedFontTable_1 = __webpack_require__(305);
+	var TesselatedFontTable_1 = __webpack_require__(316);
 	exports.TesselatedFontTable = TesselatedFontTable_1.default;
-	var TextFieldAutoSize_1 = __webpack_require__(447);
+	var TextFieldAutoSize_1 = __webpack_require__(451);
 	exports.TextFieldAutoSize = TextFieldAutoSize_1.default;
-	var TextFieldType_1 = __webpack_require__(299);
+	var TextFieldType_1 = __webpack_require__(310);
 	exports.TextFieldType = TextFieldType_1.default;
-	var TextFormat_1 = __webpack_require__(307);
+	var TextFormat_1 = __webpack_require__(318);
 	exports.TextFormat = TextFormat_1.default;
-	var TextFormatAlign_1 = __webpack_require__(448);
+	var TextFormatAlign_1 = __webpack_require__(452);
 	exports.TextFormatAlign = TextFormatAlign_1.default;
-	var TextInteractionMode_1 = __webpack_require__(449);
+	var TextInteractionMode_1 = __webpack_require__(453);
 	exports.TextInteractionMode = TextInteractionMode_1.default;
-	var TextLineMetrics_1 = __webpack_require__(450);
+	var TextLineMetrics_1 = __webpack_require__(454);
 	exports.TextLineMetrics = TextLineMetrics_1.default;
 
 
 /***/ },
-/* 445 */
+/* 449 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65757,7 +66074,7 @@
 
 
 /***/ },
-/* 446 */
+/* 450 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65800,7 +66117,7 @@
 
 
 /***/ },
-/* 447 */
+/* 451 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65840,7 +66157,7 @@
 
 
 /***/ },
-/* 448 */
+/* 452 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65878,7 +66195,7 @@
 
 
 /***/ },
-/* 449 */
+/* 453 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65911,7 +66228,7 @@
 
 
 /***/ },
-/* 450 */
+/* 454 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65955,40 +66272,40 @@
 
 
 /***/ },
-/* 451 */
+/* 455 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var MappingMode_1 = __webpack_require__(97);
+	var MappingMode_1 = __webpack_require__(104);
 	exports.MappingMode = MappingMode_1.default;
-	var Single2DTexture_1 = __webpack_require__(96);
+	var Single2DTexture_1 = __webpack_require__(103);
 	exports.Single2DTexture = Single2DTexture_1.default;
-	var SingleCubeTexture_1 = __webpack_require__(91);
+	var SingleCubeTexture_1 = __webpack_require__(98);
 	exports.SingleCubeTexture = SingleCubeTexture_1.default;
-	var TextureBase_1 = __webpack_require__(92);
+	var TextureBase_1 = __webpack_require__(99);
 	exports.TextureBase = TextureBase_1.default;
 
 
 /***/ },
-/* 452 */
+/* 456 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Cast_1 = __webpack_require__(453);
+	var Cast_1 = __webpack_require__(457);
 	exports.Cast = Cast_1.default;
 	var ElementsUtils_1 = __webpack_require__(63);
 	exports.ElementsUtils = ElementsUtils_1.default;
 
 
 /***/ },
-/* 453 */
+/* 457 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2D_1 = __webpack_require__(75);
-	var ByteArray_1 = __webpack_require__(126);
-	var CastError_1 = __webpack_require__(423);
-	var Single2DTexture_1 = __webpack_require__(96);
+	var Image2D_1 = __webpack_require__(81);
+	var ByteArray_1 = __webpack_require__(139);
+	var CastError_1 = __webpack_require__(427);
+	var Single2DTexture_1 = __webpack_require__(103);
 	/**
 	 * Helper class for casting assets to usable objects
 	 */
@@ -66258,32 +66575,32 @@
 
 
 /***/ },
-/* 454 */
+/* 458 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var aglsl = __webpack_require__(455);
+	var aglsl = __webpack_require__(459);
 	exports.aglsl = aglsl;
-	var attributes = __webpack_require__(456);
+	var attributes = __webpack_require__(460);
 	exports.attributes = attributes;
-	var base = __webpack_require__(458);
+	var base = __webpack_require__(462);
 	exports.base = base;
-	var events = __webpack_require__(461);
+	var events = __webpack_require__(465);
 	exports.events = events;
-	var image = __webpack_require__(462);
+	var image = __webpack_require__(466);
 	exports.image = image;
-	var library = __webpack_require__(473);
+	var library = __webpack_require__(477);
 	exports.library = library;
-	var managers = __webpack_require__(474);
+	var managers = __webpack_require__(478);
 	exports.managers = managers;
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var BitmapImageCube_1 = __webpack_require__(83);
-	var Image2D_1 = __webpack_require__(75);
-	var ImageCube_1 = __webpack_require__(84);
-	var SpecularImage2D_1 = __webpack_require__(316);
-	var Sampler2D_1 = __webpack_require__(72);
-	var SamplerCube_1 = __webpack_require__(220);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImageCube_1 = __webpack_require__(89);
+	var Image2D_1 = __webpack_require__(81);
+	var ImageCube_1 = __webpack_require__(90);
+	var SpecularImage2D_1 = __webpack_require__(327);
+	var Sampler2D_1 = __webpack_require__(78);
+	var SamplerCube_1 = __webpack_require__(231);
 	base.Stage.registerAbstraction(attributes.GL_AttributesBuffer, AttributesBuffer_1.default);
 	base.Stage.registerAbstraction(image.GL_RenderImage2D, Image2D_1.default);
 	base.Stage.registerAbstraction(image.GL_RenderImageCube, ImageCube_1.default);
@@ -66295,57 +66612,57 @@
 
 
 /***/ },
-/* 455 */
+/* 459 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AGALMiniAssembler_1 = __webpack_require__(120);
+	var AGALMiniAssembler_1 = __webpack_require__(133);
 	exports.AGALMiniAssembler = AGALMiniAssembler_1.default;
-	var Flags_1 = __webpack_require__(123);
+	var Flags_1 = __webpack_require__(136);
 	exports.Flags = Flags_1.default;
-	var FS_1 = __webpack_require__(124);
+	var FS_1 = __webpack_require__(137);
 	exports.FS = FS_1.default;
-	var Opcode_1 = __webpack_require__(122);
+	var Opcode_1 = __webpack_require__(135);
 	exports.Opcode = Opcode_1.default;
-	var OpcodeMap_1 = __webpack_require__(121);
+	var OpcodeMap_1 = __webpack_require__(134);
 	exports.OpcodeMap = OpcodeMap_1.default;
-	var Part_1 = __webpack_require__(125);
+	var Part_1 = __webpack_require__(138);
 	exports.Part = Part_1.default;
-	var RegMap_1 = __webpack_require__(128);
+	var RegMap_1 = __webpack_require__(141);
 	exports.RegMap = RegMap_1.default;
-	var Sampler_1 = __webpack_require__(130);
+	var Sampler_1 = __webpack_require__(143);
 	exports.Sampler = Sampler_1.default;
-	var SamplerMap_1 = __webpack_require__(129);
+	var SamplerMap_1 = __webpack_require__(142);
 	exports.SamplerMap = SamplerMap_1.default;
-	var AGALTokenizer_1 = __webpack_require__(150);
+	var AGALTokenizer_1 = __webpack_require__(163);
 	exports.AGALTokenizer = AGALTokenizer_1.default;
-	var AGLSLParser_1 = __webpack_require__(157);
+	var AGLSLParser_1 = __webpack_require__(170);
 	exports.AGLSLParser = AGLSLParser_1.default;
-	var Description_1 = __webpack_require__(151);
+	var Description_1 = __webpack_require__(164);
 	exports.Description = Description_1.default;
-	var Destination_1 = __webpack_require__(156);
+	var Destination_1 = __webpack_require__(169);
 	exports.Destination = Destination_1.default;
-	var Header_1 = __webpack_require__(152);
+	var Header_1 = __webpack_require__(165);
 	exports.Header = Header_1.default;
-	var Mapping_1 = __webpack_require__(153);
+	var Mapping_1 = __webpack_require__(166);
 	exports.Mapping = Mapping_1.default;
-	var OpLUT_1 = __webpack_require__(154);
+	var OpLUT_1 = __webpack_require__(167);
 	exports.OpLUT = OpLUT_1.default;
-	var Token_1 = __webpack_require__(155);
+	var Token_1 = __webpack_require__(168);
 	exports.Token = Token_1.default;
 
 
 /***/ },
-/* 456 */
+/* 460 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_AttributesBuffer_1 = __webpack_require__(457);
+	var GL_AttributesBuffer_1 = __webpack_require__(461);
 	exports.GL_AttributesBuffer = GL_AttributesBuffer_1.default;
 
 
 /***/ },
-/* 457 */
+/* 461 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66354,7 +66671,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	/**
 	 *
 	 * @class away.pool.GL_AttributesBuffer
@@ -66417,90 +66734,90 @@
 
 
 /***/ },
-/* 458 */
+/* 462 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ContextGLBlendFactor_1 = __webpack_require__(131);
+	var ContextGLBlendFactor_1 = __webpack_require__(144);
 	exports.ContextGLBlendFactor = ContextGLBlendFactor_1.default;
-	var ContextGLClearMask_1 = __webpack_require__(118);
+	var ContextGLClearMask_1 = __webpack_require__(131);
 	exports.ContextGLClearMask = ContextGLClearMask_1.default;
-	var ContextGLCompareMode_1 = __webpack_require__(117);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
 	exports.ContextGLCompareMode = ContextGLCompareMode_1.default;
-	var ContextGLDrawMode_1 = __webpack_require__(142);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
 	exports.ContextGLDrawMode = ContextGLDrawMode_1.default;
-	var ContextGLMipFilter_1 = __webpack_require__(137);
+	var ContextGLMipFilter_1 = __webpack_require__(150);
 	exports.ContextGLMipFilter = ContextGLMipFilter_1.default;
-	var ContextGLProfile_1 = __webpack_require__(459);
+	var ContextGLProfile_1 = __webpack_require__(463);
 	exports.ContextGLProfile = ContextGLProfile_1.default;
-	var ContextGLProgramType_1 = __webpack_require__(143);
+	var ContextGLProgramType_1 = __webpack_require__(156);
 	exports.ContextGLProgramType = ContextGLProgramType_1.default;
-	var ContextGLStencilAction_1 = __webpack_require__(144);
+	var ContextGLStencilAction_1 = __webpack_require__(157);
 	exports.ContextGLStencilAction = ContextGLStencilAction_1.default;
-	var ContextGLTextureFilter_1 = __webpack_require__(138);
+	var ContextGLTextureFilter_1 = __webpack_require__(151);
 	exports.ContextGLTextureFilter = ContextGLTextureFilter_1.default;
-	var ContextGLTextureFormat_1 = __webpack_require__(460);
+	var ContextGLTextureFormat_1 = __webpack_require__(464);
 	exports.ContextGLTextureFormat = ContextGLTextureFormat_1.default;
-	var ContextGLTriangleFace_1 = __webpack_require__(145);
+	var ContextGLTriangleFace_1 = __webpack_require__(158);
 	exports.ContextGLTriangleFace = ContextGLTriangleFace_1.default;
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
 	exports.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat_1.default;
-	var ContextGLWrapMode_1 = __webpack_require__(140);
+	var ContextGLWrapMode_1 = __webpack_require__(153);
 	exports.ContextGLWrapMode = ContextGLWrapMode_1.default;
-	var ContextMode_1 = __webpack_require__(136);
+	var ContextMode_1 = __webpack_require__(149);
 	exports.ContextMode = ContextMode_1.default;
-	var ContextSoftware_1 = __webpack_require__(169);
+	var ContextSoftware_1 = __webpack_require__(182);
 	exports.ContextSoftware = ContextSoftware_1.default;
-	var ContextStage3D_1 = __webpack_require__(161);
+	var ContextStage3D_1 = __webpack_require__(174);
 	exports.ContextStage3D = ContextStage3D_1.default;
-	var ContextWebGL_1 = __webpack_require__(141);
+	var ContextWebGL_1 = __webpack_require__(154);
 	exports.ContextWebGL = ContextWebGL_1.default;
-	var CubeTextureFlash_1 = __webpack_require__(162);
+	var CubeTextureFlash_1 = __webpack_require__(175);
 	exports.CubeTextureFlash = CubeTextureFlash_1.default;
-	var CubeTextureWebGL_1 = __webpack_require__(146);
+	var CubeTextureWebGL_1 = __webpack_require__(159);
 	exports.CubeTextureWebGL = CubeTextureWebGL_1.default;
-	var IndexBufferFlash_1 = __webpack_require__(165);
+	var IndexBufferFlash_1 = __webpack_require__(178);
 	exports.IndexBufferFlash = IndexBufferFlash_1.default;
-	var IndexBufferSoftware_1 = __webpack_require__(170);
+	var IndexBufferSoftware_1 = __webpack_require__(183);
 	exports.IndexBufferSoftware = IndexBufferSoftware_1.default;
-	var IndexBufferWebGL_1 = __webpack_require__(148);
+	var IndexBufferWebGL_1 = __webpack_require__(161);
 	exports.IndexBufferWebGL = IndexBufferWebGL_1.default;
-	var OpCodes_1 = __webpack_require__(163);
+	var OpCodes_1 = __webpack_require__(176);
 	exports.OpCodes = OpCodes_1.default;
-	var ProgramFlash_1 = __webpack_require__(166);
+	var ProgramFlash_1 = __webpack_require__(179);
 	exports.ProgramFlash = ProgramFlash_1.default;
-	var ProgramSoftware_1 = __webpack_require__(173);
+	var ProgramSoftware_1 = __webpack_require__(186);
 	exports.ProgramSoftware = ProgramSoftware_1.default;
-	var ProgramVOSoftware_1 = __webpack_require__(174);
+	var ProgramVOSoftware_1 = __webpack_require__(187);
 	exports.ProgramVOSoftware = ProgramVOSoftware_1.default;
-	var ProgramWebGL_1 = __webpack_require__(149);
+	var ProgramWebGL_1 = __webpack_require__(162);
 	exports.ProgramWebGL = ProgramWebGL_1.default;
-	var ResourceBaseFlash_1 = __webpack_require__(164);
+	var ResourceBaseFlash_1 = __webpack_require__(177);
 	exports.ResourceBaseFlash = ResourceBaseFlash_1.default;
-	var SamplerState_1 = __webpack_require__(159);
+	var SamplerState_1 = __webpack_require__(172);
 	exports.SamplerState = SamplerState_1.default;
-	var SoftwareSamplerState_1 = __webpack_require__(175);
+	var SoftwareSamplerState_1 = __webpack_require__(188);
 	exports.SoftwareSamplerState = SoftwareSamplerState_1.default;
-	var Stage_1 = __webpack_require__(134);
+	var Stage_1 = __webpack_require__(147);
 	exports.Stage = Stage_1.default;
-	var TextureBaseWebGL_1 = __webpack_require__(147);
+	var TextureBaseWebGL_1 = __webpack_require__(160);
 	exports.TextureBaseWebGL = TextureBaseWebGL_1.default;
-	var TextureFlash_1 = __webpack_require__(167);
+	var TextureFlash_1 = __webpack_require__(180);
 	exports.TextureFlash = TextureFlash_1.default;
-	var TextureSoftware_1 = __webpack_require__(172);
+	var TextureSoftware_1 = __webpack_require__(185);
 	exports.TextureSoftware = TextureSoftware_1.default;
-	var TextureWebGL_1 = __webpack_require__(158);
+	var TextureWebGL_1 = __webpack_require__(171);
 	exports.TextureWebGL = TextureWebGL_1.default;
-	var VertexBufferFlash_1 = __webpack_require__(168);
+	var VertexBufferFlash_1 = __webpack_require__(181);
 	exports.VertexBufferFlash = VertexBufferFlash_1.default;
-	var VertexBufferSoftware_1 = __webpack_require__(171);
+	var VertexBufferSoftware_1 = __webpack_require__(184);
 	exports.VertexBufferSoftware = VertexBufferSoftware_1.default;
-	var VertexBufferWebGL_1 = __webpack_require__(160);
+	var VertexBufferWebGL_1 = __webpack_require__(173);
 	exports.VertexBufferWebGL = VertexBufferWebGL_1.default;
 
 
 /***/ },
-/* 459 */
+/* 463 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66517,7 +66834,7 @@
 
 
 /***/ },
-/* 460 */
+/* 464 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66536,47 +66853,47 @@
 
 
 /***/ },
-/* 461 */
+/* 465 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StageEvent_1 = __webpack_require__(132);
+	var StageEvent_1 = __webpack_require__(145);
 	exports.StageEvent = StageEvent_1.default;
 
 
 /***/ },
-/* 462 */
+/* 466 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_BitmapImage2D_1 = __webpack_require__(463);
+	var GL_BitmapImage2D_1 = __webpack_require__(467);
 	exports.GL_BitmapImage2D = GL_BitmapImage2D_1.default;
-	var GL_BitmapImageCube_1 = __webpack_require__(466);
+	var GL_BitmapImageCube_1 = __webpack_require__(470);
 	exports.GL_BitmapImageCube = GL_BitmapImageCube_1.default;
-	var GL_Image2D_1 = __webpack_require__(464);
+	var GL_Image2D_1 = __webpack_require__(468);
 	exports.GL_Image2D = GL_Image2D_1.default;
-	var GL_ImageBase_1 = __webpack_require__(465);
+	var GL_ImageBase_1 = __webpack_require__(469);
 	exports.GL_ImageBase = GL_ImageBase_1.default;
-	var GL_ImageCube_1 = __webpack_require__(467);
+	var GL_ImageCube_1 = __webpack_require__(471);
 	exports.GL_ImageCube = GL_ImageCube_1.default;
-	var GL_RenderImage2D_1 = __webpack_require__(468);
+	var GL_RenderImage2D_1 = __webpack_require__(472);
 	exports.GL_RenderImage2D = GL_RenderImage2D_1.default;
-	var GL_RenderImageCube_1 = __webpack_require__(469);
+	var GL_RenderImageCube_1 = __webpack_require__(473);
 	exports.GL_RenderImageCube = GL_RenderImageCube_1.default;
-	var GL_Sampler2D_1 = __webpack_require__(470);
+	var GL_Sampler2D_1 = __webpack_require__(474);
 	exports.GL_Sampler2D = GL_Sampler2D_1.default;
-	var GL_SamplerBase_1 = __webpack_require__(471);
+	var GL_SamplerBase_1 = __webpack_require__(475);
 	exports.GL_SamplerBase = GL_SamplerBase_1.default;
-	var GL_SamplerCube_1 = __webpack_require__(472);
+	var GL_SamplerCube_1 = __webpack_require__(476);
 	exports.GL_SamplerCube = GL_SamplerCube_1.default;
-	var ProgramData_1 = __webpack_require__(177);
+	var ProgramData_1 = __webpack_require__(190);
 	exports.ProgramData = ProgramData_1.default;
-	var ProgramDataPool_1 = __webpack_require__(176);
+	var ProgramDataPool_1 = __webpack_require__(189);
 	exports.ProgramDataPool = ProgramDataPool_1.default;
 
 
 /***/ },
-/* 463 */
+/* 467 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66585,8 +66902,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MipmapGenerator_1 = __webpack_require__(398);
-	var GL_Image2D_1 = __webpack_require__(464);
+	var MipmapGenerator_1 = __webpack_require__(408);
+	var GL_Image2D_1 = __webpack_require__(468);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -66638,7 +66955,7 @@
 
 
 /***/ },
-/* 464 */
+/* 468 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66647,8 +66964,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLTextureFormat_1 = __webpack_require__(460);
-	var GL_ImageBase_1 = __webpack_require__(465);
+	var ContextGLTextureFormat_1 = __webpack_require__(464);
+	var GL_ImageBase_1 = __webpack_require__(469);
 	/**
 	 *
 	 * @class away.pool.GL_ImageBase
@@ -66673,7 +66990,7 @@
 
 
 /***/ },
-/* 465 */
+/* 469 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66683,7 +67000,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	/**
 	 *
 	 * @class away.pool.GL_ImageBase
@@ -66729,7 +67046,7 @@
 
 
 /***/ },
-/* 466 */
+/* 470 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66738,8 +67055,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MipmapGenerator_1 = __webpack_require__(398);
-	var GL_ImageCube_1 = __webpack_require__(467);
+	var MipmapGenerator_1 = __webpack_require__(408);
+	var GL_ImageCube_1 = __webpack_require__(471);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -66797,7 +67114,7 @@
 
 
 /***/ },
-/* 467 */
+/* 471 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66806,8 +67123,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLTextureFormat_1 = __webpack_require__(460);
-	var GL_ImageBase_1 = __webpack_require__(465);
+	var ContextGLTextureFormat_1 = __webpack_require__(464);
+	var GL_ImageBase_1 = __webpack_require__(469);
 	/**
 	 *
 	 * @class away.pool.GL_ImageCubeBase
@@ -66832,7 +67149,7 @@
 
 
 /***/ },
-/* 468 */
+/* 472 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66841,7 +67158,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_Image2D_1 = __webpack_require__(464);
+	var GL_Image2D_1 = __webpack_require__(468);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -66862,7 +67179,7 @@
 
 
 /***/ },
-/* 469 */
+/* 473 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66871,7 +67188,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_ImageCube_1 = __webpack_require__(467);
+	var GL_ImageCube_1 = __webpack_require__(471);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -66892,7 +67209,7 @@
 
 
 /***/ },
-/* 470 */
+/* 474 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66901,7 +67218,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SamplerBase_1 = __webpack_require__(471);
+	var GL_SamplerBase_1 = __webpack_require__(475);
 	/**
 	 *
 	 * @class away.pool.GL_SamplerBase
@@ -66922,7 +67239,7 @@
 
 
 /***/ },
-/* 471 */
+/* 475 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66932,7 +67249,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	/**
 	 *
 	 * @class away.pool.GL_SamplerBase
@@ -66953,7 +67270,7 @@
 
 
 /***/ },
-/* 472 */
+/* 476 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66962,7 +67279,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SamplerBase_1 = __webpack_require__(471);
+	var GL_SamplerBase_1 = __webpack_require__(475);
 	/**
 	 *
 	 * @class away.pool.GL_SamplerBase
@@ -66983,71 +67300,71 @@
 
 
 /***/ },
-/* 473 */
+/* 477 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 474 */
+/* 478 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StageManager_1 = __webpack_require__(133);
+	var StageManager_1 = __webpack_require__(146);
 	exports.StageManager = StageManager_1.default;
 
 
 /***/ },
-/* 475 */
+/* 479 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var animators = __webpack_require__(476);
+	var animators = __webpack_require__(480);
 	exports.animators = animators;
-	var elements = __webpack_require__(504);
+	var elements = __webpack_require__(508);
 	exports.elements = elements;
-	var errors = __webpack_require__(506);
+	var errors = __webpack_require__(510);
 	exports.errors = errors;
-	var events = __webpack_require__(507);
+	var events = __webpack_require__(511);
 	exports.events = events;
-	var filters = __webpack_require__(508);
+	var filters = __webpack_require__(512);
 	exports.filters = filters;
-	var managers = __webpack_require__(518);
+	var managers = __webpack_require__(522);
 	exports.managers = managers;
-	var renderables = __webpack_require__(519);
+	var renderables = __webpack_require__(523);
 	exports.renderables = renderables;
-	var shaders = __webpack_require__(525);
+	var shaders = __webpack_require__(529);
 	exports.shaders = shaders;
-	var sort = __webpack_require__(528);
+	var sort = __webpack_require__(532);
 	exports.sort = sort;
-	var surfaces = __webpack_require__(530);
+	var surfaces = __webpack_require__(534);
 	exports.surfaces = surfaces;
-	var textures = __webpack_require__(535);
+	var textures = __webpack_require__(539);
 	exports.textures = textures;
-	var tools = __webpack_require__(539);
+	var tools = __webpack_require__(543);
 	exports.tools = tools;
-	var utils = __webpack_require__(541);
+	var utils = __webpack_require__(545);
 	exports.utils = utils;
-	var DefaultRenderer_1 = __webpack_require__(116);
+	var DefaultRenderer_1 = __webpack_require__(129);
 	exports.DefaultRenderer = DefaultRenderer_1.default;
-	var DepthRenderer_1 = __webpack_require__(181);
+	var DepthRenderer_1 = __webpack_require__(194);
 	exports.DepthRenderer = DepthRenderer_1.default;
-	var DistanceRenderer_1 = __webpack_require__(193);
+	var DistanceRenderer_1 = __webpack_require__(206);
 	exports.DistanceRenderer = DistanceRenderer_1.default;
-	var Filter3DRenderer_1 = __webpack_require__(195);
+	var Filter3DRenderer_1 = __webpack_require__(208);
 	exports.Filter3DRenderer = Filter3DRenderer_1.default;
-	var RendererBase_1 = __webpack_require__(119);
+	var RendererBase_1 = __webpack_require__(132);
 	exports.RendererBase = RendererBase_1.default;
-	var BasicMaterial_1 = __webpack_require__(94);
-	var Skybox_1 = __webpack_require__(89);
-	var Billboard_1 = __webpack_require__(69);
-	var LineSegment_1 = __webpack_require__(355);
-	var LineElements_1 = __webpack_require__(85);
-	var TriangleElements_1 = __webpack_require__(209);
+	var BasicMaterial_1 = __webpack_require__(101);
+	var Skybox_1 = __webpack_require__(95);
+	var Billboard_1 = __webpack_require__(110);
+	var LineSegment_1 = __webpack_require__(365);
+	var LineElements_1 = __webpack_require__(91);
+	var TriangleElements_1 = __webpack_require__(107);
 	var Graphic_1 = __webpack_require__(59);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var SingleCubeTexture_1 = __webpack_require__(91);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var SingleCubeTexture_1 = __webpack_require__(98);
 	surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.default);
 	surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.default);
 	elements.ElementsPool.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
@@ -67061,164 +67378,164 @@
 
 
 /***/ },
-/* 476 */
+/* 480 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationElements_1 = __webpack_require__(327);
+	var AnimationElements_1 = __webpack_require__(337);
 	exports.AnimationElements = AnimationElements_1.default;
-	var AnimationRegisterCache_1 = __webpack_require__(326);
+	var AnimationRegisterCache_1 = __webpack_require__(336);
 	exports.AnimationRegisterCache = AnimationRegisterCache_1.default;
-	var ColorSegmentPoint_1 = __webpack_require__(477);
+	var ColorSegmentPoint_1 = __webpack_require__(481);
 	exports.ColorSegmentPoint = ColorSegmentPoint_1.default;
-	var JointPose_1 = __webpack_require__(241);
+	var JointPose_1 = __webpack_require__(252);
 	exports.JointPose = JointPose_1.default;
-	var ParticleAnimationData_1 = __webpack_require__(328);
+	var ParticleAnimationData_1 = __webpack_require__(338);
 	exports.ParticleAnimationData = ParticleAnimationData_1.default;
-	var ParticleProperties_1 = __webpack_require__(329);
+	var ParticleProperties_1 = __webpack_require__(339);
 	exports.ParticleProperties = ParticleProperties_1.default;
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
 	exports.ParticlePropertiesMode = ParticlePropertiesMode_1.default;
-	var Skeleton_1 = __webpack_require__(245);
+	var Skeleton_1 = __webpack_require__(256);
 	exports.Skeleton = Skeleton_1.default;
-	var SkeletonJoint_1 = __webpack_require__(246);
+	var SkeletonJoint_1 = __webpack_require__(257);
 	exports.SkeletonJoint = SkeletonJoint_1.default;
-	var SkeletonPose_1 = __webpack_require__(243);
+	var SkeletonPose_1 = __webpack_require__(254);
 	exports.SkeletonPose = SkeletonPose_1.default;
-	var VertexAnimationMode_1 = __webpack_require__(235);
+	var VertexAnimationMode_1 = __webpack_require__(246);
 	exports.VertexAnimationMode = VertexAnimationMode_1.default;
-	var AnimationClipNodeBase_1 = __webpack_require__(248);
+	var AnimationClipNodeBase_1 = __webpack_require__(259);
 	exports.AnimationClipNodeBase = AnimationClipNodeBase_1.default;
-	var ParticleAccelerationNode_1 = __webpack_require__(478);
+	var ParticleAccelerationNode_1 = __webpack_require__(482);
 	exports.ParticleAccelerationNode = ParticleAccelerationNode_1.default;
-	var ParticleBezierCurveNode_1 = __webpack_require__(356);
+	var ParticleBezierCurveNode_1 = __webpack_require__(366);
 	exports.ParticleBezierCurveNode = ParticleBezierCurveNode_1.default;
-	var ParticleBillboardNode_1 = __webpack_require__(336);
+	var ParticleBillboardNode_1 = __webpack_require__(346);
 	exports.ParticleBillboardNode = ParticleBillboardNode_1.default;
-	var ParticleColorNode_1 = __webpack_require__(342);
+	var ParticleColorNode_1 = __webpack_require__(352);
 	exports.ParticleColorNode = ParticleColorNode_1.default;
-	var ParticleFollowNode_1 = __webpack_require__(480);
+	var ParticleFollowNode_1 = __webpack_require__(484);
 	exports.ParticleFollowNode = ParticleFollowNode_1.default;
-	var ParticleInitialColorNode_1 = __webpack_require__(358);
+	var ParticleInitialColorNode_1 = __webpack_require__(368);
 	exports.ParticleInitialColorNode = ParticleInitialColorNode_1.default;
-	var ParticleNodeBase_1 = __webpack_require__(332);
+	var ParticleNodeBase_1 = __webpack_require__(342);
 	exports.ParticleNodeBase = ParticleNodeBase_1.default;
-	var ParticleOrbitNode_1 = __webpack_require__(482);
+	var ParticleOrbitNode_1 = __webpack_require__(486);
 	exports.ParticleOrbitNode = ParticleOrbitNode_1.default;
-	var ParticleOscillatorNode_1 = __webpack_require__(484);
+	var ParticleOscillatorNode_1 = __webpack_require__(488);
 	exports.ParticleOscillatorNode = ParticleOscillatorNode_1.default;
-	var ParticlePositionNode_1 = __webpack_require__(360);
+	var ParticlePositionNode_1 = __webpack_require__(370);
 	exports.ParticlePositionNode = ParticlePositionNode_1.default;
-	var ParticleRotateToHeadingNode_1 = __webpack_require__(486);
+	var ParticleRotateToHeadingNode_1 = __webpack_require__(490);
 	exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode_1.default;
-	var ParticleRotateToPositionNode_1 = __webpack_require__(488);
+	var ParticleRotateToPositionNode_1 = __webpack_require__(492);
 	exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode_1.default;
-	var ParticleRotationalVelocityNode_1 = __webpack_require__(490);
+	var ParticleRotationalVelocityNode_1 = __webpack_require__(494);
 	exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode_1.default;
-	var ParticleScaleNode_1 = __webpack_require__(338);
+	var ParticleScaleNode_1 = __webpack_require__(348);
 	exports.ParticleScaleNode = ParticleScaleNode_1.default;
-	var ParticleSegmentedColorNode_1 = __webpack_require__(492);
+	var ParticleSegmentedColorNode_1 = __webpack_require__(496);
 	exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode_1.default;
-	var ParticleSpriteSheetNode_1 = __webpack_require__(494);
+	var ParticleSpriteSheetNode_1 = __webpack_require__(498);
 	exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode_1.default;
-	var ParticleTimeNode_1 = __webpack_require__(331);
+	var ParticleTimeNode_1 = __webpack_require__(341);
 	exports.ParticleTimeNode = ParticleTimeNode_1.default;
-	var ParticleUVNode_1 = __webpack_require__(496);
+	var ParticleUVNode_1 = __webpack_require__(500);
 	exports.ParticleUVNode = ParticleUVNode_1.default;
-	var ParticleVelocityNode_1 = __webpack_require__(340);
+	var ParticleVelocityNode_1 = __webpack_require__(350);
 	exports.ParticleVelocityNode = ParticleVelocityNode_1.default;
-	var SkeletonBinaryLERPNode_1 = __webpack_require__(349);
+	var SkeletonBinaryLERPNode_1 = __webpack_require__(359);
 	exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode_1.default;
-	var SkeletonClipNode_1 = __webpack_require__(247);
+	var SkeletonClipNode_1 = __webpack_require__(258);
 	exports.SkeletonClipNode = SkeletonClipNode_1.default;
-	var SkeletonDifferenceNode_1 = __webpack_require__(498);
+	var SkeletonDifferenceNode_1 = __webpack_require__(502);
 	exports.SkeletonDifferenceNode = SkeletonDifferenceNode_1.default;
-	var SkeletonDirectionalNode_1 = __webpack_require__(500);
+	var SkeletonDirectionalNode_1 = __webpack_require__(504);
 	exports.SkeletonDirectionalNode = SkeletonDirectionalNode_1.default;
-	var SkeletonNaryLERPNode_1 = __webpack_require__(502);
+	var SkeletonNaryLERPNode_1 = __webpack_require__(506);
 	exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode_1.default;
-	var VertexClipNode_1 = __webpack_require__(253);
+	var VertexClipNode_1 = __webpack_require__(264);
 	exports.VertexClipNode = VertexClipNode_1.default;
-	var AnimationClipState_1 = __webpack_require__(251);
+	var AnimationClipState_1 = __webpack_require__(262);
 	exports.AnimationClipState = AnimationClipState_1.default;
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	exports.AnimationStateBase = AnimationStateBase_1.default;
-	var ParticleAccelerationState_1 = __webpack_require__(479);
+	var ParticleAccelerationState_1 = __webpack_require__(483);
 	exports.ParticleAccelerationState = ParticleAccelerationState_1.default;
-	var ParticleBezierCurveState_1 = __webpack_require__(357);
+	var ParticleBezierCurveState_1 = __webpack_require__(367);
 	exports.ParticleBezierCurveState = ParticleBezierCurveState_1.default;
-	var ParticleBillboardState_1 = __webpack_require__(337);
+	var ParticleBillboardState_1 = __webpack_require__(347);
 	exports.ParticleBillboardState = ParticleBillboardState_1.default;
-	var ParticleColorState_1 = __webpack_require__(343);
+	var ParticleColorState_1 = __webpack_require__(353);
 	exports.ParticleColorState = ParticleColorState_1.default;
-	var ParticleFollowState_1 = __webpack_require__(481);
+	var ParticleFollowState_1 = __webpack_require__(485);
 	exports.ParticleFollowState = ParticleFollowState_1.default;
-	var ParticleInitialColorState_1 = __webpack_require__(359);
+	var ParticleInitialColorState_1 = __webpack_require__(369);
 	exports.ParticleInitialColorState = ParticleInitialColorState_1.default;
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	exports.ParticleStateBase = ParticleStateBase_1.default;
-	var ParticleOrbitState_1 = __webpack_require__(483);
+	var ParticleOrbitState_1 = __webpack_require__(487);
 	exports.ParticleOrbitState = ParticleOrbitState_1.default;
-	var ParticleOscillatorState_1 = __webpack_require__(485);
+	var ParticleOscillatorState_1 = __webpack_require__(489);
 	exports.ParticleOscillatorState = ParticleOscillatorState_1.default;
-	var ParticlePositionState_1 = __webpack_require__(361);
+	var ParticlePositionState_1 = __webpack_require__(371);
 	exports.ParticlePositionState = ParticlePositionState_1.default;
-	var ParticleRotateToHeadingState_1 = __webpack_require__(487);
+	var ParticleRotateToHeadingState_1 = __webpack_require__(491);
 	exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState_1.default;
-	var ParticleRotateToPositionState_1 = __webpack_require__(489);
+	var ParticleRotateToPositionState_1 = __webpack_require__(493);
 	exports.ParticleRotateToPositionState = ParticleRotateToPositionState_1.default;
-	var ParticleRotationalVelocityState_1 = __webpack_require__(491);
+	var ParticleRotationalVelocityState_1 = __webpack_require__(495);
 	exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState_1.default;
-	var ParticleScaleState_1 = __webpack_require__(339);
+	var ParticleScaleState_1 = __webpack_require__(349);
 	exports.ParticleScaleState = ParticleScaleState_1.default;
-	var ParticleSegmentedColorState_1 = __webpack_require__(493);
+	var ParticleSegmentedColorState_1 = __webpack_require__(497);
 	exports.ParticleSegmentedColorState = ParticleSegmentedColorState_1.default;
-	var ParticleSpriteSheetState_1 = __webpack_require__(495);
+	var ParticleSpriteSheetState_1 = __webpack_require__(499);
 	exports.ParticleSpriteSheetState = ParticleSpriteSheetState_1.default;
-	var ParticleTimeState_1 = __webpack_require__(333);
+	var ParticleTimeState_1 = __webpack_require__(343);
 	exports.ParticleTimeState = ParticleTimeState_1.default;
-	var ParticleUVState_1 = __webpack_require__(497);
+	var ParticleUVState_1 = __webpack_require__(501);
 	exports.ParticleUVState = ParticleUVState_1.default;
-	var ParticleVelocityState_1 = __webpack_require__(341);
+	var ParticleVelocityState_1 = __webpack_require__(351);
 	exports.ParticleVelocityState = ParticleVelocityState_1.default;
-	var SkeletonBinaryLERPState_1 = __webpack_require__(350);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
 	exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState_1.default;
-	var SkeletonClipState_1 = __webpack_require__(250);
+	var SkeletonClipState_1 = __webpack_require__(261);
 	exports.SkeletonClipState = SkeletonClipState_1.default;
-	var SkeletonDifferenceState_1 = __webpack_require__(499);
+	var SkeletonDifferenceState_1 = __webpack_require__(503);
 	exports.SkeletonDifferenceState = SkeletonDifferenceState_1.default;
-	var SkeletonDirectionalState_1 = __webpack_require__(501);
+	var SkeletonDirectionalState_1 = __webpack_require__(505);
 	exports.SkeletonDirectionalState = SkeletonDirectionalState_1.default;
-	var SkeletonNaryLERPState_1 = __webpack_require__(503);
+	var SkeletonNaryLERPState_1 = __webpack_require__(507);
 	exports.SkeletonNaryLERPState = SkeletonNaryLERPState_1.default;
-	var VertexClipState_1 = __webpack_require__(254);
+	var VertexClipState_1 = __webpack_require__(265);
 	exports.VertexClipState = VertexClipState_1.default;
-	var CrossfadeTransition_1 = __webpack_require__(347);
+	var CrossfadeTransition_1 = __webpack_require__(357);
 	exports.CrossfadeTransition = CrossfadeTransition_1.default;
-	var CrossfadeTransitionNode_1 = __webpack_require__(348);
+	var CrossfadeTransitionNode_1 = __webpack_require__(358);
 	exports.CrossfadeTransitionNode = CrossfadeTransitionNode_1.default;
-	var CrossfadeTransitionState_1 = __webpack_require__(351);
+	var CrossfadeTransitionState_1 = __webpack_require__(361);
 	exports.CrossfadeTransitionState = CrossfadeTransitionState_1.default;
-	var AnimationSetBase_1 = __webpack_require__(233);
+	var AnimationSetBase_1 = __webpack_require__(244);
 	exports.AnimationSetBase = AnimationSetBase_1.default;
-	var AnimatorBase_1 = __webpack_require__(237);
+	var AnimatorBase_1 = __webpack_require__(248);
 	exports.AnimatorBase = AnimatorBase_1.default;
-	var ParticleAnimationSet_1 = __webpack_require__(325);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
 	exports.ParticleAnimationSet = ParticleAnimationSet_1.default;
-	var ParticleAnimator_1 = __webpack_require__(335);
+	var ParticleAnimator_1 = __webpack_require__(345);
 	exports.ParticleAnimator = ParticleAnimator_1.default;
-	var SkeletonAnimationSet_1 = __webpack_require__(239);
+	var SkeletonAnimationSet_1 = __webpack_require__(250);
 	exports.SkeletonAnimationSet = SkeletonAnimationSet_1.default;
-	var SkeletonAnimator_1 = __webpack_require__(240);
+	var SkeletonAnimator_1 = __webpack_require__(251);
 	exports.SkeletonAnimator = SkeletonAnimator_1.default;
-	var VertexAnimationSet_1 = __webpack_require__(232);
+	var VertexAnimationSet_1 = __webpack_require__(243);
 	exports.VertexAnimationSet = VertexAnimationSet_1.default;
-	var VertexAnimator_1 = __webpack_require__(236);
+	var VertexAnimator_1 = __webpack_require__(247);
 	exports.VertexAnimator = VertexAnimator_1.default;
 
 
 /***/ },
-/* 477 */
+/* 481 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -67251,7 +67568,7 @@
 
 
 /***/ },
-/* 478 */
+/* 482 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67261,9 +67578,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleAccelerationState_1 = __webpack_require__(479);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleAccelerationState_1 = __webpack_require__(483);
 	/**
 	 * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
 	 */
@@ -67329,7 +67646,7 @@
 
 
 /***/ },
-/* 479 */
+/* 483 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67339,9 +67656,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -67392,7 +67709,7 @@
 
 
 /***/ },
-/* 480 */
+/* 484 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67401,10 +67718,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleFollowState_1 = __webpack_require__(481);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleFollowState_1 = __webpack_require__(485);
 	/**
 	 * A particle animation node used to create a follow behaviour on a particle system.
 	 */
@@ -67524,7 +67841,7 @@
 
 
 /***/ },
-/* 481 */
+/* 485 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67535,8 +67852,8 @@
 	};
 	var MathConsts_1 = __webpack_require__(22);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -67748,7 +68065,7 @@
 
 
 /***/ },
-/* 482 */
+/* 486 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67758,10 +68075,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleOrbitState_1 = __webpack_require__(483);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleOrbitState_1 = __webpack_require__(487);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time around a circular orbit.
 	 */
@@ -67883,7 +68200,7 @@
 
 
 /***/ },
-/* 483 */
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67894,9 +68211,9 @@
 	};
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -68012,7 +68329,7 @@
 
 
 /***/ },
-/* 484 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68022,10 +68339,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleOscillatorState_1 = __webpack_require__(485);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleOscillatorState_1 = __webpack_require__(489);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time using simple harmonic motion.
 	 */
@@ -68102,7 +68419,7 @@
 
 
 /***/ },
-/* 485 */
+/* 489 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68112,9 +68429,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -68171,7 +68488,7 @@
 
 
 /***/ },
-/* 486 */
+/* 490 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68180,10 +68497,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleRotateToHeadingState_1 = __webpack_require__(487);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleRotateToHeadingState_1 = __webpack_require__(491);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the rotation of a particle to match its heading vector.
 	 */
@@ -68339,7 +68656,7 @@
 
 
 /***/ },
-/* 487 */
+/* 491 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68349,7 +68666,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -68375,7 +68692,7 @@
 
 
 /***/ },
-/* 488 */
+/* 492 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68385,10 +68702,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleRotateToPositionState_1 = __webpack_require__(489);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleRotateToPositionState_1 = __webpack_require__(493);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the rotation of a particle to face to a position
 	 */
@@ -68562,7 +68879,7 @@
 
 
 /***/ },
-/* 489 */
+/* 493 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68572,9 +68889,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -68624,7 +68941,7 @@
 
 
 /***/ },
-/* 490 */
+/* 494 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68634,10 +68951,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleRotationalVelocityState_1 = __webpack_require__(491);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleRotationalVelocityState_1 = __webpack_require__(495);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to set the starting rotational velocity of a particle.
 	 */
@@ -68756,7 +69073,7 @@
 
 
 /***/ },
-/* 491 */
+/* 495 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68766,9 +69083,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -68838,7 +69155,7 @@
 
 
 /***/ },
-/* 492 */
+/* 496 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68847,11 +69164,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleSegmentedColorState_1 = __webpack_require__(493);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleSegmentedColorState_1 = __webpack_require__(497);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 *
 	 */
@@ -68994,7 +69311,7 @@
 
 
 /***/ },
-/* 493 */
+/* 497 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69003,7 +69320,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 *
 	 */
@@ -69152,7 +69469,7 @@
 
 
 /***/ },
-/* 494 */
+/* 498 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69161,11 +69478,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleSpriteSheetState_1 = __webpack_require__(495);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleSpriteSheetState_1 = __webpack_require__(499);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used when a spritesheet texture is required to animate the particle.
 	 * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
@@ -69324,7 +69641,7 @@
 
 
 /***/ },
-/* 495 */
+/* 499 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69333,9 +69650,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(139);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -69423,7 +69740,7 @@
 
 
 /***/ },
-/* 496 */
+/* 500 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69433,11 +69750,11 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticleAnimationSet_1 = __webpack_require__(325);
-	var ParticlePropertiesMode_1 = __webpack_require__(330);
-	var ParticleNodeBase_1 = __webpack_require__(332);
-	var ParticleUVState_1 = __webpack_require__(497);
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleUVState_1 = __webpack_require__(501);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the UV offset and scale of a particle over time.
 	 */
@@ -69551,7 +69868,7 @@
 
 
 /***/ },
-/* 497 */
+/* 501 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69560,7 +69877,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleStateBase_1 = __webpack_require__(334);
+	var ParticleStateBase_1 = __webpack_require__(344);
 	/**
 	 * ...
 	 */
@@ -69586,7 +69903,7 @@
 
 
 /***/ },
-/* 498 */
+/* 502 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69595,8 +69912,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(249);
-	var SkeletonDifferenceState_1 = __webpack_require__(499);
+	var AnimationNodeBase_1 = __webpack_require__(260);
+	var SkeletonDifferenceState_1 = __webpack_require__(503);
 	/**
 	 * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
 	 */
@@ -69622,7 +69939,7 @@
 
 
 /***/ },
-/* 499 */
+/* 503 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69631,10 +69948,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Quaternion_1 = __webpack_require__(242);
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var Quaternion_1 = __webpack_require__(253);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	/**
 	 *
 	 */
@@ -69747,7 +70064,7 @@
 
 
 /***/ },
-/* 500 */
+/* 504 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69756,8 +70073,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(249);
-	var SkeletonDirectionalState_1 = __webpack_require__(501);
+	var AnimationNodeBase_1 = __webpack_require__(260);
+	var SkeletonDirectionalState_1 = __webpack_require__(505);
 	/**
 	 * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
 	 */
@@ -69780,7 +70097,7 @@
 
 
 /***/ },
-/* 501 */
+/* 505 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69789,9 +70106,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	/**
 	 *
 	 */
@@ -69947,7 +70264,7 @@
 
 
 /***/ },
-/* 502 */
+/* 506 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69956,8 +70273,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(249);
-	var SkeletonNaryLERPState_1 = __webpack_require__(503);
+	var AnimationNodeBase_1 = __webpack_require__(260);
+	var SkeletonNaryLERPState_1 = __webpack_require__(507);
 	/**
 	 * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -70013,7 +70330,7 @@
 
 
 /***/ },
-/* 503 */
+/* 507 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70022,9 +70339,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(241);
-	var SkeletonPose_1 = __webpack_require__(243);
-	var AnimationStateBase_1 = __webpack_require__(252);
+	var JointPose_1 = __webpack_require__(252);
+	var SkeletonPose_1 = __webpack_require__(254);
+	var AnimationStateBase_1 = __webpack_require__(263);
 	/**
 	 *
 	 */
@@ -70199,24 +70516,24 @@
 
 
 /***/ },
-/* 504 */
+/* 508 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ElementsPool_1 = __webpack_require__(179);
+	var ElementsPool_1 = __webpack_require__(192);
 	exports.ElementsPool = ElementsPool_1.default;
-	var GL_ElementsBase_1 = __webpack_require__(200);
+	var GL_ElementsBase_1 = __webpack_require__(213);
 	exports.GL_ElementsBase = GL_ElementsBase_1.default;
-	var GL_LineElements_1 = __webpack_require__(505);
+	var GL_LineElements_1 = __webpack_require__(509);
 	exports.GL_LineElements = GL_LineElements_1.default;
-	var GL_SkyboxElements_1 = __webpack_require__(198);
+	var GL_SkyboxElements_1 = __webpack_require__(211);
 	exports.GL_SkyboxElements = GL_SkyboxElements_1.default;
-	var GL_TriangleElements_1 = __webpack_require__(199);
+	var GL_TriangleElements_1 = __webpack_require__(212);
 	exports.GL_TriangleElements = GL_TriangleElements_1.default;
 
 
 /***/ },
-/* 505 */
+/* 509 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70226,9 +70543,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ContextGLDrawMode_1 = __webpack_require__(142);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var GL_ElementsBase_1 = __webpack_require__(200);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var GL_ElementsBase_1 = __webpack_require__(213);
 	/**
 	 *
 	 * @class away.pool.GL_LineElements
@@ -70348,58 +70665,58 @@
 
 
 /***/ },
-/* 506 */
+/* 510 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationSetError_1 = __webpack_require__(234);
+	var AnimationSetError_1 = __webpack_require__(245);
 	exports.AnimationSetError = AnimationSetError_1.default;
 
 
 /***/ },
-/* 507 */
+/* 511 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationStateEvent_1 = __webpack_require__(244);
+	var AnimationStateEvent_1 = __webpack_require__(255);
 	exports.AnimationStateEvent = AnimationStateEvent_1.default;
-	var AnimatorEvent_1 = __webpack_require__(238);
+	var AnimatorEvent_1 = __webpack_require__(249);
 	exports.AnimatorEvent = AnimatorEvent_1.default;
-	var PassEvent_1 = __webpack_require__(184);
+	var PassEvent_1 = __webpack_require__(197);
 	exports.PassEvent = PassEvent_1.default;
-	var RTTEvent_1 = __webpack_require__(196);
+	var RTTEvent_1 = __webpack_require__(209);
 	exports.RTTEvent = RTTEvent_1.default;
-	var ShadingMethodEvent_1 = __webpack_require__(259);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
 	exports.ShadingMethodEvent = ShadingMethodEvent_1.default;
 
 
 /***/ },
-/* 508 */
+/* 512 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Filter3DCompositeTask_1 = __webpack_require__(509);
+	var Filter3DCompositeTask_1 = __webpack_require__(513);
 	exports.Filter3DCompositeTask = Filter3DCompositeTask_1.default;
-	var Filter3DFXAATask_1 = __webpack_require__(511);
+	var Filter3DFXAATask_1 = __webpack_require__(515);
 	exports.Filter3DFXAATask = Filter3DFXAATask_1.default;
-	var Filter3DHBlurTask_1 = __webpack_require__(512);
+	var Filter3DHBlurTask_1 = __webpack_require__(516);
 	exports.Filter3DHBlurTask = Filter3DHBlurTask_1.default;
-	var Filter3DTaskBase_1 = __webpack_require__(510);
+	var Filter3DTaskBase_1 = __webpack_require__(514);
 	exports.Filter3DTaskBase = Filter3DTaskBase_1.default;
-	var Filter3DVBlurTask_1 = __webpack_require__(513);
+	var Filter3DVBlurTask_1 = __webpack_require__(517);
 	exports.Filter3DVBlurTask = Filter3DVBlurTask_1.default;
-	var BlurFilter3D_1 = __webpack_require__(514);
+	var BlurFilter3D_1 = __webpack_require__(518);
 	exports.BlurFilter3D = BlurFilter3D_1.default;
-	var CompositeFilter3D_1 = __webpack_require__(516);
+	var CompositeFilter3D_1 = __webpack_require__(520);
 	exports.CompositeFilter3D = CompositeFilter3D_1.default;
-	var Filter3DBase_1 = __webpack_require__(515);
+	var Filter3DBase_1 = __webpack_require__(519);
 	exports.Filter3DBase = Filter3DBase_1.default;
-	var FXAAFilter3D_1 = __webpack_require__(517);
+	var FXAAFilter3D_1 = __webpack_require__(521);
 	exports.FXAAFilter3D = FXAAFilter3D_1.default;
 
 
 /***/ },
-/* 509 */
+/* 513 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70408,8 +70725,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var Filter3DTaskBase_1 = __webpack_require__(510);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DCompositeTask = (function (_super) {
 	    __extends(Filter3DCompositeTask, _super);
 	    function Filter3DCompositeTask(blendMode, exposure) {
@@ -70496,13 +70813,13 @@
 
 
 /***/ },
-/* 510 */
+/* 514 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2D_1 = __webpack_require__(75);
+	var Image2D_1 = __webpack_require__(81);
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AGALMiniAssembler_1 = __webpack_require__(120);
+	var AGALMiniAssembler_1 = __webpack_require__(133);
 	var Filter3DTaskBase = (function () {
 	    function Filter3DTaskBase(requireDepthRender) {
 	        if (requireDepthRender === void 0) { requireDepthRender = false; }
@@ -70642,7 +70959,7 @@
 
 
 /***/ },
-/* 511 */
+/* 515 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70651,8 +70968,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var Filter3DTaskBase_1 = __webpack_require__(510);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DFXAATask = (function (_super) {
 	    __extends(Filter3DFXAATask, _super);
 	    /**
@@ -70867,7 +71184,7 @@
 
 
 /***/ },
-/* 512 */
+/* 516 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70876,8 +71193,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var Filter3DTaskBase_1 = __webpack_require__(510);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DHBlurTask = (function (_super) {
 	    __extends(Filter3DHBlurTask, _super);
 	    /**
@@ -70963,7 +71280,7 @@
 
 
 /***/ },
-/* 513 */
+/* 517 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70972,8 +71289,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var Filter3DTaskBase_1 = __webpack_require__(510);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DVBlurTask = (function (_super) {
 	    __extends(Filter3DVBlurTask, _super);
 	    /**
@@ -71058,7 +71375,7 @@
 
 
 /***/ },
-/* 514 */
+/* 518 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71067,9 +71384,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Filter3DHBlurTask_1 = __webpack_require__(512);
-	var Filter3DVBlurTask_1 = __webpack_require__(513);
-	var Filter3DBase_1 = __webpack_require__(515);
+	var Filter3DHBlurTask_1 = __webpack_require__(516);
+	var Filter3DVBlurTask_1 = __webpack_require__(517);
+	var Filter3DBase_1 = __webpack_require__(519);
 	var BlurFilter3D = (function (_super) {
 	    __extends(BlurFilter3D, _super);
 	    /**
@@ -71134,7 +71451,7 @@
 
 
 /***/ },
-/* 515 */
+/* 519 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -71217,7 +71534,7 @@
 
 
 /***/ },
-/* 516 */
+/* 520 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71226,8 +71543,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Filter3DCompositeTask_1 = __webpack_require__(509);
-	var Filter3DBase_1 = __webpack_require__(515);
+	var Filter3DCompositeTask_1 = __webpack_require__(513);
+	var Filter3DBase_1 = __webpack_require__(519);
 	var CompositeFilter3D = (function (_super) {
 	    __extends(CompositeFilter3D, _super);
 	    /**
@@ -71269,7 +71586,7 @@
 
 
 /***/ },
-/* 517 */
+/* 521 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71278,8 +71595,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Filter3DFXAATask_1 = __webpack_require__(511);
-	var Filter3DBase_1 = __webpack_require__(515);
+	var Filter3DFXAATask_1 = __webpack_require__(515);
+	var Filter3DBase_1 = __webpack_require__(519);
 	var FXAAFilter3D = (function (_super) {
 	    __extends(FXAAFilter3D, _super);
 	    /**
@@ -71320,33 +71637,33 @@
 
 
 /***/ },
-/* 518 */
+/* 522 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var RTTBufferManager_1 = __webpack_require__(197);
+	var RTTBufferManager_1 = __webpack_require__(210);
 	exports.RTTBufferManager = RTTBufferManager_1.default;
 
 
 /***/ },
-/* 519 */
+/* 523 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_BillboardRenderable_1 = __webpack_require__(520);
+	var GL_BillboardRenderable_1 = __webpack_require__(524);
 	exports.GL_BillboardRenderable = GL_BillboardRenderable_1.default;
-	var GL_GraphicRenderable_1 = __webpack_require__(522);
+	var GL_GraphicRenderable_1 = __webpack_require__(526);
 	exports.GL_GraphicRenderable = GL_GraphicRenderable_1.default;
-	var GL_LineSegmentRenderable_1 = __webpack_require__(523);
+	var GL_LineSegmentRenderable_1 = __webpack_require__(527);
 	exports.GL_LineSegmentRenderable = GL_LineSegmentRenderable_1.default;
-	var GL_RenderableBase_1 = __webpack_require__(521);
+	var GL_RenderableBase_1 = __webpack_require__(525);
 	exports.GL_RenderableBase = GL_RenderableBase_1.default;
-	var GL_SkyboxRenderable_1 = __webpack_require__(524);
+	var GL_SkyboxRenderable_1 = __webpack_require__(528);
 	exports.GL_SkyboxRenderable = GL_SkyboxRenderable_1.default;
 
 
 /***/ },
-/* 520 */
+/* 524 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71356,9 +71673,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var TriangleElements_1 = __webpack_require__(209);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
-	var GL_RenderableBase_1 = __webpack_require__(521);
+	var TriangleElements_1 = __webpack_require__(107);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.RenderableListItem
 	 */
@@ -71419,7 +71736,7 @@
 
 
 /***/ },
-/* 521 */
+/* 525 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71430,9 +71747,9 @@
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetEvent_1 = __webpack_require__(1);
-	var AbstractionBase_1 = __webpack_require__(186);
+	var AbstractionBase_1 = __webpack_require__(199);
 	var RenderableEvent_1 = __webpack_require__(60);
-	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var DefaultMaterialManager_1 = __webpack_require__(77);
 	/**
 	 * @class RenderableListItem
 	 */
@@ -71594,7 +71911,7 @@
 
 
 /***/ },
-/* 522 */
+/* 526 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71603,7 +71920,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_RenderableBase_1 = __webpack_require__(521);
+	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.GL_GraphicRenderable
 	 */
@@ -71643,7 +71960,7 @@
 
 
 /***/ },
-/* 523 */
+/* 527 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71652,8 +71969,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var LineElements_1 = __webpack_require__(85);
-	var GL_RenderableBase_1 = __webpack_require__(521);
+	var LineElements_1 = __webpack_require__(91);
+	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.GL_LineSegmentRenderable
 	 */
@@ -71729,7 +72046,7 @@
 
 
 /***/ },
-/* 524 */
+/* 528 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71739,9 +72056,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AttributesBuffer_1 = __webpack_require__(64);
-	var TriangleElements_1 = __webpack_require__(209);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var GL_RenderableBase_1 = __webpack_require__(521);
+	var TriangleElements_1 = __webpack_require__(107);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.GL_SkyboxRenderable
 	 */
@@ -71813,30 +72130,30 @@
 
 
 /***/ },
-/* 525 */
+/* 529 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CompilerBase_1 = __webpack_require__(188);
+	var CompilerBase_1 = __webpack_require__(201);
 	exports.CompilerBase = CompilerBase_1.default;
-	var LightingCompiler_1 = __webpack_require__(526);
+	var LightingCompiler_1 = __webpack_require__(530);
 	exports.LightingCompiler = LightingCompiler_1.default;
-	var LightingShader_1 = __webpack_require__(527);
+	var LightingShader_1 = __webpack_require__(531);
 	exports.LightingShader = LightingShader_1.default;
-	var RegisterPool_1 = __webpack_require__(190);
+	var RegisterPool_1 = __webpack_require__(203);
 	exports.RegisterPool = RegisterPool_1.default;
-	var ShaderBase_1 = __webpack_require__(187);
+	var ShaderBase_1 = __webpack_require__(200);
 	exports.ShaderBase = ShaderBase_1.default;
-	var ShaderRegisterCache_1 = __webpack_require__(189);
+	var ShaderRegisterCache_1 = __webpack_require__(202);
 	exports.ShaderRegisterCache = ShaderRegisterCache_1.default;
-	var ShaderRegisterData_1 = __webpack_require__(192);
+	var ShaderRegisterData_1 = __webpack_require__(205);
 	exports.ShaderRegisterData = ShaderRegisterData_1.default;
-	var ShaderRegisterElement_1 = __webpack_require__(191);
+	var ShaderRegisterElement_1 = __webpack_require__(204);
 	exports.ShaderRegisterElement = ShaderRegisterElement_1.default;
 
 
 /***/ },
-/* 526 */
+/* 530 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -71845,7 +72162,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var CompilerBase_1 = __webpack_require__(188);
+	var CompilerBase_1 = __webpack_require__(201);
 	/**
 	 * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
 	 * material. Concrete subclasses are used by the default materials.
@@ -72080,7 +72397,7 @@
 
 
 /***/ },
-/* 527 */
+/* 531 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72089,10 +72406,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var LightSources_1 = __webpack_require__(433);
-	var ContextGLProfile_1 = __webpack_require__(459);
-	var ShaderBase_1 = __webpack_require__(187);
-	var LightingCompiler_1 = __webpack_require__(526);
+	var LightSources_1 = __webpack_require__(437);
+	var ContextGLProfile_1 = __webpack_require__(463);
+	var ShaderBase_1 = __webpack_require__(200);
+	var LightingCompiler_1 = __webpack_require__(530);
 	/**
 	 * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
 	 * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -72327,18 +72644,18 @@
 
 
 /***/ },
-/* 528 */
+/* 532 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var RenderableMergeSort_1 = __webpack_require__(180);
+	var RenderableMergeSort_1 = __webpack_require__(193);
 	exports.RenderableMergeSort = RenderableMergeSort_1.default;
-	var RenderableNullSort_1 = __webpack_require__(529);
+	var RenderableNullSort_1 = __webpack_require__(533);
 	exports.RenderableNullSort = RenderableNullSort_1.default;
 
 
 /***/ },
-/* 529 */
+/* 533 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -72361,32 +72678,32 @@
 
 
 /***/ },
-/* 530 */
+/* 534 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BasicMaterialPass_1 = __webpack_require__(531);
+	var BasicMaterialPass_1 = __webpack_require__(535);
 	exports.BasicMaterialPass = BasicMaterialPass_1.default;
-	var PassBase_1 = __webpack_require__(532);
+	var PassBase_1 = __webpack_require__(536);
 	exports.PassBase = PassBase_1.default;
-	var GL_BasicMaterialSurface_1 = __webpack_require__(533);
+	var GL_BasicMaterialSurface_1 = __webpack_require__(537);
 	exports.GL_BasicMaterialSurface = GL_BasicMaterialSurface_1.default;
-	var GL_DepthSurface_1 = __webpack_require__(182);
+	var GL_DepthSurface_1 = __webpack_require__(195);
 	exports.GL_DepthSurface = GL_DepthSurface_1.default;
-	var GL_DistanceSurface_1 = __webpack_require__(194);
+	var GL_DistanceSurface_1 = __webpack_require__(207);
 	exports.GL_DistanceSurface = GL_DistanceSurface_1.default;
-	var GL_SkyboxSurface_1 = __webpack_require__(534);
+	var GL_SkyboxSurface_1 = __webpack_require__(538);
 	exports.GL_SkyboxSurface = GL_SkyboxSurface_1.default;
-	var GL_SurfaceBase_1 = __webpack_require__(185);
+	var GL_SurfaceBase_1 = __webpack_require__(198);
 	exports.GL_SurfaceBase = GL_SurfaceBase_1.default;
-	var GL_SurfacePassBase_1 = __webpack_require__(183);
+	var GL_SurfacePassBase_1 = __webpack_require__(196);
 	exports.GL_SurfacePassBase = GL_SurfacePassBase_1.default;
-	var SurfacePool_1 = __webpack_require__(178);
+	var SurfacePool_1 = __webpack_require__(191);
 	exports.SurfacePool = SurfacePool_1.default;
 
 
 /***/ },
-/* 531 */
+/* 535 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72396,8 +72713,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var ShaderBase_1 = __webpack_require__(187);
-	var PassBase_1 = __webpack_require__(532);
+	var ShaderBase_1 = __webpack_require__(200);
+	var PassBase_1 = __webpack_require__(536);
 	/**
 	 * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -72494,7 +72811,7 @@
 
 
 /***/ },
-/* 532 */
+/* 536 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72504,7 +72821,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var EventDispatcher_1 = __webpack_require__(29);
-	var PassEvent_1 = __webpack_require__(184);
+	var PassEvent_1 = __webpack_require__(197);
 	/**
 	 * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
@@ -72661,7 +72978,7 @@
 
 
 /***/ },
-/* 533 */
+/* 537 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72670,9 +72987,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(90);
-	var BasicMaterialPass_1 = __webpack_require__(531);
-	var GL_SurfaceBase_1 = __webpack_require__(185);
+	var BlendMode_1 = __webpack_require__(96);
+	var BasicMaterialPass_1 = __webpack_require__(535);
+	var GL_SurfaceBase_1 = __webpack_require__(198);
 	/**
 	 * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -72705,7 +73022,7 @@
 
 
 /***/ },
-/* 534 */
+/* 538 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72715,10 +73032,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var BlendMode_1 = __webpack_require__(90);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var GL_SurfacePassBase_1 = __webpack_require__(183);
-	var ShaderBase_1 = __webpack_require__(187);
+	var BlendMode_1 = __webpack_require__(96);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var GL_SurfacePassBase_1 = __webpack_require__(196);
+	var ShaderBase_1 = __webpack_require__(200);
 	/**
 	 * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -72775,20 +73092,20 @@
 
 
 /***/ },
-/* 535 */
+/* 539 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_Single2DTexture_1 = __webpack_require__(536);
+	var GL_Single2DTexture_1 = __webpack_require__(540);
 	exports.GL_Single2DTexture = GL_Single2DTexture_1.default;
-	var GL_SingleCubeTexture_1 = __webpack_require__(538);
+	var GL_SingleCubeTexture_1 = __webpack_require__(542);
 	exports.GL_SingleCubeTexture = GL_SingleCubeTexture_1.default;
-	var GL_TextureBase_1 = __webpack_require__(537);
+	var GL_TextureBase_1 = __webpack_require__(541);
 	exports.GL_TextureBase = GL_TextureBase_1.default;
 
 
 /***/ },
-/* 536 */
+/* 540 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72797,8 +73114,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MappingMode_1 = __webpack_require__(97);
-	var GL_TextureBase_1 = __webpack_require__(537);
+	var MappingMode_1 = __webpack_require__(104);
+	var GL_TextureBase_1 = __webpack_require__(541);
 	/**
 	 *
 	 * @class away.pool.GL_Single2DTexture
@@ -72906,7 +73223,7 @@
 
 
 /***/ },
-/* 537 */
+/* 541 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72916,8 +73233,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AbstractionBase_1 = __webpack_require__(186);
-	var ContextGLTextureFormat_1 = __webpack_require__(460);
+	var AbstractionBase_1 = __webpack_require__(199);
+	var ContextGLTextureFormat_1 = __webpack_require__(464);
 	/**
 	 *
 	 * @class away.pool.GL_TextureBaseBase
@@ -72976,7 +73293,7 @@
 
 
 /***/ },
-/* 538 */
+/* 542 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -72985,7 +73302,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_TextureBase_1 = __webpack_require__(537);
+	var GL_TextureBase_1 = __webpack_require__(541);
 	/**
 	 *
 	 * @class away.pool.TextureDataBase
@@ -73043,18 +73360,18 @@
 
 
 /***/ },
-/* 539 */
+/* 543 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Merge_1 = __webpack_require__(321);
+	var Merge_1 = __webpack_require__(332);
 	exports.Merge = Merge_1.default;
-	var ParticleGraphicsTransform_1 = __webpack_require__(540);
+	var ParticleGraphicsTransform_1 = __webpack_require__(544);
 	exports.ParticleGraphicsTransform = ParticleGraphicsTransform_1.default;
 
 
 /***/ },
-/* 540 */
+/* 544 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -73101,18 +73418,18 @@
 
 
 /***/ },
-/* 541 */
+/* 545 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ParticleGraphicsHelper_1 = __webpack_require__(344);
+	var ParticleGraphicsHelper_1 = __webpack_require__(354);
 	exports.ParticleGraphicsHelper = ParticleGraphicsHelper_1.default;
-	var PerspectiveMatrix3D_1 = __webpack_require__(542);
+	var PerspectiveMatrix3D_1 = __webpack_require__(546);
 	exports.PerspectiveMatrix3D = PerspectiveMatrix3D_1.default;
 
 
 /***/ },
-/* 542 */
+/* 546 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73158,35 +73475,35 @@
 
 
 /***/ },
-/* 543 */
+/* 547 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var data = __webpack_require__(544);
+	var data = __webpack_require__(548);
 	exports.data = data;
-	var methods = __webpack_require__(546);
+	var methods = __webpack_require__(550);
 	exports.methods = methods;
-	var surfaces = __webpack_require__(552);
+	var surfaces = __webpack_require__(556);
 	exports.surfaces = surfaces;
-	var MethodMaterial_1 = __webpack_require__(256);
+	var MethodMaterial_1 = __webpack_require__(267);
 	exports.MethodMaterial = MethodMaterial_1.default;
-	var MethodMaterialMode_1 = __webpack_require__(255);
+	var MethodMaterialMode_1 = __webpack_require__(266);
 	exports.MethodMaterialMode = MethodMaterialMode_1.default;
-	var SurfacePool_1 = __webpack_require__(178);
+	var SurfacePool_1 = __webpack_require__(191);
 	SurfacePool_1.default.registerAbstraction(surfaces.GL_MethodMaterialSurface, MethodMaterial_1.default);
 
 
 /***/ },
-/* 544 */
+/* 548 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var MethodVO_1 = __webpack_require__(545);
+	var MethodVO_1 = __webpack_require__(549);
 	exports.MethodVO = MethodVO_1.default;
 
 
 /***/ },
-/* 545 */
+/* 549 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -73226,94 +73543,94 @@
 
 
 /***/ },
-/* 546 */
+/* 550 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AmbientBasicMethod_1 = __webpack_require__(257);
+	var AmbientBasicMethod_1 = __webpack_require__(268);
 	exports.AmbientBasicMethod = AmbientBasicMethod_1.default;
-	var AmbientEnvMapMethod_1 = __webpack_require__(264);
+	var AmbientEnvMapMethod_1 = __webpack_require__(275);
 	exports.AmbientEnvMapMethod = AmbientEnvMapMethod_1.default;
-	var CurveBasicMethod_1 = __webpack_require__(547);
+	var CurveBasicMethod_1 = __webpack_require__(551);
 	exports.CurveBasicMethod = CurveBasicMethod_1.default;
-	var DiffuseBasicMethod_1 = __webpack_require__(260);
+	var DiffuseBasicMethod_1 = __webpack_require__(271);
 	exports.DiffuseBasicMethod = DiffuseBasicMethod_1.default;
-	var DiffuseCelMethod_1 = __webpack_require__(266);
+	var DiffuseCelMethod_1 = __webpack_require__(277);
 	exports.DiffuseCelMethod = DiffuseCelMethod_1.default;
-	var DiffuseCompositeMethod_1 = __webpack_require__(267);
+	var DiffuseCompositeMethod_1 = __webpack_require__(278);
 	exports.DiffuseCompositeMethod = DiffuseCompositeMethod_1.default;
-	var DiffuseDepthMethod_1 = __webpack_require__(265);
+	var DiffuseDepthMethod_1 = __webpack_require__(276);
 	exports.DiffuseDepthMethod = DiffuseDepthMethod_1.default;
-	var DiffuseGradientMethod_1 = __webpack_require__(268);
+	var DiffuseGradientMethod_1 = __webpack_require__(279);
 	exports.DiffuseGradientMethod = DiffuseGradientMethod_1.default;
-	var DiffuseLightMapMethod_1 = __webpack_require__(269);
+	var DiffuseLightMapMethod_1 = __webpack_require__(280);
 	exports.DiffuseLightMapMethod = DiffuseLightMapMethod_1.default;
-	var DiffuseSubSurfaceMethod_1 = __webpack_require__(548);
+	var DiffuseSubSurfaceMethod_1 = __webpack_require__(552);
 	exports.DiffuseSubSurfaceMethod = DiffuseSubSurfaceMethod_1.default;
-	var DiffuseWrapMethod_1 = __webpack_require__(270);
+	var DiffuseWrapMethod_1 = __webpack_require__(281);
 	exports.DiffuseWrapMethod = DiffuseWrapMethod_1.default;
-	var EffectAlphaMaskMethod_1 = __webpack_require__(271);
+	var EffectAlphaMaskMethod_1 = __webpack_require__(282);
 	exports.EffectAlphaMaskMethod = EffectAlphaMaskMethod_1.default;
-	var EffectColorMatrixMethod_1 = __webpack_require__(273);
+	var EffectColorMatrixMethod_1 = __webpack_require__(284);
 	exports.EffectColorMatrixMethod = EffectColorMatrixMethod_1.default;
-	var EffectColorTransformMethod_1 = __webpack_require__(274);
+	var EffectColorTransformMethod_1 = __webpack_require__(285);
 	exports.EffectColorTransformMethod = EffectColorTransformMethod_1.default;
-	var EffectEnvMapMethod_1 = __webpack_require__(275);
+	var EffectEnvMapMethod_1 = __webpack_require__(286);
 	exports.EffectEnvMapMethod = EffectEnvMapMethod_1.default;
-	var EffectFogMethod_1 = __webpack_require__(276);
+	var EffectFogMethod_1 = __webpack_require__(287);
 	exports.EffectFogMethod = EffectFogMethod_1.default;
-	var EffectFresnelEnvMapMethod_1 = __webpack_require__(277);
+	var EffectFresnelEnvMapMethod_1 = __webpack_require__(288);
 	exports.EffectFresnelEnvMapMethod = EffectFresnelEnvMapMethod_1.default;
-	var EffectLightMapMethod_1 = __webpack_require__(278);
+	var EffectLightMapMethod_1 = __webpack_require__(289);
 	exports.EffectLightMapMethod = EffectLightMapMethod_1.default;
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	exports.EffectMethodBase = EffectMethodBase_1.default;
-	var EffectRefractionEnvMapMethod_1 = __webpack_require__(549);
+	var EffectRefractionEnvMapMethod_1 = __webpack_require__(553);
 	exports.EffectRefractionEnvMapMethod = EffectRefractionEnvMapMethod_1.default;
-	var EffectRimLightMethod_1 = __webpack_require__(279);
+	var EffectRimLightMethod_1 = __webpack_require__(290);
 	exports.EffectRimLightMethod = EffectRimLightMethod_1.default;
-	var LightingMethodBase_1 = __webpack_require__(261);
+	var LightingMethodBase_1 = __webpack_require__(272);
 	exports.LightingMethodBase = LightingMethodBase_1.default;
-	var NormalBasicMethod_1 = __webpack_require__(262);
+	var NormalBasicMethod_1 = __webpack_require__(273);
 	exports.NormalBasicMethod = NormalBasicMethod_1.default;
-	var NormalHeightMapMethod_1 = __webpack_require__(550);
+	var NormalHeightMapMethod_1 = __webpack_require__(554);
 	exports.NormalHeightMapMethod = NormalHeightMapMethod_1.default;
-	var NormalSimpleWaterMethod_1 = __webpack_require__(280);
+	var NormalSimpleWaterMethod_1 = __webpack_require__(291);
 	exports.NormalSimpleWaterMethod = NormalSimpleWaterMethod_1.default;
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	exports.ShadingMethodBase = ShadingMethodBase_1.default;
-	var ShadowCascadeMethod_1 = __webpack_require__(551);
+	var ShadowCascadeMethod_1 = __webpack_require__(555);
 	exports.ShadowCascadeMethod = ShadowCascadeMethod_1.default;
-	var ShadowDitheredMethod_1 = __webpack_require__(281);
+	var ShadowDitheredMethod_1 = __webpack_require__(292);
 	exports.ShadowDitheredMethod = ShadowDitheredMethod_1.default;
-	var ShadowFilteredMethod_1 = __webpack_require__(284);
+	var ShadowFilteredMethod_1 = __webpack_require__(295);
 	exports.ShadowFilteredMethod = ShadowFilteredMethod_1.default;
-	var ShadowHardMethod_1 = __webpack_require__(287);
+	var ShadowHardMethod_1 = __webpack_require__(298);
 	exports.ShadowHardMethod = ShadowHardMethod_1.default;
-	var ShadowMapMethodBase_1 = __webpack_require__(283);
+	var ShadowMapMethodBase_1 = __webpack_require__(294);
 	exports.ShadowMapMethodBase = ShadowMapMethodBase_1.default;
-	var ShadowMethodBase_1 = __webpack_require__(282);
+	var ShadowMethodBase_1 = __webpack_require__(293);
 	exports.ShadowMethodBase = ShadowMethodBase_1.default;
-	var ShadowNearMethod_1 = __webpack_require__(291);
+	var ShadowNearMethod_1 = __webpack_require__(302);
 	exports.ShadowNearMethod = ShadowNearMethod_1.default;
-	var ShadowSoftMethod_1 = __webpack_require__(292);
+	var ShadowSoftMethod_1 = __webpack_require__(303);
 	exports.ShadowSoftMethod = ShadowSoftMethod_1.default;
-	var SpecularAnisotropicMethod_1 = __webpack_require__(288);
+	var SpecularAnisotropicMethod_1 = __webpack_require__(299);
 	exports.SpecularAnisotropicMethod = SpecularAnisotropicMethod_1.default;
-	var SpecularBasicMethod_1 = __webpack_require__(263);
+	var SpecularBasicMethod_1 = __webpack_require__(274);
 	exports.SpecularBasicMethod = SpecularBasicMethod_1.default;
-	var SpecularCelMethod_1 = __webpack_require__(289);
+	var SpecularCelMethod_1 = __webpack_require__(300);
 	exports.SpecularCelMethod = SpecularCelMethod_1.default;
-	var SpecularCompositeMethod_1 = __webpack_require__(286);
+	var SpecularCompositeMethod_1 = __webpack_require__(297);
 	exports.SpecularCompositeMethod = SpecularCompositeMethod_1.default;
-	var SpecularFresnelMethod_1 = __webpack_require__(285);
+	var SpecularFresnelMethod_1 = __webpack_require__(296);
 	exports.SpecularFresnelMethod = SpecularFresnelMethod_1.default;
-	var SpecularPhongMethod_1 = __webpack_require__(290);
+	var SpecularPhongMethod_1 = __webpack_require__(301);
 	exports.SpecularPhongMethod = SpecularPhongMethod_1.default;
 
 
 /***/ },
-/* 547 */
+/* 551 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73323,7 +73640,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var ShadingMethodBase_1 = __webpack_require__(258);
+	var ShadingMethodBase_1 = __webpack_require__(269);
 	/**
 	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
 	 */
@@ -73488,7 +73805,7 @@
 
 
 /***/ },
-/* 548 */
+/* 552 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73497,7 +73814,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(267);
+	var DiffuseCompositeMethod_1 = __webpack_require__(278);
 	/**
 	 * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
 	 * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
@@ -73720,7 +74037,7 @@
 
 
 /***/ },
-/* 549 */
+/* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73729,7 +74046,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(272);
+	var EffectMethodBase_1 = __webpack_require__(283);
 	/**
 	 * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
 	 */
@@ -73986,7 +74303,7 @@
 
 
 /***/ },
-/* 550 */
+/* 554 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73995,7 +74312,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var NormalBasicMethod_1 = __webpack_require__(262);
+	var NormalBasicMethod_1 = __webpack_require__(273);
 	/**
 	 * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
 	 */
@@ -74076,7 +74393,7 @@
 
 
 /***/ },
-/* 551 */
+/* 555 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -74086,10 +74403,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var DirectionalLight_1 = __webpack_require__(210);
-	var ShadingMethodEvent_1 = __webpack_require__(259);
-	var MethodVO_1 = __webpack_require__(545);
-	var ShadowMapMethodBase_1 = __webpack_require__(283);
+	var DirectionalLight_1 = __webpack_require__(221);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var MethodVO_1 = __webpack_require__(549);
+	var ShadowMapMethodBase_1 = __webpack_require__(294);
 	/**
 	 * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
 	 * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
@@ -74286,22 +74603,22 @@
 
 
 /***/ },
-/* 552 */
+/* 556 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var MethodPass_1 = __webpack_require__(553);
+	var MethodPass_1 = __webpack_require__(557);
 	exports.MethodPass = MethodPass_1.default;
-	var MethodPassMode_1 = __webpack_require__(554);
+	var MethodPassMode_1 = __webpack_require__(558);
 	exports.MethodPassMode = MethodPassMode_1.default;
-	var SingleObjectDepthPass_1 = __webpack_require__(555);
+	var SingleObjectDepthPass_1 = __webpack_require__(559);
 	exports.SingleObjectDepthPass = SingleObjectDepthPass_1.default;
-	var GL_MethodMaterialSurface_1 = __webpack_require__(556);
+	var GL_MethodMaterialSurface_1 = __webpack_require__(560);
 	exports.GL_MethodMaterialSurface = GL_MethodMaterialSurface_1.default;
 
 
 /***/ },
-/* 553 */
+/* 557 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -74311,14 +74628,14 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightSources_1 = __webpack_require__(433);
-	var LightingShader_1 = __webpack_require__(527);
-	var ShadingMethodEvent_1 = __webpack_require__(259);
-	var ShaderBase_1 = __webpack_require__(187);
-	var PassBase_1 = __webpack_require__(532);
-	var MethodVO_1 = __webpack_require__(545);
-	var EffectColorTransformMethod_1 = __webpack_require__(274);
-	var MethodPassMode_1 = __webpack_require__(554);
+	var LightSources_1 = __webpack_require__(437);
+	var LightingShader_1 = __webpack_require__(531);
+	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var ShaderBase_1 = __webpack_require__(200);
+	var PassBase_1 = __webpack_require__(536);
+	var MethodVO_1 = __webpack_require__(549);
+	var EffectColorTransformMethod_1 = __webpack_require__(285);
+	var MethodPassMode_1 = __webpack_require__(558);
 	/**
 	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
 	 * using material methods to define their appearance.
@@ -75042,7 +75359,7 @@
 
 
 /***/ },
-/* 554 */
+/* 558 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75068,7 +75385,7 @@
 
 
 /***/ },
-/* 555 */
+/* 559 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -75077,12 +75394,12 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(75);
+	var Image2D_1 = __webpack_require__(81);
 	var Matrix3D_1 = __webpack_require__(23);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var ContextGLDrawMode_1 = __webpack_require__(142);
-	var ContextGLProgramType_1 = __webpack_require__(143);
-	var PassBase_1 = __webpack_require__(532);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLProgramType_1 = __webpack_require__(156);
+	var PassBase_1 = __webpack_require__(536);
 	/**
 	 * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
 	 * of view from a light.
@@ -75247,7 +75564,7 @@
 
 
 /***/ },
-/* 556 */
+/* 560 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -75256,13 +75573,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(90);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var ContextGLCompareMode_1 = __webpack_require__(117);
-	var GL_SurfaceBase_1 = __webpack_require__(185);
-	var MethodMaterialMode_1 = __webpack_require__(255);
-	var MethodPassMode_1 = __webpack_require__(554);
-	var MethodPass_1 = __webpack_require__(553);
+	var BlendMode_1 = __webpack_require__(96);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var GL_SurfaceBase_1 = __webpack_require__(198);
+	var MethodMaterialMode_1 = __webpack_require__(266);
+	var MethodPassMode_1 = __webpack_require__(558);
+	var MethodPass_1 = __webpack_require__(557);
 	/**
 	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
 	 * using material methods to define their appearance.
@@ -75504,49 +75821,49 @@
 
 
 /***/ },
-/* 557 */
+/* 561 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var adapters = __webpack_require__(558);
+	var adapters = __webpack_require__(562);
 	exports.adapters = adapters;
-	var bounds = __webpack_require__(566);
+	var bounds = __webpack_require__(570);
 	exports.bounds = bounds;
-	var factories = __webpack_require__(568);
+	var factories = __webpack_require__(572);
 	exports.factories = factories;
 
 
 /***/ },
-/* 558 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AS2ColorAdapter_1 = __webpack_require__(559);
+	var AS2ColorAdapter_1 = __webpack_require__(563);
 	exports.AS2ColorAdapter = AS2ColorAdapter_1.default;
-	var AS2KeyAdapter_1 = __webpack_require__(560);
+	var AS2KeyAdapter_1 = __webpack_require__(564);
 	exports.AS2KeyAdapter = AS2KeyAdapter_1.default;
-	var AS2MCSoundProps_1 = __webpack_require__(302);
+	var AS2MCSoundProps_1 = __webpack_require__(313);
 	exports.AS2MCSoundProps = AS2MCSoundProps_1.default;
-	var AS2MouseAdapter_1 = __webpack_require__(561);
+	var AS2MouseAdapter_1 = __webpack_require__(565);
 	exports.AS2MouseAdapter = AS2MouseAdapter_1.default;
-	var AS2MovieClipAdapter_1 = __webpack_require__(295);
+	var AS2MovieClipAdapter_1 = __webpack_require__(306);
 	exports.AS2MovieClipAdapter = AS2MovieClipAdapter_1.default;
-	var AS2SharedObjectAdapter_1 = __webpack_require__(562);
+	var AS2SharedObjectAdapter_1 = __webpack_require__(566);
 	exports.AS2SharedObjectAdapter = AS2SharedObjectAdapter_1.default;
-	var AS2SoundAdapter_1 = __webpack_require__(563);
+	var AS2SoundAdapter_1 = __webpack_require__(567);
 	exports.AS2SoundAdapter = AS2SoundAdapter_1.default;
-	var AS2StageAdapter_1 = __webpack_require__(564);
+	var AS2StageAdapter_1 = __webpack_require__(568);
 	exports.AS2StageAdapter = AS2StageAdapter_1.default;
-	var AS2SymbolAdapter_1 = __webpack_require__(301);
+	var AS2SymbolAdapter_1 = __webpack_require__(312);
 	exports.AS2SymbolAdapter = AS2SymbolAdapter_1.default;
-	var AS2SystemAdapter_1 = __webpack_require__(565);
+	var AS2SystemAdapter_1 = __webpack_require__(569);
 	exports.AS2SystemAdapter = AS2SystemAdapter_1.default;
-	var AS2TextFieldAdapter_1 = __webpack_require__(303);
+	var AS2TextFieldAdapter_1 = __webpack_require__(314);
 	exports.AS2TextFieldAdapter = AS2TextFieldAdapter_1.default;
 
 
 /***/ },
-/* 559 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -75594,7 +75911,7 @@
 
 
 /***/ },
-/* 560 */
+/* 564 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75720,7 +76037,7 @@
 
 
 /***/ },
-/* 561 */
+/* 565 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75740,7 +76057,7 @@
 
 
 /***/ },
-/* 562 */
+/* 566 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75776,13 +76093,13 @@
 
 
 /***/ },
-/* 563 */
+/* 567 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var AssetEvent_1 = __webpack_require__(1);
-	var AS2MCSoundProps_1 = __webpack_require__(302);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AS2MCSoundProps_1 = __webpack_require__(313);
+	var AssetLibrary_1 = __webpack_require__(307);
 	// also contains global AS2 functions
 	var AS2SoundAdapter = (function () {
 	    // TODO: Any real Sound stuff should be externalized for AwayJS use. For now use internally since it's only 2D.
@@ -75924,7 +76241,7 @@
 
 
 /***/ },
-/* 564 */
+/* 568 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75940,7 +76257,7 @@
 
 
 /***/ },
-/* 565 */
+/* 569 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -75957,16 +76274,16 @@
 
 
 /***/ },
-/* 566 */
+/* 570 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AxisAlignedBoundingBox2D_1 = __webpack_require__(567);
+	var AxisAlignedBoundingBox2D_1 = __webpack_require__(571);
 	exports.AxisAlignedBoundingBox2D = AxisAlignedBoundingBox2D_1.default;
 
 
 /***/ },
-/* 567 */
+/* 571 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -75975,7 +76292,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AxisAlignedBoundingBox_1 = __webpack_require__(313);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
 	/**
 	 * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
 	 * This is useful for most meshes.
@@ -76040,45 +76357,45 @@
 
 
 /***/ },
-/* 568 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AS2SceneGraphFactory_1 = __webpack_require__(294);
+	var AS2SceneGraphFactory_1 = __webpack_require__(305);
 	exports.AS2SceneGraphFactory = AS2SceneGraphFactory_1.default;
 
 
 /***/ },
-/* 569 */
+/* 573 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AWDParser_1 = __webpack_require__(201);
+	var AWDParser_1 = __webpack_require__(214);
 	exports.AWDParser = AWDParser_1.default;
-	var Max3DSParser_1 = __webpack_require__(346);
+	var Max3DSParser_1 = __webpack_require__(356);
 	exports.Max3DSParser = Max3DSParser_1.default;
-	var MD2Parser_1 = __webpack_require__(362);
+	var MD2Parser_1 = __webpack_require__(372);
 	exports.MD2Parser = MD2Parser_1.default;
-	var MD5AnimParser_1 = __webpack_require__(353);
+	var MD5AnimParser_1 = __webpack_require__(363);
 	exports.MD5AnimParser = MD5AnimParser_1.default;
-	var MD5MeshParser_1 = __webpack_require__(354);
+	var MD5MeshParser_1 = __webpack_require__(364);
 	exports.MD5MeshParser = MD5MeshParser_1.default;
-	var OBJParser_1 = __webpack_require__(324);
+	var OBJParser_1 = __webpack_require__(334);
 	exports.OBJParser = OBJParser_1.default;
-	var Parsers_1 = __webpack_require__(570);
+	var Parsers_1 = __webpack_require__(574);
 	exports.Parsers = Parsers_1.default;
 
 
 /***/ },
-/* 570 */
+/* 574 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Loader_1 = __webpack_require__(104);
-	var AWDParser_1 = __webpack_require__(201);
-	var Max3DSParser_1 = __webpack_require__(346);
-	var MD2Parser_1 = __webpack_require__(362);
-	var OBJParser_1 = __webpack_require__(324);
+	var Loader_1 = __webpack_require__(117);
+	var AWDParser_1 = __webpack_require__(214);
+	var Max3DSParser_1 = __webpack_require__(356);
+	var MD2Parser_1 = __webpack_require__(372);
+	var OBJParser_1 = __webpack_require__(334);
 	/**
 	 *
 	 */

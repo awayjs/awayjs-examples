@@ -1,24 +1,24 @@
-webpackJsonp([18],[
+webpackJsonp([19],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(74);
-	var Sampler2D_1 = __webpack_require__(72);
+	var BitmapImage2D_1 = __webpack_require__(80);
+	var Sampler2D_1 = __webpack_require__(78);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	var URLRequest_1 = __webpack_require__(3);
-	var Debug_1 = __webpack_require__(322);
+	var Debug_1 = __webpack_require__(333);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(210);
+	var DirectionalLight_1 = __webpack_require__(221);
 	var Sprite_1 = __webpack_require__(57);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var OBJParser_1 = __webpack_require__(324);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var OBJParser_1 = __webpack_require__(334);
 	var ObjLoaderMasterChief = (function () {
 	    function ObjLoaderMasterChief() {
 	        var _this = this;

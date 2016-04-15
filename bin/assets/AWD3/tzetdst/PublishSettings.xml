@@ -1,0 +1,62 @@
+<profiles>
+<profile version="1.0" name="Default" current="true">
+  <PublishFormatProperties enabled="true">
+    <defaultNames>1</defaultNames>
+    <jpeg>0</jpeg>
+    <oam>0</oam>
+    <jpegDefaultName>1</jpegDefaultName>
+    <oamDefaultName>1</oamDefaultName>
+    <jpegFileName>Untitled-1.jpg</jpegFileName>
+    <oamFileName>Untitled-1.oam</oamFileName>
+    <publishFormat id="BBC1F406-65F2-4219-9304-FA48C7549E44">0</publishFormat>
+    <publishFormat id="D6863765-2532-47E6-83DA-BA7B575EAD27">1</publishFormat>
+  </PublishFormatProperties>
+  <PublishJpegProperties enabled="true">
+    <Width>550</Width>
+    <Height>400</Height>
+    <Progressive>0</Progressive>
+    <DPI>4718592</DPI>
+    <Size>0</Size>
+    <Quality>80</Quality>
+    <MatchMovieDim>1</MatchMovieDim>
+  </PublishJpegProperties>
+  <PublishOamProperties enabled="true">
+    <Width>550</Width>
+    <Height>400</Height>
+    <CurrentFramePNG>1</CurrentFramePNG>
+    <CustomPNG>0</CustomPNG>
+    <PNGFilePath></PNGFilePath>
+    <Transparency>0</Transparency>
+  </PublishOamProperties>
+  <PublishProperties id="BBC1F406-65F2-4219-9304-FA48C7549E44" name="SVG Image" otf="true" enabled="true">
+    <Property name="copy">true</Property>
+    <Property name="default">true</Property>
+    <Property name="embed">false</Property>
+    <Property name="filename">Untitled-1.svg</Property>
+    <Property name="imagesPath">images</Property>
+    <Property name="includeHiddenLayers">true</Property>
+    <Property name="version">0.1</Property>
+  </PublishProperties>
+  <PublishProperties id="D6863765-2532-47E6-83DA-BA7B575EAD27" name="AwayExtensionsAnimateCC" enabled="true">
+    <Property name="PublishSettings.CopyRuntime">true</Property>
+    <Property name="PublishSettings.CreateAudioMap">false</Property>
+    <Property name="PublishSettings.EmbbedAllChars">true</Property>
+    <Property name="PublishSettings.EmbbedSounds">true</Property>
+    <Property name="PublishSettings.EmbbedTextures">true</Property>
+    <Property name="PublishSettings.ExportFrameScript">true</Property>
+    <Property name="PublishSettings.ExportLibBitmaps">true</Property>
+    <Property name="PublishSettings.ExportLibFonts">true</Property>
+    <Property name="PublishSettings.ExportLibSounds">true</Property>
+    <Property name="PublishSettings.ExportShapesInDebugMode">false</Property>
+    <Property name="PublishSettings.ExternalScripts">true</Property>
+    <Property name="PublishSettings.ForceSoundOverwrite">true</Property>
+    <Property name="PublishSettings.ForceTextureOverwrite">true</Property>
+    <Property name="PublishSettings.IncludeInvisibleLayer">true</Property>
+    <Property name="PublishSettings.OpenPreview">true</Property>
+    <Property name="PublishSettings.PrintExportLog">false</Property>
+    <Property name="PublishSettings.PrintExportLogTimelines">false</Property>
+    <Property name="PublishSettings.SaveSoundsAs">0</Property>
+    <Property name="out_file">D:\_icycle_2016\awayjs-examples\bin\assets\AWD3\erer.awd</Property>
+  </PublishProperties>
+</profile>
+</profiles>

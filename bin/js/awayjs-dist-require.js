@@ -1,243 +1,44 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
-exports.AttributesView = AttributesView_1.default;
-var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
-exports.AttributesBuffer = AttributesBuffer_1.default;
-var Byte1Attributes_1 = require("awayjs-core/lib/attributes/Byte1Attributes");
-exports.Byte1Attributes = Byte1Attributes_1.default;
-var Byte2Attributes_1 = require("awayjs-core/lib/attributes/Byte2Attributes");
-exports.Byte2Attributes = Byte2Attributes_1.default;
-var Byte3Attributes_1 = require("awayjs-core/lib/attributes/Byte3Attributes");
-exports.Byte3Attributes = Byte3Attributes_1.default;
-var Byte4Attributes_1 = require("awayjs-core/lib/attributes/Byte4Attributes");
-exports.Byte4Attributes = Byte4Attributes_1.default;
-var Float1Attributes_1 = require("awayjs-core/lib/attributes/Float1Attributes");
-exports.Float1Attributes = Float1Attributes_1.default;
-var Float2Attributes_1 = require("awayjs-core/lib/attributes/Float2Attributes");
-exports.Float2Attributes = Float2Attributes_1.default;
-var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
-exports.Float3Attributes = Float3Attributes_1.default;
-var Float4Attributes_1 = require("awayjs-core/lib/attributes/Float4Attributes");
-exports.Float4Attributes = Float4Attributes_1.default;
-var Short2Attributes_1 = require("awayjs-core/lib/attributes/Short2Attributes");
-exports.Short2Attributes = Short2Attributes_1.default;
-var Short3Attributes_1 = require("awayjs-core/lib/attributes/Short3Attributes");
-exports.Short3Attributes = Short3Attributes_1.default;
-var WaveAudio_1 = require("awayjs-core/lib/audio/WaveAudio");
-exports.WaveAudio = WaveAudio_1.default;
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-exports.AbstractMethodError = AbstractMethodError_1.default;
-var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
-exports.ArgumentError = ArgumentError_1.default;
-var DocumentError_1 = require("awayjs-core/lib/errors/DocumentError");
-exports.DocumentError = DocumentError_1.default;
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
-exports.ErrorBase = ErrorBase_1.default;
-var PartialImplementationError_1 = require("awayjs-core/lib/errors/PartialImplementationError");
-exports.PartialImplementationError = PartialImplementationError_1.default;
-var RangeError_1 = require("awayjs-core/lib/errors/RangeError");
-exports.RangeError = RangeError_1.default;
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-exports.AssetEvent = AssetEvent_1.default;
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-exports.EventBase = EventBase_1.default;
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-exports.EventDispatcher = EventDispatcher_1.default;
-var LoaderEvent_1 = require("awayjs-core/lib/events/LoaderEvent");
-exports.LoaderEvent = LoaderEvent_1.default;
-var ParserEvent_1 = require("awayjs-core/lib/events/ParserEvent");
-exports.ParserEvent = ParserEvent_1.default;
-var ProjectionEvent_1 = require("awayjs-core/lib/events/ProjectionEvent");
-exports.ProjectionEvent = ProjectionEvent_1.default;
-var TimerEvent_1 = require("awayjs-core/lib/events/TimerEvent");
-exports.TimerEvent = TimerEvent_1.default;
-var URLLoaderEvent_1 = require("awayjs-core/lib/events/URLLoaderEvent");
-exports.URLLoaderEvent = URLLoaderEvent_1.default;
-var Box_1 = require("awayjs-core/lib/geom/Box");
-exports.Box = Box_1.default;
-var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
-exports.ColorTransform = ColorTransform_1.default;
-var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
-exports.MathConsts = MathConsts_1.default;
-var Matrix_1 = require("awayjs-core/lib/geom/Matrix");
-exports.Matrix = Matrix_1.default;
-var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-exports.Matrix3D = Matrix3D_1.default;
-var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-exports.Matrix3DUtils = Matrix3DUtils_1.default;
-var Orientation3D_1 = require("awayjs-core/lib/geom/Orientation3D");
-exports.Orientation3D = Orientation3D_1.default;
-var Plane3D_1 = require("awayjs-core/lib/geom/Plane3D");
-exports.Plane3D = Plane3D_1.default;
-var PlaneClassification_1 = require("awayjs-core/lib/geom/PlaneClassification");
-exports.PlaneClassification = PlaneClassification_1.default;
-var Point_1 = require("awayjs-core/lib/geom/Point");
-exports.Point = Point_1.default;
-var PoissonLookup_1 = require("awayjs-core/lib/geom/PoissonLookup");
-exports.PoissonLookup = PoissonLookup_1.default;
-var Quaternion_1 = require("awayjs-core/lib/geom/Quaternion");
-exports.Quaternion = Quaternion_1.default;
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-exports.Rectangle = Rectangle_1.default;
-var Sphere_1 = require("awayjs-core/lib/geom/Sphere");
-exports.Sphere = Sphere_1.default;
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-exports.Vector3D = Vector3D_1.default;
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-exports.BitmapImage2D = BitmapImage2D_1.default;
-var BitmapImageChannel_1 = require("awayjs-core/lib/image/BitmapImageChannel");
-exports.BitmapImageChannel = BitmapImageChannel_1.default;
-var BitmapImageCube_1 = require("awayjs-core/lib/image/BitmapImageCube");
-exports.BitmapImageCube = BitmapImageCube_1.default;
-var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
-exports.BlendMode = BlendMode_1.default;
-var CPUCanvas_1 = require("awayjs-core/lib/image/CPUCanvas");
-exports.CPUCanvas = CPUCanvas_1.default;
-var CPURenderingContext2D_1 = require("awayjs-core/lib/image/CPURenderingContext2D");
-exports.CPURenderingContext2D = CPURenderingContext2D_1.default;
-var Image2D_1 = require("awayjs-core/lib/image/Image2D");
-exports.Image2D = Image2D_1.default;
-var ImageBase_1 = require("awayjs-core/lib/image/ImageBase");
-exports.ImageBase = ImageBase_1.default;
-var ImageCube_1 = require("awayjs-core/lib/image/ImageCube");
-exports.ImageCube = ImageCube_1.default;
-var ImageData_1 = require("awayjs-core/lib/image/ImageData");
-exports.ImageData = ImageData_1.default;
-var Sampler2D_1 = require("awayjs-core/lib/image/Sampler2D");
-exports.Sampler2D = Sampler2D_1.default;
-var SamplerBase_1 = require("awayjs-core/lib/image/SamplerBase");
-exports.SamplerBase = SamplerBase_1.default;
-var SamplerCube_1 = require("awayjs-core/lib/image/SamplerCube");
-exports.SamplerCube = SamplerCube_1.default;
-var SpecularImage2D_1 = require("awayjs-core/lib/image/SpecularImage2D");
-exports.SpecularImage2D = SpecularImage2D_1.default;
-var AbstractionBase_1 = require("awayjs-core/lib/library/AbstractionBase");
-exports.AbstractionBase = AbstractionBase_1.default;
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-exports.AssetBase = AssetBase_1.default;
-var AssetLibrary_1 = require("awayjs-core/lib/library/AssetLibrary");
-exports.AssetLibrary = AssetLibrary_1.default;
-var AssetLibraryBundle_1 = require("awayjs-core/lib/library/AssetLibraryBundle");
-exports.AssetLibraryBundle = AssetLibraryBundle_1.default;
-var AssetLibraryIterator_1 = require("awayjs-core/lib/library/AssetLibraryIterator");
-exports.AssetLibraryIterator = AssetLibraryIterator_1.default;
-var ConflictPrecedence_1 = require("awayjs-core/lib/library/ConflictPrecedence");
-exports.ConflictPrecedence = ConflictPrecedence_1.default;
-var ConflictStrategy_1 = require("awayjs-core/lib/library/ConflictStrategy");
-exports.ConflictStrategy = ConflictStrategy_1.default;
-var ConflictStrategyBase_1 = require("awayjs-core/lib/library/ConflictStrategyBase");
-exports.ConflictStrategyBase = ConflictStrategyBase_1.default;
-var ErrorConflictStrategy_1 = require("awayjs-core/lib/library/ErrorConflictStrategy");
-exports.ErrorConflictStrategy = ErrorConflictStrategy_1.default;
-var IDUtil_1 = require("awayjs-core/lib/library/IDUtil");
-exports.IDUtil = IDUtil_1.default;
-var IgnoreConflictStrategy_1 = require("awayjs-core/lib/library/IgnoreConflictStrategy");
-exports.IgnoreConflictStrategy = IgnoreConflictStrategy_1.default;
-var Loader_1 = require("awayjs-core/lib/library/Loader");
-exports.Loader = Loader_1.default;
-var LoaderContext_1 = require("awayjs-core/lib/library/LoaderContext");
-exports.LoaderContext = LoaderContext_1.default;
-var LoaderInfo_1 = require("awayjs-core/lib/library/LoaderInfo");
-exports.LoaderInfo = LoaderInfo_1.default;
-var NumSuffixConflictStrategy_1 = require("awayjs-core/lib/library/NumSuffixConflictStrategy");
-exports.NumSuffixConflictStrategy = NumSuffixConflictStrategy_1.default;
-var AudioManager_1 = require("awayjs-core/lib/managers/AudioManager");
-exports.AudioManager = AudioManager_1.default;
-var StreamingAudioChannel_1 = require("awayjs-core/lib/managers/StreamingAudioChannel");
-exports.StreamingAudioChannel = StreamingAudioChannel_1.default;
-var WebAudioChannel_1 = require("awayjs-core/lib/managers/WebAudioChannel");
-exports.WebAudioChannel = WebAudioChannel_1.default;
-var CrossDomainPolicy_1 = require("awayjs-core/lib/net/CrossDomainPolicy");
-exports.CrossDomainPolicy = CrossDomainPolicy_1.default;
-var URLLoader_1 = require("awayjs-core/lib/net/URLLoader");
-exports.URLLoader = URLLoader_1.default;
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-exports.URLLoaderDataFormat = URLLoaderDataFormat_1.default;
-var URLRequest_1 = require("awayjs-core/lib/net/URLRequest");
-exports.URLRequest = URLRequest_1.default;
-var URLRequestMethod_1 = require("awayjs-core/lib/net/URLRequestMethod");
-exports.URLRequestMethod = URLRequestMethod_1.default;
-var URLVariables_1 = require("awayjs-core/lib/net/URLVariables");
-exports.URLVariables = URLVariables_1.default;
-var Image2DParser_1 = require("awayjs-core/lib/parsers/Image2DParser");
-exports.Image2DParser = Image2DParser_1.default;
-var ImageCubeParser_1 = require("awayjs-core/lib/parsers/ImageCubeParser");
-exports.ImageCubeParser = ImageCubeParser_1.default;
-var ParserBase_1 = require("awayjs-core/lib/parsers/ParserBase");
-exports.ParserBase = ParserBase_1.default;
-var ParserDataFormat_1 = require("awayjs-core/lib/parsers/ParserDataFormat");
-exports.ParserDataFormat = ParserDataFormat_1.default;
-var ParserUtils_1 = require("awayjs-core/lib/parsers/ParserUtils");
-exports.ParserUtils = ParserUtils_1.default;
-var ResourceDependency_1 = require("awayjs-core/lib/parsers/ResourceDependency");
-exports.ResourceDependency = ResourceDependency_1.default;
-var TextureAtlasParser_1 = require("awayjs-core/lib/parsers/TextureAtlasParser");
-exports.TextureAtlasParser = TextureAtlasParser_1.default;
-var WaveAudioParser_1 = require("awayjs-core/lib/parsers/WaveAudioParser");
-exports.WaveAudioParser = WaveAudioParser_1.default;
-var CoordinateSystem_1 = require("awayjs-core/lib/projections/CoordinateSystem");
-exports.CoordinateSystem = CoordinateSystem_1.default;
-var FreeMatrixProjection_1 = require("awayjs-core/lib/projections/FreeMatrixProjection");
-exports.FreeMatrixProjection = FreeMatrixProjection_1.default;
-var ObliqueNearPlaneProjection_1 = require("awayjs-core/lib/projections/ObliqueNearPlaneProjection");
-exports.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection_1.default;
-var OrthographicOffCenterProjection_1 = require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
-exports.OrthographicOffCenterProjection = OrthographicOffCenterProjection_1.default;
-var OrthographicProjection_1 = require("awayjs-core/lib/projections/OrthographicProjection");
-exports.OrthographicProjection = OrthographicProjection_1.default;
-var PerspectiveProjection_1 = require("awayjs-core/lib/projections/PerspectiveProjection");
-exports.PerspectiveProjection = PerspectiveProjection_1.default;
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
-exports.ProjectionBase = ProjectionBase_1.default;
-var Keyboard_1 = require("awayjs-core/lib/ui/Keyboard");
-exports.Keyboard = Keyboard_1.default;
-var BitmapImageUtils_1 = require("awayjs-core/lib/utils/BitmapImageUtils");
-exports.BitmapImageUtils = BitmapImageUtils_1.default;
-var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
-exports.ByteArray = ByteArray_1.default;
-var ByteArrayBase_1 = require("awayjs-core/lib/utils/ByteArrayBase");
-exports.ByteArrayBase = ByteArrayBase_1.default;
-var ByteArrayBuffer_1 = require("awayjs-core/lib/utils/ByteArrayBuffer");
-exports.ByteArrayBuffer = ByteArrayBuffer_1.default;
-var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
-exports.ColorUtils = ColorUtils_1.default;
-var CSS_1 = require("awayjs-core/lib/utils/CSS");
-exports.CSS = CSS_1.default;
-var Debug_1 = require("awayjs-core/lib/utils/Debug");
-exports.Debug = Debug_1.default;
-var Extensions_1 = require("awayjs-core/lib/utils/Extensions");
-exports.Extensions = Extensions_1.default;
-var getTimer_1 = require("awayjs-core/lib/utils/getTimer");
-exports.getTimer = getTimer_1.default;
-var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
-exports.ImageUtils = ImageUtils_1.default;
-var MipmapGenerator_1 = require("awayjs-core/lib/utils/MipmapGenerator");
-exports.MipmapGenerator = MipmapGenerator_1.default;
-var RequestAnimationFrame_1 = require("awayjs-core/lib/utils/RequestAnimationFrame");
-exports.RequestAnimationFrame = RequestAnimationFrame_1.default;
-var Timer_1 = require("awayjs-core/lib/utils/Timer");
-exports.Timer = Timer_1.default;
-var XmlUtils_1 = require("awayjs-core/lib/utils/XmlUtils");
-exports.XmlUtils = XmlUtils_1.default;
-var Loader_2 = require("awayjs-core/lib/library/Loader");
-var Image2DParser_2 = require("awayjs-core/lib/parsers/Image2DParser");
-var ImageCubeParser_2 = require("awayjs-core/lib/parsers/ImageCubeParser");
-var TextureAtlasParser_2 = require("awayjs-core/lib/parsers/TextureAtlasParser");
-var WaveAudioParser_2 = require("awayjs-core/lib/parsers/WaveAudioParser");
-Loader_2.default.enableParser(Image2DParser_2.default);
-Loader_2.default.enableParser(ImageCubeParser_2.default);
-Loader_2.default.enableParser(TextureAtlasParser_2.default);
-Loader_2.default.enableParser(WaveAudioParser_2.default);
+var attributes = require("./lib/attributes");
+exports.attributes = attributes;
+var audio = require("./lib/audio");
+exports.audio = audio;
+var errors = require("./lib/errors");
+exports.errors = errors;
+var events = require("./lib/events");
+exports.events = events;
+var geom = require("./lib/geom");
+exports.geom = geom;
+var image = require("./lib/image");
+exports.image = image;
+var library = require("./lib/library");
+exports.library = library;
+var managers = require("./lib/managers");
+exports.managers = managers;
+var net = require("./lib/net");
+exports.net = net;
+var parsers = require("./lib/parsers");
+exports.parsers = parsers;
+var projections = require("./lib/projections");
+exports.projections = projections;
+var ui = require("./lib/ui");
+exports.ui = ui;
+var utils = require("./lib/utils");
+exports.utils = utils;
+library.Loader.enableParser(parsers.Image2DParser);
+library.Loader.enableParser(parsers.ImageCubeParser);
+library.Loader.enableParser(parsers.TextureAtlasParser);
+library.Loader.enableParser(parsers.WaveAudioParser);
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":"awayjs-core/lib/attributes/AttributesBuffer","awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView","awayjs-core/lib/attributes/Byte1Attributes":"awayjs-core/lib/attributes/Byte1Attributes","awayjs-core/lib/attributes/Byte2Attributes":"awayjs-core/lib/attributes/Byte2Attributes","awayjs-core/lib/attributes/Byte3Attributes":"awayjs-core/lib/attributes/Byte3Attributes","awayjs-core/lib/attributes/Byte4Attributes":"awayjs-core/lib/attributes/Byte4Attributes","awayjs-core/lib/attributes/Float1Attributes":"awayjs-core/lib/attributes/Float1Attributes","awayjs-core/lib/attributes/Float2Attributes":"awayjs-core/lib/attributes/Float2Attributes","awayjs-core/lib/attributes/Float3Attributes":"awayjs-core/lib/attributes/Float3Attributes","awayjs-core/lib/attributes/Float4Attributes":"awayjs-core/lib/attributes/Float4Attributes","awayjs-core/lib/attributes/Short2Attributes":"awayjs-core/lib/attributes/Short2Attributes","awayjs-core/lib/attributes/Short3Attributes":"awayjs-core/lib/attributes/Short3Attributes","awayjs-core/lib/audio/WaveAudio":"awayjs-core/lib/audio/WaveAudio","awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/errors/DocumentError":"awayjs-core/lib/errors/DocumentError","awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","awayjs-core/lib/errors/PartialImplementationError":"awayjs-core/lib/errors/PartialImplementationError","awayjs-core/lib/errors/RangeError":"awayjs-core/lib/errors/RangeError","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","awayjs-core/lib/events/TimerEvent":"awayjs-core/lib/events/TimerEvent","awayjs-core/lib/events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","awayjs-core/lib/geom/Box":"awayjs-core/lib/geom/Box","awayjs-core/lib/geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","awayjs-core/lib/geom/MathConsts":"awayjs-core/lib/geom/MathConsts","awayjs-core/lib/geom/Matrix":"awayjs-core/lib/geom/Matrix","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","awayjs-core/lib/geom/Plane3D":"awayjs-core/lib/geom/Plane3D","awayjs-core/lib/geom/PlaneClassification":"awayjs-core/lib/geom/PlaneClassification","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/geom/PoissonLookup":"awayjs-core/lib/geom/PoissonLookup","awayjs-core/lib/geom/Quaternion":"awayjs-core/lib/geom/Quaternion","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/geom/Sphere":"awayjs-core/lib/geom/Sphere","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","awayjs-core/lib/image/BitmapImageChannel":"awayjs-core/lib/image/BitmapImageChannel","awayjs-core/lib/image/BitmapImageCube":"awayjs-core/lib/image/BitmapImageCube","awayjs-core/lib/image/BlendMode":"awayjs-core/lib/image/BlendMode","awayjs-core/lib/image/CPUCanvas":"awayjs-core/lib/image/CPUCanvas","awayjs-core/lib/image/CPURenderingContext2D":"awayjs-core/lib/image/CPURenderingContext2D","awayjs-core/lib/image/Image2D":"awayjs-core/lib/image/Image2D","awayjs-core/lib/image/ImageBase":"awayjs-core/lib/image/ImageBase","awayjs-core/lib/image/ImageCube":"awayjs-core/lib/image/ImageCube","awayjs-core/lib/image/ImageData":"awayjs-core/lib/image/ImageData","awayjs-core/lib/image/Sampler2D":"awayjs-core/lib/image/Sampler2D","awayjs-core/lib/image/SamplerBase":"awayjs-core/lib/image/SamplerBase","awayjs-core/lib/image/SamplerCube":"awayjs-core/lib/image/SamplerCube","awayjs-core/lib/image/SpecularImage2D":"awayjs-core/lib/image/SpecularImage2D","awayjs-core/lib/library/AbstractionBase":"awayjs-core/lib/library/AbstractionBase","awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase","awayjs-core/lib/library/AssetLibrary":"awayjs-core/lib/library/AssetLibrary","awayjs-core/lib/library/AssetLibraryBundle":"awayjs-core/lib/library/AssetLibraryBundle","awayjs-core/lib/library/AssetLibraryIterator":"awayjs-core/lib/library/AssetLibraryIterator","awayjs-core/lib/library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence","awayjs-core/lib/library/ConflictStrategy":"awayjs-core/lib/library/ConflictStrategy","awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase","awayjs-core/lib/library/ErrorConflictStrategy":"awayjs-core/lib/library/ErrorConflictStrategy","awayjs-core/lib/library/IDUtil":"awayjs-core/lib/library/IDUtil","awayjs-core/lib/library/IgnoreConflictStrategy":"awayjs-core/lib/library/IgnoreConflictStrategy","awayjs-core/lib/library/Loader":"awayjs-core/lib/library/Loader","awayjs-core/lib/library/LoaderContext":"awayjs-core/lib/library/LoaderContext","awayjs-core/lib/library/LoaderInfo":"awayjs-core/lib/library/LoaderInfo","awayjs-core/lib/library/NumSuffixConflictStrategy":"awayjs-core/lib/library/NumSuffixConflictStrategy","awayjs-core/lib/managers/AudioManager":"awayjs-core/lib/managers/AudioManager","awayjs-core/lib/managers/StreamingAudioChannel":"awayjs-core/lib/managers/StreamingAudioChannel","awayjs-core/lib/managers/WebAudioChannel":"awayjs-core/lib/managers/WebAudioChannel","awayjs-core/lib/net/CrossDomainPolicy":"awayjs-core/lib/net/CrossDomainPolicy","awayjs-core/lib/net/URLLoader":"awayjs-core/lib/net/URLLoader","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod","awayjs-core/lib/net/URLVariables":"awayjs-core/lib/net/URLVariables","awayjs-core/lib/parsers/Image2DParser":"awayjs-core/lib/parsers/Image2DParser","awayjs-core/lib/parsers/ImageCubeParser":"awayjs-core/lib/parsers/ImageCubeParser","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserDataFormat":"awayjs-core/lib/parsers/ParserDataFormat","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","awayjs-core/lib/parsers/TextureAtlasParser":"awayjs-core/lib/parsers/TextureAtlasParser","awayjs-core/lib/parsers/WaveAudioParser":"awayjs-core/lib/parsers/WaveAudioParser","awayjs-core/lib/projections/CoordinateSystem":"awayjs-core/lib/projections/CoordinateSystem","awayjs-core/lib/projections/FreeMatrixProjection":"awayjs-core/lib/projections/FreeMatrixProjection","awayjs-core/lib/projections/ObliqueNearPlaneProjection":"awayjs-core/lib/projections/ObliqueNearPlaneProjection","awayjs-core/lib/projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","awayjs-core/lib/projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase","awayjs-core/lib/ui/Keyboard":"awayjs-core/lib/ui/Keyboard","awayjs-core/lib/utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray","awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","awayjs-core/lib/utils/ByteArrayBuffer":"awayjs-core/lib/utils/ByteArrayBuffer","awayjs-core/lib/utils/CSS":"awayjs-core/lib/utils/CSS","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils","awayjs-core/lib/utils/Debug":"awayjs-core/lib/utils/Debug","awayjs-core/lib/utils/Extensions":"awayjs-core/lib/utils/Extensions","awayjs-core/lib/utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils","awayjs-core/lib/utils/MipmapGenerator":"awayjs-core/lib/utils/MipmapGenerator","awayjs-core/lib/utils/RequestAnimationFrame":"awayjs-core/lib/utils/RequestAnimationFrame","awayjs-core/lib/utils/Timer":"awayjs-core/lib/utils/Timer","awayjs-core/lib/utils/XmlUtils":"awayjs-core/lib/utils/XmlUtils","awayjs-core/lib/utils/getTimer":"awayjs-core/lib/utils/getTimer"}],"awayjs-core/lib/attributes/AttributesBuffer":[function(require,module,exports){
+},{"./lib/attributes":"awayjs-core/lib/attributes","./lib/audio":"awayjs-core/lib/audio","./lib/errors":"awayjs-core/lib/errors","./lib/events":"awayjs-core/lib/events","./lib/geom":"awayjs-core/lib/geom","./lib/image":"awayjs-core/lib/image","./lib/library":"awayjs-core/lib/library","./lib/managers":"awayjs-core/lib/managers","./lib/net":"awayjs-core/lib/net","./lib/parsers":"awayjs-core/lib/parsers","./lib/projections":"awayjs-core/lib/projections","./lib/ui":"awayjs-core/lib/ui","./lib/utils":"awayjs-core/lib/utils"}],"awayjs-core/lib/attributes/AttributesBuffer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var AssetBase_1 = require("../library/AssetBase");
 var AttributesBuffer = (function (_super) {
     __extends(AttributesBuffer, _super);
     /**
@@ -479,15 +280,15 @@ var ViewVO = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AttributesBuffer;
 
-},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/attributes/AttributesView":[function(require,module,exports){
+},{"../library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/attributes/AttributesView":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var AttributesBuffer_1 = require("../attributes/AttributesBuffer");
+var AssetBase_1 = require("../library/AssetBase");
 var AttributesView = (function (_super) {
     __extends(AttributesView, _super);
     function AttributesView(arrayClass, dimensions, attributesBufferCount, unsigned) {
@@ -627,14 +428,14 @@ var AttributesView = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AttributesView;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":"awayjs-core/lib/attributes/AttributesBuffer","awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/attributes/Byte1Attributes":[function(require,module,exports){
+},{"../attributes/AttributesBuffer":"awayjs-core/lib/attributes/AttributesBuffer","../library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/attributes/Byte1Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Byte1Attributes = (function (_super) {
     __extends(Byte1Attributes, _super);
     function Byte1Attributes(attributesBufferLength, unsigned) {
@@ -673,14 +474,14 @@ var Byte1Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Byte1Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte2Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte2Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Byte2Attributes = (function (_super) {
     __extends(Byte2Attributes, _super);
     function Byte2Attributes(attributesBufferLength, unsigned) {
@@ -719,14 +520,14 @@ var Byte2Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Byte2Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte3Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte3Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Byte3Attributes = (function (_super) {
     __extends(Byte3Attributes, _super);
     function Byte3Attributes(attributesBufferLength, unsigned) {
@@ -765,14 +566,14 @@ var Byte3Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Byte3Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte4Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Byte4Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Byte4Attributes = (function (_super) {
     __extends(Byte4Attributes, _super);
     function Byte4Attributes(attributesBufferLength, unsigned) {
@@ -811,14 +612,14 @@ var Byte4Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Byte4Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float1Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float1Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Float1Attributes = (function (_super) {
     __extends(Float1Attributes, _super);
     function Float1Attributes(attributesBufferLength) {
@@ -856,14 +657,14 @@ var Float1Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Float1Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float2Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float2Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Float2Attributes = (function (_super) {
     __extends(Float2Attributes, _super);
     function Float2Attributes(attributesBufferLength) {
@@ -901,14 +702,14 @@ var Float2Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Float2Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float3Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float3Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Float3Attributes = (function (_super) {
     __extends(Float3Attributes, _super);
     function Float3Attributes(attributesBufferLength) {
@@ -946,14 +747,14 @@ var Float3Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Float3Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float4Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Float4Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Float4Attributes = (function (_super) {
     __extends(Float4Attributes, _super);
     function Float4Attributes(attributesBufferLength) {
@@ -991,14 +792,14 @@ var Float4Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Float4Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Short2Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Short2Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Short2Attributes = (function (_super) {
     __extends(Short2Attributes, _super);
     function Short2Attributes(attributesBufferLength, unsigned) {
@@ -1037,14 +838,14 @@ var Short2Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Short2Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Short3Attributes":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes/Short3Attributes":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var AttributesView_1 = require("../attributes/AttributesView");
 var Short3Attributes = (function (_super) {
     __extends(Short3Attributes, _super);
     function Short3Attributes(attributesBufferLength, unsigned) {
@@ -1083,15 +884,42 @@ var Short3Attributes = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Short3Attributes;
 
-},{"awayjs-core/lib/attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/audio/WaveAudio":[function(require,module,exports){
+},{"../attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView"}],"awayjs-core/lib/attributes":[function(require,module,exports){
+"use strict";
+var AttributesView_1 = require("./attributes/AttributesView");
+exports.AttributesView = AttributesView_1.default;
+var AttributesBuffer_1 = require("./attributes/AttributesBuffer");
+exports.AttributesBuffer = AttributesBuffer_1.default;
+var Byte1Attributes_1 = require("./attributes/Byte1Attributes");
+exports.Byte1Attributes = Byte1Attributes_1.default;
+var Byte2Attributes_1 = require("./attributes/Byte2Attributes");
+exports.Byte2Attributes = Byte2Attributes_1.default;
+var Byte3Attributes_1 = require("./attributes/Byte3Attributes");
+exports.Byte3Attributes = Byte3Attributes_1.default;
+var Byte4Attributes_1 = require("./attributes/Byte4Attributes");
+exports.Byte4Attributes = Byte4Attributes_1.default;
+var Float1Attributes_1 = require("./attributes/Float1Attributes");
+exports.Float1Attributes = Float1Attributes_1.default;
+var Float2Attributes_1 = require("./attributes/Float2Attributes");
+exports.Float2Attributes = Float2Attributes_1.default;
+var Float3Attributes_1 = require("./attributes/Float3Attributes");
+exports.Float3Attributes = Float3Attributes_1.default;
+var Float4Attributes_1 = require("./attributes/Float4Attributes");
+exports.Float4Attributes = Float4Attributes_1.default;
+var Short2Attributes_1 = require("./attributes/Short2Attributes");
+exports.Short2Attributes = Short2Attributes_1.default;
+var Short3Attributes_1 = require("./attributes/Short3Attributes");
+exports.Short3Attributes = Short3Attributes_1.default;
+
+},{"./attributes/AttributesBuffer":"awayjs-core/lib/attributes/AttributesBuffer","./attributes/AttributesView":"awayjs-core/lib/attributes/AttributesView","./attributes/Byte1Attributes":"awayjs-core/lib/attributes/Byte1Attributes","./attributes/Byte2Attributes":"awayjs-core/lib/attributes/Byte2Attributes","./attributes/Byte3Attributes":"awayjs-core/lib/attributes/Byte3Attributes","./attributes/Byte4Attributes":"awayjs-core/lib/attributes/Byte4Attributes","./attributes/Float1Attributes":"awayjs-core/lib/attributes/Float1Attributes","./attributes/Float2Attributes":"awayjs-core/lib/attributes/Float2Attributes","./attributes/Float3Attributes":"awayjs-core/lib/attributes/Float3Attributes","./attributes/Float4Attributes":"awayjs-core/lib/attributes/Float4Attributes","./attributes/Short2Attributes":"awayjs-core/lib/attributes/Short2Attributes","./attributes/Short3Attributes":"awayjs-core/lib/attributes/Short3Attributes"}],"awayjs-core/lib/audio/WaveAudio":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AudioManager_1 = require("awayjs-core/lib/managers/AudioManager");
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var AudioManager_1 = require("../managers/AudioManager");
+var AssetBase_1 = require("../library/AssetBase");
 // TODO: Audio should probably be an interface containing play/stop/seek functionality
 var WaveAudio = (function (_super) {
     __extends(WaveAudio, _super);
@@ -1174,14 +1002,19 @@ var WaveAudio = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WaveAudio;
 
-},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase","awayjs-core/lib/managers/AudioManager":"awayjs-core/lib/managers/AudioManager"}],"awayjs-core/lib/errors/AbstractMethodError":[function(require,module,exports){
+},{"../library/AssetBase":"awayjs-core/lib/library/AssetBase","../managers/AudioManager":"awayjs-core/lib/managers/AudioManager"}],"awayjs-core/lib/audio":[function(require,module,exports){
+"use strict";
+var WaveAudio_1 = require("./audio/WaveAudio");
+exports.WaveAudio = WaveAudio_1.default;
+
+},{"./audio/WaveAudio":"awayjs-core/lib/audio/WaveAudio"}],"awayjs-core/lib/errors/AbstractMethodError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 /**
  * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
  * by a concrete subclass.
@@ -1203,14 +1036,14 @@ var AbstractMethodError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AbstractMethodError;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/ArgumentError":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/ArgumentError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 /**
  * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
  * by a concrete subclass.
@@ -1233,14 +1066,14 @@ var ArgumentError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ArgumentError;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/DocumentError":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/DocumentError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 var DocumentError = (function (_super) {
     __extends(DocumentError, _super);
     function DocumentError(message, id) {
@@ -1254,7 +1087,7 @@ var DocumentError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DocumentError;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/ErrorBase":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/ErrorBase":[function(require,module,exports){
 "use strict";
 var ErrorBase = (function () {
     function ErrorBase(message, id, _name) {
@@ -1327,7 +1160,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 /**
  * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
  * by a concrete subclass.
@@ -1349,14 +1182,14 @@ var PartialImplementationError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PartialImplementationError;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/RangeError":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors/RangeError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 /**
  * RangeError is thrown when an index is accessed out of range of the number of
  * available indices on an Array.
@@ -1379,14 +1212,29 @@ var RangeError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RangeError;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/events/AssetEvent":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase"}],"awayjs-core/lib/errors":[function(require,module,exports){
+"use strict";
+var AbstractMethodError_1 = require("./errors/AbstractMethodError");
+exports.AbstractMethodError = AbstractMethodError_1.default;
+var ArgumentError_1 = require("./errors/ArgumentError");
+exports.ArgumentError = ArgumentError_1.default;
+var DocumentError_1 = require("./errors/DocumentError");
+exports.DocumentError = DocumentError_1.default;
+var ErrorBase_1 = require("./errors/ErrorBase");
+exports.ErrorBase = ErrorBase_1.default;
+var PartialImplementationError_1 = require("./errors/PartialImplementationError");
+exports.PartialImplementationError = PartialImplementationError_1.default;
+var RangeError_1 = require("./errors/RangeError");
+exports.RangeError = RangeError_1.default;
+
+},{"./errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","./errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","./errors/DocumentError":"awayjs-core/lib/errors/DocumentError","./errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","./errors/PartialImplementationError":"awayjs-core/lib/errors/PartialImplementationError","./errors/RangeError":"awayjs-core/lib/errors/RangeError"}],"awayjs-core/lib/events/AssetEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 /**
  * @class away.events.AssetEvent
  */
@@ -1468,7 +1316,7 @@ var AssetEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AssetEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/EventBase":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/EventBase":[function(require,module,exports){
 "use strict";
 var EventBase = (function () {
     function EventBase(type) {
@@ -1620,7 +1468,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 var LoaderEvent = (function (_super) {
     __extends(LoaderEvent, _super);
     /**
@@ -1685,14 +1533,14 @@ var LoaderEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LoaderEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/ParserEvent":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/ParserEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 var ParserEvent = (function (_super) {
     __extends(ParserEvent, _super);
     function ParserEvent(type, message) {
@@ -1733,14 +1581,14 @@ var ParserEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParserEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/ProjectionEvent":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/ProjectionEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 var ProjectionEvent = (function (_super) {
     __extends(ProjectionEvent, _super);
     function ProjectionEvent(type, projection) {
@@ -1760,14 +1608,14 @@ var ProjectionEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProjectionEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/TimerEvent":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/TimerEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 var TimerEvent = (function (_super) {
     __extends(TimerEvent, _super);
     function TimerEvent(type) {
@@ -1786,14 +1634,14 @@ var TimerEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TimerEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/URLLoaderEvent":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events/URLLoaderEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var EventBase_1 = require("../events/EventBase");
 var URLLoaderEvent = (function (_super) {
     __extends(URLLoaderEvent, _super);
     function URLLoaderEvent(type, urlLoader) {
@@ -1826,9 +1674,28 @@ var URLLoaderEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = URLLoaderEvent;
 
-},{"awayjs-core/lib/events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/geom/Box":[function(require,module,exports){
+},{"../events/EventBase":"awayjs-core/lib/events/EventBase"}],"awayjs-core/lib/events":[function(require,module,exports){
 "use strict";
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
+var AssetEvent_1 = require("./events/AssetEvent");
+exports.AssetEvent = AssetEvent_1.default;
+var EventBase_1 = require("./events/EventBase");
+exports.EventBase = EventBase_1.default;
+var EventDispatcher_1 = require("./events/EventDispatcher");
+exports.EventDispatcher = EventDispatcher_1.default;
+var LoaderEvent_1 = require("./events/LoaderEvent");
+exports.LoaderEvent = LoaderEvent_1.default;
+var ParserEvent_1 = require("./events/ParserEvent");
+exports.ParserEvent = ParserEvent_1.default;
+var ProjectionEvent_1 = require("./events/ProjectionEvent");
+exports.ProjectionEvent = ProjectionEvent_1.default;
+var TimerEvent_1 = require("./events/TimerEvent");
+exports.TimerEvent = TimerEvent_1.default;
+var URLLoaderEvent_1 = require("./events/URLLoaderEvent");
+exports.URLLoaderEvent = URLLoaderEvent_1.default;
+
+},{"./events/AssetEvent":"awayjs-core/lib/events/AssetEvent","./events/EventBase":"awayjs-core/lib/events/EventBase","./events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","./events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","./events/ParserEvent":"awayjs-core/lib/events/ParserEvent","./events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","./events/TimerEvent":"awayjs-core/lib/events/TimerEvent","./events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent"}],"awayjs-core/lib/geom/Box":[function(require,module,exports){
+"use strict";
+var Vector3D_1 = require("../geom/Vector3D");
 /**
  * A Box object is an area defined by its position, as indicated by its
  * top-left-front corner point(<i>x</i>, <i>y</i>, <i>z</i>) and by its width,
@@ -2525,9 +2392,9 @@ var Box = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Box;
 
-},{"awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/ColorTransform":[function(require,module,exports){
+},{"../geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/ColorTransform":[function(require,module,exports){
 "use strict";
-var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
+var ColorUtils_1 = require("../utils/ColorUtils");
 /**
  * The ColorTransform class lets you adjust the color values in a display
  * object. The color adjustment or <i>color transformation</i> can be applied
@@ -2681,7 +2548,7 @@ var ColorTransform = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ColorTransform;
 
-},{"awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/geom/MathConsts":[function(require,module,exports){
+},{"../utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/geom/MathConsts":[function(require,module,exports){
 "use strict";
 /**
 * MathConsts provides some commonly used mathematical constants
@@ -2704,8 +2571,8 @@ exports.default = MathConsts;
 
 },{}],"awayjs-core/lib/geom/Matrix3DUtils":[function(require,module,exports){
 "use strict";
-var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
+var Matrix3D_1 = require("../geom/Matrix3D");
+var Vector3D_1 = require("../geom/Vector3D");
 /**
  * away.geom.Matrix3DUtils provides additional Matrix3D functions.
  */
@@ -2968,13 +2835,13 @@ var Matrix3DUtils = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Matrix3DUtils;
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Matrix3D":[function(require,module,exports){
+},{"../geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Matrix3D":[function(require,module,exports){
 "use strict";
-var Box_1 = require("awayjs-core/lib/geom/Box");
-var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
-var Orientation3D_1 = require("awayjs-core/lib/geom/Orientation3D");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
+var Box_1 = require("../geom/Box");
+var MathConsts_1 = require("../geom/MathConsts");
+var Orientation3D_1 = require("../geom/Orientation3D");
+var Vector3D_1 = require("../geom/Vector3D");
+var ArgumentError_1 = require("../errors/ArgumentError");
 var Matrix3D = (function () {
     /**
      * Creates a Matrix3D object.
@@ -3830,10 +3697,10 @@ var Matrix3D = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Matrix3D;
 
-},{"awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/geom/Box":"awayjs-core/lib/geom/Box","awayjs-core/lib/geom/MathConsts":"awayjs-core/lib/geom/MathConsts","awayjs-core/lib/geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Matrix":[function(require,module,exports){
+},{"../errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","../geom/Box":"awayjs-core/lib/geom/Box","../geom/MathConsts":"awayjs-core/lib/geom/MathConsts","../geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Matrix":[function(require,module,exports){
 "use strict";
-var Point_1 = require("awayjs-core/lib/geom/Point");
-var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
+var Point_1 = require("../geom/Point");
+var ArgumentError_1 = require("../errors/ArgumentError");
 /**
  * The Matrix class represents a transformation matrix that determines how to
  * map points from one coordinate space to another. You can perform various
@@ -4343,7 +4210,7 @@ var Matrix = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Matrix;
 
-},{"awayjs-core/lib/errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point"}],"awayjs-core/lib/geom/Orientation3D":[function(require,module,exports){
+},{"../errors/ArgumentError":"awayjs-core/lib/errors/ArgumentError","../geom/Point":"awayjs-core/lib/geom/Point"}],"awayjs-core/lib/geom/Orientation3D":[function(require,module,exports){
 "use strict";
 /**
  * A Quaternion object which can be used to represent rotations.
@@ -4373,7 +4240,7 @@ exports.default = Orientation3D;
 
 },{}],"awayjs-core/lib/geom/Plane3D":[function(require,module,exports){
 "use strict";
-var PlaneClassification_1 = require("awayjs-core/lib/geom/PlaneClassification");
+var PlaneClassification_1 = require("../geom/PlaneClassification");
 var Plane3D = (function () {
     /**
      * Create a Plane3D with ABCD coefficients
@@ -4524,7 +4391,7 @@ var Plane3D = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Plane3D;
 
-},{"awayjs-core/lib/geom/PlaneClassification":"awayjs-core/lib/geom/PlaneClassification"}],"awayjs-core/lib/geom/PlaneClassification":[function(require,module,exports){
+},{"../geom/PlaneClassification":"awayjs-core/lib/geom/PlaneClassification"}],"awayjs-core/lib/geom/PlaneClassification":[function(require,module,exports){
 "use strict";
 var PlaneClassification = (function () {
     function PlaneClassification() {
@@ -4780,10 +4647,10 @@ exports.default = PoissonLookup;
 
 },{}],"awayjs-core/lib/geom/Quaternion":[function(require,module,exports){
 "use strict";
-var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Orientation3D_1 = require("awayjs-core/lib/geom/Orientation3D");
-var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
+var Matrix3DUtils_1 = require("../geom/Matrix3DUtils");
+var Orientation3D_1 = require("../geom/Orientation3D");
+var Matrix3D_1 = require("../geom/Matrix3D");
+var Vector3D_1 = require("../geom/Vector3D");
 /**
  * A Quaternion object which can be used to represent rotations.
  */
@@ -5111,9 +4978,9 @@ var Quaternion = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Quaternion;
 
-},{"awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Rectangle":[function(require,module,exports){
+},{"../geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","../geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","../geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/geom/Rectangle":[function(require,module,exports){
 "use strict";
-var Point_1 = require("awayjs-core/lib/geom/Point");
+var Point_1 = require("../geom/Point");
 /**
  * A Rectangle object is an area defined by its position, as indicated by its
  * top-left corner point(<i>x</i>, <i>y</i>) and by its width and its height.
@@ -5573,7 +5440,7 @@ var Rectangle = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Rectangle;
 
-},{"awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point"}],"awayjs-core/lib/geom/Sphere":[function(require,module,exports){
+},{"../geom/Point":"awayjs-core/lib/geom/Point"}],"awayjs-core/lib/geom/Sphere":[function(require,module,exports){
 "use strict";
 var Sphere = (function () {
     /**
@@ -6043,17 +5910,50 @@ var Vector3D = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Vector3D;
 
-},{}],"awayjs-core/lib/image/BitmapImage2D":[function(require,module,exports){
+},{}],"awayjs-core/lib/geom":[function(require,module,exports){
+"use strict";
+var Box_1 = require("./geom/Box");
+exports.Box = Box_1.default;
+var ColorTransform_1 = require("./geom/ColorTransform");
+exports.ColorTransform = ColorTransform_1.default;
+var MathConsts_1 = require("./geom/MathConsts");
+exports.MathConsts = MathConsts_1.default;
+var Matrix_1 = require("./geom/Matrix");
+exports.Matrix = Matrix_1.default;
+var Matrix3D_1 = require("./geom/Matrix3D");
+exports.Matrix3D = Matrix3D_1.default;
+var Matrix3DUtils_1 = require("./geom/Matrix3DUtils");
+exports.Matrix3DUtils = Matrix3DUtils_1.default;
+var Orientation3D_1 = require("./geom/Orientation3D");
+exports.Orientation3D = Orientation3D_1.default;
+var Plane3D_1 = require("./geom/Plane3D");
+exports.Plane3D = Plane3D_1.default;
+var PlaneClassification_1 = require("./geom/PlaneClassification");
+exports.PlaneClassification = PlaneClassification_1.default;
+var Point_1 = require("./geom/Point");
+exports.Point = Point_1.default;
+var PoissonLookup_1 = require("./geom/PoissonLookup");
+exports.PoissonLookup = PoissonLookup_1.default;
+var Quaternion_1 = require("./geom/Quaternion");
+exports.Quaternion = Quaternion_1.default;
+var Rectangle_1 = require("./geom/Rectangle");
+exports.Rectangle = Rectangle_1.default;
+var Sphere_1 = require("./geom/Sphere");
+exports.Sphere = Sphere_1.default;
+var Vector3D_1 = require("./geom/Vector3D");
+exports.Vector3D = Vector3D_1.default;
+
+},{"./geom/Box":"awayjs-core/lib/geom/Box","./geom/ColorTransform":"awayjs-core/lib/geom/ColorTransform","./geom/MathConsts":"awayjs-core/lib/geom/MathConsts","./geom/Matrix":"awayjs-core/lib/geom/Matrix","./geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","./geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","./geom/Orientation3D":"awayjs-core/lib/geom/Orientation3D","./geom/Plane3D":"awayjs-core/lib/geom/Plane3D","./geom/PlaneClassification":"awayjs-core/lib/geom/PlaneClassification","./geom/Point":"awayjs-core/lib/geom/Point","./geom/PoissonLookup":"awayjs-core/lib/geom/PoissonLookup","./geom/Quaternion":"awayjs-core/lib/geom/Quaternion","./geom/Rectangle":"awayjs-core/lib/geom/Rectangle","./geom/Sphere":"awayjs-core/lib/geom/Sphere","./geom/Vector3D":"awayjs-core/lib/geom/Vector3D"}],"awayjs-core/lib/image/BitmapImage2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Image2D_1 = require("awayjs-core/lib/image/Image2D");
-var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
-var BitmapImageUtils_1 = require("awayjs-core/lib/utils/BitmapImageUtils");
-var CPUCanvas_1 = require("awayjs-core/lib/image/CPUCanvas");
+var Image2D_1 = require("../image/Image2D");
+var ColorUtils_1 = require("../utils/ColorUtils");
+var BitmapImageUtils_1 = require("../utils/BitmapImageUtils");
+var CPUCanvas_1 = require("../image/CPUCanvas");
 /**
  * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
  * object. You can use the methods of the BitmapImage2D class to create
@@ -6699,7 +6599,7 @@ var BitmapImage2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BitmapImage2D;
 
-},{"awayjs-core/lib/image/CPUCanvas":"awayjs-core/lib/image/CPUCanvas","awayjs-core/lib/image/Image2D":"awayjs-core/lib/image/Image2D","awayjs-core/lib/utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/image/BitmapImageChannel":[function(require,module,exports){
+},{"../image/CPUCanvas":"awayjs-core/lib/image/CPUCanvas","../image/Image2D":"awayjs-core/lib/image/Image2D","../utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","../utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/image/BitmapImageChannel":[function(require,module,exports){
 "use strict";
 var BitmapImageChannel = (function () {
     function BitmapImageChannel() {
@@ -6720,11 +6620,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var ImageCube_1 = require("awayjs-core/lib/image/ImageCube");
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
-var BitmapImageUtils_1 = require("awayjs-core/lib/utils/BitmapImageUtils");
+var BitmapImage2D_1 = require("../image/BitmapImage2D");
+var ImageCube_1 = require("../image/ImageCube");
+var Rectangle_1 = require("../geom/Rectangle");
+var ColorUtils_1 = require("../utils/ColorUtils");
+var BitmapImageUtils_1 = require("../utils/BitmapImageUtils");
 /**
  * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
  * object. You can use the methods of the BitmapImage2D class to create
@@ -7380,7 +7280,7 @@ var BitmapImageCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BitmapImageCube;
 
-},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","awayjs-core/lib/image/ImageCube":"awayjs-core/lib/image/ImageCube","awayjs-core/lib/utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/image/BlendMode":[function(require,module,exports){
+},{"../geom/Rectangle":"awayjs-core/lib/geom/Rectangle","../image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","../image/ImageCube":"awayjs-core/lib/image/ImageCube","../utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","../utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/image/BlendMode":[function(require,module,exports){
 "use strict";
 /**
  * A class that provides constant values for visual blend mode effects. These
@@ -7563,8 +7463,8 @@ exports.default = BlendMode;
 
 },{}],"awayjs-core/lib/image/CPUCanvas":[function(require,module,exports){
 "use strict";
-var CPURenderingContext2D_1 = require("awayjs-core/lib/image/CPURenderingContext2D");
-var ImageData_1 = require("awayjs-core/lib/image/ImageData");
+var CPURenderingContext2D_1 = require("../image/CPURenderingContext2D");
+var ImageData_1 = require("../image/ImageData");
 var CPUCanvas = (function () {
     function CPUCanvas() {
         this.width = 1;
@@ -7609,11 +7509,11 @@ var CPUCanvas = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CPUCanvas;
 
-},{"awayjs-core/lib/image/CPURenderingContext2D":"awayjs-core/lib/image/CPURenderingContext2D","awayjs-core/lib/image/ImageData":"awayjs-core/lib/image/ImageData"}],"awayjs-core/lib/image/CPURenderingContext2D":[function(require,module,exports){
+},{"../image/CPURenderingContext2D":"awayjs-core/lib/image/CPURenderingContext2D","../image/ImageData":"awayjs-core/lib/image/ImageData"}],"awayjs-core/lib/image/CPURenderingContext2D":[function(require,module,exports){
 "use strict";
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var Matrix_1 = require("awayjs-core/lib/geom/Matrix");
-var Point_1 = require("awayjs-core/lib/geom/Point");
+var BitmapImage2D_1 = require("../image/BitmapImage2D");
+var Matrix_1 = require("../geom/Matrix");
+var Point_1 = require("../geom/Point");
 //TODO: implement all methods
 var CPURenderingContext2D = (function () {
     function CPURenderingContext2D(cpuCanvas) {
@@ -7651,6 +7551,8 @@ var CPURenderingContext2D = (function () {
     };
     CPURenderingContext2D.prototype.createRadialGradient = function (x0, y0, r0, x1, y1, r1) {
         return undefined;
+    };
+    CPURenderingContext2D.prototype.ellipse = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise) {
     };
     CPURenderingContext2D.prototype.lineTo = function (x, y) {
     };
@@ -7971,7 +7873,7 @@ var CPURenderingContext2D = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CPURenderingContext2D;
 
-},{"awayjs-core/lib/geom/Matrix":"awayjs-core/lib/geom/Matrix","awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D"}],"awayjs-core/lib/image/IImageCanvas":[function(require,module,exports){
+},{"../geom/Matrix":"awayjs-core/lib/geom/Matrix","../geom/Point":"awayjs-core/lib/geom/Point","../image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D"}],"awayjs-core/lib/image/IImageCanvas":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-core/lib/image/Image2D":[function(require,module,exports){
@@ -7981,9 +7883,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ImageBase_1 = require("awayjs-core/lib/image/ImageBase");
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
+var ImageBase_1 = require("../image/ImageBase");
+var Rectangle_1 = require("../geom/Rectangle");
+var ImageUtils_1 = require("../utils/ImageUtils");
 var Image2D = (function (_super) {
     __extends(Image2D, _super);
     /**
@@ -8094,14 +7996,14 @@ var Image2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Image2D;
 
-},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/image/ImageBase":"awayjs-core/lib/image/ImageBase","awayjs-core/lib/utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils"}],"awayjs-core/lib/image/ImageBase":[function(require,module,exports){
+},{"../geom/Rectangle":"awayjs-core/lib/geom/Rectangle","../image/ImageBase":"awayjs-core/lib/image/ImageBase","../utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils"}],"awayjs-core/lib/image/ImageBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var AssetBase_1 = require("../library/AssetBase");
 var ImageBase = (function (_super) {
     __extends(ImageBase, _super);
     /**
@@ -8127,15 +8029,15 @@ var ImageBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ImageBase;
 
-},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/image/ImageCube":[function(require,module,exports){
+},{"../library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/image/ImageCube":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ImageBase_1 = require("awayjs-core/lib/image/ImageBase");
-var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
+var ImageBase_1 = require("../image/ImageBase");
+var ImageUtils_1 = require("../utils/ImageUtils");
 var ImageCube = (function (_super) {
     __extends(ImageCube, _super);
     /**
@@ -8198,7 +8100,7 @@ var ImageCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ImageCube;
 
-},{"awayjs-core/lib/image/ImageBase":"awayjs-core/lib/image/ImageBase","awayjs-core/lib/utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils"}],"awayjs-core/lib/image/ImageData":[function(require,module,exports){
+},{"../image/ImageBase":"awayjs-core/lib/image/ImageBase","../utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils"}],"awayjs-core/lib/image/ImageData":[function(require,module,exports){
 "use strict";
 var ImageData = (function () {
     function ImageData(width, height) {
@@ -8218,7 +8120,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SamplerBase_1 = require("awayjs-core/lib/image/SamplerBase");
+var SamplerBase_1 = require("../image/SamplerBase");
 /**
  * The Sampler2D class represents display objects that represent bitmap images.
  * These can be images that you load with the <code>flash.Assets</code> or
@@ -8343,14 +8245,14 @@ var Sampler2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Sampler2D;
 
-},{"awayjs-core/lib/image/SamplerBase":"awayjs-core/lib/image/SamplerBase"}],"awayjs-core/lib/image/SamplerBase":[function(require,module,exports){
+},{"../image/SamplerBase":"awayjs-core/lib/image/SamplerBase"}],"awayjs-core/lib/image/SamplerBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var AssetBase_1 = require("../library/AssetBase");
 /**
  *
  */
@@ -8403,14 +8305,14 @@ var SamplerBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SamplerBase;
 
-},{"awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/image/SamplerCube":[function(require,module,exports){
+},{"../library/AssetBase":"awayjs-core/lib/library/AssetBase"}],"awayjs-core/lib/image/SamplerCube":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SamplerBase_1 = require("awayjs-core/lib/image/SamplerBase");
+var SamplerBase_1 = require("../image/SamplerBase");
 /**
  * The Bitmap class represents display objects that represent bitmap images.
  * These can be images that you load with the <code>flash.Assets</code> or
@@ -8460,17 +8362,17 @@ var SamplerCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SamplerCube;
 
-},{"awayjs-core/lib/image/SamplerBase":"awayjs-core/lib/image/SamplerBase"}],"awayjs-core/lib/image/SpecularImage2D":[function(require,module,exports){
+},{"../image/SamplerBase":"awayjs-core/lib/image/SamplerBase"}],"awayjs-core/lib/image/SpecularImage2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var BitmapImageChannel_1 = require("awayjs-core/lib/image/BitmapImageChannel");
-var Image2D_1 = require("awayjs-core/lib/image/Image2D");
-var Point_1 = require("awayjs-core/lib/geom/Point");
+var BitmapImage2D_1 = require("../image/BitmapImage2D");
+var BitmapImageChannel_1 = require("../image/BitmapImageChannel");
+var Image2D_1 = require("../image/Image2D");
+var Point_1 = require("../geom/Point");
 /**
  *
  */
@@ -8616,15 +8518,46 @@ var SpecularImage2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularImage2D;
 
-},{"awayjs-core/lib/geom/Point":"awayjs-core/lib/geom/Point","awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","awayjs-core/lib/image/BitmapImageChannel":"awayjs-core/lib/image/BitmapImageChannel","awayjs-core/lib/image/Image2D":"awayjs-core/lib/image/Image2D"}],"awayjs-core/lib/library/AbstractionBase":[function(require,module,exports){
+},{"../geom/Point":"awayjs-core/lib/geom/Point","../image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","../image/BitmapImageChannel":"awayjs-core/lib/image/BitmapImageChannel","../image/Image2D":"awayjs-core/lib/image/Image2D"}],"awayjs-core/lib/image":[function(require,module,exports){
+"use strict";
+var BitmapImage2D_1 = require("./image/BitmapImage2D");
+exports.BitmapImage2D = BitmapImage2D_1.default;
+var BitmapImageChannel_1 = require("./image/BitmapImageChannel");
+exports.BitmapImageChannel = BitmapImageChannel_1.default;
+var BitmapImageCube_1 = require("./image/BitmapImageCube");
+exports.BitmapImageCube = BitmapImageCube_1.default;
+var BlendMode_1 = require("./image/BlendMode");
+exports.BlendMode = BlendMode_1.default;
+var CPUCanvas_1 = require("./image/CPUCanvas");
+exports.CPUCanvas = CPUCanvas_1.default;
+var CPURenderingContext2D_1 = require("./image/CPURenderingContext2D");
+exports.CPURenderingContext2D = CPURenderingContext2D_1.default;
+var Image2D_1 = require("./image/Image2D");
+exports.Image2D = Image2D_1.default;
+var ImageBase_1 = require("./image/ImageBase");
+exports.ImageBase = ImageBase_1.default;
+var ImageCube_1 = require("./image/ImageCube");
+exports.ImageCube = ImageCube_1.default;
+var ImageData_1 = require("./image/ImageData");
+exports.ImageData = ImageData_1.default;
+var Sampler2D_1 = require("./image/Sampler2D");
+exports.Sampler2D = Sampler2D_1.default;
+var SamplerBase_1 = require("./image/SamplerBase");
+exports.SamplerBase = SamplerBase_1.default;
+var SamplerCube_1 = require("./image/SamplerCube");
+exports.SamplerCube = SamplerCube_1.default;
+var SpecularImage2D_1 = require("./image/SpecularImage2D");
+exports.SpecularImage2D = SpecularImage2D_1.default;
+
+},{"./image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","./image/BitmapImageChannel":"awayjs-core/lib/image/BitmapImageChannel","./image/BitmapImageCube":"awayjs-core/lib/image/BitmapImageCube","./image/BlendMode":"awayjs-core/lib/image/BlendMode","./image/CPUCanvas":"awayjs-core/lib/image/CPUCanvas","./image/CPURenderingContext2D":"awayjs-core/lib/image/CPURenderingContext2D","./image/Image2D":"awayjs-core/lib/image/Image2D","./image/ImageBase":"awayjs-core/lib/image/ImageBase","./image/ImageCube":"awayjs-core/lib/image/ImageCube","./image/ImageData":"awayjs-core/lib/image/ImageData","./image/Sampler2D":"awayjs-core/lib/image/Sampler2D","./image/SamplerBase":"awayjs-core/lib/image/SamplerBase","./image/SamplerCube":"awayjs-core/lib/image/SamplerCube","./image/SpecularImage2D":"awayjs-core/lib/image/SpecularImage2D"}],"awayjs-core/lib/library/AbstractionBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
+var AssetEvent_1 = require("../events/AssetEvent");
+var EventDispatcher_1 = require("../events/EventDispatcher");
 /**
  *
  * @class away.pool.AbstractionBase
@@ -8663,16 +8596,16 @@ var AbstractionBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AbstractionBase;
 
-},{"awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/AssetBase":[function(require,module,exports){
+},{"../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/AssetBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
+var AbstractMethodError_1 = require("../errors/AbstractMethodError");
+var AssetEvent_1 = require("../events/AssetEvent");
+var EventDispatcher_1 = require("../events/EventDispatcher");
 var AssetBase = (function (_super) {
     __extends(AssetBase, _super);
     function AssetBase(name) {
@@ -8787,24 +8720,24 @@ var AssetBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AssetBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/AssetLibraryBundle":[function(require,module,exports){
+},{"../errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/AssetLibraryBundle":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AssetLibraryIterator_1 = require("awayjs-core/lib/library/AssetLibraryIterator");
-var Loader_1 = require("awayjs-core/lib/library/Loader");
-var ConflictPrecedence_1 = require("awayjs-core/lib/library/ConflictPrecedence");
-var ConflictStrategy_1 = require("awayjs-core/lib/library/ConflictStrategy");
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var URLLoaderEvent_1 = require("awayjs-core/lib/events/URLLoaderEvent");
-var LoaderEvent_1 = require("awayjs-core/lib/events/LoaderEvent");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var ParserEvent_1 = require("awayjs-core/lib/events/ParserEvent");
+var AssetLibraryIterator_1 = require("../library/AssetLibraryIterator");
+var Loader_1 = require("../library/Loader");
+var ConflictPrecedence_1 = require("../library/ConflictPrecedence");
+var ConflictStrategy_1 = require("../library/ConflictStrategy");
+var AssetBase_1 = require("../library/AssetBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
+var AssetEvent_1 = require("../events/AssetEvent");
+var URLLoaderEvent_1 = require("../events/URLLoaderEvent");
+var LoaderEvent_1 = require("../events/LoaderEvent");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var ParserEvent_1 = require("../events/ParserEvent");
 /**
  * AssetLibraryBundle enforces a multiton pattern and is not intended to be instanced directly.
  * Its purpose is to create a container for 3D data management, both before and after parsing.
@@ -9251,7 +9184,7 @@ var AssetLibraryBundle = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AssetLibraryBundle;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","awayjs-core/lib/library/AssetBase":"awayjs-core/lib/library/AssetBase","awayjs-core/lib/library/AssetLibraryIterator":"awayjs-core/lib/library/AssetLibraryIterator","awayjs-core/lib/library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence","awayjs-core/lib/library/ConflictStrategy":"awayjs-core/lib/library/ConflictStrategy","awayjs-core/lib/library/Loader":"awayjs-core/lib/library/Loader"}],"awayjs-core/lib/library/AssetLibraryIterator":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","../events/ParserEvent":"awayjs-core/lib/events/ParserEvent","../events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","../library/AssetBase":"awayjs-core/lib/library/AssetBase","../library/AssetLibraryIterator":"awayjs-core/lib/library/AssetLibraryIterator","../library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence","../library/ConflictStrategy":"awayjs-core/lib/library/ConflictStrategy","../library/Loader":"awayjs-core/lib/library/Loader"}],"awayjs-core/lib/library/AssetLibraryIterator":[function(require,module,exports){
 "use strict";
 var AssetLibraryIterator = (function () {
     function AssetLibraryIterator(assets, assetTypeFilter, namespaceFilter, filterFunc) {
@@ -9318,8 +9251,8 @@ exports.default = AssetLibraryIterator;
 
 },{}],"awayjs-core/lib/library/AssetLibrary":[function(require,module,exports){
 "use strict";
-var AssetLibraryBundle_1 = require("awayjs-core/lib/library/AssetLibraryBundle");
-var Loader_1 = require("awayjs-core/lib/library/Loader");
+var AssetLibraryBundle_1 = require("../library/AssetLibraryBundle");
+var Loader_1 = require("../library/Loader");
 /**
  * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
  * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
@@ -9529,7 +9462,7 @@ var AssetLibrary = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AssetLibrary;
 
-},{"awayjs-core/lib/library/AssetLibraryBundle":"awayjs-core/lib/library/AssetLibraryBundle","awayjs-core/lib/library/Loader":"awayjs-core/lib/library/Loader"}],"awayjs-core/lib/library/ConflictPrecedence":[function(require,module,exports){
+},{"../library/AssetLibraryBundle":"awayjs-core/lib/library/AssetLibraryBundle","../library/Loader":"awayjs-core/lib/library/Loader"}],"awayjs-core/lib/library/ConflictPrecedence":[function(require,module,exports){
 "use strict";
 /**
  * Enumaration class for precedence when resolving naming conflicts in the library.
@@ -9560,9 +9493,9 @@ exports.default = ConflictPrecedence;
 
 },{}],"awayjs-core/lib/library/ConflictStrategyBase":[function(require,module,exports){
 "use strict";
-var ConflictPrecedence_1 = require("awayjs-core/lib/library/ConflictPrecedence");
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
+var ConflictPrecedence_1 = require("../library/ConflictPrecedence");
+var AbstractMethodError_1 = require("../errors/AbstractMethodError");
+var AssetEvent_1 = require("../events/AssetEvent");
 /**
  * Abstract base class for naming conflict resolution classes. Extend this to create a
  * strategy class which the asset library can use to resolve asset naming conflicts, or
@@ -9619,11 +9552,11 @@ var ConflictStrategyBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ConflictStrategyBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence"}],"awayjs-core/lib/library/ConflictStrategy":[function(require,module,exports){
+},{"../errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence"}],"awayjs-core/lib/library/ConflictStrategy":[function(require,module,exports){
 "use strict";
-var ErrorConflictStrategy_1 = require("awayjs-core/lib/library/ErrorConflictStrategy");
-var IgnoreConflictStrategy_1 = require("awayjs-core/lib/library/IgnoreConflictStrategy");
-var NumSuffixConflictStrategy_1 = require("awayjs-core/lib/library/NumSuffixConflictStrategy");
+var ErrorConflictStrategy_1 = require("../library/ErrorConflictStrategy");
+var IgnoreConflictStrategy_1 = require("../library/IgnoreConflictStrategy");
+var NumSuffixConflictStrategy_1 = require("../library/NumSuffixConflictStrategy");
 /**
  * Enumeration class for bundled conflict strategies. Set one of these values (or an
  * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
@@ -9661,15 +9594,15 @@ var ConflictStrategy = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ConflictStrategy;
 
-},{"awayjs-core/lib/library/ErrorConflictStrategy":"awayjs-core/lib/library/ErrorConflictStrategy","awayjs-core/lib/library/IgnoreConflictStrategy":"awayjs-core/lib/library/IgnoreConflictStrategy","awayjs-core/lib/library/NumSuffixConflictStrategy":"awayjs-core/lib/library/NumSuffixConflictStrategy"}],"awayjs-core/lib/library/ErrorConflictStrategy":[function(require,module,exports){
+},{"../library/ErrorConflictStrategy":"awayjs-core/lib/library/ErrorConflictStrategy","../library/IgnoreConflictStrategy":"awayjs-core/lib/library/IgnoreConflictStrategy","../library/NumSuffixConflictStrategy":"awayjs-core/lib/library/NumSuffixConflictStrategy"}],"awayjs-core/lib/library/ErrorConflictStrategy":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ConflictStrategyBase_1 = require("awayjs-core/lib/library/ConflictStrategyBase");
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var ConflictStrategyBase_1 = require("../library/ConflictStrategyBase");
+var ErrorBase_1 = require("../errors/ErrorBase");
 var ErrorConflictStrategy = (function (_super) {
     __extends(ErrorConflictStrategy, _super);
     function ErrorConflictStrategy() {
@@ -9686,7 +9619,7 @@ var ErrorConflictStrategy = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ErrorConflictStrategy;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/IAbstractionPool":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","../library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/IAbstractionPool":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-core/lib/library/IAssetClass":[function(require,module,exports){
@@ -9763,7 +9696,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ConflictStrategyBase_1 = require("awayjs-core/lib/library/ConflictStrategyBase");
+var ConflictStrategyBase_1 = require("../library/ConflictStrategyBase");
 var IgnoreConflictStrategy = (function (_super) {
     __extends(IgnoreConflictStrategy, _super);
     function IgnoreConflictStrategy() {
@@ -9781,7 +9714,7 @@ var IgnoreConflictStrategy = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = IgnoreConflictStrategy;
 
-},{"awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/LoaderContext":[function(require,module,exports){
+},{"../library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library/LoaderContext":[function(require,module,exports){
 "use strict";
 var LoaderContext = (function () {
     /**
@@ -9942,7 +9875,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
+var EventDispatcher_1 = require("../events/EventDispatcher");
 /**
  * The LoaderInfo class provides information about a loaded SWF file or a
  * loaded image file(JPEG, GIF, or PNG). LoaderInfo objects are available for
@@ -10187,21 +10120,21 @@ var LoaderInfo = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LoaderInfo;
 
-},{"awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/Loader":[function(require,module,exports){
+},{"../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher"}],"awayjs-core/lib/library/Loader":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var URLLoader_1 = require("awayjs-core/lib/net/URLLoader");
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var URLLoaderEvent_1 = require("awayjs-core/lib/events/URLLoaderEvent");
-var LoaderEvent_1 = require("awayjs-core/lib/events/LoaderEvent");
-var ParserEvent_1 = require("awayjs-core/lib/events/ParserEvent");
-var ResourceDependency_1 = require("awayjs-core/lib/parsers/ResourceDependency");
+var URLLoader_1 = require("../net/URLLoader");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var AssetEvent_1 = require("../events/AssetEvent");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var URLLoaderEvent_1 = require("../events/URLLoaderEvent");
+var LoaderEvent_1 = require("../events/LoaderEvent");
+var ParserEvent_1 = require("../events/ParserEvent");
+var ResourceDependency_1 = require("../parsers/ResourceDependency");
 /**
  * Dispatched when any asset finishes parsing. Also see specific events for each
  * individual asset type (meshes, materials et c.)
@@ -10770,14 +10703,14 @@ var Loader = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Loader;
 
-},{"awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","awayjs-core/lib/net/URLLoader":"awayjs-core/lib/net/URLLoader","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency"}],"awayjs-core/lib/library/NumSuffixConflictStrategy":[function(require,module,exports){
+},{"../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/LoaderEvent":"awayjs-core/lib/events/LoaderEvent","../events/ParserEvent":"awayjs-core/lib/events/ParserEvent","../events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","../net/URLLoader":"awayjs-core/lib/net/URLLoader","../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency"}],"awayjs-core/lib/library/NumSuffixConflictStrategy":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ConflictStrategyBase_1 = require("awayjs-core/lib/library/ConflictStrategyBase");
+var ConflictStrategyBase_1 = require("../library/ConflictStrategyBase");
 var NumSuffixConflictStrategy = (function (_super) {
     __extends(NumSuffixConflictStrategy, _super);
     function NumSuffixConflictStrategy(separator) {
@@ -10827,7 +10760,40 @@ var NumSuffixConflictStrategy = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NumSuffixConflictStrategy;
 
-},{"awayjs-core/lib/library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/managers/AudioChannel":[function(require,module,exports){
+},{"../library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase"}],"awayjs-core/lib/library":[function(require,module,exports){
+"use strict";
+var AbstractionBase_1 = require("./library/AbstractionBase");
+exports.AbstractionBase = AbstractionBase_1.default;
+var AssetBase_1 = require("./library/AssetBase");
+exports.AssetBase = AssetBase_1.default;
+var AssetLibrary_1 = require("./library/AssetLibrary");
+exports.AssetLibrary = AssetLibrary_1.default;
+var AssetLibraryBundle_1 = require("./library/AssetLibraryBundle");
+exports.AssetLibraryBundle = AssetLibraryBundle_1.default;
+var AssetLibraryIterator_1 = require("./library/AssetLibraryIterator");
+exports.AssetLibraryIterator = AssetLibraryIterator_1.default;
+var ConflictPrecedence_1 = require("./library/ConflictPrecedence");
+exports.ConflictPrecedence = ConflictPrecedence_1.default;
+var ConflictStrategy_1 = require("./library/ConflictStrategy");
+exports.ConflictStrategy = ConflictStrategy_1.default;
+var ConflictStrategyBase_1 = require("./library/ConflictStrategyBase");
+exports.ConflictStrategyBase = ConflictStrategyBase_1.default;
+var ErrorConflictStrategy_1 = require("./library/ErrorConflictStrategy");
+exports.ErrorConflictStrategy = ErrorConflictStrategy_1.default;
+var IDUtil_1 = require("./library/IDUtil");
+exports.IDUtil = IDUtil_1.default;
+var IgnoreConflictStrategy_1 = require("./library/IgnoreConflictStrategy");
+exports.IgnoreConflictStrategy = IgnoreConflictStrategy_1.default;
+var Loader_1 = require("./library/Loader");
+exports.Loader = Loader_1.default;
+var LoaderContext_1 = require("./library/LoaderContext");
+exports.LoaderContext = LoaderContext_1.default;
+var LoaderInfo_1 = require("./library/LoaderInfo");
+exports.LoaderInfo = LoaderInfo_1.default;
+var NumSuffixConflictStrategy_1 = require("./library/NumSuffixConflictStrategy");
+exports.NumSuffixConflictStrategy = NumSuffixConflictStrategy_1.default;
+
+},{"./library/AbstractionBase":"awayjs-core/lib/library/AbstractionBase","./library/AssetBase":"awayjs-core/lib/library/AssetBase","./library/AssetLibrary":"awayjs-core/lib/library/AssetLibrary","./library/AssetLibraryBundle":"awayjs-core/lib/library/AssetLibraryBundle","./library/AssetLibraryIterator":"awayjs-core/lib/library/AssetLibraryIterator","./library/ConflictPrecedence":"awayjs-core/lib/library/ConflictPrecedence","./library/ConflictStrategy":"awayjs-core/lib/library/ConflictStrategy","./library/ConflictStrategyBase":"awayjs-core/lib/library/ConflictStrategyBase","./library/ErrorConflictStrategy":"awayjs-core/lib/library/ErrorConflictStrategy","./library/IDUtil":"awayjs-core/lib/library/IDUtil","./library/IgnoreConflictStrategy":"awayjs-core/lib/library/IgnoreConflictStrategy","./library/Loader":"awayjs-core/lib/library/Loader","./library/LoaderContext":"awayjs-core/lib/library/LoaderContext","./library/LoaderInfo":"awayjs-core/lib/library/LoaderInfo","./library/NumSuffixConflictStrategy":"awayjs-core/lib/library/NumSuffixConflictStrategy"}],"awayjs-core/lib/managers/AudioChannel":[function(require,module,exports){
 "use strict";
 var AudioChannel = (function () {
     function AudioChannel() {
@@ -10897,8 +10863,8 @@ exports.default = AudioChannel;
 
 },{}],"awayjs-core/lib/managers/AudioManager":[function(require,module,exports){
 "use strict";
-var StreamingAudioChannel_1 = require("awayjs-core/lib/managers/StreamingAudioChannel");
-var WebAudioChannel_1 = require("awayjs-core/lib/managers/WebAudioChannel");
+var StreamingAudioChannel_1 = require("../managers/StreamingAudioChannel");
+var WebAudioChannel_1 = require("../managers/WebAudioChannel");
 var AudioManager = (function () {
     function AudioManager() {
     }
@@ -10930,9 +10896,9 @@ var AudioManager = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AudioManager;
 
-},{"awayjs-core/lib/managers/StreamingAudioChannel":"awayjs-core/lib/managers/StreamingAudioChannel","awayjs-core/lib/managers/WebAudioChannel":"awayjs-core/lib/managers/WebAudioChannel"}],"awayjs-core/lib/managers/EventAudioChannel":[function(require,module,exports){
+},{"../managers/StreamingAudioChannel":"awayjs-core/lib/managers/StreamingAudioChannel","../managers/WebAudioChannel":"awayjs-core/lib/managers/WebAudioChannel"}],"awayjs-core/lib/managers/EventAudioChannel":[function(require,module,exports){
 "use strict";
-var ParserUtils_1 = require("awayjs-core/lib/parsers/ParserUtils");
+var ParserUtils_1 = require("../parsers/ParserUtils");
 var EventAudioChannel = (function () {
     function EventAudioChannel() {
         var _this = this;
@@ -11007,7 +10973,7 @@ var EventAudioChannel = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EventAudioChannel;
 
-},{"awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils"}],"awayjs-core/lib/managers/IAudioChannelClass":[function(require,module,exports){
+},{"../parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils"}],"awayjs-core/lib/managers/IAudioChannelClass":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-core/lib/managers/IAudioChannel":[function(require,module,exports){
@@ -11274,7 +11240,16 @@ var WebAudioChannel = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WebAudioChannel;
 
-},{}],"awayjs-core/lib/net/CrossDomainPolicy":[function(require,module,exports){
+},{}],"awayjs-core/lib/managers":[function(require,module,exports){
+"use strict";
+var AudioManager_1 = require("./managers/AudioManager");
+exports.AudioManager = AudioManager_1.default;
+var StreamingAudioChannel_1 = require("./managers/StreamingAudioChannel");
+exports.StreamingAudioChannel = StreamingAudioChannel_1.default;
+var WebAudioChannel_1 = require("./managers/WebAudioChannel");
+exports.WebAudioChannel = WebAudioChannel_1.default;
+
+},{"./managers/AudioManager":"awayjs-core/lib/managers/AudioManager","./managers/StreamingAudioChannel":"awayjs-core/lib/managers/StreamingAudioChannel","./managers/WebAudioChannel":"awayjs-core/lib/managers/WebAudioChannel"}],"awayjs-core/lib/net/CrossDomainPolicy":[function(require,module,exports){
 "use strict";
 var CrossDomainPolicy = (function () {
     function CrossDomainPolicy() {
@@ -11328,11 +11303,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var URLRequestMethod_1 = require("awayjs-core/lib/net/URLRequestMethod");
-var URLVariables_1 = require("awayjs-core/lib/net/URLVariables");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var URLLoaderEvent_1 = require("awayjs-core/lib/events/URLLoaderEvent");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var URLRequestMethod_1 = require("../net/URLRequestMethod");
+var URLVariables_1 = require("../net/URLVariables");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var URLLoaderEvent_1 = require("../events/URLLoaderEvent");
 /**
  * The URLLoader is used to load a single file, as part of a resource.
  *
@@ -11663,7 +11638,7 @@ var URLLoader = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = URLLoader;
 
-},{"awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod","awayjs-core/lib/net/URLVariables":"awayjs-core/lib/net/URLVariables"}],"awayjs-core/lib/net/URLRequestMethod":[function(require,module,exports){
+},{"../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/URLLoaderEvent":"awayjs-core/lib/events/URLLoaderEvent","../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod","../net/URLVariables":"awayjs-core/lib/net/URLVariables"}],"awayjs-core/lib/net/URLRequestMethod":[function(require,module,exports){
 "use strict";
 var URLRequestMethod = (function () {
     function URLRequestMethod() {
@@ -11685,7 +11660,7 @@ exports.default = URLRequestMethod;
 
 },{}],"awayjs-core/lib/net/URLRequest":[function(require,module,exports){
 "use strict";
-var URLRequestMethod_1 = require("awayjs-core/lib/net/URLRequestMethod");
+var URLRequestMethod_1 = require("../net/URLRequestMethod");
 var URLRequest = (function () {
     /**
 
@@ -11738,7 +11713,7 @@ var URLRequest = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = URLRequest;
 
-},{"awayjs-core/lib/net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod"}],"awayjs-core/lib/net/URLVariables":[function(require,module,exports){
+},{"../net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod"}],"awayjs-core/lib/net/URLVariables":[function(require,module,exports){
 "use strict";
 var URLVariables = (function () {
     /**
@@ -11805,17 +11780,32 @@ var URLVariables = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = URLVariables;
 
-},{}],"awayjs-core/lib/parsers/Image2DParser":[function(require,module,exports){
+},{}],"awayjs-core/lib/net":[function(require,module,exports){
+"use strict";
+var CrossDomainPolicy_1 = require("./net/CrossDomainPolicy");
+exports.CrossDomainPolicy = CrossDomainPolicy_1.default;
+var URLLoader_1 = require("./net/URLLoader");
+exports.URLLoader = URLLoader_1.default;
+var URLLoaderDataFormat_1 = require("./net/URLLoaderDataFormat");
+exports.URLLoaderDataFormat = URLLoaderDataFormat_1.default;
+var URLRequest_1 = require("./net/URLRequest");
+exports.URLRequest = URLRequest_1.default;
+var URLRequestMethod_1 = require("./net/URLRequestMethod");
+exports.URLRequestMethod = URLRequestMethod_1.default;
+var URLVariables_1 = require("./net/URLVariables");
+exports.URLVariables = URLVariables_1.default;
+
+},{"./net/CrossDomainPolicy":"awayjs-core/lib/net/CrossDomainPolicy","./net/URLLoader":"awayjs-core/lib/net/URLLoader","./net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","./net/URLRequest":"awayjs-core/lib/net/URLRequest","./net/URLRequestMethod":"awayjs-core/lib/net/URLRequestMethod","./net/URLVariables":"awayjs-core/lib/net/URLVariables"}],"awayjs-core/lib/parsers/Image2DParser":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var ParserBase_1 = require("awayjs-core/lib/parsers/ParserBase");
-var ParserUtils_1 = require("awayjs-core/lib/parsers/ParserUtils");
-var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var ParserBase_1 = require("../parsers/ParserBase");
+var ParserUtils_1 = require("../parsers/ParserUtils");
+var ByteArray_1 = require("../utils/ByteArray");
 /**
  * Image2DParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
  * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
@@ -11926,17 +11916,17 @@ var Image2DParser = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Image2DParser;
 
-},{"awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/parsers/ImageCubeParser":[function(require,module,exports){
+},{"../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","../parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","../utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/parsers/ImageCubeParser":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var BitmapImageCube_1 = require("awayjs-core/lib/image/BitmapImageCube");
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var URLRequest_1 = require("awayjs-core/lib/net/URLRequest");
-var ParserBase_1 = require("awayjs-core/lib/parsers/ParserBase");
+var BitmapImageCube_1 = require("../image/BitmapImageCube");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var URLRequest_1 = require("../net/URLRequest");
+var ParserBase_1 = require("../parsers/ParserBase");
 /**
  * ImageCubeParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
  * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -12050,23 +12040,23 @@ var ImageCubeParser = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ImageCubeParser;
 
-},{"awayjs-core/lib/image/BitmapImageCube":"awayjs-core/lib/image/BitmapImageCube","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase"}],"awayjs-core/lib/parsers/ParserBase":[function(require,module,exports){
+},{"../image/BitmapImageCube":"awayjs-core/lib/image/BitmapImageCube","../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../net/URLRequest":"awayjs-core/lib/net/URLRequest","../parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase"}],"awayjs-core/lib/parsers/ParserBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var ParserEvent_1 = require("awayjs-core/lib/events/ParserEvent");
-var TimerEvent_1 = require("awayjs-core/lib/events/TimerEvent");
-var ParserUtils_1 = require("awayjs-core/lib/parsers/ParserUtils");
-var ResourceDependency_1 = require("awayjs-core/lib/parsers/ResourceDependency");
-var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
-var Timer_1 = require("awayjs-core/lib/utils/Timer");
-var getTimer_1 = require("awayjs-core/lib/utils/getTimer");
+var AbstractMethodError_1 = require("../errors/AbstractMethodError");
+var AssetEvent_1 = require("../events/AssetEvent");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var ParserEvent_1 = require("../events/ParserEvent");
+var TimerEvent_1 = require("../events/TimerEvent");
+var ParserUtils_1 = require("../parsers/ParserUtils");
+var ResourceDependency_1 = require("../parsers/ResourceDependency");
+var ImageUtils_1 = require("../utils/ImageUtils");
+var Timer_1 = require("../utils/Timer");
+var getTimer_1 = require("../utils/getTimer");
 /**
  * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
  * supported by away.
@@ -12368,7 +12358,7 @@ var ParserBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParserBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/AssetEvent":"awayjs-core/lib/events/AssetEvent","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/ParserEvent":"awayjs-core/lib/events/ParserEvent","awayjs-core/lib/events/TimerEvent":"awayjs-core/lib/events/TimerEvent","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","awayjs-core/lib/utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils","awayjs-core/lib/utils/Timer":"awayjs-core/lib/utils/Timer","awayjs-core/lib/utils/getTimer":"awayjs-core/lib/utils/getTimer"}],"awayjs-core/lib/parsers/ParserDataFormat":[function(require,module,exports){
+},{"../errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","../events/AssetEvent":"awayjs-core/lib/events/AssetEvent","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/ParserEvent":"awayjs-core/lib/events/ParserEvent","../events/TimerEvent":"awayjs-core/lib/events/TimerEvent","../parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","../parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","../utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils","../utils/Timer":"awayjs-core/lib/utils/Timer","../utils/getTimer":"awayjs-core/lib/utils/getTimer"}],"awayjs-core/lib/parsers/ParserDataFormat":[function(require,module,exports){
 "use strict";
 /**
  * An enumeration providing values to describe the data format of parsed data.
@@ -12395,8 +12385,8 @@ exports.default = ParserDataFormat;
 
 },{}],"awayjs-core/lib/parsers/ParserUtils":[function(require,module,exports){
 "use strict";
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
+var BitmapImage2D_1 = require("../image/BitmapImage2D");
+var ByteArray_1 = require("../utils/ByteArray");
 var ParserUtils = (function () {
     function ParserUtils() {
     }
@@ -12546,7 +12536,7 @@ var ParserUtils = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParserUtils;
 
-},{"awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/parsers/ResourceDependency":[function(require,module,exports){
+},{"../image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D","../utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/parsers/ResourceDependency":[function(require,module,exports){
 "use strict";
 /**
  * ResourceDependency represents the data required to load, parse and resolve additional files ("dependencies")
@@ -12716,13 +12706,13 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Sampler2D_1 = require("awayjs-core/lib/image/Sampler2D");
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var URLRequest_1 = require("awayjs-core/lib/net/URLRequest");
-var ParserBase_1 = require("awayjs-core/lib/parsers/ParserBase");
-var ParserUtils_1 = require("awayjs-core/lib/parsers/ParserUtils");
-var XmlUtils_1 = require("awayjs-core/lib/utils/XmlUtils");
+var Sampler2D_1 = require("../image/Sampler2D");
+var Rectangle_1 = require("../geom/Rectangle");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var URLRequest_1 = require("../net/URLRequest");
+var ParserBase_1 = require("../parsers/ParserBase");
+var ParserUtils_1 = require("../parsers/ParserUtils");
+var XmlUtils_1 = require("../utils/XmlUtils");
 /**
  * TextureAtlasParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
  * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -12857,17 +12847,17 @@ var TextureAtlasParserState = (function () {
     return TextureAtlasParserState;
 }());
 
-},{"awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/image/Sampler2D":"awayjs-core/lib/image/Sampler2D","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/net/URLRequest":"awayjs-core/lib/net/URLRequest","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","awayjs-core/lib/utils/XmlUtils":"awayjs-core/lib/utils/XmlUtils"}],"awayjs-core/lib/parsers/WaveAudioParser":[function(require,module,exports){
+},{"../geom/Rectangle":"awayjs-core/lib/geom/Rectangle","../image/Sampler2D":"awayjs-core/lib/image/Sampler2D","../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../net/URLRequest":"awayjs-core/lib/net/URLRequest","../parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","../parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","../utils/XmlUtils":"awayjs-core/lib/utils/XmlUtils"}],"awayjs-core/lib/parsers/WaveAudioParser":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var WaveAudio_1 = require("awayjs-core/lib/audio/WaveAudio");
-var URLLoaderDataFormat_1 = require("awayjs-core/lib/net/URLLoaderDataFormat");
-var ParserBase_1 = require("awayjs-core/lib/parsers/ParserBase");
-var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
+var WaveAudio_1 = require("../audio/WaveAudio");
+var URLLoaderDataFormat_1 = require("../net/URLLoaderDataFormat");
+var ParserBase_1 = require("../parsers/ParserBase");
+var ByteArray_1 = require("../utils/ByteArray");
 var WaveAudioParser = (function (_super) {
     __extends(WaveAudioParser, _super);
     function WaveAudioParser() {
@@ -12921,7 +12911,26 @@ var WaveAudioParser = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = WaveAudioParser;
 
-},{"awayjs-core/lib/audio/WaveAudio":"awayjs-core/lib/audio/WaveAudio","awayjs-core/lib/net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","awayjs-core/lib/parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","awayjs-core/lib/utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/projections/CoordinateSystem":[function(require,module,exports){
+},{"../audio/WaveAudio":"awayjs-core/lib/audio/WaveAudio","../net/URLLoaderDataFormat":"awayjs-core/lib/net/URLLoaderDataFormat","../parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","../utils/ByteArray":"awayjs-core/lib/utils/ByteArray"}],"awayjs-core/lib/parsers":[function(require,module,exports){
+"use strict";
+var Image2DParser_1 = require("./parsers/Image2DParser");
+exports.Image2DParser = Image2DParser_1.default;
+var ImageCubeParser_1 = require("./parsers/ImageCubeParser");
+exports.ImageCubeParser = ImageCubeParser_1.default;
+var ParserBase_1 = require("./parsers/ParserBase");
+exports.ParserBase = ParserBase_1.default;
+var ParserDataFormat_1 = require("./parsers/ParserDataFormat");
+exports.ParserDataFormat = ParserDataFormat_1.default;
+var ParserUtils_1 = require("./parsers/ParserUtils");
+exports.ParserUtils = ParserUtils_1.default;
+var ResourceDependency_1 = require("./parsers/ResourceDependency");
+exports.ResourceDependency = ResourceDependency_1.default;
+var TextureAtlasParser_1 = require("./parsers/TextureAtlasParser");
+exports.TextureAtlasParser = TextureAtlasParser_1.default;
+var WaveAudioParser_1 = require("./parsers/WaveAudioParser");
+exports.WaveAudioParser = WaveAudioParser_1.default;
+
+},{"./parsers/Image2DParser":"awayjs-core/lib/parsers/Image2DParser","./parsers/ImageCubeParser":"awayjs-core/lib/parsers/ImageCubeParser","./parsers/ParserBase":"awayjs-core/lib/parsers/ParserBase","./parsers/ParserDataFormat":"awayjs-core/lib/parsers/ParserDataFormat","./parsers/ParserUtils":"awayjs-core/lib/parsers/ParserUtils","./parsers/ResourceDependency":"awayjs-core/lib/parsers/ResourceDependency","./parsers/TextureAtlasParser":"awayjs-core/lib/parsers/TextureAtlasParser","./parsers/WaveAudioParser":"awayjs-core/lib/parsers/WaveAudioParser"}],"awayjs-core/lib/projections/CoordinateSystem":[function(require,module,exports){
 "use strict";
 /**
  * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
@@ -12951,8 +12960,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var PerspectiveProjection_1 = require("awayjs-core/lib/projections/PerspectiveProjection");
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
+var PerspectiveProjection_1 = require("../projections/PerspectiveProjection");
+var ProjectionBase_1 = require("../projections/ProjectionBase");
 var FreeMatrixProjection = (function (_super) {
     __extends(FreeMatrixProjection, _super);
     function FreeMatrixProjection() {
@@ -13002,7 +13011,7 @@ var FreeMatrixProjection = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FreeMatrixProjection;
 
-},{"awayjs-core/lib/projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/IProjection":[function(require,module,exports){
+},{"../projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","../projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/IProjection":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-core/lib/projections/ObliqueNearPlaneProjection":[function(require,module,exports){
@@ -13012,9 +13021,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ProjectionEvent_1 = require("awayjs-core/lib/events/ProjectionEvent");
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
+var Vector3D_1 = require("../geom/Vector3D");
+var ProjectionEvent_1 = require("../events/ProjectionEvent");
+var ProjectionBase_1 = require("../projections/ProjectionBase");
 var ObliqueNearPlaneProjection = (function (_super) {
     __extends(ObliqueNearPlaneProjection, _super);
     function ObliqueNearPlaneProjection(baseProjection, plane) {
@@ -13118,16 +13127,16 @@ var ObliqueNearPlaneProjection = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ObliqueNearPlaneProjection;
 
-},{"awayjs-core/lib/events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/OrthographicOffCenterProjection":[function(require,module,exports){
+},{"../events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D","../projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/OrthographicOffCenterProjection":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
+var Matrix3DUtils_1 = require("../geom/Matrix3DUtils");
+var Vector3D_1 = require("../geom/Vector3D");
+var ProjectionBase_1 = require("../projections/ProjectionBase");
 var OrthographicOffCenterProjection = (function (_super) {
     __extends(OrthographicOffCenterProjection, _super);
     function OrthographicOffCenterProjection(minX, maxX, minY, maxY) {
@@ -13225,16 +13234,16 @@ var OrthographicOffCenterProjection = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = OrthographicOffCenterProjection;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/OrthographicProjection":[function(require,module,exports){
+},{"../geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D","../projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/OrthographicProjection":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
+var Matrix3DUtils_1 = require("../geom/Matrix3DUtils");
+var Vector3D_1 = require("../geom/Vector3D");
+var ProjectionBase_1 = require("../projections/ProjectionBase");
 var OrthographicProjection = (function (_super) {
     __extends(OrthographicProjection, _super);
     function OrthographicProjection(projectionHeight) {
@@ -13327,17 +13336,17 @@ var OrthographicProjection = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = OrthographicProjection;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/PerspectiveProjection":[function(require,module,exports){
+},{"../geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D","../projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/PerspectiveProjection":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var CoordinateSystem_1 = require("awayjs-core/lib/projections/CoordinateSystem");
-var ProjectionBase_1 = require("awayjs-core/lib/projections/ProjectionBase");
+var Matrix3DUtils_1 = require("../geom/Matrix3DUtils");
+var Vector3D_1 = require("../geom/Vector3D");
+var CoordinateSystem_1 = require("../projections/CoordinateSystem");
+var ProjectionBase_1 = require("../projections/ProjectionBase");
 var PerspectiveProjection = (function (_super) {
     __extends(PerspectiveProjection, _super);
     function PerspectiveProjection(fieldOfView, coordinateSystem) {
@@ -13528,18 +13537,18 @@ var PerspectiveProjection = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PerspectiveProjection;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","awayjs-core/lib/geom/Vector3D":"awayjs-core/lib/geom/Vector3D","awayjs-core/lib/projections/CoordinateSystem":"awayjs-core/lib/projections/CoordinateSystem","awayjs-core/lib/projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/ProjectionBase":[function(require,module,exports){
+},{"../geom/Matrix3DUtils":"awayjs-core/lib/geom/Matrix3DUtils","../geom/Vector3D":"awayjs-core/lib/geom/Vector3D","../projections/CoordinateSystem":"awayjs-core/lib/projections/CoordinateSystem","../projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/projections/ProjectionBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var ProjectionEvent_1 = require("awayjs-core/lib/events/ProjectionEvent");
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
+var Matrix3D_1 = require("../geom/Matrix3D");
+var Rectangle_1 = require("../geom/Rectangle");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var ProjectionEvent_1 = require("../events/ProjectionEvent");
+var AbstractMethodError_1 = require("../errors/AbstractMethodError");
 var ProjectionBase = (function (_super) {
     __extends(ProjectionBase, _super);
     function ProjectionBase(coordinateSystem) {
@@ -13719,7 +13728,24 @@ var ProjectionBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProjectionBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","awayjs-core/lib/geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle"}],"awayjs-core/lib/ui/Keyboard":[function(require,module,exports){
+},{"../errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/ProjectionEvent":"awayjs-core/lib/events/ProjectionEvent","../geom/Matrix3D":"awayjs-core/lib/geom/Matrix3D","../geom/Rectangle":"awayjs-core/lib/geom/Rectangle"}],"awayjs-core/lib/projections":[function(require,module,exports){
+"use strict";
+var CoordinateSystem_1 = require("./projections/CoordinateSystem");
+exports.CoordinateSystem = CoordinateSystem_1.default;
+var FreeMatrixProjection_1 = require("./projections/FreeMatrixProjection");
+exports.FreeMatrixProjection = FreeMatrixProjection_1.default;
+var ObliqueNearPlaneProjection_1 = require("./projections/ObliqueNearPlaneProjection");
+exports.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection_1.default;
+var OrthographicOffCenterProjection_1 = require("./projections/OrthographicOffCenterProjection");
+exports.OrthographicOffCenterProjection = OrthographicOffCenterProjection_1.default;
+var OrthographicProjection_1 = require("./projections/OrthographicProjection");
+exports.OrthographicProjection = OrthographicProjection_1.default;
+var PerspectiveProjection_1 = require("./projections/PerspectiveProjection");
+exports.PerspectiveProjection = PerspectiveProjection_1.default;
+var ProjectionBase_1 = require("./projections/ProjectionBase");
+exports.ProjectionBase = ProjectionBase_1.default;
+
+},{"./projections/CoordinateSystem":"awayjs-core/lib/projections/CoordinateSystem","./projections/FreeMatrixProjection":"awayjs-core/lib/projections/FreeMatrixProjection","./projections/ObliqueNearPlaneProjection":"awayjs-core/lib/projections/ObliqueNearPlaneProjection","./projections/OrthographicOffCenterProjection":"awayjs-core/lib/projections/OrthographicOffCenterProjection","./projections/OrthographicProjection":"awayjs-core/lib/projections/OrthographicProjection","./projections/PerspectiveProjection":"awayjs-core/lib/projections/PerspectiveProjection","./projections/ProjectionBase":"awayjs-core/lib/projections/ProjectionBase"}],"awayjs-core/lib/ui/Keyboard":[function(require,module,exports){
 "use strict";
 var Keyboard = (function () {
     function Keyboard() {
@@ -14542,9 +14568,14 @@ var Keyboard = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Keyboard;
 
-},{}],"awayjs-core/lib/utils/BitmapImageUtils":[function(require,module,exports){
+},{}],"awayjs-core/lib/ui":[function(require,module,exports){
 "use strict";
-var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
+var Keyboard_1 = require("./ui/Keyboard");
+exports.Keyboard = Keyboard_1.default;
+
+},{"./ui/Keyboard":"awayjs-core/lib/ui/Keyboard"}],"awayjs-core/lib/utils/BitmapImageUtils":[function(require,module,exports){
+"use strict";
+var ColorUtils_1 = require("../utils/ColorUtils");
 var BitmapImageUtils = (function () {
     function BitmapImageUtils() {
     }
@@ -14579,9 +14610,9 @@ var BitmapImageUtils = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BitmapImageUtils;
 
-},{"awayjs-core/lib/utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/utils/ByteArrayBase":[function(require,module,exports){
+},{"../utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils"}],"awayjs-core/lib/utils/ByteArrayBase":[function(require,module,exports){
 "use strict";
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
+var AbstractMethodError_1 = require("../errors/AbstractMethodError");
 var ByteArrayBase = (function () {
     function ByteArrayBase() {
         this.position = 0;
@@ -14723,14 +14754,14 @@ var ByteArrayBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ByteArrayBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError"}],"awayjs-core/lib/utils/ByteArrayBuffer":[function(require,module,exports){
+},{"../errors/AbstractMethodError":"awayjs-core/lib/errors/AbstractMethodError"}],"awayjs-core/lib/utils/ByteArrayBuffer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ByteArrayBase_1 = require("awayjs-core/lib/utils/ByteArrayBase");
+var ByteArrayBase_1 = require("../utils/ByteArrayBase");
 var ByteArrayBuffer = (function (_super) {
     __extends(ByteArrayBuffer, _super);
     function ByteArrayBuffer() {
@@ -14845,14 +14876,14 @@ var ByteArrayBuffer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ByteArrayBuffer;
 
-},{"awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase"}],"awayjs-core/lib/utils/ByteArray":[function(require,module,exports){
+},{"../utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase"}],"awayjs-core/lib/utils/ByteArray":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ByteArrayBase_1 = require("awayjs-core/lib/utils/ByteArrayBase");
+var ByteArrayBase_1 = require("../utils/ByteArrayBase");
 var ByteArray = (function (_super) {
     __extends(ByteArray, _super);
     function ByteArray(maxlength) {
@@ -15083,7 +15114,7 @@ var ByteArray = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ByteArray;
 
-},{"awayjs-core/lib/utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase"}],"awayjs-core/lib/utils/CSS":[function(require,module,exports){
+},{"../utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase"}],"awayjs-core/lib/utils/CSS":[function(require,module,exports){
 "use strict";
 var CSS = (function () {
     function CSS() {
@@ -15195,7 +15226,7 @@ exports.default = ColorUtils;
 
 },{}],"awayjs-core/lib/utils/Debug":[function(require,module,exports){
 "use strict";
-var PartialImplementationError_1 = require("awayjs-core/lib/errors/PartialImplementationError");
+var PartialImplementationError_1 = require("../errors/PartialImplementationError");
 /**
  *
  */
@@ -15245,7 +15276,7 @@ var Debug = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Debug;
 
-},{"awayjs-core/lib/errors/PartialImplementationError":"awayjs-core/lib/errors/PartialImplementationError"}],"awayjs-core/lib/utils/Extensions":[function(require,module,exports){
+},{"../errors/PartialImplementationError":"awayjs-core/lib/errors/PartialImplementationError"}],"awayjs-core/lib/utils/Extensions":[function(require,module,exports){
 "use strict";
 /**
  *
@@ -15300,9 +15331,9 @@ exports.default = ImageUtils;
 
 },{}],"awayjs-core/lib/utils/MipmapGenerator":[function(require,module,exports){
 "use strict";
-var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
-var Matrix_1 = require("awayjs-core/lib/geom/Matrix");
-var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
+var BitmapImage2D_1 = require("../image/BitmapImage2D");
+var Matrix_1 = require("../geom/Matrix");
+var Rectangle_1 = require("../geom/Rectangle");
 var MipmapGenerator = (function () {
     function MipmapGenerator() {
     }
@@ -15534,9 +15565,9 @@ var BoxFilter = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MipmapGenerator;
 
-},{"awayjs-core/lib/geom/Matrix":"awayjs-core/lib/geom/Matrix","awayjs-core/lib/geom/Rectangle":"awayjs-core/lib/geom/Rectangle","awayjs-core/lib/image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D"}],"awayjs-core/lib/utils/RequestAnimationFrame":[function(require,module,exports){
+},{"../geom/Matrix":"awayjs-core/lib/geom/Matrix","../geom/Rectangle":"awayjs-core/lib/geom/Rectangle","../image/BitmapImage2D":"awayjs-core/lib/image/BitmapImage2D"}],"awayjs-core/lib/utils/RequestAnimationFrame":[function(require,module,exports){
 "use strict";
-var getTimer_1 = require("awayjs-core/lib/utils/getTimer");
+var getTimer_1 = require("../utils/getTimer");
 var RequestAnimationFrame = (function () {
     function RequestAnimationFrame(callback, callbackContext) {
         var _this = this;
@@ -15616,16 +15647,16 @@ var RequestAnimationFrame = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RequestAnimationFrame;
 
-},{"awayjs-core/lib/utils/getTimer":"awayjs-core/lib/utils/getTimer"}],"awayjs-core/lib/utils/Timer":[function(require,module,exports){
+},{"../utils/getTimer":"awayjs-core/lib/utils/getTimer"}],"awayjs-core/lib/utils/Timer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
-var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var TimerEvent_1 = require("awayjs-core/lib/events/TimerEvent");
+var ErrorBase_1 = require("../errors/ErrorBase");
+var EventDispatcher_1 = require("../events/EventDispatcher");
+var TimerEvent_1 = require("../events/TimerEvent");
 var Timer = (function (_super) {
     __extends(Timer, _super);
     function Timer(delay, repeatCount) {
@@ -15708,7 +15739,7 @@ var Timer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Timer;
 
-},{"awayjs-core/lib/errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","awayjs-core/lib/events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","awayjs-core/lib/events/TimerEvent":"awayjs-core/lib/events/TimerEvent"}],"awayjs-core/lib/utils/XmlUtils":[function(require,module,exports){
+},{"../errors/ErrorBase":"awayjs-core/lib/errors/ErrorBase","../events/EventDispatcher":"awayjs-core/lib/events/EventDispatcher","../events/TimerEvent":"awayjs-core/lib/events/TimerEvent"}],"awayjs-core/lib/utils/XmlUtils":[function(require,module,exports){
 "use strict";
 var XmlUtils = (function () {
     function XmlUtils() {
@@ -15803,47 +15834,44 @@ function getTimer() {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = getTimer;
 
-},{}]},{},[1])
+},{}],"awayjs-core/lib/utils":[function(require,module,exports){
+"use strict";
+var BitmapImageUtils_1 = require("./utils/BitmapImageUtils");
+exports.BitmapImageUtils = BitmapImageUtils_1.default;
+var ByteArray_1 = require("./utils/ByteArray");
+exports.ByteArray = ByteArray_1.default;
+var ByteArrayBase_1 = require("./utils/ByteArrayBase");
+exports.ByteArrayBase = ByteArrayBase_1.default;
+var ByteArrayBuffer_1 = require("./utils/ByteArrayBuffer");
+exports.ByteArrayBuffer = ByteArrayBuffer_1.default;
+var ColorUtils_1 = require("./utils/ColorUtils");
+exports.ColorUtils = ColorUtils_1.default;
+var CSS_1 = require("./utils/CSS");
+exports.CSS = CSS_1.default;
+var Debug_1 = require("./utils/Debug");
+exports.Debug = Debug_1.default;
+var Extensions_1 = require("./utils/Extensions");
+exports.Extensions = Extensions_1.default;
+var getTimer_1 = require("./utils/getTimer");
+exports.getTimer = getTimer_1.default;
+var ImageUtils_1 = require("./utils/ImageUtils");
+exports.ImageUtils = ImageUtils_1.default;
+var MipmapGenerator_1 = require("./utils/MipmapGenerator");
+exports.MipmapGenerator = MipmapGenerator_1.default;
+var RequestAnimationFrame_1 = require("./utils/RequestAnimationFrame");
+exports.RequestAnimationFrame = RequestAnimationFrame_1.default;
+var Timer_1 = require("./utils/Timer");
+exports.Timer = Timer_1.default;
+var XmlUtils_1 = require("./utils/XmlUtils");
+exports.XmlUtils = XmlUtils_1.default;
+
+},{"./utils/BitmapImageUtils":"awayjs-core/lib/utils/BitmapImageUtils","./utils/ByteArray":"awayjs-core/lib/utils/ByteArray","./utils/ByteArrayBase":"awayjs-core/lib/utils/ByteArrayBase","./utils/ByteArrayBuffer":"awayjs-core/lib/utils/ByteArrayBuffer","./utils/CSS":"awayjs-core/lib/utils/CSS","./utils/ColorUtils":"awayjs-core/lib/utils/ColorUtils","./utils/Debug":"awayjs-core/lib/utils/Debug","./utils/Extensions":"awayjs-core/lib/utils/Extensions","./utils/ImageUtils":"awayjs-core/lib/utils/ImageUtils","./utils/MipmapGenerator":"awayjs-core/lib/utils/MipmapGenerator","./utils/RequestAnimationFrame":"awayjs-core/lib/utils/RequestAnimationFrame","./utils/Timer":"awayjs-core/lib/utils/Timer","./utils/XmlUtils":"awayjs-core/lib/utils/XmlUtils","./utils/getTimer":"awayjs-core/lib/utils/getTimer"}]},{},[1])
 //# sourceMappingURL=awayjs-core.js.map
 
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-display/lib/IRenderer":[function(require,module,exports){
 "use strict";
-var Camera_1 = require("awayjs-display/lib/display/Camera");
-var DirectionalLight_1 = require("awayjs-display/lib/display/DirectionalLight");
-var Sprite_1 = require("awayjs-display/lib/display/Sprite");
-var Billboard_1 = require("awayjs-display/lib/display/Billboard");
-var LineSegment_1 = require("awayjs-display/lib/display/LineSegment");
-var TextField_1 = require("awayjs-display/lib/display/TextField");
-var PointLight_1 = require("awayjs-display/lib/display/PointLight");
-var LightProbe_1 = require("awayjs-display/lib/display/LightProbe");
-var Skybox_1 = require("awayjs-display/lib/display/Skybox");
-var Shape_1 = require("awayjs-display/lib/display/Shape");
-var MovieClip_1 = require("awayjs-display/lib/display/MovieClip");
-var CameraNode_1 = require("awayjs-display/lib/partition/CameraNode");
-var DirectionalLightNode_1 = require("awayjs-display/lib/partition/DirectionalLightNode");
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
-var LightProbeNode_1 = require("awayjs-display/lib/partition/LightProbeNode");
-var PartitionBase_1 = require("awayjs-display/lib/partition/PartitionBase");
-var PointLightNode_1 = require("awayjs-display/lib/partition/PointLightNode");
-var SkyboxNode_1 = require("awayjs-display/lib/partition/SkyboxNode");
-PartitionBase_1.default.registerAbstraction(CameraNode_1.default, Camera_1.default);
-PartitionBase_1.default.registerAbstraction(DirectionalLightNode_1.default, DirectionalLight_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, Sprite_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, Shape_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, MovieClip_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, Billboard_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, LineSegment_1.default);
-PartitionBase_1.default.registerAbstraction(EntityNode_1.default, TextField_1.default);
-PartitionBase_1.default.registerAbstraction(LightProbeNode_1.default, LightProbe_1.default);
-PartitionBase_1.default.registerAbstraction(PointLightNode_1.default, PointLight_1.default);
-PartitionBase_1.default.registerAbstraction(SkyboxNode_1.default, Skybox_1.default);
-
-},{"awayjs-display/lib/display/Billboard":"awayjs-display/lib/display/Billboard","awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","awayjs-display/lib/display/LightProbe":"awayjs-display/lib/display/LightProbe","awayjs-display/lib/display/LineSegment":"awayjs-display/lib/display/LineSegment","awayjs-display/lib/display/MovieClip":"awayjs-display/lib/display/MovieClip","awayjs-display/lib/display/PointLight":"awayjs-display/lib/display/PointLight","awayjs-display/lib/display/Shape":"awayjs-display/lib/display/Shape","awayjs-display/lib/display/Skybox":"awayjs-display/lib/display/Skybox","awayjs-display/lib/display/Sprite":"awayjs-display/lib/display/Sprite","awayjs-display/lib/display/TextField":"awayjs-display/lib/display/TextField","awayjs-display/lib/partition/CameraNode":"awayjs-display/lib/partition/CameraNode","awayjs-display/lib/partition/DirectionalLightNode":"awayjs-display/lib/partition/DirectionalLightNode","awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode","awayjs-display/lib/partition/LightProbeNode":"awayjs-display/lib/partition/LightProbeNode","awayjs-display/lib/partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","awayjs-display/lib/partition/PointLightNode":"awayjs-display/lib/partition/PointLightNode","awayjs-display/lib/partition/SkyboxNode":"awayjs-display/lib/partition/SkyboxNode"}],"awayjs-display/lib/IRenderer":[function(require,module,exports){
-"use strict";
-
 },{}],"awayjs-display/lib/ITraverser":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/View":[function(require,module,exports){
 "use strict";
 var getTimer_1 = require("awayjs-core/lib/utils/getTimer");
@@ -16336,19 +16364,16 @@ var View = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = View;
-
 },{"./base/TouchPoint":"awayjs-display/lib/base/TouchPoint","./display/Camera":"awayjs-display/lib/display/Camera","./display/Scene":"awayjs-display/lib/display/Scene","./events/CameraEvent":"awayjs-display/lib/events/CameraEvent","./events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","./events/RendererEvent":"awayjs-display/lib/events/RendererEvent","./managers/MouseManager":"awayjs-display/lib/managers/MouseManager","./pick/RaycastPicker":"awayjs-display/lib/pick/RaycastPicker","awayjs-core/lib/utils/getTimer":undefined}],"awayjs-display/lib/adapters/IDisplayObjectAdapter":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/adapters/IMovieClipAdapter":[function(require,module,exports){
 "use strict";
-
+},{}],"awayjs-display/lib/adapters":[function(require,module,exports){
+"use strict";
 },{}],"awayjs-display/lib/animators/IAnimationSet":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/animators/IAnimator":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/animators/data/ParticleData":[function(require,module,exports){
 "use strict";
 var ParticleData = (function () {
@@ -16358,7 +16383,6 @@ var ParticleData = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleData;
-
 },{}],"awayjs-display/lib/animators/nodes/AnimationNodeBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -16405,8 +16429,13 @@ var AnimationNodeBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationNodeBase;
-
-},{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/base/AlignmentMode":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/animators":[function(require,module,exports){
+"use strict";
+var ParticleData_1 = require("./animators/data/ParticleData");
+exports.ParticleData = ParticleData_1.default;
+var AnimationNodeBase_1 = require("./animators/nodes/AnimationNodeBase");
+exports.AnimationNodeBase = AnimationNodeBase_1.default;
+},{"./animators/data/ParticleData":"awayjs-display/lib/animators/data/ParticleData","./animators/nodes/AnimationNodeBase":"awayjs-display/lib/animators/nodes/AnimationNodeBase"}],"awayjs-display/lib/base/AlignmentMode":[function(require,module,exports){
 "use strict";
 /**
  *
@@ -16426,7 +16455,6 @@ var AlignmentMode = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AlignmentMode;
-
 },{}],"awayjs-display/lib/base/HierarchicalProperties":[function(require,module,exports){
 "use strict";
 /**
@@ -16467,16 +16495,12 @@ var HierarchicalProperties = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HierarchicalProperties;
-
 },{}],"awayjs-display/lib/base/IBitmapDrawable":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/base/IRenderable":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/base/ISurface":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/base/OrientationMode":[function(require,module,exports){
 "use strict";
 var OrientationMode = (function () {
@@ -16498,7 +16522,6 @@ var OrientationMode = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = OrientationMode;
-
 },{}],"awayjs-display/lib/base/Style":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -16507,7 +16530,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  *
  */
@@ -16616,12 +16639,11 @@ var Style = (function (_super) {
 }(EventDispatcher_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Style;
-
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/base/Timeline":[function(require,module,exports){
+},{"../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-core/lib/events/EventDispatcher":undefined}],"awayjs-display/lib/base/Timeline":[function(require,module,exports){
 "use strict";
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
 var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
-var FrameScriptManager_1 = require("awayjs-display/lib/managers/FrameScriptManager");
+var FrameScriptManager_1 = require("../managers/FrameScriptManager");
 var Timeline = (function () {
     function Timeline() {
         this._functions = [];
@@ -16988,8 +17010,7 @@ var Timeline = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Timeline;
-
-},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/base/TouchPoint":[function(require,module,exports){
+},{"../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager","awayjs-core/lib/geom/ColorTransform":undefined}],"awayjs-display/lib/base/TouchPoint":[function(require,module,exports){
 "use strict";
 /**
  *
@@ -17004,7 +17025,6 @@ var TouchPoint = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TouchPoint;
-
 },{}],"awayjs-display/lib/base/Transform":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -17016,7 +17036,7 @@ var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var TransformEvent_1 = require("awayjs-display/lib/events/TransformEvent");
+var TransformEvent_1 = require("../events/TransformEvent");
 /**
  * The Transform class provides access to color adjustment properties and two-
  * or three-dimensional transformation objects that can be applied to a
@@ -17520,8 +17540,23 @@ var Transform = (function (_super) {
 }(EventDispatcher_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Transform;
-
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent"}],"awayjs-display/lib/bounds/AxisAlignedBoundingBox":[function(require,module,exports){
+},{"../events/TransformEvent":"awayjs-display/lib/events/TransformEvent","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/base":[function(require,module,exports){
+"use strict";
+var AlignmentMode_1 = require("./base/AlignmentMode");
+exports.AlignmentMode = AlignmentMode_1.default;
+var HierarchicalProperties_1 = require("./base/HierarchicalProperties");
+exports.HierarchicalProperties = HierarchicalProperties_1.default;
+var OrientationMode_1 = require("./base/OrientationMode");
+exports.OrientationMode = OrientationMode_1.default;
+var Style_1 = require("./base/Style");
+exports.Style = Style_1.default;
+var Timeline_1 = require("./base/Timeline");
+exports.Timeline = Timeline_1.default;
+var TouchPoint_1 = require("./base/TouchPoint");
+exports.TouchPoint = TouchPoint_1.default;
+var Transform_1 = require("./base/Transform");
+exports.Transform = Transform_1.default;
+},{"./base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","./base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","./base/OrientationMode":"awayjs-display/lib/base/OrientationMode","./base/Style":"awayjs-display/lib/base/Style","./base/Timeline":"awayjs-display/lib/base/Timeline","./base/TouchPoint":"awayjs-display/lib/base/TouchPoint","./base/Transform":"awayjs-display/lib/base/Transform"}],"awayjs-display/lib/bounds/AxisAlignedBoundingBox":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -17529,9 +17564,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var PlaneClassification_1 = require("awayjs-core/lib/geom/PlaneClassification");
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var BoundingVolumeBase_1 = require("awayjs-display/lib/bounds/BoundingVolumeBase");
-var PrimitiveCubePrefab_1 = require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
+var ElementsType_1 = require("../graphics/ElementsType");
+var BoundingVolumeBase_1 = require("../bounds/BoundingVolumeBase");
+var PrimitiveCubePrefab_1 = require("../prefabs/PrimitiveCubePrefab");
 /**
  * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
  * This is useful for most sprites.
@@ -17645,8 +17680,7 @@ var AxisAlignedBoundingBox = (function (_super) {
 }(BoundingVolumeBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AxisAlignedBoundingBox;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab"}],"awayjs-display/lib/bounds/BoundingSphere":[function(require,module,exports){
+},{"../bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","awayjs-core/lib/geom/PlaneClassification":undefined}],"awayjs-display/lib/bounds/BoundingSphere":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -17654,9 +17688,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var PlaneClassification_1 = require("awayjs-core/lib/geom/PlaneClassification");
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var BoundingVolumeBase_1 = require("awayjs-display/lib/bounds/BoundingVolumeBase");
-var PrimitiveSpherePrefab_1 = require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
+var ElementsType_1 = require("../graphics/ElementsType");
+var BoundingVolumeBase_1 = require("../bounds/BoundingVolumeBase");
+var PrimitiveSpherePrefab_1 = require("../prefabs/PrimitiveSpherePrefab");
 var BoundingSphere = (function (_super) {
     __extends(BoundingSphere, _super);
     function BoundingSphere(entity) {
@@ -17740,8 +17774,7 @@ var BoundingSphere = (function (_super) {
 }(BoundingVolumeBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BoundingSphere;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab"}],"awayjs-display/lib/bounds/BoundingVolumeBase":[function(require,module,exports){
+},{"../bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","awayjs-core/lib/geom/PlaneClassification":undefined}],"awayjs-display/lib/bounds/BoundingVolumeBase":[function(require,module,exports){
 "use strict";
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var BoundingVolumeBase = (function () {
@@ -17794,7 +17827,6 @@ var BoundingVolumeBase = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BoundingVolumeBase;
-
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/bounds/BoundsType":[function(require,module,exports){
 "use strict";
 /**
@@ -17819,7 +17851,6 @@ var BoundsType = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BoundsType;
-
 },{}],"awayjs-display/lib/bounds/NullBounds":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -17828,7 +17859,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var PlaneClassification_1 = require("awayjs-core/lib/geom/PlaneClassification");
-var BoundingVolumeBase_1 = require("awayjs-display/lib/bounds/BoundingVolumeBase");
+var BoundingVolumeBase_1 = require("../bounds/BoundingVolumeBase");
 var NullBounds = (function (_super) {
     __extends(NullBounds, _super);
     function NullBounds(alwaysIn) {
@@ -17851,8 +17882,19 @@ var NullBounds = (function (_super) {
 }(BoundingVolumeBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NullBounds;
-
-},{"awayjs-core/lib/geom/PlaneClassification":undefined,"awayjs-display/lib/bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase"}],"awayjs-display/lib/controllers/ControllerBase":[function(require,module,exports){
+},{"../bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","awayjs-core/lib/geom/PlaneClassification":undefined}],"awayjs-display/lib/bounds":[function(require,module,exports){
+"use strict";
+var AxisAlignedBoundingBox_1 = require("./bounds/AxisAlignedBoundingBox");
+exports.AxisAlignedBoundingBox = AxisAlignedBoundingBox_1.default;
+var BoundingSphere_1 = require("./bounds/BoundingSphere");
+exports.BoundingSphere = BoundingSphere_1.default;
+var BoundingVolumeBase_1 = require("./bounds/BoundingVolumeBase");
+exports.BoundingVolumeBase = BoundingVolumeBase_1.default;
+var BoundsType_1 = require("./bounds/BoundsType");
+exports.BoundsType = BoundsType_1.default;
+var NullBounds_1 = require("./bounds/NullBounds");
+exports.NullBounds = NullBounds_1.default;
+},{"./bounds/AxisAlignedBoundingBox":"awayjs-display/lib/bounds/AxisAlignedBoundingBox","./bounds/BoundingSphere":"awayjs-display/lib/bounds/BoundingSphere","./bounds/BoundingVolumeBase":"awayjs-display/lib/bounds/BoundingVolumeBase","./bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","./bounds/NullBounds":"awayjs-display/lib/bounds/NullBounds"}],"awayjs-display/lib/controllers/ControllerBase":[function(require,module,exports){
 "use strict";
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var ControllerBase = (function () {
@@ -17914,7 +17956,6 @@ var ControllerBase = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ControllerBase;
-
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/controllers/FirstPersonController":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -17923,7 +17964,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
-var ControllerBase_1 = require("awayjs-display/lib/controllers/ControllerBase");
+var ControllerBase_1 = require("../controllers/ControllerBase");
 /**
  * Extended camera used to hover round a specified target object.
  *
@@ -18147,15 +18188,14 @@ var FirstPersonController = (function (_super) {
 }(ControllerBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FirstPersonController;
-
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase"}],"awayjs-display/lib/controllers/FollowController":[function(require,module,exports){
+},{"../controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","awayjs-core/lib/geom/MathConsts":undefined}],"awayjs-display/lib/controllers/FollowController":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var HoverController_1 = require("awayjs-display/lib/controllers/HoverController");
+var HoverController_1 = require("../controllers/HoverController");
 /**
  * Controller used to follow behind an object on the XZ plane, with an optional
  * elevation (tiltAngle).
@@ -18182,8 +18222,7 @@ var FollowController = (function (_super) {
 }(HoverController_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FollowController;
-
-},{"awayjs-display/lib/controllers/HoverController":"awayjs-display/lib/controllers/HoverController"}],"awayjs-display/lib/controllers/HoverController":[function(require,module,exports){
+},{"../controllers/HoverController":"awayjs-display/lib/controllers/HoverController"}],"awayjs-display/lib/controllers/HoverController":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18192,7 +18231,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var LookAtController_1 = require("awayjs-display/lib/controllers/LookAtController");
+var LookAtController_1 = require("../controllers/LookAtController");
 /**
  * Extended camera used to hover round a specified target object.
  *
@@ -18483,8 +18522,7 @@ var HoverController = (function (_super) {
 }(LookAtController_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HoverController;
-
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/controllers/LookAtController":[function(require,module,exports){
+},{"../controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/controllers/LookAtController":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18492,8 +18530,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ControllerBase_1 = require("awayjs-display/lib/controllers/ControllerBase");
-var DisplayObjectEvent_1 = require("awayjs-display/lib/events/DisplayObjectEvent");
+var ControllerBase_1 = require("../controllers/ControllerBase");
+var DisplayObjectEvent_1 = require("../events/DisplayObjectEvent");
 var LookAtController = (function (_super) {
     __extends(LookAtController, _super);
     function LookAtController(targetObject, lookAtObject) {
@@ -18559,8 +18597,7 @@ var LookAtController = (function (_super) {
 }(ControllerBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LookAtController;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent"}],"awayjs-display/lib/controllers/SpringController":[function(require,module,exports){
+},{"../controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","../events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/controllers/SpringController":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18568,7 +18605,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var LookAtController_1 = require("awayjs-display/lib/controllers/LookAtController");
+var LookAtController_1 = require("../controllers/LookAtController");
 /**
  * Uses spring physics to animate the target object towards a position that is
  * defined as the lookAtTarget object's position plus the vector defined by the
@@ -18617,15 +18654,29 @@ var SpringController = (function (_super) {
         this._acceleration.copyFrom(this._force);
         this._acceleration.scaleBy(1 / this.mass);
         this._velocity.incrementBy(this._acceleration);
-        this._pTargetObject.transform.position = this._pTargetObject.transform.position.add(this._velocity);
+        var position = this._pTargetObject.transform.position.add(this._velocity);
+        this._pTargetObject.transform.moveTo(position.x, position.y, position.z);
         _super.prototype.update.call(this);
     };
     return SpringController;
 }(LookAtController_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpringController;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController"}],"awayjs-display/lib/display/Billboard":[function(require,module,exports){
+},{"../controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/controllers":[function(require,module,exports){
+"use strict";
+var ControllerBase_1 = require("./controllers/ControllerBase");
+exports.ControllerBase = ControllerBase_1.default;
+var FirstPersonController_1 = require("./controllers/FirstPersonController");
+exports.FirstPersonController = FirstPersonController_1.default;
+var FollowController_1 = require("./controllers/FollowController");
+exports.FollowController = FollowController_1.default;
+var HoverController_1 = require("./controllers/HoverController");
+exports.HoverController = HoverController_1.default;
+var LookAtController_1 = require("./controllers/LookAtController");
+exports.LookAtController = LookAtController_1.default;
+var SpringController_1 = require("./controllers/SpringController");
+exports.SpringController = SpringController_1.default;
+},{"./controllers/ControllerBase":"awayjs-display/lib/controllers/ControllerBase","./controllers/FirstPersonController":"awayjs-display/lib/controllers/FirstPersonController","./controllers/FollowController":"awayjs-display/lib/controllers/FollowController","./controllers/HoverController":"awayjs-display/lib/controllers/HoverController","./controllers/LookAtController":"awayjs-display/lib/controllers/LookAtController","./controllers/SpringController":"awayjs-display/lib/controllers/SpringController"}],"awayjs-display/lib/display/Billboard":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18633,12 +18684,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
-var DisplayObject_1 = require("awayjs-display/lib/display/DisplayObject");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableEvent_1 = require("awayjs-display/lib/events/RenderableEvent");
-var SurfaceEvent_1 = require("awayjs-display/lib/events/SurfaceEvent");
-var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var DisplayObject_1 = require("../display/DisplayObject");
+var BoundsType_1 = require("../bounds/BoundsType");
+var RenderableEvent_1 = require("../events/RenderableEvent");
+var SurfaceEvent_1 = require("../events/SurfaceEvent");
+var DefaultMaterialManager_1 = require("../managers/DefaultMaterialManager");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  * The Billboard class represents display objects that represent bitmap images.
  * These can be images that you load with the <code>flash.Assets</code> or
@@ -18849,8 +18900,7 @@ var Billboard = (function (_super) {
 }(DisplayObject_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Billboard;
-
-},{"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/display/Camera":[function(require,module,exports){
+},{"../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/DisplayObject":"awayjs-display/lib/display/DisplayObject","../events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","../events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","../managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-core/lib/geom/Rectangle":undefined}],"awayjs-display/lib/display/Camera":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18861,10 +18911,10 @@ var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Plane3D_1 = require("awayjs-core/lib/geom/Plane3D");
 var ProjectionEvent_1 = require("awayjs-core/lib/events/ProjectionEvent");
 var PerspectiveProjection_1 = require("awayjs-core/lib/projections/PerspectiveProjection");
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var DisplayObjectContainer_1 = require("awayjs-display/lib/display/DisplayObjectContainer");
-var CameraEvent_1 = require("awayjs-display/lib/events/CameraEvent");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
+var BoundsType_1 = require("../bounds/BoundsType");
+var DisplayObjectContainer_1 = require("../display/DisplayObjectContainer");
+var CameraEvent_1 = require("../events/CameraEvent");
 var Camera = (function (_super) {
     __extends(Camera, _super);
     function Camera(projection) {
@@ -19083,8 +19133,7 @@ var Camera = (function (_super) {
 }(DisplayObjectContainer_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Camera;
-
-},{"awayjs-core/lib/events/ProjectionEvent":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Plane3D":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/events/CameraEvent":"awayjs-display/lib/events/CameraEvent"}],"awayjs-display/lib/display/DirectionalLight":[function(require,module,exports){
+},{"../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","../events/CameraEvent":"awayjs-display/lib/events/CameraEvent","awayjs-core/lib/events/ProjectionEvent":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Plane3D":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined}],"awayjs-display/lib/display/DirectionalLight":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -19094,10 +19143,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var LightBase_1 = require("awayjs-display/lib/display/LightBase");
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var DirectionalShadowMapper_1 = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+var LightBase_1 = require("../display/LightBase");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
+var BoundsType_1 = require("../bounds/BoundsType");
+var DirectionalShadowMapper_1 = require("../materials/shadowmappers/DirectionalShadowMapper");
 var DirectionalLight = (function (_super) {
     __extends(DirectionalLight, _super);
     function DirectionalLight(xDir, yDir, zDir) {
@@ -19246,8 +19295,7 @@ var DirectionalLight = (function (_super) {
 }(LightBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DirectionalLight;
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/display/DisplayObjectContainer":[function(require,module,exports){
+},{"../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/LightBase":"awayjs-display/lib/display/LightBase","../materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/display/DisplayObjectContainer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -19256,8 +19304,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
 var RangeError_1 = require("awayjs-core/lib/errors/RangeError");
-var DisplayObject_1 = require("awayjs-display/lib/display/DisplayObject");
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
+var DisplayObject_1 = require("../display/DisplayObject");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
 /**
  * The DisplayObjectContainer class is the base class for all objects that can
  * serve as display object containers on the display list. The display list
@@ -19835,8 +19883,7 @@ var DisplayObjectContainer = (function (_super) {
 }(DisplayObject_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DisplayObjectContainer;
-
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/errors/RangeError":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject"}],"awayjs-display/lib/display/DisplayObject":[function(require,module,exports){
+},{"../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/errors/RangeError":undefined}],"awayjs-display/lib/display/DisplayObject":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -19852,14 +19899,14 @@ var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Point_1 = require("awayjs-core/lib/geom/Point");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var AlignmentMode_1 = require("awayjs-display/lib/base/AlignmentMode");
-var OrientationMode_1 = require("awayjs-display/lib/base/OrientationMode");
-var Transform_1 = require("awayjs-display/lib/base/Transform");
-var PickingCollision_1 = require("awayjs-display/lib/pick/PickingCollision");
-var DisplayObjectEvent_1 = require("awayjs-display/lib/events/DisplayObjectEvent");
-var TransformEvent_1 = require("awayjs-display/lib/events/TransformEvent");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
+var BoundsType_1 = require("../bounds/BoundsType");
+var AlignmentMode_1 = require("../base/AlignmentMode");
+var OrientationMode_1 = require("../base/OrientationMode");
+var Transform_1 = require("../base/Transform");
+var PickingCollision_1 = require("../pick/PickingCollision");
+var DisplayObjectEvent_1 = require("../events/DisplayObjectEvent");
+var TransformEvent_1 = require("../events/TransformEvent");
 /**
  * The DisplayObject class is the base class for all objects that can be
  * placed on the display list. The display list manages all objects displayed
@@ -21722,10 +21769,8 @@ var DisplayObject = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DisplayObject;
-
-},{"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/OrientationMode":"awayjs-display/lib/base/OrientationMode","awayjs-display/lib/base/Transform":"awayjs-display/lib/base/Transform","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-display/lib/events/TransformEvent":"awayjs-display/lib/events/TransformEvent","awayjs-display/lib/pick/PickingCollision":"awayjs-display/lib/pick/PickingCollision"}],"awayjs-display/lib/display/IEntity":[function(require,module,exports){
+},{"../base/AlignmentMode":"awayjs-display/lib/base/AlignmentMode","../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../base/OrientationMode":"awayjs-display/lib/base/OrientationMode","../base/Transform":"awayjs-display/lib/base/Transform","../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","../events/TransformEvent":"awayjs-display/lib/events/TransformEvent","../pick/PickingCollision":"awayjs-display/lib/pick/PickingCollision","awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/display/IEntity":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/display/LightBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -21734,8 +21779,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var DisplayObjectContainer_1 = require("awayjs-display/lib/display/DisplayObjectContainer");
-var LightEvent_1 = require("awayjs-display/lib/events/LightEvent");
+var DisplayObjectContainer_1 = require("../display/DisplayObjectContainer");
+var LightEvent_1 = require("../events/LightEvent");
 var LightBase = (function (_super) {
     __extends(LightBase, _super);
     function LightBase() {
@@ -21886,8 +21931,7 @@ var LightBase = (function (_super) {
 }(DisplayObjectContainer_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent"}],"awayjs-display/lib/display/LightProbe":[function(require,module,exports){
+},{"../display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","../events/LightEvent":"awayjs-display/lib/events/LightEvent","awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/display/LightProbe":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -21896,8 +21940,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var SamplerCube_1 = require("awayjs-core/lib/image/SamplerCube");
 var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
-var LightBase_1 = require("awayjs-display/lib/display/LightBase");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
+var LightBase_1 = require("../display/LightBase");
+var BoundsType_1 = require("../bounds/BoundsType");
 var LightProbe = (function (_super) {
     __extends(LightProbe, _super);
     function LightProbe(diffuseMap, specularMap) {
@@ -21928,18 +21972,17 @@ var LightProbe = (function (_super) {
 }(LightBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightProbe;
-
-},{"awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase"}],"awayjs-display/lib/display/LineSegment":[function(require,module,exports){
+},{"../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/LightBase":"awayjs-display/lib/display/LightBase","awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/image/SamplerCube":undefined}],"awayjs-display/lib/display/LineSegment":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DisplayObject_1 = require("awayjs-display/lib/display/DisplayObject");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableEvent_1 = require("awayjs-display/lib/events/RenderableEvent");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var DisplayObject_1 = require("../display/DisplayObject");
+var BoundsType_1 = require("../bounds/BoundsType");
+var RenderableEvent_1 = require("../events/RenderableEvent");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  * A Line Segment primitive.
  */
@@ -22129,8 +22172,7 @@ var LineSegment = (function (_super) {
 }(DisplayObject_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LineSegment;
-
-},{"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/display/LoaderContainer":[function(require,module,exports){
+},{"../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/DisplayObject":"awayjs-display/lib/display/DisplayObject","../events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/display/LoaderContainer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -22143,7 +22185,7 @@ var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var URLLoaderEvent_1 = require("awayjs-core/lib/events/URLLoaderEvent");
 var LoaderEvent_1 = require("awayjs-core/lib/events/LoaderEvent");
 var ParserEvent_1 = require("awayjs-core/lib/events/ParserEvent");
-var DisplayObjectContainer_1 = require("awayjs-display/lib/display/DisplayObjectContainer");
+var DisplayObjectContainer_1 = require("../display/DisplayObjectContainer");
 /**
  * The LoaderContainer class is used to load SWF files or image(JPG, PNG, or GIF)
  * files. Use the <code>load()</code> method to initiate loading. The loaded
@@ -22692,8 +22734,7 @@ var LoaderContainer = (function (_super) {
 }(DisplayObjectContainer_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LoaderContainer;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/library/AssetLibraryBundle":undefined,"awayjs-core/lib/library/Loader":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer"}],"awayjs-display/lib/display/MovieClip":[function(require,module,exports){
+},{"../display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/events/LoaderEvent":undefined,"awayjs-core/lib/events/ParserEvent":undefined,"awayjs-core/lib/events/URLLoaderEvent":undefined,"awayjs-core/lib/library/AssetLibraryBundle":undefined,"awayjs-core/lib/library/Loader":undefined}],"awayjs-display/lib/display/MovieClip":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -22701,11 +22742,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var Sprite_1 = require("awayjs-display/lib/display/Sprite");
-var TextField_1 = require("awayjs-display/lib/display/TextField");
-var MouseEvent_1 = require("awayjs-display/lib/events/MouseEvent");
-var Timeline_1 = require("awayjs-display/lib/base/Timeline");
-var FrameScriptManager_1 = require("awayjs-display/lib/managers/FrameScriptManager");
+var Sprite_1 = require("../display/Sprite");
+var TextField_1 = require("../display/TextField");
+var MouseEvent_1 = require("../events/MouseEvent");
+var Timeline_1 = require("../base/Timeline");
+var FrameScriptManager_1 = require("../managers/FrameScriptManager");
 var MovieClip = (function (_super) {
     __extends(MovieClip, _super);
     function MovieClip(timeline) {
@@ -23023,8 +23064,7 @@ var MovieClip = (function (_super) {
 }(Sprite_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MovieClip;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/base/Timeline":"awayjs-display/lib/base/Timeline","awayjs-display/lib/display/Sprite":"awayjs-display/lib/display/Sprite","awayjs-display/lib/display/TextField":"awayjs-display/lib/display/TextField","awayjs-display/lib/events/MouseEvent":"awayjs-display/lib/events/MouseEvent","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/display/PointLight":[function(require,module,exports){
+},{"../base/Timeline":"awayjs-display/lib/base/Timeline","../display/Sprite":"awayjs-display/lib/display/Sprite","../display/TextField":"awayjs-display/lib/display/TextField","../events/MouseEvent":"awayjs-display/lib/events/MouseEvent","../managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-display/lib/display/PointLight":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23034,9 +23074,9 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var LightBase_1 = require("awayjs-display/lib/display/LightBase");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var CubeMapShadowMapper_1 = require("awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper");
+var LightBase_1 = require("../display/LightBase");
+var BoundsType_1 = require("../bounds/BoundsType");
+var CubeMapShadowMapper_1 = require("../materials/shadowmappers/CubeMapShadowMapper");
 var PointLight = (function (_super) {
     __extends(PointLight, _super);
     function PointLight() {
@@ -23136,16 +23176,15 @@ var PointLight = (function (_super) {
 }(LightBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PointLight;
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/LightBase":"awayjs-display/lib/display/LightBase","awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper"}],"awayjs-display/lib/display/Scene":[function(require,module,exports){
+},{"../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/LightBase":"awayjs-display/lib/display/LightBase","../materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/display/Scene":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DisplayObjectContainer_1 = require("awayjs-display/lib/display/DisplayObjectContainer");
-var BasicPartition_1 = require("awayjs-display/lib/partition/BasicPartition");
+var DisplayObjectContainer_1 = require("../display/DisplayObjectContainer");
+var BasicPartition_1 = require("../partition/BasicPartition");
 var Scene = (function (_super) {
     __extends(Scene, _super);
     function Scene(partition) {
@@ -23186,8 +23225,7 @@ var Scene = (function (_super) {
 }(DisplayObjectContainer_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Scene;
-
-},{"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/partition/BasicPartition":"awayjs-display/lib/partition/BasicPartition"}],"awayjs-display/lib/display/Shape":[function(require,module,exports){
+},{"../display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","../partition/BasicPartition":"awayjs-display/lib/partition/BasicPartition"}],"awayjs-display/lib/display/Shape":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23197,8 +23235,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var Point_1 = require("awayjs-core/lib/geom/Point");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var DisplayObject_1 = require("awayjs-display/lib/display/DisplayObject");
-var Graphics_1 = require("awayjs-display/lib/graphics/Graphics");
+var DisplayObject_1 = require("../display/DisplayObject");
+var Graphics_1 = require("../graphics/Graphics");
 /**
  * This class is used to create lightweight shapes using the ActionScript
  * drawing application program interface(API). The Shape class includes a
@@ -23413,8 +23451,7 @@ var Shape = (function (_super) {
 }(DisplayObject_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Shape;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics"}],"awayjs-display/lib/display/Skybox":[function(require,module,exports){
+},{"../display/DisplayObject":"awayjs-display/lib/display/DisplayObject","../graphics/Graphics":"awayjs-display/lib/graphics/Graphics","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/display/Skybox":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23423,13 +23460,13 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
-var DisplayObject_1 = require("awayjs-display/lib/display/DisplayObject");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var RenderableEvent_1 = require("awayjs-display/lib/events/RenderableEvent");
-var SurfaceEvent_1 = require("awayjs-display/lib/events/SurfaceEvent");
-var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
-var Style_1 = require("awayjs-display/lib/base/Style");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var DisplayObject_1 = require("../display/DisplayObject");
+var BoundsType_1 = require("../bounds/BoundsType");
+var RenderableEvent_1 = require("../events/RenderableEvent");
+var SurfaceEvent_1 = require("../events/SurfaceEvent");
+var SingleCubeTexture_1 = require("../textures/SingleCubeTexture");
+var Style_1 = require("../base/Style");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
  * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
@@ -23668,8 +23705,7 @@ var Skybox = (function (_super) {
 }(DisplayObject_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Skybox;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/display/DisplayObject":"awayjs-display/lib/display/DisplayObject","awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/display/Sprite":[function(require,module,exports){
+},{"../base/Style":"awayjs-display/lib/base/Style","../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../display/DisplayObject":"awayjs-display/lib/display/DisplayObject","../events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","../events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","../textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined}],"awayjs-display/lib/display/Sprite":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23679,8 +23715,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var Point_1 = require("awayjs-core/lib/geom/Point");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var Graphics_1 = require("awayjs-display/lib/graphics/Graphics");
-var DisplayObjectContainer_1 = require("awayjs-display/lib/display/DisplayObjectContainer");
+var Graphics_1 = require("../graphics/Graphics");
+var DisplayObjectContainer_1 = require("../display/DisplayObjectContainer");
 /**
  * Sprite is an instance of a Graphics, augmenting it with a presence in the scene graph, a material, and an animation
  * state. It consists out of Graphices, which in turn correspond to SubGeometries. Graphices allow different parts
@@ -23886,8 +23922,7 @@ var Sprite = (function (_super) {
 }(DisplayObjectContainer_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Sprite;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","awayjs-display/lib/graphics/Graphics":"awayjs-display/lib/graphics/Graphics"}],"awayjs-display/lib/display/TextField":[function(require,module,exports){
+},{"../display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","../graphics/Graphics":"awayjs-display/lib/graphics/Graphics","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/display/TextField":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23900,11 +23935,11 @@ var Byte4Attributes_1 = require("awayjs-core/lib/attributes/Byte4Attributes");
 var Matrix_1 = require("awayjs-core/lib/geom/Matrix");
 var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
 var Sampler2D_1 = require("awayjs-core/lib/image/Sampler2D");
-var HierarchicalProperties_1 = require("awayjs-display/lib/base/HierarchicalProperties");
-var Style_1 = require("awayjs-display/lib/base/Style");
-var TextFieldType_1 = require("awayjs-display/lib/text/TextFieldType");
-var Sprite_1 = require("awayjs-display/lib/display/Sprite");
-var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
+var HierarchicalProperties_1 = require("../base/HierarchicalProperties");
+var Style_1 = require("../base/Style");
+var TextFieldType_1 = require("../text/TextFieldType");
+var Sprite_1 = require("../display/Sprite");
+var TriangleElements_1 = require("../graphics/TriangleElements");
 /**
  * The TextField class is used to create display objects for text display and
  * input. <ph outputclass="flexonly">You can use the TextField class to
@@ -24774,8 +24809,41 @@ var TextField = (function (_super) {
 }(Sprite_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextField;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/display/Sprite":"awayjs-display/lib/display/Sprite","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/text/TextFieldType":"awayjs-display/lib/text/TextFieldType"}],"awayjs-display/lib/draw/CapsStyle":[function(require,module,exports){
+},{"../base/HierarchicalProperties":"awayjs-display/lib/base/HierarchicalProperties","../base/Style":"awayjs-display/lib/base/Style","../display/Sprite":"awayjs-display/lib/display/Sprite","../graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","../text/TextFieldType":"awayjs-display/lib/text/TextFieldType","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/image/Sampler2D":undefined}],"awayjs-display/lib/display":[function(require,module,exports){
+"use strict";
+var Billboard_1 = require("./display/Billboard");
+exports.Billboard = Billboard_1.default;
+var Camera_1 = require("./display/Camera");
+exports.Camera = Camera_1.default;
+var DirectionalLight_1 = require("./display/DirectionalLight");
+exports.DirectionalLight = DirectionalLight_1.default;
+var DisplayObject_1 = require("./display/DisplayObject");
+exports.DisplayObject = DisplayObject_1.default;
+var DisplayObjectContainer_1 = require("./display/DisplayObjectContainer");
+exports.DisplayObjectContainer = DisplayObjectContainer_1.default;
+var LightBase_1 = require("./display/LightBase");
+exports.LightBase = LightBase_1.default;
+var LightProbe_1 = require("./display/LightProbe");
+exports.LightProbe = LightProbe_1.default;
+var LineSegment_1 = require("./display/LineSegment");
+exports.LineSegment = LineSegment_1.default;
+var LoaderContainer_1 = require("./display/LoaderContainer");
+exports.LoaderContainer = LoaderContainer_1.default;
+var MovieClip_1 = require("./display/MovieClip");
+exports.MovieClip = MovieClip_1.default;
+var PointLight_1 = require("./display/PointLight");
+exports.PointLight = PointLight_1.default;
+var Scene_1 = require("./display/Scene");
+exports.Scene = Scene_1.default;
+var Shape_1 = require("./display/Shape");
+exports.Shape = Shape_1.default;
+var Skybox_1 = require("./display/Skybox");
+exports.Skybox = Skybox_1.default;
+var Sprite_1 = require("./display/Sprite");
+exports.Sprite = Sprite_1.default;
+var TextField_1 = require("./display/TextField");
+exports.TextField = TextField_1.default;
+},{"./display/Billboard":"awayjs-display/lib/display/Billboard","./display/Camera":"awayjs-display/lib/display/Camera","./display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","./display/DisplayObject":"awayjs-display/lib/display/DisplayObject","./display/DisplayObjectContainer":"awayjs-display/lib/display/DisplayObjectContainer","./display/LightBase":"awayjs-display/lib/display/LightBase","./display/LightProbe":"awayjs-display/lib/display/LightProbe","./display/LineSegment":"awayjs-display/lib/display/LineSegment","./display/LoaderContainer":"awayjs-display/lib/display/LoaderContainer","./display/MovieClip":"awayjs-display/lib/display/MovieClip","./display/PointLight":"awayjs-display/lib/display/PointLight","./display/Scene":"awayjs-display/lib/display/Scene","./display/Shape":"awayjs-display/lib/display/Shape","./display/Skybox":"awayjs-display/lib/display/Skybox","./display/Sprite":"awayjs-display/lib/display/Sprite","./display/TextField":"awayjs-display/lib/display/TextField"}],"awayjs-display/lib/draw/CapsStyle":[function(require,module,exports){
 "use strict";
 /**
  * The CapsStyle class is an enumeration of constant values that specify the
@@ -24791,22 +24859,21 @@ var CapsStyle = (function () {
      * Used to specify round caps in the <code>caps</code> parameter of the
      * <code>flash.display.Graphics.lineStyle()</code> method.
      */
-    CapsStyle.ROUND = "round";
+    CapsStyle.ROUND = 1;
     /**
      * Used to specify no caps in the <code>caps</code> parameter of the
      * <code>flash.display.Graphics.lineStyle()</code> method.
      */
-    CapsStyle.NONE = "none";
+    CapsStyle.NONE = 0;
     /**
      * Used to specify square caps in the <code>caps</code> parameter of the
      * <code>flash.display.Graphics.lineStyle()</code> method.
      */
-    CapsStyle.SQUARE = "square";
+    CapsStyle.SQUARE = 2;
     return CapsStyle;
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CapsStyle;
-
 },{}],"awayjs-display/lib/draw/GradientType":[function(require,module,exports){
 "use strict";
 /**
@@ -24830,12 +24897,991 @@ var GradientType = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GradientType;
+},{}],"awayjs-display/lib/draw/GraphicsFactoryFills":[function(require,module,exports){
+"use strict";
+var GraphicsPathCommand_1 = require("../draw/GraphicsPathCommand");
+var DefaultMaterialManager_1 = require("../managers/DefaultMaterialManager");
+var Point_1 = require("awayjs-core/lib/geom/Point");
+var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
+var Float2Attributes_1 = require("awayjs-core/lib/attributes/Float2Attributes");
+var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
+var GraphicsFactoryHelper_1 = require("../draw/GraphicsFactoryHelper");
+var TriangleElements_1 = require("../graphics/TriangleElements");
+/**
+ * The Graphics class contains a set of methods that you can use to create a
+ * vector shape. Display objects that support drawing include Sprite and Shape
+ * objects. Each of these classes includes a <code>graphics</code> property
+ * that is a Graphics object. The following are among those helper functions
+ * provided for ease of use: <code>drawRect()</code>,
+ * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+ * <code>drawEllipse()</code>.
+ *
+ * <p>You cannot create a Graphics object directly from ActionScript code. If
+ * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ *
+ * <p>The Graphics class is final; it cannot be subclassed.</p>
+ */
+var GraphicsFactoryFills = (function () {
+    function GraphicsFactoryFills() {
+    }
+    GraphicsFactoryFills.draw_pathes = function (targetGraphic) {
+        var len = targetGraphic.queued_fill_pathes.length;
+        var cp = 0;
+        for (cp = 0; cp < len; cp++) {
+            var one_path = targetGraphic.queued_fill_pathes[cp];
+            //one_path.finalizeContour();
+            var contour_commands = one_path.commands;
+            var contour_data = one_path.data;
+            var commands;
+            var data;
+            var i = 0;
+            var k = 0;
+            var vert_cnt = 0;
+            var data_cnt = 0;
+            var draw_direction = 0;
+            var contours_vertices = [[]];
+            var final_vert_list = [];
+            var final_vert_cnt = 0;
+            var lastPoint = new Point_1.default();
+            var last_dir_vec = new Point_1.default();
+            var end_point = new Point_1.default();
+            for (k = 0; k < contour_commands.length; k++) {
+                contours_vertices.push([]);
+                vert_cnt = 0;
+                data_cnt = 0;
+                commands = contour_commands[k];
+                data = contour_data[k];
+                draw_direction = 0;
+                var new_dir = 0;
+                var new_dir_1 = 0;
+                var new_dir_2 = 0;
+                var dir_delta = 0;
+                var last_direction = 0;
+                var tmp_dir_point = new Point_1.default();
+                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
+                    data[data.length] == data[0];
+                    data[data.length] == data[1];
+                }
+                lastPoint.x = data[0];
+                lastPoint.y = data[1];
+                if (commands[1] == GraphicsPathCommand_1.default.LINE_TO) {
+                    last_dir_vec.x = data[2] - lastPoint.x;
+                    last_dir_vec.y = data[3] - lastPoint.y;
+                }
+                else if (commands[1] == GraphicsPathCommand_1.default.CURVE_TO) {
+                    last_dir_vec.x = data[4] - lastPoint.x;
+                    last_dir_vec.y = data[5] - lastPoint.y;
+                }
+                data_cnt = 2;
+                last_dir_vec.normalize();
+                last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                for (i = 1; i < commands.length; i++) {
+                    end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+                    if (commands[i] == GraphicsPathCommand_1.default.MOVE_TO) {
+                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                    }
+                    else if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+                        end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+                    }
+                    //get the directional vector and the direction for this segment
+                    tmp_dir_point.x = end_point.x - lastPoint.x;
+                    tmp_dir_point.y = end_point.y - lastPoint.y;
+                    tmp_dir_point.normalize();
+                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                    // get the difference in angle to the last segment
+                    dir_delta = new_dir - last_direction;
+                    if (dir_delta > 180) {
+                        dir_delta -= 360;
+                    }
+                    if (dir_delta < -180) {
+                        dir_delta += 360;
+                    }
+                    draw_direction += dir_delta;
+                    last_direction = new_dir;
+                    lastPoint.x = end_point.x;
+                    lastPoint.y = end_point.y;
+                }
+                lastPoint.x = data[0];
+                lastPoint.y = data[1];
+                data_cnt = 2;
+                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+                console.log("Draw directions complete: " + draw_direction);
+                for (i = 1; i < commands.length; i++) {
+                    switch (commands[i]) {
+                        case GraphicsPathCommand_1.default.MOVE_TO:
+                            console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                            break;
+                        case GraphicsPathCommand_1.default.LINE_TO:
+                            lastPoint.x = data[data_cnt++];
+                            lastPoint.y = data[data_cnt++];
+                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+                            break;
+                        case GraphicsPathCommand_1.default.CURVE_TO:
+                            var control_x = data[data_cnt++];
+                            var control_y = data[data_cnt++];
+                            var end_x = data[data_cnt++];
+                            var end_y = data[data_cnt++];
+                            tmp_dir_point.x = control_x - lastPoint.x;
+                            tmp_dir_point.y = control_y - lastPoint.y;
+                            tmp_dir_point.normalize();
+                            new_dir_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                            tmp_dir_point.x = end_x - lastPoint.x;
+                            tmp_dir_point.y = end_y - lastPoint.y;
+                            tmp_dir_point.normalize();
+                            new_dir_2 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                            // get the difference in angle to the last segment
+                            var curve_direction = new_dir_2 - new_dir_1;
+                            if (curve_direction > 180) {
+                                curve_direction -= 360;
+                            }
+                            if (curve_direction < -180) {
+                                curve_direction += 360;
+                            }
+                            if ((curve_direction == 0) && (curve_direction == 180) && (curve_direction == -180)) {
+                                lastPoint.x = end_x;
+                                lastPoint.y = end_y;
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+                                break;
+                            }
+                            var curve_attr_1 = -1;
+                            if (draw_direction < 0) {
+                                if (curve_direction > 0) {
+                                    //convex
+                                    //console.log("convex");
+                                    curve_attr_1 = 1;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                                }
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+                            }
+                            else {
+                                if (curve_direction < 0) {
+                                    //convex
+                                    //console.log("convex");
+                                    curve_attr_1 = 1;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                                }
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+                            }
+                            if (GraphicsFactoryHelper_1.default.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
+                                final_vert_list[final_vert_cnt++] = end_x;
+                                final_vert_list[final_vert_cnt++] = end_y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = control_x;
+                                final_vert_list[final_vert_cnt++] = control_y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 0.5;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = lastPoint.x;
+                                final_vert_list[final_vert_cnt++] = lastPoint.y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                            }
+                            else {
+                                final_vert_list[final_vert_cnt++] = lastPoint.x;
+                                final_vert_list[final_vert_cnt++] = lastPoint.y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = control_x;
+                                final_vert_list[final_vert_cnt++] = control_y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 0.5;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = end_x;
+                                final_vert_list[final_vert_cnt++] = end_y;
+                                final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                                final_vert_list[final_vert_cnt++] = 1.0;
+                                final_vert_list[final_vert_cnt++] = 0.0;
+                            }
+                            lastPoint.x = end_x;
+                            lastPoint.y = end_y;
+                            break;
+                        case GraphicsPathCommand_1.default.CUBIC_CURVE:
+                            //todo
+                            break;
+                    }
+                }
+            }
+            var verts = [];
+            var all_verts = [];
+            var vertIndicess = [];
+            var elems = [];
+            for (k = 0; k < contours_vertices.length; k++) {
+                var vertices = contours_vertices[k];
+                for (i = 0; i < vertices.length / 2; ++i)
+                    console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
+                var verticesF32 = new Float32Array(vertices);
+                //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
+                //console.log("in vertices", vertices);
+                //var tess = new TESS();
+                if (GraphicsFactoryHelper_1.default._tess_obj == null) {
+                    console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
+                    return;
+                }
+                GraphicsFactoryHelper_1.default._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
+            }
+            GraphicsFactoryHelper_1.default._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
+            //console.log("out vertices", Graphics._tess_obj.getVertices());
+            verts = GraphicsFactoryHelper_1.default._tess_obj.getVertices();
+            elems = GraphicsFactoryHelper_1.default._tess_obj.getElements();
+            //console.log("out elements", Graphics._tess_obj.getElements());
+            var numVerts = verts.length / 2;
+            var numElems = elems.length / 3;
+            for (i = 0; i < numVerts; ++i)
+                all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
+            for (i = 0; i < numElems; ++i) {
+                var p1 = elems[i * 3];
+                var p2 = elems[i * 3 + 1];
+                var p3 = elems[i * 3 + 2];
+                final_vert_list[final_vert_cnt++] = all_verts[p3].x;
+                final_vert_list[final_vert_cnt++] = all_verts[p3].y;
+                final_vert_list[final_vert_cnt++] = 1;
+                final_vert_list[final_vert_cnt++] = 2.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+                final_vert_list[final_vert_cnt++] = 1.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+                final_vert_list[final_vert_cnt++] = all_verts[p2].x;
+                final_vert_list[final_vert_cnt++] = all_verts[p2].y;
+                final_vert_list[final_vert_cnt++] = 1;
+                final_vert_list[final_vert_cnt++] = 2.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+                final_vert_list[final_vert_cnt++] = 1.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+                final_vert_list[final_vert_cnt++] = all_verts[p1].x;
+                final_vert_list[final_vert_cnt++] = all_verts[p1].y;
+                final_vert_list[final_vert_cnt++] = 1;
+                final_vert_list[final_vert_cnt++] = 2.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+                final_vert_list[final_vert_cnt++] = 1.0;
+                final_vert_list[final_vert_cnt++] = 0.0;
+            }
+            //for (i = 0; i < final_vert_list.length/7; ++i)
+            //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
+            var attributesView = new AttributesView_1.default(Float32Array, 7);
+            attributesView.set(final_vert_list);
+            var attributesBuffer = attributesView.buffer;
+            attributesView.dispose();
+            var elements = new TriangleElements_1.default(attributesBuffer);
+            elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
+            elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
+            elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
+            var material = DefaultMaterialManager_1.default.getDefaultMaterial();
+            material.bothSides = true;
+            material.useColorTransform = true;
+            material.curves = true;
+            var thisGraphic = targetGraphic.addGraphic(elements, material);
+        }
+        targetGraphic.queued_fill_pathes.length = 0;
+    };
+    return GraphicsFactoryFills;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GraphicsFactoryFills;
+},{"../draw/GraphicsFactoryHelper":"awayjs-display/lib/draw/GraphicsFactoryHelper","../draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","../graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","../managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Point":undefined}],"awayjs-display/lib/draw/GraphicsFactoryHelper":[function(require,module,exports){
+"use strict";
+var CapsStyle_1 = require("../draw/CapsStyle");
+var Point_1 = require("awayjs-core/lib/geom/Point");
+var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
+/**
+ * The Graphics class contains a set of methods that you can use to create a
+ * vector shape. Display objects that support drawing include Sprite and Shape
+ * objects. Each of these classes includes a <code>graphics</code> property
+ * that is a Graphics object. The following are among those helper functions
+ * provided for ease of use: <code>drawRect()</code>,
+ * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+ * <code>drawEllipse()</code>.
+ *
+ * <p>You cannot create a Graphics object directly from ActionScript code. If
+ * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ *
+ * <p>The Graphics class is final; it cannot be subclassed.</p>
+ */
+var GraphicsFactoryHelper = (function () {
+    function GraphicsFactoryHelper() {
+    }
+    GraphicsFactoryHelper.isClockWiseXY = function (point1x, point1y, point2x, point2y, point3x, point3y) {
+        var num = (point1x - point2x) * (point3y - point2y) - (point1y - point2y) * (point3x - point2x);
+        if (num < 0)
+            return false;
+        return true;
+    };
+    GraphicsFactoryHelper.getSign = function (ax, ay, cx, cy, bx, by) {
+        return (ax - bx) * (cy - by) - (ay - by) * (cx - bx);
+    };
+    GraphicsFactoryHelper.pointInTri = function (ax, ay, bx, by, cx, cy, xx, xy) {
+        var b1 = GraphicsFactoryHelper.getSign(ax, ay, xx, xy, bx, by) > 0;
+        var b2 = GraphicsFactoryHelper.getSign(bx, by, xx, xy, cx, cy) > 0;
+        var b3 = GraphicsFactoryHelper.getSign(cx, cy, xx, xy, ax, ay) > 0;
+        return ((b1 == b2) && (b2 == b3));
+    };
+    GraphicsFactoryHelper.getControlXForCurveX = function (a, c, b) {
+        return c;
+    };
+    GraphicsFactoryHelper.getControlYForCurveY = function (a, c, b) {
+        return c;
+    };
+    GraphicsFactoryHelper.drawPoint = function (startX, startY, vertices) {
+        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX + 2, startY - 2, startX + 2, startY + 2, 0, vertices);
+        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX - 2, startY + 2, startX + 2, startY + 2, 0, vertices);
+    };
+    GraphicsFactoryHelper.addTriangle = function (startX, startY, controlX, controlY, endX, endY, tri_type, vertices) {
+        var final_vert_cnt = vertices.length;
+        if (tri_type == 0) {
+            vertices[final_vert_cnt++] = startX;
+            vertices[final_vert_cnt++] = startY;
+            vertices[final_vert_cnt++] = 1;
+            vertices[final_vert_cnt++] = 2.0;
+            vertices[final_vert_cnt++] = 0.0;
+            vertices[final_vert_cnt++] = controlX;
+            vertices[final_vert_cnt++] = controlY;
+            vertices[final_vert_cnt++] = 1;
+            vertices[final_vert_cnt++] = 2.0;
+            vertices[final_vert_cnt++] = 0.0;
+            vertices[final_vert_cnt++] = endX;
+            vertices[final_vert_cnt++] = endY;
+            vertices[final_vert_cnt++] = 1;
+            vertices[final_vert_cnt++] = 2.0;
+            vertices[final_vert_cnt++] = 0.0;
+        }
+        else {
+            vertices[final_vert_cnt++] = startX;
+            vertices[final_vert_cnt++] = startY;
+            vertices[final_vert_cnt++] = tri_type;
+            vertices[final_vert_cnt++] = 1.0;
+            vertices[final_vert_cnt++] = 1.0;
+            vertices[final_vert_cnt++] = controlX;
+            vertices[final_vert_cnt++] = controlY;
+            vertices[final_vert_cnt++] = tri_type;
+            vertices[final_vert_cnt++] = 0.5;
+            vertices[final_vert_cnt++] = 0.0;
+            vertices[final_vert_cnt++] = endX;
+            vertices[final_vert_cnt++] = endY;
+            vertices[final_vert_cnt++] = tri_type;
+            vertices[final_vert_cnt++] = 0.0;
+            vertices[final_vert_cnt++] = 0.0;
+        }
+    };
+    GraphicsFactoryHelper.createCap = function (startX, startY, start_le, start_ri, dir_vec, capstyle, cap_position, thickness, vertices) {
+        if (capstyle == CapsStyle_1.default.ROUND) {
+            console.log("add round cap");
+            var tmp1_x = startX + (cap_position * (dir_vec.x * thickness));
+            var tmp1_y = startY + (cap_position * (dir_vec.y * thickness));
+            tmp1_x = tmp1_x * 2 - start_le.x / 2 - start_ri.x / 2;
+            tmp1_y = tmp1_y * 2 - start_le.y / 2 - start_ri.y / 2;
+            GraphicsFactoryHelper.addTriangle(start_le.x, start_le.y, tmp1_x, tmp1_y, start_ri.x, start_ri.y, -1, vertices);
+        }
+        else if (capstyle == CapsStyle_1.default.SQUARE) {
+            console.log("add square cap");
+            var tmp1_x = start_le.x + (cap_position * (dir_vec.x * thickness));
+            var tmp1_y = start_le.y + (cap_position * (dir_vec.y * thickness));
+            var tmp2_x = start_ri.x + (cap_position * (dir_vec.x * thickness));
+            var tmp2_y = start_ri.y + (cap_position * (dir_vec.y * thickness));
+            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, tmp1_x, tmp1_y, start_le.x, start_le.y, 0, vertices);
+            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, start_le.x, start_le.y, start_ri.x, start_ri.y, 0, vertices);
+        }
+    };
+    GraphicsFactoryHelper.getLineFormularData = function (a, b) {
+        var tmp_x = b.x - a.x;
+        var tmp_y = b.y - a.y;
+        var return_point = new Point_1.default();
+        if ((tmp_x != 0) && (tmp_y != 0))
+            return_point.x = tmp_y / tmp_x;
+        return_point.y = -(return_point.x * a.x - a.y);
+        return return_point;
+    };
+    GraphicsFactoryHelper.getQuadricBezierPosition = function (t, start, control, end) {
+        var xt = 1 - t;
+        return xt * xt * start + 2 * xt * t * control + t * t * end;
+    };
+    GraphicsFactoryHelper.subdivideCurve = function (startx, starty, cx, cy, endx, endy, startx2, starty2, cx2, cy2, endx2, endy2, array_out, array2_out) {
+        var angle_1 = Math.atan2(cy - starty, cx - startx) * MathConsts_1.default.RADIANS_TO_DEGREES;
+        var angle_2 = Math.atan2(endy - cy, endx - cx) * MathConsts_1.default.RADIANS_TO_DEGREES;
+        var angle_delta = angle_2 - angle_1;
+        console.log("angle_delta " + angle_delta);
+        if (angle_delta > 180) {
+            angle_delta -= 360;
+        }
+        if (angle_delta < -180) {
+            angle_delta += 360;
+        }
+        if (Math.abs(angle_delta) >= 150) {
+            array_out.push(startx, starty, cx, cy, endx, endy);
+            array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
+            return;
+        }
+        var b1 = false;
+        var b2 = false;
+        if (angle_delta < 0) {
+            // curve is curved to right side. right side is convex
+            b1 = GraphicsFactoryHelper.getSign(startx, starty, cx2, cy2, endx, endy) > 0;
+            b2 = GraphicsFactoryHelper.getSign(startx, starty, cx, cy, endx, endy) > 0;
+            b1 = (((starty - endy) * (cx - startx) + (endx - startx) * (cy - starty)) * ((starty - endy) * (cx2 - startx) + (endx - startx) * (cy2 - starty))) < 0;
+        }
+        else {
+            // curve is curved to left side. left side is convex
+            b1 = GraphicsFactoryHelper.getSign(startx2, starty2, cx2, cy2, endx2, endy2) > 0;
+            b2 = GraphicsFactoryHelper.getSign(startx2, starty2, cx, cy, endx2, endy2) > 0;
+            b1 = (((starty2 - endy) * (cx - startx2) + (endx2 - startx2) * (cy - starty2)) * ((starty2 - endy2) * (cx2 - startx2) + (endx2 - startx2) * (cy2 - starty2))) < 0;
+        }
+        if (b1) {
+            array_out.push(startx, starty, cx, cy, endx, endy);
+            array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
+            return;
+        }
+        // triangles overlap. we must subdivide:
+        var c1x = startx + (cx - startx) * 0.5; // new controlpoint 1.1
+        var c1y = starty + (cy - starty) * 0.5;
+        var c2x = cx + (endx - cx) * 0.5; // new controlpoint 1.2
+        var c2y = cy + (endy - cy) * 0.5;
+        var ax = c1x + (c2x - c1x) * 0.5; // new middlepoint 1
+        var ay = c1y + (c2y - c1y) * 0.5;
+        var c1x2 = startx2 + (cx2 - startx2) * 0.5; // new controlpoint 2.1
+        var c1y2 = starty2 + (cy2 - starty2) * 0.5;
+        var c2x2 = cx2 + (endx2 - cx2) * 0.5; // new controlpoint 2.2
+        var c2y2 = cy2 + (endy2 - cy2) * 0.5;
+        var ax2 = c1x2 + (c2x2 - c1x2) * 0.5; // new middlepoint 2
+        var ay2 = c1y2 + (c2y2 - c1y2) * 0.5;
+        GraphicsFactoryHelper.subdivideCurve(startx, starty, c1x, c1y, ax, ay, startx2, starty2, c1x2, c1y2, ax2, ay2, array_out, array2_out);
+        GraphicsFactoryHelper.subdivideCurve(ax, ay, c2x, c2y, endx, endy, ax2, ay2, c2x2, c2y2, endx2, endy2, array_out, array2_out);
+    };
+    return GraphicsFactoryHelper;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GraphicsFactoryHelper;
+},{"../draw/CapsStyle":"awayjs-display/lib/draw/CapsStyle","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Point":undefined}],"awayjs-display/lib/draw/GraphicsFactoryStrokes":[function(require,module,exports){
+"use strict";
+var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
+var JointStyle_1 = require("../draw/JointStyle");
+var GraphicsPathCommand_1 = require("../draw/GraphicsPathCommand");
+var DefaultMaterialManager_1 = require("../managers/DefaultMaterialManager");
+var Point_1 = require("awayjs-core/lib/geom/Point");
+var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
+var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
+var Float2Attributes_1 = require("awayjs-core/lib/attributes/Float2Attributes");
+var GraphicsFactoryHelper_1 = require("../draw/GraphicsFactoryHelper");
+var TriangleElements_1 = require("../graphics/TriangleElements");
+/**
+ * The Graphics class contains a set of methods that you can use to create a
+ * vector shape. Display objects that support drawing include Sprite and Shape
+ * objects. Each of these classes includes a <code>graphics</code> property
+ * that is a Graphics object. The following are among those helper functions
+ * provided for ease of use: <code>drawRect()</code>,
+ * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+ * <code>drawEllipse()</code>.
+ *
+ * <p>You cannot create a Graphics object directly from ActionScript code. If
+ * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ *
+ * <p>The Graphics class is final; it cannot be subclassed.</p>
+ */
+var GraphicsFactoryStrokes = (function () {
+    function GraphicsFactoryStrokes() {
+    }
+    GraphicsFactoryStrokes.draw_pathes = function (targetGraphic) {
+        var len = targetGraphic.queued_stroke_pathes.length;
+        var contour_commands;
+        var contour_data;
+        var strokeStyle;
+        var one_path;
+        var commands;
+        var data;
+        var i = 0;
+        var k = 0;
+        var vert_cnt = 0;
+        var data_cnt = 0;
+        var final_vert_list = [];
+        var final_vert_cnt = 0;
+        var lastPoint = new Point_1.default();
+        var start_point = new Point_1.default();
+        var end_point = new Point_1.default();
+        var start_left = new Point_1.default();
+        var start_right = new Point_1.default();
+        var ctr_left = new Point_1.default();
+        var ctr_right = new Point_1.default();
+        var ctr_left2 = new Point_1.default();
+        var ctr_right2 = new Point_1.default();
+        var end_left = new Point_1.default();
+        var end_right = new Point_1.default();
+        var tmp_point = new Point_1.default();
+        var tmp_point2 = new Point_1.default();
+        var tmp_point3 = new Point_1.default();
+        var closed = false;
+        var last_dir_vec = new Point_1.default();
+        var cp = 0;
+        for (cp = 0; cp < len; cp++) {
+            one_path = targetGraphic.queued_stroke_pathes[cp];
+            contour_commands = one_path.commands;
+            contour_data = one_path.data;
+            strokeStyle = one_path.stroke();
+            var tessVerts = [];
+            for (k = 0; k < contour_commands.length; k++) {
+                commands = contour_commands[k];
+                data = contour_data[k];
+                vert_cnt = 0;
+                data_cnt = 0;
+                var new_dir = 0;
+                var dir_delta = 0;
+                var last_direction = 0;
+                var tmp_dir_point = new Point_1.default();
+                closed = true;
+                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1]))
+                    closed = false;
+                else {
+                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+                    last_dir_vec.normalize();
+                    last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                }
+                data_cnt = 0;
+                lastPoint.x = data[data_cnt++];
+                lastPoint.y = data[data_cnt++];
+                var new_cmds = [];
+                var new_pnts = [];
+                var new_cmds_cnt = 0;
+                var new_pnts_cnt = 0;
+                var prev_normal = new Point_1.default();
+                var le_point = new Point_1.default();
+                var curve_end_point = new Point_1.default();
+                var ri_point = new Point_1.default();
+                var ctr_point = new Point_1.default();
+                prev_normal.x = -1 * last_dir_vec.y;
+                prev_normal.y = last_dir_vec.x;
+                for (i = 1; i < commands.length; i++) {
+                    if (commands[i] == GraphicsPathCommand_1.default.MOVE_TO) {
+                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                        continue;
+                    }
+                    console.log("");
+                    //console.log("segment "+i+"lastPoint x = "+lastPoint.x+" y = "+lastPoint.y)
+                    end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+                    //console.log("segment "+i+"end_point x = "+end_point.x+" y = "+end_point.y)
+                    if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+                        curve_end_point = new Point_1.default(data[data_cnt++], data[data_cnt++]);
+                    }
+                    //get the directional vector and the direction for this segment
+                    tmp_dir_point.x = end_point.x - lastPoint.x;
+                    tmp_dir_point.y = end_point.y - lastPoint.y;
+                    tmp_dir_point.normalize();
+                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                    // get the difference in angle to the last segment
+                    dir_delta = new_dir - last_direction;
+                    if (dir_delta > 180) {
+                        dir_delta -= 360;
+                    }
+                    if (dir_delta < -180) {
+                        dir_delta += 360;
+                    }
+                    last_direction = new_dir;
+                    //console.log("segment "+i+" direction: "+dir_delta);
+                    // rotate direction around 90 degree
+                    tmp_point.x = -1 * tmp_dir_point.y;
+                    tmp_point.y = tmp_dir_point.x;
+                    ri_point = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                    le_point = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                    var add_segment = false;
+                    // check if this is the first segment, and the path is not closed
+                    // in this case, we can just set the points to the contour points
+                    if ((i == 1) && (!closed)) {
+                        //console.log("segment "+i+"Path is not closed, we can just add the first segment")
+                        add_segment = true;
+                    }
+                    else {
+                        // we need to figure out if we need to add a joint or not
+                        if ((dir_delta == 0) || (dir_delta == 180)) {
+                            // check if this and the prev segment was a line. if yes, than they can be merged
+                            if ((i != 1) && (commands[i] == GraphicsPathCommand_1.default.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand_1.default.LINE_TO)) {
+                                //console.log("straight line can be merged in prev straight line");
+                                add_segment = false;
+                            }
+                            else {
+                                add_segment = true;
+                            }
+                        }
+                        if (dir_delta == 180) {
+                            console.log("path goes straight back (180�). DO we need to handle this edge case different ? !");
+                        }
+                        else if (dir_delta != 0) {
+                            add_segment = true;
+                            var half_angle = (180 - (dir_delta));
+                            if (dir_delta < 0) {
+                                half_angle = (-180 - (dir_delta));
+                            }
+                            half_angle = half_angle * -0.5 * MathConsts_1.default.DEGREES_TO_RADIANS;
+                            var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+                            tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
+                            tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
+                            tmp_point2.normalize();
+                            var merged_pnt_ri = new Point_1.default(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
+                            var merged_pnt_le = new Point_1.default(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
+                            if (dir_delta > 0) {
+                                ri_point = merged_pnt_ri;
+                                var contour_le = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                                var contour_prev_le = new Point_1.default(lastPoint.x - (prev_normal.x * strokeStyle.half_thickness), lastPoint.y - (prev_normal.y * strokeStyle.half_thickness));
+                                le_point = contour_le;
+                            }
+                            else {
+                                le_point = merged_pnt_le;
+                                var contour_ri = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                                var contour_prev_ri = new Point_1.default(lastPoint.x + (prev_normal.x * strokeStyle.half_thickness), lastPoint.y + (prev_normal.y * strokeStyle.half_thickness));
+                                ri_point = contour_ri;
+                            }
+                            var addJoints = true;
+                            if (strokeStyle.jointstyle == JointStyle_1.default.MITER) {
+                                var distance_miter = (Math.sqrt((distance * distance) - (strokeStyle.half_thickness * strokeStyle.half_thickness)) / strokeStyle.half_thickness);
+                                if (distance_miter <= strokeStyle.miter_limit) {
+                                    addJoints = false;
+                                    ri_point = merged_pnt_ri;
+                                    le_point = merged_pnt_le;
+                                }
+                                else {
+                                    if (dir_delta > 0) {
+                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        tmp_point3.x = prev_normal.y * -1;
+                                        tmp_point3.y = prev_normal.x;
+                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                    }
+                                    else {
+                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        tmp_point3.x = prev_normal.y * -1;
+                                        tmp_point3.y = prev_normal.x;
+                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                    }
+                                }
+                            }
+                            if (addJoints) {
+                                new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle_1.default.ROUND) ? GraphicsPathCommand_1.default.BUILD_JOINT : GraphicsPathCommand_1.default.BUILD_ROUND_JOINT;
+                                if (dir_delta > 0) {
+                                    new_pnts[new_pnts_cnt++] = merged_pnt_ri;
+                                    new_pnts[new_pnts_cnt++] = contour_prev_le;
+                                    new_pnts[new_pnts_cnt++] = contour_le;
+                                }
+                                else {
+                                    new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                    new_pnts[new_pnts_cnt++] = merged_pnt_le;
+                                    new_pnts[new_pnts_cnt++] = contour_ri;
+                                }
+                                if (strokeStyle.jointstyle == JointStyle_1.default.ROUND) {
+                                    new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
+                                    if (dir_delta > 0) {
+                                        new_pnts[new_pnts_cnt++] = contour_prev_le;
+                                        new_pnts[new_pnts_cnt++] = contour_le;
+                                    }
+                                    else {
+                                        new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                        new_pnts[new_pnts_cnt++] = contour_ri;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    prev_normal.x = tmp_point.x;
+                    prev_normal.y = tmp_point.y;
+                    if (add_segment) {
+                        if (commands[i] == GraphicsPathCommand_1.default.LINE_TO) {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.LINE_TO;
+                            new_pnts[new_pnts_cnt++] = ri_point;
+                            new_pnts[new_pnts_cnt++] = le_point;
+                        }
+                        else if (commands[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+                            tmp_dir_point.x = curve_end_point.x - end_point.x;
+                            tmp_dir_point.y = curve_end_point.y - end_point.y;
+                            tmp_dir_point.normalize();
+                            new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                            dir_delta = new_dir - last_direction;
+                            last_direction = new_dir;
+                            tmp_point.x = -1 * tmp_dir_point.y;
+                            tmp_point.y = tmp_dir_point.x;
+                            if ((dir_delta != 0) && (dir_delta != 180)) {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.CURVE_TO;
+                                new_pnts[new_pnts_cnt++] = ri_point;
+                                new_pnts[new_pnts_cnt++] = le_point;
+                                new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x, lastPoint.y);
+                                new_pnts[new_pnts_cnt++] = new Point_1.default(end_point.x, end_point.y);
+                                new_pnts[new_pnts_cnt++] = curve_end_point;
+                            }
+                            else {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.LINE_TO;
+                                new_pnts[new_pnts_cnt++] = ri_point;
+                                new_pnts[new_pnts_cnt++] = le_point;
+                            }
+                            prev_normal.x = tmp_point.x;
+                            prev_normal.y = tmp_point.y;
+                            lastPoint = curve_end_point;
+                        }
+                    }
+                    if (commands[i] == GraphicsPathCommand_1.default.LINE_TO) {
+                        lastPoint = end_point;
+                    }
+                    if (i == commands.length - 1) {
+                        if (!closed) {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.NO_OP;
+                            new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                            new_pnts[new_pnts_cnt++] = new Point_1.default(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                        }
+                        else {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand_1.default.NO_OP;
+                            new_pnts[new_pnts_cnt++] = new_pnts[0];
+                            new_pnts[new_pnts_cnt++] = new_pnts[1];
+                        }
+                    }
+                }
+                // first we draw all the curves:
+                new_cmds_cnt = 0;
+                new_pnts_cnt = 0;
+                for (i = 0; i < new_cmds.length; i++) {
+                    if (new_cmds[i] == GraphicsPathCommand_1.default.LINE_TO) {
+                        new_pnts_cnt += 2;
+                    }
+                    else if (new_cmds[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        start_point = new_pnts[new_pnts_cnt++];
+                        ctr_point = new_pnts[new_pnts_cnt++];
+                        end_point = new_pnts[new_pnts_cnt++];
+                        end_right = new_pnts[new_pnts_cnt];
+                        end_left = new_pnts[new_pnts_cnt + 1];
+                        // get the directional vector for the first part of the curve
+                        tmp_dir_point.x = ctr_point.x - start_point.x;
+                        tmp_dir_point.y = ctr_point.y - start_point.y;
+                        tmp_point3.x = ctr_point.x - start_point.x;
+                        tmp_point3.y = ctr_point.y - start_point.y;
+                        var length1 = tmp_point3.length;
+                        tmp_dir_point.normalize();
+                        // get the directional vector for the second part of the curve
+                        tmp_point2.x = end_point.x - ctr_point.x;
+                        tmp_point2.y = end_point.y - ctr_point.y;
+                        var length2 = tmp_point2.length;
+                        tmp_point2.normalize();
+                        var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
+                        if (length1 > length2) {
+                            length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
+                        }
+                        // get angle to positive x-axis for both dir-vectors, than get the difference between those
+                        var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                        var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * MathConsts_1.default.RADIANS_TO_DEGREES;
+                        dir_delta = angle_2 - angle_1;
+                        if (dir_delta > 180) {
+                            dir_delta -= 360;
+                        }
+                        if (dir_delta < -180) {
+                            dir_delta += 360;
+                        }
+                        if (dir_delta == 0) {
+                            console.log("This is not a curve, we can just draw it like a straight line");
+                        }
+                        //console.log("segment : '"+i+"' direction:"+dir_delta);
+                        var dirNumber = 1;
+                        if (dir_delta < 0) {
+                            dirNumber = -1;
+                        }
+                        var half_angle = dir_delta * 0.5 * MathConsts_1.default.DEGREES_TO_RADIANS;
+                        var lengthpos = Math.abs(length1 * Math.sin(half_angle));
+                        var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+                        tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
+                        tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
+                        tmp_point3.normalize();
+                        var merged_pnt_ri = new Point_1.default(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
+                        var merged_pnt_le = new Point_1.default(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
+                        var curve_x = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
+                        var curve_y = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
+                        var curve_2x = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
+                        var curve_2y = GraphicsFactoryHelper_1.default.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
+                        tmp_point3.x = -1 * (curve_y - curve_2y);
+                        tmp_point3.y = curve_x - curve_2x;
+                        tmp_point3.normalize();
+                        //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
+                        // move the point on the curve to use correct thickness
+                        ctr_right.x = curve_x + (dirNumber * tmp_point3.x * strokeStyle.half_thickness);
+                        ctr_right.y = curve_y + (dirNumber * tmp_point3.y * strokeStyle.half_thickness);
+                        ctr_left.x = curve_x - (dirNumber * tmp_point3.x * strokeStyle.half_thickness);
+                        ctr_left.y = curve_y - (dirNumber * tmp_point3.y * strokeStyle.half_thickness);
+                        //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+                        //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+                        // calculate the actual controlpoints
+                        ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
+                        ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
+                        ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
+                        ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
+                        //ctr_right=merged_pnt_ri;
+                        //ctr_left=merged_pnt_le;
+                        /*
+                        // controlpoints version2:
+                        tmp_dir_point.x = start_left.x-start_right.x;
+                        tmp_dir_point.y = start_left.y-start_right.y;
+                        tmp_point2.x = end_left.x-end_right.x;
+                        tmp_point2.y = end_left.y-end_right.y;
 
+                        ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
+                        ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
+                        var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
+
+                        ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
+                        ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
+                        var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
+                        */
+                        /*
+                                                GraphicsFactoryHelper.drawPoint(start_right.x, start_right.y , final_vert_list);
+                                                GraphicsFactoryHelper.drawPoint(start_left.x, start_left.y , final_vert_list);
+                                                GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+                                                GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+                                                GraphicsFactoryHelper.drawPoint(end_right.x, end_right.y , final_vert_list);
+                                                GraphicsFactoryHelper.drawPoint(end_left.x, end_left.y , final_vert_list);
+                        */
+                        var subdivided = [];
+                        var subdivided2 = [];
+                        GraphicsFactoryHelper_1.default.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
+                        if (dir_delta > 0) {
+                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                // right curved
+                                // concave curves:
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 1, final_vert_list);
+                                // fills
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list);
+                                // convex curves:
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -1, final_vert_list);
+                            }
+                        }
+                        else {
+                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                // left curved
+                                // convex curves:
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -1, final_vert_list);
+                                // fills
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list);
+                                // concave curves:
+                                GraphicsFactoryHelper_1.default.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 1, final_vert_list);
+                            }
+                        }
+                    }
+                    else if (new_cmds[i] >= GraphicsPathCommand_1.default.BUILD_JOINT) {
+                        new_pnts_cnt += 3;
+                        //GraphicsFactoryHelper.addTriangle(start_right.x,  start_right.y,  start_left.x,  start_left.y,  end_right.x,  end_right.y, 0, final_vert_list);
+                        if (new_cmds[i] == GraphicsPathCommand_1.default.BUILD_ROUND_JOINT) {
+                            end_left = new_pnts[new_pnts_cnt++]; // concave curves:
+                            start_right = new_pnts[new_pnts_cnt++];
+                            start_left = new_pnts[new_pnts_cnt++];
+                            console.log("add round tri");
+                            GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, end_left.x, end_left.y, start_left.x, start_left.y, -1, final_vert_list);
+                        }
+                    }
+                }
+                // now we draw all the normal triangles.
+                // we do it in 2 steps, to prevent curves cut anything out of underlying normal tris
+                new_cmds_cnt = 0;
+                new_pnts_cnt = 0;
+                for (i = 0; i < new_cmds.length; i++) {
+                    if (new_cmds[i] == GraphicsPathCommand_1.default.LINE_TO) {
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        end_right = new_pnts[new_pnts_cnt];
+                        end_left = new_pnts[new_pnts_cnt + 1];
+                        GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
+                        GraphicsFactoryHelper_1.default.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list);
+                    }
+                    else if (new_cmds[i] == GraphicsPathCommand_1.default.CURVE_TO) {
+                        new_pnts_cnt += 5;
+                    }
+                    else if (new_cmds[i] >= GraphicsPathCommand_1.default.BUILD_JOINT) {
+                        end_right = new_pnts[new_pnts_cnt++];
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        GraphicsFactoryHelper_1.default.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
+                        if (new_cmds[i] == GraphicsPathCommand_1.default.BUILD_ROUND_JOINT) {
+                            new_pnts_cnt += 3;
+                        }
+                    }
+                }
+                if (!closed) {
+                    last_dir_vec.x = data[2] - data[0];
+                    last_dir_vec.y = data[3] - data[1];
+                    last_dir_vec.normalize();
+                    GraphicsFactoryHelper_1.default.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -1, strokeStyle.half_thickness, final_vert_list);
+                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+                    last_dir_vec.normalize();
+                    GraphicsFactoryHelper_1.default.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 1, strokeStyle.half_thickness, final_vert_list);
+                }
+            }
+            console.log("final_vert_cnt " + (final_vert_cnt / 5));
+            // todo: handle material / submesh settings, and check if a material / submesh already exists for this settings
+            var attributesView = new AttributesView_1.default(Float32Array, 5);
+            attributesView.set(final_vert_list);
+            var attributesBuffer = attributesView.buffer;
+            attributesView.dispose();
+            var elements = new TriangleElements_1.default(attributesBuffer);
+            elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
+            elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
+            //elements.setUVs(new Float2Attributes(attributesBuffer));
+            //curve_sub_geom.setUVs(new Float2Attributes(attributesBuffer));
+            var material = DefaultMaterialManager_1.default.getDefaultMaterial();
+            material.bothSides = true;
+            material.useColorTransform = true;
+            material.curves = true;
+            targetGraphic.addGraphic(elements, material);
+        }
+        targetGraphic.queued_stroke_pathes.length = 0;
+    };
+    return GraphicsFactoryStrokes;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GraphicsFactoryStrokes;
+},{"../draw/GraphicsFactoryHelper":"awayjs-display/lib/draw/GraphicsFactoryHelper","../draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","../draw/JointStyle":"awayjs-display/lib/draw/JointStyle","../graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","../managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Point":undefined}],"awayjs-display/lib/draw/GraphicsFillStyle":[function(require,module,exports){
+"use strict";
+var GraphicsFillStyle = (function () {
+    function GraphicsFillStyle(color, alpha) {
+        if (color === void 0) { color = 0xffffff; }
+        if (alpha === void 0) { alpha = 1; }
+        this._color = color;
+        this._alpha = alpha;
+    }
+    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsFillStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
+    return GraphicsFillStyle;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GraphicsFillStyle;
 },{}],"awayjs-display/lib/draw/GraphicsPathCommand":[function(require,module,exports){
 "use strict";
 /**
-* Defines the values to use for specifying path-drawing commands.
-* The values in this class are used by the Graphics.drawPath() method,
+ * Defines the values to use for specifying path-drawing commands.
+ * The values in this class are used by the Graphics.drawPath() method,
  *or stored in the commands vector of a GraphicsPath object.
  */
 var GraphicsPathCommand = (function () {
@@ -24864,7 +25910,8 @@ var GraphicsPathCommand = (function () {
      *  Specifies a drawing command that draws a curve from the current drawing position
      *  to the x- and y-coordinates specified in the data vector, using a control point.
      */
-    GraphicsPathCommand.CURVE_TO_2 = 13;
+    GraphicsPathCommand.BUILD_JOINT = 13;
+    GraphicsPathCommand.BUILD_ROUND_JOINT = 14;
     /**
      * Specifies a "line to" drawing command,
      * but uses two sets of coordinates (four values) instead of one set.
@@ -24884,7 +25931,6 @@ var GraphicsPathCommand = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GraphicsPathCommand;
-
 },{}],"awayjs-display/lib/draw/GraphicsPathWinding":[function(require,module,exports){
 "use strict";
 /**
@@ -24906,11 +25952,12 @@ var GraphicsPathWinding = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GraphicsPathWinding;
-
 },{}],"awayjs-display/lib/draw/GraphicsPath":[function(require,module,exports){
 "use strict";
-var GraphicsPathWinding_1 = require("awayjs-display/lib/draw/GraphicsPathWinding");
-var GraphicsPathCommand_1 = require("awayjs-display/lib/draw/GraphicsPathCommand");
+var GraphicsPathWinding_1 = require("../draw/GraphicsPathWinding");
+var GraphicsPathCommand_1 = require("../draw/GraphicsPathCommand");
+var GraphicsFillStyle_1 = require("../draw/GraphicsFillStyle");
+var GraphicsStrokeStyle_1 = require("../draw/GraphicsStrokeStyle");
 var Point_1 = require("awayjs-core/lib/geom/Point");
 /**
 
@@ -24919,14 +25966,13 @@ var Point_1 = require("awayjs-core/lib/geom/Point");
  *or stored in the commands vector of a GraphicsPath object.
  */
 var GraphicsPath = (function () {
-    function GraphicsPath(commands, data, winding) {
+    function GraphicsPath(commands, data, winding_rule) {
         if (commands === void 0) { commands = null; }
         if (data === void 0) { data = null; }
-        if (winding === void 0) { winding = GraphicsPathWinding_1.default.EVEN_ODD; }
+        if (winding_rule === void 0) { winding_rule = GraphicsPathWinding_1.default.EVEN_ODD; }
         this._data = [];
         this._commands = [];
-        this._draw_directions = [0];
-        this._contours_closed = [false];
+        this._style = null;
         if (commands != null && data != null) {
             this._data[0] = data;
             this._commands[0] = commands;
@@ -24935,37 +25981,42 @@ var GraphicsPath = (function () {
             this._data[0] = [];
             this._commands[0] = [];
         }
-        this._direction = new Point_1.default(0, -1);
         this._startPoint = new Point_1.default();
         this._cur_point = new Point_1.default();
-        this._tmp_point = new Point_1.default();
-        this.isFill = false;
-        this._winding = winding;
+        this._winding_rule = winding_rule;
+        this._winding_directions = [];
     }
-    Object.defineProperty(GraphicsPath.prototype, "draw_directions", {
+    Object.defineProperty(GraphicsPath.prototype, "data_type", {
         get: function () {
-            return this._draw_directions;
+            return GraphicsPath.data_type;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(GraphicsPath.prototype, "contours_closed", {
+    Object.defineProperty(GraphicsPath.prototype, "style", {
         get: function () {
-            return this._contours_closed;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsPath.prototype, "isFill", {
-        get: function () {
-            return this._isFill;
+            return this._style;
         },
         set: function (value) {
-            this._isFill = value;
+            this._style = value;
         },
         enumerable: true,
         configurable: true
     });
+    GraphicsPath.prototype.fill = function () {
+        if (this._style == null)
+            return null;
+        if (this._style.data_type == GraphicsFillStyle_1.default.data_type)
+            return this._style;
+        return null;
+    };
+    GraphicsPath.prototype.stroke = function () {
+        if (this._style == null)
+            return null;
+        if (this._style.data_type == GraphicsStrokeStyle_1.default.data_type)
+            return this._style;
+        return null;
+    };
     Object.defineProperty(GraphicsPath.prototype, "commands", {
         get: function () {
             return this._commands;
@@ -24988,44 +26039,46 @@ var GraphicsPath = (function () {
             this._data[this._data.length - 1].push(this._cur_point.y);
         }
         this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.CURVE_TO);
-        if (this.isFill) {
-            this._tmp_point.x = anchorX - this._cur_point.x;
-            this._tmp_point.y = anchorY - this._cur_point.y;
-            this._tmp_point.normalize();
-            var testpoint = new Point_1.default(this._tmp_point.x, this._tmp_point.y);
-            testpoint.normalize();
-            var degree_anchor = Math.acos(this._tmp_point.x * this._direction.x + this._tmp_point.y * this._direction.y) * 180 / Math.PI;
-            if (degree_anchor > 180)
-                degree_anchor -= 360;
-            //var degree_anchor:number=Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
-            this._draw_directions[this._draw_directions.length - 1] += degree_anchor;
-            this._tmp_point.x = controlX - this._cur_point.x;
-            this._tmp_point.y = controlY - this._cur_point.y;
-            this._tmp_point.normalize();
-            //angle = atan2( a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y );
-            var degree_control = (Math.atan2(this._tmp_point.x * testpoint.y - this._tmp_point.y * testpoint.x, this._tmp_point.x * testpoint.x + this._tmp_point.y * testpoint.y));
-            if (degree_control > 180)
-                degree_control -= 360;
-            //var degree_control:number=(Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI);
-            console.log("degree_control " + degree_control);
-            console.log("degree_anchor " + degree_anchor);
-            console.log("this._draw_directions[this._draw_directions.length-1] " + this._draw_directions[this._draw_directions.length - 1]);
-            this._direction.x = testpoint.x;
-            this._direction.y = testpoint.y;
-            if ((degree_control) < 0)
-                this._data[this._data.length - 1].push(1);
-            else
-                this._data[this._data.length - 1].push(2);
-        }
-        else {
-            this._data[this._data.length - 1].push(1);
-        }
-        this._cur_point.x = anchorX;
-        this._cur_point.y = anchorY;
+        /*
+         if(this.isFill){
+         this._tmp_point.x=anchorX-this._cur_point.x;
+         this._tmp_point.y=anchorY-this._cur_point.y;
+         this._tmp_point.normalize();
+
+         var testpoint:Point=new Point(this._tmp_point.x, this._tmp_point.y);
+         testpoint.normalize();
+         var degree_anchor:number=Math.acos(this._tmp_point.x * this._direction.x + this._tmp_point.y * this._direction.y) * 180 / Math.PI;
+         if(degree_anchor>180)degree_anchor-=360;
+         //var degree_anchor:number=Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
+         this._draw_directions[this._draw_directions.length-1]+=degree_anchor;
+         this._tmp_point.x=controlX-this._cur_point.x;
+         this._tmp_point.y=controlY-this._cur_point.y;
+         this._tmp_point.normalize();
+         //angle = atan2( a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y );
+         var degree_control:number=(Math.atan2(this._tmp_point.x* testpoint.y - this._tmp_point.y* testpoint.x, this._tmp_point.x* testpoint.x + this._tmp_point.y* testpoint.y));
+         if(degree_control>180)degree_control-=360;
+         //var degree_control:number=(Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI);
+         console.log("degree_control "+degree_control);
+         console.log("degree_anchor "+degree_anchor);
+         console.log("this._draw_directions[this._draw_directions.length-1] "+this._draw_directions[this._draw_directions.length-1]);
+         this._direction.x=testpoint.x;
+         this._direction.y=testpoint.y;
+         if((degree_control)<0)
+         this._data[this._data.length-1].push(1);
+         else
+         this._data[this._data.length-1].push(2);
+
+         }
+         else{
+         this._data[this._data.length-1].push(1);
+         }
+         */
         this._data[this._data.length - 1].push(controlX);
         this._data[this._data.length - 1].push(controlY);
         this._data[this._data.length - 1].push(anchorX);
         this._data[this._data.length - 1].push(anchorY);
+        this._cur_point.x = anchorX;
+        this._cur_point.y = anchorY;
     };
     GraphicsPath.prototype.lineTo = function (x, y) {
         if (this._commands[this._commands.length - 1].length == 0) {
@@ -25037,40 +26090,19 @@ var GraphicsPath = (function () {
         this._commands[this._commands.length - 1].push(GraphicsPathCommand_1.default.LINE_TO);
         this._data[this._data.length - 1].push(x);
         this._data[this._data.length - 1].push(y);
-        if (this.isFill) {
-            this._tmp_point.x = x - this._cur_point.x;
-            this._tmp_point.y = y - this._cur_point.y;
-            this._tmp_point.normalize();
-            this._direction.x = this._tmp_point.x;
-            this._direction.y = this._tmp_point.y;
-            var degree_anchor = Math.atan2(this._tmp_point.x, this._tmp_point.y) * 180 / Math.PI;
-            this._draw_directions[this._draw_directions.length - 1] += degree_anchor;
-        }
         this._cur_point.x = x;
         this._cur_point.y = y;
     };
     GraphicsPath.prototype.moveTo = function (x, y) {
+        // whenever a moveTo command apears, we start a new contour
         if (this._commands[this._commands.length - 1].length > 0) {
-            this.finalizeContour();
-            this._draw_directions.push(0);
-            this._contours_closed.push(false);
-            this._commands.push([]);
-            this._data.push([]);
+            this._commands.push([GraphicsPathCommand_1.default.MOVE_TO]);
+            this._data.push([x, y]);
         }
         this._startPoint.x = x;
         this._startPoint.y = y;
         this._cur_point.x = x;
         this._cur_point.y = y;
-    };
-    GraphicsPath.prototype.finalizeContour = function () {
-        if ((this._startPoint.x != this._cur_point.x) || (this._startPoint.y != this._cur_point.y)) {
-            if (this.isFill) {
-                this.lineTo(this._startPoint.x, this._startPoint.y);
-            }
-        }
-        else {
-            this._contours_closed[this._contours_closed.length - 1] = true;
-        }
     };
     GraphicsPath.prototype.wideLineTo = function (x, y) {
         // not used
@@ -25092,46 +26124,1643 @@ var GraphicsPath = (function () {
          this._data.push(y);
          */
     };
+    GraphicsPath.data_type = "[graphicsdata path]";
     return GraphicsPath;
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GraphicsPath;
-
-},{"awayjs-core/lib/geom/Point":undefined,"awayjs-display/lib/draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","awayjs-display/lib/draw/GraphicsPathWinding":"awayjs-display/lib/draw/GraphicsPathWinding"}],"awayjs-display/lib/draw/Graphics":[function(require,module,exports){
+},{"../draw/GraphicsFillStyle":"awayjs-display/lib/draw/GraphicsFillStyle","../draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","../draw/GraphicsPathWinding":"awayjs-display/lib/draw/GraphicsPathWinding","../draw/GraphicsStrokeStyle":"awayjs-display/lib/draw/GraphicsStrokeStyle","awayjs-core/lib/geom/Point":undefined}],"awayjs-display/lib/draw/GraphicsStrokeStyle":[function(require,module,exports){
 "use strict";
-var GraphicsPath_1 = require("awayjs-display/lib/draw/GraphicsPath");
-var GraphicsPathCommand_1 = require("awayjs-display/lib/draw/GraphicsPathCommand");
-var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var Point_1 = require("awayjs-core/lib/geom/Point");
+var JointStyle_1 = require("../draw/JointStyle");
+var CapsStyle_1 = require("../draw/CapsStyle");
+var GraphicsStrokeStyle = (function () {
+    function GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miter_limit) {
+        if (color === void 0) { color = 0xffffff; }
+        if (alpha === void 0) { alpha = 1; }
+        if (thickness === void 0) { thickness = 10; }
+        if (jointstyle === void 0) { jointstyle = JointStyle_1.default.ROUND; }
+        if (capstyle === void 0) { capstyle = CapsStyle_1.default.SQUARE; }
+        if (miter_limit === void 0) { miter_limit = 10; }
+        this._color = color;
+        this._alpha = alpha;
+        this._thickness = thickness;
+        this._jointstyle = jointstyle;
+        this._capstyle = capstyle;
+        this._miter_limit = miter_limit;
+    }
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsStrokeStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "color", {
+        get: function () {
+            return this._color;
+        },
+        set: function (value) {
+            this._color = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "alpha", {
+        get: function () {
+            return this._alpha;
+        },
+        set: function (value) {
+            this._alpha = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "half_thickness", {
+        get: function () {
+            return this._thickness / 2;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "thickness", {
+        get: function () {
+            return this._thickness;
+        },
+        set: function (value) {
+            this._thickness = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "jointstyle", {
+        get: function () {
+            return this._jointstyle;
+        },
+        set: function (value) {
+            this._jointstyle = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "miter_limit", {
+        get: function () {
+            return this._miter_limit;
+        },
+        set: function (value) {
+            this._miter_limit = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "capstyle", {
+        get: function () {
+            return this._capstyle;
+        },
+        set: function (value) {
+            this._capstyle = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GraphicsStrokeStyle.data_type = "[graphicsdata StrokeStyle]";
+    return GraphicsStrokeStyle;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GraphicsStrokeStyle;
+},{"../draw/CapsStyle":"awayjs-display/lib/draw/CapsStyle","../draw/JointStyle":"awayjs-display/lib/draw/JointStyle"}],"awayjs-display/lib/draw/IGraphicsData":[function(require,module,exports){
+"use strict";
+},{}],"awayjs-display/lib/draw/InterpolationMethod":[function(require,module,exports){
+"use strict";
+/**
+ * The InterpolationMethod class provides values for the
+ * <code>interpolationMethod</code> parameter in the
+ * <code>Graphics.beginGradientFill()</code> and
+ * <code>Graphics.lineGradientStyle()</code> methods. This parameter
+ * determines the RGB space to use when rendering the gradient.
+ */
+var InterpolationMethod = (function () {
+    function InterpolationMethod() {
+    }
+    /**
+     * Specifies that the RGB interpolation method should be used. This means
+     * that the gradient is rendered with exponential sRGB(standard RGB) space.
+     * The sRGB space is a W3C-endorsed standard that defines a non-linear
+     * conversion between red, green, and blue component values and the actual
+     * intensity of the visible component color.
+     *
+     * <p>For example, consider a simple linear gradient between two colors(with
+     * the <code>spreadMethod</code> parameter set to
+     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
+     * affect the appearance as follows: </p>
+     */
+    InterpolationMethod.LINEAR_RGB = "linearRGB";
+    /**
+     * Specifies that the RGB interpolation method should be used. This means
+     * that the gradient is rendered with exponential sRGB(standard RGB) space.
+     * The sRGB space is a W3C-endorsed standard that defines a non-linear
+     * conversion between red, green, and blue component values and the actual
+     * intensity of the visible component color.
+     *
+     * <p>For example, consider a simple linear gradient between two colors(with
+     * the <code>spreadMethod</code> parameter set to
+     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
+     * affect the appearance as follows: </p>
+     */
+    InterpolationMethod.RGB = "rgb";
+    return InterpolationMethod;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = InterpolationMethod;
+},{}],"awayjs-display/lib/draw/JointStyle":[function(require,module,exports){
+"use strict";
+/**
+ * The JointStyle class is an enumeration of constant values that specify the
+ * joint style to use in drawing lines. These constants are provided for use
+ * as values in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
+ * three types of joints: miter, round, and bevel, as the following example
+ * shows:
+ */
+var JointStyle = (function () {
+    function JointStyle() {
+    }
+    /**
+     * Specifies beveled joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.BEVEL = 2;
+    /**
+     * Specifies mitered joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.MITER = 0;
+    /**
+     * Specifies round joints in the <code>joints</code> parameter of the
+     * <code>flash.display.Graphics.lineStyle()</code> method.
+     */
+    JointStyle.ROUND = 1;
+    return JointStyle;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = JointStyle;
+},{}],"awayjs-display/lib/draw/LineScaleMode":[function(require,module,exports){
+"use strict";
+/**
+ * The LineScaleMode class provides values for the <code>scaleMode</code>
+ * parameter in the <code>Graphics.lineStyle()</code> method.
+ */
+var LineScaleMode = (function () {
+    function LineScaleMode() {
+    }
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line scales
+     * <i>only</i> vertically. For example, consider the following circles, drawn
+     * with a one-pixel line, and each with the <code>scaleMode</code> parameter
+     * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
+     * scaled only vertically, and the circle on the right is scaled both
+     * vertically and horizontally.
+     */
+    LineScaleMode.HORIZONTAL = "horizontal";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line never scales.
+     */
+    LineScaleMode.NONE = "none";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line always scales
+     * when the object is scaled(the default).
+     */
+    LineScaleMode.NORMAL = "normal";
+    /**
+     * With this setting used as the <code>scaleMode</code> parameter of the
+     * <code>lineStyle()</code> method, the thickness of the line scales
+     * <i>only</i> horizontally. For example, consider the following circles,
+     * drawn with a one-pixel line, and each with the <code>scaleMode</code>
+     * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
+     * left is scaled only horizontally, and the circle on the right is scaled
+     * both vertically and horizontally.
+     */
+    LineScaleMode.VERTICAL = "vertical";
+    return LineScaleMode;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = LineScaleMode;
+},{}],"awayjs-display/lib/draw/PixelSnapping":[function(require,module,exports){
+"use strict";
+/**
+ * The PixelSnapping class is an enumeration of constant values for setting
+ * the pixel snapping options by using the <code>pixelSnapping</code> property
+ * of a Bitmap object.
+ */
+var PixelSnapping = (function () {
+    function PixelSnapping() {
+    }
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that the bitmap image is always snapped to the
+     * nearest pixel, independent of any transformation.
+     */
+    PixelSnapping.ALWAYS = "always";
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that the bitmap image is snapped to the nearest
+     * pixel if it is drawn with no rotation or skew and it is drawn at a scale
+     * factor of 99.9% to 100.1%. If these conditions are satisfied, the image is
+     * drawn at 100% scale, snapped to the nearest pixel. Internally, this
+     * setting allows the image to be drawn as fast as possible by using the
+     * vector renderer.
+     */
+    PixelSnapping.AUTO = "auto";
+    /**
+     * A constant value used in the <code>pixelSnapping</code> property of a
+     * Bitmap object to specify that no pixel snapping occurs.
+     */
+    PixelSnapping.NEVER = "never";
+    return PixelSnapping;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = PixelSnapping;
+},{}],"awayjs-display/lib/draw/SpreadMethod":[function(require,module,exports){
+"use strict";
+/**
+ * The SpreadMethod class provides values for the <code>spreadMethod</code>
+ * parameter in the <code>beginGradientFill()</code> and
+ * <code>lineGradientStyle()</code> methods of the Graphics class.
+ *
+ * <p>The following example shows the same gradient fill using various spread
+ * methods:</p>
+ */
+var SpreadMethod = (function () {
+    function SpreadMethod() {
+    }
+    /**
+     * Specifies that the gradient use the <i>pad</i> spread method.
+     */
+    SpreadMethod.PAD = "pad";
+    /**
+     * Specifies that the gradient use the <i>reflect</i> spread method.
+     */
+    SpreadMethod.REFLECT = "reflect";
+    /**
+     * Specifies that the gradient use the <i>repeat</i> spread method.
+     */
+    SpreadMethod.REPEAT = "repeat";
+    return SpreadMethod;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = SpreadMethod;
+},{}],"awayjs-display/lib/draw/TriangleCulling":[function(require,module,exports){
+"use strict";
+/**
+ * Defines codes for culling algorithms that determine which triangles not to
+ * render when drawing triangle paths.
+ *
+ * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
+ * sign of a triangle's normal along the z-axis. The normal is a 3D vector
+ * that is perpendicular to the surface of the triangle. </p>
+ *
+ * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
+ * has a positive normal value. That is, its normal points in a positive
+ * z-axis direction, away from the current view point. When the
+ * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
+ * positive normals are not rendered. Another term for this is backface
+ * culling. </p>
+ *
+ * <p> A triangle whose vertices are arranged in a counter-clockwise order has
+ * a negative normal value. That is, its normal points in a negative z-axis
+ * direction, toward the current view point. When the
+ * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
+ * negative normals will not be rendered. </p>
+ */
+var TriangleCulling = (function () {
+    function TriangleCulling() {
+    }
+    /**
+     * Specifies culling of all triangles facing toward the current view point.
+     */
+    TriangleCulling.NEGATIVE = "negative";
+    /**
+     * Specifies no culling. All triangles in the path are rendered.
+     */
+    TriangleCulling.NONE = "none";
+    /**
+     * Specifies culling of all triangles facing away from the current view
+     * point. This is also known as backface culling.
+     */
+    TriangleCulling.POSITIVE = "positive";
+    return TriangleCulling;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = TriangleCulling;
+},{}],"awayjs-display/lib/draw":[function(require,module,exports){
+"use strict";
+var CapsStyle_1 = require("./draw/CapsStyle");
+exports.CapsStyle = CapsStyle_1.default;
+var GradientType_1 = require("./draw/GradientType");
+exports.GradientType = GradientType_1.default;
+var GraphicsFactoryFills_1 = require("./draw/GraphicsFactoryFills");
+exports.GraphicsFactoryFills = GraphicsFactoryFills_1.default;
+var GraphicsFactoryHelper_1 = require("./draw/GraphicsFactoryHelper");
+exports.GraphicsFactoryHelper = GraphicsFactoryHelper_1.default;
+var GraphicsFactoryStrokes_1 = require("./draw/GraphicsFactoryStrokes");
+exports.GraphicsFactoryStrokes = GraphicsFactoryStrokes_1.default;
+var GraphicsFillStyle_1 = require("./draw/GraphicsFillStyle");
+exports.GraphicsFillStyle = GraphicsFillStyle_1.default;
+var GraphicsStrokeStyle_1 = require("./draw/GraphicsStrokeStyle");
+exports.GraphicsStrokeStyle = GraphicsStrokeStyle_1.default;
+var GraphicsPath_1 = require("./draw/GraphicsPath");
+exports.GraphicsPath = GraphicsPath_1.default;
+var GraphicsPathCommand_1 = require("./draw/GraphicsPathCommand");
+exports.GraphicsPathCommand = GraphicsPathCommand_1.default;
+var GraphicsPathWinding_1 = require("./draw/GraphicsPathWinding");
+exports.GraphicsPathWinding = GraphicsPathWinding_1.default;
+var InterpolationMethod_1 = require("./draw/InterpolationMethod");
+exports.InterpolationMethod = InterpolationMethod_1.default;
+var JointStyle_1 = require("./draw/JointStyle");
+exports.JointStyle = JointStyle_1.default;
+var LineScaleMode_1 = require("./draw/LineScaleMode");
+exports.LineScaleMode = LineScaleMode_1.default;
+var PixelSnapping_1 = require("./draw/PixelSnapping");
+exports.PixelSnapping = PixelSnapping_1.default;
+var SpreadMethod_1 = require("./draw/SpreadMethod");
+exports.SpreadMethod = SpreadMethod_1.default;
+var TriangleCulling_1 = require("./draw/TriangleCulling");
+exports.TriangleCulling = TriangleCulling_1.default;
+},{"./draw/CapsStyle":"awayjs-display/lib/draw/CapsStyle","./draw/GradientType":"awayjs-display/lib/draw/GradientType","./draw/GraphicsFactoryFills":"awayjs-display/lib/draw/GraphicsFactoryFills","./draw/GraphicsFactoryHelper":"awayjs-display/lib/draw/GraphicsFactoryHelper","./draw/GraphicsFactoryStrokes":"awayjs-display/lib/draw/GraphicsFactoryStrokes","./draw/GraphicsFillStyle":"awayjs-display/lib/draw/GraphicsFillStyle","./draw/GraphicsPath":"awayjs-display/lib/draw/GraphicsPath","./draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","./draw/GraphicsPathWinding":"awayjs-display/lib/draw/GraphicsPathWinding","./draw/GraphicsStrokeStyle":"awayjs-display/lib/draw/GraphicsStrokeStyle","./draw/InterpolationMethod":"awayjs-display/lib/draw/InterpolationMethod","./draw/JointStyle":"awayjs-display/lib/draw/JointStyle","./draw/LineScaleMode":"awayjs-display/lib/draw/LineScaleMode","./draw/PixelSnapping":"awayjs-display/lib/draw/PixelSnapping","./draw/SpreadMethod":"awayjs-display/lib/draw/SpreadMethod","./draw/TriangleCulling":"awayjs-display/lib/draw/TriangleCulling"}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
+var CastError = (function (_super) {
+    __extends(CastError, _super);
+    function CastError(message) {
+        _super.call(this, message);
+    }
+    return CastError;
+}(ErrorBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = CastError;
+},{"awayjs-core/lib/errors/ErrorBase":undefined}],"awayjs-display/lib/errors":[function(require,module,exports){
+"use strict";
+var CastError_1 = require("./errors/CastError");
+exports.CastError = CastError_1.default;
+},{"./errors/CastError":"awayjs-display/lib/errors/CastError"}],"awayjs-display/lib/events/CameraEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+/**
+ * @class away.events.CameraEvent
+ */
+var CameraEvent = (function (_super) {
+    __extends(CameraEvent, _super);
+    function CameraEvent(type, camera) {
+        _super.call(this, type);
+        this._camera = camera;
+    }
+    Object.defineProperty(CameraEvent.prototype, "camera", {
+        get: function () {
+            return this._camera;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     * @return An exact duplicate of the current object.
+     */
+    CameraEvent.prototype.clone = function () {
+        return new CameraEvent(this.type, this._camera);
+    };
+    CameraEvent.PROJECTION_CHANGED = "projectionChanged";
+    return CameraEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = CameraEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/DisplayObjectEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var DisplayObjectEvent = (function (_super) {
+    __extends(DisplayObjectEvent, _super);
+    function DisplayObjectEvent(type, object) {
+        _super.call(this, type);
+        this._object = object;
+    }
+    Object.defineProperty(DisplayObjectEvent.prototype, "object", {
+        get: function () {
+            return this._object;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     * @return An exact duplicate of the current object.
+     */
+    DisplayObjectEvent.prototype.clone = function () {
+        return new DisplayObjectEvent(this.type, this._object);
+    };
+    /**
+     *
+     */
+    DisplayObjectEvent.VISIBLITY_UPDATED = "visiblityUpdated";
+    /**
+     *
+     */
+    DisplayObjectEvent.SCENETRANSFORM_CHANGED = "scenetransformChanged";
+    /**
+     *
+     */
+    DisplayObjectEvent.SCENE_CHANGED = "sceneChanged";
+    /**
+     *
+     */
+    DisplayObjectEvent.PARTITION_CHANGED = "partitionChanged";
+    /**
+     *
+     */
+    DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS = "invalidatePartitionBounds";
+    return DisplayObjectEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = DisplayObjectEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/ElementsEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+/**
+ * Dispatched to notify changes in a sub geometry object's state.
+ *
+ * @class away.events.ElementsEvent
+ * @see away.core.base.Graphics
+ */
+var ElementsEvent = (function (_super) {
+    __extends(ElementsEvent, _super);
+    /**
+     * Create a new GraphicsEvent
+     * @param type The event type.
+     * @param attributesView An optional data type of the vertex data being updated.
+     */
+    function ElementsEvent(type, attributesView) {
+        _super.call(this, type);
+        this._attributesView = attributesView;
+    }
+    Object.defineProperty(ElementsEvent.prototype, "attributesView", {
+        /**
+         * The attributes view of the vertex data.
+         */
+        get: function () {
+            return this._attributesView;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    ElementsEvent.prototype.clone = function () {
+        return new ElementsEvent(this.type, this._attributesView);
+    };
+    /**
+     * Dispatched when a Elements's index data has been updated.
+     */
+    ElementsEvent.INVALIDATE_INDICES = "invalidateIndices";
+    /**
+     * Dispatched when a Elements's index data has been disposed.
+     */
+    ElementsEvent.CLEAR_INDICES = "clearIndices";
+    /**
+     * Dispatched when a Elements's vertex data has been updated.
+     */
+    ElementsEvent.INVALIDATE_VERTICES = "invalidateVertices";
+    /**
+     * Dispatched when a Elements's vertex data has been disposed.
+     */
+    ElementsEvent.CLEAR_VERTICES = "clearVertices";
+    return ElementsEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ElementsEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/LightEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var LightEvent = (function (_super) {
+    __extends(LightEvent, _super);
+    function LightEvent(type) {
+        _super.call(this, type);
+    }
+    //@override
+    LightEvent.prototype.clone = function () {
+        return new LightEvent(this.type);
+    };
+    LightEvent.CASTS_SHADOW_CHANGE = "castsShadowChange";
+    return LightEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = LightEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/MouseEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+/**
+ * A MouseEvent is dispatched when a mouse event occurs over a mouseEnabled object in View.
+ * TODO: we don't have screenZ data, tho this should be easy to implement
+ */
+var MouseEvent = (function (_super) {
+    __extends(MouseEvent, _super);
+    /**
+     * Create a new MouseEvent object.
+     * @param type The type of the MouseEvent.
+     */
+    function MouseEvent(type) {
+        _super.call(this, type);
+        // Private.
+        this._iAllowedToPropagate = true;
+    }
+    Object.defineProperty(MouseEvent.prototype, "bubbles", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            var doesBubble = this._iAllowedToPropagate;
+            this._iAllowedToPropagate = true;
+            // Don't bubble if propagation has been stopped.
+            return doesBubble;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    MouseEvent.prototype.stopPropagation = function () {
+        this._iAllowedToPropagate = false;
+        if (this._iParentEvent)
+            this._iParentEvent.stopPropagation();
+    };
+    /**
+     * @inheritDoc
+     */
+    MouseEvent.prototype.stopImmediatePropagation = function () {
+        this._iAllowedToPropagate = false;
+        if (this._iParentEvent)
+            this._iParentEvent.stopImmediatePropagation();
+    };
+    /**
+     * Creates a copy of the MouseEvent object and sets the value of each property to match that of the original.
+     */
+    MouseEvent.prototype.clone = function () {
+        var result = new MouseEvent(this.type);
+        /* TODO: Debug / test - look into isDefaultPrevented
+         if (isDefaultPrevented())
+         result.preventDefault();
+         */
+        result.screenX = this.screenX;
+        result.screenY = this.screenY;
+        result.view = this.view;
+        result.entity = this.entity;
+        result.renderable = this.renderable;
+        result.material = this.material;
+        result.uv = this.uv;
+        result.position = this.position;
+        result.normal = this.normal;
+        result.elementIndex = this.elementIndex;
+        result.delta = this.delta;
+        result.ctrlKey = this.ctrlKey;
+        result.shiftKey = this.shiftKey;
+        result._iParentEvent = this;
+        result._iAllowedToPropagate = this._iAllowedToPropagate;
+        return result;
+    };
+    Object.defineProperty(MouseEvent.prototype, "scenePosition", {
+        /**
+         * The position in scene space where the event took place
+         */
+        get: function () {
+            return this.entity.sceneTransform.transformVector(this.position);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MouseEvent.prototype, "sceneNormal", {
+        /**
+         * The normal in scene space where the event took place
+         */
+        get: function () {
+            var sceneNormal = this.entity.sceneTransform.deltaTransformVector(this.normal);
+            sceneNormal.normalize();
+            return sceneNormal;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Defines the value of the type property of a mouseOver3d event object.
+     */
+    MouseEvent.MOUSE_OVER = "mouseOver3d";
+    /**
+     * Defines the value of the type property of a mouseOut3d event object.
+     */
+    MouseEvent.MOUSE_OUT = "mouseOut3d";
+    /**
+     * Defines the value of the type property of a mouseUp3d event object.
+     */
+    MouseEvent.MOUSE_UP = "mouseUp3d";
+    /**
+     * Defines the value of the type property of a mouseDown3d event object.
+     */
+    MouseEvent.MOUSE_DOWN = "mouseDown3d";
+    /**
+     * Defines the value of the type property of a mouseMove3d event object.
+     */
+    MouseEvent.MOUSE_MOVE = "mouseMove3d";
+    /**
+     * Defines the value of the type property of a rollOver3d event object.
+     */
+    //		public static ROLL_OVER : string = "rollOver3d";
+    /**
+     * Defines the value of the type property of a rollOut3d event object.
+     */
+    //		public static ROLL_OUT : string = "rollOut3d";
+    /**
+     * Defines the value of the type property of a click3d event object.
+     */
+    MouseEvent.CLICK = "click3d";
+    /**
+     * Defines the value of the type property of a doubleClick3d event object.
+     */
+    MouseEvent.DOUBLE_CLICK = "doubleClick3d";
+    /**
+     * Defines the value of the type property of a mouseWheel3d event object.
+     */
+    MouseEvent.MOUSE_WHEEL = "mouseWheel3d";
+    return MouseEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MouseEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RenderableEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+/**
+ * Dispatched to notify changes in a sub geometry object's state.
+ *
+ * @class away.events.RenderableEvent
+ * @see away.core.base.Graphics
+ */
+var RenderableEvent = (function (_super) {
+    __extends(RenderableEvent, _super);
+    /**
+     * Create a new GraphicsEvent
+     * @param type The event type.
+     * @param dataType An optional data type of the vertex data being updated.
+     */
+    function RenderableEvent(type, renderable) {
+        _super.call(this, type);
+        this._renderable = renderable;
+    }
+    Object.defineProperty(RenderableEvent.prototype, "renderable", {
+        /**
+         * The renderobject owner of the renderable owner.
+         */
+        get: function () {
+            return this._renderable;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    RenderableEvent.prototype.clone = function () {
+        return new RenderableEvent(this.type, this._renderable);
+    };
+    /**
+     * Dispatched when a Renderable owners's render object owner has been updated.
+     */
+    RenderableEvent.INVALIDATE_RENDER_OWNER = "invalidateRenderable";
+    /**
+     *
+     */
+    RenderableEvent.INVALIDATE_ELEMENTS = "invalidateElements";
+    return RenderableEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = RenderableEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RendererEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var RendererEvent = (function (_super) {
+    __extends(RendererEvent, _super);
+    function RendererEvent(type) {
+        _super.call(this, type);
+    }
+    RendererEvent.VIEWPORT_UPDATED = "viewportUpdated";
+    RendererEvent.SCISSOR_UPDATED = "scissorUpdated";
+    return RendererEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = RendererEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/ResizeEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var ResizeEvent = (function (_super) {
+    __extends(ResizeEvent, _super);
+    function ResizeEvent(type, oldHeight, oldWidth) {
+        if (oldHeight === void 0) { oldHeight = NaN; }
+        if (oldWidth === void 0) { oldWidth = NaN; }
+        _super.call(this, type);
+        this._oldHeight = oldHeight;
+        this._oldWidth = oldWidth;
+    }
+    Object.defineProperty(ResizeEvent.prototype, "oldHeight", {
+        get: function () {
+            return this._oldHeight;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ResizeEvent.prototype, "oldWidth", {
+        get: function () {
+            return this._oldWidth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    ResizeEvent.prototype.clone = function () {
+        return new ResizeEvent(this.type, this._oldHeight, this._oldWidth);
+    };
+    ResizeEvent.RESIZE = "resize";
+    return ResizeEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ResizeEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/StyleEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var StyleEvent = (function (_super) {
+    __extends(StyleEvent, _super);
+    function StyleEvent(type, style) {
+        _super.call(this, type);
+        this._style = style;
+    }
+    Object.defineProperty(StyleEvent.prototype, "style", {
+        get: function () {
+            return this._style;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     * @return An exact duplicate of the current object.
+     */
+    StyleEvent.prototype.clone = function () {
+        return new StyleEvent(this.type, this._style);
+    };
+    /**
+     *
+     */
+    StyleEvent.INVALIDATE_PROPERTIES = "invalidateProperties";
+    return StyleEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = StyleEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/SurfaceEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var SurfaceEvent = (function (_super) {
+    __extends(SurfaceEvent, _super);
+    /**
+     * Create a new GraphicsEvent
+     * @param type The event type.
+     * @param dataType An optional data type of the vertex data being updated.
+     */
+    function SurfaceEvent(type, surface) {
+        _super.call(this, type);
+        this._surface = surface;
+    }
+    Object.defineProperty(SurfaceEvent.prototype, "surface", {
+        /**
+         * The surface of the renderable.
+         */
+        get: function () {
+            return this._surface;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     *
+     * @return An exact duplicate of the current object.
+     */
+    SurfaceEvent.prototype.clone = function () {
+        return new SurfaceEvent(this.type, this._surface);
+    };
+    SurfaceEvent.INVALIDATE_TEXTURE = "invalidateTexture";
+    SurfaceEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
+    SurfaceEvent.INVALIDATE_PASSES = "invalidatePasses";
+    return SurfaceEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = SurfaceEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/TouchEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var TouchEvent = (function (_super) {
+    __extends(TouchEvent, _super);
+    /**
+     * Create a new TouchEvent object.
+     * @param type The type of the TouchEvent.
+     */
+    function TouchEvent(type) {
+        _super.call(this, type);
+        // Private.
+        this._iAllowedToPropagate = true;
+    }
+    Object.defineProperty(TouchEvent.prototype, "bubbles", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            var doesBubble = this._iAllowedToPropagate;
+            this._iAllowedToPropagate = true;
+            // Don't bubble if propagation has been stopped.
+            return doesBubble;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    TouchEvent.prototype.stopPropagation = function () {
+        this._iAllowedToPropagate = false;
+        if (this._iParentEvent)
+            this._iParentEvent.stopPropagation();
+    };
+    /**
+     * @inheritDoc
+     */
+    TouchEvent.prototype.stopImmediatePropagation = function () {
+        this._iAllowedToPropagate = false;
+        if (this._iParentEvent)
+            this._iParentEvent.stopImmediatePropagation();
+    };
+    /**
+     * Creates a copy of the TouchEvent object and sets the value of each property to match that of the original.
+     */
+    TouchEvent.prototype.clone = function () {
+        var result = new TouchEvent(this.type);
+        /* TODO: Debug / test - look into isDefaultPrevented
+         if (isDefaultPrevented())
+         result.preventDefault();
+         */
+        result.screenX = this.screenX;
+        result.screenY = this.screenY;
+        result.view = this.view;
+        result.entity = this.entity;
+        result.renderable = this.renderable;
+        result.material = this.material;
+        result.uv = this.uv;
+        result.position = this.position;
+        result.normal = this.normal;
+        result.elementIndex = this.elementIndex;
+        result.ctrlKey = this.ctrlKey;
+        result.shiftKey = this.shiftKey;
+        result._iParentEvent = this;
+        return result;
+    };
+    Object.defineProperty(TouchEvent.prototype, "scenePosition", {
+        /**
+         * The position in scene space where the event took place
+         */
+        get: function () {
+            return this.entity.sceneTransform.transformVector(this.position);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TouchEvent.prototype, "sceneNormal", {
+        /**
+         * The normal in scene space where the event took place
+         */
+        get: function () {
+            var sceneNormal = this.entity.sceneTransform.deltaTransformVector(this.normal);
+            sceneNormal.normalize();
+            return sceneNormal;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    TouchEvent.TOUCH_END = "touchEnd3d";
+    /**
+     *
+     */
+    TouchEvent.TOUCH_BEGIN = "touchBegin3d";
+    /**
+     *
+     */
+    TouchEvent.TOUCH_MOVE = "touchMove3d";
+    /**
+     *
+     */
+    TouchEvent.TOUCH_OUT = "touchOut3d";
+    /**
+     *
+     */
+    TouchEvent.TOUCH_OVER = "touchOver3d";
+    return TouchEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = TouchEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/TransformEvent":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("awayjs-core/lib/events/EventBase");
+var TransformEvent = (function (_super) {
+    __extends(TransformEvent, _super);
+    function TransformEvent(type, transform) {
+        _super.call(this, type);
+        this._transform = transform;
+    }
+    Object.defineProperty(TransformEvent.prototype, "transform", {
+        get: function () {
+            return this._transform;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Clones the event.
+     * @return An exact duplicate of the current object.
+     */
+    TransformEvent.prototype.clone = function () {
+        return new TransformEvent(this.type, this._transform);
+    };
+    /**
+     *
+     */
+    TransformEvent.INVALIDATE_MATRIX3D = "invalidateMatrix3D";
+    /**
+     *
+     */
+    TransformEvent.INVALIDATE_COLOR_TRANSFORM = "invalidateColorTransform";
+    return TransformEvent;
+}(EventBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = TransformEvent;
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events":[function(require,module,exports){
+"use strict";
+var CameraEvent_1 = require("./events/CameraEvent");
+exports.CameraEvent = CameraEvent_1.default;
+var DisplayObjectEvent_1 = require("./events/DisplayObjectEvent");
+exports.DisplayObjectEvent = DisplayObjectEvent_1.default;
+var ElementsEvent_1 = require("./events/ElementsEvent");
+exports.ElementsEvent = ElementsEvent_1.default;
+var LightEvent_1 = require("./events/LightEvent");
+exports.LightEvent = LightEvent_1.default;
+var MouseEvent_1 = require("./events/MouseEvent");
+exports.MouseEvent = MouseEvent_1.default;
+var RenderableEvent_1 = require("./events/RenderableEvent");
+exports.RenderableEvent = RenderableEvent_1.default;
+var RendererEvent_1 = require("./events/RendererEvent");
+exports.RendererEvent = RendererEvent_1.default;
+var ResizeEvent_1 = require("./events/ResizeEvent");
+exports.ResizeEvent = ResizeEvent_1.default;
+var StyleEvent_1 = require("./events/StyleEvent");
+exports.StyleEvent = StyleEvent_1.default;
+var SurfaceEvent_1 = require("./events/SurfaceEvent");
+exports.SurfaceEvent = SurfaceEvent_1.default;
+var TouchEvent_1 = require("./events/TouchEvent");
+exports.TouchEvent = TouchEvent_1.default;
+var TransformEvent_1 = require("./events/TransformEvent");
+exports.TransformEvent = TransformEvent_1.default;
+},{"./events/CameraEvent":"awayjs-display/lib/events/CameraEvent","./events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","./events/ElementsEvent":"awayjs-display/lib/events/ElementsEvent","./events/LightEvent":"awayjs-display/lib/events/LightEvent","./events/MouseEvent":"awayjs-display/lib/events/MouseEvent","./events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","./events/RendererEvent":"awayjs-display/lib/events/RendererEvent","./events/ResizeEvent":"awayjs-display/lib/events/ResizeEvent","./events/StyleEvent":"awayjs-display/lib/events/StyleEvent","./events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","./events/TouchEvent":"awayjs-display/lib/events/TouchEvent","./events/TransformEvent":"awayjs-display/lib/events/TransformEvent"}],"awayjs-display/lib/factories/ITimelineSceneGraphFactory":[function(require,module,exports){
+"use strict";
+},{}],"awayjs-display/lib/factories":[function(require,module,exports){
+"use strict";
+},{}],"awayjs-display/lib/graphics/ElementsBase":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
 var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
-var Float2Attributes_1 = require("awayjs-core/lib/attributes/Float2Attributes");
-var PartialImplementationError_1 = require("awayjs-core/lib/errors/PartialImplementationError");
-var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
+var Short3Attributes_1 = require("awayjs-core/lib/attributes/Short3Attributes");
+var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
+var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var ElementsEvent_1 = require("../events/ElementsEvent");
 /**
- * The Graphics class contains a set of methods that you can use to create a
- * vector shape. Display objects that support drawing include Sprite and Shape
- * objects. Each of these classes includes a <code>graphics</code> property
- * that is a Graphics object. The following are among those helper functions
- * provided for ease of use: <code>drawRect()</code>,
- * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
- * <code>drawEllipse()</code>.
- *
- * <p>You cannot create a Graphics object directly from ActionScript code. If
- * you call <code>new Graphics()</code>, an exception is thrown.</p>
- *
- * <p>The Graphics class is final; it cannot be subclassed.</p>
+ * @class away.base.TriangleElements
  */
-var Graphics = (function () {
-    function Graphics(target) {
+var ElementsBase = (function (_super) {
+    __extends(ElementsBase, _super);
+    /**
+     *
+     */
+    function ElementsBase(concatenatedBuffer) {
+        if (concatenatedBuffer === void 0) { concatenatedBuffer = null; }
+        _super.call(this);
+        this._customAttributesNames = new Array();
+        this._customAttributes = new Object();
+        this._numElements = 0;
+        this._verticesDirty = new Object();
+        this._invalidateVertices = new Object();
+        this._concatenatedBuffer = concatenatedBuffer;
+    }
+    Object.defineProperty(ElementsBase.prototype, "concatenatedBuffer", {
+        get: function () {
+            return this._concatenatedBuffer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ElementsBase.prototype, "indices", {
+        /**
+         * The raw index data that define the faces.
+         */
+        get: function () {
+            return this._indices;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     */
+    ElementsBase.prototype.getCustomAtributesNames = function () {
+        return this._customAttributesNames;
+    };
+    /**
+     *
+     */
+    ElementsBase.prototype.getCustomAtributes = function (name) {
+        return this._customAttributes[name];
+    };
+    Object.defineProperty(ElementsBase.prototype, "numElements", {
+        /**
+         * The total amount of triangles in the TriangleElements.
+         */
+        get: function () {
+            return this._numElements;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ElementsBase.prototype, "numVertices", {
+        get: function () {
+            throw new AbstractMethodError_1.default();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ElementsBase.prototype.copyTo = function (elements) {
+        if (this.indices)
+            elements.setIndices(this.indices.clone());
+        for (var name in this._customAttributes)
+            elements.setCustomAttributes(name, this.getCustomAtributes(name).clone());
+    };
+    /**
+     *
+     */
+    ElementsBase.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        if (this._indices) {
+            this._indices.dispose();
+            this._indices = null;
+        }
+        for (var name in this._customAttributes) {
+            this._customAttributes[name].dispose();
+            delete this._customAttributes;
+        }
+    };
+    ElementsBase.prototype.setIndices = function (values, offset) {
+        if (offset === void 0) { offset = 0; }
+        if (values instanceof Short3Attributes_1.default) {
+            if (this._indices)
+                this.clearIndices();
+            this._indices = values;
+        }
+        else if (values) {
+            if (!this._indices)
+                this._indices = new Short3Attributes_1.default();
+            this._indices.set(values, offset);
+        }
+        else if (this._indices) {
+            this._indices.dispose();
+            this._indices = null;
+            this.clearIndices();
+        }
+        if (this._indices) {
+            this._numElements = this._indices.count;
+            this.invalidateIndicies();
+        }
+        else {
+            this._numElements = 0;
+        }
+    };
+    ElementsBase.prototype.setCustomAttributes = function (name, values, offset) {
+        if (offset === void 0) { offset = 0; }
+        if (values == this._customAttributes[name])
+            return;
+        if (values instanceof AttributesView_1.default) {
+            this.clearVertices(this._customAttributes[name]);
+            this._customAttributes[name] = values;
+        }
+        else if (values) {
+            if (!this._customAttributes[name])
+                this._customAttributes[name] = new Float3Attributes_1.default(this._concatenatedBuffer); //default custom atrributes is Float3
+            this._customAttributes[name].set(values, offset);
+        }
+        else if (this._customAttributes[name]) {
+            this.clearVertices(this._customAttributes[name]);
+            this._customAttributesNames.splice(this._customAttributesNames.indexOf(name), 1);
+            delete this._customAttributes[name];
+            return;
+        }
+        this.invalidateVertices(this._customAttributes[name]);
+        this._verticesDirty[this._customAttributes[name].id] = false;
+        if (this._customAttributesNames.indexOf(name) == -1)
+            this._customAttributesNames.push(name);
+    };
+    /**
+     * Clones the current object
+     * @return An exact duplicate of the current object.
+     */
+    ElementsBase.prototype.clone = function () {
+        throw new AbstractMethodError_1.default();
+    };
+    ElementsBase.prototype.applyTransformation = function (transform) {
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    ElementsBase.prototype.scale = function (scale) {
+    };
+    ElementsBase.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+    };
+    ElementsBase.prototype.getBoxBounds = function (target) {
+        if (target === void 0) { target = null; }
+        throw new AbstractMethodError_1.default();
+    };
+    ElementsBase.prototype.getSphereBounds = function (center, target) {
+        if (target === void 0) { target = null; }
+        throw new AbstractMethodError_1.default();
+    };
+    ElementsBase.prototype.hitTestPoint = function (x, y, z, box) {
+        throw new AbstractMethodError_1.default();
+    };
+    ElementsBase.prototype.invalidateIndicies = function () {
+        if (!this._invalidateIndices)
+            this._invalidateIndices = new ElementsEvent_1.default(ElementsEvent_1.default.INVALIDATE_INDICES, this._indices);
+        this.dispatchEvent(this._invalidateIndices);
+    };
+    ElementsBase.prototype.clearIndices = function () {
+        this.dispatchEvent(new ElementsEvent_1.default(ElementsEvent_1.default.CLEAR_INDICES, this._indices));
+    };
+    ElementsBase.prototype.invalidateVertices = function (attributesView) {
+        if (!attributesView || this._verticesDirty[attributesView.id])
+            return;
+        this._verticesDirty[attributesView.id] = true;
+        if (!this._invalidateVertices[attributesView.id])
+            this._invalidateVertices[attributesView.id] = new ElementsEvent_1.default(ElementsEvent_1.default.INVALIDATE_VERTICES, attributesView);
+        this.dispatchEvent(this._invalidateVertices[attributesView.id]);
+    };
+    ElementsBase.prototype.clearVertices = function (attributesView) {
+        if (!attributesView)
+            return;
+        attributesView.dispose();
+        this.dispatchEvent(new ElementsEvent_1.default(ElementsEvent_1.default.CLEAR_VERTICES, attributesView));
+        this._verticesDirty[attributesView.id] = null;
+        this._invalidateVertices[attributesView.id] = null;
+    };
+    ElementsBase.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
+        throw new AbstractMethodError_1.default();
+    };
+    return ElementsBase;
+}(AssetBase_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ElementsBase;
+},{"../events/ElementsEvent":"awayjs-display/lib/events/ElementsEvent","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/attributes/Short3Attributes":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/graphics/ElementsType":[function(require,module,exports){
+"use strict";
+var ElementsType = (function () {
+    function ElementsType() {
+    }
+    /**
+     *
+     */
+    ElementsType.TRIANGLE = "triangle";
+    /**
+     *
+     */
+    ElementsType.LINE = "line";
+    return ElementsType;
+}());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = ElementsType;
+},{}],"awayjs-display/lib/graphics/Graphics":[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Point_1 = require("awayjs-core/lib/geom/Point");
+var Box_1 = require("awayjs-core/lib/geom/Box");
+var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
+var Graphic_1 = require("../graphics/Graphic");
+var ElementsEvent_1 = require("../events/ElementsEvent");
+var StyleEvent_1 = require("../events/StyleEvent");
+var ElementsUtils_1 = require("../utils/ElementsUtils");
+var GraphicsPath_1 = require("../draw/GraphicsPath");
+var GraphicsFactoryFills_1 = require("../draw/GraphicsFactoryFills");
+var GraphicsFactoryStrokes_1 = require("../draw/GraphicsFactoryStrokes");
+var PartialImplementationError_1 = require("awayjs-core/lib/errors/PartialImplementationError");
+var JointStyle_1 = require("../draw/JointStyle");
+var CapsStyle_1 = require("../draw/CapsStyle");
+var GraphicsStrokeStyle_1 = require("../draw/GraphicsStrokeStyle");
+var GraphicsFillStyle_1 = require("../draw/GraphicsFillStyle");
+/**
+ *
+ * Graphics is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
+ * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+ * A Graphics object is assigned to a Sprite, a scene graph occurence of the geometry, which in turn assigns
+ * the SubGeometries to its respective TriangleGraphic objects.
+ *
+ *
+ *
+ * @see away.core.base.SubGraphics
+ * @see away.entities.Sprite
+ *
+ * @class Graphics
+ */
+var Graphics = (function (_super) {
+    __extends(Graphics, _super);
+    /**
+     * Creates a new Graphics object.
+     */
+    function Graphics() {
+        var _this = this;
+        _super.call(this);
+        this._boxBoundsInvalid = true;
+        this._sphereBoundsInvalid = true;
+        this._graphics = new Array();
         this._current_position = new Point_1.default();
-        this._target = target;
+        this._current_position = new Point_1.default();
         this._queued_fill_pathes = [];
         this._queued_stroke_pathes = [];
         this._active_fill_path = null;
         this._active_stroke_path = null;
-        this._current_position = new Point_1.default();
+        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
     }
+    Object.defineProperty(Graphics.prototype, "assetType", {
+        get: function () {
+            return Graphics.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "count", {
+        get: function () {
+            return this._graphics.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "animator", {
+        /**
+         * Defines the animator of the graphics object.  Default value is <code>null</code>.
+         */
+        get: function () {
+            return this._animator;
+        },
+        set: function (value) {
+            this._animator = value;
+            var len = this._graphics.length;
+            var graphic;
+            for (var i = 0; i < len; ++i) {
+                graphic = this._graphics[i];
+                // cause material to be unregistered and registered again to work with the new animation type (if possible)
+                if (graphic.material) {
+                    graphic.material.iRemoveOwner(graphic);
+                    graphic.material.iAddOwner(graphic);
+                }
+                //invalidate any existing graphic objects in case they need to pull new elements
+                graphic.invalidateElements();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "style", {
+        /**
+         *
+         */
+        get: function () {
+            return this._style;
+        },
+        set: function (value) {
+            if (this._style == value)
+                return;
+            if (this._style)
+                this._style.removeEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._style = value;
+            if (this._style)
+                this._style.addEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._iInvalidateSurfaces();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "queued_stroke_pathes", {
+        get: function () {
+            return this._queued_stroke_pathes;
+        },
+        set: function (value) {
+            this._queued_stroke_pathes = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "queued_fill_pathes", {
+        get: function () {
+            return this._queued_fill_pathes;
+        },
+        set: function (value) {
+            this._queued_fill_pathes = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "material", {
+        /**
+         * The material with which to render the Graphics.
+         */
+        get: function () {
+            return this._material;
+        },
+        set: function (value) {
+            if (value == this._material)
+                return;
+            var i;
+            var len = this._graphics.length;
+            var graphic;
+            if (this._material)
+                for (i = 0; i < len; i++)
+                    if (!(graphic = this._graphics[i])._iGetExplicitMaterial())
+                        this._material.iRemoveOwner(graphic);
+            this._material = value;
+            if (this._material)
+                for (i = 0; i < len; i++)
+                    if (!(graphic = this._graphics[i])._iGetExplicitMaterial())
+                        this._material.iAddOwner(graphic);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Adds a GraphicBase wrapping a Elements.
+     *
+     * @param elements
+     */
+    Graphics.prototype.addGraphic = function (elements, material, style) {
+        if (material === void 0) { material = null; }
+        if (style === void 0) { style = null; }
+        var graphic;
+        if (Graphic_1.default._available.length) {
+            graphic = Graphic_1.default._available.pop();
+            graphic._iIndex = this._graphics.length;
+            graphic.parent = this;
+            graphic.elements = elements;
+            graphic.material = material;
+            graphic.style = style;
+        }
+        else {
+            graphic = new Graphic_1.default(this._graphics.length, this, elements, material, style);
+        }
+        this._graphics.push(graphic);
+        elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        this.invalidate();
+        return graphic;
+    };
+    Graphics.prototype.removeGraphic = function (graphic) {
+        this._graphics.splice(this._graphics.indexOf(graphic), 1);
+        graphic.elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        graphic.elements = null;
+        graphic.material = null;
+        graphic.style = null;
+        graphic.clear();
+        this.invalidate();
+    };
+    Graphics.prototype.getGraphicAt = function (index) {
+        return this._graphics[index];
+    };
+    Graphics.prototype.applyTransformation = function (transform) {
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i)
+            this._graphics[i].elements.applyTransformation(transform);
+    };
+    Graphics.prototype.copyTo = function (graphics) {
+        graphics.material = this._material;
+        graphics.style = this.style;
+        graphics.particles = this.particles;
+        graphics.numParticles = this.numParticles;
+        var graphic;
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i) {
+            graphic = this._graphics[i];
+            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle());
+        }
+        if (this._animator)
+            graphics.animator = this._animator.clone();
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    Graphics.prototype.scale = function (scale) {
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i)
+            this._graphics[i].elements.scale(scale);
+    };
+    /*
+        public clear()
+        {
+            for (var i:number = this._graphics.length - 1; i>=0; i--)
+                this._graphics[i].clear();
+        }
+    */
+    Graphics.prototype.clear = function () {
+        for (var i = this._graphics.length - 1; i >= 0; i--)
+            this._graphics[i].dispose();
+    };
+    /**
+     * Clears all resources used by the Graphics object, including SubGeometries.
+     */
+    Graphics.prototype.dispose = function () {
+        this.material = null;
+        for (var i = this._graphics.length - 1; i >= 0; i--)
+            this._graphics[i].dispose();
+        if (this._animator)
+            this._animator.dispose();
+    };
+    /**
+     * Scales the uv coordinates (tiling)
+     * @param scaleU The amount by which to scale on the u axis. Default is 1;
+     * @param scaleV The amount by which to scale on the v axis. Default is 1;
+     */
+    Graphics.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i)
+            this._graphics[i].elements.scaleUV(scaleU, scaleV);
+    };
+    Graphics.prototype.getBoxBounds = function () {
+        if (this._boxBoundsInvalid) {
+            this._boxBoundsInvalid = false;
+            if (!this._boxBounds)
+                this._boxBounds = new Box_1.default();
+            if (this._graphics.length) {
+                this._boxBounds.setBoundIdentity();
+                var len = this._graphics.length;
+                for (var i = 0; i < len; i++)
+                    this._boxBounds = this._graphics[i].elements.getBoxBounds(this._boxBounds);
+            }
+            else {
+                this._boxBounds.setEmpty();
+            }
+        }
+        return this._boxBounds;
+    };
+    Graphics.prototype.getSphereBounds = function (center, target) {
+        if (target === void 0) { target = null; }
+        var len = this._graphics.length;
+        for (var i = 0; i < len; i++)
+            target = this._graphics[i].elements.getSphereBounds(center, target);
+        return target;
+    };
+    Graphics.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._boxBoundsInvalid = true;
+        this._sphereBoundsInvalid = true;
+    };
+    Graphics.prototype._iInvalidateSurfaces = function () {
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i)
+            this._graphics[i].invalidateSurface();
+    };
+    Graphics.prototype.invalidateElements = function () {
+        var len = this._graphics.length;
+        for (var i = 0; i < len; ++i)
+            this._graphics[i].invalidateElements();
+    };
+    Graphics.prototype._hitTestPointInternal = function (x, y) {
+        //TODO: handle lines as well
+        var len = this._graphics.length;
+        for (var i = 0; i < len; i++)
+            if (ElementsUtils_1.default.hitTestTriangleElements(x, y, 0, this.getBoxBounds(), this._graphics[i].elements))
+                return true;
+        return false;
+    };
+    Graphics.prototype.acceptTraverser = function (traverser) {
+        var len = this._graphics.length;
+        for (var i = 0; i < len; i++)
+            traverser.applyRenderable(this._graphics[i]);
+    };
+    Graphics.prototype._onInvalidateProperties = function (event) {
+        this._iInvalidateSurfaces();
+    };
+    Graphics.prototype._onInvalidateVertices = function (event) {
+        if (event.attributesView != event.target.positions)
+            return;
+        this.invalidate();
+    };
+    Graphics.prototype.draw_fills = function () {
+        GraphicsFactoryFills_1.default.draw_pathes(this);
+    };
+    Graphics.prototype.draw_strokes = function () {
+        GraphicsFactoryStrokes_1.default.draw_pathes(this);
+    };
     /**
      * Fills a drawing area with a bitmap image. The bitmap can be repeated or
      * tiled to fill the area. The fill remains in effect until you call the
@@ -25173,10 +27802,11 @@ var Graphics = (function () {
         if (matrix === void 0) { matrix = null; }
         if (repeat === void 0) { repeat = true; }
         if (smooth === void 0) { smooth = false; }
-        this.draw_fill();
+        this.draw_fills();
         // start a new fill path
         this._active_fill_path = new GraphicsPath_1.default();
-        this._active_fill_path.isFill = true;
+        // todo: create bitmap fill style
+        this._active_fill_path.style = new GraphicsFillStyle_1.default(0xffffff, 1);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
@@ -25197,10 +27827,10 @@ var Graphics = (function () {
      */
     Graphics.prototype.beginFill = function (color /*int*/, alpha) {
         if (alpha === void 0) { alpha = 1; }
-        this.draw_fill();
+        this.draw_fills();
         // start a new fill path
         this._active_fill_path = new GraphicsPath_1.default();
-        this._active_fill_path.isFill = true;
+        this._active_fill_path.style = new GraphicsFillStyle_1.default(color, alpha);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
@@ -25293,76 +27923,14 @@ var Graphics = (function () {
         if (spreadMethod === void 0) { spreadMethod = "pad"; }
         if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
         if (focalPointRatio === void 0) { focalPointRatio = 0; }
-        this.draw_fill();
+        this.draw_fills();
         // start a new fill path
         this._active_fill_path = new GraphicsPath_1.default();
-        this._active_fill_path.isFill = true;
+        // todo: create gradient fill style
+        this._active_fill_path.style = new GraphicsFillStyle_1.default(colors[0], alphas[0]);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
-    };
-    /**
-     * Specifies a shader fill used by subsequent calls to other Graphics methods
-     * (such as <code>lineTo()</code> or <code>drawCircle()</code>) for the
-     * object. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called.</p>
-     *
-     * <p>Shader fills are not supported under GPU rendering; filled areas will
-     * be colored cyan.</p>
-     *
-     * @param shader The shader to use for the fill. This Shader instance is not
-     *               required to specify an image input. However, if an image
-     *               input is specified in the shader, the input must be provided
-     *               manually. To specify the input, set the <code>input</code>
-     *               property of the corresponding ShaderInput property of the
-     *               <code>Shader.data</code> property.
-     *
-     *               <p>When you pass a Shader instance as an argument the shader
-     *               is copied internally. The drawing fill operation uses that
-     *               internal copy, not a reference to the original shader. Any
-     *               changes made to the shader, such as changing a parameter
-     *               value, input, or bytecode, are not applied to the copied
-     *               shader that's used for the fill.</p>
-     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-     *               can use to define transformations on the shader. For
-     *               example, you can use the following matrix to rotate a shader
-     *               by 45 degrees(pi/4 radians):
-     *
-     *               <p>The coordinates received in the shader are based on the
-     *               matrix that is specified for the <code>matrix</code>
-     *               parameter. For a default(<code>null</code>) matrix, the
-     *               coordinates in the shader are local pixel coordinates which
-     *               can be used to sample an input.</p>
-     * @throws ArgumentError When the shader output type is not compatible with
-     *                       this operation(the shader must specify a
-     *                       <code>pixel3</code> or <code>pixel4</code> output).
-     * @throws ArgumentError When the shader specifies an image input that isn't
-     *                       provided.
-     * @throws ArgumentError When a ByteArray or Vector.<Number> instance is used
-     *                       as an input and the <code>width</code> and
-     *                       <code>height</code> properties aren't specified for
-     *                       the ShaderInput, or the specified values don't match
-     *                       the amount of data in the input object. See the
-     *                       <code>ShaderInput.input</code> property for more
-     *                       information.
-     */
-    //		public beginShaderFill(shader:Shader, matrix:Matrix = null)
-    //		{
-    //
-    //		}
-    /**
-     * Clears the graphics that were drawn to this Graphics object, and resets
-     * fill and line style settings.
-     *
-     */
-    Graphics.prototype.clear = function () {
-        // todo: do this the correct way
-        this._target.graphics.dispose();
     };
     /**
      * Copies all of drawing commands from the source Graphics object into the
@@ -25372,7 +27940,7 @@ var Graphics = (function () {
      *                       commands.
      */
     Graphics.prototype.copyFrom = function (sourceGraphics) {
-        sourceGraphics._target.graphics.copyTo(this._target.graphics);
+        sourceGraphics.copyTo(this);
     };
     /**
      * Draws a cubic Bezier curve from the current drawing position to the
@@ -25483,13 +28051,6 @@ var Graphics = (function () {
         }
         this._current_position.x = anchorX;
         this._current_position.y = anchorY;
-        /*
-        this.queued_command_types.push(Graphics.CMD_CURVE);
-        this.queued_command_data.push(controlX);
-        this.queued_command_data.push(controlY);
-        this.queued_command_data.push(anchorX);
-        this.queued_command_data.push(anchorY);
-        */
     };
     /**
      * Draws a circle. Set the line style, fill, or both before you call the
@@ -25507,6 +28068,7 @@ var Graphics = (function () {
      * @param radius The radius of the circle(in pixels).
      */
     Graphics.prototype.drawCircle = function (x, y, radius) {
+        // todo: directly create triangles instead of draw commands ?
         var radius2 = radius * 1.065;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x - radius, y);
@@ -25572,7 +28134,7 @@ var Graphics = (function () {
      *
      */
     Graphics.prototype.drawGraphicsData = function (graphicsData) {
-        //this.draw_fill();
+        //this.draw_fills();
         /*
          for (var i:number=0; i<graphicsData.length; i++){
          //todo
@@ -25668,6 +28230,7 @@ var Graphics = (function () {
      *                      (<code>Number.NaN</code>).
      */
     Graphics.prototype.drawRect = function (x, y, width, height) {
+        //todo: directly create triangles instead of drawing commands ?
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
             this._active_fill_path.lineTo(x + width, y);
@@ -25711,6 +28274,7 @@ var Graphics = (function () {
      */
     Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
         if (ellipseHeight === void 0) { ellipseHeight = NaN; }
+        //todo: directly create triangles instead of drawing commands ?
         if (!ellipseHeight) {
             ellipseHeight = ellipseWidth;
         }
@@ -25778,7 +28342,7 @@ var Graphics = (function () {
      */
     Graphics.prototype.endFill = function () {
         this.draw_strokes();
-        this.draw_fill();
+        this.draw_fills();
         this._active_fill_path = null;
         this._active_stroke_path = null;
     };
@@ -26072,17 +28636,18 @@ var Graphics = (function () {
      *                     has a specific maximum angle for which the miter is
      *                     cut off. The following table lists some examples:</p>
      */
-    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit) {
+    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, capstyle, jointstyle, miterLimit) {
         if (thickness === void 0) { thickness = 0; }
         if (color === void 0) { color = 0; }
         if (alpha === void 0) { alpha = 1; }
         if (pixelHinting === void 0) { pixelHinting = false; }
         if (scaleMode === void 0) { scaleMode = null; }
-        if (caps === void 0) { caps = null; }
-        if (joints === void 0) { joints = null; }
-        if (miterLimit === void 0) { miterLimit = 3; }
+        if (capstyle === void 0) { capstyle = CapsStyle_1.default.NONE; }
+        if (jointstyle === void 0) { jointstyle = JointStyle_1.default.MITER; }
+        if (miterLimit === void 0) { miterLimit = 100; }
         // start a new stroke path
         this._active_stroke_path = new GraphicsPath_1.default();
+        this._active_stroke_path.style = new GraphicsStrokeStyle_1.default(color, alpha, thickness, jointstyle, capstyle, miterLimit);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_stroke_pathes.push(this._active_stroke_path);
@@ -26133,2182 +28698,12 @@ var Graphics = (function () {
         this._current_position.x = x;
         this._current_position.y = y;
     };
-    Graphics.prototype.draw_strokes = function () {
-        if (this._active_stroke_path == null)
-            return;
-        this._active_stroke_path.finalizeContour();
-        var contour_commands = this._active_stroke_path.commands;
-        var contour_data = this._active_stroke_path.data;
-        var contour_closed = this._active_stroke_path.contours_closed;
-        var commands;
-        var data;
-        var i = 0;
-        var k = 0;
-        var vert_cnt = 0;
-        var data_cnt = 0;
-        var draw_started = false;
-        var final_vert_list = [];
-        var final_vert_cnt = 0;
-        var lastPoint = new Point_1.default();
-        var start_point = new Point_1.default();
-        var end_point = new Point_1.default();
-        var start_left = new Point_1.default();
-        var start_right = new Point_1.default();
-        var ctr_left = new Point_1.default();
-        var ctr_right = new Point_1.default();
-        var ctr_left2 = new Point_1.default();
-        var ctr_right2 = new Point_1.default();
-        var end_left = new Point_1.default();
-        var end_right = new Point_1.default();
-        var tmp_point = new Point_1.default();
-        var tmp_point2 = new Point_1.default();
-        var first_point = new Point_1.default();
-        var first_point_set = false;
-        var closed = false;
-        var thickness = 3;
-        var tessVerts = [];
-        Graphics._tess_obj.newTess(1024 * 512);
-        for (k = 0; k < contour_commands.length; k++) {
-            var contour_points = [];
-            var contour_types = [];
-            commands = contour_commands[k];
-            data = contour_data[k];
-            closed = contour_closed[k];
-            vert_cnt = 0;
-            data_cnt = 0;
-            draw_started = false;
-            first_point_set = false;
-            for (i = 0; i < commands.length; i++) {
-                switch (commands[i]) {
-                    case GraphicsPathCommand_1.default.MOVE_TO:
-                        lastPoint.x = data[data_cnt++];
-                        lastPoint.y = data[data_cnt++];
-                        break;
-                    case GraphicsPathCommand_1.default.LINE_TO:
-                        contour_types.push(GraphicsPathCommand_1.default.LINE_TO);
-                        end_point.x = data[data_cnt++];
-                        end_point.y = data[data_cnt++];
-                        tmp_point.x = -1 * (end_point.y - lastPoint.y);
-                        tmp_point.y = end_point.x - lastPoint.x;
-                        tmp_point.normalize();
-                        // rotate point
-                        start_left.x = lastPoint.x + (tmp_point.x * thickness);
-                        start_left.y = lastPoint.y + (tmp_point.y * thickness);
-                        start_right.x = lastPoint.x - (tmp_point.x * thickness);
-                        start_right.y = lastPoint.y - (tmp_point.y * thickness);
-                        // rotate point
-                        end_left.x = end_point.x + (tmp_point.x * thickness);
-                        end_left.y = end_point.y + (tmp_point.y * thickness);
-                        end_right.x = end_point.x - (tmp_point.x * thickness);
-                        end_right.y = end_point.y - (tmp_point.y * thickness);
-                        lastPoint.x = end_point.x;
-                        lastPoint.y = end_point.y;
-                        contour_points.push(new Point_1.default(start_right.x, start_right.y));
-                        contour_points.push(new Point_1.default(start_left.x, start_left.y));
-                        contour_points.push(new Point_1.default(end_right.x, end_right.y));
-                        contour_points.push(new Point_1.default(end_left.x, end_left.y));
-                        break;
-                    case GraphicsPathCommand_1.default.CURVE_TO:
-                        contour_types.push(GraphicsPathCommand_1.default.CURVE_TO);
-                        contour_types.push(GraphicsPathCommand_1.default.CURVE_TO_2);
-                        var curve_direction = data[data_cnt++];
-                        var control_x = data[data_cnt++];
-                        var control_y = data[data_cnt++];
-                        var end_x = data[data_cnt++];
-                        var end_y = data[data_cnt++];
-                        tmp_point.x = -1 * (control_y - lastPoint.y);
-                        tmp_point.y = control_x - lastPoint.x;
-                        tmp_point.normalize();
-                        // rotate point
-                        start_left.x = lastPoint.x + (tmp_point.x * thickness);
-                        start_left.y = lastPoint.y + (tmp_point.y * thickness);
-                        start_right.x = lastPoint.x - (tmp_point.x * thickness);
-                        start_right.y = lastPoint.y - (tmp_point.y * thickness);
-                        // rotate point
-                        ctr_left.x = control_x + (tmp_point.x * thickness);
-                        ctr_left.y = control_y + (tmp_point.y * thickness);
-                        ctr_right.x = control_x - (tmp_point.x * thickness);
-                        ctr_right.y = control_y - (tmp_point.y * thickness);
-                        contour_points.push(new Point_1.default(start_right.x, start_right.y));
-                        contour_points.push(new Point_1.default(start_left.x, start_left.y));
-                        contour_points.push(new Point_1.default(ctr_right.x, ctr_right.y));
-                        contour_points.push(new Point_1.default(ctr_left.x, ctr_left.y));
-                        tmp_point.x = -1 * (end_y - control_y);
-                        tmp_point.y = end_x - control_x;
-                        tmp_point.normalize();
-                        ctr_left2.x = control_x + (tmp_point.x * thickness);
-                        ctr_left2.y = control_y + (tmp_point.y * thickness);
-                        ctr_right2.x = control_x - (tmp_point.x * thickness);
-                        ctr_right2.y = control_y - (tmp_point.y * thickness);
-                        end_left.x = end_x + (tmp_point.x * thickness);
-                        end_left.y = end_y + (tmp_point.y * thickness);
-                        end_right.x = end_x - (tmp_point.x * thickness);
-                        end_right.y = end_y - (tmp_point.y * thickness);
-                        contour_points.push(new Point_1.default(ctr_right2.x, ctr_right2.y));
-                        contour_points.push(new Point_1.default(ctr_left2.x, ctr_left2.y));
-                        contour_points.push(new Point_1.default(end_right.x, end_right.y));
-                        contour_points.push(new Point_1.default(end_left.x, end_left.y));
-                        lastPoint.x = end_x;
-                        lastPoint.y = end_y;
-                        break;
-                }
-            }
-            var con_length = contour_points.length / 4;
-            var next_start_right = new Point_1.default();
-            var next_start_left = new Point_1.default();
-            var next_end_right = new Point_1.default();
-            var next_end_left = new Point_1.default();
-            var prevLeft;
-            var prevRight;
-            for (i = 0; i < con_length; i++) {
-                start_right = contour_points[i * 4];
-                start_left = contour_points[i * 4 + 1];
-                end_right = contour_points[i * 4 + 2];
-                end_left = contour_points[i * 4 + 3];
-                var nextIdx = i + 1;
-                if (i >= con_length - 1) {
-                    // last segment
-                    if (closed) {
-                        nextIdx = 0;
-                    }
-                    else {
-                        nextIdx = -1;
-                    }
-                }
-                if (nextIdx >= 0) {
-                    next_start_right = contour_points[nextIdx * 4];
-                    next_start_left = contour_points[nextIdx * 4 + 1];
-                    next_end_right = contour_points[nextIdx * 4 + 2];
-                    next_end_left = contour_points[nextIdx * 4 + 3];
-                    var cur_vertical = false;
-                    var next_vertical = false;
-                    var cur_horizontal = false;
-                    var next_horizontal = false;
-                    tmp_point.x = end_right.x - start_right.x;
-                    tmp_point.y = end_right.y - start_right.y;
-                    var factor1 = 0;
-                    var offsetY1 = 0;
-                    if (tmp_point.x == 0)
-                        cur_vertical = true;
-                    else if (tmp_point.y == 0)
-                        cur_horizontal = true;
-                    else {
-                        factor1 = tmp_point.y / tmp_point.x;
-                        offsetY1 = -(factor1 * start_right.x - start_right.y);
-                    }
-                    tmp_point.x = next_end_right.x - next_start_right.x;
-                    tmp_point.y = next_end_right.y - next_start_right.y;
-                    var factor2 = 0;
-                    var offsetY2 = 0;
-                    if (tmp_point.x == 0)
-                        next_vertical = true;
-                    else if (tmp_point.y == 0)
-                        next_horizontal = true;
-                    else {
-                        factor2 = tmp_point.y / tmp_point.x;
-                        offsetY2 = -(factor2 * next_start_right.x - next_start_right.y);
-                    }
-                    tmp_point.x = end_left.x - start_left.x;
-                    tmp_point.y = end_left.y - start_left.y;
-                    var factor3 = 0;
-                    var offsetY3 = 0;
-                    if (tmp_point.x == 0)
-                        cur_vertical = true;
-                    else if (tmp_point.y == 0)
-                        cur_horizontal = true;
-                    else {
-                        factor3 = tmp_point.y / tmp_point.x;
-                        offsetY3 = -(factor3 * start_left.x - start_left.y);
-                    }
-                    tmp_point.x = next_end_left.x - next_start_left.x;
-                    tmp_point.y = next_end_left.y - next_start_left.y;
-                    var factor4 = 0;
-                    var offsetY4 = 0;
-                    if (tmp_point.x == 0)
-                        next_vertical = true;
-                    else if (tmp_point.y == 0)
-                        next_horizontal = true;
-                    else {
-                        factor4 = tmp_point.y / tmp_point.x;
-                        offsetY4 = -(factor4 * next_start_left.x - next_start_left.y);
-                    }
-                    if ((cur_vertical && cur_horizontal) || (next_horizontal && next_vertical))
-                        console.log("ERROR");
-                    if ((factor1 == factor2) || (factor3 == factor4)) {
-                        console.log("STRAIGHT LINE factor same");
-                        console.log("factor = " + factor1);
-                        console.log("factor = " + factor2);
-                        console.log("factor = " + factor3);
-                        console.log("factor = " + factor4);
-                    }
-                    //else
-                    if ((cur_horizontal && next_horizontal) || (cur_vertical && next_vertical))
-                        console.log("STRAIGHT LINE");
-                    else {
-                        if ((cur_vertical) && (next_horizontal)) {
-                            console.log("(cur_vertical)&&(next_horizontal)");
-                            next_start_right.x = end_right.x;
-                            end_right.y = next_start_right.y;
-                            next_start_left.x = end_left.x;
-                            end_left.y = next_start_left.y;
-                        }
-                        else if ((cur_vertical) && (!next_horizontal)) {
-                            console.log("(cur_vertical)&&(!next_horizontal)");
-                            next_start_right.x = end_right.x = start_right.x;
-                            next_start_right.y = end_right.y = factor2 * start_right.x + offsetY2;
-                            next_start_left.x = end_left.x = start_left.x;
-                            next_start_left.y = end_left.y = factor4 * start_left.x + offsetY4;
-                        }
-                        else if ((!cur_vertical) && (next_horizontal)) {
-                            console.log("(!cur_vertical)&&(next_horizontal)");
-                            next_start_right.y = end_right.y = next_start_right.y;
-                            next_start_right.x = end_right.x = (next_start_right.y - offsetY1) / factor1;
-                            next_start_left.y = end_left.y = next_start_left.y;
-                            next_start_left.x = end_left.x = (next_start_left.y - offsetY3) / factor3;
-                        }
-                        else if ((next_vertical) && (cur_horizontal)) {
-                            console.log("(next_vertical)&&(cur_horizontal)");
-                            end_right.x = next_start_right.x;
-                            next_start_right.y = end_right.y;
-                            end_left.x = next_start_left.x;
-                            next_start_left.y = end_left.y;
-                        }
-                        else if ((next_vertical) && (!cur_horizontal)) {
-                            console.log("(next_vertical)&&(!cur_horizontal)");
-                            next_start_right.x = end_right.x = next_start_right.x;
-                            next_start_right.y = end_right.y = factor1 * next_start_right.x + offsetY1;
-                            next_start_left.x = end_left.x = next_start_left.x;
-                            next_start_left.y = end_left.y = factor3 * next_start_left.x + offsetY3;
-                        }
-                        else if ((!next_vertical) && (cur_horizontal)) {
-                            console.log("(!next_vertical)&&(!cur_horizontal)");
-                            next_start_right.y = end_right.y;
-                            next_start_right.x = end_right.x = (end_right.y - offsetY2) / factor2;
-                            next_start_left.y = end_left.y;
-                            next_start_left.x = end_left.x = (end_left.y - offsetY4) / factor4;
-                        }
-                        else {
-                            console.log("else");
-                            console.log("factor1 - factor2 " + (factor1 - factor2));
-                            console.log("offsetY1 - offsetY2 " + (offsetY1 - offsetY2));
-                            console.log("factor3 - factor4 " + (factor3 - factor4));
-                            console.log("offsetY3 - offsetY4 " + (offsetY3 - offsetY4));
-                            next_start_right.x = end_right.x = -((offsetY1 - offsetY2) / (factor1 - factor2));
-                            next_start_right.y = end_right.y = factor1 * end_right.x + offsetY1;
-                            next_start_left.x = end_left.x = -((offsetY3 - offsetY4) / (factor3 - factor4));
-                            next_start_left.y = end_left.y = factor3 * end_left.x + offsetY3;
-                        }
-                    }
-                    next_start_right.x = end_right.x;
-                    next_start_right.y = end_right.y;
-                    next_start_left.x = end_left.x;
-                    next_start_left.y = end_left.y;
-                }
-            }
-            for (i = 0; i < con_length; i++) {
-                if (contour_types[i] == GraphicsPathCommand_1.default.CURVE_TO_2)
-                    continue;
-                start_right = contour_points[i * 4];
-                start_left = contour_points[i * 4 + 1];
-                if (contour_types[i] == GraphicsPathCommand_1.default.CURVE_TO) {
-                    i++;
-                    ctr_right = contour_points[i * 4];
-                    ctr_left = contour_points[i * 4 + 1];
-                    end_right = contour_points[i * 4 + 2];
-                    end_left = contour_points[i * 4 + 3];
-                    var finished_curves = [];
-                    var finished_curves_types = [];
-                    var test_concave_curves = [];
-                    var test_convex_curves = [];
-                    var curve_sign = this.getSign(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y) > 0;
-                    var curve_sign2 = -1;
-                    var curve_sign3 = 1;
-                    tessVerts.length = 0;
-                    if (curve_sign) {
-                        var subdivided = [];
-                        var subdivided2 = [];
-                        this.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
-                        for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6], subdivided[sc * 6 + 1]));
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 2], subdivided[sc * 6 + 3]));
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]));
-                            finished_curves_types.push(-1);
-                            tessVerts.push(subdivided[sc * 6], subdivided[sc * 6 + 1]);
-                            tessVerts.push(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]);
-                        }
-                        for (var sc = (subdivided2.length / 6) - 1; sc >= 0; sc--) {
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]));
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]));
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6], subdivided2[sc * 6 + 1]));
-                            finished_curves_types.push(1);
-                            tessVerts.push(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]);
-                            tessVerts.push(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]);
-                            tessVerts.push(subdivided2[sc * 6], subdivided2[sc * 6 + 1]);
-                        }
-                    }
-                    else {
-                        var subdivided = [];
-                        var subdivided2 = [];
-                        this.subdivideCurve(start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, subdivided, subdivided2);
-                        for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6], subdivided[sc * 6 + 1]));
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 2], subdivided[sc * 6 + 3]));
-                            finished_curves.push(new Point_1.default(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]));
-                            finished_curves_types.push(-1);
-                            tessVerts.push(subdivided[sc * 6], subdivided[sc * 6 + 1]);
-                            tessVerts.push(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5]);
-                        }
-                        for (var sc = (subdivided2.length / 6) - 1; sc >= 0; sc--) {
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]));
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]));
-                            finished_curves.push(new Point_1.default(subdivided2[sc * 6], subdivided2[sc * 6 + 1]));
-                            finished_curves_types.push(1);
-                            tessVerts.push(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5]);
-                            tessVerts.push(subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3]);
-                            tessVerts.push(subdivided2[sc * 6], subdivided2[sc * 6 + 1]);
-                        }
-                    }
-                    if (tessVerts.length > 0) {
-                        var verticesF32 = new Float32Array(tessVerts);
-                        if (Graphics._tess_obj == null) {
-                            console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
-                            return;
-                        }
-                        Graphics._tess_obj.addContour(verticesF32, 2, 8, tessVerts.length / 2);
-                    }
-                    var t = 0;
-                    for (t = 0; t < finished_curves_types.length; t++) {
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3].x;
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3].y;
-                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 1].x;
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 1].y;
-                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-                        final_vert_list[final_vert_cnt++] = 0.5;
-                        final_vert_list[final_vert_cnt++] = 0.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 2].x;
-                        final_vert_list[final_vert_cnt++] = finished_curves[t * 3 + 2].y;
-                        final_vert_list[final_vert_cnt++] = finished_curves_types[t];
-                        final_vert_list[final_vert_cnt++] = 0.0;
-                        final_vert_list[final_vert_cnt++] = 0.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                        final_vert_list[final_vert_cnt++] = 1.0;
-                    }
-                }
-                else {
-                    end_right = contour_points[i * 4 + 2];
-                    end_left = contour_points[i * 4 + 3];
-                    final_vert_list[final_vert_cnt++] = start_right.x;
-                    final_vert_list[final_vert_cnt++] = start_right.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = start_left.x;
-                    final_vert_list[final_vert_cnt++] = start_left.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = end_left.x;
-                    final_vert_list[final_vert_cnt++] = end_left.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = start_right.x;
-                    final_vert_list[final_vert_cnt++] = start_right.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = end_left.x;
-                    final_vert_list[final_vert_cnt++] = end_left.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = end_right.x;
-                    final_vert_list[final_vert_cnt++] = end_right.y;
-                    final_vert_list[final_vert_cnt++] = 1;
-                    final_vert_list[final_vert_cnt++] = 2.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                    final_vert_list[final_vert_cnt++] = 0.0;
-                }
-            }
-        }
-        /*
-         for (i = 0; i < final_vert_list.length/7; ++i)
-         console.log("final verts stroke "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-         */
-        Graphics._tess_obj.tesselate(4 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-        var verts = [];
-        var all_verts = [];
-        var vertIndicess = [];
-        var elems = [];
-        verts = Graphics._tess_obj.getVertices();
-        elems = Graphics._tess_obj.getElements();
-        var numVerts = verts.length / 2;
-        var numElems = elems.length / 3;
-        for (i = 0; i < numVerts; ++i)
-            all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
-        for (i = 0; i < numElems; ++i) {
-            var p1 = elems[i * 3];
-            var p2 = elems[i * 3 + 1];
-            var p3 = elems[i * 3 + 2];
-            final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-        }
-        // todo: handle material / subsprite settings, and check if a material / subsprite already exists for this settings
-        var attributesView = new AttributesView_1.default(Float32Array, 7);
-        attributesView.set(final_vert_list);
-        var attributesBuffer = attributesView.buffer;
-        attributesView.dispose();
-        var elements = new TriangleElements_1.default(attributesBuffer);
-        elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
-        elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
-        elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
-        var material = DefaultMaterialManager_1.default.getDefaultMaterial();
-        material.bothSides = true;
-        material.useColorTransform = true;
-        material.curves = true;
-        this._target.graphics.addGraphic(elements, material);
-        this._active_stroke_path = null;
-    };
-    Graphics.prototype.isClockWiseXY = function (point1x, point1y, point2x, point2y, point3x, point3y) {
-        return ((point1x - point2x) * (point3y - point2y) - (point1y - point2y) * (point3x - point2x) < 0);
-    };
-    Graphics.prototype.getSign = function (ax, ay, cx, cy, bx, by) {
-        /*if(this.isClockWiseXY(ax, ay, bx, by, cx, cy)) {
-         return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
-         }*/
-        return (ax - bx) * (cy - by) - (ay - by) * (cx - bx);
-    };
-    Graphics.prototype.pointInTri = function (ax, ay, bx, by, cx, cy, xx, xy) {
-        var b1 = this.getSign(ax, ay, xx, xy, bx, by) > 0;
-        var b2 = this.getSign(bx, by, xx, xy, cx, cy) > 0;
-        var b3 = this.getSign(cx, cy, xx, xy, ax, ay) > 0;
-        return ((b1 == b2) && (b2 == b3));
-    };
-    Graphics.prototype.subdivideCurve = function (startx, starty, cx, cy, endx, endy, startx2, starty2, cx2, cy2, endx2, endy2, array_out, array2_out) {
-        /*
-         if(!this.pointInTri(startx2, starty2, cx2, cy2, endx2, endy2, cx, cy)){
-         }
-         */
-        array_out.push(startx, starty, cx, cy, endx, endy);
-        array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
-        return;
-        // var c1x = startx + (cx - startx) * 0.5;
-        // var c1y = starty + (cy - starty) * 0.5;
-        // var c2x = cx + (endx - cx) * 0.5;
-        // var c2y = cy + (endy - cy) * 0.5;
-        // var ax = c1x + (c2x - c1x) * 0.5;
-        // var ay = c1y + (c2y - c1y) * 0.5;
-        //
-        // var c1x2 = startx2 + (cx2 - startx2) * 0.5;
-        // var c1y2 = starty2 + (cy2 - starty2) * 0.5;
-        // var c2x2 = cx2 + (endx2 - cx2) * 0.5;
-        // var c2y2 = cy2 + (endy2 - cy2) * 0.5;
-        // var ax2 = c1x2 + (c2x2 - c1x2) * 0.5;
-        // var ay2 = c1y2 + (c2y2 - c1y2) * 0.5;
-        // if(this.pointInTri(startx2, starty2, c1x2, c1y2, ax2, ay2, c1x, c1y)){
-        // 	this.subdivideCurve(startx, starty, c1x, c1y, ax, ay, startx2, starty2, c1x2, c1y2, ax2, ay2, array_out, array2_out);
-        // }
-        // else{
-        // 	array_out.push(startx, starty, c1x, c1y, ax, ay);
-        // 	array2_out.push(startx2, starty2, c1x2, c1y2, ax2, ay2);
-        // }
-        //
-        // if(this.pointInTri(ax2, ay2, c2x2, c2y2,  endx2, endy2, c2x, c2y)){
-        // 	this.subdivideCurve(ax, ay, c2x, c2y, endx, endy, ax2, ay2, c2x2, c2y2, endx2, endy2, array_out, array2_out);
-        // }
-        // else{
-        // 	array_out.push(ax, ay, c2x, c2y, endx, endy);
-        // 	array2_out.push(ax2, ay2, c2x2, c2y2, endx2, endy2);
-        // }
-    };
-    Graphics.prototype.draw_fill = function () {
-        if (this._active_fill_path == null)
-            return;
-        this._active_fill_path.finalizeContour();
-        var contour_commands = this._active_fill_path.commands;
-        var contour_data = this._active_fill_path.data;
-        var contour_draw_directions = this._active_fill_path.draw_directions;
-        var commands;
-        var data;
-        var i = 0;
-        var k = 0;
-        var vert_cnt = 0;
-        var data_cnt = 0;
-        var draw_direction = 0;
-        var contours_vertices = [[]];
-        var final_vert_list = [];
-        var final_vert_cnt = 0;
-        var lastPoint = new Point_1.default();
-        for (k = 0; k < contour_commands.length; k++) {
-            contours_vertices.push([]);
-            vert_cnt = 0;
-            data_cnt = 0;
-            commands = contour_commands[k];
-            data = contour_data[k];
-            draw_direction = contour_draw_directions[k];
-            for (i = 0; i < commands.length; i++) {
-                switch (commands[i]) {
-                    case GraphicsPathCommand_1.default.MOVE_TO:
-                        lastPoint.x = data[data_cnt++];
-                        lastPoint.y = data[data_cnt++];
-                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-                        break;
-                    case GraphicsPathCommand_1.default.LINE_TO:
-                        lastPoint.x = data[data_cnt++];
-                        lastPoint.y = data[data_cnt++];
-                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-                        break;
-                    case GraphicsPathCommand_1.default.CURVE_TO:
-                        var curve_direction = data[data_cnt++];
-                        var control_x = data[data_cnt++];
-                        var control_y = data[data_cnt++];
-                        var end_x = data[data_cnt++];
-                        var end_y = data[data_cnt++];
-                        var curve_attr_1 = -1;
-                        if (draw_direction > 0) {
-                            if (curve_direction == 1) {
-                                //convex
-                                //console.log("convex";
-                                curve_attr_1 = 1;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
-                            }
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-                        }
-                        else {
-                            if (curve_direction == 2) {
-                                //convex
-                                //console.log("convex";
-                                curve_attr_1 = 1;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
-                            }
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-                        }
-                        if (!this.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
-                            final_vert_list[final_vert_cnt++] = end_x;
-                            final_vert_list[final_vert_cnt++] = end_y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = control_x;
-                            final_vert_list[final_vert_cnt++] = control_y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 0.5;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = lastPoint.x;
-                            final_vert_list[final_vert_cnt++] = lastPoint.y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                        }
-                        else {
-                            final_vert_list[final_vert_cnt++] = lastPoint.x;
-                            final_vert_list[final_vert_cnt++] = lastPoint.y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = control_x;
-                            final_vert_list[final_vert_cnt++] = control_y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 0.5;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = end_x;
-                            final_vert_list[final_vert_cnt++] = end_y;
-                            final_vert_list[final_vert_cnt++] = curve_attr_1;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                            final_vert_list[final_vert_cnt++] = 1.0;
-                            final_vert_list[final_vert_cnt++] = 0.0;
-                        }
-                        lastPoint.x = end_x;
-                        lastPoint.y = end_y;
-                        break;
-                    case GraphicsPathCommand_1.default.CUBIC_CURVE:
-                        //todo
-                        break;
-                }
-            }
-        }
-        var verts = [];
-        var all_verts = [];
-        var vertIndicess = [];
-        var elems = [];
-        Graphics._tess_obj.newTess(1024 * 512);
-        for (k = 0; k < contours_vertices.length; k++) {
-            var vertices = contours_vertices[k];
-            /*
-             for (i = 0; i < vertices.length / 2; ++i)
-             console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
-             */
-            var verticesF32 = new Float32Array(vertices);
-            //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
-            //console.log("in vertices", vertices);
-            //var tess = new TESS();
-            if (Graphics._tess_obj == null) {
-                console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
-                return;
-            }
-            Graphics._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
-        }
-        Graphics._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-        //console.log("out vertices", Graphics._tess_obj.getVertices());
-        verts = Graphics._tess_obj.getVertices();
-        elems = Graphics._tess_obj.getElements();
-        //console.log("out elements", Graphics._tess_obj.getElements());
-        var numVerts = verts.length / 2;
-        var numElems = elems.length / 3;
-        for (i = 0; i < numVerts; ++i)
-            all_verts.push(new Point_1.default(verts[i * 2], verts[i * 2 + 1]));
-        for (i = 0; i < numElems; ++i) {
-            var p1 = elems[i * 3];
-            var p2 = elems[i * 3 + 1];
-            var p3 = elems[i * 3 + 2];
-            final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-            final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-            final_vert_list[final_vert_cnt++] = 1;
-            final_vert_list[final_vert_cnt++] = 2.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-            final_vert_list[final_vert_cnt++] = 1.0;
-            final_vert_list[final_vert_cnt++] = 0.0;
-        }
-        //for (i = 0; i < final_vert_list.length/7; ++i)
-        //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-        var attributesView = new AttributesView_1.default(Float32Array, 7);
-        attributesView.set(final_vert_list);
-        var attributesBuffer = attributesView.buffer;
-        attributesView.dispose();
-        var elements = new TriangleElements_1.default(attributesBuffer);
-        elements.setPositions(new Float2Attributes_1.default(attributesBuffer));
-        elements.setCustomAttributes("curves", new Float3Attributes_1.default(attributesBuffer));
-        elements.setUVs(new Float2Attributes_1.default(attributesBuffer));
-        var material = DefaultMaterialManager_1.default.getDefaultMaterial();
-        material.bothSides = true;
-        material.useColorTransform = true;
-        material.curves = true;
-        this._target.graphics.addGraphic(elements, material);
-        this._active_fill_path = null;
-    };
-    return Graphics;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Graphics;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/errors/PartialImplementationError":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-display/lib/draw/GraphicsPath":"awayjs-display/lib/draw/GraphicsPath","awayjs-display/lib/draw/GraphicsPathCommand":"awayjs-display/lib/draw/GraphicsPathCommand","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager"}],"awayjs-display/lib/draw/IGraphicsData":[function(require,module,exports){
-"use strict";
-
-},{}],"awayjs-display/lib/draw/InterpolationMethod":[function(require,module,exports){
-"use strict";
-/**
- * The InterpolationMethod class provides values for the
- * <code>interpolationMethod</code> parameter in the
- * <code>Graphics.beginGradientFill()</code> and
- * <code>Graphics.lineGradientStyle()</code> methods. This parameter
- * determines the RGB space to use when rendering the gradient.
- */
-var InterpolationMethod = (function () {
-    function InterpolationMethod() {
-    }
-    /**
-     * Specifies that the RGB interpolation method should be used. This means
-     * that the gradient is rendered with exponential sRGB(standard RGB) space.
-     * The sRGB space is a W3C-endorsed standard that defines a non-linear
-     * conversion between red, green, and blue component values and the actual
-     * intensity of the visible component color.
-     *
-     * <p>For example, consider a simple linear gradient between two colors(with
-     * the <code>spreadMethod</code> parameter set to
-     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-     * affect the appearance as follows: </p>
-     */
-    InterpolationMethod.LINEAR_RGB = "linearRGB";
-    /**
-     * Specifies that the RGB interpolation method should be used. This means
-     * that the gradient is rendered with exponential sRGB(standard RGB) space.
-     * The sRGB space is a W3C-endorsed standard that defines a non-linear
-     * conversion between red, green, and blue component values and the actual
-     * intensity of the visible component color.
-     *
-     * <p>For example, consider a simple linear gradient between two colors(with
-     * the <code>spreadMethod</code> parameter set to
-     * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-     * affect the appearance as follows: </p>
-     */
-    InterpolationMethod.RGB = "rgb";
-    return InterpolationMethod;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = InterpolationMethod;
-
-},{}],"awayjs-display/lib/draw/JointStyle":[function(require,module,exports){
-"use strict";
-/**
- * The JointStyle class is an enumeration of constant values that specify the
- * joint style to use in drawing lines. These constants are provided for use
- * as values in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
- * three types of joints: miter, round, and bevel, as the following example
- * shows:
- */
-var JointStyle = (function () {
-    function JointStyle() {
-    }
-    /**
-     * Specifies beveled joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.BEVEL = "bevel";
-    /**
-     * Specifies mitered joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.MITER = "miter";
-    /**
-     * Specifies round joints in the <code>joints</code> parameter of the
-     * <code>flash.display.Graphics.lineStyle()</code> method.
-     */
-    JointStyle.ROUND = "round";
-    return JointStyle;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = JointStyle;
-
-},{}],"awayjs-display/lib/draw/LineScaleMode":[function(require,module,exports){
-"use strict";
-/**
- * The LineScaleMode class provides values for the <code>scaleMode</code>
- * parameter in the <code>Graphics.lineStyle()</code> method.
- */
-var LineScaleMode = (function () {
-    function LineScaleMode() {
-    }
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line scales
-     * <i>only</i> vertically. For example, consider the following circles, drawn
-     * with a one-pixel line, and each with the <code>scaleMode</code> parameter
-     * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
-     * scaled only vertically, and the circle on the right is scaled both
-     * vertically and horizontally.
-     */
-    LineScaleMode.HORIZONTAL = "horizontal";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line never scales.
-     */
-    LineScaleMode.NONE = "none";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line always scales
-     * when the object is scaled(the default).
-     */
-    LineScaleMode.NORMAL = "normal";
-    /**
-     * With this setting used as the <code>scaleMode</code> parameter of the
-     * <code>lineStyle()</code> method, the thickness of the line scales
-     * <i>only</i> horizontally. For example, consider the following circles,
-     * drawn with a one-pixel line, and each with the <code>scaleMode</code>
-     * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
-     * left is scaled only horizontally, and the circle on the right is scaled
-     * both vertically and horizontally.
-     */
-    LineScaleMode.VERTICAL = "vertical";
-    return LineScaleMode;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = LineScaleMode;
-
-},{}],"awayjs-display/lib/draw/PixelSnapping":[function(require,module,exports){
-"use strict";
-/**
- * The PixelSnapping class is an enumeration of constant values for setting
- * the pixel snapping options by using the <code>pixelSnapping</code> property
- * of a Bitmap object.
- */
-var PixelSnapping = (function () {
-    function PixelSnapping() {
-    }
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that the bitmap image is always snapped to the
-     * nearest pixel, independent of any transformation.
-     */
-    PixelSnapping.ALWAYS = "always";
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that the bitmap image is snapped to the nearest
-     * pixel if it is drawn with no rotation or skew and it is drawn at a scale
-     * factor of 99.9% to 100.1%. If these conditions are satisfied, the image is
-     * drawn at 100% scale, snapped to the nearest pixel. Internally, this
-     * setting allows the image to be drawn as fast as possible by using the
-     * vector renderer.
-     */
-    PixelSnapping.AUTO = "auto";
-    /**
-     * A constant value used in the <code>pixelSnapping</code> property of a
-     * Bitmap object to specify that no pixel snapping occurs.
-     */
-    PixelSnapping.NEVER = "never";
-    return PixelSnapping;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = PixelSnapping;
-
-},{}],"awayjs-display/lib/draw/SpreadMethod":[function(require,module,exports){
-"use strict";
-/**
- * The SpreadMethod class provides values for the <code>spreadMethod</code>
- * parameter in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the Graphics class.
- *
- * <p>The following example shows the same gradient fill using various spread
- * methods:</p>
- */
-var SpreadMethod = (function () {
-    function SpreadMethod() {
-    }
-    /**
-     * Specifies that the gradient use the <i>pad</i> spread method.
-     */
-    SpreadMethod.PAD = "pad";
-    /**
-     * Specifies that the gradient use the <i>reflect</i> spread method.
-     */
-    SpreadMethod.REFLECT = "reflect";
-    /**
-     * Specifies that the gradient use the <i>repeat</i> spread method.
-     */
-    SpreadMethod.REPEAT = "repeat";
-    return SpreadMethod;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SpreadMethod;
-
-},{}],"awayjs-display/lib/draw/TriangleCulling":[function(require,module,exports){
-"use strict";
-/**
- * Defines codes for culling algorithms that determine which triangles not to
- * render when drawing triangle paths.
- *
- * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
- * sign of a triangle's normal along the z-axis. The normal is a 3D vector
- * that is perpendicular to the surface of the triangle. </p>
- *
- * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
- * has a positive normal value. That is, its normal points in a positive
- * z-axis direction, away from the current view point. When the
- * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
- * positive normals are not rendered. Another term for this is backface
- * culling. </p>
- *
- * <p> A triangle whose vertices are arranged in a counter-clockwise order has
- * a negative normal value. That is, its normal points in a negative z-axis
- * direction, toward the current view point. When the
- * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
- * negative normals will not be rendered. </p>
- */
-var TriangleCulling = (function () {
-    function TriangleCulling() {
-    }
-    /**
-     * Specifies culling of all triangles facing toward the current view point.
-     */
-    TriangleCulling.NEGATIVE = "negative";
-    /**
-     * Specifies no culling. All triangles in the path are rendered.
-     */
-    TriangleCulling.NONE = "none";
-    /**
-     * Specifies culling of all triangles facing away from the current view
-     * point. This is also known as backface culling.
-     */
-    TriangleCulling.POSITIVE = "positive";
-    return TriangleCulling;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = TriangleCulling;
-
-},{}],"awayjs-display/lib/errors/CastError":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
-var CastError = (function (_super) {
-    __extends(CastError, _super);
-    function CastError(message) {
-        _super.call(this, message);
-    }
-    return CastError;
-}(ErrorBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CastError;
-
-},{"awayjs-core/lib/errors/ErrorBase":undefined}],"awayjs-display/lib/events/CameraEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-/**
- * @class away.events.CameraEvent
- */
-var CameraEvent = (function (_super) {
-    __extends(CameraEvent, _super);
-    function CameraEvent(type, camera) {
-        _super.call(this, type);
-        this._camera = camera;
-    }
-    Object.defineProperty(CameraEvent.prototype, "camera", {
-        get: function () {
-            return this._camera;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     * @return An exact duplicate of the current object.
-     */
-    CameraEvent.prototype.clone = function () {
-        return new CameraEvent(this.type, this._camera);
-    };
-    CameraEvent.PROJECTION_CHANGED = "projectionChanged";
-    return CameraEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = CameraEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/DisplayObjectEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var DisplayObjectEvent = (function (_super) {
-    __extends(DisplayObjectEvent, _super);
-    function DisplayObjectEvent(type, object) {
-        _super.call(this, type);
-        this._object = object;
-    }
-    Object.defineProperty(DisplayObjectEvent.prototype, "object", {
-        get: function () {
-            return this._object;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     * @return An exact duplicate of the current object.
-     */
-    DisplayObjectEvent.prototype.clone = function () {
-        return new DisplayObjectEvent(this.type, this._object);
-    };
-    /**
-     *
-     */
-    DisplayObjectEvent.VISIBLITY_UPDATED = "visiblityUpdated";
-    /**
-     *
-     */
-    DisplayObjectEvent.SCENETRANSFORM_CHANGED = "scenetransformChanged";
-    /**
-     *
-     */
-    DisplayObjectEvent.SCENE_CHANGED = "sceneChanged";
-    /**
-     *
-     */
-    DisplayObjectEvent.PARTITION_CHANGED = "partitionChanged";
-    /**
-     *
-     */
-    DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS = "invalidatePartitionBounds";
-    return DisplayObjectEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = DisplayObjectEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/ElementsEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-/**
- * Dispatched to notify changes in a sub geometry object's state.
- *
- * @class away.events.ElementsEvent
- * @see away.core.base.Graphics
- */
-var ElementsEvent = (function (_super) {
-    __extends(ElementsEvent, _super);
-    /**
-     * Create a new GraphicsEvent
-     * @param type The event type.
-     * @param attributesView An optional data type of the vertex data being updated.
-     */
-    function ElementsEvent(type, attributesView) {
-        _super.call(this, type);
-        this._attributesView = attributesView;
-    }
-    Object.defineProperty(ElementsEvent.prototype, "attributesView", {
-        /**
-         * The attributes view of the vertex data.
-         */
-        get: function () {
-            return this._attributesView;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    ElementsEvent.prototype.clone = function () {
-        return new ElementsEvent(this.type, this._attributesView);
-    };
-    /**
-     * Dispatched when a Elements's index data has been updated.
-     */
-    ElementsEvent.INVALIDATE_INDICES = "invalidateIndices";
-    /**
-     * Dispatched when a Elements's index data has been disposed.
-     */
-    ElementsEvent.CLEAR_INDICES = "clearIndices";
-    /**
-     * Dispatched when a Elements's vertex data has been updated.
-     */
-    ElementsEvent.INVALIDATE_VERTICES = "invalidateVertices";
-    /**
-     * Dispatched when a Elements's vertex data has been disposed.
-     */
-    ElementsEvent.CLEAR_VERTICES = "clearVertices";
-    return ElementsEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ElementsEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/LightEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var LightEvent = (function (_super) {
-    __extends(LightEvent, _super);
-    function LightEvent(type) {
-        _super.call(this, type);
-    }
-    //@override
-    LightEvent.prototype.clone = function () {
-        return new LightEvent(this.type);
-    };
-    LightEvent.CASTS_SHADOW_CHANGE = "castsShadowChange";
-    return LightEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = LightEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/MouseEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-/**
- * A MouseEvent is dispatched when a mouse event occurs over a mouseEnabled object in View.
- * TODO: we don't have screenZ data, tho this should be easy to implement
- */
-var MouseEvent = (function (_super) {
-    __extends(MouseEvent, _super);
-    /**
-     * Create a new MouseEvent object.
-     * @param type The type of the MouseEvent.
-     */
-    function MouseEvent(type) {
-        _super.call(this, type);
-        // Private.
-        this._iAllowedToPropagate = true;
-    }
-    Object.defineProperty(MouseEvent.prototype, "bubbles", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            var doesBubble = this._iAllowedToPropagate;
-            this._iAllowedToPropagate = true;
-            // Don't bubble if propagation has been stopped.
-            return doesBubble;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    MouseEvent.prototype.stopPropagation = function () {
-        this._iAllowedToPropagate = false;
-        if (this._iParentEvent)
-            this._iParentEvent.stopPropagation();
-    };
-    /**
-     * @inheritDoc
-     */
-    MouseEvent.prototype.stopImmediatePropagation = function () {
-        this._iAllowedToPropagate = false;
-        if (this._iParentEvent)
-            this._iParentEvent.stopImmediatePropagation();
-    };
-    /**
-     * Creates a copy of the MouseEvent object and sets the value of each property to match that of the original.
-     */
-    MouseEvent.prototype.clone = function () {
-        var result = new MouseEvent(this.type);
-        /* TODO: Debug / test - look into isDefaultPrevented
-         if (isDefaultPrevented())
-         result.preventDefault();
-         */
-        result.screenX = this.screenX;
-        result.screenY = this.screenY;
-        result.view = this.view;
-        result.entity = this.entity;
-        result.renderable = this.renderable;
-        result.material = this.material;
-        result.uv = this.uv;
-        result.position = this.position;
-        result.normal = this.normal;
-        result.elementIndex = this.elementIndex;
-        result.delta = this.delta;
-        result.ctrlKey = this.ctrlKey;
-        result.shiftKey = this.shiftKey;
-        result._iParentEvent = this;
-        result._iAllowedToPropagate = this._iAllowedToPropagate;
-        return result;
-    };
-    Object.defineProperty(MouseEvent.prototype, "scenePosition", {
-        /**
-         * The position in scene space where the event took place
-         */
-        get: function () {
-            return this.entity.sceneTransform.transformVector(this.position);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(MouseEvent.prototype, "sceneNormal", {
-        /**
-         * The normal in scene space where the event took place
-         */
-        get: function () {
-            var sceneNormal = this.entity.sceneTransform.deltaTransformVector(this.normal);
-            sceneNormal.normalize();
-            return sceneNormal;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Defines the value of the type property of a mouseOver3d event object.
-     */
-    MouseEvent.MOUSE_OVER = "mouseOver3d";
-    /**
-     * Defines the value of the type property of a mouseOut3d event object.
-     */
-    MouseEvent.MOUSE_OUT = "mouseOut3d";
-    /**
-     * Defines the value of the type property of a mouseUp3d event object.
-     */
-    MouseEvent.MOUSE_UP = "mouseUp3d";
-    /**
-     * Defines the value of the type property of a mouseDown3d event object.
-     */
-    MouseEvent.MOUSE_DOWN = "mouseDown3d";
-    /**
-     * Defines the value of the type property of a mouseMove3d event object.
-     */
-    MouseEvent.MOUSE_MOVE = "mouseMove3d";
-    /**
-     * Defines the value of the type property of a rollOver3d event object.
-     */
-    //		public static ROLL_OVER : string = "rollOver3d";
-    /**
-     * Defines the value of the type property of a rollOut3d event object.
-     */
-    //		public static ROLL_OUT : string = "rollOut3d";
-    /**
-     * Defines the value of the type property of a click3d event object.
-     */
-    MouseEvent.CLICK = "click3d";
-    /**
-     * Defines the value of the type property of a doubleClick3d event object.
-     */
-    MouseEvent.DOUBLE_CLICK = "doubleClick3d";
-    /**
-     * Defines the value of the type property of a mouseWheel3d event object.
-     */
-    MouseEvent.MOUSE_WHEEL = "mouseWheel3d";
-    return MouseEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = MouseEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RenderableEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-/**
- * Dispatched to notify changes in a sub geometry object's state.
- *
- * @class away.events.RenderableEvent
- * @see away.core.base.Graphics
- */
-var RenderableEvent = (function (_super) {
-    __extends(RenderableEvent, _super);
-    /**
-     * Create a new GraphicsEvent
-     * @param type The event type.
-     * @param dataType An optional data type of the vertex data being updated.
-     */
-    function RenderableEvent(type, renderable) {
-        _super.call(this, type);
-        this._renderable = renderable;
-    }
-    Object.defineProperty(RenderableEvent.prototype, "renderable", {
-        /**
-         * The renderobject owner of the renderable owner.
-         */
-        get: function () {
-            return this._renderable;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    RenderableEvent.prototype.clone = function () {
-        return new RenderableEvent(this.type, this._renderable);
-    };
-    /**
-     * Dispatched when a Renderable owners's render object owner has been updated.
-     */
-    RenderableEvent.INVALIDATE_RENDER_OWNER = "invalidateRenderable";
-    /**
-     *
-     */
-    RenderableEvent.INVALIDATE_ELEMENTS = "invalidateElements";
-    return RenderableEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RenderableEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/RendererEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var RendererEvent = (function (_super) {
-    __extends(RendererEvent, _super);
-    function RendererEvent(type) {
-        _super.call(this, type);
-    }
-    RendererEvent.VIEWPORT_UPDATED = "viewportUpdated";
-    RendererEvent.SCISSOR_UPDATED = "scissorUpdated";
-    return RendererEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = RendererEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/ResizeEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var ResizeEvent = (function (_super) {
-    __extends(ResizeEvent, _super);
-    function ResizeEvent(type, oldHeight, oldWidth) {
-        if (oldHeight === void 0) { oldHeight = NaN; }
-        if (oldWidth === void 0) { oldWidth = NaN; }
-        _super.call(this, type);
-        this._oldHeight = oldHeight;
-        this._oldWidth = oldWidth;
-    }
-    Object.defineProperty(ResizeEvent.prototype, "oldHeight", {
-        get: function () {
-            return this._oldHeight;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ResizeEvent.prototype, "oldWidth", {
-        get: function () {
-            return this._oldWidth;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    ResizeEvent.prototype.clone = function () {
-        return new ResizeEvent(this.type, this._oldHeight, this._oldWidth);
-    };
-    ResizeEvent.RESIZE = "resize";
-    return ResizeEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ResizeEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/StyleEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var StyleEvent = (function (_super) {
-    __extends(StyleEvent, _super);
-    function StyleEvent(type, style) {
-        _super.call(this, type);
-        this._style = style;
-    }
-    Object.defineProperty(StyleEvent.prototype, "style", {
-        get: function () {
-            return this._style;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     * @return An exact duplicate of the current object.
-     */
-    StyleEvent.prototype.clone = function () {
-        return new StyleEvent(this.type, this._style);
-    };
-    /**
-     *
-     */
-    StyleEvent.INVALIDATE_PROPERTIES = "invalidateProperties";
-    return StyleEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = StyleEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/SurfaceEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var SurfaceEvent = (function (_super) {
-    __extends(SurfaceEvent, _super);
-    /**
-     * Create a new GraphicsEvent
-     * @param type The event type.
-     * @param dataType An optional data type of the vertex data being updated.
-     */
-    function SurfaceEvent(type, surface) {
-        _super.call(this, type);
-        this._surface = surface;
-    }
-    Object.defineProperty(SurfaceEvent.prototype, "surface", {
-        /**
-         * The surface of the renderable.
-         */
-        get: function () {
-            return this._surface;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     *
-     * @return An exact duplicate of the current object.
-     */
-    SurfaceEvent.prototype.clone = function () {
-        return new SurfaceEvent(this.type, this._surface);
-    };
-    SurfaceEvent.INVALIDATE_TEXTURE = "invalidateTexture";
-    SurfaceEvent.INVALIDATE_ANIMATION = "invalidateAnimation";
-    SurfaceEvent.INVALIDATE_PASSES = "invalidatePasses";
-    return SurfaceEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = SurfaceEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/TouchEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var TouchEvent = (function (_super) {
-    __extends(TouchEvent, _super);
-    /**
-     * Create a new TouchEvent object.
-     * @param type The type of the TouchEvent.
-     */
-    function TouchEvent(type) {
-        _super.call(this, type);
-        // Private.
-        this._iAllowedToPropagate = true;
-    }
-    Object.defineProperty(TouchEvent.prototype, "bubbles", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            var doesBubble = this._iAllowedToPropagate;
-            this._iAllowedToPropagate = true;
-            // Don't bubble if propagation has been stopped.
-            return doesBubble;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    TouchEvent.prototype.stopPropagation = function () {
-        this._iAllowedToPropagate = false;
-        if (this._iParentEvent)
-            this._iParentEvent.stopPropagation();
-    };
-    /**
-     * @inheritDoc
-     */
-    TouchEvent.prototype.stopImmediatePropagation = function () {
-        this._iAllowedToPropagate = false;
-        if (this._iParentEvent)
-            this._iParentEvent.stopImmediatePropagation();
-    };
-    /**
-     * Creates a copy of the TouchEvent object and sets the value of each property to match that of the original.
-     */
-    TouchEvent.prototype.clone = function () {
-        var result = new TouchEvent(this.type);
-        /* TODO: Debug / test - look into isDefaultPrevented
-         if (isDefaultPrevented())
-         result.preventDefault();
-         */
-        result.screenX = this.screenX;
-        result.screenY = this.screenY;
-        result.view = this.view;
-        result.entity = this.entity;
-        result.renderable = this.renderable;
-        result.material = this.material;
-        result.uv = this.uv;
-        result.position = this.position;
-        result.normal = this.normal;
-        result.elementIndex = this.elementIndex;
-        result.ctrlKey = this.ctrlKey;
-        result.shiftKey = this.shiftKey;
-        result._iParentEvent = this;
-        return result;
-    };
-    Object.defineProperty(TouchEvent.prototype, "scenePosition", {
-        /**
-         * The position in scene space where the event took place
-         */
-        get: function () {
-            return this.entity.sceneTransform.transformVector(this.position);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TouchEvent.prototype, "sceneNormal", {
-        /**
-         * The normal in scene space where the event took place
-         */
-        get: function () {
-            var sceneNormal = this.entity.sceneTransform.deltaTransformVector(this.normal);
-            sceneNormal.normalize();
-            return sceneNormal;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     */
-    TouchEvent.TOUCH_END = "touchEnd3d";
-    /**
-     *
-     */
-    TouchEvent.TOUCH_BEGIN = "touchBegin3d";
-    /**
-     *
-     */
-    TouchEvent.TOUCH_MOVE = "touchMove3d";
-    /**
-     *
-     */
-    TouchEvent.TOUCH_OUT = "touchOut3d";
-    /**
-     *
-     */
-    TouchEvent.TOUCH_OVER = "touchOver3d";
-    return TouchEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = TouchEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/events/TransformEvent":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var EventBase_1 = require("awayjs-core/lib/events/EventBase");
-var TransformEvent = (function (_super) {
-    __extends(TransformEvent, _super);
-    function TransformEvent(type, transform) {
-        _super.call(this, type);
-        this._transform = transform;
-    }
-    Object.defineProperty(TransformEvent.prototype, "transform", {
-        get: function () {
-            return this._transform;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Clones the event.
-     * @return An exact duplicate of the current object.
-     */
-    TransformEvent.prototype.clone = function () {
-        return new TransformEvent(this.type, this._transform);
-    };
-    /**
-     *
-     */
-    TransformEvent.INVALIDATE_MATRIX3D = "invalidateMatrix3D";
-    /**
-     *
-     */
-    TransformEvent.INVALIDATE_COLOR_TRANSFORM = "invalidateColorTransform";
-    return TransformEvent;
-}(EventBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = TransformEvent;
-
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-display/lib/factories/ITimelineSceneGraphFactory":[function(require,module,exports){
-"use strict";
-
-},{}],"awayjs-display/lib/graphics/ElementsBase":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
-var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
-var Short3Attributes_1 = require("awayjs-core/lib/attributes/Short3Attributes");
-var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var ElementsEvent_1 = require("awayjs-display/lib/events/ElementsEvent");
-/**
- * @class away.base.TriangleElements
- */
-var ElementsBase = (function (_super) {
-    __extends(ElementsBase, _super);
-    /**
-     *
-     */
-    function ElementsBase(concatenatedBuffer) {
-        if (concatenatedBuffer === void 0) { concatenatedBuffer = null; }
-        _super.call(this);
-        this._customAttributesNames = new Array();
-        this._customAttributes = new Object();
-        this._numElements = 0;
-        this._verticesDirty = new Object();
-        this._invalidateVertices = new Object();
-        this._concatenatedBuffer = concatenatedBuffer;
-    }
-    Object.defineProperty(ElementsBase.prototype, "concatenatedBuffer", {
-        get: function () {
-            return this._concatenatedBuffer;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ElementsBase.prototype, "indices", {
-        /**
-         * The raw index data that define the faces.
-         */
-        get: function () {
-            return this._indices;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     */
-    ElementsBase.prototype.getCustomAtributesNames = function () {
-        return this._customAttributesNames;
-    };
-    /**
-     *
-     */
-    ElementsBase.prototype.getCustomAtributes = function (name) {
-        return this._customAttributes[name];
-    };
-    Object.defineProperty(ElementsBase.prototype, "numElements", {
-        /**
-         * The total amount of triangles in the TriangleElements.
-         */
-        get: function () {
-            return this._numElements;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ElementsBase.prototype, "numVertices", {
-        get: function () {
-            throw new AbstractMethodError_1.default();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ElementsBase.prototype.copyTo = function (elements) {
-        if (this.indices)
-            elements.setIndices(this.indices.clone());
-        for (var name in this._customAttributes)
-            elements.setCustomAttributes(name, this.getCustomAtributes(name).clone());
-    };
-    /**
-     *
-     */
-    ElementsBase.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        if (this._indices) {
-            this._indices.dispose();
-            this._indices = null;
-        }
-        for (var name in this._customAttributes) {
-            this._customAttributes[name].dispose();
-            delete this._customAttributes;
-        }
-    };
-    ElementsBase.prototype.setIndices = function (values, offset) {
-        if (offset === void 0) { offset = 0; }
-        if (values instanceof Short3Attributes_1.default) {
-            if (this._indices)
-                this.clearIndices();
-            this._indices = values;
-        }
-        else if (values) {
-            if (!this._indices)
-                this._indices = new Short3Attributes_1.default();
-            this._indices.set(values, offset);
-        }
-        else if (this._indices) {
-            this._indices.dispose();
-            this._indices = null;
-            this.clearIndices();
-        }
-        if (this._indices) {
-            this._numElements = this._indices.count;
-            this.invalidateIndicies();
-        }
-        else {
-            this._numElements = 0;
-        }
-    };
-    ElementsBase.prototype.setCustomAttributes = function (name, values, offset) {
-        if (offset === void 0) { offset = 0; }
-        if (values == this._customAttributes[name])
-            return;
-        if (values instanceof AttributesView_1.default) {
-            this.clearVertices(this._customAttributes[name]);
-            this._customAttributes[name] = values;
-        }
-        else if (values) {
-            if (!this._customAttributes[name])
-                this._customAttributes[name] = new Float3Attributes_1.default(this._concatenatedBuffer); //default custom atrributes is Float3
-            this._customAttributes[name].set(values, offset);
-        }
-        else if (this._customAttributes[name]) {
-            this.clearVertices(this._customAttributes[name]);
-            this._customAttributesNames.splice(this._customAttributesNames.indexOf(name), 1);
-            delete this._customAttributes[name];
-            return;
-        }
-        this.invalidateVertices(this._customAttributes[name]);
-        this._verticesDirty[this._customAttributes[name].id] = false;
-        if (this._customAttributesNames.indexOf(name) == -1)
-            this._customAttributesNames.push(name);
-    };
-    /**
-     * Clones the current object
-     * @return An exact duplicate of the current object.
-     */
-    ElementsBase.prototype.clone = function () {
-        throw new AbstractMethodError_1.default();
-    };
-    ElementsBase.prototype.applyTransformation = function (transform) {
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    ElementsBase.prototype.scale = function (scale) {
-    };
-    ElementsBase.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-    };
-    ElementsBase.prototype.getBoxBounds = function (target) {
-        if (target === void 0) { target = null; }
-        throw new AbstractMethodError_1.default();
-    };
-    ElementsBase.prototype.getSphereBounds = function (center, target) {
-        if (target === void 0) { target = null; }
-        throw new AbstractMethodError_1.default();
-    };
-    ElementsBase.prototype.hitTestPoint = function (x, y, z, box) {
-        throw new AbstractMethodError_1.default();
-    };
-    ElementsBase.prototype.invalidateIndicies = function () {
-        if (!this._invalidateIndices)
-            this._invalidateIndices = new ElementsEvent_1.default(ElementsEvent_1.default.INVALIDATE_INDICES, this._indices);
-        this.dispatchEvent(this._invalidateIndices);
-    };
-    ElementsBase.prototype.clearIndices = function () {
-        this.dispatchEvent(new ElementsEvent_1.default(ElementsEvent_1.default.CLEAR_INDICES, this._indices));
-    };
-    ElementsBase.prototype.invalidateVertices = function (attributesView) {
-        if (!attributesView || this._verticesDirty[attributesView.id])
-            return;
-        this._verticesDirty[attributesView.id] = true;
-        if (!this._invalidateVertices[attributesView.id])
-            this._invalidateVertices[attributesView.id] = new ElementsEvent_1.default(ElementsEvent_1.default.INVALIDATE_VERTICES, attributesView);
-        this.dispatchEvent(this._invalidateVertices[attributesView.id]);
-    };
-    ElementsBase.prototype.clearVertices = function (attributesView) {
-        if (!attributesView)
-            return;
-        attributesView.dispose();
-        this.dispatchEvent(new ElementsEvent_1.default(ElementsEvent_1.default.CLEAR_VERTICES, attributesView));
-        this._verticesDirty[attributesView.id] = null;
-        this._invalidateVertices[attributesView.id] = null;
-    };
-    ElementsBase.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
-        throw new AbstractMethodError_1.default();
-    };
-    return ElementsBase;
-}(AssetBase_1.default));
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ElementsBase;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/attributes/Short3Attributes":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/events/ElementsEvent":"awayjs-display/lib/events/ElementsEvent"}],"awayjs-display/lib/graphics/ElementsType":[function(require,module,exports){
-"use strict";
-var ElementsType = (function () {
-    function ElementsType() {
-    }
-    /**
-     *
-     */
-    ElementsType.TRIANGLE = "triangle";
-    /**
-     *
-     */
-    ElementsType.LINE = "line";
-    return ElementsType;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ElementsType;
-
-},{}],"awayjs-display/lib/graphics/Graphics":[function(require,module,exports){
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var Box_1 = require("awayjs-core/lib/geom/Box");
-var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var Graphic_1 = require("awayjs-display/lib/graphics/Graphic");
-var ElementsEvent_1 = require("awayjs-display/lib/events/ElementsEvent");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
-var ElementsUtils_1 = require("awayjs-display/lib/utils/ElementsUtils");
-/**
- *
- * Graphics is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
- * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
- * A Graphics object is assigned to a Sprite, a scene graph occurence of the geometry, which in turn assigns
- * the SubGeometries to its respective TriangleGraphic objects.
- *
- *
- *
- * @see away.core.base.SubGraphics
- * @see away.entities.Sprite
- *
- * @class Graphics
- */
-var Graphics = (function (_super) {
-    __extends(Graphics, _super);
-    /**
-     * Creates a new Graphics object.
-     */
-    function Graphics() {
-        var _this = this;
-        _super.call(this);
-        this._boxBoundsInvalid = true;
-        this._sphereBoundsInvalid = true;
-        this._graphics = new Array();
-        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
-    }
-    Object.defineProperty(Graphics.prototype, "assetType", {
-        get: function () {
-            return Graphics.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "count", {
-        get: function () {
-            return this._graphics.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "animator", {
-        /**
-         * Defines the animator of the graphics object.  Default value is <code>null</code>.
-         */
-        get: function () {
-            return this._animator;
-        },
-        set: function (value) {
-            this._animator = value;
-            var len = this._graphics.length;
-            var graphic;
-            for (var i = 0; i < len; ++i) {
-                graphic = this._graphics[i];
-                // cause material to be unregistered and registered again to work with the new animation type (if possible)
-                if (graphic.material) {
-                    graphic.material.iRemoveOwner(graphic);
-                    graphic.material.iAddOwner(graphic);
-                }
-                //invalidate any existing graphic objects in case they need to pull new elements
-                graphic.invalidateElements();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "style", {
-        /**
-         *
-         */
-        get: function () {
-            return this._style;
-        },
-        set: function (value) {
-            if (this._style == value)
-                return;
-            if (this._style)
-                this._style.removeEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._style = value;
-            if (this._style)
-                this._style.addEventListener(StyleEvent_1.default.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._iInvalidateSurfaces();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "material", {
-        /**
-         * The material with which to render the Graphics.
-         */
-        get: function () {
-            return this._material;
-        },
-        set: function (value) {
-            if (value == this._material)
-                return;
-            var i;
-            var len = this._graphics.length;
-            var graphic;
-            if (this._material)
-                for (i = 0; i < len; i++)
-                    if (!(graphic = this._graphics[i])._iGetExplicitMaterial())
-                        this._material.iRemoveOwner(graphic);
-            this._material = value;
-            if (this._material)
-                for (i = 0; i < len; i++)
-                    if (!(graphic = this._graphics[i])._iGetExplicitMaterial())
-                        this._material.iAddOwner(graphic);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Adds a GraphicBase wrapping a Elements.
-     *
-     * @param elements
-     */
-    Graphics.prototype.addGraphic = function (elements, material, style) {
-        if (material === void 0) { material = null; }
-        if (style === void 0) { style = null; }
-        var graphic;
-        if (Graphic_1.default._available.length) {
-            graphic = Graphic_1.default._available.pop();
-            graphic._iIndex = this._graphics.length;
-            graphic.parent = this;
-            graphic.elements = elements;
-            graphic.material = material;
-            graphic.style = style;
-        }
-        else {
-            graphic = new Graphic_1.default(this._graphics.length, this, elements, material, style);
-        }
-        this._graphics.push(graphic);
-        elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-        this.invalidate();
-        return graphic;
-    };
-    Graphics.prototype.removeGraphic = function (graphic) {
-        this._graphics.splice(this._graphics.indexOf(graphic), 1);
-        graphic.elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-        graphic.elements = null;
-        graphic.material = null;
-        graphic.style = null;
-        graphic.clear();
-        this.invalidate();
-    };
-    Graphics.prototype.getGraphicAt = function (index) {
-        return this._graphics[index];
-    };
-    Graphics.prototype.applyTransformation = function (transform) {
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i)
-            this._graphics[i].elements.applyTransformation(transform);
-    };
-    Graphics.prototype.copyTo = function (graphics) {
-        graphics.material = this._material;
-        graphics.style = this.style;
-        graphics.particles = this.particles;
-        graphics.numParticles = this.numParticles;
-        var graphic;
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i) {
-            graphic = this._graphics[i];
-            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle());
-        }
-        if (this._animator)
-            graphics.animator = this._animator.clone();
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    Graphics.prototype.scale = function (scale) {
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i)
-            this._graphics[i].elements.scale(scale);
-    };
-    Graphics.prototype.clear = function () {
-        for (var i = this._graphics.length - 1; i >= 0; i--)
-            this._graphics[i].clear();
-    };
-    /**
-     * Clears all resources used by the Graphics object, including SubGeometries.
-     */
-    Graphics.prototype.dispose = function () {
-        this.material = null;
-        for (var i = this._graphics.length - 1; i >= 0; i--)
-            this._graphics[i].dispose();
-        if (this._animator)
-            this._animator.dispose();
-    };
-    /**
-     * Scales the uv coordinates (tiling)
-     * @param scaleU The amount by which to scale on the u axis. Default is 1;
-     * @param scaleV The amount by which to scale on the v axis. Default is 1;
-     */
-    Graphics.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i)
-            this._graphics[i].elements.scaleUV(scaleU, scaleV);
-    };
-    Graphics.prototype.getBoxBounds = function () {
-        if (this._boxBoundsInvalid) {
-            this._boxBoundsInvalid = false;
-            if (!this._boxBounds)
-                this._boxBounds = new Box_1.default();
-            if (this._graphics.length) {
-                this._boxBounds.setBoundIdentity();
-                var len = this._graphics.length;
-                for (var i = 0; i < len; i++)
-                    this._boxBounds = this._graphics[i].elements.getBoxBounds(this._boxBounds);
-            }
-            else {
-                this._boxBounds.setEmpty();
-            }
-        }
-        return this._boxBounds;
-    };
-    Graphics.prototype.getSphereBounds = function (center, target) {
-        if (target === void 0) { target = null; }
-        var len = this._graphics.length;
-        for (var i = 0; i < len; i++)
-            target = this._graphics[i].elements.getSphereBounds(center, target);
-        return target;
-    };
-    Graphics.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._boxBoundsInvalid = true;
-        this._sphereBoundsInvalid = true;
-    };
-    Graphics.prototype._iInvalidateSurfaces = function () {
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i)
-            this._graphics[i].invalidateSurface();
-    };
-    Graphics.prototype.invalidateElements = function () {
-        var len = this._graphics.length;
-        for (var i = 0; i < len; ++i)
-            this._graphics[i].invalidateElements();
-    };
-    Graphics.prototype._hitTestPointInternal = function (x, y) {
-        //TODO: handle lines as well
-        var len = this._graphics.length;
-        for (var i = 0; i < len; i++)
-            if (ElementsUtils_1.default.hitTestTriangleElements(x, y, 0, this.getBoxBounds(), this._graphics[i].elements))
-                return true;
-        return false;
-    };
-    Graphics.prototype.acceptTraverser = function (traverser) {
-        var len = this._graphics.length;
-        for (var i = 0; i < len; i++)
-            traverser.applyRenderable(this._graphics[i]);
-    };
-    Graphics.prototype._onInvalidateProperties = function (event) {
-        this._iInvalidateSurfaces();
-    };
-    Graphics.prototype._onInvalidateVertices = function (event) {
-        if (event.attributesView != event.target.positions)
-            return;
-        this.invalidate();
-    };
     Graphics.assetType = "[asset Graphics]";
     return Graphics;
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Graphics;
-
-},{"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/events/ElementsEvent":"awayjs-display/lib/events/ElementsEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/graphics/Graphic":"awayjs-display/lib/graphics/Graphic","awayjs-display/lib/utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils"}],"awayjs-display/lib/graphics/Graphic":[function(require,module,exports){
+},{"../draw/CapsStyle":"awayjs-display/lib/draw/CapsStyle","../draw/GraphicsFactoryFills":"awayjs-display/lib/draw/GraphicsFactoryFills","../draw/GraphicsFactoryStrokes":"awayjs-display/lib/draw/GraphicsFactoryStrokes","../draw/GraphicsFillStyle":"awayjs-display/lib/draw/GraphicsFillStyle","../draw/GraphicsPath":"awayjs-display/lib/draw/GraphicsPath","../draw/GraphicsStrokeStyle":"awayjs-display/lib/draw/GraphicsStrokeStyle","../draw/JointStyle":"awayjs-display/lib/draw/JointStyle","../events/ElementsEvent":"awayjs-display/lib/events/ElementsEvent","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","../graphics/Graphic":"awayjs-display/lib/graphics/Graphic","../utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils","awayjs-core/lib/errors/PartialImplementationError":undefined,"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/graphics/Graphic":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -28316,8 +28711,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var RenderableEvent_1 = require("awayjs-display/lib/events/RenderableEvent");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var RenderableEvent_1 = require("../events/RenderableEvent");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  * Graphic wraps a Elements as a scene graph instantiation. A Graphic is owned by a Sprite object.
  *
@@ -28450,8 +28845,7 @@ var Graphic = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Graphic;
-
-},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent"}],"awayjs-display/lib/graphics/LineElements":[function(require,module,exports){
+},{"../events/RenderableEvent":"awayjs-display/lib/events/RenderableEvent","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/graphics/LineElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -28461,8 +28855,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
 var Byte4Attributes_1 = require("awayjs-core/lib/attributes/Byte4Attributes");
 var Float1Attributes_1 = require("awayjs-core/lib/attributes/Float1Attributes");
-var ElementsBase_1 = require("awayjs-display/lib/graphics/ElementsBase");
-var ElementsUtils_1 = require("awayjs-display/lib/utils/ElementsUtils");
+var ElementsBase_1 = require("../graphics/ElementsBase");
+var ElementsUtils_1 = require("../utils/ElementsUtils");
 /**
  * @class LineElements
  */
@@ -28694,8 +29088,7 @@ var LineElements = (function (_super) {
 }(ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LineElements;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float1Attributes":undefined,"awayjs-display/lib/graphics/ElementsBase":"awayjs-display/lib/graphics/ElementsBase","awayjs-display/lib/utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils"}],"awayjs-display/lib/graphics/TriangleElements":[function(require,module,exports){
+},{"../graphics/ElementsBase":"awayjs-display/lib/graphics/ElementsBase","../utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float1Attributes":undefined}],"awayjs-display/lib/graphics/TriangleElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -28705,8 +29098,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AttributesView_1 = require("awayjs-core/lib/attributes/AttributesView");
 var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
 var Float2Attributes_1 = require("awayjs-core/lib/attributes/Float2Attributes");
-var ElementsBase_1 = require("awayjs-display/lib/graphics/ElementsBase");
-var ElementsUtils_1 = require("awayjs-display/lib/utils/ElementsUtils");
+var ElementsBase_1 = require("../graphics/ElementsBase");
+var ElementsUtils_1 = require("../utils/ElementsUtils");
 /**
  * @class away.base.TriangleElements
  */
@@ -29186,18 +29579,31 @@ var TriangleElements = (function (_super) {
 }(ElementsBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TriangleElements;
-
-},{"awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-display/lib/graphics/ElementsBase":"awayjs-display/lib/graphics/ElementsBase","awayjs-display/lib/utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils"}],"awayjs-display/lib/managers/DefaultMaterialManager":[function(require,module,exports){
+},{"../graphics/ElementsBase":"awayjs-display/lib/graphics/ElementsBase","../utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils","awayjs-core/lib/attributes/AttributesView":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined}],"awayjs-display/lib/graphics":[function(require,module,exports){
+"use strict";
+var ElementsBase_1 = require("./graphics/ElementsBase");
+exports.ElementsBase = ElementsBase_1.default;
+var ElementsType_1 = require("./graphics/ElementsType");
+exports.ElementsType = ElementsType_1.default;
+var Graphic_1 = require("./graphics/Graphic");
+exports.Graphic = Graphic_1.default;
+var Graphics_1 = require("./graphics/Graphics");
+exports.Graphics = Graphics_1.default;
+var LineElements_1 = require("./graphics/LineElements");
+exports.LineElements = LineElements_1.default;
+var TriangleElements_1 = require("./graphics/TriangleElements");
+exports.TriangleElements = TriangleElements_1.default;
+},{"./graphics/ElementsBase":"awayjs-display/lib/graphics/ElementsBase","./graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","./graphics/Graphic":"awayjs-display/lib/graphics/Graphic","./graphics/Graphics":"awayjs-display/lib/graphics/Graphics","./graphics/LineElements":"awayjs-display/lib/graphics/LineElements","./graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements"}],"awayjs-display/lib/managers/DefaultMaterialManager":[function(require,module,exports){
 "use strict";
 var Sampler2D_1 = require("awayjs-core/lib/image/Sampler2D");
 var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
 var BitmapImageCube_1 = require("awayjs-core/lib/image/BitmapImageCube");
-var LineElements_1 = require("awayjs-display/lib/graphics/LineElements");
-var Skybox_1 = require("awayjs-display/lib/display/Skybox");
-var BasicMaterial_1 = require("awayjs-display/lib/materials/BasicMaterial");
-var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
-var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
-var Graphic_1 = require("awayjs-display/lib/graphics/Graphic");
+var LineElements_1 = require("../graphics/LineElements");
+var Skybox_1 = require("../display/Skybox");
+var BasicMaterial_1 = require("../materials/BasicMaterial");
+var Single2DTexture_1 = require("../textures/Single2DTexture");
+var SingleCubeTexture_1 = require("../textures/SingleCubeTexture");
+var Graphic_1 = require("../graphics/Graphic");
 var DefaultMaterialManager = (function () {
     function DefaultMaterialManager() {
     }
@@ -29294,8 +29700,7 @@ var DefaultMaterialManager = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DefaultMaterialManager;
-
-},{"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-display/lib/display/Skybox":"awayjs-display/lib/display/Skybox","awayjs-display/lib/graphics/Graphic":"awayjs-display/lib/graphics/Graphic","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/managers/FrameScriptManager":[function(require,module,exports){
+},{"../display/Skybox":"awayjs-display/lib/display/Skybox","../graphics/Graphic":"awayjs-display/lib/graphics/Graphic","../graphics/LineElements":"awayjs-display/lib/graphics/LineElements","../materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","../textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","../textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture","awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined}],"awayjs-display/lib/managers/FrameScriptManager":[function(require,module,exports){
 "use strict";
 var FrameScriptManager = (function () {
     function FrameScriptManager() {
@@ -29381,13 +29786,12 @@ var FrameScriptManager = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FrameScriptManager;
-
 },{}],"awayjs-display/lib/managers/MouseManager":[function(require,module,exports){
 "use strict";
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var TouchPoint_1 = require("awayjs-display/lib/base/TouchPoint");
-var MouseEvent_1 = require("awayjs-display/lib/events/MouseEvent");
-var FrameScriptManager_1 = require("awayjs-display/lib/managers/FrameScriptManager");
+var TouchPoint_1 = require("../base/TouchPoint");
+var MouseEvent_1 = require("../events/MouseEvent");
+var FrameScriptManager_1 = require("../managers/FrameScriptManager");
 /**
  * MouseManager enforces a singleton pattern and is not intended to be instanced.
  * it provides a manager class for detecting mouse hits on scene objects and sending out mouse events.
@@ -29629,11 +30033,10 @@ var MouseManager = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MouseManager;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/base/TouchPoint":"awayjs-display/lib/base/TouchPoint","awayjs-display/lib/events/MouseEvent":"awayjs-display/lib/events/MouseEvent","awayjs-display/lib/managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager"}],"awayjs-display/lib/managers/TouchManager":[function(require,module,exports){
+},{"../base/TouchPoint":"awayjs-display/lib/base/TouchPoint","../events/MouseEvent":"awayjs-display/lib/events/MouseEvent","../managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/managers/TouchManager":[function(require,module,exports){
 "use strict";
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var TouchEvent_1 = require("awayjs-display/lib/events/TouchEvent");
+var TouchEvent_1 = require("../events/TouchEvent");
 var TouchManager = (function () {
     function TouchManager() {
         var _this = this;
@@ -29809,8 +30212,17 @@ var TouchPoint = (function () {
     }
     return TouchPoint;
 }());
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/TouchEvent":"awayjs-display/lib/events/TouchEvent"}],"awayjs-display/lib/materials/BasicMaterial":[function(require,module,exports){
+},{"../events/TouchEvent":"awayjs-display/lib/events/TouchEvent","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/managers":[function(require,module,exports){
+"use strict";
+var DefaultMaterialManager_1 = require("./managers/DefaultMaterialManager");
+exports.DefaultMaterialManager = DefaultMaterialManager_1.default;
+var FrameScriptManager_1 = require("./managers/FrameScriptManager");
+exports.FrameScriptManager = FrameScriptManager_1.default;
+var MouseManager_1 = require("./managers/MouseManager");
+exports.MouseManager = MouseManager_1.default;
+var TouchManager_1 = require("./managers/TouchManager");
+exports.TouchManager = TouchManager_1.default;
+},{"./managers/DefaultMaterialManager":"awayjs-display/lib/managers/DefaultMaterialManager","./managers/FrameScriptManager":"awayjs-display/lib/managers/FrameScriptManager","./managers/MouseManager":"awayjs-display/lib/managers/MouseManager","./managers/TouchManager":"awayjs-display/lib/managers/TouchManager"}],"awayjs-display/lib/materials/BasicMaterial":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -29818,8 +30230,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Image2D_1 = require("awayjs-core/lib/image/Image2D");
-var MaterialBase_1 = require("awayjs-display/lib/materials/MaterialBase");
-var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
+var MaterialBase_1 = require("../materials/MaterialBase");
+var Single2DTexture_1 = require("../textures/Single2DTexture");
 /**
  * BasicMaterial forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -29886,8 +30298,7 @@ var BasicMaterial = (function (_super) {
 }(MaterialBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BasicMaterial;
-
-},{"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/materials/MaterialBase":"awayjs-display/lib/materials/MaterialBase","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture"}],"awayjs-display/lib/materials/LightSources":[function(require,module,exports){
+},{"../materials/MaterialBase":"awayjs-display/lib/materials/MaterialBase","../textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-core/lib/image/Image2D":undefined}],"awayjs-display/lib/materials/LightSources":[function(require,module,exports){
 "use strict";
 /**
  * Enumeration class for defining which lighting types affect the specific material
@@ -29922,7 +30333,6 @@ var LightSources = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightSources;
-
 },{}],"awayjs-display/lib/materials/MaterialBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -29935,9 +30345,9 @@ var ImageBase_1 = require("awayjs-core/lib/image/ImageBase");
 var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var SurfaceEvent_1 = require("awayjs-display/lib/events/SurfaceEvent");
-var Style_1 = require("awayjs-display/lib/base/Style");
-var StyleEvent_1 = require("awayjs-display/lib/events/StyleEvent");
+var SurfaceEvent_1 = require("../events/SurfaceEvent");
+var Style_1 = require("../base/Style");
+var StyleEvent_1 = require("../events/StyleEvent");
 /**
  * MaterialBase forms an abstract base class for any material.
  * A material consists of several passes, each of which constitutes at least one render call. Several passes could
@@ -30414,8 +30824,7 @@ var MaterialBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MaterialBase;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/ImageBase":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/base/Style":"awayjs-display/lib/base/Style","awayjs-display/lib/events/StyleEvent":"awayjs-display/lib/events/StyleEvent","awayjs-display/lib/events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent"}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
+},{"../base/Style":"awayjs-display/lib/base/Style","../events/StyleEvent":"awayjs-display/lib/events/StyleEvent","../events/SurfaceEvent":"awayjs-display/lib/events/SurfaceEvent","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/ImageBase":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/materials/lightpickers/LightPickerBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -30619,7 +31028,6 @@ var LightPickerBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightPickerBase;
-
 },{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/materials/lightpickers/StaticLightPicker":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -30628,11 +31036,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var DirectionalLight_1 = require("awayjs-display/lib/display/DirectionalLight");
-var LightProbe_1 = require("awayjs-display/lib/display/LightProbe");
-var PointLight_1 = require("awayjs-display/lib/display/PointLight");
-var LightEvent_1 = require("awayjs-display/lib/events/LightEvent");
-var LightPickerBase_1 = require("awayjs-display/lib/materials/lightpickers/LightPickerBase");
+var DirectionalLight_1 = require("../../display/DirectionalLight");
+var LightProbe_1 = require("../../display/LightProbe");
+var PointLight_1 = require("../../display/PointLight");
+var LightEvent_1 = require("../../events/LightEvent");
+var LightPickerBase_1 = require("../../materials/lightpickers/LightPickerBase");
 /**
  * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
  * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
@@ -30769,8 +31177,7 @@ var StaticLightPicker = (function (_super) {
 }(LightPickerBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StaticLightPicker;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","awayjs-display/lib/display/LightProbe":"awayjs-display/lib/display/LightProbe","awayjs-display/lib/display/PointLight":"awayjs-display/lib/display/PointLight","awayjs-display/lib/events/LightEvent":"awayjs-display/lib/events/LightEvent","awayjs-display/lib/materials/lightpickers/LightPickerBase":"awayjs-display/lib/materials/lightpickers/LightPickerBase"}],"awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper":[function(require,module,exports){
+},{"../../display/DirectionalLight":"awayjs-display/lib/display/DirectionalLight","../../display/LightProbe":"awayjs-display/lib/display/LightProbe","../../display/PointLight":"awayjs-display/lib/display/PointLight","../../events/LightEvent":"awayjs-display/lib/events/LightEvent","../../materials/lightpickers/LightPickerBase":"awayjs-display/lib/materials/lightpickers/LightPickerBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -30781,8 +31188,8 @@ var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var FreeMatrixProjection_1 = require("awayjs-core/lib/projections/FreeMatrixProjection");
-var Camera_1 = require("awayjs-display/lib/display/Camera");
-var DirectionalShadowMapper_1 = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+var Camera_1 = require("../../display/Camera");
+var DirectionalShadowMapper_1 = require("../../materials/shadowmappers/DirectionalShadowMapper");
 var CascadeShadowMapper = (function (_super) {
     __extends(CascadeShadowMapper, _super);
     function CascadeShadowMapper(numCascades) {
@@ -30959,8 +31366,7 @@ var CascadeShadowMapper = (function (_super) {
 }(DirectionalShadowMapper_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CascadeShadowMapper;
-
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":[function(require,module,exports){
+},{"../../display/Camera":"awayjs-display/lib/display/Camera","../../materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined}],"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -30968,9 +31374,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ImageCube_1 = require("awayjs-core/lib/image/ImageCube");
-var Camera_1 = require("awayjs-display/lib/display/Camera");
-var ShadowMapperBase_1 = require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
-var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
+var Camera_1 = require("../../display/Camera");
+var ShadowMapperBase_1 = require("../../materials/shadowmappers/ShadowMapperBase");
+var SingleCubeTexture_1 = require("../../textures/SingleCubeTexture");
 var CubeMapShadowMapper = (function (_super) {
     __extends(CubeMapShadowMapper, _super);
     function CubeMapShadowMapper() {
@@ -31028,8 +31434,7 @@ var CubeMapShadowMapper = (function (_super) {
 }(ShadowMapperBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CubeMapShadowMapper;
-
-},{"awayjs-core/lib/image/ImageCube":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture"}],"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":[function(require,module,exports){
+},{"../../display/Camera":"awayjs-display/lib/display/Camera","../../materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","../../textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture","awayjs-core/lib/image/ImageCube":undefined}],"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31040,9 +31445,9 @@ var Image2D_1 = require("awayjs-core/lib/image/Image2D");
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var FreeMatrixProjection_1 = require("awayjs-core/lib/projections/FreeMatrixProjection");
-var Camera_1 = require("awayjs-display/lib/display/Camera");
-var ShadowMapperBase_1 = require("awayjs-display/lib/materials/shadowmappers/ShadowMapperBase");
-var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
+var Camera_1 = require("../../display/Camera");
+var ShadowMapperBase_1 = require("../../materials/shadowmappers/ShadowMapperBase");
+var Single2DTexture_1 = require("../../textures/Single2DTexture");
 var DirectionalShadowMapper = (function (_super) {
     __extends(DirectionalShadowMapper, _super);
     function DirectionalShadowMapper() {
@@ -31208,15 +31613,14 @@ var DirectionalShadowMapper = (function (_super) {
 }(ShadowMapperBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DirectionalShadowMapper;
-
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined,"awayjs-display/lib/display/Camera":"awayjs-display/lib/display/Camera","awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture"}],"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":[function(require,module,exports){
+},{"../../display/Camera":"awayjs-display/lib/display/Camera","../../materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase","../../textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/projections/FreeMatrixProjection":undefined}],"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DirectionalShadowMapper_1 = require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
+var DirectionalShadowMapper_1 = require("../../materials/shadowmappers/DirectionalShadowMapper");
 var NearDirectionalShadowMapper = (function (_super) {
     __extends(NearDirectionalShadowMapper, _super);
     function NearDirectionalShadowMapper(coverageRatio) {
@@ -31255,8 +31659,7 @@ var NearDirectionalShadowMapper = (function (_super) {
 }(DirectionalShadowMapper_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NearDirectionalShadowMapper;
-
-},{"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":[function(require,module,exports){
+},{"../../materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper"}],"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31356,16 +31759,37 @@ var ShadowMapperBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowMapperBase;
-
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/partition/BasicPartition":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/materials":[function(require,module,exports){
+"use strict";
+var LightPickerBase_1 = require("./materials/lightpickers/LightPickerBase");
+exports.LightPickerBase = LightPickerBase_1.default;
+var StaticLightPicker_1 = require("./materials/lightpickers/StaticLightPicker");
+exports.StaticLightPicker = StaticLightPicker_1.default;
+var CascadeShadowMapper_1 = require("./materials/shadowmappers/CascadeShadowMapper");
+exports.CascadeShadowMapper = CascadeShadowMapper_1.default;
+var CubeMapShadowMapper_1 = require("./materials/shadowmappers/CubeMapShadowMapper");
+exports.CubeMapShadowMapper = CubeMapShadowMapper_1.default;
+var DirectionalShadowMapper_1 = require("./materials/shadowmappers/DirectionalShadowMapper");
+exports.DirectionalShadowMapper = DirectionalShadowMapper_1.default;
+var NearDirectionalShadowMapper_1 = require("./materials/shadowmappers/NearDirectionalShadowMapper");
+exports.NearDirectionalShadowMapper = NearDirectionalShadowMapper_1.default;
+var ShadowMapperBase_1 = require("./materials/shadowmappers/ShadowMapperBase");
+exports.ShadowMapperBase = ShadowMapperBase_1.default;
+var BasicMaterial_1 = require("./materials/BasicMaterial");
+exports.BasicMaterial = BasicMaterial_1.default;
+var LightSources_1 = require("./materials/LightSources");
+exports.LightSources = LightSources_1.default;
+var MaterialBase_1 = require("./materials/MaterialBase");
+exports.MaterialBase = MaterialBase_1.default;
+},{"./materials/BasicMaterial":"awayjs-display/lib/materials/BasicMaterial","./materials/LightSources":"awayjs-display/lib/materials/LightSources","./materials/MaterialBase":"awayjs-display/lib/materials/MaterialBase","./materials/lightpickers/LightPickerBase":"awayjs-display/lib/materials/lightpickers/LightPickerBase","./materials/lightpickers/StaticLightPicker":"awayjs-display/lib/materials/lightpickers/StaticLightPicker","./materials/shadowmappers/CascadeShadowMapper":"awayjs-display/lib/materials/shadowmappers/CascadeShadowMapper","./materials/shadowmappers/CubeMapShadowMapper":"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper","./materials/shadowmappers/DirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper","./materials/shadowmappers/NearDirectionalShadowMapper":"awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper","./materials/shadowmappers/ShadowMapperBase":"awayjs-display/lib/materials/shadowmappers/ShadowMapperBase"}],"awayjs-display/lib/partition/BasicPartition":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NodeBase_1 = require("awayjs-display/lib/partition/NodeBase");
-var PartitionBase_1 = require("awayjs-display/lib/partition/PartitionBase");
+var NodeBase_1 = require("../partition/NodeBase");
+var PartitionBase_1 = require("../partition/PartitionBase");
 /**
  * @class away.partition.Partition
  */
@@ -31379,15 +31803,14 @@ var BasicPartition = (function (_super) {
 }(PartitionBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BasicPartition;
-
-},{"awayjs-display/lib/partition/NodeBase":"awayjs-display/lib/partition/NodeBase","awayjs-display/lib/partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase"}],"awayjs-display/lib/partition/CameraNode":[function(require,module,exports){
+},{"../partition/NodeBase":"awayjs-display/lib/partition/NodeBase","../partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase"}],"awayjs-display/lib/partition/CameraNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
+var EntityNode_1 = require("../partition/EntityNode");
 /**
  * @class away.partition.CameraNode
  */
@@ -31406,15 +31829,14 @@ var CameraNode = (function (_super) {
 }(EntityNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CameraNode;
-
-},{"awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/DirectionalLightNode":[function(require,module,exports){
+},{"../partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/DirectionalLightNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
+var EntityNode_1 = require("../partition/EntityNode");
 /**
  * @class away.partition.DirectionalLightNode
  */
@@ -31441,8 +31863,7 @@ var DirectionalLightNode = (function (_super) {
 }(EntityNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DirectionalLightNode;
-
-},{"awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/DisplayObjectNode":[function(require,module,exports){
+},{"../partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/DisplayObjectNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31450,11 +31871,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AbstractionBase_1 = require("awayjs-core/lib/library/AbstractionBase");
-var AxisAlignedBoundingBox_1 = require("awayjs-display/lib/bounds/AxisAlignedBoundingBox");
-var BoundingSphere_1 = require("awayjs-display/lib/bounds/BoundingSphere");
-var BoundsType_1 = require("awayjs-display/lib/bounds/BoundsType");
-var NullBounds_1 = require("awayjs-display/lib/bounds/NullBounds");
-var DisplayObjectEvent_1 = require("awayjs-display/lib/events/DisplayObjectEvent");
+var AxisAlignedBoundingBox_1 = require("../bounds/AxisAlignedBoundingBox");
+var BoundingSphere_1 = require("../bounds/BoundingSphere");
+var BoundsType_1 = require("../bounds/BoundsType");
+var NullBounds_1 = require("../bounds/NullBounds");
+var DisplayObjectEvent_1 = require("../events/DisplayObjectEvent");
 /**
  * @class away.partition.EntityNode
  */
@@ -31551,8 +31972,7 @@ var DisplayObjectNode = (function (_super) {
 }(AbstractionBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DisplayObjectNode;
-
-},{"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/bounds/AxisAlignedBoundingBox":"awayjs-display/lib/bounds/AxisAlignedBoundingBox","awayjs-display/lib/bounds/BoundingSphere":"awayjs-display/lib/bounds/BoundingSphere","awayjs-display/lib/bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","awayjs-display/lib/bounds/NullBounds":"awayjs-display/lib/bounds/NullBounds","awayjs-display/lib/events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent"}],"awayjs-display/lib/partition/EntityNode":[function(require,module,exports){
+},{"../bounds/AxisAlignedBoundingBox":"awayjs-display/lib/bounds/AxisAlignedBoundingBox","../bounds/BoundingSphere":"awayjs-display/lib/bounds/BoundingSphere","../bounds/BoundsType":"awayjs-display/lib/bounds/BoundsType","../bounds/NullBounds":"awayjs-display/lib/bounds/NullBounds","../events/DisplayObjectEvent":"awayjs-display/lib/events/DisplayObjectEvent","awayjs-core/lib/library/AbstractionBase":undefined}],"awayjs-display/lib/partition/EntityNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31560,7 +31980,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var DisplayObjectNode_1 = require("awayjs-display/lib/partition/DisplayObjectNode");
+var DisplayObjectNode_1 = require("../partition/DisplayObjectNode");
 /**
  * @class away.partition.EntityNode
  */
@@ -31648,19 +32068,14 @@ var EntityNode = (function (_super) {
 }(DisplayObjectNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EntityNode;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/partition/DisplayObjectNode":"awayjs-display/lib/partition/DisplayObjectNode"}],"awayjs-display/lib/partition/IContainerNode":[function(require,module,exports){
+},{"../partition/DisplayObjectNode":"awayjs-display/lib/partition/DisplayObjectNode","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/partition/IContainerNode":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/partition/IDisplayObjectNode":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/partition/IEntityNodeClass":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/partition/INode":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/partition/LightProbeNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -31668,7 +32083,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
+var EntityNode_1 = require("../partition/EntityNode");
 /**
  * @class away.partition.LightProbeNode
  */
@@ -31695,10 +32110,9 @@ var LightProbeNode = (function (_super) {
 }(EntityNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightProbeNode;
-
-},{"awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/NodeBase":[function(require,module,exports){
+},{"../partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/NodeBase":[function(require,module,exports){
 "use strict";
-var NullBounds_1 = require("awayjs-display/lib/bounds/NullBounds");
+var NullBounds_1 = require("../bounds/NullBounds");
 /**
  * @class away.partition.NodeBase
  */
@@ -31805,8 +32219,7 @@ var NodeBase = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NodeBase;
-
-},{"awayjs-display/lib/bounds/NullBounds":"awayjs-display/lib/bounds/NullBounds"}],"awayjs-display/lib/partition/PartitionBase":[function(require,module,exports){
+},{"../bounds/NullBounds":"awayjs-display/lib/bounds/NullBounds"}],"awayjs-display/lib/partition/PartitionBase":[function(require,module,exports){
 "use strict";
 /**
  * @class away.partition.Partition
@@ -31829,7 +32242,9 @@ var PartitionBase = (function () {
     PartitionBase.prototype.traverse = function (traverser) {
         if (this._updatesMade)
             this.updateEntities();
-        this._rootNode.acceptTraverser(traverser);
+        if (this._rootNode) {
+            this._rootNode.acceptTraverser(traverser);
+        }
     };
     PartitionBase.prototype.iMarkForUpdate = function (node) {
         var t = this._updateQueue;
@@ -31920,7 +32335,6 @@ var PartitionBase = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PartitionBase;
-
 },{}],"awayjs-display/lib/partition/PointLightNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -31928,7 +32342,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
+var EntityNode_1 = require("../partition/EntityNode");
 /**
  * @class away.partition.PointLightNode
  */
@@ -31955,15 +32369,14 @@ var PointLightNode = (function (_super) {
 }(EntityNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PointLightNode;
-
-},{"awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/SceneGraphNode":[function(require,module,exports){
+},{"../partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition/SceneGraphNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DisplayObjectNode_1 = require("awayjs-display/lib/partition/DisplayObjectNode");
+var DisplayObjectNode_1 = require("../partition/DisplayObjectNode");
 /**
  * Maintains scenegraph heirarchy when collecting nodes
  */
@@ -32047,16 +32460,15 @@ var SceneGraphNode = (function (_super) {
 }(DisplayObjectNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SceneGraphNode;
-
-},{"awayjs-display/lib/partition/DisplayObjectNode":"awayjs-display/lib/partition/DisplayObjectNode"}],"awayjs-display/lib/partition/SceneGraphPartition":[function(require,module,exports){
+},{"../partition/DisplayObjectNode":"awayjs-display/lib/partition/DisplayObjectNode"}],"awayjs-display/lib/partition/SceneGraphPartition":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SceneGraphNode_1 = require("awayjs-display/lib/partition/SceneGraphNode");
-var PartitionBase_1 = require("awayjs-display/lib/partition/PartitionBase");
+var SceneGraphNode_1 = require("../partition/SceneGraphNode");
+var PartitionBase_1 = require("../partition/PartitionBase");
 /**
  * @class away.partition.Partition
  */
@@ -32129,15 +32541,14 @@ var SceneGraphNodePool = (function () {
     };
     return SceneGraphNodePool;
 }());
-
-},{"awayjs-display/lib/partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","awayjs-display/lib/partition/SceneGraphNode":"awayjs-display/lib/partition/SceneGraphNode"}],"awayjs-display/lib/partition/SkyboxNode":[function(require,module,exports){
+},{"../partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","../partition/SceneGraphNode":"awayjs-display/lib/partition/SceneGraphNode"}],"awayjs-display/lib/partition/SkyboxNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EntityNode_1 = require("awayjs-display/lib/partition/EntityNode");
+var EntityNode_1 = require("../partition/EntityNode");
 /**
  * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
  *
@@ -32171,13 +32582,36 @@ var SkyboxNode = (function (_super) {
 }(EntityNode_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkyboxNode;
-
-},{"awayjs-display/lib/partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/pick/IPicker":[function(require,module,exports){
+},{"../partition/EntityNode":"awayjs-display/lib/partition/EntityNode"}],"awayjs-display/lib/partition":[function(require,module,exports){
 "use strict";
-
+var BasicPartition_1 = require("./partition/BasicPartition");
+exports.BasicPartition = BasicPartition_1.default;
+var CameraNode_1 = require("./partition/CameraNode");
+exports.CameraNode = CameraNode_1.default;
+var DirectionalLightNode_1 = require("./partition/DirectionalLightNode");
+exports.DirectionalLightNode = DirectionalLightNode_1.default;
+var DisplayObjectNode_1 = require("./partition/DisplayObjectNode");
+exports.DisplayObjectNode = DisplayObjectNode_1.default;
+var EntityNode_1 = require("./partition/EntityNode");
+exports.EntityNode = EntityNode_1.default;
+var LightProbeNode_1 = require("./partition/LightProbeNode");
+exports.LightProbeNode = LightProbeNode_1.default;
+var NodeBase_1 = require("./partition/NodeBase");
+exports.NodeBase = NodeBase_1.default;
+var PartitionBase_1 = require("./partition/PartitionBase");
+exports.PartitionBase = PartitionBase_1.default;
+var PointLightNode_1 = require("./partition/PointLightNode");
+exports.PointLightNode = PointLightNode_1.default;
+var SceneGraphNode_1 = require("./partition/SceneGraphNode");
+exports.SceneGraphNode = SceneGraphNode_1.default;
+var SceneGraphPartition_1 = require("./partition/SceneGraphPartition");
+exports.SceneGraphPartition = SceneGraphPartition_1.default;
+var SkyboxNode_1 = require("./partition/SkyboxNode");
+exports.SkyboxNode = SkyboxNode_1.default;
+},{"./partition/BasicPartition":"awayjs-display/lib/partition/BasicPartition","./partition/CameraNode":"awayjs-display/lib/partition/CameraNode","./partition/DirectionalLightNode":"awayjs-display/lib/partition/DirectionalLightNode","./partition/DisplayObjectNode":"awayjs-display/lib/partition/DisplayObjectNode","./partition/EntityNode":"awayjs-display/lib/partition/EntityNode","./partition/LightProbeNode":"awayjs-display/lib/partition/LightProbeNode","./partition/NodeBase":"awayjs-display/lib/partition/NodeBase","./partition/PartitionBase":"awayjs-display/lib/partition/PartitionBase","./partition/PointLightNode":"awayjs-display/lib/partition/PointLightNode","./partition/SceneGraphNode":"awayjs-display/lib/partition/SceneGraphNode","./partition/SceneGraphPartition":"awayjs-display/lib/partition/SceneGraphPartition","./partition/SkyboxNode":"awayjs-display/lib/partition/SkyboxNode"}],"awayjs-display/lib/pick/IPicker":[function(require,module,exports){
+"use strict";
 },{}],"awayjs-display/lib/pick/IPickingCollider":[function(require,module,exports){
 "use strict";
-
 },{}],"awayjs-display/lib/pick/JSPickingCollider":[function(require,module,exports){
 "use strict";
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
@@ -32509,7 +32943,6 @@ var JSPickingCollider = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = JSPickingCollider;
-
 },{"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/pick/PickingCollision":[function(require,module,exports){
 "use strict";
 /**
@@ -32533,7 +32966,6 @@ var PickingCollision = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PickingCollision;
-
 },{}],"awayjs-display/lib/pick/RaycastPicker":[function(require,module,exports){
 "use strict";
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
@@ -32726,8 +33158,15 @@ var RaycastPicker = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RaycastPicker;
-
-},{"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/prefabs/PrefabBase":[function(require,module,exports){
+},{"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/pick":[function(require,module,exports){
+"use strict";
+var JSPickingCollider_1 = require("./pick/JSPickingCollider");
+exports.JSPickingCollider = JSPickingCollider_1.default;
+var PickingCollision_1 = require("./pick/PickingCollision");
+exports.PickingCollision = PickingCollision_1.default;
+var RaycastPicker_1 = require("./pick/RaycastPicker");
+exports.RaycastPicker = RaycastPicker_1.default;
+},{"./pick/JSPickingCollider":"awayjs-display/lib/pick/JSPickingCollider","./pick/PickingCollision":"awayjs-display/lib/pick/PickingCollision","./pick/RaycastPicker":"awayjs-display/lib/pick/RaycastPicker"}],"awayjs-display/lib/prefabs/PrefabBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -32775,7 +33214,6 @@ var PrefabBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrefabBase;
-
 },{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -32783,8 +33221,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A Capsule primitive sprite.
  */
@@ -33043,15 +33481,14 @@ var PrimitiveCapsulePrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveCapsulePrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveConePrefab":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveConePrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var PrimitiveCylinderPrefab_1 = require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
+var PrimitiveCylinderPrefab_1 = require("../prefabs/PrimitiveCylinderPrefab");
 /**
  * A UV Cone primitive sprite.
  */
@@ -33094,16 +33531,15 @@ var PrimitiveConePrefab = (function (_super) {
 }(PrimitiveCylinderPrefab_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveConePrefab;
-
-},{"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab"}],"awayjs-display/lib/prefabs/PrimitiveCubePrefab":[function(require,module,exports){
+},{"../prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab"}],"awayjs-display/lib/prefabs/PrimitiveCubePrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A Cube primitive prefab.
  */
@@ -33633,16 +34069,15 @@ var PrimitiveCubePrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveCubePrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A Cylinder primitive sprite.
  */
@@ -34211,16 +34646,15 @@ var PrimitiveCylinderPrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveCylinderPrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitivePlanePrefab":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitivePlanePrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A Plane primitive sprite.
  */
@@ -34516,15 +34950,14 @@ var PrimitivePlanePrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitivePlanePrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitivePolygonPrefab":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitivePolygonPrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var PrimitiveCylinderPrefab_1 = require("awayjs-display/lib/prefabs/PrimitiveCylinderPrefab");
+var PrimitiveCylinderPrefab_1 = require("../prefabs/PrimitiveCylinderPrefab");
 /**
  * A UV RegularPolygon primitive sprite.
  */
@@ -34588,8 +35021,7 @@ var PrimitivePolygonPrefab = (function (_super) {
 }(PrimitiveCylinderPrefab_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitivePolygonPrefab;
-
-},{"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab"}],"awayjs-display/lib/prefabs/PrimitivePrefabBase":[function(require,module,exports){
+},{"../prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab"}],"awayjs-display/lib/prefabs/PrimitivePrefabBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -34598,11 +35030,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
-var LineElements_1 = require("awayjs-display/lib/graphics/LineElements");
-var Sprite_1 = require("awayjs-display/lib/display/Sprite");
-var PrefabBase_1 = require("awayjs-display/lib/prefabs/PrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var TriangleElements_1 = require("../graphics/TriangleElements");
+var LineElements_1 = require("../graphics/LineElements");
+var Sprite_1 = require("../display/Sprite");
+var PrefabBase_1 = require("../prefabs/PrefabBase");
 /**
  * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
  */
@@ -34754,16 +35186,15 @@ var PrimitivePrefabBase = (function (_super) {
 }(PrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitivePrefabBase;
-
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/Sprite":"awayjs-display/lib/display/Sprite","awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/graphics/LineElements":"awayjs-display/lib/graphics/LineElements","awayjs-display/lib/graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","awayjs-display/lib/prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
+},{"../display/Sprite":"awayjs-display/lib/display/Sprite","../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../graphics/LineElements":"awayjs-display/lib/graphics/LineElements","../graphics/TriangleElements":"awayjs-display/lib/graphics/TriangleElements","../prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A UV Sphere primitive sprite.
  */
@@ -35049,16 +35480,15 @@ var PrimitiveSpherePrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveSpherePrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ElementsType_1 = require("awayjs-display/lib/graphics/ElementsType");
-var PrimitivePrefabBase_1 = require("awayjs-display/lib/prefabs/PrimitivePrefabBase");
+var ElementsType_1 = require("../graphics/ElementsType");
+var PrimitivePrefabBase_1 = require("../prefabs/PrimitivePrefabBase");
 /**
  * A UV Cylinder primitive sprite.
  */
@@ -35309,8 +35739,29 @@ var PrimitiveTorusPrefab = (function (_super) {
 }(PrimitivePrefabBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PrimitiveTorusPrefab;
-
-},{"awayjs-display/lib/graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","awayjs-display/lib/prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/text/AntiAliasType":[function(require,module,exports){
+},{"../graphics/ElementsType":"awayjs-display/lib/graphics/ElementsType","../prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase"}],"awayjs-display/lib/prefabs":[function(require,module,exports){
+"use strict";
+var PrefabBase_1 = require("./prefabs/PrefabBase");
+exports.PrefabBase = PrefabBase_1.default;
+var PrimitiveCapsulePrefab_1 = require("./prefabs/PrimitiveCapsulePrefab");
+exports.PrimitiveCapsulePrefab = PrimitiveCapsulePrefab_1.default;
+var PrimitiveConePrefab_1 = require("./prefabs/PrimitiveConePrefab");
+exports.PrimitiveConePrefab = PrimitiveConePrefab_1.default;
+var PrimitiveCubePrefab_1 = require("./prefabs/PrimitiveCubePrefab");
+exports.PrimitiveCubePrefab = PrimitiveCubePrefab_1.default;
+var PrimitiveCylinderPrefab_1 = require("./prefabs/PrimitiveCylinderPrefab");
+exports.PrimitiveCylinderPrefab = PrimitiveCylinderPrefab_1.default;
+var PrimitivePlanePrefab_1 = require("./prefabs/PrimitivePlanePrefab");
+exports.PrimitivePlanePrefab = PrimitivePlanePrefab_1.default;
+var PrimitivePolygonPrefab_1 = require("./prefabs/PrimitivePolygonPrefab");
+exports.PrimitivePolygonPrefab = PrimitivePolygonPrefab_1.default;
+var PrimitivePrefabBase_1 = require("./prefabs/PrimitivePrefabBase");
+exports.PrimitivePrefabBase = PrimitivePrefabBase_1.default;
+var PrimitiveSpherePrefab_1 = require("./prefabs/PrimitiveSpherePrefab");
+exports.PrimitiveSpherePrefab = PrimitiveSpherePrefab_1.default;
+var PrimitiveTorusPrefab_1 = require("./prefabs/PrimitiveTorusPrefab");
+exports.PrimitiveTorusPrefab = PrimitiveTorusPrefab_1.default;
+},{"./prefabs/PrefabBase":"awayjs-display/lib/prefabs/PrefabBase","./prefabs/PrimitiveCapsulePrefab":"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab","./prefabs/PrimitiveConePrefab":"awayjs-display/lib/prefabs/PrimitiveConePrefab","./prefabs/PrimitiveCubePrefab":"awayjs-display/lib/prefabs/PrimitiveCubePrefab","./prefabs/PrimitiveCylinderPrefab":"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab","./prefabs/PrimitivePlanePrefab":"awayjs-display/lib/prefabs/PrimitivePlanePrefab","./prefabs/PrimitivePolygonPrefab":"awayjs-display/lib/prefabs/PrimitivePolygonPrefab","./prefabs/PrimitivePrefabBase":"awayjs-display/lib/prefabs/PrimitivePrefabBase","./prefabs/PrimitiveSpherePrefab":"awayjs-display/lib/prefabs/PrimitiveSpherePrefab","./prefabs/PrimitiveTorusPrefab":"awayjs-display/lib/prefabs/PrimitiveTorusPrefab"}],"awayjs-display/lib/text/AntiAliasType":[function(require,module,exports){
 "use strict";
 /**
  * The AntiAliasType class provides values for anti-aliasing in the
@@ -35341,7 +35792,6 @@ var AntiAliasType = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AntiAliasType;
-
 },{}],"awayjs-display/lib/text/Font":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -35350,7 +35800,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var TesselatedFontTable_1 = require("awayjs-display/lib/text/TesselatedFontTable");
+var TesselatedFontTable_1 = require("../text/TesselatedFontTable");
 /**
  * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
  *
@@ -35416,8 +35866,7 @@ var Font = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Font;
-
-},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/text/TesselatedFontTable":"awayjs-display/lib/text/TesselatedFontTable"}],"awayjs-display/lib/text/GridFitType":[function(require,module,exports){
+},{"../text/TesselatedFontTable":"awayjs-display/lib/text/TesselatedFontTable","awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/text/GridFitType":[function(require,module,exports){
 "use strict";
 /**
  * The GridFitType class defines values for grid fitting in the TextField class.
@@ -35455,7 +35904,6 @@ var GridFitType = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GridFitType;
-
 },{}],"awayjs-display/lib/text/TesselatedFontChar":[function(require,module,exports){
 "use strict";
 /**
@@ -35500,7 +35948,6 @@ var TesselatedFontChar = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TesselatedFontChar;
-
 },{}],"awayjs-display/lib/text/TesselatedFontTable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -35509,7 +35956,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var TesselatedFontChar_1 = require("awayjs-display/lib/text/TesselatedFontChar");
+var TesselatedFontChar_1 = require("../text/TesselatedFontChar");
 /**
  * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
  *
@@ -35617,8 +36064,7 @@ var TesselatedFontTable = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TesselatedFontTable;
-
-},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-display/lib/text/TesselatedFontChar":"awayjs-display/lib/text/TesselatedFontChar"}],"awayjs-display/lib/text/TextFieldAutoSize":[function(require,module,exports){
+},{"../text/TesselatedFontChar":"awayjs-display/lib/text/TesselatedFontChar","awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/text/TextFieldAutoSize":[function(require,module,exports){
 "use strict";
 /**
  * The TextFieldAutoSize class is an enumeration of constant values used in
@@ -35653,7 +36099,6 @@ var TextFieldAutoSize = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextFieldAutoSize;
-
 },{}],"awayjs-display/lib/text/TextFieldType":[function(require,module,exports){
 "use strict";
 /**
@@ -35681,7 +36126,6 @@ var TextFieldType = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextFieldType;
-
 },{}],"awayjs-display/lib/text/TextFormatAlign":[function(require,module,exports){
 "use strict";
 /**
@@ -35715,7 +36159,6 @@ var TextFormatAlign = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextFormatAlign;
-
 },{}],"awayjs-display/lib/text/TextFormat":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -35841,7 +36284,6 @@ var TextFormat = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextFormat;
-
 },{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/text/TextInteractionMode":[function(require,module,exports){
 "use strict";
 /**
@@ -35870,7 +36312,6 @@ var TextInteractionMode = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextInteractionMode;
-
 },{}],"awayjs-display/lib/text/TextLineMetrics":[function(require,module,exports){
 "use strict";
 /**
@@ -35910,8 +36351,31 @@ var TextLineMetrics = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextLineMetrics;
-
-},{}],"awayjs-display/lib/textures/MappingMode":[function(require,module,exports){
+},{}],"awayjs-display/lib/text":[function(require,module,exports){
+"use strict";
+var AntiAliasType_1 = require("./text/AntiAliasType");
+exports.AntiAliasType = AntiAliasType_1.default;
+var Font_1 = require("./text/Font");
+exports.Font = Font_1.default;
+var GridFitType_1 = require("./text/GridFitType");
+exports.GridFitType = GridFitType_1.default;
+var TesselatedFontChar_1 = require("./text/TesselatedFontChar");
+exports.TesselatedFontChar = TesselatedFontChar_1.default;
+var TesselatedFontTable_1 = require("./text/TesselatedFontTable");
+exports.TesselatedFontTable = TesselatedFontTable_1.default;
+var TextFieldAutoSize_1 = require("./text/TextFieldAutoSize");
+exports.TextFieldAutoSize = TextFieldAutoSize_1.default;
+var TextFieldType_1 = require("./text/TextFieldType");
+exports.TextFieldType = TextFieldType_1.default;
+var TextFormat_1 = require("./text/TextFormat");
+exports.TextFormat = TextFormat_1.default;
+var TextFormatAlign_1 = require("./text/TextFormatAlign");
+exports.TextFormatAlign = TextFormatAlign_1.default;
+var TextInteractionMode_1 = require("./text/TextInteractionMode");
+exports.TextInteractionMode = TextInteractionMode_1.default;
+var TextLineMetrics_1 = require("./text/TextLineMetrics");
+exports.TextLineMetrics = TextLineMetrics_1.default;
+},{"./text/AntiAliasType":"awayjs-display/lib/text/AntiAliasType","./text/Font":"awayjs-display/lib/text/Font","./text/GridFitType":"awayjs-display/lib/text/GridFitType","./text/TesselatedFontChar":"awayjs-display/lib/text/TesselatedFontChar","./text/TesselatedFontTable":"awayjs-display/lib/text/TesselatedFontTable","./text/TextFieldAutoSize":"awayjs-display/lib/text/TextFieldAutoSize","./text/TextFieldType":"awayjs-display/lib/text/TextFieldType","./text/TextFormat":"awayjs-display/lib/text/TextFormat","./text/TextFormatAlign":"awayjs-display/lib/text/TextFormatAlign","./text/TextInteractionMode":"awayjs-display/lib/text/TextInteractionMode","./text/TextLineMetrics":"awayjs-display/lib/text/TextLineMetrics"}],"awayjs-display/lib/textures/MappingMode":[function(require,module,exports){
 "use strict";
 /**
 
@@ -35936,7 +36400,6 @@ var MappingMode = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MappingMode;
-
 },{}],"awayjs-display/lib/textures/Single2DTexture":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -35946,8 +36409,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var ErrorBase_1 = require("awayjs-core/lib/errors/ErrorBase");
 var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
-var MappingMode_1 = require("awayjs-display/lib/textures/MappingMode");
-var TextureBase_1 = require("awayjs-display/lib/textures/TextureBase");
+var MappingMode_1 = require("../textures/MappingMode");
+var TextureBase_1 = require("../textures/TextureBase");
 var Single2DTexture = (function (_super) {
     __extends(Single2DTexture, _super);
     function Single2DTexture(image2D) {
@@ -36019,15 +36482,14 @@ var Single2DTexture = (function (_super) {
 }(TextureBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Single2DTexture;
-
-},{"awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/utils/ImageUtils":undefined,"awayjs-display/lib/textures/MappingMode":"awayjs-display/lib/textures/MappingMode","awayjs-display/lib/textures/TextureBase":"awayjs-display/lib/textures/TextureBase"}],"awayjs-display/lib/textures/SingleCubeTexture":[function(require,module,exports){
+},{"../textures/MappingMode":"awayjs-display/lib/textures/MappingMode","../textures/TextureBase":"awayjs-display/lib/textures/TextureBase","awayjs-core/lib/errors/ErrorBase":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-display/lib/textures/SingleCubeTexture":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextureBase_1 = require("awayjs-display/lib/textures/TextureBase");
+var TextureBase_1 = require("../textures/TextureBase");
 var SingleCubeTexture = (function (_super) {
     __extends(SingleCubeTexture, _super);
     function SingleCubeTexture(imageCube) {
@@ -36084,8 +36546,7 @@ var SingleCubeTexture = (function (_super) {
 }(TextureBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SingleCubeTexture;
-
-},{"awayjs-display/lib/textures/TextureBase":"awayjs-display/lib/textures/TextureBase"}],"awayjs-display/lib/textures/TextureBase":[function(require,module,exports){
+},{"../textures/TextureBase":"awayjs-display/lib/textures/TextureBase"}],"awayjs-display/lib/textures/TextureBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -36136,13 +36597,22 @@ var TextureBase = (function (_super) {
 }(AssetBase_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextureBase;
-
-},{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/utils/Cast":[function(require,module,exports){
+},{"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-display/lib/textures":[function(require,module,exports){
+"use strict";
+var MappingMode_1 = require("./textures/MappingMode");
+exports.MappingMode = MappingMode_1.default;
+var Single2DTexture_1 = require("./textures/Single2DTexture");
+exports.Single2DTexture = Single2DTexture_1.default;
+var SingleCubeTexture_1 = require("./textures/SingleCubeTexture");
+exports.SingleCubeTexture = SingleCubeTexture_1.default;
+var TextureBase_1 = require("./textures/TextureBase");
+exports.TextureBase = TextureBase_1.default;
+},{"./textures/MappingMode":"awayjs-display/lib/textures/MappingMode","./textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","./textures/SingleCubeTexture":"awayjs-display/lib/textures/SingleCubeTexture","./textures/TextureBase":"awayjs-display/lib/textures/TextureBase"}],"awayjs-display/lib/utils/Cast":[function(require,module,exports){
 "use strict";
 var Image2D_1 = require("awayjs-core/lib/image/Image2D");
 var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
-var CastError_1 = require("awayjs-display/lib/errors/CastError");
-var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
+var CastError_1 = require("../errors/CastError");
+var Single2DTexture_1 = require("../textures/Single2DTexture");
 /**
  * Helper class for casting assets to usable objects
  */
@@ -36409,8 +36879,7 @@ var Cast = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Cast;
-
-},{"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/errors/CastError":"awayjs-display/lib/errors/CastError","awayjs-display/lib/textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture"}],"awayjs-display/lib/utils/ElementsUtils":[function(require,module,exports){
+},{"../errors/CastError":"awayjs-display/lib/errors/CastError","../textures/Single2DTexture":"awayjs-display/lib/textures/Single2DTexture","awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/utils/ByteArray":undefined}],"awayjs-display/lib/utils/ElementsUtils":[function(require,module,exports){
 "use strict";
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Float3Attributes_1 = require("awayjs-core/lib/attributes/Float3Attributes");
@@ -37228,12 +37697,84 @@ var ElementsUtils = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ElementsUtils;
-
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/attributes/Float4Attributes":undefined,"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined}]},{},[1])
+},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/attributes/Float4Attributes":undefined,"awayjs-core/lib/geom/Box":undefined,"awayjs-core/lib/geom/Sphere":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-display/lib/utils":[function(require,module,exports){
+"use strict";
+var Cast_1 = require("./utils/Cast");
+exports.Cast = Cast_1.default;
+var ElementsUtils_1 = require("./utils/ElementsUtils");
+exports.ElementsUtils = ElementsUtils_1.default;
+},{"./utils/Cast":"awayjs-display/lib/utils/Cast","./utils/ElementsUtils":"awayjs-display/lib/utils/ElementsUtils"}],1:[function(require,module,exports){
+"use strict";
+var adapters = require("./lib/adapters");
+exports.adapters = adapters;
+var animators = require("./lib/animators");
+exports.animators = animators;
+var base = require("./lib/base");
+exports.base = base;
+var bounds = require("./lib/bounds");
+exports.bounds = bounds;
+var controllers = require("./lib/controllers");
+exports.controllers = controllers;
+var display = require("./lib/display");
+exports.display = display;
+var draw = require("./lib/draw");
+exports.draw = draw;
+var errors = require("./lib/errors");
+exports.errors = errors;
+var events = require("./lib/events");
+exports.events = events;
+var factories = require("./lib/factories");
+exports.factories = factories;
+var graphics = require("./lib/graphics");
+exports.graphics = graphics;
+var managers = require("./lib/managers");
+exports.managers = managers;
+var materials = require("./lib/materials");
+exports.materials = materials;
+var partition = require("./lib/partition");
+exports.partition = partition;
+var pick = require("./lib/pick");
+exports.pick = pick;
+var prefabs = require("./lib/prefabs");
+exports.prefabs = prefabs;
+var text = require("./lib/text");
+exports.text = text;
+var textures = require("./lib/textures");
+exports.textures = textures;
+var utils = require("./lib/utils");
+exports.utils = utils;
+var View_1 = require("./lib/View");
+exports.View = View_1.default;
+partition.PartitionBase.registerAbstraction(partition.CameraNode, display.Camera);
+partition.PartitionBase.registerAbstraction(partition.DirectionalLightNode, display.DirectionalLight);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.Sprite);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.Shape);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.MovieClip);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.Billboard);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.LineSegment);
+partition.PartitionBase.registerAbstraction(partition.EntityNode, display.TextField);
+partition.PartitionBase.registerAbstraction(partition.LightProbeNode, display.LightProbe);
+partition.PartitionBase.registerAbstraction(partition.PointLightNode, display.PointLight);
+partition.PartitionBase.registerAbstraction(partition.SkyboxNode, display.Skybox);
+},{"./lib/View":"awayjs-display/lib/View","./lib/adapters":"awayjs-display/lib/adapters","./lib/animators":"awayjs-display/lib/animators","./lib/base":"awayjs-display/lib/base","./lib/bounds":"awayjs-display/lib/bounds","./lib/controllers":"awayjs-display/lib/controllers","./lib/display":"awayjs-display/lib/display","./lib/draw":"awayjs-display/lib/draw","./lib/errors":"awayjs-display/lib/errors","./lib/events":"awayjs-display/lib/events","./lib/factories":"awayjs-display/lib/factories","./lib/graphics":"awayjs-display/lib/graphics","./lib/managers":"awayjs-display/lib/managers","./lib/materials":"awayjs-display/lib/materials","./lib/partition":"awayjs-display/lib/partition","./lib/pick":"awayjs-display/lib/pick","./lib/prefabs":"awayjs-display/lib/prefabs","./lib/text":"awayjs-display/lib/text","./lib/textures":"awayjs-display/lib/textures","./lib/utils":"awayjs-display/lib/utils"}]},{},[1])
 //# sourceMappingURL=awayjs-display.js.map
 
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
+var aglsl = require("./lib/aglsl");
+exports.aglsl = aglsl;
+var attributes = require("./lib/attributes");
+exports.attributes = attributes;
+var base = require("./lib/base");
+exports.base = base;
+var events = require("./lib/events");
+exports.events = events;
+var image = require("./lib/image");
+exports.image = image;
+var library = require("./lib/library");
+exports.library = library;
+var managers = require("./lib/managers");
+exports.managers = managers;
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
 var BitmapImageCube_1 = require("awayjs-core/lib/image/BitmapImageCube");
@@ -37242,29 +37783,21 @@ var ImageCube_1 = require("awayjs-core/lib/image/ImageCube");
 var SpecularImage2D_1 = require("awayjs-core/lib/image/SpecularImage2D");
 var Sampler2D_1 = require("awayjs-core/lib/image/Sampler2D");
 var SamplerCube_1 = require("awayjs-core/lib/image/SamplerCube");
-var Stage_1 = require("./lib/base/Stage");
-var GL_AttributesBuffer_1 = require("./lib/attributes/GL_AttributesBuffer");
-var GL_BitmapImage2D_1 = require("./lib/image/GL_BitmapImage2D");
-var GL_BitmapImageCube_1 = require("./lib/image/GL_BitmapImageCube");
-var GL_RenderImage2D_1 = require("./lib/image/GL_RenderImage2D");
-var GL_RenderImageCube_1 = require("./lib/image/GL_RenderImageCube");
-var GL_Sampler2D_1 = require("./lib/image/GL_Sampler2D");
-var GL_SamplerCube_1 = require("./lib/image/GL_SamplerCube");
-Stage_1.default.registerAbstraction(GL_AttributesBuffer_1.default, AttributesBuffer_1.default);
-Stage_1.default.registerAbstraction(GL_RenderImage2D_1.default, Image2D_1.default);
-Stage_1.default.registerAbstraction(GL_RenderImageCube_1.default, ImageCube_1.default);
-Stage_1.default.registerAbstraction(GL_BitmapImage2D_1.default, BitmapImage2D_1.default);
-Stage_1.default.registerAbstraction(GL_BitmapImageCube_1.default, BitmapImageCube_1.default);
-Stage_1.default.registerAbstraction(GL_BitmapImage2D_1.default, SpecularImage2D_1.default);
-Stage_1.default.registerAbstraction(GL_Sampler2D_1.default, Sampler2D_1.default);
-Stage_1.default.registerAbstraction(GL_SamplerCube_1.default, SamplerCube_1.default);
+base.Stage.registerAbstraction(attributes.GL_AttributesBuffer, AttributesBuffer_1.default);
+base.Stage.registerAbstraction(image.GL_RenderImage2D, Image2D_1.default);
+base.Stage.registerAbstraction(image.GL_RenderImageCube, ImageCube_1.default);
+base.Stage.registerAbstraction(image.GL_BitmapImage2D, BitmapImage2D_1.default);
+base.Stage.registerAbstraction(image.GL_BitmapImageCube, BitmapImageCube_1.default);
+base.Stage.registerAbstraction(image.GL_BitmapImage2D, SpecularImage2D_1.default);
+base.Stage.registerAbstraction(image.GL_Sampler2D, Sampler2D_1.default);
+base.Stage.registerAbstraction(image.GL_SamplerCube, SamplerCube_1.default);
 
-},{"./lib/attributes/GL_AttributesBuffer":"awayjs-stagegl/lib/attributes/GL_AttributesBuffer","./lib/base/Stage":"awayjs-stagegl/lib/base/Stage","./lib/image/GL_BitmapImage2D":"awayjs-stagegl/lib/image/GL_BitmapImage2D","./lib/image/GL_BitmapImageCube":"awayjs-stagegl/lib/image/GL_BitmapImageCube","./lib/image/GL_RenderImage2D":"awayjs-stagegl/lib/image/GL_RenderImage2D","./lib/image/GL_RenderImageCube":"awayjs-stagegl/lib/image/GL_RenderImageCube","./lib/image/GL_Sampler2D":"awayjs-stagegl/lib/image/GL_Sampler2D","./lib/image/GL_SamplerCube":"awayjs-stagegl/lib/image/GL_SamplerCube","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/image/ImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined}],"awayjs-stagegl/lib/aglsl/AGALTokenizer":[function(require,module,exports){
+},{"./lib/aglsl":"awayjs-stagegl/lib/aglsl","./lib/attributes":"awayjs-stagegl/lib/attributes","./lib/base":"awayjs-stagegl/lib/base","./lib/events":"awayjs-stagegl/lib/events","./lib/image":"awayjs-stagegl/lib/image","./lib/library":"awayjs-stagegl/lib/library","./lib/managers":"awayjs-stagegl/lib/managers","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-core/lib/image/ImageCube":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/image/SamplerCube":undefined,"awayjs-core/lib/image/SpecularImage2D":undefined}],"awayjs-stagegl/lib/aglsl/AGALTokenizer":[function(require,module,exports){
 "use strict";
-var Description_1 = require("awayjs-stagegl/lib/aglsl/Description");
-var Header_1 = require("awayjs-stagegl/lib/aglsl/Header");
-var Mapping_1 = require("awayjs-stagegl/lib/aglsl/Mapping");
-var Token_1 = require("awayjs-stagegl/lib/aglsl/Token");
+var Description_1 = require("../aglsl/Description");
+var Header_1 = require("../aglsl/Header");
+var Mapping_1 = require("../aglsl/Mapping");
+var Token_1 = require("../aglsl/Token");
 var AGALTokenizer = (function () {
     function AGALTokenizer() {
     }
@@ -37382,9 +37915,9 @@ var AGALTokenizer = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AGALTokenizer;
 
-},{"awayjs-stagegl/lib/aglsl/Description":"awayjs-stagegl/lib/aglsl/Description","awayjs-stagegl/lib/aglsl/Header":"awayjs-stagegl/lib/aglsl/Header","awayjs-stagegl/lib/aglsl/Mapping":"awayjs-stagegl/lib/aglsl/Mapping","awayjs-stagegl/lib/aglsl/Token":"awayjs-stagegl/lib/aglsl/Token"}],"awayjs-stagegl/lib/aglsl/AGLSLParser":[function(require,module,exports){
+},{"../aglsl/Description":"awayjs-stagegl/lib/aglsl/Description","../aglsl/Header":"awayjs-stagegl/lib/aglsl/Header","../aglsl/Mapping":"awayjs-stagegl/lib/aglsl/Mapping","../aglsl/Token":"awayjs-stagegl/lib/aglsl/Token"}],"awayjs-stagegl/lib/aglsl/AGLSLParser":[function(require,module,exports){
 "use strict";
-var Mapping_1 = require("awayjs-stagegl/lib/aglsl/Mapping");
+var Mapping_1 = require("../aglsl/Mapping");
 var AGLSLParser = (function () {
     function AGLSLParser() {
     }
@@ -37623,9 +38156,9 @@ var AGLSLParser = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AGLSLParser;
 
-},{"awayjs-stagegl/lib/aglsl/Mapping":"awayjs-stagegl/lib/aglsl/Mapping"}],"awayjs-stagegl/lib/aglsl/Description":[function(require,module,exports){
+},{"../aglsl/Mapping":"awayjs-stagegl/lib/aglsl/Mapping"}],"awayjs-stagegl/lib/aglsl/Description":[function(require,module,exports){
 "use strict";
-var Header_1 = require("awayjs-stagegl/lib/aglsl/Header");
+var Header_1 = require("../aglsl/Header");
 var Description = (function () {
     function Description() {
         this.regread = [
@@ -37659,7 +38192,7 @@ var Description = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Description;
 
-},{"awayjs-stagegl/lib/aglsl/Header":"awayjs-stagegl/lib/aglsl/Header"}],"awayjs-stagegl/lib/aglsl/Destination":[function(require,module,exports){
+},{"../aglsl/Header":"awayjs-stagegl/lib/aglsl/Header"}],"awayjs-stagegl/lib/aglsl/Destination":[function(require,module,exports){
 "use strict";
 var Destination = (function () {
     function Destination() {
@@ -37698,7 +38231,7 @@ exports.default = Header;
 
 },{}],"awayjs-stagegl/lib/aglsl/Mapping":[function(require,module,exports){
 "use strict";
-var OpLUT_1 = require("awayjs-stagegl/lib/aglsl/OpLUT");
+var OpLUT_1 = require("../aglsl/OpLUT");
 var Mapping = (function () {
     //TODO: get rid of hack that fixes including definition file
     function Mapping(include) {
@@ -37744,7 +38277,7 @@ var Mapping = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Mapping;
 
-},{"awayjs-stagegl/lib/aglsl/OpLUT":"awayjs-stagegl/lib/aglsl/OpLUT"}],"awayjs-stagegl/lib/aglsl/OpLUT":[function(require,module,exports){
+},{"../aglsl/OpLUT":"awayjs-stagegl/lib/aglsl/OpLUT"}],"awayjs-stagegl/lib/aglsl/OpLUT":[function(require,module,exports){
 "use strict";
 var OpLUT = (function () {
     function OpLUT(s, flags, dest, a, b, matrixwidth, matrixheight, ndwm, scaler, dm, lod) {
@@ -37765,26 +38298,9 @@ var OpLUT = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = OpLUT;
 
-},{}],"awayjs-stagegl/lib/aglsl/Sampler":[function(require,module,exports){
-"use strict";
-var Sampler = (function () {
-    function Sampler() {
-        this.lodbias = 0;
-        this.dim = 0;
-        this.readmode = 0;
-        this.special = 0;
-        this.wrap = 0;
-        this.mipmap = 0;
-        this.filter = 0;
-    }
-    return Sampler;
-}());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Sampler;
-
 },{}],"awayjs-stagegl/lib/aglsl/Token":[function(require,module,exports){
 "use strict";
-var Destination_1 = require("awayjs-stagegl/lib/aglsl/Destination");
+var Destination_1 = require("../aglsl/Destination");
 var Token = (function () {
     function Token() {
         this.dest = new Destination_1.default();
@@ -37797,12 +38313,12 @@ var Token = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Token;
 
-},{"awayjs-stagegl/lib/aglsl/Destination":"awayjs-stagegl/lib/aglsl/Destination"}],"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":[function(require,module,exports){
+},{"../aglsl/Destination":"awayjs-stagegl/lib/aglsl/Destination"}],"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":[function(require,module,exports){
 "use strict";
-var OpcodeMap_1 = require("awayjs-stagegl/lib/aglsl/assembler/OpcodeMap");
-var Part_1 = require("awayjs-stagegl/lib/aglsl/assembler/Part");
-var RegMap_1 = require("awayjs-stagegl/lib/aglsl/assembler/RegMap");
-var SamplerMap_1 = require("awayjs-stagegl/lib/aglsl/assembler/SamplerMap");
+var OpcodeMap_1 = require("../../aglsl/assembler/OpcodeMap");
+var Part_1 = require("../../aglsl/assembler/Part");
+var RegMap_1 = require("../../aglsl/assembler/RegMap");
+var SamplerMap_1 = require("../../aglsl/assembler/SamplerMap");
 var AGALMiniAssembler = (function () {
     function AGALMiniAssembler() {
         this.r = {};
@@ -38084,7 +38600,7 @@ var AGALMiniAssembler = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AGALMiniAssembler;
 
-},{"awayjs-stagegl/lib/aglsl/assembler/OpcodeMap":"awayjs-stagegl/lib/aglsl/assembler/OpcodeMap","awayjs-stagegl/lib/aglsl/assembler/Part":"awayjs-stagegl/lib/aglsl/assembler/Part","awayjs-stagegl/lib/aglsl/assembler/RegMap":"awayjs-stagegl/lib/aglsl/assembler/RegMap","awayjs-stagegl/lib/aglsl/assembler/SamplerMap":"awayjs-stagegl/lib/aglsl/assembler/SamplerMap"}],"awayjs-stagegl/lib/aglsl/assembler/FS":[function(require,module,exports){
+},{"../../aglsl/assembler/OpcodeMap":"awayjs-stagegl/lib/aglsl/assembler/OpcodeMap","../../aglsl/assembler/Part":"awayjs-stagegl/lib/aglsl/assembler/Part","../../aglsl/assembler/RegMap":"awayjs-stagegl/lib/aglsl/assembler/RegMap","../../aglsl/assembler/SamplerMap":"awayjs-stagegl/lib/aglsl/assembler/SamplerMap"}],"awayjs-stagegl/lib/aglsl/assembler/FS":[function(require,module,exports){
 "use strict";
 var FS = (function () {
     function FS() {
@@ -38106,7 +38622,7 @@ exports.default = Flags;
 
 },{}],"awayjs-stagegl/lib/aglsl/assembler/OpcodeMap":[function(require,module,exports){
 "use strict";
-var Opcode_1 = require("awayjs-stagegl/lib/aglsl/assembler/Opcode");
+var Opcode_1 = require("../../aglsl/assembler/Opcode");
 var OpcodeMap = (function () {
     function OpcodeMap() {
     }
@@ -38161,10 +38677,10 @@ var OpcodeMap = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = OpcodeMap;
 
-},{"awayjs-stagegl/lib/aglsl/assembler/Opcode":"awayjs-stagegl/lib/aglsl/assembler/Opcode"}],"awayjs-stagegl/lib/aglsl/assembler/Opcode":[function(require,module,exports){
+},{"../../aglsl/assembler/Opcode":"awayjs-stagegl/lib/aglsl/assembler/Opcode"}],"awayjs-stagegl/lib/aglsl/assembler/Opcode":[function(require,module,exports){
 "use strict";
-var Flags_1 = require("awayjs-stagegl/lib/aglsl/assembler/Flags");
-var FS_1 = require("awayjs-stagegl/lib/aglsl/assembler/FS");
+var Flags_1 = require("../../aglsl/assembler/Flags");
+var FS_1 = require("../../aglsl/assembler/FS");
 /**
  *
  */
@@ -38189,7 +38705,7 @@ var Opcode = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Opcode;
 
-},{"awayjs-stagegl/lib/aglsl/assembler/FS":"awayjs-stagegl/lib/aglsl/assembler/FS","awayjs-stagegl/lib/aglsl/assembler/Flags":"awayjs-stagegl/lib/aglsl/assembler/Flags"}],"awayjs-stagegl/lib/aglsl/assembler/Part":[function(require,module,exports){
+},{"../../aglsl/assembler/FS":"awayjs-stagegl/lib/aglsl/assembler/FS","../../aglsl/assembler/Flags":"awayjs-stagegl/lib/aglsl/assembler/Flags"}],"awayjs-stagegl/lib/aglsl/assembler/Part":[function(require,module,exports){
 "use strict";
 var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
 var Part = (function () {
@@ -38266,7 +38782,7 @@ exports.default = RegMap;
 
 },{}],"awayjs-stagegl/lib/aglsl/assembler/SamplerMap":[function(require,module,exports){
 "use strict";
-var Sampler_1 = require("awayjs-stagegl/lib/aglsl/assembler/Sampler");
+var Sampler_1 = require("../../aglsl/assembler/Sampler");
 var SamplerMap = (function () {
     /*
      public static map =     [ new Sampler( 8, 0xf, 0 ),
@@ -38377,7 +38893,7 @@ var SamplerMap = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SamplerMap;
 
-},{"awayjs-stagegl/lib/aglsl/assembler/Sampler":"awayjs-stagegl/lib/aglsl/assembler/Sampler"}],"awayjs-stagegl/lib/aglsl/assembler/Sampler":[function(require,module,exports){
+},{"../../aglsl/assembler/Sampler":"awayjs-stagegl/lib/aglsl/assembler/Sampler"}],"awayjs-stagegl/lib/aglsl/assembler/Sampler":[function(require,module,exports){
 "use strict";
 var Sampler = (function () {
     function Sampler(shift, mask, value) {
@@ -38390,7 +38906,44 @@ var Sampler = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Sampler;
 
-},{}],"awayjs-stagegl/lib/attributes/GL_AttributesBuffer":[function(require,module,exports){
+},{}],"awayjs-stagegl/lib/aglsl":[function(require,module,exports){
+"use strict";
+var AGALMiniAssembler_1 = require("./aglsl/assembler/AGALMiniAssembler");
+exports.AGALMiniAssembler = AGALMiniAssembler_1.default;
+var Flags_1 = require("./aglsl/assembler/Flags");
+exports.Flags = Flags_1.default;
+var FS_1 = require("./aglsl/assembler/FS");
+exports.FS = FS_1.default;
+var Opcode_1 = require("./aglsl/assembler/Opcode");
+exports.Opcode = Opcode_1.default;
+var OpcodeMap_1 = require("./aglsl/assembler/OpcodeMap");
+exports.OpcodeMap = OpcodeMap_1.default;
+var Part_1 = require("./aglsl/assembler/Part");
+exports.Part = Part_1.default;
+var RegMap_1 = require("./aglsl/assembler/RegMap");
+exports.RegMap = RegMap_1.default;
+var Sampler_1 = require("./aglsl/assembler/Sampler");
+exports.Sampler = Sampler_1.default;
+var SamplerMap_1 = require("./aglsl/assembler/SamplerMap");
+exports.SamplerMap = SamplerMap_1.default;
+var AGALTokenizer_1 = require("./aglsl/AGALTokenizer");
+exports.AGALTokenizer = AGALTokenizer_1.default;
+var AGLSLParser_1 = require("./aglsl/AGLSLParser");
+exports.AGLSLParser = AGLSLParser_1.default;
+var Description_1 = require("./aglsl/Description");
+exports.Description = Description_1.default;
+var Destination_1 = require("./aglsl/Destination");
+exports.Destination = Destination_1.default;
+var Header_1 = require("./aglsl/Header");
+exports.Header = Header_1.default;
+var Mapping_1 = require("./aglsl/Mapping");
+exports.Mapping = Mapping_1.default;
+var OpLUT_1 = require("./aglsl/OpLUT");
+exports.OpLUT = OpLUT_1.default;
+var Token_1 = require("./aglsl/Token");
+exports.Token = Token_1.default;
+
+},{"./aglsl/AGALTokenizer":"awayjs-stagegl/lib/aglsl/AGALTokenizer","./aglsl/AGLSLParser":"awayjs-stagegl/lib/aglsl/AGLSLParser","./aglsl/Description":"awayjs-stagegl/lib/aglsl/Description","./aglsl/Destination":"awayjs-stagegl/lib/aglsl/Destination","./aglsl/Header":"awayjs-stagegl/lib/aglsl/Header","./aglsl/Mapping":"awayjs-stagegl/lib/aglsl/Mapping","./aglsl/OpLUT":"awayjs-stagegl/lib/aglsl/OpLUT","./aglsl/Token":"awayjs-stagegl/lib/aglsl/Token","./aglsl/assembler/AGALMiniAssembler":"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler","./aglsl/assembler/FS":"awayjs-stagegl/lib/aglsl/assembler/FS","./aglsl/assembler/Flags":"awayjs-stagegl/lib/aglsl/assembler/Flags","./aglsl/assembler/Opcode":"awayjs-stagegl/lib/aglsl/assembler/Opcode","./aglsl/assembler/OpcodeMap":"awayjs-stagegl/lib/aglsl/assembler/OpcodeMap","./aglsl/assembler/Part":"awayjs-stagegl/lib/aglsl/assembler/Part","./aglsl/assembler/RegMap":"awayjs-stagegl/lib/aglsl/assembler/RegMap","./aglsl/assembler/Sampler":"awayjs-stagegl/lib/aglsl/assembler/Sampler","./aglsl/assembler/SamplerMap":"awayjs-stagegl/lib/aglsl/assembler/SamplerMap"}],"awayjs-stagegl/lib/attributes/GL_AttributesBuffer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -38458,7 +39011,12 @@ var GL_AttributesBuffer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_AttributesBuffer;
 
-},{"awayjs-core/lib/library/AbstractionBase":undefined}],"awayjs-stagegl/lib/base/ContextGLBlendFactor":[function(require,module,exports){
+},{"awayjs-core/lib/library/AbstractionBase":undefined}],"awayjs-stagegl/lib/attributes":[function(require,module,exports){
+"use strict";
+var GL_AttributesBuffer_1 = require("./attributes/GL_AttributesBuffer");
+exports.GL_AttributesBuffer = GL_AttributesBuffer_1.default;
+
+},{"./attributes/GL_AttributesBuffer":"awayjs-stagegl/lib/attributes/GL_AttributesBuffer"}],"awayjs-stagegl/lib/base/ContextGLBlendFactor":[function(require,module,exports){
 "use strict";
 var ContextGLBlendFactor = (function () {
     function ContextGLBlendFactor() {
@@ -38687,16 +39245,16 @@ var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var ColorUtils_1 = require("awayjs-core/lib/utils/ColorUtils");
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLClearMask_1 = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ContextGLTriangleFace_1 = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-var IndexBufferSoftware_1 = require("awayjs-stagegl/lib/base/IndexBufferSoftware");
-var VertexBufferSoftware_1 = require("awayjs-stagegl/lib/base/VertexBufferSoftware");
-var TextureSoftware_1 = require("awayjs-stagegl/lib/base/TextureSoftware");
-var ProgramSoftware_1 = require("awayjs-stagegl/lib/base/ProgramSoftware");
-var SoftwareSamplerState_1 = require("awayjs-stagegl/lib/base/SoftwareSamplerState");
+var ContextGLBlendFactor_1 = require("../base/ContextGLBlendFactor");
+var ContextGLClearMask_1 = require("../base/ContextGLClearMask");
+var ContextGLCompareMode_1 = require("../base/ContextGLCompareMode");
+var ContextGLProgramType_1 = require("../base/ContextGLProgramType");
+var ContextGLTriangleFace_1 = require("../base/ContextGLTriangleFace");
+var IndexBufferSoftware_1 = require("../base/IndexBufferSoftware");
+var VertexBufferSoftware_1 = require("../base/VertexBufferSoftware");
+var TextureSoftware_1 = require("../base/TextureSoftware");
+var ProgramSoftware_1 = require("../base/ProgramSoftware");
+var SoftwareSamplerState_1 = require("../base/SoftwareSamplerState");
 var ContextSoftware = (function () {
     function ContextSoftware(canvas) {
         this._backBufferRect = new Rectangle_1.default();
@@ -39231,22 +39789,21 @@ var VertexBufferProperties = (function () {
     return VertexBufferProperties;
 }());
 
-},{"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/utils/ColorUtils":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","awayjs-stagegl/lib/base/IndexBufferSoftware":"awayjs-stagegl/lib/base/IndexBufferSoftware","awayjs-stagegl/lib/base/ProgramSoftware":"awayjs-stagegl/lib/base/ProgramSoftware","awayjs-stagegl/lib/base/SoftwareSamplerState":"awayjs-stagegl/lib/base/SoftwareSamplerState","awayjs-stagegl/lib/base/TextureSoftware":"awayjs-stagegl/lib/base/TextureSoftware","awayjs-stagegl/lib/base/VertexBufferSoftware":"awayjs-stagegl/lib/base/VertexBufferSoftware"}],"awayjs-stagegl/lib/base/ContextStage3D":[function(require,module,exports){
+},{"../base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","../base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","../base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","../base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","../base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","../base/IndexBufferSoftware":"awayjs-stagegl/lib/base/IndexBufferSoftware","../base/ProgramSoftware":"awayjs-stagegl/lib/base/ProgramSoftware","../base/SoftwareSamplerState":"awayjs-stagegl/lib/base/SoftwareSamplerState","../base/TextureSoftware":"awayjs-stagegl/lib/base/TextureSoftware","../base/VertexBufferSoftware":"awayjs-stagegl/lib/base/VertexBufferSoftware","awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/utils/ColorUtils":undefined}],"awayjs-stagegl/lib/base/ContextStage3D":[function(require,module,exports){
 "use strict";
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
-//import swfobject					from "awayjs-stagegl/lib/swfobject";
-var Sampler_1 = require("awayjs-stagegl/lib/aglsl/Sampler");
-var ContextGLClearMask_1 = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var CubeTextureFlash_1 = require("awayjs-stagegl/lib/base/CubeTextureFlash");
-var IndexBufferFlash_1 = require("awayjs-stagegl/lib/base/IndexBufferFlash");
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ProgramFlash_1 = require("awayjs-stagegl/lib/base/ProgramFlash");
-var TextureFlash_1 = require("awayjs-stagegl/lib/base/TextureFlash");
-var VertexBufferFlash_1 = require("awayjs-stagegl/lib/base/VertexBufferFlash");
+//import swfobject					from "../swfobject";
+var ContextGLClearMask_1 = require("../base/ContextGLClearMask");
+var ContextGLProgramType_1 = require("../base/ContextGLProgramType");
+var CubeTextureFlash_1 = require("../base/CubeTextureFlash");
+var IndexBufferFlash_1 = require("../base/IndexBufferFlash");
+var OpCodes_1 = require("../base/OpCodes");
+var ProgramFlash_1 = require("../base/ProgramFlash");
+var TextureFlash_1 = require("../base/TextureFlash");
+var VertexBufferFlash_1 = require("../base/VertexBufferFlash");
 var ContextStage3D = (function () {
     //TODO: get rid of hack that fixes including definition file
-    function ContextStage3D(container, callback, include) {
+    function ContextStage3D(container, callback) {
         this._cmdStream = "";
         this._resources = new Array();
         var swfVersionStr = "11.0.0";
@@ -39545,7 +40102,6 @@ var ContextStage3D = (function () {
         return Number(result);
     };
     ContextStage3D.contexts = new Object();
-    ContextStage3D.defaultsampler = new Sampler_1.default();
     ContextStage3D.debug = false;
     ContextStage3D.logStream = false;
     return ContextStage3D;
@@ -39572,28 +40128,28 @@ function mountain_js_context_available(id, driverInfo) {
     }
 }
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-stagegl/lib/aglsl/Sampler":"awayjs-stagegl/lib/aglsl/Sampler","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/CubeTextureFlash":"awayjs-stagegl/lib/base/CubeTextureFlash","awayjs-stagegl/lib/base/IndexBufferFlash":"awayjs-stagegl/lib/base/IndexBufferFlash","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ProgramFlash":"awayjs-stagegl/lib/base/ProgramFlash","awayjs-stagegl/lib/base/TextureFlash":"awayjs-stagegl/lib/base/TextureFlash","awayjs-stagegl/lib/base/VertexBufferFlash":"awayjs-stagegl/lib/base/VertexBufferFlash"}],"awayjs-stagegl/lib/base/ContextWebGL":[function(require,module,exports){
+},{"../base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","../base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","../base/CubeTextureFlash":"awayjs-stagegl/lib/base/CubeTextureFlash","../base/IndexBufferFlash":"awayjs-stagegl/lib/base/IndexBufferFlash","../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ProgramFlash":"awayjs-stagegl/lib/base/ProgramFlash","../base/TextureFlash":"awayjs-stagegl/lib/base/TextureFlash","../base/VertexBufferFlash":"awayjs-stagegl/lib/base/VertexBufferFlash","awayjs-core/lib/geom/Matrix3DUtils":undefined}],"awayjs-stagegl/lib/base/ContextWebGL":[function(require,module,exports){
 "use strict";
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var ByteArray_1 = require("awayjs-core/lib/utils/ByteArray");
-var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
-var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
-var ContextGLClearMask_1 = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var ContextGLMipFilter_1 = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var ContextGLStencilAction_1 = require("awayjs-stagegl/lib/base/ContextGLStencilAction");
-var ContextGLTextureFilter_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLTriangleFace_1 = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ContextGLWrapMode_1 = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var CubeTextureWebGL_1 = require("awayjs-stagegl/lib/base/CubeTextureWebGL");
-var IndexBufferWebGL_1 = require("awayjs-stagegl/lib/base/IndexBufferWebGL");
-var ProgramWebGL_1 = require("awayjs-stagegl/lib/base/ProgramWebGL");
-var TextureWebGL_1 = require("awayjs-stagegl/lib/base/TextureWebGL");
-var SamplerState_1 = require("awayjs-stagegl/lib/base/SamplerState");
-var VertexBufferWebGL_1 = require("awayjs-stagegl/lib/base/VertexBufferWebGL");
+var ContextGLBlendFactor_1 = require("../base/ContextGLBlendFactor");
+var ContextGLDrawMode_1 = require("../base/ContextGLDrawMode");
+var ContextGLClearMask_1 = require("../base/ContextGLClearMask");
+var ContextGLCompareMode_1 = require("../base/ContextGLCompareMode");
+var ContextGLMipFilter_1 = require("../base/ContextGLMipFilter");
+var ContextGLProgramType_1 = require("../base/ContextGLProgramType");
+var ContextGLStencilAction_1 = require("../base/ContextGLStencilAction");
+var ContextGLTextureFilter_1 = require("../base/ContextGLTextureFilter");
+var ContextGLTriangleFace_1 = require("../base/ContextGLTriangleFace");
+var ContextGLVertexBufferFormat_1 = require("../base/ContextGLVertexBufferFormat");
+var ContextGLWrapMode_1 = require("../base/ContextGLWrapMode");
+var CubeTextureWebGL_1 = require("../base/CubeTextureWebGL");
+var IndexBufferWebGL_1 = require("../base/IndexBufferWebGL");
+var ProgramWebGL_1 = require("../base/ProgramWebGL");
+var TextureWebGL_1 = require("../base/TextureWebGL");
+var SamplerState_1 = require("../base/SamplerState");
+var VertexBufferWebGL_1 = require("../base/VertexBufferWebGL");
 var ContextWebGL = (function () {
     function ContextWebGL(canvas) {
         this._blendFactorDictionary = new Object();
@@ -40032,7 +40588,7 @@ var VertexBufferProperties = (function () {
     return VertexBufferProperties;
 }());
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","awayjs-stagegl/lib/base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","awayjs-stagegl/lib/base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","awayjs-stagegl/lib/base/ContextGLDrawMode":"awayjs-stagegl/lib/base/ContextGLDrawMode","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","awayjs-stagegl/lib/base/ContextGLStencilAction":"awayjs-stagegl/lib/base/ContextGLStencilAction","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/CubeTextureWebGL":"awayjs-stagegl/lib/base/CubeTextureWebGL","awayjs-stagegl/lib/base/IndexBufferWebGL":"awayjs-stagegl/lib/base/IndexBufferWebGL","awayjs-stagegl/lib/base/ProgramWebGL":"awayjs-stagegl/lib/base/ProgramWebGL","awayjs-stagegl/lib/base/SamplerState":"awayjs-stagegl/lib/base/SamplerState","awayjs-stagegl/lib/base/TextureWebGL":"awayjs-stagegl/lib/base/TextureWebGL","awayjs-stagegl/lib/base/VertexBufferWebGL":"awayjs-stagegl/lib/base/VertexBufferWebGL"}],"awayjs-stagegl/lib/base/CubeTextureFlash":[function(require,module,exports){
+},{"../base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","../base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","../base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","../base/ContextGLDrawMode":"awayjs-stagegl/lib/base/ContextGLDrawMode","../base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","../base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","../base/ContextGLStencilAction":"awayjs-stagegl/lib/base/ContextGLStencilAction","../base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","../base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","../base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","../base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","../base/CubeTextureWebGL":"awayjs-stagegl/lib/base/CubeTextureWebGL","../base/IndexBufferWebGL":"awayjs-stagegl/lib/base/IndexBufferWebGL","../base/ProgramWebGL":"awayjs-stagegl/lib/base/ProgramWebGL","../base/SamplerState":"awayjs-stagegl/lib/base/SamplerState","../base/TextureWebGL":"awayjs-stagegl/lib/base/TextureWebGL","../base/VertexBufferWebGL":"awayjs-stagegl/lib/base/VertexBufferWebGL","awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ByteArray":undefined}],"awayjs-stagegl/lib/base/CubeTextureFlash":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -40040,8 +40596,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ByteArrayBase_1 = require("awayjs-core/lib/utils/ByteArrayBase");
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ResourceBaseFlash_1 = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
+var OpCodes_1 = require("../base/OpCodes");
+var ResourceBaseFlash_1 = require("../base/ResourceBaseFlash");
 var CubeTextureFlash = (function (_super) {
     __extends(CubeTextureFlash, _super);
     function CubeTextureFlash(context, size, format, forRTT, streaming) {
@@ -40093,14 +40649,14 @@ var CubeTextureFlash = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CubeTextureFlash;
 
-},{"awayjs-core/lib/utils/ByteArrayBase":undefined,"awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/CubeTextureWebGL":[function(require,module,exports){
+},{"../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash","awayjs-core/lib/utils/ByteArrayBase":undefined}],"awayjs-stagegl/lib/base/CubeTextureWebGL":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextureBaseWebGL_1 = require("awayjs-stagegl/lib/base/TextureBaseWebGL");
+var TextureBaseWebGL_1 = require("../base/TextureBaseWebGL");
 var CubeTextureWebGL = (function (_super) {
     __extends(CubeTextureWebGL, _super);
     function CubeTextureWebGL(gl, size) {
@@ -40147,7 +40703,7 @@ var CubeTextureWebGL = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CubeTextureWebGL;
 
-},{"awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/IContextGL":[function(require,module,exports){
+},{"../base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/IContextGL":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-stagegl/lib/base/ICubeTexture":[function(require,module,exports){
@@ -40175,8 +40731,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ResourceBaseFlash_1 = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
+var OpCodes_1 = require("../base/OpCodes");
+var ResourceBaseFlash_1 = require("../base/ResourceBaseFlash");
 var IndexBufferFlash = (function (_super) {
     __extends(IndexBufferFlash, _super);
     function IndexBufferFlash(context, numIndices) {
@@ -40211,7 +40767,7 @@ var IndexBufferFlash = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = IndexBufferFlash;
 
-},{"awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/IndexBufferSoftware":[function(require,module,exports){
+},{"../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/IndexBufferSoftware":[function(require,module,exports){
 "use strict";
 var IndexBufferSoftware = (function () {
     function IndexBufferSoftware(numIndices) {
@@ -40226,7 +40782,7 @@ var IndexBufferSoftware = (function () {
         this._data = new Uint16Array(data);
     };
     IndexBufferSoftware.prototype.dispose = function () {
-        this._data.length = 0;
+        this._data = null;
     };
     Object.defineProperty(IndexBufferSoftware.prototype, "numIndices", {
         get: function () {
@@ -40359,9 +40915,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ContextStage3D_1 = require("awayjs-stagegl/lib/base/ContextStage3D");
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ResourceBaseFlash_1 = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
+var ContextStage3D_1 = require("../base/ContextStage3D");
+var OpCodes_1 = require("../base/OpCodes");
+var ResourceBaseFlash_1 = require("../base/ResourceBaseFlash");
 var ProgramFlash = (function (_super) {
     __extends(ProgramFlash, _super);
     function ProgramFlash(context) {
@@ -40387,17 +40943,17 @@ var ProgramFlash = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProgramFlash;
 
-},{"awayjs-stagegl/lib/base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/ProgramSoftware":[function(require,module,exports){
+},{"../base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/ProgramSoftware":[function(require,module,exports){
 "use strict";
-var AGALTokenizer_1 = require("awayjs-stagegl/lib/aglsl/AGALTokenizer");
-var ProgramVOSoftware_1 = require("awayjs-stagegl/lib/base/ProgramVOSoftware");
+var AGALTokenizer_1 = require("../aglsl/AGALTokenizer");
+var ProgramVOSoftware_1 = require("../base/ProgramVOSoftware");
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var SoftwareSamplerState_1 = require("awayjs-stagegl/lib/base/SoftwareSamplerState");
-var ContextGLTextureFilter_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLMipFilter_1 = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLWrapMode_1 = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var ContextGLVertexBufferFormat_1 = require("../base/ContextGLVertexBufferFormat");
+var SoftwareSamplerState_1 = require("../base/SoftwareSamplerState");
+var ContextGLTextureFilter_1 = require("../base/ContextGLTextureFilter");
+var ContextGLMipFilter_1 = require("../base/ContextGLMipFilter");
+var ContextGLWrapMode_1 = require("../base/ContextGLWrapMode");
 var ProgramSoftware = (function () {
     function ProgramSoftware() {
     }
@@ -41430,7 +41986,7 @@ var ProgramSoftware = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProgramSoftware;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/aglsl/AGALTokenizer":"awayjs-stagegl/lib/aglsl/AGALTokenizer","awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/ProgramVOSoftware":"awayjs-stagegl/lib/base/ProgramVOSoftware","awayjs-stagegl/lib/base/SoftwareSamplerState":"awayjs-stagegl/lib/base/SoftwareSamplerState"}],"awayjs-stagegl/lib/base/ProgramVOSoftware":[function(require,module,exports){
+},{"../aglsl/AGALTokenizer":"awayjs-stagegl/lib/aglsl/AGALTokenizer","../base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","../base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","../base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","../base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","../base/ProgramVOSoftware":"awayjs-stagegl/lib/base/ProgramVOSoftware","../base/SoftwareSamplerState":"awayjs-stagegl/lib/base/SoftwareSamplerState","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-stagegl/lib/base/ProgramVOSoftware":[function(require,module,exports){
 "use strict";
 var ProgramVOSoftware = (function () {
     function ProgramVOSoftware() {
@@ -41450,8 +42006,8 @@ exports.default = ProgramVOSoftware;
 
 },{}],"awayjs-stagegl/lib/base/ProgramWebGL":[function(require,module,exports){
 "use strict";
-var AGALTokenizer_1 = require("awayjs-stagegl/lib/aglsl/AGALTokenizer");
-var AGLSLParser_1 = require("awayjs-stagegl/lib/aglsl/AGLSLParser");
+var AGALTokenizer_1 = require("../aglsl/AGALTokenizer");
+var AGLSLParser_1 = require("../aglsl/AGLSLParser");
 var ProgramWebGL = (function () {
     function ProgramWebGL(gl) {
         this._uniforms = [[], [], []];
@@ -41513,7 +42069,7 @@ var ProgramWebGL = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProgramWebGL;
 
-},{"awayjs-stagegl/lib/aglsl/AGALTokenizer":"awayjs-stagegl/lib/aglsl/AGALTokenizer","awayjs-stagegl/lib/aglsl/AGLSLParser":"awayjs-stagegl/lib/aglsl/AGLSLParser"}],"awayjs-stagegl/lib/base/ResourceBaseFlash":[function(require,module,exports){
+},{"../aglsl/AGALTokenizer":"awayjs-stagegl/lib/aglsl/AGALTokenizer","../aglsl/AGLSLParser":"awayjs-stagegl/lib/aglsl/AGLSLParser"}],"awayjs-stagegl/lib/base/ResourceBaseFlash":[function(require,module,exports){
 "use strict";
 var ResourceBaseFlash = (function () {
     function ResourceBaseFlash() {
@@ -41544,9 +42100,9 @@ exports.default = SamplerState;
 
 },{}],"awayjs-stagegl/lib/base/SoftwareSamplerState":[function(require,module,exports){
 "use strict";
-var ContextGLTextureFilter_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLMipFilter_1 = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLWrapMode_1 = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
+var ContextGLTextureFilter_1 = require("../base/ContextGLTextureFilter");
+var ContextGLMipFilter_1 = require("../base/ContextGLMipFilter");
+var ContextGLWrapMode_1 = require("../base/ContextGLWrapMode");
 /**
  * The same as SamplerState, but with strings
  * TODO: replace two similar classes with one
@@ -41562,7 +42118,7 @@ var SoftwareSamplerState = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SoftwareSamplerState;
 
-},{"awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode"}],"awayjs-stagegl/lib/base/Stage":[function(require,module,exports){
+},{"../base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","../base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","../base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode"}],"awayjs-stagegl/lib/base/Stage":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -41572,13 +42128,16 @@ var __extends = (this && this.__extends) || function (d, b) {
 var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var CSS_1 = require("awayjs-core/lib/utils/CSS");
-var ContextGLMipFilter_1 = require("awayjs-stagegl/lib/base/ContextGLMipFilter");
-var ContextGLTextureFilter_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFilter");
-var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ContextGLWrapMode_1 = require("awayjs-stagegl/lib/base/ContextGLWrapMode");
-var ContextWebGL_1 = require("awayjs-stagegl/lib/base/ContextWebGL");
-var StageEvent_1 = require("awayjs-stagegl/lib/events/StageEvent");
-var ProgramDataPool_1 = require("awayjs-stagegl/lib/image/ProgramDataPool");
+var ContextMode_1 = require("../base/ContextMode");
+var ContextGLMipFilter_1 = require("../base/ContextGLMipFilter");
+var ContextGLTextureFilter_1 = require("../base/ContextGLTextureFilter");
+var ContextGLVertexBufferFormat_1 = require("../base/ContextGLVertexBufferFormat");
+var ContextGLWrapMode_1 = require("../base/ContextGLWrapMode");
+var ContextWebGL_1 = require("../base/ContextWebGL");
+var ContextStage3D_1 = require("../base/ContextStage3D");
+var ContextSoftware_1 = require("../base/ContextSoftware");
+var StageEvent_1 = require("../events/StageEvent");
+var ProgramDataPool_1 = require("../image/ProgramDataPool");
 /**
  * Stage provides a proxy class to handle the creation and attachment of the Context
  * (and in turn the back buffer) it uses. Stage should never be created directly,
@@ -41692,6 +42251,7 @@ var Stage = (function (_super) {
         // returned Context will be running software mode.
         // If not, we can't be sure and should stick to the
         // old value (will likely be same if re-requesting.)
+        var _this = this;
         if (forceSoftware === void 0) { forceSoftware = false; }
         if (profile === void 0) { profile = "baseline"; }
         if (mode === void 0) { mode = "auto"; }
@@ -41699,14 +42259,23 @@ var Stage = (function (_super) {
             this._usesSoftwareRendering = forceSoftware;
         this._profile = profile;
         try {
-            // if (mode == ContextMode.FLASH)
-            // 	new ContextStage3D(<HTMLCanvasElement> this._container, (context:IContextGL) => this._callback(context));
-            // else if(mode == ContextMode.SOFTWARE)
-            // 	this._context = new ContextSoftware(<HTMLCanvasElement> this._container);
-            // else
-            this._context = new ContextWebGL_1.default(this._container);
+            if (mode == ContextMode_1.default.FLASH)
+                new ContextStage3D_1.default(this._container, function (context) { return _this._callback(context); });
+            else if (mode == ContextMode_1.default.SOFTWARE)
+                this._context = new ContextSoftware_1.default(this._container);
+            else
+                this._context = new ContextWebGL_1.default(this._container);
         }
         catch (e) {
+            try {
+                if (mode == ContextMode_1.default.AUTO)
+                    new ContextStage3D_1.default(this._container, function (context) { return _this._callback(context); });
+                else
+                    this.dispatchEvent(new StageEvent_1.default(StageEvent_1.default.STAGE_ERROR, this));
+            }
+            catch (e) {
+                this.dispatchEvent(new StageEvent_1.default(StageEvent_1.default.STAGE_ERROR, this));
+            }
         }
         if (this._context)
             this._callback(this._context);
@@ -42046,7 +42615,7 @@ var Stage = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Stage;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/CSS":undefined,"awayjs-stagegl/lib/base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","awayjs-stagegl/lib/base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","awayjs-stagegl/lib/base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","awayjs-stagegl/lib/base/ContextWebGL":"awayjs-stagegl/lib/base/ContextWebGL","awayjs-stagegl/lib/events/StageEvent":"awayjs-stagegl/lib/events/StageEvent","awayjs-stagegl/lib/image/ProgramDataPool":"awayjs-stagegl/lib/image/ProgramDataPool"}],"awayjs-stagegl/lib/base/TextureBaseWebGL":[function(require,module,exports){
+},{"../base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","../base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","../base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","../base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","../base/ContextMode":"awayjs-stagegl/lib/base/ContextMode","../base/ContextSoftware":"awayjs-stagegl/lib/base/ContextSoftware","../base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","../base/ContextWebGL":"awayjs-stagegl/lib/base/ContextWebGL","../events/StageEvent":"awayjs-stagegl/lib/events/StageEvent","../image/ProgramDataPool":"awayjs-stagegl/lib/image/ProgramDataPool","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/CSS":undefined}],"awayjs-stagegl/lib/base/TextureBaseWebGL":[function(require,module,exports){
 "use strict";
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var TextureBaseWebGL = (function () {
@@ -42077,8 +42646,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ByteArrayBase_1 = require("awayjs-core/lib/utils/ByteArrayBase");
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ResourceBaseFlash_1 = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
+var OpCodes_1 = require("../base/OpCodes");
+var ResourceBaseFlash_1 = require("../base/ResourceBaseFlash");
 var TextureFlash = (function (_super) {
     __extends(TextureFlash, _super);
     function TextureFlash(context, width, height, format, forRTT, streaming) {
@@ -42135,7 +42704,7 @@ var TextureFlash = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextureFlash;
 
-},{"awayjs-core/lib/utils/ByteArrayBase":undefined,"awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/TextureSoftware":[function(require,module,exports){
+},{"../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash","awayjs-core/lib/utils/ByteArrayBase":undefined}],"awayjs-stagegl/lib/base/TextureSoftware":[function(require,module,exports){
 "use strict";
 var TextureSoftware = (function () {
     function TextureSoftware(width, height) {
@@ -42184,7 +42753,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextureBaseWebGL_1 = require("awayjs-stagegl/lib/base/TextureBaseWebGL");
+var TextureBaseWebGL_1 = require("../base/TextureBaseWebGL");
 var TextureWebGL = (function (_super) {
     __extends(TextureWebGL, _super);
     function TextureWebGL(gl, width, height) {
@@ -42261,15 +42830,15 @@ var TextureWebGL = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TextureWebGL;
 
-},{"awayjs-stagegl/lib/base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/VertexBufferFlash":[function(require,module,exports){
+},{"../base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL"}],"awayjs-stagegl/lib/base/VertexBufferFlash":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var OpCodes_1 = require("awayjs-stagegl/lib/base/OpCodes");
-var ResourceBaseFlash_1 = require("awayjs-stagegl/lib/base/ResourceBaseFlash");
+var OpCodes_1 = require("../base/OpCodes");
+var ResourceBaseFlash_1 = require("../base/ResourceBaseFlash");
 var VertexBufferFlash = (function (_super) {
     __extends(VertexBufferFlash, _super);
     function VertexBufferFlash(context, numVertices, dataPerVertex) {
@@ -42312,7 +42881,7 @@ var VertexBufferFlash = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexBufferFlash;
 
-},{"awayjs-stagegl/lib/base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","awayjs-stagegl/lib/base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/VertexBufferSoftware":[function(require,module,exports){
+},{"../base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","../base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash"}],"awayjs-stagegl/lib/base/VertexBufferSoftware":[function(require,module,exports){
 "use strict";
 var VertexBufferSoftware = (function () {
     //private _dataOffset:number;
@@ -42353,7 +42922,7 @@ var VertexBufferSoftware = (function () {
         configurable: true
     });
     VertexBufferSoftware.prototype.dispose = function () {
-        this._floatData.length = 0;
+        this._floatData = null;
     };
     Object.defineProperty(VertexBufferSoftware.prototype, "data", {
         get: function () {
@@ -42426,7 +42995,86 @@ var VertexBufferWebGL = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexBufferWebGL;
 
-},{}],"awayjs-stagegl/lib/events/StageEvent":[function(require,module,exports){
+},{}],"awayjs-stagegl/lib/base":[function(require,module,exports){
+"use strict";
+var ContextGLBlendFactor_1 = require("./base/ContextGLBlendFactor");
+exports.ContextGLBlendFactor = ContextGLBlendFactor_1.default;
+var ContextGLClearMask_1 = require("./base/ContextGLClearMask");
+exports.ContextGLClearMask = ContextGLClearMask_1.default;
+var ContextGLCompareMode_1 = require("./base/ContextGLCompareMode");
+exports.ContextGLCompareMode = ContextGLCompareMode_1.default;
+var ContextGLDrawMode_1 = require("./base/ContextGLDrawMode");
+exports.ContextGLDrawMode = ContextGLDrawMode_1.default;
+var ContextGLMipFilter_1 = require("./base/ContextGLMipFilter");
+exports.ContextGLMipFilter = ContextGLMipFilter_1.default;
+var ContextGLProfile_1 = require("./base/ContextGLProfile");
+exports.ContextGLProfile = ContextGLProfile_1.default;
+var ContextGLProgramType_1 = require("./base/ContextGLProgramType");
+exports.ContextGLProgramType = ContextGLProgramType_1.default;
+var ContextGLStencilAction_1 = require("./base/ContextGLStencilAction");
+exports.ContextGLStencilAction = ContextGLStencilAction_1.default;
+var ContextGLTextureFilter_1 = require("./base/ContextGLTextureFilter");
+exports.ContextGLTextureFilter = ContextGLTextureFilter_1.default;
+var ContextGLTextureFormat_1 = require("./base/ContextGLTextureFormat");
+exports.ContextGLTextureFormat = ContextGLTextureFormat_1.default;
+var ContextGLTriangleFace_1 = require("./base/ContextGLTriangleFace");
+exports.ContextGLTriangleFace = ContextGLTriangleFace_1.default;
+var ContextGLVertexBufferFormat_1 = require("./base/ContextGLVertexBufferFormat");
+exports.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat_1.default;
+var ContextGLWrapMode_1 = require("./base/ContextGLWrapMode");
+exports.ContextGLWrapMode = ContextGLWrapMode_1.default;
+var ContextMode_1 = require("./base/ContextMode");
+exports.ContextMode = ContextMode_1.default;
+var ContextSoftware_1 = require("./base/ContextSoftware");
+exports.ContextSoftware = ContextSoftware_1.default;
+var ContextStage3D_1 = require("./base/ContextStage3D");
+exports.ContextStage3D = ContextStage3D_1.default;
+var ContextWebGL_1 = require("./base/ContextWebGL");
+exports.ContextWebGL = ContextWebGL_1.default;
+var CubeTextureFlash_1 = require("./base/CubeTextureFlash");
+exports.CubeTextureFlash = CubeTextureFlash_1.default;
+var CubeTextureWebGL_1 = require("./base/CubeTextureWebGL");
+exports.CubeTextureWebGL = CubeTextureWebGL_1.default;
+var IndexBufferFlash_1 = require("./base/IndexBufferFlash");
+exports.IndexBufferFlash = IndexBufferFlash_1.default;
+var IndexBufferSoftware_1 = require("./base/IndexBufferSoftware");
+exports.IndexBufferSoftware = IndexBufferSoftware_1.default;
+var IndexBufferWebGL_1 = require("./base/IndexBufferWebGL");
+exports.IndexBufferWebGL = IndexBufferWebGL_1.default;
+var OpCodes_1 = require("./base/OpCodes");
+exports.OpCodes = OpCodes_1.default;
+var ProgramFlash_1 = require("./base/ProgramFlash");
+exports.ProgramFlash = ProgramFlash_1.default;
+var ProgramSoftware_1 = require("./base/ProgramSoftware");
+exports.ProgramSoftware = ProgramSoftware_1.default;
+var ProgramVOSoftware_1 = require("./base/ProgramVOSoftware");
+exports.ProgramVOSoftware = ProgramVOSoftware_1.default;
+var ProgramWebGL_1 = require("./base/ProgramWebGL");
+exports.ProgramWebGL = ProgramWebGL_1.default;
+var ResourceBaseFlash_1 = require("./base/ResourceBaseFlash");
+exports.ResourceBaseFlash = ResourceBaseFlash_1.default;
+var SamplerState_1 = require("./base/SamplerState");
+exports.SamplerState = SamplerState_1.default;
+var SoftwareSamplerState_1 = require("./base/SoftwareSamplerState");
+exports.SoftwareSamplerState = SoftwareSamplerState_1.default;
+var Stage_1 = require("./base/Stage");
+exports.Stage = Stage_1.default;
+var TextureBaseWebGL_1 = require("./base/TextureBaseWebGL");
+exports.TextureBaseWebGL = TextureBaseWebGL_1.default;
+var TextureFlash_1 = require("./base/TextureFlash");
+exports.TextureFlash = TextureFlash_1.default;
+var TextureSoftware_1 = require("./base/TextureSoftware");
+exports.TextureSoftware = TextureSoftware_1.default;
+var TextureWebGL_1 = require("./base/TextureWebGL");
+exports.TextureWebGL = TextureWebGL_1.default;
+var VertexBufferFlash_1 = require("./base/VertexBufferFlash");
+exports.VertexBufferFlash = VertexBufferFlash_1.default;
+var VertexBufferSoftware_1 = require("./base/VertexBufferSoftware");
+exports.VertexBufferSoftware = VertexBufferSoftware_1.default;
+var VertexBufferWebGL_1 = require("./base/VertexBufferWebGL");
+exports.VertexBufferWebGL = VertexBufferWebGL_1.default;
+
+},{"./base/ContextGLBlendFactor":"awayjs-stagegl/lib/base/ContextGLBlendFactor","./base/ContextGLClearMask":"awayjs-stagegl/lib/base/ContextGLClearMask","./base/ContextGLCompareMode":"awayjs-stagegl/lib/base/ContextGLCompareMode","./base/ContextGLDrawMode":"awayjs-stagegl/lib/base/ContextGLDrawMode","./base/ContextGLMipFilter":"awayjs-stagegl/lib/base/ContextGLMipFilter","./base/ContextGLProfile":"awayjs-stagegl/lib/base/ContextGLProfile","./base/ContextGLProgramType":"awayjs-stagegl/lib/base/ContextGLProgramType","./base/ContextGLStencilAction":"awayjs-stagegl/lib/base/ContextGLStencilAction","./base/ContextGLTextureFilter":"awayjs-stagegl/lib/base/ContextGLTextureFilter","./base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","./base/ContextGLTriangleFace":"awayjs-stagegl/lib/base/ContextGLTriangleFace","./base/ContextGLVertexBufferFormat":"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat","./base/ContextGLWrapMode":"awayjs-stagegl/lib/base/ContextGLWrapMode","./base/ContextMode":"awayjs-stagegl/lib/base/ContextMode","./base/ContextSoftware":"awayjs-stagegl/lib/base/ContextSoftware","./base/ContextStage3D":"awayjs-stagegl/lib/base/ContextStage3D","./base/ContextWebGL":"awayjs-stagegl/lib/base/ContextWebGL","./base/CubeTextureFlash":"awayjs-stagegl/lib/base/CubeTextureFlash","./base/CubeTextureWebGL":"awayjs-stagegl/lib/base/CubeTextureWebGL","./base/IndexBufferFlash":"awayjs-stagegl/lib/base/IndexBufferFlash","./base/IndexBufferSoftware":"awayjs-stagegl/lib/base/IndexBufferSoftware","./base/IndexBufferWebGL":"awayjs-stagegl/lib/base/IndexBufferWebGL","./base/OpCodes":"awayjs-stagegl/lib/base/OpCodes","./base/ProgramFlash":"awayjs-stagegl/lib/base/ProgramFlash","./base/ProgramSoftware":"awayjs-stagegl/lib/base/ProgramSoftware","./base/ProgramVOSoftware":"awayjs-stagegl/lib/base/ProgramVOSoftware","./base/ProgramWebGL":"awayjs-stagegl/lib/base/ProgramWebGL","./base/ResourceBaseFlash":"awayjs-stagegl/lib/base/ResourceBaseFlash","./base/SamplerState":"awayjs-stagegl/lib/base/SamplerState","./base/SoftwareSamplerState":"awayjs-stagegl/lib/base/SoftwareSamplerState","./base/Stage":"awayjs-stagegl/lib/base/Stage","./base/TextureBaseWebGL":"awayjs-stagegl/lib/base/TextureBaseWebGL","./base/TextureFlash":"awayjs-stagegl/lib/base/TextureFlash","./base/TextureSoftware":"awayjs-stagegl/lib/base/TextureSoftware","./base/TextureWebGL":"awayjs-stagegl/lib/base/TextureWebGL","./base/VertexBufferFlash":"awayjs-stagegl/lib/base/VertexBufferFlash","./base/VertexBufferSoftware":"awayjs-stagegl/lib/base/VertexBufferSoftware","./base/VertexBufferWebGL":"awayjs-stagegl/lib/base/VertexBufferWebGL"}],"awayjs-stagegl/lib/events/StageEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -42481,7 +43129,12 @@ var StageEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StageEvent;
 
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-stagegl/lib/image/GL_BitmapImage2D":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-stagegl/lib/events":[function(require,module,exports){
+"use strict";
+var StageEvent_1 = require("./events/StageEvent");
+exports.StageEvent = StageEvent_1.default;
+
+},{"./events/StageEvent":"awayjs-stagegl/lib/events/StageEvent"}],"awayjs-stagegl/lib/image/GL_BitmapImage2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -42489,7 +43142,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var MipmapGenerator_1 = require("awayjs-core/lib/utils/MipmapGenerator");
-var GL_Image2D_1 = require("awayjs-stagegl/lib/image/GL_Image2D");
+var GL_Image2D_1 = require("../image/GL_Image2D");
 /**
  *
  * @class away.pool.ImageObjectBase
@@ -42539,7 +43192,7 @@ var GL_BitmapImage2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_BitmapImage2D;
 
-},{"awayjs-core/lib/utils/MipmapGenerator":undefined,"awayjs-stagegl/lib/image/GL_Image2D":"awayjs-stagegl/lib/image/GL_Image2D"}],"awayjs-stagegl/lib/image/GL_BitmapImageCube":[function(require,module,exports){
+},{"../image/GL_Image2D":"awayjs-stagegl/lib/image/GL_Image2D","awayjs-core/lib/utils/MipmapGenerator":undefined}],"awayjs-stagegl/lib/image/GL_BitmapImageCube":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -42547,7 +43200,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var MipmapGenerator_1 = require("awayjs-core/lib/utils/MipmapGenerator");
-var GL_ImageCube_1 = require("awayjs-stagegl/lib/image/GL_ImageCube");
+var GL_ImageCube_1 = require("../image/GL_ImageCube");
 /**
  *
  * @class away.pool.ImageObjectBase
@@ -42603,15 +43256,15 @@ var GL_BitmapImageCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_BitmapImageCube;
 
-},{"awayjs-core/lib/utils/MipmapGenerator":undefined,"awayjs-stagegl/lib/image/GL_ImageCube":"awayjs-stagegl/lib/image/GL_ImageCube"}],"awayjs-stagegl/lib/image/GL_Image2D":[function(require,module,exports){
+},{"../image/GL_ImageCube":"awayjs-stagegl/lib/image/GL_ImageCube","awayjs-core/lib/utils/MipmapGenerator":undefined}],"awayjs-stagegl/lib/image/GL_Image2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ContextGLTextureFormat_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-var GL_ImageBase_1 = require("awayjs-stagegl/lib/image/GL_ImageBase");
+var ContextGLTextureFormat_1 = require("../base/ContextGLTextureFormat");
+var GL_ImageBase_1 = require("../image/GL_ImageBase");
 /**
  *
  * @class away.pool.GL_ImageBase
@@ -42634,7 +43287,7 @@ var GL_Image2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_Image2D;
 
-},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","awayjs-stagegl/lib/image/GL_ImageBase":"awayjs-stagegl/lib/image/GL_ImageBase"}],"awayjs-stagegl/lib/image/GL_ImageBase":[function(require,module,exports){
+},{"../base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","../image/GL_ImageBase":"awayjs-stagegl/lib/image/GL_ImageBase"}],"awayjs-stagegl/lib/image/GL_ImageBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -42693,8 +43346,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ContextGLTextureFormat_1 = require("awayjs-stagegl/lib/base/ContextGLTextureFormat");
-var GL_ImageBase_1 = require("awayjs-stagegl/lib/image/GL_ImageBase");
+var ContextGLTextureFormat_1 = require("../base/ContextGLTextureFormat");
+var GL_ImageBase_1 = require("../image/GL_ImageBase");
 /**
  *
  * @class away.pool.GL_ImageCubeBase
@@ -42717,14 +43370,14 @@ var GL_ImageCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_ImageCube;
 
-},{"awayjs-stagegl/lib/base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","awayjs-stagegl/lib/image/GL_ImageBase":"awayjs-stagegl/lib/image/GL_ImageBase"}],"awayjs-stagegl/lib/image/GL_RenderImage2D":[function(require,module,exports){
+},{"../base/ContextGLTextureFormat":"awayjs-stagegl/lib/base/ContextGLTextureFormat","../image/GL_ImageBase":"awayjs-stagegl/lib/image/GL_ImageBase"}],"awayjs-stagegl/lib/image/GL_RenderImage2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_Image2D_1 = require("awayjs-stagegl/lib/image/GL_Image2D");
+var GL_Image2D_1 = require("../image/GL_Image2D");
 /**
  *
  * @class away.pool.ImageObjectBase
@@ -42743,14 +43396,14 @@ var GL_RenderImage2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_RenderImage2D;
 
-},{"awayjs-stagegl/lib/image/GL_Image2D":"awayjs-stagegl/lib/image/GL_Image2D"}],"awayjs-stagegl/lib/image/GL_RenderImageCube":[function(require,module,exports){
+},{"../image/GL_Image2D":"awayjs-stagegl/lib/image/GL_Image2D"}],"awayjs-stagegl/lib/image/GL_RenderImageCube":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_ImageCube_1 = require("awayjs-stagegl/lib/image/GL_ImageCube");
+var GL_ImageCube_1 = require("../image/GL_ImageCube");
 /**
  *
  * @class away.pool.ImageObjectBase
@@ -42769,14 +43422,14 @@ var GL_RenderImageCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_RenderImageCube;
 
-},{"awayjs-stagegl/lib/image/GL_ImageCube":"awayjs-stagegl/lib/image/GL_ImageCube"}],"awayjs-stagegl/lib/image/GL_Sampler2D":[function(require,module,exports){
+},{"../image/GL_ImageCube":"awayjs-stagegl/lib/image/GL_ImageCube"}],"awayjs-stagegl/lib/image/GL_Sampler2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_SamplerBase_1 = require("awayjs-stagegl/lib/image/GL_SamplerBase");
+var GL_SamplerBase_1 = require("../image/GL_SamplerBase");
 /**
  *
  * @class away.pool.GL_SamplerBase
@@ -42795,7 +43448,7 @@ var GL_Sampler2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_Sampler2D;
 
-},{"awayjs-stagegl/lib/image/GL_SamplerBase":"awayjs-stagegl/lib/image/GL_SamplerBase"}],"awayjs-stagegl/lib/image/GL_SamplerBase":[function(require,module,exports){
+},{"../image/GL_SamplerBase":"awayjs-stagegl/lib/image/GL_SamplerBase"}],"awayjs-stagegl/lib/image/GL_SamplerBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -42829,7 +43482,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_SamplerBase_1 = require("awayjs-stagegl/lib/image/GL_SamplerBase");
+var GL_SamplerBase_1 = require("../image/GL_SamplerBase");
 /**
  *
  * @class away.pool.GL_SamplerBase
@@ -42848,9 +43501,9 @@ var GL_SamplerCube = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SamplerCube;
 
-},{"awayjs-stagegl/lib/image/GL_SamplerBase":"awayjs-stagegl/lib/image/GL_SamplerBase"}],"awayjs-stagegl/lib/image/ProgramDataPool":[function(require,module,exports){
+},{"../image/GL_SamplerBase":"awayjs-stagegl/lib/image/GL_SamplerBase"}],"awayjs-stagegl/lib/image/ProgramDataPool":[function(require,module,exports){
 "use strict";
-var ProgramData_1 = require("awayjs-stagegl/lib/image/ProgramData");
+var ProgramData_1 = require("../image/ProgramData");
 /**
  * @class away.pool.ProgramDataPool
  */
@@ -42887,7 +43540,7 @@ var ProgramDataPool = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProgramDataPool;
 
-},{"awayjs-stagegl/lib/image/ProgramData":"awayjs-stagegl/lib/image/ProgramData"}],"awayjs-stagegl/lib/image/ProgramData":[function(require,module,exports){
+},{"../image/ProgramData":"awayjs-stagegl/lib/image/ProgramData"}],"awayjs-stagegl/lib/image/ProgramData":[function(require,module,exports){
 "use strict";
 /**
  *
@@ -42922,7 +43575,37 @@ var ProgramData = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ProgramData;
 
-},{}],"awayjs-stagegl/lib/library/GL_IAssetClass":[function(require,module,exports){
+},{}],"awayjs-stagegl/lib/image":[function(require,module,exports){
+"use strict";
+var GL_BitmapImage2D_1 = require("./image/GL_BitmapImage2D");
+exports.GL_BitmapImage2D = GL_BitmapImage2D_1.default;
+var GL_BitmapImageCube_1 = require("./image/GL_BitmapImageCube");
+exports.GL_BitmapImageCube = GL_BitmapImageCube_1.default;
+var GL_Image2D_1 = require("./image/GL_Image2D");
+exports.GL_Image2D = GL_Image2D_1.default;
+var GL_ImageBase_1 = require("./image/GL_ImageBase");
+exports.GL_ImageBase = GL_ImageBase_1.default;
+var GL_ImageCube_1 = require("./image/GL_ImageCube");
+exports.GL_ImageCube = GL_ImageCube_1.default;
+var GL_RenderImage2D_1 = require("./image/GL_RenderImage2D");
+exports.GL_RenderImage2D = GL_RenderImage2D_1.default;
+var GL_RenderImageCube_1 = require("./image/GL_RenderImageCube");
+exports.GL_RenderImageCube = GL_RenderImageCube_1.default;
+var GL_Sampler2D_1 = require("./image/GL_Sampler2D");
+exports.GL_Sampler2D = GL_Sampler2D_1.default;
+var GL_SamplerBase_1 = require("./image/GL_SamplerBase");
+exports.GL_SamplerBase = GL_SamplerBase_1.default;
+var GL_SamplerCube_1 = require("./image/GL_SamplerCube");
+exports.GL_SamplerCube = GL_SamplerCube_1.default;
+var ProgramData_1 = require("./image/ProgramData");
+exports.ProgramData = ProgramData_1.default;
+var ProgramDataPool_1 = require("./image/ProgramDataPool");
+exports.ProgramDataPool = ProgramDataPool_1.default;
+
+},{"./image/GL_BitmapImage2D":"awayjs-stagegl/lib/image/GL_BitmapImage2D","./image/GL_BitmapImageCube":"awayjs-stagegl/lib/image/GL_BitmapImageCube","./image/GL_Image2D":"awayjs-stagegl/lib/image/GL_Image2D","./image/GL_ImageBase":"awayjs-stagegl/lib/image/GL_ImageBase","./image/GL_ImageCube":"awayjs-stagegl/lib/image/GL_ImageCube","./image/GL_RenderImage2D":"awayjs-stagegl/lib/image/GL_RenderImage2D","./image/GL_RenderImageCube":"awayjs-stagegl/lib/image/GL_RenderImageCube","./image/GL_Sampler2D":"awayjs-stagegl/lib/image/GL_Sampler2D","./image/GL_SamplerBase":"awayjs-stagegl/lib/image/GL_SamplerBase","./image/GL_SamplerCube":"awayjs-stagegl/lib/image/GL_SamplerCube","./image/ProgramData":"awayjs-stagegl/lib/image/ProgramData","./image/ProgramDataPool":"awayjs-stagegl/lib/image/ProgramDataPool"}],"awayjs-stagegl/lib/library/GL_IAssetClass":[function(require,module,exports){
+"use strict";
+
+},{}],"awayjs-stagegl/lib/library":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-stagegl/lib/managers/StageManager":[function(require,module,exports){
@@ -42934,8 +43617,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
 var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
-var Stage_1 = require("awayjs-stagegl/lib/base/Stage");
-var StageEvent_1 = require("awayjs-stagegl/lib/events/StageEvent");
+var Stage_1 = require("../base/Stage");
+var StageEvent_1 = require("../events/StageEvent");
 /**
  * The StageManager class provides a multiton object that handles management for Stage objects.
  *
@@ -43074,11 +43757,52 @@ var StageManager = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = StageManager;
 
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-stagegl/lib/base/Stage":"awayjs-stagegl/lib/base/Stage","awayjs-stagegl/lib/events/StageEvent":"awayjs-stagegl/lib/events/StageEvent"}]},{},[1])
+},{"../base/Stage":"awayjs-stagegl/lib/base/Stage","../events/StageEvent":"awayjs-stagegl/lib/events/StageEvent","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/events/EventDispatcher":undefined}],"awayjs-stagegl/lib/managers":[function(require,module,exports){
+"use strict";
+var StageManager_1 = require("./managers/StageManager");
+exports.StageManager = StageManager_1.default;
+
+},{"./managers/StageManager":"awayjs-stagegl/lib/managers/StageManager"}]},{},[1])
 //# sourceMappingURL=awayjs-stagegl.js.map
 
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
+var animators = require("./lib/animators");
+exports.animators = animators;
+var elements = require("./lib/elements");
+exports.elements = elements;
+var errors = require("./lib/errors");
+exports.errors = errors;
+var events = require("./lib/events");
+exports.events = events;
+var filters = require("./lib/filters");
+exports.filters = filters;
+var managers = require("./lib/managers");
+exports.managers = managers;
+var renderables = require("./lib/renderables");
+exports.renderables = renderables;
+var shaders = require("./lib/shaders");
+exports.shaders = shaders;
+var sort = require("./lib/sort");
+exports.sort = sort;
+var surfaces = require("./lib/surfaces");
+exports.surfaces = surfaces;
+var textures = require("./lib/textures");
+exports.textures = textures;
+var tools = require("./lib/tools");
+exports.tools = tools;
+var utils = require("./lib/utils");
+exports.utils = utils;
+var DefaultRenderer_1 = require("./lib/DefaultRenderer");
+exports.DefaultRenderer = DefaultRenderer_1.default;
+var DepthRenderer_1 = require("./lib/DepthRenderer");
+exports.DepthRenderer = DepthRenderer_1.default;
+var DistanceRenderer_1 = require("./lib/DistanceRenderer");
+exports.DistanceRenderer = DistanceRenderer_1.default;
+var Filter3DRenderer_1 = require("./lib/Filter3DRenderer");
+exports.Filter3DRenderer = Filter3DRenderer_1.default;
+var RendererBase_1 = require("./lib/RendererBase");
+exports.RendererBase = RendererBase_1.default;
 var BasicMaterial_1 = require("awayjs-display/lib/materials/BasicMaterial");
 var Skybox_1 = require("awayjs-display/lib/display/Skybox");
 var Billboard_1 = require("awayjs-display/lib/display/Billboard");
@@ -43088,32 +43812,18 @@ var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements")
 var Graphic_1 = require("awayjs-display/lib/graphics/Graphic");
 var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
 var SingleCubeTexture_1 = require("awayjs-display/lib/textures/SingleCubeTexture");
-var RendererBase_1 = require("awayjs-renderergl/lib/RendererBase");
-var SurfacePool_1 = require("awayjs-renderergl/lib/surfaces/SurfacePool");
-var GL_BasicMaterialSurface_1 = require("awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface");
-var GL_SkyboxSurface_1 = require("awayjs-renderergl/lib/surfaces/GL_SkyboxSurface");
-var GL_BillboardRenderable_1 = require("awayjs-renderergl/lib/renderables/GL_BillboardRenderable");
-var GL_LineSegmentRenderable_1 = require("awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable");
-var GL_GraphicRenderable_1 = require("awayjs-renderergl/lib/renderables/GL_GraphicRenderable");
-var GL_SkyboxRenderable_1 = require("awayjs-renderergl/lib/renderables/GL_SkyboxRenderable");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
-var ElementsPool_1 = require("awayjs-renderergl/lib/elements/ElementsPool");
-var GL_LineElements_1 = require("awayjs-renderergl/lib/elements/GL_LineElements");
-var GL_TriangleElements_1 = require("awayjs-renderergl/lib/elements/GL_TriangleElements");
-var GL_Single2DTexture_1 = require("awayjs-renderergl/lib/textures/GL_Single2DTexture");
-var GL_SingleCubeTexture_1 = require("awayjs-renderergl/lib/textures/GL_SingleCubeTexture");
-SurfacePool_1.default.registerAbstraction(GL_BasicMaterialSurface_1.default, BasicMaterial_1.default);
-SurfacePool_1.default.registerAbstraction(GL_SkyboxSurface_1.default, Skybox_1.default);
-ElementsPool_1.default.registerAbstraction(GL_LineElements_1.default, LineElements_1.default);
-ElementsPool_1.default.registerAbstraction(GL_TriangleElements_1.default, TriangleElements_1.default);
-ShaderBase_1.default.registerAbstraction(GL_Single2DTexture_1.default, Single2DTexture_1.default);
-ShaderBase_1.default.registerAbstraction(GL_SingleCubeTexture_1.default, SingleCubeTexture_1.default);
-RendererBase_1.default.registerAbstraction(GL_BillboardRenderable_1.default, Billboard_1.default);
-RendererBase_1.default.registerAbstraction(GL_LineSegmentRenderable_1.default, LineSegment_1.default);
-RendererBase_1.default.registerAbstraction(GL_GraphicRenderable_1.default, Graphic_1.default);
-RendererBase_1.default.registerAbstraction(GL_SkyboxRenderable_1.default, Skybox_1.default);
+surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.default);
+surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.default);
+elements.ElementsPool.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
+elements.ElementsPool.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
+shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture_1.default);
+shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture_1.default);
+RendererBase_1.default.registerAbstraction(renderables.GL_BillboardRenderable, Billboard_1.default);
+RendererBase_1.default.registerAbstraction(renderables.GL_LineSegmentRenderable, LineSegment_1.default);
+RendererBase_1.default.registerAbstraction(renderables.GL_GraphicRenderable, Graphic_1.default);
+RendererBase_1.default.registerAbstraction(renderables.GL_SkyboxRenderable, Skybox_1.default);
 
-},{"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","awayjs-renderergl/lib/elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements","awayjs-renderergl/lib/renderables/GL_BillboardRenderable":"awayjs-renderergl/lib/renderables/GL_BillboardRenderable","awayjs-renderergl/lib/renderables/GL_GraphicRenderable":"awayjs-renderergl/lib/renderables/GL_GraphicRenderable","awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable","awayjs-renderergl/lib/renderables/GL_SkyboxRenderable":"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable","awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface","awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-renderergl/lib/textures/GL_Single2DTexture":"awayjs-renderergl/lib/textures/GL_Single2DTexture","awayjs-renderergl/lib/textures/GL_SingleCubeTexture":"awayjs-renderergl/lib/textures/GL_SingleCubeTexture"}],"awayjs-renderergl/lib/DefaultRenderer":[function(require,module,exports){
+},{"./lib/DefaultRenderer":"awayjs-renderergl/lib/DefaultRenderer","./lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./lib/RendererBase":"awayjs-renderergl/lib/RendererBase","./lib/animators":"awayjs-renderergl/lib/animators","./lib/elements":"awayjs-renderergl/lib/elements","./lib/errors":"awayjs-renderergl/lib/errors","./lib/events":"awayjs-renderergl/lib/events","./lib/filters":"awayjs-renderergl/lib/filters","./lib/managers":"awayjs-renderergl/lib/managers","./lib/renderables":"awayjs-renderergl/lib/renderables","./lib/shaders":"awayjs-renderergl/lib/shaders","./lib/sort":"awayjs-renderergl/lib/sort","./lib/surfaces":"awayjs-renderergl/lib/surfaces","./lib/textures":"awayjs-renderergl/lib/textures","./lib/tools":"awayjs-renderergl/lib/tools","./lib/utils":"awayjs-renderergl/lib/utils","awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/LineSegment":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/graphics/Graphic":undefined,"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined}],"awayjs-renderergl/lib/DefaultRenderer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -43125,13 +43835,13 @@ var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLClearMask_1 = require("awayjs-stagegl/lib/base/ContextGLClearMask");
-var RendererBase_1 = require("awayjs-renderergl/lib/RendererBase");
-var DepthRenderer_1 = require("awayjs-renderergl/lib/DepthRenderer");
-var DistanceRenderer_1 = require("awayjs-renderergl/lib/DistanceRenderer");
-var Filter3DRenderer_1 = require("awayjs-renderergl/lib/Filter3DRenderer");
-var GL_SkyboxElements_1 = require("awayjs-renderergl/lib/elements/GL_SkyboxElements");
-var RTTBufferManager_1 = require("awayjs-renderergl/lib/managers/RTTBufferManager");
-var SurfacePool_1 = require("awayjs-renderergl/lib/surfaces/SurfacePool");
+var RendererBase_1 = require("./RendererBase");
+var DepthRenderer_1 = require("./DepthRenderer");
+var DistanceRenderer_1 = require("./DistanceRenderer");
+var Filter3DRenderer_1 = require("./Filter3DRenderer");
+var GL_SkyboxElements_1 = require("./elements/GL_SkyboxElements");
+var RTTBufferManager_1 = require("./managers/RTTBufferManager");
+var SurfacePool_1 = require("./surfaces/SurfacePool");
 /**
  * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
  * materials assigned to them.
@@ -43444,15 +44154,15 @@ var DefaultRenderer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DefaultRenderer;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-renderergl/lib/DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","awayjs-renderergl/lib/DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","awayjs-renderergl/lib/Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
+},{"./DepthRenderer":"awayjs-renderergl/lib/DepthRenderer","./DistanceRenderer":"awayjs-renderergl/lib/DistanceRenderer","./Filter3DRenderer":"awayjs-renderergl/lib/Filter3DRenderer","./RendererBase":"awayjs-renderergl/lib/RendererBase","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-stagegl/lib/base/ContextGLClearMask":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/DepthRenderer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var RendererBase_1 = require("awayjs-renderergl/lib/RendererBase");
-var GL_DepthSurface_1 = require("awayjs-renderergl/lib/surfaces/GL_DepthSurface");
+var RendererBase_1 = require("./RendererBase");
+var GL_DepthSurface_1 = require("./surfaces/GL_DepthSurface");
 /**
  * The DepthRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -43488,15 +44198,15 @@ var DepthRenderer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DepthRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
+},{"./RendererBase":"awayjs-renderergl/lib/RendererBase","./surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface"}],"awayjs-renderergl/lib/DistanceRenderer":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var RendererBase_1 = require("awayjs-renderergl/lib/RendererBase");
-var GL_DistanceSurface_1 = require("awayjs-renderergl/lib/surfaces/GL_DistanceSurface");
+var RendererBase_1 = require("./RendererBase");
+var GL_DistanceSurface_1 = require("./surfaces/GL_DistanceSurface");
 /**
  * The DistanceRenderer class renders 32-bit depth information encoded as RGBA
  *
@@ -43532,13 +44242,13 @@ var DistanceRenderer = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DistanceRenderer;
 
-},{"awayjs-renderergl/lib/RendererBase":"awayjs-renderergl/lib/RendererBase","awayjs-renderergl/lib/surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
+},{"./RendererBase":"awayjs-renderergl/lib/RendererBase","./surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface"}],"awayjs-renderergl/lib/Filter3DRenderer":[function(require,module,exports){
 "use strict";
 var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var RTTEvent_1 = require("awayjs-renderergl/lib/events/RTTEvent");
-var RTTBufferManager_1 = require("awayjs-renderergl/lib/managers/RTTBufferManager");
+var RTTEvent_1 = require("./events/RTTEvent");
+var RTTBufferManager_1 = require("./managers/RTTBufferManager");
 /**
  * @class away.render.Filter3DRenderer
  */
@@ -43664,7 +44374,7 @@ var Filter3DRenderer = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DRenderer;
 
-},{"awayjs-renderergl/lib/events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","awayjs-renderergl/lib/managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
+},{"./events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/RendererBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -43683,9 +44393,9 @@ var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFact
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var StageEvent_1 = require("awayjs-stagegl/lib/events/StageEvent");
 var StageManager_1 = require("awayjs-stagegl/lib/managers/StageManager");
-var SurfacePool_1 = require("awayjs-renderergl/lib/surfaces/SurfacePool");
-var ElementsPool_1 = require("awayjs-renderergl/lib/elements/ElementsPool");
-var RenderableMergeSort_1 = require("awayjs-renderergl/lib/sort/RenderableMergeSort");
+var SurfacePool_1 = require("./surfaces/SurfacePool");
+var ElementsPool_1 = require("./elements/ElementsPool");
+var RenderableMergeSort_1 = require("./sort/RenderableMergeSort");
 /**
  * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
  * contents of a partition
@@ -44499,7 +45209,7 @@ var RendererBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RendererBase;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","awayjs-renderergl/lib/surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
+},{"./elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-display/lib/events/RendererEvent":undefined,"awayjs-stagegl/lib/aglsl/assembler/AGALMiniAssembler":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/events/StageEvent":undefined,"awayjs-stagegl/lib/managers/StageManager":undefined}],"awayjs-renderergl/lib/animators/AnimationSetBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44508,7 +45218,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var AnimationSetError_1 = require("awayjs-renderergl/lib/errors/AnimationSetError");
+var AnimationSetError_1 = require("../errors/AnimationSetError");
 /**
  * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
  *
@@ -44670,7 +45380,7 @@ var AnimationSetBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationSetBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-renderergl/lib/errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError"}],"awayjs-renderergl/lib/animators/AnimatorBase":[function(require,module,exports){
+},{"../errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/AnimatorBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44681,7 +45391,7 @@ var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var RequestAnimationFrame_1 = require("awayjs-core/lib/utils/RequestAnimationFrame");
 var getTimer_1 = require("awayjs-core/lib/utils/getTimer");
-var AnimatorEvent_1 = require("awayjs-renderergl/lib/events/AnimatorEvent");
+var AnimatorEvent_1 = require("../events/AnimatorEvent");
 /**
  * Dispatched when playback of an animation inside the animator object starts.
  *
@@ -44997,20 +45707,20 @@ var AnimatorBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimatorBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/getTimer":undefined,"awayjs-renderergl/lib/events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent"}],"awayjs-renderergl/lib/animators/ParticleAnimationSet":[function(require,module,exports){
+},{"../events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AssetBase":undefined,"awayjs-core/lib/utils/RequestAnimationFrame":undefined,"awayjs-core/lib/utils/getTimer":undefined}],"awayjs-renderergl/lib/animators/ParticleAnimationSet":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationSetBase_1 = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-var AnimationRegisterCache_1 = require("awayjs-renderergl/lib/animators/data/AnimationRegisterCache");
-var AnimationElements_1 = require("awayjs-renderergl/lib/animators/data/AnimationElements");
-var ParticleAnimationData_1 = require("awayjs-renderergl/lib/animators/data/ParticleAnimationData");
-var ParticleProperties_1 = require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleTimeNode_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleTimeNode");
+var AnimationSetBase_1 = require("../animators/AnimationSetBase");
+var AnimationRegisterCache_1 = require("../animators/data/AnimationRegisterCache");
+var AnimationElements_1 = require("../animators/data/AnimationElements");
+var ParticleAnimationData_1 = require("../animators/data/ParticleAnimationData");
+var ParticleProperties_1 = require("../animators/data/ParticleProperties");
+var ParticlePropertiesMode_1 = require("../animators/data/ParticlePropertiesMode");
+var ParticleTimeNode_1 = require("../animators/nodes/ParticleTimeNode");
 /**
  * The animation data set used by particle-based animators, containing particle animation data.
  *
@@ -45305,7 +46015,7 @@ var ParticleAnimationSet = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAnimationSet;
 
-},{"awayjs-renderergl/lib/animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","awayjs-renderergl/lib/animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","awayjs-renderergl/lib/animators/data/AnimationRegisterCache":"awayjs-renderergl/lib/animators/data/AnimationRegisterCache","awayjs-renderergl/lib/animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","awayjs-renderergl/lib/animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode"}],"awayjs-renderergl/lib/animators/ParticleAnimator":[function(require,module,exports){
+},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/AnimationRegisterCache":"awayjs-renderergl/lib/animators/data/AnimationRegisterCache","../animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","../animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode"}],"awayjs-renderergl/lib/animators/ParticleAnimator":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -45313,9 +46023,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var AnimatorBase_1 = require("awayjs-renderergl/lib/animators/AnimatorBase");
-var AnimationElements_1 = require("awayjs-renderergl/lib/animators/data/AnimationElements");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
+var AnimatorBase_1 = require("../animators/AnimatorBase");
+var AnimationElements_1 = require("../animators/data/AnimationElements");
+var ParticlePropertiesMode_1 = require("../animators/data/ParticlePropertiesMode");
 /**
  * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
@@ -45434,14 +46144,14 @@ var ParticleAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAnimator;
 
-},{"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/SkeletonAnimationSet":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationSetBase_1 = require("awayjs-renderergl/lib/animators/AnimationSetBase");
+var AnimationSetBase_1 = require("../animators/AnimationSetBase");
 /**
  * The animation data set used by skeleton-based animators, containing skeleton animation data.
  *
@@ -45542,7 +46252,7 @@ var SkeletonAnimationSet = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonAnimationSet;
 
-},{"awayjs-renderergl/lib/animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase"}],"awayjs-renderergl/lib/animators/SkeletonAnimator":[function(require,module,exports){
+},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase"}],"awayjs-renderergl/lib/animators/SkeletonAnimator":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -45551,10 +46261,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var ElementsEvent_1 = require("awayjs-display/lib/events/ElementsEvent");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var AnimatorBase_1 = require("awayjs-renderergl/lib/animators/AnimatorBase");
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationStateEvent_1 = require("awayjs-renderergl/lib/events/AnimationStateEvent");
+var AnimatorBase_1 = require("../animators/AnimatorBase");
+var JointPose_1 = require("../animators/data/JointPose");
+var SkeletonPose_1 = require("../animators/data/SkeletonPose");
+var AnimationStateEvent_1 = require("../events/AnimationStateEvent");
 /**
  * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
@@ -46083,15 +46793,15 @@ var SkeletonAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonAnimator;
 
-},{"awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-display/lib/events/ElementsEvent":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/VertexAnimationSet":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationSetBase_1 = require("awayjs-renderergl/lib/animators/AnimationSetBase");
-var VertexAnimationMode_1 = require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
+var AnimationSetBase_1 = require("../animators/AnimationSetBase");
+var VertexAnimationMode_1 = require("../animators/data/VertexAnimationMode");
 /**
  * The animation data set used by vertex-based animators, containing vertex animation state data.
  *
@@ -46253,7 +46963,7 @@ var VertexAnimationSet = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexAnimationSet;
 
-},{"awayjs-renderergl/lib/animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode"}],"awayjs-renderergl/lib/animators/VertexAnimator":[function(require,module,exports){
+},{"../animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode"}],"awayjs-renderergl/lib/animators/VertexAnimator":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -46262,8 +46972,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var AnimatorBase_1 = require("awayjs-renderergl/lib/animators/AnimatorBase");
-var VertexAnimationMode_1 = require("awayjs-renderergl/lib/animators/data/VertexAnimationMode");
+var AnimatorBase_1 = require("../animators/AnimatorBase");
+var VertexAnimationMode_1 = require("../animators/data/VertexAnimationMode");
 /**
  * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
  * and controlling the various available states of animation through an interative playhead that can be
@@ -46405,7 +47115,7 @@ var VertexAnimator = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexAnimator;
 
-},{"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","awayjs-renderergl/lib/animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/data/AnimationElements":[function(require,module,exports){
+},{"../animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","../animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/animators/data/AnimationElements":[function(require,module,exports){
 "use strict";
 /**
  * ...
@@ -46487,8 +47197,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShaderRegisterCache_1 = require("awayjs-renderergl/lib/animators/../shaders/ShaderRegisterCache");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/animators/../shaders/ShaderRegisterElement");
+var ShaderRegisterCache_1 = require("../../animators/../shaders/ShaderRegisterCache");
+var ShaderRegisterElement_1 = require("../../animators/../shaders/ShaderRegisterElement");
 /**
  * ...
  */
@@ -46675,7 +47385,7 @@ var AnimationRegisterCache = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationRegisterCache;
 
-},{"awayjs-renderergl/lib/animators/../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-renderergl/lib/animators/../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/ColorSegmentPoint":[function(require,module,exports){
+},{"../../animators/../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","../../animators/../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/data/ColorSegmentPoint":[function(require,module,exports){
 "use strict";
 var ColorSegmentPoint = (function () {
     function ColorSegmentPoint(life, color) {
@@ -46854,7 +47564,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetBase_1 = require("awayjs-core/lib/library/AssetBase");
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
+var JointPose_1 = require("../../animators/data/JointPose");
 /**
  * A collection of pose objects, determining the pose for an entire skeleton.
  * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
@@ -46960,7 +47670,7 @@ var SkeletonPose = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonPose;
 
-},{"awayjs-core/lib/library/AssetBase":undefined,"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose"}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-core/lib/library/AssetBase":undefined}],"awayjs-renderergl/lib/animators/data/Skeleton":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -47203,9 +47913,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleAccelerationState_1 = require("awayjs-renderergl/lib/animators/states/ParticleAccelerationState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleAccelerationState_1 = require("../../animators/states/ParticleAccelerationState");
 /**
  * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
  */
@@ -47269,7 +47979,7 @@ var ParticleAccelerationNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAccelerationNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState"}],"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -47277,10 +47987,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleBezierCurveState_1 = require("awayjs-renderergl/lib/animators/states/ParticleBezierCurveState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleBezierCurveState_1 = require("../../animators/states/ParticleBezierCurveState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the position of a particle over time along a bezier curve.
  */
@@ -47375,16 +48085,16 @@ var ParticleBezierCurveNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleBezierCurveNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleBillboardState_1 = require("awayjs-renderergl/lib/animators/states/ParticleBillboardState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleBillboardState_1 = require("../../animators/states/ParticleBillboardState");
 /**
  * A particle animation node that controls the rotation of a particle to always face the camera.
  */
@@ -47436,7 +48146,7 @@ var ParticleBillboardNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleBillboardNode;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState"}],"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState"}],"awayjs-renderergl/lib/animators/nodes/ParticleColorNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -47444,10 +48154,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleColorState_1 = require("awayjs-renderergl/lib/animators/states/ParticleColorState");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleColorState_1 = require("../../animators/states/ParticleColorState");
 /**
  * A particle animation node used to control the color variation of a particle over time.
  */
@@ -47615,17 +48325,17 @@ var ParticleColorNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleColorNode;
 
-},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState"}],"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","awayjs-core/lib/geom/ColorTransform":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleFollowState_1 = require("awayjs-renderergl/lib/animators/states/ParticleFollowState");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleFollowState_1 = require("../../animators/states/ParticleFollowState");
 /**
  * A particle animation node used to create a follow behaviour on a particle system.
  */
@@ -47743,7 +48453,7 @@ var ParticleFollowNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleFollowNode;
 
-},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState"}],"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState"}],"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -47751,10 +48461,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ColorTransform_1 = require("awayjs-core/lib/geom/ColorTransform");
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleInitialColorState_1 = require("awayjs-renderergl/lib/animators/states/ParticleInitialColorState");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleInitialColorState_1 = require("../../animators/states/ParticleInitialColorState");
 /**
  *
  */
@@ -47831,7 +48541,7 @@ var ParticleInitialColorNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleInitialColorNode;
 
-},{"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState"}],"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","awayjs-core/lib/geom/ColorTransform":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -47967,10 +48677,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleOrbitState_1 = require("awayjs-renderergl/lib/animators/states/ParticleOrbitState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleOrbitState_1 = require("../../animators/states/ParticleOrbitState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the position of a particle over time around a circular orbit.
  */
@@ -48090,7 +48800,7 @@ var ParticleOrbitNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleOrbitNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48098,10 +48808,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleOscillatorState_1 = require("awayjs-renderergl/lib/animators/states/ParticleOscillatorState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleOscillatorState_1 = require("../../animators/states/ParticleOscillatorState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the position of a particle over time using simple harmonic motion.
  */
@@ -48176,7 +48886,7 @@ var ParticleOscillatorNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleOscillatorNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48184,9 +48894,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticlePositionState_1 = require("awayjs-renderergl/lib/animators/states/ParticlePositionState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticlePositionState_1 = require("../../animators/states/ParticlePositionState");
 /**
  * A particle animation node used to set the starting position of a particle.
  */
@@ -48239,17 +48949,17 @@ var ParticlePositionNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticlePositionNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleRotateToHeadingState_1 = require("awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleRotateToHeadingState_1 = require("../../animators/states/ParticleRotateToHeadingState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the rotation of a particle to match its heading vector.
  */
@@ -48403,7 +49113,7 @@ var ParticleRotateToHeadingNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotateToHeadingNode;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48411,10 +49121,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleRotateToPositionState_1 = require("awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleRotateToPositionState_1 = require("../../animators/states/ParticleRotateToPositionState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the rotation of a particle to face to a position
  */
@@ -48586,7 +49296,7 @@ var ParticleRotateToPositionNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotateToPositionNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48594,10 +49304,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleRotationalVelocityState_1 = require("awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleRotationalVelocityState_1 = require("../../animators/states/ParticleRotationalVelocityState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to set the starting rotational velocity of a particle.
  */
@@ -48714,16 +49424,16 @@ var ParticleRotationalVelocityNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotationalVelocityNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleScaleState_1 = require("awayjs-renderergl/lib/animators/states/ParticleScaleState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleScaleState_1 = require("../../animators/states/ParticleScaleState");
 /**
  * A particle animation node used to control the scale variation of a particle over time.
  */
@@ -48810,18 +49520,18 @@ var ParticleScaleNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleScaleNode;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState"}],"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState"}],"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleSegmentedColorState_1 = require("awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleSegmentedColorState_1 = require("../../animators/states/ParticleSegmentedColorState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  *
  */
@@ -48962,18 +49672,18 @@ var ParticleSegmentedColorNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleSegmentedColorNode;
 
-},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleSpriteSheetState_1 = require("awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleSpriteSheetState_1 = require("../../animators/states/ParticleSpriteSheetState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used when a spritesheet texture is required to animate the particle.
  * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
@@ -49130,16 +49840,16 @@ var ParticleSpriteSheetNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleSpriteSheetNode;
 
-},{"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleTimeState_1 = require("awayjs-renderergl/lib/animators/states/ParticleTimeState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleTimeState_1 = require("../../animators/states/ParticleTimeState");
 /**
  * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
  */
@@ -49221,7 +49931,7 @@ var ParticleTimeNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleTimeNode;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState"}],"awayjs-renderergl/lib/animators/nodes/ParticleUVNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState"}],"awayjs-renderergl/lib/animators/nodes/ParticleUVNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49229,11 +49939,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticleAnimationSet_1 = require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleUVState_1 = require("awayjs-renderergl/lib/animators/states/ParticleUVState");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ParticleAnimationSet_1 = require("../../animators/ParticleAnimationSet");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleUVState_1 = require("../../animators/states/ParticleUVState");
+var ShaderRegisterElement_1 = require("../../shaders/ShaderRegisterElement");
 /**
  * A particle animation node used to control the UV offset and scale of a particle over time.
  */
@@ -49345,7 +50055,7 @@ var ParticleUVNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleUVNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
+},{"../../animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","../../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49353,9 +50063,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/ParticleNodeBase");
-var ParticleVelocityState_1 = require("awayjs-renderergl/lib/animators/states/ParticleVelocityState");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleNodeBase_1 = require("../../animators/nodes/ParticleNodeBase");
+var ParticleVelocityState_1 = require("../../animators/states/ParticleVelocityState");
 /**
  * A particle animation node used to set the starting velocity of a particle.
  */
@@ -49414,7 +50124,7 @@ var ParticleVelocityNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleVelocityNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","awayjs-renderergl/lib/animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","../../animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49422,7 +50132,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationNodeBase_1 = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-var SkeletonBinaryLERPState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
+var SkeletonBinaryLERPState_1 = require("../../animators/states/SkeletonBinaryLERPState");
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
@@ -49446,15 +50156,15 @@ var SkeletonBinaryLERPNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonBinaryLERPNode;
 
-},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":[function(require,module,exports){
+},{"../../animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationClipNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
-var SkeletonClipState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonClipState");
+var AnimationClipNodeBase_1 = require("../../animators/nodes/AnimationClipNodeBase");
+var SkeletonClipState_1 = require("../../animators/states/SkeletonClipState");
 /**
  * A skeleton animation node containing time-based animation data as individual skeleton poses.
  */
@@ -49532,7 +50242,7 @@ var SkeletonClipNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonClipNode;
 
-},{"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","awayjs-renderergl/lib/animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode":[function(require,module,exports){
+},{"../../animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","../../animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49540,7 +50250,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationNodeBase_1 = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-var SkeletonDifferenceState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonDifferenceState");
+var SkeletonDifferenceState_1 = require("../../animators/states/SkeletonDifferenceState");
 /**
  * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
  */
@@ -49564,7 +50274,7 @@ var SkeletonDifferenceNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonDifferenceNode;
 
-},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode":[function(require,module,exports){
+},{"../../animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49572,7 +50282,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationNodeBase_1 = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-var SkeletonDirectionalState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonDirectionalState");
+var SkeletonDirectionalState_1 = require("../../animators/states/SkeletonDirectionalState");
 /**
  * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
  */
@@ -49593,7 +50303,7 @@ var SkeletonDirectionalNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonDirectionalNode;
 
-},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState"}],"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode":[function(require,module,exports){
+},{"../../animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49601,7 +50311,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AnimationNodeBase_1 = require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-var SkeletonNaryLERPState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState");
+var SkeletonNaryLERPState_1 = require("../../animators/states/SkeletonNaryLERPState");
 /**
  * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
@@ -49655,7 +50365,7 @@ var SkeletonNaryLERPNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonNaryLERPNode;
 
-},{"awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined,"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState"}],"awayjs-renderergl/lib/animators/nodes/VertexClipNode":[function(require,module,exports){
+},{"../../animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","awayjs-display/lib/animators/nodes/AnimationNodeBase":undefined}],"awayjs-renderergl/lib/animators/nodes/VertexClipNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49663,8 +50373,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var AnimationClipNodeBase_1 = require("awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase");
-var VertexClipState_1 = require("awayjs-renderergl/lib/animators/states/VertexClipState");
+var AnimationClipNodeBase_1 = require("../../animators/nodes/AnimationClipNodeBase");
+var VertexClipState_1 = require("../../animators/states/VertexClipState");
 /**
  * A vertex animation node containing time-based animation data as individual geometry obejcts.
  */
@@ -49735,15 +50445,15 @@ var VertexClipNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexClipNode;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","awayjs-renderergl/lib/animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState"}],"awayjs-renderergl/lib/animators/states/AnimationClipState":[function(require,module,exports){
+},{"../../animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","../../animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/AnimationClipState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
-var AnimationStateEvent_1 = require("awayjs-renderergl/lib/animators/../events/AnimationStateEvent");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
+var AnimationStateEvent_1 = require("../../events/AnimationStateEvent");
 /**
  *
  */
@@ -49888,7 +50598,7 @@ var AnimationClipState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationClipState;
 
-},{"awayjs-renderergl/lib/animators/../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/AnimationStateBase":[function(require,module,exports){
+},{"../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","../../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent"}],"awayjs-renderergl/lib/animators/states/AnimationStateBase":[function(require,module,exports){
 "use strict";
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 /**
@@ -49981,8 +50691,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50031,7 +50741,7 @@ var ParticleAccelerationState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleAccelerationState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50039,8 +50749,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50099,7 +50809,7 @@ var ParticleBezierCurveState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleBezierCurveState;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBillboardState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleBillboardState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50109,7 +50819,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Orientation3D_1 = require("awayjs-core/lib/geom/Orientation3D");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50176,7 +50886,7 @@ var ParticleBillboardState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleBillboardState;
 
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Orientation3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleColorState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Orientation3D":undefined}],"awayjs-renderergl/lib/animators/states/ParticleColorState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50185,8 +50895,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  * @author ...
@@ -50337,7 +51047,7 @@ var ParticleColorState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleColorState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleFollowState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleFollowState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50347,7 +51057,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var MathConsts_1 = require("awayjs-core/lib/geom/MathConsts");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50557,7 +51267,7 @@ var ParticleFollowState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleFollowState;
 
-},{"awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/MathConsts":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleInitialColorState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50566,8 +51276,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
 *
 */
@@ -50636,7 +51346,7 @@ var ParticleInitialColorState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleInitialColorState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOrbitState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOrbitState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50646,8 +51356,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50761,7 +51471,7 @@ var ParticleOrbitState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleOrbitState;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleOscillatorState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50770,8 +51480,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50826,7 +51536,7 @@ var ParticleOscillatorState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleOscillatorState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticlePositionState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticlePositionState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50834,8 +51544,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  * @author ...
@@ -50889,7 +51599,7 @@ var ParticlePositionState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticlePositionState;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50897,7 +51607,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50921,7 +51631,7 @@ var ParticleRotateToHeadingState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotateToHeadingState;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50930,8 +51640,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -50979,7 +51689,7 @@ var ParticleRotateToPositionState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotateToPositionState;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -50988,8 +51698,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51057,7 +51767,7 @@ var ParticleRotationalVelocityState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleRotationalVelocityState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleScaleState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleScaleState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51066,8 +51776,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51173,14 +51883,14 @@ var ParticleScaleState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleScaleState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-core/lib/geom/Vector3D":undefined,"awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  *
  */
@@ -51327,7 +52037,7 @@ var ParticleSegmentedColorState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleSegmentedColorState;
 
-},{"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51335,8 +52045,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51422,14 +52132,14 @@ var ParticleSpriteSheetState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleSpriteSheetState;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleStateBase":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleStateBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
 /**
  * ...
  */
@@ -51502,7 +52212,7 @@ var ParticleStateBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleStateBase;
 
-},{"awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleTimeState":[function(require,module,exports){
+},{"../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleTimeState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51510,7 +52220,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51534,14 +52244,14 @@ var ParticleTimeState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleTimeState;
 
-},{"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleUVState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/ParticleUVState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51565,7 +52275,7 @@ var ParticleUVState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleUVState;
 
-},{"awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleVelocityState":[function(require,module,exports){
+},{"../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase"}],"awayjs-renderergl/lib/animators/states/ParticleVelocityState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51573,8 +52283,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLVertexBufferFormat_1 = require("awayjs-stagegl/lib/base/ContextGLVertexBufferFormat");
-var ParticlePropertiesMode_1 = require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-var ParticleStateBase_1 = require("awayjs-renderergl/lib/animators/states/ParticleStateBase");
+var ParticlePropertiesMode_1 = require("../../animators/data/ParticlePropertiesMode");
+var ParticleStateBase_1 = require("../../animators/states/ParticleStateBase");
 /**
  * ...
  */
@@ -51624,16 +52334,16 @@ var ParticleVelocityState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleVelocityState;
 
-},{"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","awayjs-renderergl/lib/animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":[function(require,module,exports){
+},{"../../animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","../../animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","awayjs-stagegl/lib/base/ContextGLVertexBufferFormat":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+var JointPose_1 = require("../../animators/data/JointPose");
+var SkeletonPose_1 = require("../../animators/data/SkeletonPose");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
 /**
  *
  */
@@ -51742,7 +52452,7 @@ var SkeletonBinaryLERPState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonBinaryLERPState;
 
-},{"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonClipState":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonClipState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51750,9 +52460,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Vector3D_1 = require("awayjs-core/lib/geom/Vector3D");
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationClipState_1 = require("awayjs-renderergl/lib/animators/states/AnimationClipState");
+var JointPose_1 = require("../../animators/data/JointPose");
+var SkeletonPose_1 = require("../../animators/data/SkeletonPose");
+var AnimationClipState_1 = require("../../animators/states/AnimationClipState");
 /**
  *
  */
@@ -51905,7 +52615,7 @@ var SkeletonClipState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonClipState;
 
-},{"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState"}],"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","awayjs-core/lib/geom/Vector3D":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51913,9 +52623,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Quaternion_1 = require("awayjs-core/lib/geom/Quaternion");
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+var JointPose_1 = require("../../animators/data/JointPose");
+var SkeletonPose_1 = require("../../animators/data/SkeletonPose");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
 /**
  *
  */
@@ -52026,16 +52736,16 @@ var SkeletonDifferenceState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonDifferenceState;
 
-},{"awayjs-core/lib/geom/Quaternion":undefined,"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","awayjs-core/lib/geom/Quaternion":undefined}],"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+var JointPose_1 = require("../../animators/data/JointPose");
+var SkeletonPose_1 = require("../../animators/data/SkeletonPose");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
 /**
  *
  */
@@ -52189,16 +52899,16 @@ var SkeletonDirectionalState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonDirectionalState;
 
-},{"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var JointPose_1 = require("awayjs-renderergl/lib/animators/data/JointPose");
-var SkeletonPose_1 = require("awayjs-renderergl/lib/animators/data/SkeletonPose");
-var AnimationStateBase_1 = require("awayjs-renderergl/lib/animators/states/AnimationStateBase");
+var JointPose_1 = require("../../animators/data/JointPose");
+var SkeletonPose_1 = require("../../animators/data/SkeletonPose");
+var AnimationStateBase_1 = require("../../animators/states/AnimationStateBase");
 /**
  *
  */
@@ -52371,14 +53081,14 @@ var SkeletonNaryLERPState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SkeletonNaryLERPState;
 
-},{"awayjs-renderergl/lib/animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","awayjs-renderergl/lib/animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","awayjs-renderergl/lib/animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/VertexClipState":[function(require,module,exports){
+},{"../../animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","../../animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","../../animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase"}],"awayjs-renderergl/lib/animators/states/VertexClipState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AnimationClipState_1 = require("awayjs-renderergl/lib/animators/states/AnimationClipState");
+var AnimationClipState_1 = require("../../animators/states/AnimationClipState");
 /**
  *
  */
@@ -52437,15 +53147,15 @@ var VertexClipState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = VertexClipState;
 
-},{"awayjs-renderergl/lib/animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode":[function(require,module,exports){
+},{"../../animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SkeletonBinaryLERPNode_1 = require("awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode");
-var CrossfadeTransitionState_1 = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState");
+var SkeletonBinaryLERPNode_1 = require("../../animators/nodes/SkeletonBinaryLERPNode");
+var CrossfadeTransitionState_1 = require("../../animators/transitions/CrossfadeTransitionState");
 /**
  * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
  */
@@ -52463,15 +53173,15 @@ var CrossfadeTransitionNode = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CrossfadeTransitionNode;
 
-},{"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState":[function(require,module,exports){
+},{"../../animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","../../animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SkeletonBinaryLERPState_1 = require("awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState");
-var AnimationStateEvent_1 = require("awayjs-renderergl/lib/animators/../events/AnimationStateEvent");
+var SkeletonBinaryLERPState_1 = require("../../animators/states/SkeletonBinaryLERPState");
+var AnimationStateEvent_1 = require("../../animators/../events/AnimationStateEvent");
 /**
  *
  */
@@ -52499,9 +53209,9 @@ var CrossfadeTransitionState = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CrossfadeTransitionState;
 
-},{"awayjs-renderergl/lib/animators/../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":[function(require,module,exports){
+},{"../../animators/../events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","../../animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState"}],"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition":[function(require,module,exports){
 "use strict";
-var CrossfadeTransitionNode_1 = require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode");
+var CrossfadeTransitionNode_1 = require("../../animators/transitions/CrossfadeTransitionNode");
 /**
  *
  */
@@ -52523,10 +53233,163 @@ var CrossfadeTransition = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CrossfadeTransition;
 
-},{"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode"}],"awayjs-renderergl/lib/animators/transitions/IAnimationTransition":[function(require,module,exports){
+},{"../../animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode"}],"awayjs-renderergl/lib/animators/transitions/IAnimationTransition":[function(require,module,exports){
 "use strict";
 
-},{}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/animators":[function(require,module,exports){
+"use strict";
+var AnimationElements_1 = require("./animators/data/AnimationElements");
+exports.AnimationElements = AnimationElements_1.default;
+var AnimationRegisterCache_1 = require("./animators/data/AnimationRegisterCache");
+exports.AnimationRegisterCache = AnimationRegisterCache_1.default;
+var ColorSegmentPoint_1 = require("./animators/data/ColorSegmentPoint");
+exports.ColorSegmentPoint = ColorSegmentPoint_1.default;
+var JointPose_1 = require("./animators/data/JointPose");
+exports.JointPose = JointPose_1.default;
+var ParticleAnimationData_1 = require("./animators/data/ParticleAnimationData");
+exports.ParticleAnimationData = ParticleAnimationData_1.default;
+var ParticleProperties_1 = require("./animators/data/ParticleProperties");
+exports.ParticleProperties = ParticleProperties_1.default;
+var ParticlePropertiesMode_1 = require("./animators/data/ParticlePropertiesMode");
+exports.ParticlePropertiesMode = ParticlePropertiesMode_1.default;
+var Skeleton_1 = require("./animators/data/Skeleton");
+exports.Skeleton = Skeleton_1.default;
+var SkeletonJoint_1 = require("./animators/data/SkeletonJoint");
+exports.SkeletonJoint = SkeletonJoint_1.default;
+var SkeletonPose_1 = require("./animators/data/SkeletonPose");
+exports.SkeletonPose = SkeletonPose_1.default;
+var VertexAnimationMode_1 = require("./animators/data/VertexAnimationMode");
+exports.VertexAnimationMode = VertexAnimationMode_1.default;
+var AnimationClipNodeBase_1 = require("./animators/nodes/AnimationClipNodeBase");
+exports.AnimationClipNodeBase = AnimationClipNodeBase_1.default;
+var ParticleAccelerationNode_1 = require("./animators/nodes/ParticleAccelerationNode");
+exports.ParticleAccelerationNode = ParticleAccelerationNode_1.default;
+var ParticleBezierCurveNode_1 = require("./animators/nodes/ParticleBezierCurveNode");
+exports.ParticleBezierCurveNode = ParticleBezierCurveNode_1.default;
+var ParticleBillboardNode_1 = require("./animators/nodes/ParticleBillboardNode");
+exports.ParticleBillboardNode = ParticleBillboardNode_1.default;
+var ParticleColorNode_1 = require("./animators/nodes/ParticleColorNode");
+exports.ParticleColorNode = ParticleColorNode_1.default;
+var ParticleFollowNode_1 = require("./animators/nodes/ParticleFollowNode");
+exports.ParticleFollowNode = ParticleFollowNode_1.default;
+var ParticleInitialColorNode_1 = require("./animators/nodes/ParticleInitialColorNode");
+exports.ParticleInitialColorNode = ParticleInitialColorNode_1.default;
+var ParticleNodeBase_1 = require("./animators/nodes/ParticleNodeBase");
+exports.ParticleNodeBase = ParticleNodeBase_1.default;
+var ParticleOrbitNode_1 = require("./animators/nodes/ParticleOrbitNode");
+exports.ParticleOrbitNode = ParticleOrbitNode_1.default;
+var ParticleOscillatorNode_1 = require("./animators/nodes/ParticleOscillatorNode");
+exports.ParticleOscillatorNode = ParticleOscillatorNode_1.default;
+var ParticlePositionNode_1 = require("./animators/nodes/ParticlePositionNode");
+exports.ParticlePositionNode = ParticlePositionNode_1.default;
+var ParticleRotateToHeadingNode_1 = require("./animators/nodes/ParticleRotateToHeadingNode");
+exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode_1.default;
+var ParticleRotateToPositionNode_1 = require("./animators/nodes/ParticleRotateToPositionNode");
+exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode_1.default;
+var ParticleRotationalVelocityNode_1 = require("./animators/nodes/ParticleRotationalVelocityNode");
+exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode_1.default;
+var ParticleScaleNode_1 = require("./animators/nodes/ParticleScaleNode");
+exports.ParticleScaleNode = ParticleScaleNode_1.default;
+var ParticleSegmentedColorNode_1 = require("./animators/nodes/ParticleSegmentedColorNode");
+exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode_1.default;
+var ParticleSpriteSheetNode_1 = require("./animators/nodes/ParticleSpriteSheetNode");
+exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode_1.default;
+var ParticleTimeNode_1 = require("./animators/nodes/ParticleTimeNode");
+exports.ParticleTimeNode = ParticleTimeNode_1.default;
+var ParticleUVNode_1 = require("./animators/nodes/ParticleUVNode");
+exports.ParticleUVNode = ParticleUVNode_1.default;
+var ParticleVelocityNode_1 = require("./animators/nodes/ParticleVelocityNode");
+exports.ParticleVelocityNode = ParticleVelocityNode_1.default;
+var SkeletonBinaryLERPNode_1 = require("./animators/nodes/SkeletonBinaryLERPNode");
+exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode_1.default;
+var SkeletonClipNode_1 = require("./animators/nodes/SkeletonClipNode");
+exports.SkeletonClipNode = SkeletonClipNode_1.default;
+var SkeletonDifferenceNode_1 = require("./animators/nodes/SkeletonDifferenceNode");
+exports.SkeletonDifferenceNode = SkeletonDifferenceNode_1.default;
+var SkeletonDirectionalNode_1 = require("./animators/nodes/SkeletonDirectionalNode");
+exports.SkeletonDirectionalNode = SkeletonDirectionalNode_1.default;
+var SkeletonNaryLERPNode_1 = require("./animators/nodes/SkeletonNaryLERPNode");
+exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode_1.default;
+var VertexClipNode_1 = require("./animators/nodes/VertexClipNode");
+exports.VertexClipNode = VertexClipNode_1.default;
+var AnimationClipState_1 = require("./animators/states/AnimationClipState");
+exports.AnimationClipState = AnimationClipState_1.default;
+var AnimationStateBase_1 = require("./animators/states/AnimationStateBase");
+exports.AnimationStateBase = AnimationStateBase_1.default;
+var ParticleAccelerationState_1 = require("./animators/states/ParticleAccelerationState");
+exports.ParticleAccelerationState = ParticleAccelerationState_1.default;
+var ParticleBezierCurveState_1 = require("./animators/states/ParticleBezierCurveState");
+exports.ParticleBezierCurveState = ParticleBezierCurveState_1.default;
+var ParticleBillboardState_1 = require("./animators/states/ParticleBillboardState");
+exports.ParticleBillboardState = ParticleBillboardState_1.default;
+var ParticleColorState_1 = require("./animators/states/ParticleColorState");
+exports.ParticleColorState = ParticleColorState_1.default;
+var ParticleFollowState_1 = require("./animators/states/ParticleFollowState");
+exports.ParticleFollowState = ParticleFollowState_1.default;
+var ParticleInitialColorState_1 = require("./animators/states/ParticleInitialColorState");
+exports.ParticleInitialColorState = ParticleInitialColorState_1.default;
+var ParticleStateBase_1 = require("./animators/states/ParticleStateBase");
+exports.ParticleStateBase = ParticleStateBase_1.default;
+var ParticleOrbitState_1 = require("./animators/states/ParticleOrbitState");
+exports.ParticleOrbitState = ParticleOrbitState_1.default;
+var ParticleOscillatorState_1 = require("./animators/states/ParticleOscillatorState");
+exports.ParticleOscillatorState = ParticleOscillatorState_1.default;
+var ParticlePositionState_1 = require("./animators/states/ParticlePositionState");
+exports.ParticlePositionState = ParticlePositionState_1.default;
+var ParticleRotateToHeadingState_1 = require("./animators/states/ParticleRotateToHeadingState");
+exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState_1.default;
+var ParticleRotateToPositionState_1 = require("./animators/states/ParticleRotateToPositionState");
+exports.ParticleRotateToPositionState = ParticleRotateToPositionState_1.default;
+var ParticleRotationalVelocityState_1 = require("./animators/states/ParticleRotationalVelocityState");
+exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState_1.default;
+var ParticleScaleState_1 = require("./animators/states/ParticleScaleState");
+exports.ParticleScaleState = ParticleScaleState_1.default;
+var ParticleSegmentedColorState_1 = require("./animators/states/ParticleSegmentedColorState");
+exports.ParticleSegmentedColorState = ParticleSegmentedColorState_1.default;
+var ParticleSpriteSheetState_1 = require("./animators/states/ParticleSpriteSheetState");
+exports.ParticleSpriteSheetState = ParticleSpriteSheetState_1.default;
+var ParticleTimeState_1 = require("./animators/states/ParticleTimeState");
+exports.ParticleTimeState = ParticleTimeState_1.default;
+var ParticleUVState_1 = require("./animators/states/ParticleUVState");
+exports.ParticleUVState = ParticleUVState_1.default;
+var ParticleVelocityState_1 = require("./animators/states/ParticleVelocityState");
+exports.ParticleVelocityState = ParticleVelocityState_1.default;
+var SkeletonBinaryLERPState_1 = require("./animators/states/SkeletonBinaryLERPState");
+exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState_1.default;
+var SkeletonClipState_1 = require("./animators/states/SkeletonClipState");
+exports.SkeletonClipState = SkeletonClipState_1.default;
+var SkeletonDifferenceState_1 = require("./animators/states/SkeletonDifferenceState");
+exports.SkeletonDifferenceState = SkeletonDifferenceState_1.default;
+var SkeletonDirectionalState_1 = require("./animators/states/SkeletonDirectionalState");
+exports.SkeletonDirectionalState = SkeletonDirectionalState_1.default;
+var SkeletonNaryLERPState_1 = require("./animators/states/SkeletonNaryLERPState");
+exports.SkeletonNaryLERPState = SkeletonNaryLERPState_1.default;
+var VertexClipState_1 = require("./animators/states/VertexClipState");
+exports.VertexClipState = VertexClipState_1.default;
+var CrossfadeTransition_1 = require("./animators/transitions/CrossfadeTransition");
+exports.CrossfadeTransition = CrossfadeTransition_1.default;
+var CrossfadeTransitionNode_1 = require("./animators/transitions/CrossfadeTransitionNode");
+exports.CrossfadeTransitionNode = CrossfadeTransitionNode_1.default;
+var CrossfadeTransitionState_1 = require("./animators/transitions/CrossfadeTransitionState");
+exports.CrossfadeTransitionState = CrossfadeTransitionState_1.default;
+var AnimationSetBase_1 = require("./animators/AnimationSetBase");
+exports.AnimationSetBase = AnimationSetBase_1.default;
+var AnimatorBase_1 = require("./animators/AnimatorBase");
+exports.AnimatorBase = AnimatorBase_1.default;
+var ParticleAnimationSet_1 = require("./animators/ParticleAnimationSet");
+exports.ParticleAnimationSet = ParticleAnimationSet_1.default;
+var ParticleAnimator_1 = require("./animators/ParticleAnimator");
+exports.ParticleAnimator = ParticleAnimator_1.default;
+var SkeletonAnimationSet_1 = require("./animators/SkeletonAnimationSet");
+exports.SkeletonAnimationSet = SkeletonAnimationSet_1.default;
+var SkeletonAnimator_1 = require("./animators/SkeletonAnimator");
+exports.SkeletonAnimator = SkeletonAnimator_1.default;
+var VertexAnimationSet_1 = require("./animators/VertexAnimationSet");
+exports.VertexAnimationSet = VertexAnimationSet_1.default;
+var VertexAnimator_1 = require("./animators/VertexAnimator");
+exports.VertexAnimator = VertexAnimator_1.default;
+
+},{"./animators/AnimationSetBase":"awayjs-renderergl/lib/animators/AnimationSetBase","./animators/AnimatorBase":"awayjs-renderergl/lib/animators/AnimatorBase","./animators/ParticleAnimationSet":"awayjs-renderergl/lib/animators/ParticleAnimationSet","./animators/ParticleAnimator":"awayjs-renderergl/lib/animators/ParticleAnimator","./animators/SkeletonAnimationSet":"awayjs-renderergl/lib/animators/SkeletonAnimationSet","./animators/SkeletonAnimator":"awayjs-renderergl/lib/animators/SkeletonAnimator","./animators/VertexAnimationSet":"awayjs-renderergl/lib/animators/VertexAnimationSet","./animators/VertexAnimator":"awayjs-renderergl/lib/animators/VertexAnimator","./animators/data/AnimationElements":"awayjs-renderergl/lib/animators/data/AnimationElements","./animators/data/AnimationRegisterCache":"awayjs-renderergl/lib/animators/data/AnimationRegisterCache","./animators/data/ColorSegmentPoint":"awayjs-renderergl/lib/animators/data/ColorSegmentPoint","./animators/data/JointPose":"awayjs-renderergl/lib/animators/data/JointPose","./animators/data/ParticleAnimationData":"awayjs-renderergl/lib/animators/data/ParticleAnimationData","./animators/data/ParticleProperties":"awayjs-renderergl/lib/animators/data/ParticleProperties","./animators/data/ParticlePropertiesMode":"awayjs-renderergl/lib/animators/data/ParticlePropertiesMode","./animators/data/Skeleton":"awayjs-renderergl/lib/animators/data/Skeleton","./animators/data/SkeletonJoint":"awayjs-renderergl/lib/animators/data/SkeletonJoint","./animators/data/SkeletonPose":"awayjs-renderergl/lib/animators/data/SkeletonPose","./animators/data/VertexAnimationMode":"awayjs-renderergl/lib/animators/data/VertexAnimationMode","./animators/nodes/AnimationClipNodeBase":"awayjs-renderergl/lib/animators/nodes/AnimationClipNodeBase","./animators/nodes/ParticleAccelerationNode":"awayjs-renderergl/lib/animators/nodes/ParticleAccelerationNode","./animators/nodes/ParticleBezierCurveNode":"awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode","./animators/nodes/ParticleBillboardNode":"awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode","./animators/nodes/ParticleColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleColorNode","./animators/nodes/ParticleFollowNode":"awayjs-renderergl/lib/animators/nodes/ParticleFollowNode","./animators/nodes/ParticleInitialColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode","./animators/nodes/ParticleNodeBase":"awayjs-renderergl/lib/animators/nodes/ParticleNodeBase","./animators/nodes/ParticleOrbitNode":"awayjs-renderergl/lib/animators/nodes/ParticleOrbitNode","./animators/nodes/ParticleOscillatorNode":"awayjs-renderergl/lib/animators/nodes/ParticleOscillatorNode","./animators/nodes/ParticlePositionNode":"awayjs-renderergl/lib/animators/nodes/ParticlePositionNode","./animators/nodes/ParticleRotateToHeadingNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToHeadingNode","./animators/nodes/ParticleRotateToPositionNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotateToPositionNode","./animators/nodes/ParticleRotationalVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleRotationalVelocityNode","./animators/nodes/ParticleScaleNode":"awayjs-renderergl/lib/animators/nodes/ParticleScaleNode","./animators/nodes/ParticleSegmentedColorNode":"awayjs-renderergl/lib/animators/nodes/ParticleSegmentedColorNode","./animators/nodes/ParticleSpriteSheetNode":"awayjs-renderergl/lib/animators/nodes/ParticleSpriteSheetNode","./animators/nodes/ParticleTimeNode":"awayjs-renderergl/lib/animators/nodes/ParticleTimeNode","./animators/nodes/ParticleUVNode":"awayjs-renderergl/lib/animators/nodes/ParticleUVNode","./animators/nodes/ParticleVelocityNode":"awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode","./animators/nodes/SkeletonBinaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonBinaryLERPNode","./animators/nodes/SkeletonClipNode":"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode","./animators/nodes/SkeletonDifferenceNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDifferenceNode","./animators/nodes/SkeletonDirectionalNode":"awayjs-renderergl/lib/animators/nodes/SkeletonDirectionalNode","./animators/nodes/SkeletonNaryLERPNode":"awayjs-renderergl/lib/animators/nodes/SkeletonNaryLERPNode","./animators/nodes/VertexClipNode":"awayjs-renderergl/lib/animators/nodes/VertexClipNode","./animators/states/AnimationClipState":"awayjs-renderergl/lib/animators/states/AnimationClipState","./animators/states/AnimationStateBase":"awayjs-renderergl/lib/animators/states/AnimationStateBase","./animators/states/ParticleAccelerationState":"awayjs-renderergl/lib/animators/states/ParticleAccelerationState","./animators/states/ParticleBezierCurveState":"awayjs-renderergl/lib/animators/states/ParticleBezierCurveState","./animators/states/ParticleBillboardState":"awayjs-renderergl/lib/animators/states/ParticleBillboardState","./animators/states/ParticleColorState":"awayjs-renderergl/lib/animators/states/ParticleColorState","./animators/states/ParticleFollowState":"awayjs-renderergl/lib/animators/states/ParticleFollowState","./animators/states/ParticleInitialColorState":"awayjs-renderergl/lib/animators/states/ParticleInitialColorState","./animators/states/ParticleOrbitState":"awayjs-renderergl/lib/animators/states/ParticleOrbitState","./animators/states/ParticleOscillatorState":"awayjs-renderergl/lib/animators/states/ParticleOscillatorState","./animators/states/ParticlePositionState":"awayjs-renderergl/lib/animators/states/ParticlePositionState","./animators/states/ParticleRotateToHeadingState":"awayjs-renderergl/lib/animators/states/ParticleRotateToHeadingState","./animators/states/ParticleRotateToPositionState":"awayjs-renderergl/lib/animators/states/ParticleRotateToPositionState","./animators/states/ParticleRotationalVelocityState":"awayjs-renderergl/lib/animators/states/ParticleRotationalVelocityState","./animators/states/ParticleScaleState":"awayjs-renderergl/lib/animators/states/ParticleScaleState","./animators/states/ParticleSegmentedColorState":"awayjs-renderergl/lib/animators/states/ParticleSegmentedColorState","./animators/states/ParticleSpriteSheetState":"awayjs-renderergl/lib/animators/states/ParticleSpriteSheetState","./animators/states/ParticleStateBase":"awayjs-renderergl/lib/animators/states/ParticleStateBase","./animators/states/ParticleTimeState":"awayjs-renderergl/lib/animators/states/ParticleTimeState","./animators/states/ParticleUVState":"awayjs-renderergl/lib/animators/states/ParticleUVState","./animators/states/ParticleVelocityState":"awayjs-renderergl/lib/animators/states/ParticleVelocityState","./animators/states/SkeletonBinaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonBinaryLERPState","./animators/states/SkeletonClipState":"awayjs-renderergl/lib/animators/states/SkeletonClipState","./animators/states/SkeletonDifferenceState":"awayjs-renderergl/lib/animators/states/SkeletonDifferenceState","./animators/states/SkeletonDirectionalState":"awayjs-renderergl/lib/animators/states/SkeletonDirectionalState","./animators/states/SkeletonNaryLERPState":"awayjs-renderergl/lib/animators/states/SkeletonNaryLERPState","./animators/states/VertexClipState":"awayjs-renderergl/lib/animators/states/VertexClipState","./animators/transitions/CrossfadeTransition":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransition","./animators/transitions/CrossfadeTransitionNode":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionNode","./animators/transitions/CrossfadeTransitionState":"awayjs-renderergl/lib/animators/transitions/CrossfadeTransitionState"}],"awayjs-renderergl/lib/elements/ElementsPool":[function(require,module,exports){
 "use strict";
 /**
  * @class away.pool.SurfacePool
@@ -52822,7 +53685,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Matrix3D_1 = require("awayjs-core/lib/geom/Matrix3D");
 var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var GL_ElementsBase_1 = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+var GL_ElementsBase_1 = require("../elements/GL_ElementsBase");
 /**
  *
  * @class away.pool.GL_LineElements
@@ -52940,14 +53803,14 @@ var GL_LineElements = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_LineElements;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_SkyboxElements":[function(require,module,exports){
+},{"../elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/GL_SkyboxElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_TriangleElements_1 = require("awayjs-renderergl/lib/elements/GL_TriangleElements");
+var GL_TriangleElements_1 = require("../elements/GL_TriangleElements");
 /**
  *
  * @class away.pool.GL_SkyboxElements
@@ -52976,7 +53839,7 @@ var GL_SkyboxElements = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxElements;
 
-},{"awayjs-renderergl/lib/elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
+},{"../elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/elements/GL_TriangleElements":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -52986,7 +53849,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
 var ContextGLDrawMode_1 = require("awayjs-stagegl/lib/base/ContextGLDrawMode");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var GL_ElementsBase_1 = require("awayjs-renderergl/lib/elements/GL_ElementsBase");
+var GL_ElementsBase_1 = require("../elements/GL_ElementsBase");
 /**
  *
  * @class away.pool.GL_TriangleElements
@@ -53091,10 +53954,23 @@ var GL_TriangleElements = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_TriangleElements;
 
-},{"awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-renderergl/lib/elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/IElementsClassGL":[function(require,module,exports){
+},{"../elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","awayjs-core/lib/geom/Matrix3DUtils":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/elements/IElementsClassGL":[function(require,module,exports){
 "use strict";
 
-},{}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/elements":[function(require,module,exports){
+"use strict";
+var ElementsPool_1 = require("./elements/ElementsPool");
+exports.ElementsPool = ElementsPool_1.default;
+var GL_ElementsBase_1 = require("./elements/GL_ElementsBase");
+exports.GL_ElementsBase = GL_ElementsBase_1.default;
+var GL_LineElements_1 = require("./elements/GL_LineElements");
+exports.GL_LineElements = GL_LineElements_1.default;
+var GL_SkyboxElements_1 = require("./elements/GL_SkyboxElements");
+exports.GL_SkyboxElements = GL_SkyboxElements_1.default;
+var GL_TriangleElements_1 = require("./elements/GL_TriangleElements");
+exports.GL_TriangleElements = GL_TriangleElements_1.default;
+
+},{"./elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","./elements/GL_ElementsBase":"awayjs-renderergl/lib/elements/GL_ElementsBase","./elements/GL_LineElements":"awayjs-renderergl/lib/elements/GL_LineElements","./elements/GL_SkyboxElements":"awayjs-renderergl/lib/elements/GL_SkyboxElements","./elements/GL_TriangleElements":"awayjs-renderergl/lib/elements/GL_TriangleElements"}],"awayjs-renderergl/lib/errors/AnimationSetError":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -53112,7 +53988,12 @@ var AnimationSetError = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AnimationSetError;
 
-},{"awayjs-core/lib/errors/ErrorBase":undefined}],"awayjs-renderergl/lib/events/AnimationStateEvent":[function(require,module,exports){
+},{"awayjs-core/lib/errors/ErrorBase":undefined}],"awayjs-renderergl/lib/errors":[function(require,module,exports){
+"use strict";
+var AnimationSetError_1 = require("./errors/AnimationSetError");
+exports.AnimationSetError = AnimationSetError_1.default;
+
+},{"./errors/AnimationSetError":"awayjs-renderergl/lib/errors/AnimationSetError"}],"awayjs-renderergl/lib/events/AnimationStateEvent":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -53338,16 +54219,29 @@ var ShadingMethodEvent = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadingMethodEvent;
 
-},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/filters/BlurFilter3D":[function(require,module,exports){
+},{"awayjs-core/lib/events/EventBase":undefined}],"awayjs-renderergl/lib/events":[function(require,module,exports){
+"use strict";
+var AnimationStateEvent_1 = require("./events/AnimationStateEvent");
+exports.AnimationStateEvent = AnimationStateEvent_1.default;
+var AnimatorEvent_1 = require("./events/AnimatorEvent");
+exports.AnimatorEvent = AnimatorEvent_1.default;
+var PassEvent_1 = require("./events/PassEvent");
+exports.PassEvent = PassEvent_1.default;
+var RTTEvent_1 = require("./events/RTTEvent");
+exports.RTTEvent = RTTEvent_1.default;
+var ShadingMethodEvent_1 = require("./events/ShadingMethodEvent");
+exports.ShadingMethodEvent = ShadingMethodEvent_1.default;
+
+},{"./events/AnimationStateEvent":"awayjs-renderergl/lib/events/AnimationStateEvent","./events/AnimatorEvent":"awayjs-renderergl/lib/events/AnimatorEvent","./events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","./events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","./events/ShadingMethodEvent":"awayjs-renderergl/lib/events/ShadingMethodEvent"}],"awayjs-renderergl/lib/filters/BlurFilter3D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Filter3DHBlurTask_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask");
-var Filter3DVBlurTask_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask");
-var Filter3DBase_1 = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var Filter3DHBlurTask_1 = require("../filters/tasks/Filter3DHBlurTask");
+var Filter3DVBlurTask_1 = require("../filters/tasks/Filter3DVBlurTask");
+var Filter3DBase_1 = require("../filters/Filter3DBase");
 var BlurFilter3D = (function (_super) {
     __extends(BlurFilter3D, _super);
     /**
@@ -53410,15 +54304,15 @@ var BlurFilter3D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BlurFilter3D;
 
-},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/filters/CompositeFilter3D":[function(require,module,exports){
+},{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","../filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/filters/CompositeFilter3D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Filter3DCompositeTask_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask");
-var Filter3DBase_1 = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var Filter3DCompositeTask_1 = require("../filters/tasks/Filter3DCompositeTask");
+var Filter3DBase_1 = require("../filters/Filter3DBase");
 var CompositeFilter3D = (function (_super) {
     __extends(CompositeFilter3D, _super);
     /**
@@ -53458,15 +54352,15 @@ var CompositeFilter3D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CompositeFilter3D;
 
-},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/FXAAFilter3D":[function(require,module,exports){
+},{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask"}],"awayjs-renderergl/lib/filters/FXAAFilter3D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Filter3DFXAATask_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask");
-var Filter3DBase_1 = require("awayjs-renderergl/lib/filters/Filter3DBase");
+var Filter3DFXAATask_1 = require("../filters/tasks/Filter3DFXAATask");
+var Filter3DBase_1 = require("../filters/Filter3DBase");
 var FXAAFilter3D = (function (_super) {
     __extends(FXAAFilter3D, _super);
     /**
@@ -53505,7 +54399,7 @@ var FXAAFilter3D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FXAAFilter3D;
 
-},{"awayjs-renderergl/lib/filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
+},{"../filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","../filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask"}],"awayjs-renderergl/lib/filters/Filter3DBase":[function(require,module,exports){
 "use strict";
 var Filter3DBase = (function () {
     function Filter3DBase() {
@@ -53592,7 +54486,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var Filter3DTaskBase_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DTaskBase_1 = require("../../filters/tasks/Filter3DTaskBase");
 var Filter3DCompositeTask = (function (_super) {
     __extends(Filter3DCompositeTask, _super);
     function Filter3DCompositeTask(blendMode, exposure) {
@@ -53677,7 +54571,7 @@ var Filter3DCompositeTask = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DCompositeTask;
 
-},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask":[function(require,module,exports){
+},{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -53685,7 +54579,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var Filter3DTaskBase_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DTaskBase_1 = require("../../filters/tasks/Filter3DTaskBase");
 var Filter3DFXAATask = (function (_super) {
     __extends(Filter3DFXAATask, _super);
     /**
@@ -53898,7 +54792,7 @@ var Filter3DFXAATask = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DFXAATask;
 
-},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":[function(require,module,exports){
+},{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -53906,7 +54800,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var Filter3DTaskBase_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DTaskBase_1 = require("../../filters/tasks/Filter3DTaskBase");
 var Filter3DHBlurTask = (function (_super) {
     __extends(Filter3DHBlurTask, _super);
     /**
@@ -53990,7 +54884,7 @@ var Filter3DHBlurTask = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DHBlurTask;
 
-},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
+},{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":[function(require,module,exports){
 "use strict";
 var Image2D_1 = require("awayjs-core/lib/image/Image2D");
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
@@ -54140,7 +55034,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var Filter3DTaskBase_1 = require("awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase");
+var Filter3DTaskBase_1 = require("../../filters/tasks/Filter3DTaskBase");
 var Filter3DVBlurTask = (function (_super) {
     __extends(Filter3DVBlurTask, _super);
     /**
@@ -54223,7 +55117,28 @@ var Filter3DVBlurTask = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Filter3DVBlurTask;
 
-},{"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
+},{"../../filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/filters":[function(require,module,exports){
+"use strict";
+var Filter3DCompositeTask_1 = require("./filters/tasks/Filter3DCompositeTask");
+exports.Filter3DCompositeTask = Filter3DCompositeTask_1.default;
+var Filter3DFXAATask_1 = require("./filters/tasks/Filter3DFXAATask");
+exports.Filter3DFXAATask = Filter3DFXAATask_1.default;
+var Filter3DHBlurTask_1 = require("./filters/tasks/Filter3DHBlurTask");
+exports.Filter3DHBlurTask = Filter3DHBlurTask_1.default;
+var Filter3DTaskBase_1 = require("./filters/tasks/Filter3DTaskBase");
+exports.Filter3DTaskBase = Filter3DTaskBase_1.default;
+var Filter3DVBlurTask_1 = require("./filters/tasks/Filter3DVBlurTask");
+exports.Filter3DVBlurTask = Filter3DVBlurTask_1.default;
+var BlurFilter3D_1 = require("./filters/BlurFilter3D");
+exports.BlurFilter3D = BlurFilter3D_1.default;
+var CompositeFilter3D_1 = require("./filters/CompositeFilter3D");
+exports.CompositeFilter3D = CompositeFilter3D_1.default;
+var Filter3DBase_1 = require("./filters/Filter3DBase");
+exports.Filter3DBase = Filter3DBase_1.default;
+var FXAAFilter3D_1 = require("./filters/FXAAFilter3D");
+exports.FXAAFilter3D = FXAAFilter3D_1.default;
+
+},{"./filters/BlurFilter3D":"awayjs-renderergl/lib/filters/BlurFilter3D","./filters/CompositeFilter3D":"awayjs-renderergl/lib/filters/CompositeFilter3D","./filters/FXAAFilter3D":"awayjs-renderergl/lib/filters/FXAAFilter3D","./filters/Filter3DBase":"awayjs-renderergl/lib/filters/Filter3DBase","./filters/tasks/Filter3DCompositeTask":"awayjs-renderergl/lib/filters/tasks/Filter3DCompositeTask","./filters/tasks/Filter3DFXAATask":"awayjs-renderergl/lib/filters/tasks/Filter3DFXAATask","./filters/tasks/Filter3DHBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DHBlurTask","./filters/tasks/Filter3DTaskBase":"awayjs-renderergl/lib/filters/tasks/Filter3DTaskBase","./filters/tasks/Filter3DVBlurTask":"awayjs-renderergl/lib/filters/tasks/Filter3DVBlurTask"}],"awayjs-renderergl/lib/managers/RTTBufferManager":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -54233,7 +55148,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
 var ImageUtils_1 = require("awayjs-core/lib/utils/ImageUtils");
-var RTTEvent_1 = require("awayjs-renderergl/lib/events/RTTEvent");
+var RTTEvent_1 = require("../events/RTTEvent");
 var RTTBufferManager = (function (_super) {
     __extends(RTTBufferManager, _super);
     function RTTBufferManager(stage) {
@@ -54445,7 +55360,12 @@ var RTTBufferManagerVO = (function () {
     return RTTBufferManagerVO;
 }());
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined,"awayjs-renderergl/lib/events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent"}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
+},{"../events/RTTEvent":"awayjs-renderergl/lib/events/RTTEvent","awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/utils/ImageUtils":undefined}],"awayjs-renderergl/lib/managers":[function(require,module,exports){
+"use strict";
+var RTTBufferManager_1 = require("./managers/RTTBufferManager");
+exports.RTTBufferManager = RTTBufferManager_1.default;
+
+},{"./managers/RTTBufferManager":"awayjs-renderergl/lib/managers/RTTBufferManager"}],"awayjs-renderergl/lib/renderables/GL_BillboardRenderable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -54455,7 +55375,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
 var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var GL_RenderableBase_1 = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.RenderableListItem
  */
@@ -54514,14 +55434,14 @@ var GL_Billboard = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_Billboard;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_GraphicRenderable":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined}],"awayjs-renderergl/lib/renderables/GL_GraphicRenderable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_RenderableBase_1 = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.GL_GraphicRenderable
  */
@@ -54559,7 +55479,7 @@ var GL_GraphicRenderable = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_GraphicRenderable;
 
-},{"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -54567,7 +55487,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var LineElements_1 = require("awayjs-display/lib/graphics/LineElements");
-var GL_RenderableBase_1 = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.GL_LineSegmentRenderable
  */
@@ -54641,7 +55561,7 @@ var GL_LineSegmentRenderable = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_LineSegmentRenderable;
 
-},{"awayjs-display/lib/graphics/LineElements":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase"}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-display/lib/graphics/LineElements":undefined}],"awayjs-renderergl/lib/renderables/GL_RenderableBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -54822,7 +55742,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var TriangleElements_1 = require("awayjs-display/lib/graphics/TriangleElements");
 var ContextGLProgramType_1 = require("awayjs-stagegl/lib/base/ContextGLProgramType");
-var GL_RenderableBase_1 = require("awayjs-renderergl/lib/renderables/GL_RenderableBase");
+var GL_RenderableBase_1 = require("../renderables/GL_RenderableBase");
 /**
  * @class away.pool.GL_SkyboxRenderable
  */
@@ -54892,7 +55812,20 @@ var GL_SkyboxRenderable = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxRenderable;
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-renderergl/lib/renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
+},{"../renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-renderergl/lib/renderables":[function(require,module,exports){
+"use strict";
+var GL_BillboardRenderable_1 = require("./renderables/GL_BillboardRenderable");
+exports.GL_BillboardRenderable = GL_BillboardRenderable_1.default;
+var GL_GraphicRenderable_1 = require("./renderables/GL_GraphicRenderable");
+exports.GL_GraphicRenderable = GL_GraphicRenderable_1.default;
+var GL_LineSegmentRenderable_1 = require("./renderables/GL_LineSegmentRenderable");
+exports.GL_LineSegmentRenderable = GL_LineSegmentRenderable_1.default;
+var GL_RenderableBase_1 = require("./renderables/GL_RenderableBase");
+exports.GL_RenderableBase = GL_RenderableBase_1.default;
+var GL_SkyboxRenderable_1 = require("./renderables/GL_SkyboxRenderable");
+exports.GL_SkyboxRenderable = GL_SkyboxRenderable_1.default;
+
+},{"./renderables/GL_BillboardRenderable":"awayjs-renderergl/lib/renderables/GL_BillboardRenderable","./renderables/GL_GraphicRenderable":"awayjs-renderergl/lib/renderables/GL_GraphicRenderable","./renderables/GL_LineSegmentRenderable":"awayjs-renderergl/lib/renderables/GL_LineSegmentRenderable","./renderables/GL_RenderableBase":"awayjs-renderergl/lib/renderables/GL_RenderableBase","./renderables/GL_SkyboxRenderable":"awayjs-renderergl/lib/renderables/GL_SkyboxRenderable"}],"awayjs-renderergl/lib/shaders/LightingShader":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -54901,8 +55834,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var LightSources_1 = require("awayjs-display/lib/materials/LightSources");
 var ContextGLProfile_1 = require("awayjs-stagegl/lib/base/ContextGLProfile");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
-var LightingCompiler_1 = require("awayjs-renderergl/lib/shaders/compilers/LightingCompiler");
+var ShaderBase_1 = require("../shaders/ShaderBase");
+var LightingCompiler_1 = require("../shaders/compilers/LightingCompiler");
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
  * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -55135,9 +56068,9 @@ var LightingShader = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightingShader;
 
-},{"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler","awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/shaders/RegisterPool":[function(require,module,exports){
+},{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler","awayjs-display/lib/materials/LightSources":undefined,"awayjs-stagegl/lib/base/ContextGLProfile":undefined}],"awayjs-renderergl/lib/shaders/RegisterPool":[function(require,module,exports){
 "use strict";
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var ShaderRegisterElement_1 = require("../shaders/ShaderRegisterElement");
 /**
  * RegisterPool is used by the shader compilers process to keep track of which registers of a certain type are
  * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
@@ -55292,15 +56225,15 @@ var RegisterPool = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RegisterPool;
 
-},{"awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderBase":[function(require,module,exports){
+},{"../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderBase":[function(require,module,exports){
 "use strict";
 var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
 var ArgumentError_1 = require("awayjs-core/lib/errors/ArgumentError");
 var ContextGLBlendFactor_1 = require("awayjs-stagegl/lib/base/ContextGLBlendFactor");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var ContextGLTriangleFace_1 = require("awayjs-stagegl/lib/base/ContextGLTriangleFace");
-var ElementsPool_1 = require("awayjs-renderergl/lib/elements/ElementsPool");
-var CompilerBase_1 = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+var ElementsPool_1 = require("../elements/ElementsPool");
+var CompilerBase_1 = require("../shaders/compilers/CompilerBase");
 /**
  * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
  * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
@@ -55679,10 +56612,10 @@ var ShaderBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShaderBase;
 
-},{"awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","awayjs-renderergl/lib/shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
+},{"../elements/ElementsPool":"awayjs-renderergl/lib/elements/ElementsPool","../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","awayjs-core/lib/errors/ArgumentError":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLBlendFactor":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined,"awayjs-stagegl/lib/base/ContextGLTriangleFace":undefined}],"awayjs-renderergl/lib/shaders/ShaderRegisterCache":[function(require,module,exports){
 "use strict";
-var RegisterPool_1 = require("awayjs-renderergl/lib/shaders/RegisterPool");
-var ShaderRegisterElement_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
+var RegisterPool_1 = require("../shaders/RegisterPool");
+var ShaderRegisterElement_1 = require("../shaders/ShaderRegisterElement");
 /**
  * ShaderRegister Cache provides the usage management system for all registers during shading compilers.
  */
@@ -55954,7 +56887,7 @@ var ShaderRegisterCache = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShaderRegisterCache;
 
-},{"awayjs-renderergl/lib/shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","awayjs-renderergl/lib/shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderRegisterData":[function(require,module,exports){
+},{"../shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","../shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement"}],"awayjs-renderergl/lib/shaders/ShaderRegisterData":[function(require,module,exports){
 "use strict";
 /**
  * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
@@ -56026,8 +56959,8 @@ exports.default = ShaderRegisterElement;
 
 },{}],"awayjs-renderergl/lib/shaders/compilers/CompilerBase":[function(require,module,exports){
 "use strict";
-var ShaderRegisterCache_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-var ShaderRegisterData_1 = require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
+var ShaderRegisterCache_1 = require("../../shaders/ShaderRegisterCache");
+var ShaderRegisterData_1 = require("../../shaders/ShaderRegisterData");
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
  * material. Concrete subclasses are used by the default materials.
@@ -56392,14 +57325,14 @@ var CompilerBase = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CompilerBase;
 
-},{"awayjs-renderergl/lib/shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","awayjs-renderergl/lib/shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData"}],"awayjs-renderergl/lib/shaders/compilers/LightingCompiler":[function(require,module,exports){
+},{"../../shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","../../shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData"}],"awayjs-renderergl/lib/shaders/compilers/LightingCompiler":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var CompilerBase_1 = require("awayjs-renderergl/lib/shaders/compilers/CompilerBase");
+var CompilerBase_1 = require("../../shaders/compilers/CompilerBase");
 /**
  * CompilerBase is an abstract base class for shader compilers that use modular shader methods to assemble a
  * material. Concrete subclasses are used by the default materials.
@@ -56632,7 +57565,26 @@ var LightingCompiler = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightingCompiler;
 
-},{"awayjs-renderergl/lib/shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase"}],"awayjs-renderergl/lib/sort/IEntitySorter":[function(require,module,exports){
+},{"../../shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase"}],"awayjs-renderergl/lib/shaders":[function(require,module,exports){
+"use strict";
+var CompilerBase_1 = require("./shaders/compilers/CompilerBase");
+exports.CompilerBase = CompilerBase_1.default;
+var LightingCompiler_1 = require("./shaders/compilers/LightingCompiler");
+exports.LightingCompiler = LightingCompiler_1.default;
+var LightingShader_1 = require("./shaders/LightingShader");
+exports.LightingShader = LightingShader_1.default;
+var RegisterPool_1 = require("./shaders/RegisterPool");
+exports.RegisterPool = RegisterPool_1.default;
+var ShaderBase_1 = require("./shaders/ShaderBase");
+exports.ShaderBase = ShaderBase_1.default;
+var ShaderRegisterCache_1 = require("./shaders/ShaderRegisterCache");
+exports.ShaderRegisterCache = ShaderRegisterCache_1.default;
+var ShaderRegisterData_1 = require("./shaders/ShaderRegisterData");
+exports.ShaderRegisterData = ShaderRegisterData_1.default;
+var ShaderRegisterElement_1 = require("./shaders/ShaderRegisterElement");
+exports.ShaderRegisterElement = ShaderRegisterElement_1.default;
+
+},{"./shaders/LightingShader":"awayjs-renderergl/lib/shaders/LightingShader","./shaders/RegisterPool":"awayjs-renderergl/lib/shaders/RegisterPool","./shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","./shaders/ShaderRegisterCache":"awayjs-renderergl/lib/shaders/ShaderRegisterCache","./shaders/ShaderRegisterData":"awayjs-renderergl/lib/shaders/ShaderRegisterData","./shaders/ShaderRegisterElement":"awayjs-renderergl/lib/shaders/ShaderRegisterElement","./shaders/compilers/CompilerBase":"awayjs-renderergl/lib/shaders/compilers/CompilerBase","./shaders/compilers/LightingCompiler":"awayjs-renderergl/lib/shaders/compilers/LightingCompiler"}],"awayjs-renderergl/lib/sort/IEntitySorter":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-renderergl/lib/sort/RenderableMergeSort":[function(require,module,exports){
@@ -56799,7 +57751,14 @@ var RenderableNullSort = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RenderableNullSort;
 
-},{}],"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/sort":[function(require,module,exports){
+"use strict";
+var RenderableMergeSort_1 = require("./sort/RenderableMergeSort");
+exports.RenderableMergeSort = RenderableMergeSort_1.default;
+var RenderableNullSort_1 = require("./sort/RenderableNullSort");
+exports.RenderableNullSort = RenderableNullSort_1.default;
+
+},{"./sort/RenderableMergeSort":"awayjs-renderergl/lib/sort/RenderableMergeSort","./sort/RenderableNullSort":"awayjs-renderergl/lib/sort/RenderableNullSort"}],"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -56807,8 +57766,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
-var BasicMaterialPass_1 = require("awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass");
-var GL_SurfaceBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+var BasicMaterialPass_1 = require("../surfaces/passes/BasicMaterialPass");
+var GL_SurfaceBase_1 = require("../surfaces/GL_SurfaceBase");
 /**
  * RenderMaterialObject forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -56839,15 +57798,15 @@ var GL_BasicMaterialSurface = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_BasicMaterialSurface;
 
-},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass"}],"awayjs-renderergl/lib/surfaces/GL_DepthSurface":[function(require,module,exports){
+},{"../surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","../surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass","awayjs-core/lib/image/BlendMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_DepthSurface":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_SurfacePassBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var GL_SurfacePassBase_1 = require("../surfaces/GL_SurfacePassBase");
+var ShaderBase_1 = require("../shaders/ShaderBase");
 /**
  * GL_DepthSurface forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -56935,15 +57894,15 @@ var GL_DepthSurface = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_DepthSurface;
 
-},{"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_DistanceSurface":[function(require,module,exports){
+},{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_DistanceSurface":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_SurfacePassBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var GL_SurfacePassBase_1 = require("../surfaces/GL_SurfacePassBase");
+var ShaderBase_1 = require("../shaders/ShaderBase");
 /**
  * DistanceRender is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
  * This is used to render omnidirectional shadow maps.
@@ -57037,7 +57996,7 @@ var DistanceRender = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DistanceRender;
 
-},{"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":[function(require,module,exports){
+},{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase"}],"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -57047,8 +58006,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var GL_SurfacePassBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfacePassBase");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
+var GL_SurfacePassBase_1 = require("../surfaces/GL_SurfacePassBase");
+var ShaderBase_1 = require("../shaders/ShaderBase");
 /**
  * GL_SkyboxSurface forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -57103,7 +58062,7 @@ var GL_SkyboxSurface = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SkyboxSurface;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":[function(require,module,exports){
+},{"../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -57114,7 +58073,7 @@ var AbstractionBase_1 = require("awayjs-core/lib/library/AbstractionBase");
 var SurfaceEvent_1 = require("awayjs-display/lib/events/SurfaceEvent");
 var MaterialBase_1 = require("awayjs-display/lib/materials/MaterialBase");
 var DefaultMaterialManager_1 = require("awayjs-display/lib/managers/DefaultMaterialManager");
-var PassEvent_1 = require("awayjs-renderergl/lib/events/PassEvent");
+var PassEvent_1 = require("../events/PassEvent");
 /**
  *
  * @class away.pool.Passes
@@ -57358,15 +58317,15 @@ var GL_SurfaceBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SurfaceBase;
 
-},{"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/SurfaceEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":[function(require,module,exports){
+},{"../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-display/lib/events/SurfaceEvent":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/MaterialBase":undefined}],"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var PassEvent_1 = require("awayjs-renderergl/lib/events/PassEvent");
-var GL_SurfaceBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
+var PassEvent_1 = require("../events/PassEvent");
+var GL_SurfaceBase_1 = require("../surfaces/GL_SurfaceBase");
 /**
  * GL_SurfacePassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
@@ -57461,7 +58420,7 @@ var GL_SurfacePassBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SurfacePassBase;
 
-},{"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-renderergl/lib/surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase"}],"awayjs-renderergl/lib/surfaces/ISurfaceClassGL":[function(require,module,exports){
+},{"../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","../surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase"}],"awayjs-renderergl/lib/surfaces/ISurfaceClassGL":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-renderergl/lib/surfaces/SurfacePool":[function(require,module,exports){
@@ -57527,8 +58486,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
-var PassBase_1 = require("awayjs-renderergl/lib/surfaces/passes/PassBase");
+var ShaderBase_1 = require("../../shaders/ShaderBase");
+var PassBase_1 = require("../../surfaces/passes/PassBase");
 /**
  * BasicMaterialPass forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -57623,7 +58582,7 @@ var BasicMaterialPass = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BasicMaterialPass;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","awayjs-renderergl/lib/surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase"}],"awayjs-renderergl/lib/surfaces/passes/ILightingPass":[function(require,module,exports){
+},{"../../shaders/ShaderBase":"awayjs-renderergl/lib/shaders/ShaderBase","../../surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-renderergl/lib/surfaces/passes/ILightingPass":[function(require,module,exports){
 "use strict";
 
 },{}],"awayjs-renderergl/lib/surfaces/passes/IPass":[function(require,module,exports){
@@ -57637,7 +58596,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("awayjs-core/lib/events/EventDispatcher");
-var PassEvent_1 = require("awayjs-renderergl/lib/events/PassEvent");
+var PassEvent_1 = require("../../events/PassEvent");
 /**
  * PassBase provides an abstract base class for material shader passes. A material pass constitutes at least
  * a render call per required renderable.
@@ -57792,7 +58751,28 @@ var PassBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PassBase;
 
-},{"awayjs-core/lib/events/EventDispatcher":undefined,"awayjs-renderergl/lib/events/PassEvent":"awayjs-renderergl/lib/events/PassEvent"}],"awayjs-renderergl/lib/textures/GL_Single2DTexture":[function(require,module,exports){
+},{"../../events/PassEvent":"awayjs-renderergl/lib/events/PassEvent","awayjs-core/lib/events/EventDispatcher":undefined}],"awayjs-renderergl/lib/surfaces":[function(require,module,exports){
+"use strict";
+var BasicMaterialPass_1 = require("./surfaces/passes/BasicMaterialPass");
+exports.BasicMaterialPass = BasicMaterialPass_1.default;
+var PassBase_1 = require("./surfaces/passes/PassBase");
+exports.PassBase = PassBase_1.default;
+var GL_BasicMaterialSurface_1 = require("./surfaces/GL_BasicMaterialSurface");
+exports.GL_BasicMaterialSurface = GL_BasicMaterialSurface_1.default;
+var GL_DepthSurface_1 = require("./surfaces/GL_DepthSurface");
+exports.GL_DepthSurface = GL_DepthSurface_1.default;
+var GL_DistanceSurface_1 = require("./surfaces/GL_DistanceSurface");
+exports.GL_DistanceSurface = GL_DistanceSurface_1.default;
+var GL_SkyboxSurface_1 = require("./surfaces/GL_SkyboxSurface");
+exports.GL_SkyboxSurface = GL_SkyboxSurface_1.default;
+var GL_SurfaceBase_1 = require("./surfaces/GL_SurfaceBase");
+exports.GL_SurfaceBase = GL_SurfaceBase_1.default;
+var GL_SurfacePassBase_1 = require("./surfaces/GL_SurfacePassBase");
+exports.GL_SurfacePassBase = GL_SurfacePassBase_1.default;
+var SurfacePool_1 = require("./surfaces/SurfacePool");
+exports.SurfacePool = SurfacePool_1.default;
+
+},{"./surfaces/GL_BasicMaterialSurface":"awayjs-renderergl/lib/surfaces/GL_BasicMaterialSurface","./surfaces/GL_DepthSurface":"awayjs-renderergl/lib/surfaces/GL_DepthSurface","./surfaces/GL_DistanceSurface":"awayjs-renderergl/lib/surfaces/GL_DistanceSurface","./surfaces/GL_SkyboxSurface":"awayjs-renderergl/lib/surfaces/GL_SkyboxSurface","./surfaces/GL_SurfaceBase":"awayjs-renderergl/lib/surfaces/GL_SurfaceBase","./surfaces/GL_SurfacePassBase":"awayjs-renderergl/lib/surfaces/GL_SurfacePassBase","./surfaces/SurfacePool":"awayjs-renderergl/lib/surfaces/SurfacePool","./surfaces/passes/BasicMaterialPass":"awayjs-renderergl/lib/surfaces/passes/BasicMaterialPass","./surfaces/passes/PassBase":"awayjs-renderergl/lib/surfaces/passes/PassBase"}],"awayjs-renderergl/lib/textures/GL_Single2DTexture":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -57800,7 +58780,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var MappingMode_1 = require("awayjs-display/lib/textures/MappingMode");
-var GL_TextureBase_1 = require("awayjs-renderergl/lib/textures/GL_TextureBase");
+var GL_TextureBase_1 = require("../textures/GL_TextureBase");
 /**
  *
  * @class away.pool.GL_Single2DTexture
@@ -57906,14 +58886,14 @@ var GL_Single2DTexture = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_Single2DTexture;
 
-},{"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-renderergl/lib/textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/textures/GL_SingleCubeTexture":[function(require,module,exports){
+},{"../textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase","awayjs-display/lib/textures/MappingMode":undefined}],"awayjs-renderergl/lib/textures/GL_SingleCubeTexture":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GL_TextureBase_1 = require("awayjs-renderergl/lib/textures/GL_TextureBase");
+var GL_TextureBase_1 = require("../textures/GL_TextureBase");
 /**
  *
  * @class away.pool.TextureDataBase
@@ -57969,7 +58949,7 @@ var GL_SingleCubeTexture = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_SingleCubeTexture;
 
-},{"awayjs-renderergl/lib/textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/textures/GL_TextureBase":[function(require,module,exports){
+},{"../textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/textures/GL_TextureBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -58035,7 +59015,16 @@ var GL_TextureBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_TextureBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
+},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-core/lib/library/AbstractionBase":undefined,"awayjs-stagegl/lib/base/ContextGLTextureFormat":undefined}],"awayjs-renderergl/lib/textures":[function(require,module,exports){
+"use strict";
+var GL_Single2DTexture_1 = require("./textures/GL_Single2DTexture");
+exports.GL_Single2DTexture = GL_Single2DTexture_1.default;
+var GL_SingleCubeTexture_1 = require("./textures/GL_SingleCubeTexture");
+exports.GL_SingleCubeTexture = GL_SingleCubeTexture_1.default;
+var GL_TextureBase_1 = require("./textures/GL_TextureBase");
+exports.GL_TextureBase = GL_TextureBase_1.default;
+
+},{"./textures/GL_Single2DTexture":"awayjs-renderergl/lib/textures/GL_Single2DTexture","./textures/GL_SingleCubeTexture":"awayjs-renderergl/lib/textures/GL_SingleCubeTexture","./textures/GL_TextureBase":"awayjs-renderergl/lib/textures/GL_TextureBase"}],"awayjs-renderergl/lib/tools/commands/Merge":[function(require,module,exports){
 "use strict";
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Matrix3DUtils_1 = require("awayjs-core/lib/geom/Matrix3DUtils");
@@ -58363,7 +59352,14 @@ var ParticleGraphicsTransform = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ParticleGraphicsTransform;
 
-},{}],"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":[function(require,module,exports){
+},{}],"awayjs-renderergl/lib/tools":[function(require,module,exports){
+"use strict";
+var Merge_1 = require("./tools/commands/Merge");
+exports.Merge = Merge_1.default;
+var ParticleGraphicsTransform_1 = require("./tools/data/ParticleGraphicsTransform");
+exports.ParticleGraphicsTransform = ParticleGraphicsTransform_1.default;
+
+},{"./tools/commands/Merge":"awayjs-renderergl/lib/tools/commands/Merge","./tools/data/ParticleGraphicsTransform":"awayjs-renderergl/lib/tools/data/ParticleGraphicsTransform"}],"awayjs-renderergl/lib/utils/ParticleGraphicsHelper":[function(require,module,exports){
 "use strict";
 var AttributesBuffer_1 = require("awayjs-core/lib/attributes/AttributesBuffer");
 var Point_1 = require("awayjs-core/lib/geom/Point");
@@ -58584,17 +59580,32 @@ var PerspectiveMatrix3D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PerspectiveMatrix3D;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined}]},{},[1])
+},{"awayjs-core/lib/geom/Matrix3D":undefined}],"awayjs-renderergl/lib/utils":[function(require,module,exports){
+"use strict";
+var ParticleGraphicsHelper_1 = require("./utils/ParticleGraphicsHelper");
+exports.ParticleGraphicsHelper = ParticleGraphicsHelper_1.default;
+var PerspectiveMatrix3D_1 = require("./utils/PerspectiveMatrix3D");
+exports.PerspectiveMatrix3D = PerspectiveMatrix3D_1.default;
+
+},{"./utils/ParticleGraphicsHelper":"awayjs-renderergl/lib/utils/ParticleGraphicsHelper","./utils/PerspectiveMatrix3D":"awayjs-renderergl/lib/utils/PerspectiveMatrix3D"}]},{},[1])
 //# sourceMappingURL=awayjs-renderergl.js.map
 
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
+var data = require("./lib/data");
+exports.data = data;
+var methods = require("./lib/methods");
+exports.methods = methods;
+var surfaces = require("./lib/surfaces");
+exports.surfaces = surfaces;
+var MethodMaterial_1 = require("./lib/MethodMaterial");
+exports.MethodMaterial = MethodMaterial_1.default;
+var MethodMaterialMode_1 = require("./lib/MethodMaterialMode");
+exports.MethodMaterialMode = MethodMaterialMode_1.default;
 var SurfacePool_1 = require("awayjs-renderergl/lib/surfaces/SurfacePool");
-var MethodMaterial_1 = require("awayjs-methodmaterials/lib/MethodMaterial");
-var GL_MethodMaterialSurface_1 = require("awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface");
-SurfacePool_1.default.registerAbstraction(GL_MethodMaterialSurface_1.default, MethodMaterial_1.default);
+SurfacePool_1.default.registerAbstraction(surfaces.GL_MethodMaterialSurface, MethodMaterial_1.default);
 
-},{"awayjs-methodmaterials/lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface":"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface","awayjs-renderergl/lib/surfaces/SurfacePool":undefined}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
+},{"./lib/MethodMaterial":"awayjs-methodmaterials/lib/MethodMaterial","./lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","./lib/data":"awayjs-methodmaterials/lib/data","./lib/methods":"awayjs-methodmaterials/lib/methods","./lib/surfaces":"awayjs-methodmaterials/lib/surfaces","awayjs-renderergl/lib/surfaces/SurfacePool":undefined}],"awayjs-methodmaterials/lib/MethodMaterialMode":[function(require,module,exports){
 "use strict";
 var MethodMaterialMode = (function () {
     function MethodMaterialMode() {
@@ -58623,11 +59634,11 @@ var Image2D_1 = require("awayjs-core/lib/image/Image2D");
 var MaterialBase_1 = require("awayjs-display/lib/materials/MaterialBase");
 var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
-var MethodMaterialMode_1 = require("awayjs-methodmaterials/lib/MethodMaterialMode");
-var AmbientBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/AmbientBasicMethod");
-var DiffuseBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
-var NormalBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/NormalBasicMethod");
-var SpecularBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
+var MethodMaterialMode_1 = require("./MethodMaterialMode");
+var AmbientBasicMethod_1 = require("./methods/AmbientBasicMethod");
+var DiffuseBasicMethod_1 = require("./methods/DiffuseBasicMethod");
+var NormalBasicMethod_1 = require("./methods/NormalBasicMethod");
+var SpecularBasicMethod_1 = require("./methods/SpecularBasicMethod");
 /**
  * MethodMaterial forms an abstract base class for the default shaded materials provided by Stage,
  * using material methods to define their appearance.
@@ -58858,7 +59869,7 @@ var MethodMaterial = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MethodMaterial;
 
-},{"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod","awayjs-methodmaterials/lib/methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod","awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
+},{"./MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","./methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","./methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod","./methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod","./methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/materials/MaterialBase":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/data/MethodVO":[function(require,module,exports){
 "use strict";
 /**
  * MethodVO contains data for a given shader object for the use within a single material.
@@ -58894,7 +59905,12 @@ var MethodVO = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MethodVO;
 
-},{}],"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":[function(require,module,exports){
+},{}],"awayjs-methodmaterials/lib/data":[function(require,module,exports){
+"use strict";
+var MethodVO_1 = require("./data/MethodVO");
+exports.MethodVO = MethodVO_1.default;
+
+},{"./data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO"}],"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -58902,7 +59918,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
  */
@@ -59057,7 +60073,7 @@ var AmbientBasicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AmbientBasicMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -59065,7 +60081,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var AmbientBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/AmbientBasicMethod");
+var AmbientBasicMethod_1 = require("../methods/AmbientBasicMethod");
 /**
  * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
  * approximate global lighting rather than lights.
@@ -59105,7 +60121,7 @@ var AmbientEnvMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AmbientEnvMapMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-methodmaterials/lib/methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod"}],"awayjs-methodmaterials/lib/methods/CurveBasicMethod":[function(require,module,exports){
+},{"../methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-methodmaterials/lib/methods/CurveBasicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -59113,7 +60129,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
  */
@@ -59276,7 +60292,7 @@ var CurveBasicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CurveBasicMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -59284,7 +60300,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var LightingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/LightingMethodBase");
+var LightingMethodBase_1 = require("../methods/LightingMethodBase");
 /**
  * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
  */
@@ -59579,14 +60595,14 @@ var DiffuseBasicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseBasicMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-methodmaterials/lib/methods/LightingMethodBase":"awayjs-methodmaterials/lib/methods/LightingMethodBase"}],"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":[function(require,module,exports){
+},{"../methods/LightingMethodBase":"awayjs-methodmaterials/lib/methods/LightingMethodBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseCompositeMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
+var DiffuseCompositeMethod_1 = require("../methods/DiffuseCompositeMethod");
 /**
  * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
  */
@@ -59700,7 +60716,7 @@ var DiffuseCelMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseCelMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":[function(require,module,exports){
+},{"../methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -59708,7 +60724,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ShadingMethodEvent_1 = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
-var DiffuseBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
+var DiffuseBasicMethod_1 = require("../methods/DiffuseBasicMethod");
 /**
  * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
  * calculated diffuse reflection strength.
@@ -59899,14 +60915,14 @@ var DiffuseCompositeMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseCompositeMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":[function(require,module,exports){
+},{"../methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
+var DiffuseBasicMethod_1 = require("../methods/DiffuseBasicMethod");
 /**
  * DiffuseDepthMethod provides a debug method to visualise depth maps
  */
@@ -59970,14 +60986,14 @@ var DiffuseDepthMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseDepthMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":[function(require,module,exports){
+},{"../methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
+var DiffuseBasicMethod_1 = require("../methods/DiffuseBasicMethod");
 /**
  * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
  * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
@@ -60094,14 +61110,14 @@ var DiffuseGradientMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseGradientMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":[function(require,module,exports){
+},{"../methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseCompositeMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
+var DiffuseCompositeMethod_1 = require("../methods/DiffuseCompositeMethod");
 /**
  * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
  * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
@@ -60242,14 +61258,14 @@ var DiffuseLightMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseLightMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseSubSurfaceMethod":[function(require,module,exports){
+},{"../methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseSubSurfaceMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseCompositeMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
+var DiffuseCompositeMethod_1 = require("../methods/DiffuseCompositeMethod");
 /**
  * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
  * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
@@ -60470,14 +61486,14 @@ var DiffuseSubSurfaceMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseSubSurfaceMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":[function(require,module,exports){
+},{"../methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod"}],"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DiffuseBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
+var DiffuseBasicMethod_1 = require("../methods/DiffuseBasicMethod");
 /**
  * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
  * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
@@ -60568,14 +61584,14 @@ var DiffuseWrapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = DiffuseWrapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":[function(require,module,exports){
+},{"../methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod"}],"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
  * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
@@ -60668,14 +61684,14 @@ var EffectAlphaMaskMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectAlphaMaskMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
  */
@@ -60759,14 +61775,14 @@ var EffectColorMatrixMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectColorMatrixMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
  * ColorTransform object.
@@ -60825,14 +61841,14 @@ var EffectColorTransformMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectColorTransformMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
  */
@@ -60971,14 +61987,14 @@ var EffectEnvMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectEnvMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectFogMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectFogMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectFogMethod provides a method to add distance-based fog to a material.
  */
@@ -61094,14 +62110,14 @@ var EffectFogMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectFogMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
  * stronger as the viewing angle becomes more grazing.
@@ -61285,14 +62301,14 @@ var EffectFresnelEnvMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectFresnelEnvMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
  * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
@@ -61425,7 +62441,7 @@ var EffectLightMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectLightMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectMethodBase":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectMethodBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -61433,7 +62449,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
  * and are in essence post-process effects on the materials.
@@ -61469,14 +62485,14 @@ var EffectMethodBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectMethodBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectRefractionEnvMapMethod":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","awayjs-core/lib/errors/AbstractMethodError":undefined}],"awayjs-methodmaterials/lib/methods/EffectRefractionEnvMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
  */
@@ -61731,14 +62747,14 @@ var EffectRefractionEnvMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectRefractionEnvMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EffectMethodBase_1 = require("awayjs-methodmaterials/lib/methods/EffectMethodBase");
+var EffectMethodBase_1 = require("../methods/EffectMethodBase");
 /**
  * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
  */
@@ -61890,14 +62906,14 @@ var EffectRimLightMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = EffectRimLightMethod;
 
-},{"awayjs-methodmaterials/lib/methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/LightingMethodBase":[function(require,module,exports){
+},{"../methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase"}],"awayjs-methodmaterials/lib/methods/LightingMethodBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * LightingMethodBase provides an abstract base method for shading methods that uses lights.
  * Used for diffuse and specular shaders only.
@@ -61957,14 +62973,14 @@ var LightingMethodBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LightingMethodBase;
 
-},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/NormalBasicMethod":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/NormalBasicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * NormalBasicMethod is the default method for standard tangent-space normal mapping.
  */
@@ -62064,14 +63080,14 @@ var NormalBasicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NormalBasicMethod;
 
-},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/NormalHeightMapMethod":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/NormalHeightMapMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NormalBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/NormalBasicMethod");
+var NormalBasicMethod_1 = require("../methods/NormalBasicMethod");
 /**
  * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
  */
@@ -62150,14 +63166,14 @@ var NormalHeightMapMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NormalHeightMapMethod;
 
-},{"awayjs-methodmaterials/lib/methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod"}],"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":[function(require,module,exports){
+},{"../methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod"}],"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NormalBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/NormalBasicMethod");
+var NormalBasicMethod_1 = require("../methods/NormalBasicMethod");
 /**
  * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
  */
@@ -62329,7 +63345,7 @@ var NormalSimpleWaterMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NormalSimpleWaterMethod;
 
-},{"awayjs-methodmaterials/lib/methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod"}],"awayjs-methodmaterials/lib/methods/ShadingMethodBase":[function(require,module,exports){
+},{"../methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod"}],"awayjs-methodmaterials/lib/methods/ShadingMethodBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -62533,8 +63549,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
 var DirectionalLight_1 = require("awayjs-display/lib/display/DirectionalLight");
 var ShadingMethodEvent_1 = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
-var MethodVO_1 = require("awayjs-methodmaterials/lib/data/MethodVO");
-var ShadowMapMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMapMethodBase");
+var MethodVO_1 = require("../data/MethodVO");
+var ShadowMapMethodBase_1 = require("../methods/ShadowMapMethodBase");
 /**
  * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
  * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
@@ -62729,7 +63745,7 @@ var ShadowCascadeMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowCascadeMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":[function(require,module,exports){
+},{"../data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","../methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -62738,7 +63754,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BitmapImage2D_1 = require("awayjs-core/lib/image/BitmapImage2D");
 var Single2DTexture_1 = require("awayjs-display/lib/textures/Single2DTexture");
-var ShadowMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
+var ShadowMethodBase_1 = require("../methods/ShadowMethodBase");
 /**
  * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
  */
@@ -62986,14 +64002,14 @@ var ShadowDitheredMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowDitheredMethod;
 
-},{"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
+},{"../methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase","awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined}],"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShadowMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
+var ShadowMethodBase_1 = require("../methods/ShadowMethodBase");
 /**
  * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
  * results of neighbouring pixels.
@@ -63123,14 +64139,14 @@ var ShadowFilteredMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowFilteredMethod;
 
-},{"awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowHardMethod":[function(require,module,exports){
+},{"../methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowHardMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShadowMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
+var ShadowMethodBase_1 = require("../methods/ShadowMethodBase");
 /**
  * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
  */
@@ -63200,14 +64216,14 @@ var ShadowHardMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowHardMethod;
 
-},{"awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":[function(require,module,exports){
+},{"../methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var ShadingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadingMethodBase");
+var ShadingMethodBase_1 = require("../methods/ShadingMethodBase");
 /**
  * ShadowMapMethodBase provides an abstract base method for shadow map methods.
  */
@@ -63279,7 +64295,7 @@ var ShadowMapMethodBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowMapMethodBase;
 
-},{"awayjs-methodmaterials/lib/methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowMethodBase":[function(require,module,exports){
+},{"../methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowMethodBase":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -63288,7 +64304,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var AbstractMethodError_1 = require("awayjs-core/lib/errors/AbstractMethodError");
 var PointLight_1 = require("awayjs-display/lib/display/PointLight");
-var ShadowMapMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMapMethodBase");
+var ShadowMapMethodBase_1 = require("../methods/ShadowMapMethodBase");
 /**
  * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
  */
@@ -63310,7 +64326,7 @@ var ShadowMethodBase = (function (_super) {
         methodVO.needsGlobalVertexPos = true;
         methodVO.needsGlobalFragmentPos = this._pUsePoint;
         methodVO.needsNormals = shader.numLights > 0;
-        //methodVO.textureGL = shader.getAbstraction(this._pCastingLight.shadowMapper.depthMap);
+        methodVO.textureGL = shader.getAbstraction(this._pCastingLight.shadowMapper.depthMap);
     };
     /**
      * @inheritDoc
@@ -63482,7 +64498,7 @@ var ShadowMethodBase = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowMethodBase;
 
-},{"awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase"}],"awayjs-methodmaterials/lib/methods/ShadowNearMethod":[function(require,module,exports){
+},{"../methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","awayjs-core/lib/errors/AbstractMethodError":undefined,"awayjs-display/lib/display/PointLight":undefined}],"awayjs-methodmaterials/lib/methods/ShadowNearMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -63490,7 +64506,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ShadingMethodEvent_1 = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
-var ShadowMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
+var ShadowMethodBase_1 = require("../methods/ShadowMethodBase");
 // TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 /**
  * ShadowNearMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
@@ -63675,7 +64691,7 @@ var ShadowNearMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowNearMethod;
 
-},{"awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":[function(require,module,exports){
+},{"../methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -63683,7 +64699,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var PoissonLookup_1 = require("awayjs-core/lib/geom/PoissonLookup");
-var ShadowMethodBase_1 = require("awayjs-methodmaterials/lib/methods/ShadowMethodBase");
+var ShadowMethodBase_1 = require("../methods/ShadowMethodBase");
 /**
  * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
  */
@@ -63852,14 +64868,14 @@ var ShadowSoftMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ShadowSoftMethod;
 
-},{"awayjs-core/lib/geom/PoissonLookup":undefined,"awayjs-methodmaterials/lib/methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase"}],"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":[function(require,module,exports){
+},{"../methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase","awayjs-core/lib/geom/PoissonLookup":undefined}],"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SpecularBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
+var SpecularBasicMethod_1 = require("../methods/SpecularBasicMethod");
 /**
  * SpecularAnisotropicMethod provides a specular method resulting in anisotropic highlights. These are typical for
  * surfaces with microfacet details such as tiny grooves. In particular, this uses the Heidrich-Seidel distrubution.
@@ -63932,7 +64948,7 @@ var SpecularAnisotropicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularAnisotropicMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":[function(require,module,exports){
+},{"../methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -63940,7 +64956,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var LightingMethodBase_1 = require("awayjs-methodmaterials/lib/methods/LightingMethodBase");
+var LightingMethodBase_1 = require("../methods/LightingMethodBase");
 /**
  * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
  * version of Phong specularity).
@@ -64207,14 +65223,14 @@ var SpecularBasicMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularBasicMethod;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-methodmaterials/lib/methods/LightingMethodBase":"awayjs-methodmaterials/lib/methods/LightingMethodBase"}],"awayjs-methodmaterials/lib/methods/SpecularCelMethod":[function(require,module,exports){
+},{"../methods/LightingMethodBase":"awayjs-methodmaterials/lib/methods/LightingMethodBase","awayjs-core/lib/events/AssetEvent":undefined}],"awayjs-methodmaterials/lib/methods/SpecularCelMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SpecularCompositeMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
+var SpecularCompositeMethod_1 = require("../methods/SpecularCompositeMethod");
 /**
  * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
  */
@@ -64306,7 +65322,7 @@ var SpecularCelMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularCelMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod"}],"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":[function(require,module,exports){
+},{"../methods/SpecularCompositeMethod":"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod"}],"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -64314,7 +65330,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ShadingMethodEvent_1 = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
-var SpecularBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
+var SpecularBasicMethod_1 = require("../methods/SpecularBasicMethod");
 /**
  * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
  * calculated specular reflection strength.
@@ -64509,14 +65525,14 @@ var SpecularCompositeMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularCompositeMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":[function(require,module,exports){
+},{"../methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined}],"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SpecularCompositeMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
+var SpecularCompositeMethod_1 = require("../methods/SpecularCompositeMethod");
 /**
  * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
  */
@@ -64638,14 +65654,14 @@ var SpecularFresnelMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularFresnelMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod":"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod"}],"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":[function(require,module,exports){
+},{"../methods/SpecularCompositeMethod":"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod"}],"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var SpecularBasicMethod_1 = require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
+var SpecularBasicMethod_1 = require("../methods/SpecularBasicMethod");
 /**
  * SpecularPhongMethod provides a specular method that provides Phong highlights.
  */
@@ -64710,7 +65726,90 @@ var SpecularPhongMethod = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SpecularPhongMethod;
 
-},{"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface":[function(require,module,exports){
+},{"../methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod"}],"awayjs-methodmaterials/lib/methods":[function(require,module,exports){
+"use strict";
+var AmbientBasicMethod_1 = require("./methods/AmbientBasicMethod");
+exports.AmbientBasicMethod = AmbientBasicMethod_1.default;
+var AmbientEnvMapMethod_1 = require("./methods/AmbientEnvMapMethod");
+exports.AmbientEnvMapMethod = AmbientEnvMapMethod_1.default;
+var CurveBasicMethod_1 = require("./methods/CurveBasicMethod");
+exports.CurveBasicMethod = CurveBasicMethod_1.default;
+var DiffuseBasicMethod_1 = require("./methods/DiffuseBasicMethod");
+exports.DiffuseBasicMethod = DiffuseBasicMethod_1.default;
+var DiffuseCelMethod_1 = require("./methods/DiffuseCelMethod");
+exports.DiffuseCelMethod = DiffuseCelMethod_1.default;
+var DiffuseCompositeMethod_1 = require("./methods/DiffuseCompositeMethod");
+exports.DiffuseCompositeMethod = DiffuseCompositeMethod_1.default;
+var DiffuseDepthMethod_1 = require("./methods/DiffuseDepthMethod");
+exports.DiffuseDepthMethod = DiffuseDepthMethod_1.default;
+var DiffuseGradientMethod_1 = require("./methods/DiffuseGradientMethod");
+exports.DiffuseGradientMethod = DiffuseGradientMethod_1.default;
+var DiffuseLightMapMethod_1 = require("./methods/DiffuseLightMapMethod");
+exports.DiffuseLightMapMethod = DiffuseLightMapMethod_1.default;
+var DiffuseSubSurfaceMethod_1 = require("./methods/DiffuseSubSurfaceMethod");
+exports.DiffuseSubSurfaceMethod = DiffuseSubSurfaceMethod_1.default;
+var DiffuseWrapMethod_1 = require("./methods/DiffuseWrapMethod");
+exports.DiffuseWrapMethod = DiffuseWrapMethod_1.default;
+var EffectAlphaMaskMethod_1 = require("./methods/EffectAlphaMaskMethod");
+exports.EffectAlphaMaskMethod = EffectAlphaMaskMethod_1.default;
+var EffectColorMatrixMethod_1 = require("./methods/EffectColorMatrixMethod");
+exports.EffectColorMatrixMethod = EffectColorMatrixMethod_1.default;
+var EffectColorTransformMethod_1 = require("./methods/EffectColorTransformMethod");
+exports.EffectColorTransformMethod = EffectColorTransformMethod_1.default;
+var EffectEnvMapMethod_1 = require("./methods/EffectEnvMapMethod");
+exports.EffectEnvMapMethod = EffectEnvMapMethod_1.default;
+var EffectFogMethod_1 = require("./methods/EffectFogMethod");
+exports.EffectFogMethod = EffectFogMethod_1.default;
+var EffectFresnelEnvMapMethod_1 = require("./methods/EffectFresnelEnvMapMethod");
+exports.EffectFresnelEnvMapMethod = EffectFresnelEnvMapMethod_1.default;
+var EffectLightMapMethod_1 = require("./methods/EffectLightMapMethod");
+exports.EffectLightMapMethod = EffectLightMapMethod_1.default;
+var EffectMethodBase_1 = require("./methods/EffectMethodBase");
+exports.EffectMethodBase = EffectMethodBase_1.default;
+var EffectRefractionEnvMapMethod_1 = require("./methods/EffectRefractionEnvMapMethod");
+exports.EffectRefractionEnvMapMethod = EffectRefractionEnvMapMethod_1.default;
+var EffectRimLightMethod_1 = require("./methods/EffectRimLightMethod");
+exports.EffectRimLightMethod = EffectRimLightMethod_1.default;
+var LightingMethodBase_1 = require("./methods/LightingMethodBase");
+exports.LightingMethodBase = LightingMethodBase_1.default;
+var NormalBasicMethod_1 = require("./methods/NormalBasicMethod");
+exports.NormalBasicMethod = NormalBasicMethod_1.default;
+var NormalHeightMapMethod_1 = require("./methods/NormalHeightMapMethod");
+exports.NormalHeightMapMethod = NormalHeightMapMethod_1.default;
+var NormalSimpleWaterMethod_1 = require("./methods/NormalSimpleWaterMethod");
+exports.NormalSimpleWaterMethod = NormalSimpleWaterMethod_1.default;
+var ShadingMethodBase_1 = require("./methods/ShadingMethodBase");
+exports.ShadingMethodBase = ShadingMethodBase_1.default;
+var ShadowCascadeMethod_1 = require("./methods/ShadowCascadeMethod");
+exports.ShadowCascadeMethod = ShadowCascadeMethod_1.default;
+var ShadowDitheredMethod_1 = require("./methods/ShadowDitheredMethod");
+exports.ShadowDitheredMethod = ShadowDitheredMethod_1.default;
+var ShadowFilteredMethod_1 = require("./methods/ShadowFilteredMethod");
+exports.ShadowFilteredMethod = ShadowFilteredMethod_1.default;
+var ShadowHardMethod_1 = require("./methods/ShadowHardMethod");
+exports.ShadowHardMethod = ShadowHardMethod_1.default;
+var ShadowMapMethodBase_1 = require("./methods/ShadowMapMethodBase");
+exports.ShadowMapMethodBase = ShadowMapMethodBase_1.default;
+var ShadowMethodBase_1 = require("./methods/ShadowMethodBase");
+exports.ShadowMethodBase = ShadowMethodBase_1.default;
+var ShadowNearMethod_1 = require("./methods/ShadowNearMethod");
+exports.ShadowNearMethod = ShadowNearMethod_1.default;
+var ShadowSoftMethod_1 = require("./methods/ShadowSoftMethod");
+exports.ShadowSoftMethod = ShadowSoftMethod_1.default;
+var SpecularAnisotropicMethod_1 = require("./methods/SpecularAnisotropicMethod");
+exports.SpecularAnisotropicMethod = SpecularAnisotropicMethod_1.default;
+var SpecularBasicMethod_1 = require("./methods/SpecularBasicMethod");
+exports.SpecularBasicMethod = SpecularBasicMethod_1.default;
+var SpecularCelMethod_1 = require("./methods/SpecularCelMethod");
+exports.SpecularCelMethod = SpecularCelMethod_1.default;
+var SpecularCompositeMethod_1 = require("./methods/SpecularCompositeMethod");
+exports.SpecularCompositeMethod = SpecularCompositeMethod_1.default;
+var SpecularFresnelMethod_1 = require("./methods/SpecularFresnelMethod");
+exports.SpecularFresnelMethod = SpecularFresnelMethod_1.default;
+var SpecularPhongMethod_1 = require("./methods/SpecularPhongMethod");
+exports.SpecularPhongMethod = SpecularPhongMethod_1.default;
+
+},{"./methods/AmbientBasicMethod":"awayjs-methodmaterials/lib/methods/AmbientBasicMethod","./methods/AmbientEnvMapMethod":"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod","./methods/CurveBasicMethod":"awayjs-methodmaterials/lib/methods/CurveBasicMethod","./methods/DiffuseBasicMethod":"awayjs-methodmaterials/lib/methods/DiffuseBasicMethod","./methods/DiffuseCelMethod":"awayjs-methodmaterials/lib/methods/DiffuseCelMethod","./methods/DiffuseCompositeMethod":"awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod","./methods/DiffuseDepthMethod":"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod","./methods/DiffuseGradientMethod":"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod","./methods/DiffuseLightMapMethod":"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod","./methods/DiffuseSubSurfaceMethod":"awayjs-methodmaterials/lib/methods/DiffuseSubSurfaceMethod","./methods/DiffuseWrapMethod":"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod","./methods/EffectAlphaMaskMethod":"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod","./methods/EffectColorMatrixMethod":"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod","./methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","./methods/EffectEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod","./methods/EffectFogMethod":"awayjs-methodmaterials/lib/methods/EffectFogMethod","./methods/EffectFresnelEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod","./methods/EffectLightMapMethod":"awayjs-methodmaterials/lib/methods/EffectLightMapMethod","./methods/EffectMethodBase":"awayjs-methodmaterials/lib/methods/EffectMethodBase","./methods/EffectRefractionEnvMapMethod":"awayjs-methodmaterials/lib/methods/EffectRefractionEnvMapMethod","./methods/EffectRimLightMethod":"awayjs-methodmaterials/lib/methods/EffectRimLightMethod","./methods/LightingMethodBase":"awayjs-methodmaterials/lib/methods/LightingMethodBase","./methods/NormalBasicMethod":"awayjs-methodmaterials/lib/methods/NormalBasicMethod","./methods/NormalHeightMapMethod":"awayjs-methodmaterials/lib/methods/NormalHeightMapMethod","./methods/NormalSimpleWaterMethod":"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod","./methods/ShadingMethodBase":"awayjs-methodmaterials/lib/methods/ShadingMethodBase","./methods/ShadowCascadeMethod":"awayjs-methodmaterials/lib/methods/ShadowCascadeMethod","./methods/ShadowDitheredMethod":"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod","./methods/ShadowFilteredMethod":"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod","./methods/ShadowHardMethod":"awayjs-methodmaterials/lib/methods/ShadowHardMethod","./methods/ShadowMapMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMapMethodBase","./methods/ShadowMethodBase":"awayjs-methodmaterials/lib/methods/ShadowMethodBase","./methods/ShadowNearMethod":"awayjs-methodmaterials/lib/methods/ShadowNearMethod","./methods/ShadowSoftMethod":"awayjs-methodmaterials/lib/methods/ShadowSoftMethod","./methods/SpecularAnisotropicMethod":"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod","./methods/SpecularBasicMethod":"awayjs-methodmaterials/lib/methods/SpecularBasicMethod","./methods/SpecularCelMethod":"awayjs-methodmaterials/lib/methods/SpecularCelMethod","./methods/SpecularCompositeMethod":"awayjs-methodmaterials/lib/methods/SpecularCompositeMethod","./methods/SpecularFresnelMethod":"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod","./methods/SpecularPhongMethod":"awayjs-methodmaterials/lib/methods/SpecularPhongMethod"}],"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -64721,9 +65820,9 @@ var BlendMode_1 = require("awayjs-core/lib/image/BlendMode");
 var StaticLightPicker_1 = require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
 var ContextGLCompareMode_1 = require("awayjs-stagegl/lib/base/ContextGLCompareMode");
 var GL_SurfaceBase_1 = require("awayjs-renderergl/lib/surfaces/GL_SurfaceBase");
-var MethodMaterialMode_1 = require("awayjs-methodmaterials/lib/MethodMaterialMode");
-var MethodPassMode_1 = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode");
-var MethodPass_1 = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPass");
+var MethodMaterialMode_1 = require("../MethodMaterialMode");
+var MethodPassMode_1 = require("../surfaces/passes/MethodPassMode");
+var MethodPass_1 = require("../surfaces/passes/MethodPass");
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
  * using material methods to define their appearance.
@@ -64963,7 +66062,7 @@ var GL_MethodMaterialSurface = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GL_MethodMaterialSurface;
 
-},{"awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","awayjs-methodmaterials/lib/surfaces/passes/MethodPass":"awayjs-methodmaterials/lib/surfaces/passes/MethodPass","awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-renderergl/lib/surfaces/GL_SurfaceBase":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":[function(require,module,exports){
+},{"../MethodMaterialMode":"awayjs-methodmaterials/lib/MethodMaterialMode","../surfaces/passes/MethodPass":"awayjs-methodmaterials/lib/surfaces/passes/MethodPass","../surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-core/lib/image/BlendMode":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-renderergl/lib/surfaces/GL_SurfaceBase":undefined,"awayjs-stagegl/lib/base/ContextGLCompareMode":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":[function(require,module,exports){
 "use strict";
 var PassMode = (function () {
     function PassMode() {
@@ -64998,9 +66097,9 @@ var LightingShader_1 = require("awayjs-renderergl/lib/shaders/LightingShader");
 var ShadingMethodEvent_1 = require("awayjs-renderergl/lib/events/ShadingMethodEvent");
 var ShaderBase_1 = require("awayjs-renderergl/lib/shaders/ShaderBase");
 var PassBase_1 = require("awayjs-renderergl/lib/surfaces/passes/PassBase");
-var MethodVO_1 = require("awayjs-methodmaterials/lib/data/MethodVO");
-var EffectColorTransformMethod_1 = require("awayjs-methodmaterials/lib/methods/EffectColorTransformMethod");
-var MethodPassMode_1 = require("awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode");
+var MethodVO_1 = require("../../data/MethodVO");
+var EffectColorTransformMethod_1 = require("../../methods/EffectColorTransformMethod");
+var MethodPassMode_1 = require("../../surfaces/passes/MethodPassMode");
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
  * using material methods to define their appearance.
@@ -65722,7 +66821,7 @@ var MethodPass = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = MethodPass;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/materials/LightSources":undefined,"awayjs-methodmaterials/lib/data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-renderergl/lib/events/ShadingMethodEvent":undefined,"awayjs-renderergl/lib/shaders/LightingShader":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/SingleObjectDepthPass":[function(require,module,exports){
+},{"../../data/MethodVO":"awayjs-methodmaterials/lib/data/MethodVO","../../methods/EffectColorTransformMethod":"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod","../../surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-display/lib/materials/LightSources":undefined,"awayjs-renderergl/lib/events/ShadingMethodEvent":undefined,"awayjs-renderergl/lib/shaders/LightingShader":undefined,"awayjs-renderergl/lib/shaders/ShaderBase":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined}],"awayjs-methodmaterials/lib/surfaces/passes/SingleObjectDepthPass":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65897,7 +66996,18 @@ var SingleObjectDepthPass = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = SingleObjectDepthPass;
 
-},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}]},{},[1])
+},{"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/image/Image2D":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-renderergl/lib/surfaces/passes/PassBase":undefined,"awayjs-stagegl/lib/base/ContextGLDrawMode":undefined,"awayjs-stagegl/lib/base/ContextGLProgramType":undefined}],"awayjs-methodmaterials/lib/surfaces":[function(require,module,exports){
+"use strict";
+var MethodPass_1 = require("./surfaces/passes/MethodPass");
+exports.MethodPass = MethodPass_1.default;
+var MethodPassMode_1 = require("./surfaces/passes/MethodPassMode");
+exports.MethodPassMode = MethodPassMode_1.default;
+var SingleObjectDepthPass_1 = require("./surfaces/passes/SingleObjectDepthPass");
+exports.SingleObjectDepthPass = SingleObjectDepthPass_1.default;
+var GL_MethodMaterialSurface_1 = require("./surfaces/GL_MethodMaterialSurface");
+exports.GL_MethodMaterialSurface = GL_MethodMaterialSurface_1.default;
+
+},{"./surfaces/GL_MethodMaterialSurface":"awayjs-methodmaterials/lib/surfaces/GL_MethodMaterialSurface","./surfaces/passes/MethodPass":"awayjs-methodmaterials/lib/surfaces/passes/MethodPass","./surfaces/passes/MethodPassMode":"awayjs-methodmaterials/lib/surfaces/passes/MethodPassMode","./surfaces/passes/SingleObjectDepthPass":"awayjs-methodmaterials/lib/surfaces/passes/SingleObjectDepthPass"}]},{},[1])
 //# sourceMappingURL=awayjs-methodmaterials.js.map
 
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-player/lib/adapters/AS2ColorAdapter":[function(require,module,exports){
@@ -66158,15 +67268,15 @@ var Point_1 = require("awayjs-core/lib/geom/Point");
 var AssetLibrary_1 = require("awayjs-core/lib/library/AssetLibrary");
 var MovieClip_1 = require("awayjs-display/lib/display/MovieClip");
 var MouseEvent_1 = require("awayjs-display/lib/events/MouseEvent");
-var AS2SymbolAdapter_1 = require("awayjs-player/lib/adapters/AS2SymbolAdapter");
-var AS2MCSoundProps_1 = require("awayjs-player/lib/adapters/AS2MCSoundProps");
-var includeString = 'var Color			from "awayjs-player/lib/adapters/AS2ColorAdapter";\n' +
-    'var System				from "awayjs-player/lib/adapters/AS2SystemAdapter";\n' +
-    'var Sound				from "awayjs-player/lib/adapters/AS2SoundAdapter";\n' +
-    'var Key				from "awayjs-player/lib/adapters/AS2KeyAdapter";\n' +
-    'var Mouse				from "awayjs-player/lib/adapters/AS2MouseAdapter";\n' +
-    'var Stage				from "awayjs-player/lib/adapters/AS2StageAdapter";\n' +
-    'var SharedObject		from "awayjs-player/lib/adapters/AS2SharedObjectAdapter";\n' +
+var AS2SymbolAdapter_1 = require("../adapters/AS2SymbolAdapter");
+var AS2MCSoundProps_1 = require("../adapters/AS2MCSoundProps");
+var includeString = 'var Color			= require("awayjs-player/lib/adapters/AS2ColorAdapter").default;\n' +
+    'var System				= require("awayjs-player/lib/adapters/AS2SystemAdapter").default;\n' +
+    'var Sound				= require("awayjs-player/lib/adapters/AS2SoundAdapter").default;\n' +
+    'var Key				= require("awayjs-player/lib/adapters/AS2KeyAdapter").default;\n' +
+    'var Mouse				= require("awayjs-player/lib/adapters/AS2MouseAdapter").default;\n' +
+    'var Stage				= require("awayjs-player/lib/adapters/AS2StageAdapter").default;\n' +
+    'var SharedObject		= require("awayjs-player/lib/adapters/AS2SharedObjectAdapter").default;\n' +
     'var int = function(value) {return Math.floor(value) | 0;}\n' +
     'var string = function(value) {return value.toString();}\n' +
     'var getURL = function(value) {return value;}\n';
@@ -66219,7 +67329,7 @@ var AS2MovieClipAdapter = (function (_super) {
             var sibling = document.scripts[0];
             sibling.parentNode.insertBefore(tag, sibling).parentNode.removeChild(tag);
             var script = __framescript__;
-            delete window['__framescript__'];
+            window['__framescript__'] = null;
         }
         catch (err) {
             console.log("Syntax error in script:\n", str);
@@ -66463,7 +67573,7 @@ var AS2MovieClipAdapter = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AS2MovieClipAdapter;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/events/MouseEvent":undefined,"awayjs-player/lib/adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/adapters/AS2SharedObjectAdapter":[function(require,module,exports){
+},{"../adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","../adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/geom/Point":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/events/MouseEvent":undefined}],"awayjs-player/lib/adapters/AS2SharedObjectAdapter":[function(require,module,exports){
 "use strict";
 var AS2SharedObjectAdapter = (function () {
     function AS2SharedObjectAdapter(name) {
@@ -66498,7 +67608,7 @@ exports.default = AS2SharedObjectAdapter;
 },{}],"awayjs-player/lib/adapters/AS2SoundAdapter":[function(require,module,exports){
 "use strict";
 var AssetEvent_1 = require("awayjs-core/lib/events/AssetEvent");
-var AS2MCSoundProps_1 = require("awayjs-player/lib/adapters/AS2MCSoundProps");
+var AS2MCSoundProps_1 = require("../adapters/AS2MCSoundProps");
 var AssetLibrary_1 = require("awayjs-core/lib/library/AssetLibrary");
 // also contains global AS2 functions
 var AS2SoundAdapter = (function () {
@@ -66639,7 +67749,7 @@ var AS2SoundAdapter = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AS2SoundAdapter;
 
-},{"awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-player/lib/adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps"}],"awayjs-player/lib/adapters/AS2StageAdapter":[function(require,module,exports){
+},{"../adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","awayjs-core/lib/events/AssetEvent":undefined,"awayjs-core/lib/library/AssetLibrary":undefined}],"awayjs-player/lib/adapters/AS2StageAdapter":[function(require,module,exports){
 "use strict";
 var AS2StageAdapter = (function () {
     function AS2StageAdapter() {
@@ -66942,7 +68052,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var AS2SymbolAdapter_1 = require("awayjs-player/lib/adapters/AS2SymbolAdapter");
+var AS2SymbolAdapter_1 = require("../adapters/AS2SymbolAdapter");
 var TextField_1 = require("awayjs-display/lib/display/TextField");
 var AS2TextFieldAdapter = (function (_super) {
     __extends(AS2TextFieldAdapter, _super);
@@ -66988,7 +68098,32 @@ var AS2TextFieldAdapter = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AS2TextFieldAdapter;
 
-},{"awayjs-display/lib/display/TextField":undefined,"awayjs-player/lib/adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter"}],"awayjs-player/lib/bounds/AxisAlignedBoundingBox2D":[function(require,module,exports){
+},{"../adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter","awayjs-display/lib/display/TextField":undefined}],"awayjs-player/lib/adapters":[function(require,module,exports){
+"use strict";
+var AS2ColorAdapter_1 = require("./adapters/AS2ColorAdapter");
+exports.AS2ColorAdapter = AS2ColorAdapter_1.default;
+var AS2KeyAdapter_1 = require("./adapters/AS2KeyAdapter");
+exports.AS2KeyAdapter = AS2KeyAdapter_1.default;
+var AS2MCSoundProps_1 = require("./adapters/AS2MCSoundProps");
+exports.AS2MCSoundProps = AS2MCSoundProps_1.default;
+var AS2MouseAdapter_1 = require("./adapters/AS2MouseAdapter");
+exports.AS2MouseAdapter = AS2MouseAdapter_1.default;
+var AS2MovieClipAdapter_1 = require("./adapters/AS2MovieClipAdapter");
+exports.AS2MovieClipAdapter = AS2MovieClipAdapter_1.default;
+var AS2SharedObjectAdapter_1 = require("./adapters/AS2SharedObjectAdapter");
+exports.AS2SharedObjectAdapter = AS2SharedObjectAdapter_1.default;
+var AS2SoundAdapter_1 = require("./adapters/AS2SoundAdapter");
+exports.AS2SoundAdapter = AS2SoundAdapter_1.default;
+var AS2StageAdapter_1 = require("./adapters/AS2StageAdapter");
+exports.AS2StageAdapter = AS2StageAdapter_1.default;
+var AS2SymbolAdapter_1 = require("./adapters/AS2SymbolAdapter");
+exports.AS2SymbolAdapter = AS2SymbolAdapter_1.default;
+var AS2SystemAdapter_1 = require("./adapters/AS2SystemAdapter");
+exports.AS2SystemAdapter = AS2SystemAdapter_1.default;
+var AS2TextFieldAdapter_1 = require("./adapters/AS2TextFieldAdapter");
+exports.AS2TextFieldAdapter = AS2TextFieldAdapter_1.default;
+
+},{"./adapters/AS2ColorAdapter":"awayjs-player/lib/adapters/AS2ColorAdapter","./adapters/AS2KeyAdapter":"awayjs-player/lib/adapters/AS2KeyAdapter","./adapters/AS2MCSoundProps":"awayjs-player/lib/adapters/AS2MCSoundProps","./adapters/AS2MouseAdapter":"awayjs-player/lib/adapters/AS2MouseAdapter","./adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","./adapters/AS2SharedObjectAdapter":"awayjs-player/lib/adapters/AS2SharedObjectAdapter","./adapters/AS2SoundAdapter":"awayjs-player/lib/adapters/AS2SoundAdapter","./adapters/AS2StageAdapter":"awayjs-player/lib/adapters/AS2StageAdapter","./adapters/AS2SymbolAdapter":"awayjs-player/lib/adapters/AS2SymbolAdapter","./adapters/AS2SystemAdapter":"awayjs-player/lib/adapters/AS2SystemAdapter","./adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter"}],"awayjs-player/lib/bounds/AxisAlignedBoundingBox2D":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -67058,10 +68193,15 @@ var AxisAlignedBoundingBox2D = (function (_super) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AxisAlignedBoundingBox_1.default;
 
-},{"awayjs-display/lib/bounds/AxisAlignedBoundingBox":undefined}],"awayjs-player/lib/factories/AS2SceneGraphFactory":[function(require,module,exports){
+},{"awayjs-display/lib/bounds/AxisAlignedBoundingBox":undefined}],"awayjs-player/lib/bounds":[function(require,module,exports){
 "use strict";
-var AS2MovieClipAdapter_1 = require("awayjs-player/lib/adapters/AS2MovieClipAdapter");
-var AS2TextFieldAdapter_1 = require("awayjs-player/lib/adapters/AS2TextFieldAdapter");
+var AxisAlignedBoundingBox2D_1 = require("./bounds/AxisAlignedBoundingBox2D");
+exports.AxisAlignedBoundingBox2D = AxisAlignedBoundingBox2D_1.default;
+
+},{"./bounds/AxisAlignedBoundingBox2D":"awayjs-player/lib/bounds/AxisAlignedBoundingBox2D"}],"awayjs-player/lib/factories/AS2SceneGraphFactory":[function(require,module,exports){
+"use strict";
+var AS2MovieClipAdapter_1 = require("../adapters/AS2MovieClipAdapter");
+var AS2TextFieldAdapter_1 = require("../adapters/AS2TextFieldAdapter");
 var TextField_1 = require("awayjs-display/lib/display/TextField");
 var MovieClip_1 = require("awayjs-display/lib/display/MovieClip");
 var AS2SceneGraphFactory = (function () {
@@ -67083,10 +68223,32 @@ var AS2SceneGraphFactory = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AS2SceneGraphFactory;
 
-},{"awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/display/TextField":undefined,"awayjs-player/lib/adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","awayjs-player/lib/adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter"}]},{},[])
+},{"../adapters/AS2MovieClipAdapter":"awayjs-player/lib/adapters/AS2MovieClipAdapter","../adapters/AS2TextFieldAdapter":"awayjs-player/lib/adapters/AS2TextFieldAdapter","awayjs-display/lib/display/MovieClip":undefined,"awayjs-display/lib/display/TextField":undefined}],"awayjs-player/lib/factories":[function(require,module,exports){
+"use strict";
+var AS2SceneGraphFactory_1 = require("./factories/AS2SceneGraphFactory");
+exports.AS2SceneGraphFactory = AS2SceneGraphFactory_1.default;
+
+},{"./factories/AS2SceneGraphFactory":"awayjs-player/lib/factories/AS2SceneGraphFactory"}]},{},[])
 //# sourceMappingURL=awayjs-player.js.map
 
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+var AWDParser_1 = require("./lib/AWDParser");
+exports.AWDParser = AWDParser_1.default;
+var Max3DSParser_1 = require("./lib/Max3DSParser");
+exports.Max3DSParser = Max3DSParser_1.default;
+var MD2Parser_1 = require("./lib/MD2Parser");
+exports.MD2Parser = MD2Parser_1.default;
+var MD5AnimParser_1 = require("./lib/MD5AnimParser");
+exports.MD5AnimParser = MD5AnimParser_1.default;
+var MD5MeshParser_1 = require("./lib/MD5MeshParser");
+exports.MD5MeshParser = MD5MeshParser_1.default;
+var OBJParser_1 = require("./lib/OBJParser");
+exports.OBJParser = OBJParser_1.default;
+var Parsers_1 = require("./lib/Parsers");
+exports.Parsers = Parsers_1.default;
+
+},{"./lib/AWDParser":"awayjs-parsers/lib/AWDParser","./lib/MD2Parser":"awayjs-parsers/lib/MD2Parser","./lib/MD5AnimParser":"awayjs-parsers/lib/MD5AnimParser","./lib/MD5MeshParser":"awayjs-parsers/lib/MD5MeshParser","./lib/Max3DSParser":"awayjs-parsers/lib/Max3DSParser","./lib/OBJParser":"awayjs-parsers/lib/OBJParser","./lib/Parsers":"awayjs-parsers/lib/Parsers"}],"awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils":[function(require,module,exports){
 "use strict";
 var AWD3Utils = (function () {
     function AWD3Utils() {
@@ -67126,7 +68288,7 @@ exports.default = AWD3Utils;
 
 },{}],"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock":[function(require,module,exports){
 "use strict";
-var AWD3Utils_1 = require("awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils");
+var AWD3Utils_1 = require("../AWD3ParserUtils/AWD3Utils");
 var AWDBlock = (function () {
     function AWDBlock(this_id, this_type) {
         this.type = this_type;
@@ -67155,7 +68317,7 @@ var AWDBlock = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AWDBlock;
 
-},{"awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils":"awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils"}],"awayjs-parsers/lib/AWDParser":[function(require,module,exports){
+},{"../AWD3ParserUtils/AWD3Utils":"awayjs-parsers/lib/AWD3ParserUtils/AWD3Utils"}],"awayjs-parsers/lib/AWDParser":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -67245,7 +68407,7 @@ var Timeline_1 = require("awayjs-display/lib/base/Timeline");
 var AssetLibrary_1 = require("awayjs-core/lib/library/AssetLibrary");
 var Font_1 = require("awayjs-display/lib/text/Font");
 var TextFormat_1 = require("awayjs-display/lib/text/TextFormat");
-var AWDBlock_1 = require("awayjs-parsers/lib/AWD3ParserUtils/AWDBlock");
+var AWDBlock_1 = require("./AWD3ParserUtils/AWDBlock");
 var Rectangle_1 = require("awayjs-core/lib/geom/Rectangle");
 var Style_1 = require("awayjs-display/lib/base/Style");
 var Matrix_1 = require("awayjs-core/lib/geom/Matrix");
@@ -69909,7 +71071,7 @@ var BitFlags = (function () {
     return BitFlags;
 }());
 
-},{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/base/Timeline":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock":"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock","awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
+},{"./AWD3ParserUtils/AWDBlock":"awayjs-parsers/lib/AWD3ParserUtils/AWDBlock","awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/attributes/Byte4Attributes":undefined,"awayjs-core/lib/attributes/Float2Attributes":undefined,"awayjs-core/lib/attributes/Float3Attributes":undefined,"awayjs-core/lib/geom/ColorTransform":undefined,"awayjs-core/lib/geom/Matrix":undefined,"awayjs-core/lib/geom/Matrix3D":undefined,"awayjs-core/lib/geom/Rectangle":undefined,"awayjs-core/lib/geom/Vector3D":undefined,"awayjs-core/lib/image/BitmapImageCube":undefined,"awayjs-core/lib/image/BlendMode":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/library/AssetLibrary":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-core/lib/projections/OrthographicOffCenterProjection":undefined,"awayjs-core/lib/projections/OrthographicProjection":undefined,"awayjs-core/lib/projections/PerspectiveProjection":undefined,"awayjs-core/lib/utils/ByteArray":undefined,"awayjs-display/lib/base/Style":undefined,"awayjs-display/lib/base/Timeline":undefined,"awayjs-display/lib/display/Billboard":undefined,"awayjs-display/lib/display/Camera":undefined,"awayjs-display/lib/display/DirectionalLight":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/PointLight":undefined,"awayjs-display/lib/display/Skybox":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/ElementsType":undefined,"awayjs-display/lib/graphics/Graphics":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/materials/BasicMaterial":undefined,"awayjs-display/lib/materials/lightpickers/StaticLightPicker":undefined,"awayjs-display/lib/materials/shadowmappers/CubeMapShadowMapper":undefined,"awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper":undefined,"awayjs-display/lib/prefabs/PrefabBase":undefined,"awayjs-display/lib/prefabs/PrimitiveCapsulePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveConePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCubePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveCylinderPrefab":undefined,"awayjs-display/lib/prefabs/PrimitivePlanePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveSpherePrefab":undefined,"awayjs-display/lib/prefabs/PrimitiveTorusPrefab":undefined,"awayjs-display/lib/text/Font":undefined,"awayjs-display/lib/text/TextFormat":undefined,"awayjs-display/lib/textures/MappingMode":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-display/lib/textures/SingleCubeTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/AmbientEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseCelMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseDepthMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseGradientMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/DiffuseWrapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectAlphaMaskMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorMatrixMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectColorTransformMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFogMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectFresnelEnvMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectLightMapMethod":undefined,"awayjs-methodmaterials/lib/methods/EffectRimLightMethod":undefined,"awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowDitheredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowFilteredMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowHardMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowNearMethod":undefined,"awayjs-methodmaterials/lib/methods/ShadowSoftMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularAnisotropicMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularCelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularFresnelMethod":undefined,"awayjs-methodmaterials/lib/methods/SpecularPhongMethod":undefined,"awayjs-player/lib/factories/AS2SceneGraphFactory":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimationSet":undefined,"awayjs-renderergl/lib/animators/SkeletonAnimator":undefined,"awayjs-renderergl/lib/animators/VertexAnimationSet":undefined,"awayjs-renderergl/lib/animators/VertexAnimator":undefined,"awayjs-renderergl/lib/animators/data/JointPose":undefined,"awayjs-renderergl/lib/animators/data/Skeleton":undefined,"awayjs-renderergl/lib/animators/data/SkeletonJoint":undefined,"awayjs-renderergl/lib/animators/data/SkeletonPose":undefined,"awayjs-renderergl/lib/animators/nodes/SkeletonClipNode":undefined,"awayjs-renderergl/lib/animators/nodes/VertexClipNode":undefined}],"awayjs-parsers/lib/MD2Parser":[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -72952,10 +74114,10 @@ var Vertex = (function () {
 },{"awayjs-core/lib/attributes/AttributesBuffer":undefined,"awayjs-core/lib/image/BitmapImage2D":undefined,"awayjs-core/lib/image/Sampler2D":undefined,"awayjs-core/lib/net/URLLoaderDataFormat":undefined,"awayjs-core/lib/net/URLRequest":undefined,"awayjs-core/lib/parsers/ParserBase":undefined,"awayjs-core/lib/parsers/ParserUtils":undefined,"awayjs-display/lib/display/DisplayObjectContainer":undefined,"awayjs-display/lib/display/Sprite":undefined,"awayjs-display/lib/graphics/TriangleElements":undefined,"awayjs-display/lib/managers/DefaultMaterialManager":undefined,"awayjs-display/lib/textures/Single2DTexture":undefined,"awayjs-methodmaterials/lib/MethodMaterial":undefined,"awayjs-methodmaterials/lib/MethodMaterialMode":undefined,"awayjs-methodmaterials/lib/methods/SpecularBasicMethod":undefined}],"awayjs-parsers/lib/Parsers":[function(require,module,exports){
 "use strict";
 var Loader_1 = require("awayjs-core/lib/library/Loader");
-var AWDParser_1 = require("awayjs-parsers/lib/AWDParser");
-var Max3DSParser_1 = require("awayjs-parsers/lib/Max3DSParser");
-var MD2Parser_1 = require("awayjs-parsers/lib/MD2Parser");
-var OBJParser_1 = require("awayjs-parsers/lib/OBJParser");
+var AWDParser_1 = require("./AWDParser");
+var Max3DSParser_1 = require("./Max3DSParser");
+var MD2Parser_1 = require("./MD2Parser");
+var OBJParser_1 = require("./OBJParser");
 /**
  *
  */
@@ -73013,5 +74175,5 @@ var Parsers = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Parsers;
 
-},{"awayjs-core/lib/library/Loader":undefined,"awayjs-parsers/lib/AWDParser":"awayjs-parsers/lib/AWDParser","awayjs-parsers/lib/MD2Parser":"awayjs-parsers/lib/MD2Parser","awayjs-parsers/lib/Max3DSParser":"awayjs-parsers/lib/Max3DSParser","awayjs-parsers/lib/OBJParser":"awayjs-parsers/lib/OBJParser"}]},{},[])
+},{"./AWDParser":"awayjs-parsers/lib/AWDParser","./MD2Parser":"awayjs-parsers/lib/MD2Parser","./Max3DSParser":"awayjs-parsers/lib/Max3DSParser","./OBJParser":"awayjs-parsers/lib/OBJParser","awayjs-core/lib/library/Loader":undefined}]},{},[1])
 //# sourceMappingURL=awayjs-parsers.js.map

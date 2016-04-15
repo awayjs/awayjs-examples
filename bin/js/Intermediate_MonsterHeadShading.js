@@ -1,4 +1,4 @@
-webpackJsonp([14],[
+webpackJsonp([15],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -43,34 +43,34 @@ webpackJsonp([14],[
 	
 	*/
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(72);
-	var SpecularImage2D_1 = __webpack_require__(316);
+	var Sampler2D_1 = __webpack_require__(78);
+	var SpecularImage2D_1 = __webpack_require__(327);
 	var AssetEvent_1 = __webpack_require__(1);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
-	var LoaderContext_1 = __webpack_require__(318);
-	var URLLoader_1 = __webpack_require__(105);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var AssetLibrary_1 = __webpack_require__(307);
+	var LoaderContext_1 = __webpack_require__(329);
+	var URLLoader_1 = __webpack_require__(118);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserUtils_1 = __webpack_require__(205);
+	var ParserUtils_1 = __webpack_require__(217);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var Scene_1 = __webpack_require__(11);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(98);
+	var HoverController_1 = __webpack_require__(111);
 	var Camera_1 = __webpack_require__(45);
-	var DirectionalLight_1 = __webpack_require__(210);
-	var PointLight_1 = __webpack_require__(216);
+	var DirectionalLight_1 = __webpack_require__(221);
+	var PointLight_1 = __webpack_require__(227);
 	var Sprite_1 = __webpack_require__(57);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var Single2DTexture_1 = __webpack_require__(96);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var MethodMaterialMode_1 = __webpack_require__(255);
-	var SpecularFresnelMethod_1 = __webpack_require__(285);
-	var ShadowSoftMethod_1 = __webpack_require__(292);
-	var AWDParser_1 = __webpack_require__(201);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var Single2DTexture_1 = __webpack_require__(103);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var MethodMaterialMode_1 = __webpack_require__(266);
+	var SpecularFresnelMethod_1 = __webpack_require__(296);
+	var ShadowSoftMethod_1 = __webpack_require__(303);
+	var AWDParser_1 = __webpack_require__(214);
 	var Intermediate_MonsterHeadShading = (function () {
 	    /**
 	     * Constructor

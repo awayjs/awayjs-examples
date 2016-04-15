@@ -45,17 +45,17 @@ webpackJsonp([0],[
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
 	var Sprite_1 = __webpack_require__(57);
-	var Billboard_1 = __webpack_require__(69);
-	var HoverController_1 = __webpack_require__(98);
-	var LoaderContainer_1 = __webpack_require__(101);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var AWDParser_1 = __webpack_require__(201);
-	var SceneGraphPartition_1 = __webpack_require__(310);
-	var MovieClip_1 = __webpack_require__(297);
+	var Billboard_1 = __webpack_require__(110);
+	var HoverController_1 = __webpack_require__(111);
+	var LoaderContainer_1 = __webpack_require__(114);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var AWDParser_1 = __webpack_require__(214);
+	var SceneGraphPartition_1 = __webpack_require__(321);
+	var MovieClip_1 = __webpack_require__(308);
 	var CoordinateSystem_1 = __webpack_require__(49);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var Camera_1 = __webpack_require__(45);
-	var TextField_1 = __webpack_require__(298);
+	var TextField_1 = __webpack_require__(309);
 	var AWD3ViewerMinimal = (function () {
 	    /**
 	     * Constructor

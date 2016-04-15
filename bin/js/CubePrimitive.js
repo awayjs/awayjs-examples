@@ -3,24 +3,24 @@ webpackJsonp([10],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(72);
-	var BlendMode_1 = __webpack_require__(90);
-	var URLLoaderEvent_1 = __webpack_require__(108);
+	var Sampler2D_1 = __webpack_require__(78);
+	var BlendMode_1 = __webpack_require__(96);
+	var URLLoaderEvent_1 = __webpack_require__(121);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoader_1 = __webpack_require__(105);
-	var URLLoaderDataFormat_1 = __webpack_require__(106);
+	var URLLoader_1 = __webpack_require__(118);
+	var URLLoaderDataFormat_1 = __webpack_require__(119);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserUtils_1 = __webpack_require__(205);
+	var ParserUtils_1 = __webpack_require__(217);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(210);
-	var ElementsType_1 = __webpack_require__(224);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var PrimitiveCubePrefab_1 = __webpack_require__(228);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(231);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
+	var DirectionalLight_1 = __webpack_require__(221);
+	var ElementsType_1 = __webpack_require__(235);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var PrimitiveCubePrefab_1 = __webpack_require__(239);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
 	var CubePrimitive = (function () {
 	    function CubePrimitive() {
 	        this.initView();

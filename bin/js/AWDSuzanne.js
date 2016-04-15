@@ -5,18 +5,18 @@ webpackJsonp([1],[
 	"use strict";
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(296);
+	var AssetLibrary_1 = __webpack_require__(307);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(210);
+	var DirectionalLight_1 = __webpack_require__(221);
 	var Sprite_1 = __webpack_require__(57);
-	var JSPickingCollider_1 = __webpack_require__(315);
+	var JSPickingCollider_1 = __webpack_require__(326);
 	var MouseEvent_1 = __webpack_require__(55);
-	var StaticLightPicker_1 = __webpack_require__(218);
-	var DefaultRenderer_1 = __webpack_require__(116);
-	var MethodMaterial_1 = __webpack_require__(256);
-	var AWDParser_1 = __webpack_require__(201);
+	var StaticLightPicker_1 = __webpack_require__(229);
+	var DefaultRenderer_1 = __webpack_require__(129);
+	var MethodMaterial_1 = __webpack_require__(267);
+	var AWDParser_1 = __webpack_require__(214);
 	var AWDSuzanne = (function () {
 	    function AWDSuzanne() {
 	        var _this = this;
