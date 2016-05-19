@@ -42,15 +42,15 @@ webpackJsonp([9],[
 	"use strict";
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var BasicMaterial_1 = __webpack_require__(101);
-	var ElementsType_1 = __webpack_require__(235);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var BasicMaterial_1 = __webpack_require__(102);
+	var ElementsType_1 = __webpack_require__(232);
 	var Basic_View = (function () {
 	    /**
 	     * Constructor

@@ -230,7 +230,7 @@ class Basic_Shading
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-		document.onmousewheel= (event:MouseWheelEvent) => this.onMouseWheel(event);
+		document.onmousewheel= (event:WheelEvent) => this.onMouseWheel(event);
 
 		this.onResize();
 
@@ -360,7 +360,7 @@ class Basic_Shading
 	/**
 	 * Mouse wheel listener for navigation
 	 */
-	private onMouseWheel(event:MouseWheelEvent)
+	private onMouseWheel(event:WheelEvent)
 	{
 		this._cameraController.distance -= event.wheelDelta;
 

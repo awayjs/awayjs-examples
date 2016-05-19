@@ -98,10 +98,10 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(373);
-	__webpack_require__(409);
-	__webpack_require__(458);
-	__webpack_require__(479);
+	__webpack_require__(370);
+	__webpack_require__(406);
+	__webpack_require__(455);
+	__webpack_require__(476);
 	__webpack_require__(547);
 	__webpack_require__(561);
 	module.exports = __webpack_require__(573);
@@ -1635,7 +1635,7 @@
 	            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
 	        }
 	        else {
-	            this._pBoxBounds.setEmpty();
+	            this._pBoxBounds.setBoundIdentity();
 	        }
 	    };
 	    /**
@@ -4401,43 +4401,40 @@
 	     */
 	    Box.prototype.union = function (toUnion, target) {
 	        if (target === void 0) { target = null; }
+	        var width;
+	        var height;
+	        var depth;
 	        if (target == null)
 	            target = new Box();
 	        if (this.x < toUnion.x) {
+	            width = toUnion.x - this.x + toUnion.width;
 	            target.x = this.x;
-	            target.width = toUnion.x - this.x + toUnion.width;
-	            if (target.width < this.width)
-	                target.width = this.width;
+	            target.width = (width < this.width) ? this.width : width;
 	        }
 	        else {
+	            width = this.x - toUnion.x + this.width;
 	            target.x = toUnion.x;
-	            target.width = this.x - toUnion.x + this.width;
-	            if (target.width < toUnion.width)
-	                target.width = toUnion.width;
+	            target.width = (width < toUnion.width) ? toUnion.width : width;
 	        }
 	        if (this.y < toUnion.y) {
+	            height = toUnion.y - this.y + toUnion.height;
 	            target.y = this.y;
-	            target.height = toUnion.y - this.y + toUnion.height;
-	            if (target.height < this.height)
-	                target.height = this.height;
+	            target.height = (height < this.height) ? this.height : height;
 	        }
 	        else {
+	            height = this.y - toUnion.y + this.height;
 	            target.y = toUnion.y;
-	            target.height = this.y - toUnion.y + this.height;
-	            if (target.height < toUnion.height)
-	                target.height = toUnion.height;
+	            target.height = (height < toUnion.height) ? toUnion.height : height;
 	        }
 	        if (this.z < toUnion.z) {
+	            depth = toUnion.z - this.z + toUnion.depth;
 	            target.z = this.z;
-	            target.depth = toUnion.z - this.z + toUnion.depth;
-	            if (target.depth < this.depth)
-	                target.depth = this.depth;
+	            target.depth = (depth < this.depth) ? this.depth : depth;
 	        }
 	        else {
+	            depth = this.z - toUnion.z + this.depth;
 	            target.z = toUnion.z;
-	            target.depth = this.z - toUnion.z + this.depth;
-	            if (target.depth < toUnion.depth)
-	                target.depth = toUnion.depth;
+	            target.depth = (depth < toUnion.depth) ? toUnion.depth : depth;
 	        }
 	        return target;
 	    };
@@ -5019,6 +5016,9 @@
 	        this.greenMultiplier *= ct.greenMultiplier;
 	        this.blueMultiplier *= ct.blueMultiplier;
 	        this.alphaMultiplier *= ct.alphaMultiplier;
+	    };
+	    ColorTransform.prototype._isRenderable = function () {
+	        return Boolean(this.alphaMultiplier) || this.alphaOffset > 0;
 	    };
 	    return ColorTransform;
 	}());
@@ -7643,6 +7643,13 @@
 	     *
 	     * @returns {boolean}
 	     */
+	    NodeBase.prototype.isRenderable = function () {
+	        return true;
+	    };
+	    /**
+	     *
+	     * @returns {boolean}
+	     */
 	    NodeBase.prototype.isCastingShadow = function () {
 	        return true;
 	    };
@@ -10244,15 +10251,14 @@
 	var Graphic_1 = __webpack_require__(59);
 	var ElementsEvent_1 = __webpack_require__(62);
 	var StyleEvent_1 = __webpack_require__(61);
-	var ElementsUtils_1 = __webpack_require__(63);
-	var GraphicsPath_1 = __webpack_require__(69);
-	var GraphicsFactoryFills_1 = __webpack_require__(76);
-	var GraphicsFactoryStrokes_1 = __webpack_require__(108);
-	var PartialImplementationError_1 = __webpack_require__(109);
-	var JointStyle_1 = __webpack_require__(74);
-	var CapsStyle_1 = __webpack_require__(75);
-	var GraphicsStrokeStyle_1 = __webpack_require__(73);
-	var GraphicsFillStyle_1 = __webpack_require__(72);
+	var GraphicsPath_1 = __webpack_require__(63);
+	var GraphicsFactoryFills_1 = __webpack_require__(70);
+	var GraphicsFactoryStrokes_1 = __webpack_require__(109);
+	var PartialImplementationError_1 = __webpack_require__(110);
+	var JointStyle_1 = __webpack_require__(68);
+	var CapsStyle_1 = __webpack_require__(69);
+	var GraphicsStrokeStyle_1 = __webpack_require__(67);
+	var GraphicsFillStyle_1 = __webpack_require__(66);
 	/**
 	 *
 	 * Graphics is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
@@ -10397,9 +10403,11 @@
 	     *
 	     * @param elements
 	     */
-	    Graphics.prototype.addGraphic = function (elements, material, style) {
+	    Graphics.prototype.addGraphic = function (elements, material, style, count, offset) {
 	        if (material === void 0) { material = null; }
 	        if (style === void 0) { style = null; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        var graphic;
 	        if (Graphic_1.default._available.length) {
 	            graphic = Graphic_1.default._available.pop();
@@ -10408,18 +10416,20 @@
 	            graphic.elements = elements;
 	            graphic.material = material;
 	            graphic.style = style;
+	            graphic.count = count;
+	            graphic.offset = offset;
 	        }
 	        else {
-	            graphic = new Graphic_1.default(this._graphics.length, this, elements, material, style);
+	            graphic = new Graphic_1.default(this._graphics.length, this, elements, material, style, count, offset);
 	        }
 	        this._graphics.push(graphic);
-	        elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+	        graphic.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	        this.invalidate();
 	        return graphic;
 	    };
 	    Graphics.prototype.removeGraphic = function (graphic) {
 	        this._graphics.splice(this._graphics.indexOf(graphic), 1);
-	        graphic.elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+	        graphic.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
 	        graphic.elements = null;
 	        graphic.material = null;
 	        graphic.style = null;
@@ -10432,7 +10442,7 @@
 	    Graphics.prototype.applyTransformation = function (transform) {
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; ++i)
-	            this._graphics[i].elements.applyTransformation(transform);
+	            this._graphics[i].applyTransformation(transform);
 	    };
 	    Graphics.prototype.copyTo = function (graphics) {
 	        graphics.material = this._material;
@@ -10443,10 +10453,15 @@
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; ++i) {
 	            graphic = this._graphics[i];
-	            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle());
+	            graphics.addGraphic(graphic.elements, graphic._iGetExplicitMaterial(), graphic._iGetExplicitStyle(), graphic.count, graphic.offset);
 	        }
 	        if (this._animator)
 	            graphics.animator = this._animator.clone();
+	    };
+	    Graphics.prototype.clone = function () {
+	        var newInstance = new Graphics();
+	        this.copyTo(newInstance);
+	        return newInstance;
 	    };
 	    /**
 	     * Scales the geometry.
@@ -10455,12 +10470,11 @@
 	    Graphics.prototype.scale = function (scale) {
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; ++i)
-	            this._graphics[i].elements.scale(scale);
+	            this._graphics[i].scale(scale);
 	    };
 	    Graphics.prototype.clear = function () {
 	        for (var i = this._graphics.length - 1; i >= 0; i--) {
 	            this._graphics[i].clear();
-	            this._graphics[i].dispose();
 	        }
 	    };
 	    /**
@@ -10483,7 +10497,7 @@
 	        if (scaleV === void 0) { scaleV = 1; }
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; ++i)
-	            this._graphics[i].elements.scaleUV(scaleU, scaleV);
+	            this._graphics[i].scaleUV(scaleU, scaleV);
 	    };
 	    Graphics.prototype.getBoxBounds = function () {
 	        if (this._boxBoundsInvalid) {
@@ -10494,7 +10508,7 @@
 	                this._boxBounds.setBoundIdentity();
 	                var len = this._graphics.length;
 	                for (var i = 0; i < len; i++)
-	                    this._boxBounds = this._graphics[i].elements.getBoxBounds(this._boxBounds);
+	                    this._boxBounds = this._boxBounds.union(this._graphics[i].getBoxBounds(), this._boxBounds);
 	            }
 	            else {
 	                this._boxBounds.setEmpty();
@@ -10506,7 +10520,7 @@
 	        if (target === void 0) { target = null; }
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; i++)
-	            target = this._graphics[i].elements.getSphereBounds(center, target);
+	            target = this._graphics[i].getSphereBounds(center, target);
 	        return target;
 	    };
 	    Graphics.prototype.invalidate = function () {
@@ -10528,7 +10542,7 @@
 	        //TODO: handle lines as well
 	        var len = this._graphics.length;
 	        for (var i = 0; i < len; i++)
-	            if (ElementsUtils_1.default.hitTestTriangleElements(x, y, 0, this.getBoxBounds(), this._graphics[i].elements))
+	            if (this._graphics[i].hitTestPoint(x, y, 0))
 	                return true;
 	        return false;
 	    };
@@ -11505,6 +11519,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var Box_1 = __webpack_require__(17);
 	var AssetBase_1 = __webpack_require__(27);
 	var RenderableEvent_1 = __webpack_require__(60);
 	var StyleEvent_1 = __webpack_require__(61);
@@ -11522,19 +11537,42 @@
 	    /**
 	     * Creates a new Graphic object
 	     */
-	    function Graphic(index, parent, elements, material, style) {
+	    function Graphic(index, parent, elements, material, style, count, offset) {
 	        var _this = this;
 	        if (material === void 0) { material = null; }
 	        if (style === void 0) { style = null; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        _super.call(this);
 	        this._iIndex = 0;
+	        this._boxBoundsInvalid = true;
+	        this._sphereBoundsInvalid = true;
 	        this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+	        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
 	        this._iIndex = index;
 	        this.parent = parent;
 	        this.elements = elements;
 	        this.material = material;
 	        this.style = style;
+	        this.count = count;
+	        this.offset = offset;
 	    }
+	    Object.defineProperty(Graphic.prototype, "elements", {
+	        /**
+	         * The Elements object which provides the geometry data for this Graphic.
+	         */
+	        get: function () {
+	            return this._elements;
+	        },
+	        set: function (value) {
+	            if (this._elements == value)
+	                return;
+	            this._elements = value;
+	            this.invalidateElements();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    Object.defineProperty(Graphic.prototype, "assetType", {
 	        /**
 	         *
@@ -11607,11 +11645,18 @@
 	        this.parent = null;
 	        Graphic._available.push(this);
 	    };
+	    Graphic.prototype.invalidate = function () {
+	        _super.prototype.invalidate.call(this);
+	        this._boxBoundsInvalid = true;
+	        this._sphereBoundsInvalid = true;
+	    };
 	    Graphic.prototype.invalidateElements = function () {
 	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this));
+	        this._boxBoundsInvalid = true;
+	        this._sphereBoundsInvalid = true;
 	    };
 	    Graphic.prototype.invalidateSurface = function () {
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_SURFACE, this));
 	    };
 	    Graphic.prototype._iGetExplicitMaterial = function () {
 	        return this._material;
@@ -11621,6 +11666,12 @@
 	    };
 	    Graphic.prototype._onInvalidateProperties = function (event) {
 	        this.invalidateSurface();
+	    };
+	    Graphic.prototype._onInvalidateVertices = function (event) {
+	        if (event.attributesView != event.target.positions)
+	            return;
+	        this.invalidate();
+	        this.dispatchEvent(event);
 	    };
 	    /**
 	     * //TODO
@@ -11632,7 +11683,36 @@
 	     * @internal
 	     */
 	    Graphic.prototype._iTestCollision = function (pickingCollision, pickingCollider) {
-	        return this.elements._iTestCollision(pickingCollider, this.material, pickingCollision);
+	        return this._elements._iTestCollision(pickingCollider, this.material, pickingCollision, this.count, this.offset);
+	    };
+	    Graphic.prototype.applyTransformation = function (transform) {
+	        this._elements.applyTransformation(transform, this.count, this.offset);
+	    };
+	    Graphic.prototype.hitTestPoint = function (x, y, z) {
+	        var box;
+	        //early out for box test
+	        if (!(box = this.getBoxBounds()).contains(x, y, z))
+	            return false;
+	        return this._elements.hitTestPoint(x, y, z, box, this.count, this.offset);
+	    };
+	    Graphic.prototype.scale = function (scale) {
+	        this._elements.scale(scale, this.count, this.offset);
+	    };
+	    Graphic.prototype.scaleUV = function (scaleU, scaleV) {
+	        if (scaleU === void 0) { scaleU = 1; }
+	        if (scaleV === void 0) { scaleV = 1; }
+	        this._elements.scaleUV(scaleU, scaleV, this.count, this.offset);
+	    };
+	    Graphic.prototype.getBoxBounds = function () {
+	        if (this._boxBoundsInvalid) {
+	            this._boxBoundsInvalid = false;
+	            this._boxBounds = this._elements.getBoxBounds(this._boxBounds || (this._boxBounds = new Box_1.default()), this.count, this.offset);
+	        }
+	        return this._boxBounds;
+	    };
+	    Graphic.prototype.getSphereBounds = function (center, target) {
+	        if (target === void 0) { target = null; }
+	        return this._elements.getSphereBounds(center, target, this.count, this.offset);
 	    };
 	    Graphic._available = new Array();
 	    Graphic.assetType = "[asset Graphic]";
@@ -11691,7 +11771,7 @@
 	    /**
 	     * Dispatched when a Renderable owners's render object owner has been updated.
 	     */
-	    RenderableEvent.INVALIDATE_RENDER_OWNER = "invalidateRenderable";
+	    RenderableEvent.INVALIDATE_SURFACE = "invalidateRenderable";
 	    /**
 	     *
 	     */
@@ -11816,1386 +11896,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float4Attributes_1 = __webpack_require__(67);
-	var Byte4Attributes_1 = __webpack_require__(68);
-	var Vector3D_1 = __webpack_require__(18);
-	var Box_1 = __webpack_require__(17);
-	var Sphere_1 = __webpack_require__(21);
-	var ElementsUtils = (function () {
-	    function ElementsUtils() {
-	    }
-	    ElementsUtils.generateFaceNormals = function (indexAttributes, positionAttributes, output, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        var indices = indexAttributes.get(count, offset);
-	        var positions = positionAttributes.get(positionAttributes.count);
-	        if (output == null)
-	            output = new Float4Attributes_1.default(count + offset);
-	        else if (output.count < count + offset)
-	            output.count = count + offset;
-	        var indexDim = indexAttributes.dimensions;
-	        var positionDim = positionAttributes.dimensions;
-	        var faceNormals = output.get(count, offset);
-	        //multiply by dimension to get index length
-	        count *= indexDim;
-	        var i = 0;
-	        var j = 0;
-	        var index;
-	        var x1, x2, x3;
-	        var y1, y2, y3;
-	        var z1, z2, z3;
-	        var dx1, dy1, dz1;
-	        var dx2, dy2, dz2;
-	        var cx, cy, cz;
-	        var d;
-	        if (positionDim == 3) {
-	            while (i < count) {
-	                index = indices[i++] * 3;
-	                x1 = positions[index];
-	                y1 = positions[index + 1];
-	                z1 = positions[index + 2];
-	                index = indices[i++] * 3;
-	                x2 = positions[index];
-	                y2 = positions[index + 1];
-	                z2 = positions[index + 2];
-	                index = indices[i++] * 3;
-	                x3 = positions[index];
-	                y3 = positions[index + 1];
-	                z3 = positions[index + 2];
-	                dx1 = x3 - x1;
-	                dy1 = y3 - y1;
-	                dz1 = z3 - z1;
-	                dx2 = x2 - x1;
-	                dy2 = y2 - y1;
-	                dz2 = z2 - z1;
-	                cx = dz1 * dy2 - dy1 * dz2;
-	                cy = dx1 * dz2 - dz1 * dx2;
-	                cz = dy1 * dx2 - dx1 * dy2;
-	                d = Math.sqrt(cx * cx + cy * cy + cz * cz);
-	                // length of cross product = 2*triangle area
-	                faceNormals[j++] = cx;
-	                faceNormals[j++] = cy;
-	                faceNormals[j++] = cz;
-	                faceNormals[j++] = d;
-	            }
-	        }
-	        else if (positionDim == 2) {
-	            while (i < count) {
-	                faceNormals[j++] = 0;
-	                faceNormals[j++] = 0;
-	                faceNormals[j++] = 1;
-	                faceNormals[j++] = 1;
-	                i += 3;
-	            }
-	        }
-	        output.set(faceNormals, offset);
-	        return output;
-	    };
-	    ElementsUtils.generateNormals = function (indexAttributes, faceNormalAttributes, output, concatenatedBuffer) {
-	        var indices = indexAttributes.get(indexAttributes.count);
-	        var faceNormals = faceNormalAttributes.get(faceNormalAttributes.count);
-	        if (output == null)
-	            output = new Float3Attributes_1.default(concatenatedBuffer);
-	        var indexDim = indexAttributes.dimensions;
-	        var outputDim = output.dimensions;
-	        var normals = output.get(output.count);
-	        var i = 0;
-	        var len = output.count * outputDim;
-	        //clear normal values
-	        while (i < len) {
-	            normals[i++] = 0;
-	            normals[i++] = 0;
-	            normals[i++] = 0;
-	        }
-	        i = 0;
-	        len = indexAttributes.count * indexDim;
-	        var index;
-	        var f1 = 0;
-	        var f2 = 1;
-	        var f3 = 2;
-	        //collect face normals
-	        while (i < len) {
-	            index = indices[i++] * outputDim;
-	            normals[index] += faceNormals[f1];
-	            normals[index + 1] += faceNormals[f2];
-	            normals[index + 2] += faceNormals[f3];
-	            index = indices[i++] * outputDim;
-	            normals[index] += faceNormals[f1];
-	            normals[index + 1] += faceNormals[f2];
-	            normals[index + 2] += faceNormals[f3];
-	            index = indices[i++] * outputDim;
-	            normals[index] += faceNormals[f1];
-	            normals[index + 1] += faceNormals[f2];
-	            normals[index + 2] += faceNormals[f3];
-	            f1 += 4;
-	            f2 += 4;
-	            f3 += 4;
-	        }
-	        i = 0;
-	        len = output.count * outputDim;
-	        var vx;
-	        var vy;
-	        var vz;
-	        var d;
-	        //normalise normals collections
-	        while (i < len) {
-	            vx = normals[i];
-	            vy = normals[i + 1];
-	            vz = normals[i + 2];
-	            d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-	            normals[i++] = vx * d;
-	            normals[i++] = vy * d;
-	            normals[i++] = vz * d;
-	        }
-	        output.set(normals);
-	        return output;
-	    };
-	    ElementsUtils.generateFaceTangents = function (indexAttributes, positionAttributes, uvAttributes, output, count, offset, useFaceWeights) {
-	        if (offset === void 0) { offset = 0; }
-	        if (useFaceWeights === void 0) { useFaceWeights = false; }
-	        var indices = indexAttributes.get(count, offset);
-	        var positions = positionAttributes.get(positionAttributes.count);
-	        var uvs = uvAttributes.get(uvAttributes.count);
-	        if (output == null)
-	            output = new Float3Attributes_1.default(count + offset);
-	        else if (output.count < count + offset)
-	            output.count = count + offset;
-	        var positionDim = positionAttributes.dimensions;
-	        var uvDim = uvAttributes.dimensions;
-	        var indexDim = indexAttributes.dimensions;
-	        var faceTangents = output.get(count, offset);
-	        var i = 0;
-	        var index1;
-	        var index2;
-	        var index3;
-	        var v0;
-	        var v1;
-	        var v2;
-	        var dv1;
-	        var dv2;
-	        var denom;
-	        var x0, y0, z0;
-	        var dx1, dy1, dz1;
-	        var dx2, dy2, dz2;
-	        var cx, cy, cz;
-	        //multiply by dimension to get index length
-	        count *= indexDim;
-	        while (i < count) {
-	            index1 = indices[i];
-	            index2 = indices[i + 1];
-	            index3 = indices[i + 2];
-	            v0 = uvs[index1 * uvDim + 1];
-	            dv1 = uvs[index2 * uvDim + 1] - v0;
-	            dv2 = uvs[index3 * uvDim + 1] - v0;
-	            v0 = index1 * positionDim;
-	            v1 = index2 * positionDim;
-	            v2 = index3 * positionDim;
-	            x0 = positions[v0];
-	            dx1 = positions[v1] - x0;
-	            dx2 = positions[v2] - x0;
-	            cx = dv2 * dx1 - dv1 * dx2;
-	            y0 = positions[v0 + 1];
-	            dy1 = positions[v1 + 1] - y0;
-	            dy2 = positions[v2 + 1] - y0;
-	            cy = dv2 * dy1 - dv1 * dy2;
-	            if (positionDim == 3) {
-	                z0 = positions[v0 + 2];
-	                dz1 = positions[v1 + 2] - z0;
-	                dz2 = positions[v2 + 2] - z0;
-	                cz = dv2 * dz1 - dv1 * dz2;
-	            }
-	            else {
-	                cz = 0;
-	            }
-	            denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
-	            faceTangents[i++] = denom * cx;
-	            faceTangents[i++] = denom * cy;
-	            faceTangents[i++] = denom * cz;
-	        }
-	        output.set(faceTangents, offset);
-	        return output;
-	    };
-	    ElementsUtils.generateTangents = function (indexAttributes, faceTangentAttributes, faceNormalAttributes, output, concatenatedBuffer) {
-	        var indices = indexAttributes.get(indexAttributes.count);
-	        var faceTangents = faceTangentAttributes.get(faceTangentAttributes.count);
-	        var faceNormals = faceNormalAttributes.get(faceNormalAttributes.count);
-	        if (output == null)
-	            output = new Float3Attributes_1.default(concatenatedBuffer);
-	        var indexDim = indexAttributes.dimensions;
-	        var outputDim = output.dimensions;
-	        var tangents = output.get(output.count);
-	        var i = 0;
-	        var len = output.count * outputDim;
-	        //clear tangent values
-	        while (i < len) {
-	            tangents[i++] = 0;
-	            tangents[i++] = 0;
-	            tangents[i++] = 0;
-	        }
-	        var weight;
-	        var index;
-	        var f1 = 0;
-	        var f2 = 1;
-	        var f3 = 2;
-	        var f4 = 3;
-	        i = 0;
-	        len = indexAttributes.count * indexDim;
-	        //collect face tangents
-	        while (i < len) {
-	            weight = faceNormals[f4];
-	            index = indices[i++] * outputDim;
-	            tangents[index++] += faceTangents[f1] * weight;
-	            tangents[index++] += faceTangents[f2] * weight;
-	            tangents[index] += faceTangents[f3] * weight;
-	            index = indices[i++] * outputDim;
-	            tangents[index++] += faceTangents[f1] * weight;
-	            tangents[index++] += faceTangents[f2] * weight;
-	            tangents[index] += faceTangents[f3] * weight;
-	            index = indices[i++] * outputDim;
-	            tangents[index++] += faceTangents[f1] * weight;
-	            tangents[index++] += faceTangents[f2] * weight;
-	            tangents[index] += faceTangents[f3] * weight;
-	            f1 += 3;
-	            f2 += 3;
-	            f3 += 3;
-	            f4 += 4;
-	        }
-	        i = 0;
-	        len = output.count * outputDim;
-	        var vx;
-	        var vy;
-	        var vz;
-	        var d;
-	        //normalise tangents collections
-	        while (i < len) {
-	            vx = tangents[i];
-	            vy = tangents[i + 1];
-	            vz = tangents[i + 2];
-	            d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
-	            tangents[i++] = vx * d;
-	            tangents[i++] = vy * d;
-	            tangents[i++] = vz * d;
-	        }
-	        output.set(tangents);
-	        return output;
-	    };
-	    ElementsUtils.generateColors = function (indexAttributes, output, concatenatedBuffer, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (output == null)
-	            output = new Byte4Attributes_1.default(concatenatedBuffer);
-	        var index = 0;
-	        var colors = new Uint8Array(count * 4);
-	        while (index < count * 4) {
-	            if (index / 4 & 1) {
-	                colors[index] = 0xFF;
-	                colors[index + 1] = 0xFF;
-	                colors[index + 2] = 0xFF;
-	                colors[index + 3] = 0xFF;
-	            }
-	            else {
-	                colors[index] = 0xFF;
-	                colors[index + 1] = 0xFF;
-	                colors[index + 2] = 0xFF;
-	                colors[index + 3] = 0xFF;
-	            }
-	            index += 4;
-	        }
-	        output.set(colors, offset);
-	        return output;
-	    };
-	    ElementsUtils.scaleUVs = function (scaleU, scaleV, output, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (output.count < count + offset)
-	            output.count = count + offset;
-	        var outputDim = output.dimensions;
-	        var uvs = output.get(count, offset);
-	        var i = 0;
-	        var j = 0;
-	        var len = count * outputDim;
-	        while (i < len) {
-	            uvs[i++] *= scaleU;
-	            uvs[i++] *= scaleV;
-	        }
-	        output.set(uvs, offset);
-	    };
-	    ElementsUtils.scale = function (scale, output, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (output.count < count + offset)
-	            output.count = count + offset;
-	        var outputDim = output.dimensions;
-	        var positions = output.get(count, offset);
-	        var i = 0;
-	        var j = 0;
-	        var len = count * outputDim;
-	        while (i < len) {
-	            positions[i++] *= scale;
-	            positions[i++] *= scale;
-	            positions[i++] *= scale;
-	        }
-	        output.set(positions, offset);
-	    };
-	    ElementsUtils.applyTransformation = function (transform, positionAttributes, normalAttributes, tangentAttributes, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        //todo: make this compatible with 2-dimensional positions
-	        var positions = positionAttributes.get(count, offset);
-	        var positionDim = positionAttributes.dimensions;
-	        var normals;
-	        var normalDim;
-	        if (normalAttributes) {
-	            normals = normalAttributes.get(count, offset);
-	            normalDim = normalAttributes.dimensions;
-	        }
-	        var tangents;
-	        var tangentDim;
-	        if (tangentAttributes) {
-	            tangents = tangentAttributes.get(count, offset);
-	            tangentDim = tangentAttributes.dimensions;
-	        }
-	        var i;
-	        var i1;
-	        var i2;
-	        var vector = new Vector3D_1.default();
-	        var invTranspose;
-	        if (normalAttributes || tangentAttributes) {
-	            invTranspose = transform.clone();
-	            invTranspose.invert();
-	            invTranspose.transpose();
-	        }
-	        var vi0 = 0;
-	        var ni0 = 0;
-	        var ti0 = 0;
-	        for (i = 0; i < count; ++i) {
-	            // bake position
-	            i1 = vi0 + 1;
-	            i2 = vi0 + 2;
-	            vector.x = positions[vi0];
-	            vector.y = positions[i1];
-	            vector.z = positions[i2];
-	            vector = transform.transformVector(vector);
-	            positions[vi0] = vector.x;
-	            positions[i1] = vector.y;
-	            positions[i2] = vector.z;
-	            vi0 += positionDim;
-	            if (normals) {
-	                // bake normal
-	                i1 = ni0 + 1;
-	                i2 = ni0 + 2;
-	                vector.x = normals[ni0];
-	                vector.y = normals[i1];
-	                vector.z = normals[i2];
-	                vector = invTranspose.deltaTransformVector(vector);
-	                vector.normalize();
-	                normals[ni0] = vector.x;
-	                normals[i1] = vector.y;
-	                normals[i2] = vector.z;
-	                ni0 += normalDim;
-	            }
-	            if (tangents) {
-	                // bake tangent
-	                i1 = ti0 + 1;
-	                i2 = ti0 + 2;
-	                vector.x = tangents[ti0];
-	                vector.y = tangents[i1];
-	                vector.z = tangents[i2];
-	                vector = invTranspose.deltaTransformVector(vector);
-	                vector.normalize();
-	                tangents[ti0] = vector.x;
-	                tangents[i1] = vector.y;
-	                tangents[i2] = vector.z;
-	                ti0 += tangentDim;
-	            }
-	        }
-	        positionAttributes.set(positions, offset);
-	        if (normalAttributes)
-	            normalAttributes.set(normals, offset);
-	        if (tangentAttributes)
-	            tangentAttributes.set(tangents, offset);
-	    };
-	    ElementsUtils.getSubIndices = function (indexAttributes, numVertices, indexMappings, indexOffset) {
-	        if (indexOffset === void 0) { indexOffset = 0; }
-	        var buffer = indexAttributes.buffer;
-	        var numIndices = indexAttributes.length;
-	        //reset mappings
-	        indexMappings.length = 0;
-	        //shortcut for those buffers that fit into the maximum buffer sizes
-	        if (numIndices < ElementsUtils.LIMIT_INDICES && numVertices < ElementsUtils.LIMIT_VERTS)
-	            return buffer;
-	        var i;
-	        var indices = indexAttributes.get(indexAttributes.count, indexOffset);
-	        var splitIndices = new Array();
-	        var indexSwap = ElementsUtils._indexSwap;
-	        indexSwap.length = numIndices;
-	        for (i = 0; i < numIndices; i++)
-	            indexSwap[i] = -1;
-	        var originalIndex;
-	        var splitIndex;
-	        var index = 0;
-	        var offsetLength = indexOffset * indexAttributes.dimensions;
-	        // Loop over all triangles
-	        i = 0;
-	        while (i < numIndices + offsetLength && i + 1 < ElementsUtils.LIMIT_INDICES && index + 1 < ElementsUtils.LIMIT_VERTS) {
-	            originalIndex = indices[i];
-	            if (indexSwap[originalIndex] >= 0) {
-	                splitIndex = indexSwap[originalIndex];
-	            }
-	            else {
-	                // This vertex does not yet exist in the split list and
-	                // needs to be copied from the long list.
-	                splitIndex = index++;
-	                indexSwap[originalIndex] = splitIndex;
-	                indexMappings[splitIndex] = originalIndex;
-	            }
-	            // Store new index, which may have come from the swap look-up,
-	            // or from copying a new set of vertex data from the original vector
-	            splitIndices[i++] = splitIndex;
-	        }
-	        buffer = new AttributesBuffer_1.default(indexAttributes.size * indexAttributes.dimensions, splitIndices.length / indexAttributes.dimensions);
-	        indexAttributes = indexAttributes.clone(buffer);
-	        indexAttributes.set(splitIndices);
-	        return buffer;
-	    };
-	    ElementsUtils.getSubVertices = function (vertexBuffer, indexMappings) {
-	        if (!indexMappings.length)
-	            return vertexBuffer;
-	        var stride = vertexBuffer.stride;
-	        var vertices = vertexBuffer.bufferView;
-	        var splitVerts = new Uint8Array(indexMappings.length * stride);
-	        var splitIndex;
-	        var originalIndex;
-	        var i = 0;
-	        var j = 0;
-	        var len = indexMappings.length;
-	        for (i = 0; i < len; i++) {
-	            splitIndex = i * stride;
-	            originalIndex = indexMappings[i] * stride;
-	            for (j = 0; j < stride; j++)
-	                splitVerts[splitIndex + j] = vertices[originalIndex + j];
-	        }
-	        vertexBuffer = new AttributesBuffer_1.default(stride, len);
-	        vertexBuffer.bufferView = splitVerts;
-	        return vertexBuffer;
-	    };
-	    //TODO - generate this dyanamically based on num tris
-	    ElementsUtils.hitTestTriangleElements = function (x, y, z, boundingBox, triangleElements) {
-	        var positionAttributes = triangleElements.positions;
-	        var curveAttributes = triangleElements.getCustomAtributes("curves");
-	        var count = triangleElements.numVertices;
-	        var posDim = positionAttributes.dimensions;
-	        var curveDim = curveAttributes.dimensions;
-	        var positions = positionAttributes.get(count);
-	        var curves = curveAttributes ? curveAttributes.get(count) : null;
-	        var id0;
-	        var id1;
-	        var id2;
-	        var ax;
-	        var ay;
-	        var bx;
-	        var by;
-	        var cx;
-	        var cy;
-	        var index = triangleElements.lastCollisionIndex;
-	        if (index != -1 && index < count) {
-	            precheck: {
-	                id0 = index + 2;
-	                id1 = index + 1;
-	                id2 = index + 0;
-	                ax = positions[id0 * posDim];
-	                ay = positions[id0 * posDim + 1];
-	                bx = positions[id1 * posDim];
-	                by = positions[id1 * posDim + 1];
-	                cx = positions[id2 * posDim];
-	                cy = positions[id2 * posDim + 1];
-	                //console.log(ax, ay, bx, by, cx, cy);
-	                //from a to p
-	                var dx = ax - x;
-	                var dy = ay - y;
-	                //edge normal (a-b)
-	                var nx = by - ay;
-	                var ny = -(bx - ax);
-	                //console.log(ax,ay,bx,by,cx,cy);
-	                var dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    break precheck;
-	                dx = bx - x;
-	                dy = by - y;
-	                nx = cy - by;
-	                ny = -(cx - bx);
-	                dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    break precheck;
-	                dx = cx - x;
-	                dy = cy - y;
-	                nx = ay - cy;
-	                ny = -(ax - cx);
-	                dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    break precheck;
-	                if (curves) {
-	                    var curvey0 = curves[id0 * curveDim + 2];
-	                    var curvey1 = curves[id1 * curveDim + 2];
-	                    var curvey2 = curves[id2 * curveDim + 2];
-	                    //check if not solid
-	                    if (curvey0 || curvey1 || curvey2) {
-	                        var v0x = bx - ax;
-	                        var v0y = by - ay;
-	                        var v1x = cx - ax;
-	                        var v1y = cy - ay;
-	                        var v2x = x - ax;
-	                        var v2y = y - ay;
-	                        var den = v0x * v1y - v1x * v0y;
-	                        var v = (v2x * v1y - v1x * v2y) / den;
-	                        var w = (v0x * v2y - v2x * v0y) / den;
-	                        //var u:number = 1 - v - w;	//commented out as inlined away
-	                        //here be dragons
-	                        var uu = 0.5 * v + w;
-	                        var vv = w;
-	                        var d = uu * uu - vv;
-	                        var az = curves[id0 * curveDim];
-	                        if (d > 0 && az == -128) {
-	                            break precheck;
-	                            ;
-	                        }
-	                        else if (d < 0 && az == 127) {
-	                            break precheck;
-	                            ;
-	                        }
-	                    }
-	                }
-	                return true;
-	            }
-	        }
-	        //hard coded min vertex count to bother using a grid for
-	        if (count > 150) {
-	            var cells = triangleElements.cells;
-	            var divisions = cells.length ? triangleElements.divisions : (triangleElements.divisions = Math.min(Math.ceil(Math.sqrt(count)), 32));
-	            var conversionX = divisions / boundingBox.width;
-	            var conversionY = divisions / boundingBox.height;
-	            var minx = boundingBox.x;
-	            var miny = boundingBox.y;
-	            if (!cells.length) {
-	                //now we have bounds start creating grid cells and filling
-	                cells.length = divisions * divisions;
-	                for (var k = 0; k < count; k += 3) {
-	                    id0 = k + 2;
-	                    id1 = k + 1;
-	                    id2 = k + 0;
-	                    ax = positions[id0 * posDim];
-	                    ay = positions[id0 * posDim + 1];
-	                    bx = positions[id1 * posDim];
-	                    by = positions[id1 * posDim + 1];
-	                    cx = positions[id2 * posDim];
-	                    cy = positions[id2 * posDim + 1];
-	                    //subtractions to push into positive space
-	                    var min_index_x = Math.floor((Math.min(ax, bx, cx) - minx) * conversionX);
-	                    var min_index_y = Math.floor((Math.min(ay, by, cy) - miny) * conversionY);
-	                    var max_index_x = Math.floor((Math.max(ax, bx, cx) - minx) * conversionX);
-	                    var max_index_y = Math.floor((Math.max(ay, by, cy) - miny) * conversionY);
-	                    for (var i = min_index_x; i <= max_index_x; i++) {
-	                        for (var j = min_index_y; j <= max_index_y; j++) {
-	                            var index = i + j * divisions;
-	                            var nodes = cells[index] || (cells[index] = new Array());
-	                            //push in the triangle ids
-	                            nodes.push(id0, id1, id2);
-	                        }
-	                    }
-	                }
-	            }
-	            var index_x = Math.floor((x - minx) * conversionX);
-	            var index_y = Math.floor((y - miny) * conversionY);
-	            if ((index_x < 0 || index_x > divisions || index_y < 0 || index_y > divisions))
-	                return false;
-	            var nodes = cells[index_x + index_y * divisions];
-	            if (nodes == null)
-	                return false;
-	            var nodeCount = nodes.length;
-	            for (var k = 0; k < nodeCount; k += 3) {
-	                id0 = nodes[k];
-	                id1 = nodes[k + 1];
-	                id2 = nodes[k + 2];
-	                if (id2 == index)
-	                    continue;
-	                ax = positions[id0 * posDim];
-	                ay = positions[id0 * posDim + 1];
-	                bx = positions[id1 * posDim];
-	                by = positions[id1 * posDim + 1];
-	                cx = positions[id2 * posDim];
-	                cy = positions[id2 * posDim + 1];
-	                //from a to p
-	                var dx = ax - x;
-	                var dy = ay - y;
-	                //edge normal (a-b)
-	                var nx = by - ay;
-	                var ny = -(bx - ax);
-	                var dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    continue;
-	                dx = bx - x;
-	                dy = by - y;
-	                nx = cy - by;
-	                ny = -(cx - bx);
-	                dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    continue;
-	                dx = cx - x;
-	                dy = cy - y;
-	                nx = ay - cy;
-	                ny = -(ax - cx);
-	                dot = (dx * nx) + (dy * ny);
-	                if (dot > 0)
-	                    continue;
-	                if (curves) {
-	                    var curvey0 = curves[id0 * curveDim + 2];
-	                    var curvey1 = curves[id1 * curveDim + 2];
-	                    var curvey2 = curves[id2 * curveDim + 2];
-	                    //check if not solid
-	                    if (curvey0 || curvey1 || curvey2) {
-	                        var v0x = bx - ax;
-	                        var v0y = by - ay;
-	                        var v1x = cx - ax;
-	                        var v1y = cy - ay;
-	                        var v2x = x - ax;
-	                        var v2y = y - ay;
-	                        var den = v0x * v1y - v1x * v0y;
-	                        var v = (v2x * v1y - v1x * v2y) / den;
-	                        var w = (v0x * v2y - v2x * v0y) / den;
-	                        //var u:number = 1 - v - w;	//commented out as inlined away
-	                        //here be dragons
-	                        var uu = 0.5 * v + w;
-	                        var vv = w;
-	                        var d = uu * uu - vv;
-	                        var az = curves[id0 * curveDim];
-	                        if (d > 0 && az == -128)
-	                            continue;
-	                        else if (d < 0 && az == 127)
-	                            continue;
-	                    }
-	                }
-	                triangleElements.lastCollisionIndex = id2;
-	                return true;
-	            }
-	            return false;
-	        }
-	        //brute force
-	        for (var k = 0; k < count; k += 3) {
-	            id0 = k + 2;
-	            id1 = k + 1;
-	            id2 = k + 0;
-	            if (id2 == index)
-	                continue;
-	            ax = positions[id0 * posDim];
-	            ay = positions[id0 * posDim + 1];
-	            bx = positions[id1 * posDim];
-	            by = positions[id1 * posDim + 1];
-	            cx = positions[id2 * posDim];
-	            cy = positions[id2 * posDim + 1];
-	            //console.log(ax, ay, bx, by, cx, cy);
-	            //from a to p
-	            var dx = ax - x;
-	            var dy = ay - y;
-	            //edge normal (a-b)
-	            var nx = by - ay;
-	            var ny = -(bx - ax);
-	            //console.log(ax,ay,bx,by,cx,cy);
-	            var dot = (dx * nx) + (dy * ny);
-	            if (dot > 0)
-	                continue;
-	            dx = bx - x;
-	            dy = by - y;
-	            nx = cy - by;
-	            ny = -(cx - bx);
-	            dot = (dx * nx) + (dy * ny);
-	            if (dot > 0)
-	                continue;
-	            dx = cx - x;
-	            dy = cy - y;
-	            nx = ay - cy;
-	            ny = -(ax - cx);
-	            dot = (dx * nx) + (dy * ny);
-	            if (dot > 0)
-	                continue;
-	            if (curves) {
-	                var curvey0 = curves[id0 * curveDim + 2];
-	                var curvey1 = curves[id1 * curveDim + 2];
-	                var curvey2 = curves[id2 * curveDim + 2];
-	                //check if not solid
-	                if (curvey0 || curvey1 || curvey2) {
-	                    var v0x = bx - ax;
-	                    var v0y = by - ay;
-	                    var v1x = cx - ax;
-	                    var v1y = cy - ay;
-	                    var v2x = x - ax;
-	                    var v2y = y - ay;
-	                    var den = v0x * v1y - v1x * v0y;
-	                    var v = (v2x * v1y - v1x * v2y) / den;
-	                    var w = (v0x * v2y - v2x * v0y) / den;
-	                    //var u:number = 1 - v - w;	//commented out as inlined away
-	                    //here be dragons
-	                    var uu = 0.5 * v + w;
-	                    var vv = w;
-	                    var d = uu * uu - vv;
-	                    var az = curves[id0 * curveDim];
-	                    if (d > 0 && az == -128) {
-	                        continue;
-	                    }
-	                    else if (d < 0 && az == 127) {
-	                        continue;
-	                    }
-	                }
-	            }
-	            triangleElements.lastCollisionIndex = id2;
-	            return true;
-	        }
-	        return false;
-	    };
-	    ElementsUtils.getTriangleGraphicsBoxBounds = function (positionAttributes, output, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        var positions = positionAttributes.get(count, offset);
-	        var posDim = positionAttributes.dimensions;
-	        if (output == null)
-	            output = new Box_1.default();
-	        var pos;
-	        var minX = 0, minY = 0, minZ = 0;
-	        var maxX = 0, maxY = 0, maxZ = 0;
-	        var len = count * posDim;
-	        for (var i = 0; i < len; i += posDim) {
-	            if (i == 0) {
-	                maxX = minX = positions[i];
-	                maxY = minY = positions[i + 1];
-	                maxZ = minZ = (posDim == 3) ? positions[i + 2] : 0;
-	            }
-	            else {
-	                pos = positions[i];
-	                if (pos < minX)
-	                    minX = pos;
-	                else if (pos > maxX)
-	                    maxX = pos;
-	                pos = positions[i + 1];
-	                if (pos < minY)
-	                    minY = pos;
-	                else if (pos > maxY)
-	                    maxY = pos;
-	                if (posDim == 3) {
-	                    pos = positions[i + 2];
-	                    if (pos < minZ)
-	                        minZ = pos;
-	                    else if (pos > maxZ)
-	                        maxZ = pos;
-	                }
-	            }
-	        }
-	        if (output.x > minX)
-	            output.x = minX;
-	        if (output.y > minY)
-	            output.y = minY;
-	        if (output.z > minZ)
-	            output.z = minZ;
-	        if (output.right < maxX)
-	            output.right = maxX;
-	        if (output.bottom < maxY)
-	            output.bottom = maxY;
-	        if (output.back < maxZ)
-	            output.back = maxZ;
-	        return output;
-	    };
-	    ElementsUtils.getTriangleGraphicsSphereBounds = function (positionAttributes, center, output, count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        var positions = positionAttributes.get(count, offset);
-	        var posDim = positionAttributes.dimensions;
-	        if (output == null)
-	            output = new Sphere_1.default();
-	        var maxRadiusSquared = 0;
-	        var radiusSquared;
-	        var len = count * posDim;
-	        var distanceX;
-	        var distanceY;
-	        var distanceZ;
-	        for (var i = 0; i < len; i += posDim) {
-	            distanceX = positions[i] - center.x;
-	            distanceY = positions[i + 1] - center.y;
-	            distanceZ = (posDim == 3) ? positions[i + 2] - center.z : -center.z;
-	            radiusSquared = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
-	            if (maxRadiusSquared < radiusSquared)
-	                maxRadiusSquared = radiusSquared;
-	        }
-	        output.x = center.x;
-	        output.y = center.y;
-	        output.z = center.z;
-	        output.radius = Math.sqrt(maxRadiusSquared);
-	        return output;
-	    };
-	    ElementsUtils.tempFloat32x4 = new Float32Array(4);
-	    ElementsUtils.LIMIT_VERTS = 0xffff;
-	    ElementsUtils.LIMIT_INDICES = 0xffffff;
-	    ElementsUtils._indexSwap = new Array();
-	    return ElementsUtils;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ElementsUtils;
-
-
-/***/ },
-/* 64 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AssetBase_1 = __webpack_require__(27);
-	var AttributesBuffer = (function (_super) {
-	    __extends(AttributesBuffer, _super);
-	    /**
-	     *
-	     */
-	    function AttributesBuffer(stride, count) {
-	        if (stride === void 0) { stride = 0; }
-	        if (count === void 0) { count = 0; }
-	        _super.call(this);
-	        this._count = 0;
-	        this._stride = 0;
-	        this._newStride = 0;
-	        this._viewVOs = new Array();
-	        this._stride = this._newStride = stride;
-	        this._count = count;
-	        this._buffer = new ArrayBuffer(this._stride * this._count);
-	        this._bufferView = new Uint8Array(this._buffer, 0, this._buffer.byteLength);
-	    }
-	    Object.defineProperty(AttributesBuffer.prototype, "assetType", {
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        get: function () {
-	            return AttributesBuffer.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesBuffer.prototype, "stride", {
-	        get: function () {
-	            if (this._lengthDirty)
-	                this._updateLength();
-	            return this._stride;
-	        },
-	        set: function (value) {
-	            if (this._newStride == value)
-	                return;
-	            this._newStride = value;
-	            this.resize();
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesBuffer.prototype, "count", {
-	        get: function () {
-	            return this._count;
-	        },
-	        set: function (value) {
-	            if (this._count == value)
-	                return;
-	            this._count = value;
-	            this.resize();
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesBuffer.prototype, "buffer", {
-	        get: function () {
-	            if (this._lengthDirty)
-	                this._updateLength();
-	            this._contentDirty = false;
-	            return this._buffer;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesBuffer.prototype, "bufferView", {
-	        get: function () {
-	            if (this._lengthDirty)
-	                this._updateLength();
-	            this._contentDirty = false;
-	            return this._bufferView;
-	        },
-	        set: function (value) {
-	            this._bufferView = value;
-	            this._buffer = this._bufferView.buffer;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesBuffer.prototype, "length", {
-	        get: function () {
-	            return this._count * this.stride;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     *
-	     */
-	    AttributesBuffer.prototype.invalidate = function () {
-	        if (this._contentDirty)
-	            return;
-	        _super.prototype.invalidate.call(this);
-	        this._contentDirty = true;
-	    };
-	    /**
-	     *
-	     * @private
-	     */
-	    AttributesBuffer.prototype.resize = function () {
-	        if (this._lengthDirty)
-	            return;
-	        this.clear();
-	        this._lengthDirty = true;
-	        //dispose buffer if stride is 0
-	        if (!this._newStride) {
-	            this._buffer = null;
-	            this._bufferView = null;
-	        }
-	    };
-	    AttributesBuffer.prototype.clone = function () {
-	        var attributesBuffer = new AttributesBuffer(this._stride, this._count);
-	        attributesBuffer.bufferView.set(this.bufferView);
-	        var len = this._viewVOs.length;
-	        for (var i = 0; i < len; i++)
-	            this._viewVOs[i].view._internalClone(attributesBuffer);
-	        return attributesBuffer;
-	    };
-	    AttributesBuffer.prototype.getView = function (index) {
-	        if (index < this._viewVOs.length)
-	            return this._viewVOs[index].view;
-	        return null;
-	    };
-	    AttributesBuffer.prototype._setAttributes = function (viewIndex, arrayBufferView, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        var array = (arrayBufferView instanceof Uint8Array) ? arrayBufferView : new Uint8Array(arrayBufferView.buffer);
-	        var viewVO = this._viewVOs[viewIndex];
-	        var vLength = viewVO.length;
-	        var vOffset = viewVO.offset;
-	        var vCount = array.length / vLength;
-	        //make sure there is enough space in the buffer
-	        if (this.count < vCount + offset)
-	            this.count = vCount + offset;
-	        if (this._lengthDirty)
-	            this._updateLength();
-	        //fast path for separate buffers
-	        if (this._viewVOs.length == 1) {
-	            this._bufferView.set(array);
-	        }
-	        else {
-	            for (var i = 0; i < vCount; i++)
-	                this._bufferView.set(array.subarray(i * vLength, (i + 1) * vLength), (i + offset) * this._stride + vOffset);
-	        }
-	        this.invalidate();
-	    };
-	    AttributesBuffer.prototype._getLocalArrayBuffer = function (viewIndex) {
-	        var viewVO = this._viewVOs[viewIndex];
-	        var vLength = viewVO.length;
-	        var vOffset = viewVO.offset;
-	        if (this._lengthDirty)
-	            this._updateLength();
-	        //fast path for separate buffers
-	        if (this._viewVOs.length == 1)
-	            return this._buffer;
-	        var localBuffer = new ArrayBuffer(this._count * vLength);
-	        var localBufferView = new Uint8Array(localBuffer);
-	        for (var i = 0; i < this._count; i++)
-	            localBufferView.set(this._bufferView.subarray(i * this._stride + vOffset, i * this._stride + vOffset + vLength), i * vLength);
-	        return localBuffer;
-	    };
-	    AttributesBuffer.prototype._addView = function (view) {
-	        var viewVO = new ViewVO(view);
-	        var len = this._viewVOs.length;
-	        viewVO.offset = len ? this._viewVOs[len - 1].offset + this._viewVOs[len - 1].length : 0;
-	        this._viewVOs.push(viewVO);
-	        if (this._newStride < viewVO.offset + viewVO.length) {
-	            this._newStride = viewVO.offset + viewVO.length;
-	            this.resize();
-	        }
-	        view._index = len;
-	    };
-	    AttributesBuffer.prototype._removeView = function (view) {
-	        var viewIndex = view._index;
-	        var viewVO = this._viewVOs.splice(viewIndex, 1)[0];
-	        var len = this._viewVOs.length;
-	        viewVO.dispose();
-	        for (var i = viewIndex; i < len; i++) {
-	            viewVO = this._viewVOs[i];
-	            viewVO.offset = i ? this._viewVOs[i - 1].offset + this._viewVOs[i - 1].length : 0;
-	            viewVO.view._index = i;
-	        }
-	        this._newStride = viewVO.offset + viewVO.length;
-	        this.resize();
-	    };
-	    AttributesBuffer.prototype._getOffset = function (viewIndex) {
-	        return this._viewVOs[viewIndex].offset;
-	    };
-	    AttributesBuffer.prototype._updateLength = function () {
-	        this._lengthDirty = false;
-	        var i;
-	        var j;
-	        var len = this._viewVOs.length;
-	        var newLength = this._newStride * this._count;
-	        if (!this._buffer || this._buffer.byteLength != newLength) {
-	            var newBuffer = new ArrayBuffer(newLength);
-	            var newView = new Uint8Array(newBuffer, 0, newBuffer.byteLength);
-	            var viewVO;
-	            var vLength;
-	            var vOffset;
-	            var vOldOffset;
-	            if (this._stride != this._newStride) {
-	                for (i = 0; i < len; i++) {
-	                    viewVO = this._viewVOs[i];
-	                    vLength = viewVO.length;
-	                    vOffset = viewVO.offset;
-	                    vOldOffset = viewVO.oldOffset;
-	                    for (j = 0; j < this._count; j++)
-	                        if (vOldOffset != null)
-	                            newView.set(new Uint8Array(this._buffer, j * this._stride + vOldOffset, vLength), j * this._newStride + vOffset);
-	                    viewVO.oldOffset = viewVO.offset;
-	                }
-	                this._stride = this._newStride;
-	            }
-	            else {
-	                newView.set(new Uint8Array(this._buffer, 0, Math.min(newLength, this._buffer.byteLength))); //TODO: bypass quantisation of bytearray on instantiation
-	            }
-	            this._buffer = newBuffer;
-	            this._bufferView = newView;
-	        }
-	    };
-	    AttributesBuffer.assetType = "[assets AttributesBuffer]";
-	    return AttributesBuffer;
-	}(AssetBase_1.default));
-	var ViewVO = (function () {
-	    function ViewVO(view) {
-	        this.view = view;
-	        this.length = view.size * view.dimensions;
-	    }
-	    ViewVO.prototype.dispose = function () {
-	        this.view = null;
-	    };
-	    ViewVO.prototype.clone = function () {
-	        return new ViewVO(this.view);
-	    };
-	    return ViewVO;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = AttributesBuffer;
-
-
-/***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes = (function (_super) {
-	    __extends(Float3Attributes, _super);
-	    function Float3Attributes(attributesBufferLength) {
-	        _super.call(this, Float32Array, 3, attributesBufferLength);
-	    }
-	    Object.defineProperty(Float3Attributes.prototype, "assetType", {
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        get: function () {
-	            return Float3Attributes.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Float3Attributes.prototype.set = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        _super.prototype.set.call(this, values, offset);
-	    };
-	    Float3Attributes.prototype.get = function (count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        return _super.prototype.get.call(this, count, offset);
-	    };
-	    Float3Attributes.prototype._internalClone = function (attributesBuffer) {
-	        return (this._cloneCache = new Float3Attributes(attributesBuffer));
-	    };
-	    Float3Attributes.prototype.clone = function (attributesBuffer) {
-	        if (attributesBuffer === void 0) { attributesBuffer = null; }
-	        return _super.prototype.clone.call(this, attributesBuffer);
-	    };
-	    Float3Attributes.assetType = "[attributes Float3Attributes]";
-	    return Float3Attributes;
-	}(AttributesView_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Float3Attributes;
-
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var AssetBase_1 = __webpack_require__(27);
-	var AttributesView = (function (_super) {
-	    __extends(AttributesView, _super);
-	    function AttributesView(arrayClass, dimensions, attributesBufferCount, unsigned) {
-	        if (attributesBufferCount === void 0) { attributesBufferCount = 0; }
-	        if (unsigned === void 0) { unsigned = false; }
-	        _super.call(this);
-	        this._arrayClass = arrayClass;
-	        this._size = arrayClass.BYTES_PER_ELEMENT;
-	        this._dimensions = dimensions;
-	        this._attributesBuffer = (attributesBufferCount instanceof AttributesBuffer_1.default) ? attributesBufferCount : new AttributesBuffer_1.default(this._dimensions * this._size, attributesBufferCount);
-	        this._attributesBuffer._addView(this);
-	        this._unsigned = unsigned;
-	    }
-	    Object.defineProperty(AttributesView.prototype, "assetType", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return AttributesView.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "buffer", {
-	        get: function () {
-	            return this._attributesBuffer;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "size", {
-	        /**
-	         *
-	         * @returns {number}
-	         */
-	        get: function () {
-	            return this._size;
-	        },
-	        set: function (value) {
-	            if (this._size == value)
-	                return;
-	            this._size = value;
-	            this._attributesBuffer._removeView(this);
-	            this._attributesBuffer._addView(this);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "dimensions", {
-	        /**
-	         *
-	         * @returns {number}
-	         */
-	        get: function () {
-	            return this._dimensions;
-	        },
-	        set: function (value) {
-	            if (this._dimensions == value)
-	                return;
-	            this._dimensions = value;
-	            //reset view
-	            this._attributesBuffer._removeView(this);
-	            this._attributesBuffer._addView(this);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "unsigned", {
-	        get: function () {
-	            return this._unsigned;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "count", {
-	        get: function () {
-	            return this._attributesBuffer.count;
-	        },
-	        set: function (value) {
-	            this._attributesBuffer.count = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "offset", {
-	        get: function () {
-	            return this._attributesBuffer._getOffset(this._index);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AttributesView.prototype, "length", {
-	        get: function () {
-	            return this._attributesBuffer.count * this._dimensions;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    AttributesView.prototype.set = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        this._attributesBuffer._setAttributes(this._index, (values instanceof Array) ? new (this._arrayClass)(values) : values, offset);
-	        this._localArrayBuffer = null;
-	    };
-	    AttributesView.prototype.get = function (count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        if (!this._localArrayBuffer)
-	            this._localArrayBuffer = this._attributesBuffer._getLocalArrayBuffer(this._index);
-	        var len = this._dimensions * this._size;
-	        return new (this._arrayClass)(this._localArrayBuffer, offset * len, count * this._dimensions);
-	    };
-	    AttributesView.prototype._internalClone = function (attributesBuffer) {
-	        return (this._cloneCache = new AttributesView(this._arrayClass, this._dimensions, attributesBuffer));
-	    };
-	    AttributesView.prototype.clone = function (attributesBuffer) {
-	        if (attributesBuffer === void 0) { attributesBuffer = null; }
-	        if (attributesBuffer)
-	            this._internalClone(attributesBuffer);
-	        if (!this._cloneCache)
-	            this._attributesBuffer.clone();
-	        var cloneCache = this._cloneCache;
-	        this._cloneCache = null;
-	        return cloneCache;
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    AttributesView.prototype.dispose = function () {
-	        if (!this._attributesBuffer)
-	            return;
-	        this._attributesBuffer._removeView(this);
-	        this._attributesBuffer = null;
-	        this._localArrayBuffer = null;
-	    };
-	    AttributesView.assetType = "[attributes AttributesView]";
-	    return AttributesView;
-	}(AssetBase_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = AttributesView;
-
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float4Attributes = (function (_super) {
-	    __extends(Float4Attributes, _super);
-	    function Float4Attributes(attributesBufferLength) {
-	        _super.call(this, Float32Array, 4, attributesBufferLength);
-	    }
-	    Object.defineProperty(Float4Attributes.prototype, "assetType", {
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        get: function () {
-	            return Float4Attributes.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Float4Attributes.prototype.set = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        _super.prototype.set.call(this, values, offset);
-	    };
-	    Float4Attributes.prototype.get = function (count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        return _super.prototype.get.call(this, count, offset);
-	    };
-	    Float4Attributes.prototype._internalClone = function (attributesBuffer) {
-	        return (this._cloneCache = new Float4Attributes(attributesBuffer));
-	    };
-	    Float4Attributes.prototype.clone = function (attributesBuffer) {
-	        if (attributesBuffer === void 0) { attributesBuffer = null; }
-	        return _super.prototype.clone.call(this, attributesBuffer);
-	    };
-	    Float4Attributes.assetType = "[attributes Float4Attributes]";
-	    return Float4Attributes;
-	}(AttributesView_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Float4Attributes;
-
-
-/***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Byte4Attributes = (function (_super) {
-	    __extends(Byte4Attributes, _super);
-	    function Byte4Attributes(attributesBufferLength, unsigned) {
-	        if (unsigned === void 0) { unsigned = true; }
-	        _super.call(this, unsigned ? Uint8Array : Int8Array, 4, attributesBufferLength, unsigned);
-	    }
-	    Object.defineProperty(Byte4Attributes.prototype, "assetType", {
-	        /**
-	         *
-	         * @returns {string}
-	         */
-	        get: function () {
-	            return Byte4Attributes.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Byte4Attributes.prototype.set = function (values, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        _super.prototype.set.call(this, values, offset);
-	    };
-	    Byte4Attributes.prototype.get = function (count, offset) {
-	        if (offset === void 0) { offset = 0; }
-	        return _super.prototype.get.call(this, count, offset);
-	    };
-	    Byte4Attributes.prototype._internalClone = function (attributesBuffer) {
-	        return (this._cloneCache = new Byte4Attributes(attributesBuffer, this._arrayClass == Uint8Array));
-	    };
-	    Byte4Attributes.prototype.clone = function (attributesBuffer) {
-	        if (attributesBuffer === void 0) { attributesBuffer = null; }
-	        return _super.prototype.clone.call(this, attributesBuffer);
-	    };
-	    Byte4Attributes.assetType = "[attributes Byte4Attributes]";
-	    return Byte4Attributes;
-	}(AttributesView_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Byte4Attributes;
-
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var GraphicsPathWinding_1 = __webpack_require__(70);
-	var GraphicsPathCommand_1 = __webpack_require__(71);
-	var GraphicsFillStyle_1 = __webpack_require__(72);
-	var GraphicsStrokeStyle_1 = __webpack_require__(73);
+	var GraphicsPathWinding_1 = __webpack_require__(64);
+	var GraphicsPathCommand_1 = __webpack_require__(65);
+	var GraphicsFillStyle_1 = __webpack_require__(66);
+	var GraphicsStrokeStyle_1 = __webpack_require__(67);
 	var Point_1 = __webpack_require__(26);
 	/**
 	
@@ -13370,7 +12074,7 @@
 
 
 /***/ },
-/* 70 */
+/* 64 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13396,7 +12100,7 @@
 
 
 /***/ },
-/* 71 */
+/* 65 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13455,7 +12159,7 @@
 
 
 /***/ },
-/* 72 */
+/* 66 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13481,12 +12185,12 @@
 
 
 /***/ },
-/* 73 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var JointStyle_1 = __webpack_require__(74);
-	var CapsStyle_1 = __webpack_require__(75);
+	var JointStyle_1 = __webpack_require__(68);
+	var CapsStyle_1 = __webpack_require__(69);
 	var GraphicsStrokeStyle = (function () {
 	    function GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miter_limit) {
 	        if (color === void 0) { color = 0xffffff; }
@@ -13584,7 +12288,7 @@
 
 
 /***/ },
-/* 74 */
+/* 68 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13621,7 +12325,7 @@
 
 
 /***/ },
-/* 75 */
+/* 69 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13657,19 +12361,19 @@
 
 
 /***/ },
-/* 76 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GraphicsPathCommand_1 = __webpack_require__(71);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var GraphicsPathCommand_1 = __webpack_require__(65);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var Point_1 = __webpack_require__(26);
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(105);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Float2Attributes_1 = __webpack_require__(106);
 	var MathConsts_1 = __webpack_require__(22);
-	var GraphicsFactoryHelper_1 = __webpack_require__(106);
-	var TriangleElements_1 = __webpack_require__(107);
+	var GraphicsFactoryHelper_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	/**
 	 * The Graphics class contains a set of methods that you can use to create a
 	 * vector shape. Display objects that support drawing include Sprite and Shape
@@ -13965,18 +12669,18 @@
 
 
 /***/ },
-/* 77 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var BitmapImageCube_1 = __webpack_require__(89);
-	var LineElements_1 = __webpack_require__(91);
-	var Skybox_1 = __webpack_require__(95);
-	var BasicMaterial_1 = __webpack_require__(101);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var SingleCubeTexture_1 = __webpack_require__(98);
+	var Sampler2D_1 = __webpack_require__(72);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImageCube_1 = __webpack_require__(83);
+	var LineElements_1 = __webpack_require__(85);
+	var Skybox_1 = __webpack_require__(96);
+	var BasicMaterial_1 = __webpack_require__(102);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var SingleCubeTexture_1 = __webpack_require__(99);
 	var Graphic_1 = __webpack_require__(59);
 	var DefaultMaterialManager = (function () {
 	    function DefaultMaterialManager() {
@@ -14077,7 +12781,7 @@
 
 
 /***/ },
-/* 78 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14086,7 +12790,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerBase_1 = __webpack_require__(79);
+	var SamplerBase_1 = __webpack_require__(73);
 	/**
 	 * The Sampler2D class represents display objects that represent bitmap images.
 	 * These can be images that you load with the <code>flash.Assets</code> or
@@ -14213,7 +12917,7 @@
 
 
 /***/ },
-/* 79 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14277,7 +12981,7 @@
 
 
 /***/ },
-/* 80 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14286,10 +12990,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	var ColorUtils_1 = __webpack_require__(20);
-	var BitmapImageUtils_1 = __webpack_require__(84);
-	var CPUCanvas_1 = __webpack_require__(85);
+	var BitmapImageUtils_1 = __webpack_require__(78);
+	var CPUCanvas_1 = __webpack_require__(79);
 	/**
 	 * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
 	 * object. You can use the methods of the BitmapImage2D class to create
@@ -14937,7 +13641,7 @@
 
 
 /***/ },
-/* 81 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14946,9 +13650,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageBase_1 = __webpack_require__(82);
+	var ImageBase_1 = __webpack_require__(76);
 	var Rectangle_1 = __webpack_require__(51);
-	var ImageUtils_1 = __webpack_require__(83);
+	var ImageUtils_1 = __webpack_require__(77);
 	var Image2D = (function (_super) {
 	    __extends(Image2D, _super);
 	    /**
@@ -15061,7 +13765,7 @@
 
 
 /***/ },
-/* 82 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15098,7 +13802,7 @@
 
 
 /***/ },
-/* 83 */
+/* 77 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -15138,7 +13842,7 @@
 
 
 /***/ },
-/* 84 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15179,12 +13883,12 @@
 
 
 /***/ },
-/* 85 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CPURenderingContext2D_1 = __webpack_require__(86);
-	var ImageData_1 = __webpack_require__(88);
+	var CPURenderingContext2D_1 = __webpack_require__(80);
+	var ImageData_1 = __webpack_require__(82);
 	var CPUCanvas = (function () {
 	    function CPUCanvas() {
 	        this.width = 1;
@@ -15206,7 +13910,7 @@
 	            this.imageData.width = this.width;
 	            this.imageData.height = this.height;
 	            if (this.imageData.data) {
-	                this.imageData.data.length = 0;
+	                //this.imageData.data.length = 0;
 	                this.imageData.data = null;
 	            }
 	            this.imageData.data = new Uint8Array(this.width * this.height * 4);
@@ -15231,12 +13935,12 @@
 
 
 /***/ },
-/* 86 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var Matrix_1 = __webpack_require__(87);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var Matrix_1 = __webpack_require__(81);
 	var Point_1 = __webpack_require__(26);
 	//TODO: implement all methods
 	var CPURenderingContext2D = (function () {
@@ -15599,7 +14303,7 @@
 
 
 /***/ },
-/* 87 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16116,7 +14820,7 @@
 
 
 /***/ },
-/* 88 */
+/* 82 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -16133,7 +14837,7 @@
 
 
 /***/ },
-/* 89 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16142,11 +14846,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var ImageCube_1 = __webpack_require__(90);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var ImageCube_1 = __webpack_require__(84);
 	var Rectangle_1 = __webpack_require__(51);
 	var ColorUtils_1 = __webpack_require__(20);
-	var BitmapImageUtils_1 = __webpack_require__(84);
+	var BitmapImageUtils_1 = __webpack_require__(78);
 	/**
 	 * The BitmapImage2D class lets you work with the data(pixels) of a Bitmap
 	 * object. You can use the methods of the BitmapImage2D class to create
@@ -16804,7 +15508,7 @@
 
 
 /***/ },
-/* 90 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16813,8 +15517,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageBase_1 = __webpack_require__(82);
-	var ImageUtils_1 = __webpack_require__(83);
+	var ImageBase_1 = __webpack_require__(76);
+	var ImageUtils_1 = __webpack_require__(77);
 	var ImageCube = (function (_super) {
 	    __extends(ImageCube, _super);
 	    /**
@@ -16879,7 +15583,7 @@
 
 
 /***/ },
-/* 91 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16888,11 +15592,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Byte4Attributes_1 = __webpack_require__(68);
-	var Float1Attributes_1 = __webpack_require__(92);
-	var ElementsBase_1 = __webpack_require__(93);
-	var ElementsUtils_1 = __webpack_require__(63);
+	var AttributesView_1 = __webpack_require__(86);
+	var Byte4Attributes_1 = __webpack_require__(88);
+	var Float1Attributes_1 = __webpack_require__(89);
+	var ElementsBase_1 = __webpack_require__(90);
+	var ElementsUtils_1 = __webpack_require__(93);
 	/**
 	 * @class LineElements
 	 */
@@ -16904,7 +15608,6 @@
 	    function LineElements(concatenatedBuffer) {
 	        if (concatenatedBuffer === void 0) { concatenatedBuffer = null; }
 	        _super.call(this, concatenatedBuffer);
-	        this._numVertices = 0;
 	        this._positions = new AttributesView_1.default(Float32Array, 6, concatenatedBuffer);
 	    }
 	    Object.defineProperty(LineElements.prototype, "assetType", {
@@ -16946,16 +15649,6 @@
 	            if (!this._colors)
 	                this.setColors(this._colors);
 	            return this._colors;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(LineElements.prototype, "numVertices", {
-	        /**
-	         * The total amount of vertices in the LineElements.
-	         */
-	        get: function () {
-	            return this._numVertices;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -17116,8 +15809,10 @@
 	        clone.setColors(this._colors.clone());
 	        return clone;
 	    };
-	    LineElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
-	        return pickingCollider.testLineCollision(this, material, pickingCollision);
+	    LineElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        return pickingCollider.testLineCollision(this, material, pickingCollision, count || this._numVertices, offset);
 	    };
 	    LineElements.assetType = "[asset LineElements]";
 	    return LineElements;
@@ -17127,7 +15822,7 @@
 
 
 /***/ },
-/* 92 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17136,7 +15831,462 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var AssetBase_1 = __webpack_require__(27);
+	var AttributesView = (function (_super) {
+	    __extends(AttributesView, _super);
+	    function AttributesView(arrayClass, dimensions, attributesBufferCount, unsigned) {
+	        if (attributesBufferCount === void 0) { attributesBufferCount = 0; }
+	        if (unsigned === void 0) { unsigned = false; }
+	        _super.call(this);
+	        this._arrayClass = arrayClass;
+	        this._size = arrayClass.BYTES_PER_ELEMENT;
+	        this._dimensions = dimensions;
+	        this._attributesBuffer = (attributesBufferCount instanceof AttributesBuffer_1.default) ? attributesBufferCount : new AttributesBuffer_1.default(this._dimensions * this._size, attributesBufferCount);
+	        this._attributesBuffer._addView(this);
+	        this._unsigned = unsigned;
+	    }
+	    Object.defineProperty(AttributesView.prototype, "assetType", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return AttributesView.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "buffer", {
+	        get: function () {
+	            return this._attributesBuffer;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "size", {
+	        /**
+	         *
+	         * @returns {number}
+	         */
+	        get: function () {
+	            return this._size;
+	        },
+	        set: function (value) {
+	            if (this._size == value)
+	                return;
+	            this._size = value;
+	            this._attributesBuffer._removeView(this);
+	            this._attributesBuffer._addView(this);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "dimensions", {
+	        /**
+	         *
+	         * @returns {number}
+	         */
+	        get: function () {
+	            return this._dimensions;
+	        },
+	        set: function (value) {
+	            if (this._dimensions == value)
+	                return;
+	            this._dimensions = value;
+	            //reset view
+	            this._attributesBuffer._removeView(this);
+	            this._attributesBuffer._addView(this);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "unsigned", {
+	        get: function () {
+	            return this._unsigned;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "count", {
+	        get: function () {
+	            return this._attributesBuffer.count;
+	        },
+	        set: function (value) {
+	            this._attributesBuffer.count = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "offset", {
+	        get: function () {
+	            return this._attributesBuffer._getOffset(this._index);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesView.prototype, "length", {
+	        get: function () {
+	            return this._attributesBuffer.count * this._dimensions;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    AttributesView.prototype.set = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        this._attributesBuffer._setAttributes(this._index, (values instanceof Array) ? new (this._arrayClass)(values) : values, offset);
+	        this._localArrayBuffer = null;
+	    };
+	    AttributesView.prototype.get = function (count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (!this._localArrayBuffer)
+	            this._localArrayBuffer = this._attributesBuffer._getLocalArrayBuffer(this._index);
+	        var len = this._dimensions * this._size;
+	        return new (this._arrayClass)(this._localArrayBuffer, offset * len, count * this._dimensions);
+	    };
+	    AttributesView.prototype._internalClone = function (attributesBuffer) {
+	        return (this._cloneCache = new AttributesView(this._arrayClass, this._dimensions, attributesBuffer, this._unsigned));
+	    };
+	    AttributesView.prototype.clone = function (attributesBuffer) {
+	        if (attributesBuffer === void 0) { attributesBuffer = null; }
+	        if (attributesBuffer)
+	            this._internalClone(attributesBuffer);
+	        if (!this._cloneCache)
+	            this._attributesBuffer.clone();
+	        var cloneCache = this._cloneCache;
+	        this._cloneCache = null;
+	        return cloneCache;
+	    };
+	    /**
+	     * @inheritDoc
+	     */
+	    AttributesView.prototype.dispose = function () {
+	        if (!this._attributesBuffer)
+	            return;
+	        this._attributesBuffer._removeView(this);
+	        this._attributesBuffer = null;
+	        this._localArrayBuffer = null;
+	    };
+	    AttributesView.assetType = "[attributes AttributesView]";
+	    return AttributesView;
+	}(AssetBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = AttributesView;
+
+
+/***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AssetBase_1 = __webpack_require__(27);
+	var AttributesBuffer = (function (_super) {
+	    __extends(AttributesBuffer, _super);
+	    /**
+	     *
+	     */
+	    function AttributesBuffer(stride, count) {
+	        if (stride === void 0) { stride = 0; }
+	        if (count === void 0) { count = 0; }
+	        _super.call(this);
+	        this._count = 0;
+	        this._stride = 0;
+	        this._newStride = 0;
+	        this._viewVOs = new Array();
+	        this._stride = this._newStride = stride;
+	        this._count = count;
+	        this._buffer = new ArrayBuffer(this._stride * this._count);
+	        this._bufferView = new Uint8Array(this._buffer, 0, this._buffer.byteLength);
+	    }
+	    Object.defineProperty(AttributesBuffer.prototype, "assetType", {
+	        /**
+	         *
+	         * @returns {string}
+	         */
+	        get: function () {
+	            return AttributesBuffer.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesBuffer.prototype, "stride", {
+	        get: function () {
+	            if (this._lengthDirty)
+	                this._updateLength();
+	            return this._stride;
+	        },
+	        set: function (value) {
+	            if (this._newStride == value)
+	                return;
+	            this._newStride = value;
+	            this.resize();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesBuffer.prototype, "count", {
+	        get: function () {
+	            return this._count;
+	        },
+	        set: function (value) {
+	            if (this._count == value)
+	                return;
+	            this._count = value;
+	            this.resize();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesBuffer.prototype, "buffer", {
+	        get: function () {
+	            if (this._lengthDirty)
+	                this._updateLength();
+	            this._contentDirty = false;
+	            return this._buffer;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesBuffer.prototype, "bufferView", {
+	        get: function () {
+	            if (this._lengthDirty)
+	                this._updateLength();
+	            this._contentDirty = false;
+	            return this._bufferView;
+	        },
+	        set: function (value) {
+	            this._bufferView = value;
+	            this._buffer = this._bufferView.buffer;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AttributesBuffer.prototype, "length", {
+	        get: function () {
+	            return this._count * this.stride;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     *
+	     */
+	    AttributesBuffer.prototype.invalidate = function () {
+	        if (this._contentDirty)
+	            return;
+	        _super.prototype.invalidate.call(this);
+	        this._contentDirty = true;
+	    };
+	    /**
+	     *
+	     * @private
+	     */
+	    AttributesBuffer.prototype.resize = function () {
+	        if (this._lengthDirty)
+	            return;
+	        this.clear();
+	        this._lengthDirty = true;
+	        //dispose buffer if stride is 0
+	        if (!this._newStride) {
+	            this._buffer = null;
+	            this._bufferView = null;
+	        }
+	    };
+	    AttributesBuffer.prototype.clone = function () {
+	        var attributesBuffer = new AttributesBuffer(this._stride, this._count);
+	        attributesBuffer.bufferView = new Uint8Array(this.bufferView.buffer);
+	        var len = this._viewVOs.length;
+	        for (var i = 0; i < len; i++)
+	            this._viewVOs[i].view._internalClone(attributesBuffer);
+	        return attributesBuffer;
+	    };
+	    AttributesBuffer.prototype.getView = function (index) {
+	        if (index < this._viewVOs.length)
+	            return this._viewVOs[index].view;
+	        return null;
+	    };
+	    AttributesBuffer.prototype._setAttributes = function (viewIndex, arrayBufferView, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        var array = (arrayBufferView instanceof Uint8Array) ? arrayBufferView : new Uint8Array(arrayBufferView.buffer);
+	        var viewVO = this._viewVOs[viewIndex];
+	        var vLength = viewVO.length;
+	        var vOffset = viewVO.offset;
+	        var vCount = array.length / vLength;
+	        //make sure there is enough space in the buffer
+	        if (this.count < vCount + offset)
+	            this.count = vCount + offset;
+	        if (this._lengthDirty)
+	            this._updateLength();
+	        //fast path for separate buffers
+	        if (this._viewVOs.length == 1) {
+	            this._bufferView.set(array);
+	        }
+	        else {
+	            for (var i = 0; i < vCount; i++)
+	                this._bufferView.set(array.subarray(i * vLength, (i + 1) * vLength), (i + offset) * this._stride + vOffset);
+	        }
+	        this.invalidate();
+	    };
+	    AttributesBuffer.prototype._getLocalArrayBuffer = function (viewIndex) {
+	        var viewVO = this._viewVOs[viewIndex];
+	        var vLength = viewVO.length;
+	        var vOffset = viewVO.offset;
+	        if (this._lengthDirty)
+	            this._updateLength();
+	        //fast path for separate buffers
+	        if (this._viewVOs.length == 1)
+	            return this._buffer;
+	        var localBuffer = new ArrayBuffer(this._count * vLength);
+	        var localBufferView = new Uint8Array(localBuffer);
+	        for (var i = 0; i < this._count; i++)
+	            localBufferView.set(this._bufferView.subarray(i * this._stride + vOffset, i * this._stride + vOffset + vLength), i * vLength);
+	        return localBuffer;
+	    };
+	    AttributesBuffer.prototype._addView = function (view) {
+	        var viewVO = new ViewVO(view);
+	        var len = this._viewVOs.length;
+	        viewVO.offset = len ? this._viewVOs[len - 1].offset + this._viewVOs[len - 1].length : 0;
+	        this._viewVOs.push(viewVO);
+	        if (this._newStride < viewVO.offset + viewVO.length) {
+	            this._newStride = viewVO.offset + viewVO.length;
+	            this.resize();
+	        }
+	        view._index = len;
+	    };
+	    AttributesBuffer.prototype._removeView = function (view) {
+	        var viewIndex = view._index;
+	        var viewVO = this._viewVOs.splice(viewIndex, 1)[0];
+	        var len = this._viewVOs.length;
+	        viewVO.dispose();
+	        for (var i = viewIndex; i < len; i++) {
+	            viewVO = this._viewVOs[i];
+	            viewVO.offset = i ? this._viewVOs[i - 1].offset + this._viewVOs[i - 1].length : 0;
+	            viewVO.view._index = i;
+	        }
+	        this._newStride = viewVO.offset + viewVO.length;
+	        this.resize();
+	    };
+	    AttributesBuffer.prototype._getOffset = function (viewIndex) {
+	        return this._viewVOs[viewIndex].offset;
+	    };
+	    AttributesBuffer.prototype._updateLength = function () {
+	        this._lengthDirty = false;
+	        var i;
+	        var j;
+	        var len = this._viewVOs.length;
+	        var newLength = this._newStride * this._count;
+	        if (!this._buffer || this._buffer.byteLength != newLength) {
+	            var newBuffer = new ArrayBuffer(newLength);
+	            var newView = new Uint8Array(newBuffer, 0, newBuffer.byteLength);
+	            var viewVO;
+	            var vLength;
+	            var vOffset;
+	            var vOldOffset;
+	            if (this._stride != this._newStride) {
+	                for (i = 0; i < len; i++) {
+	                    viewVO = this._viewVOs[i];
+	                    vLength = viewVO.length;
+	                    vOffset = viewVO.offset;
+	                    vOldOffset = viewVO.oldOffset;
+	                    for (j = 0; j < this._count; j++)
+	                        if (vOldOffset != null)
+	                            newView.set(new Uint8Array(this._buffer, j * this._stride + vOldOffset, vLength), j * this._newStride + vOffset);
+	                    viewVO.oldOffset = viewVO.offset;
+	                }
+	                this._stride = this._newStride;
+	            }
+	            else {
+	                newView.set(new Uint8Array(this._buffer, 0, Math.min(newLength, this._buffer.byteLength))); //TODO: bypass quantisation of bytearray on instantiation
+	            }
+	            this._buffer = newBuffer;
+	            this._bufferView = newView;
+	        }
+	    };
+	    AttributesBuffer.assetType = "[assets AttributesBuffer]";
+	    return AttributesBuffer;
+	}(AssetBase_1.default));
+	var ViewVO = (function () {
+	    function ViewVO(view) {
+	        this.view = view;
+	        this.length = view.size * view.dimensions;
+	    }
+	    ViewVO.prototype.dispose = function () {
+	        this.view = null;
+	    };
+	    ViewVO.prototype.clone = function () {
+	        return new ViewVO(this.view);
+	    };
+	    return ViewVO;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = AttributesBuffer;
+
+
+/***/ },
+/* 88 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(86);
+	var Byte4Attributes = (function (_super) {
+	    __extends(Byte4Attributes, _super);
+	    function Byte4Attributes(attributesBufferLength, unsigned) {
+	        if (unsigned === void 0) { unsigned = true; }
+	        _super.call(this, unsigned ? Uint8Array : Int8Array, 4, attributesBufferLength, unsigned);
+	    }
+	    Object.defineProperty(Byte4Attributes.prototype, "assetType", {
+	        /**
+	         *
+	         * @returns {string}
+	         */
+	        get: function () {
+	            return Byte4Attributes.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Byte4Attributes.prototype.set = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        _super.prototype.set.call(this, values, offset);
+	    };
+	    Byte4Attributes.prototype.get = function (count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        return _super.prototype.get.call(this, count, offset);
+	    };
+	    Byte4Attributes.prototype._internalClone = function (attributesBuffer) {
+	        return (this._cloneCache = new Byte4Attributes(attributesBuffer, this._arrayClass == Uint8Array));
+	    };
+	    Byte4Attributes.prototype.clone = function (attributesBuffer) {
+	        if (attributesBuffer === void 0) { attributesBuffer = null; }
+	        return _super.prototype.clone.call(this, attributesBuffer);
+	    };
+	    Byte4Attributes.assetType = "[attributes Byte4Attributes]";
+	    return Byte4Attributes;
+	}(AttributesView_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Byte4Attributes;
+
+
+/***/ },
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(86);
 	var Float1Attributes = (function (_super) {
 	    __extends(Float1Attributes, _super);
 	    function Float1Attributes(attributesBufferLength) {
@@ -17176,7 +16326,7 @@
 
 
 /***/ },
-/* 93 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17185,9 +16335,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Short3Attributes_1 = __webpack_require__(94);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Short3Attributes_1 = __webpack_require__(92);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetBase_1 = __webpack_require__(27);
 	var ElementsEvent_1 = __webpack_require__(62);
@@ -17205,6 +16355,7 @@
 	        this._customAttributesNames = new Array();
 	        this._customAttributes = new Object();
 	        this._numElements = 0;
+	        this._numVertices = 0;
 	        this._verticesDirty = new Object();
 	        this._invalidateVertices = new Object();
 	        this._concatenatedBuffer = concatenatedBuffer;
@@ -17250,7 +16401,7 @@
 	    });
 	    Object.defineProperty(ElementsBase.prototype, "numVertices", {
 	        get: function () {
-	            throw new AbstractMethodError_1.default();
+	            return this._numVertices;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -17331,27 +16482,42 @@
 	    ElementsBase.prototype.clone = function () {
 	        throw new AbstractMethodError_1.default();
 	    };
-	    ElementsBase.prototype.applyTransformation = function (transform) {
+	    ElementsBase.prototype.applyTransformation = function (transform, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
 	     * Scales the geometry.
 	     * @param scale The amount by which to scale.
 	     */
-	    ElementsBase.prototype.scale = function (scale) {
+	    ElementsBase.prototype.scale = function (scale, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        throw new AbstractMethodError_1.default();
 	    };
-	    ElementsBase.prototype.scaleUV = function (scaleU, scaleV) {
+	    ElementsBase.prototype.scaleUV = function (scaleU, scaleV, count, offset) {
 	        if (scaleU === void 0) { scaleU = 1; }
 	        if (scaleV === void 0) { scaleV = 1; }
-	    };
-	    ElementsBase.prototype.getBoxBounds = function (target) {
-	        if (target === void 0) { target = null; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        throw new AbstractMethodError_1.default();
 	    };
-	    ElementsBase.prototype.getSphereBounds = function (center, target) {
+	    ElementsBase.prototype.getBoxBounds = function (target, count, offset) {
 	        if (target === void 0) { target = null; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        throw new AbstractMethodError_1.default();
 	    };
-	    ElementsBase.prototype.hitTestPoint = function (x, y, z, box) {
+	    ElementsBase.prototype.getSphereBounds = function (center, target, count, offset) {
+	        if (target === void 0) { target = null; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        throw new AbstractMethodError_1.default();
+	    };
+	    ElementsBase.prototype.hitTestPoint = function (x, y, z, box, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        throw new AbstractMethodError_1.default();
 	    };
 	    ElementsBase.prototype.invalidateIndicies = function () {
@@ -17378,7 +16544,9 @@
 	        this._verticesDirty[attributesView.id] = null;
 	        this._invalidateVertices[attributesView.id] = null;
 	    };
-	    ElementsBase.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
+	    ElementsBase.prototype._iTestCollision = function (pickingCollider, material, pickingCollision, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        throw new AbstractMethodError_1.default();
 	    };
 	    return ElementsBase;
@@ -17388,7 +16556,7 @@
 
 
 /***/ },
-/* 94 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17397,7 +16565,56 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float3Attributes = (function (_super) {
+	    __extends(Float3Attributes, _super);
+	    function Float3Attributes(attributesBufferLength) {
+	        _super.call(this, Float32Array, 3, attributesBufferLength);
+	    }
+	    Object.defineProperty(Float3Attributes.prototype, "assetType", {
+	        /**
+	         *
+	         * @returns {string}
+	         */
+	        get: function () {
+	            return Float3Attributes.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Float3Attributes.prototype.set = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        _super.prototype.set.call(this, values, offset);
+	    };
+	    Float3Attributes.prototype.get = function (count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        return _super.prototype.get.call(this, count, offset);
+	    };
+	    Float3Attributes.prototype._internalClone = function (attributesBuffer) {
+	        return (this._cloneCache = new Float3Attributes(attributesBuffer));
+	    };
+	    Float3Attributes.prototype.clone = function (attributesBuffer) {
+	        if (attributesBuffer === void 0) { attributesBuffer = null; }
+	        return _super.prototype.clone.call(this, attributesBuffer);
+	    };
+	    Float3Attributes.assetType = "[attributes Float3Attributes]";
+	    return Float3Attributes;
+	}(AttributesView_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Float3Attributes;
+
+
+/***/ },
+/* 92 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(86);
 	var Short3Attributes = (function (_super) {
 	    __extends(Short3Attributes, _super);
 	    function Short3Attributes(attributesBufferLength, unsigned) {
@@ -17438,7 +16655,900 @@
 
 
 /***/ },
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Float4Attributes_1 = __webpack_require__(94);
+	var Byte4Attributes_1 = __webpack_require__(88);
+	var Vector3D_1 = __webpack_require__(18);
+	var Box_1 = __webpack_require__(17);
+	var Sphere_1 = __webpack_require__(21);
+	var HitTestCache_1 = __webpack_require__(95);
+	var ElementsUtils = (function () {
+	    function ElementsUtils() {
+	    }
+	    ElementsUtils.generateFaceNormals = function (indexAttributes, positionAttributes, output, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        var indices = indexAttributes.get(count, offset);
+	        var positions = positionAttributes.get(positionAttributes.count);
+	        if (output == null)
+	            output = new Float4Attributes_1.default(count + offset);
+	        else if (output.count < count + offset)
+	            output.count = count + offset;
+	        var indexDim = indexAttributes.dimensions;
+	        var positionDim = positionAttributes.dimensions;
+	        var faceNormals = output.get(count, offset);
+	        //multiply by dimension to get index length
+	        count *= indexDim;
+	        var i = 0;
+	        var j = 0;
+	        var index;
+	        var x1, x2, x3;
+	        var y1, y2, y3;
+	        var z1, z2, z3;
+	        var dx1, dy1, dz1;
+	        var dx2, dy2, dz2;
+	        var cx, cy, cz;
+	        var d;
+	        if (positionDim == 3) {
+	            while (i < count) {
+	                index = indices[i++] * 3;
+	                x1 = positions[index];
+	                y1 = positions[index + 1];
+	                z1 = positions[index + 2];
+	                index = indices[i++] * 3;
+	                x2 = positions[index];
+	                y2 = positions[index + 1];
+	                z2 = positions[index + 2];
+	                index = indices[i++] * 3;
+	                x3 = positions[index];
+	                y3 = positions[index + 1];
+	                z3 = positions[index + 2];
+	                dx1 = x3 - x1;
+	                dy1 = y3 - y1;
+	                dz1 = z3 - z1;
+	                dx2 = x2 - x1;
+	                dy2 = y2 - y1;
+	                dz2 = z2 - z1;
+	                cx = dz1 * dy2 - dy1 * dz2;
+	                cy = dx1 * dz2 - dz1 * dx2;
+	                cz = dy1 * dx2 - dx1 * dy2;
+	                d = Math.sqrt(cx * cx + cy * cy + cz * cz);
+	                // length of cross product = 2*triangle area
+	                faceNormals[j++] = cx;
+	                faceNormals[j++] = cy;
+	                faceNormals[j++] = cz;
+	                faceNormals[j++] = d;
+	            }
+	        }
+	        else if (positionDim == 2) {
+	            while (i < count) {
+	                faceNormals[j++] = 0;
+	                faceNormals[j++] = 0;
+	                faceNormals[j++] = 1;
+	                faceNormals[j++] = 1;
+	                i += 3;
+	            }
+	        }
+	        output.set(faceNormals, offset);
+	        return output;
+	    };
+	    ElementsUtils.generateNormals = function (indexAttributes, faceNormalAttributes, output, concatenatedBuffer) {
+	        var indices = indexAttributes.get(indexAttributes.count);
+	        var faceNormals = faceNormalAttributes.get(faceNormalAttributes.count);
+	        if (output == null)
+	            output = new Float3Attributes_1.default(concatenatedBuffer);
+	        var indexDim = indexAttributes.dimensions;
+	        var outputDim = output.dimensions;
+	        var normals = output.get(output.count);
+	        var i = 0;
+	        var len = output.count * outputDim;
+	        //clear normal values
+	        while (i < len) {
+	            normals[i++] = 0;
+	            normals[i++] = 0;
+	            normals[i++] = 0;
+	        }
+	        i = 0;
+	        len = indexAttributes.count * indexDim;
+	        var index;
+	        var f1 = 0;
+	        var f2 = 1;
+	        var f3 = 2;
+	        //collect face normals
+	        while (i < len) {
+	            index = indices[i++] * outputDim;
+	            normals[index] += faceNormals[f1];
+	            normals[index + 1] += faceNormals[f2];
+	            normals[index + 2] += faceNormals[f3];
+	            index = indices[i++] * outputDim;
+	            normals[index] += faceNormals[f1];
+	            normals[index + 1] += faceNormals[f2];
+	            normals[index + 2] += faceNormals[f3];
+	            index = indices[i++] * outputDim;
+	            normals[index] += faceNormals[f1];
+	            normals[index + 1] += faceNormals[f2];
+	            normals[index + 2] += faceNormals[f3];
+	            f1 += 4;
+	            f2 += 4;
+	            f3 += 4;
+	        }
+	        i = 0;
+	        len = output.count * outputDim;
+	        var vx;
+	        var vy;
+	        var vz;
+	        var d;
+	        //normalise normals collections
+	        while (i < len) {
+	            vx = normals[i];
+	            vy = normals[i + 1];
+	            vz = normals[i + 2];
+	            d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+	            normals[i++] = vx * d;
+	            normals[i++] = vy * d;
+	            normals[i++] = vz * d;
+	        }
+	        output.set(normals);
+	        return output;
+	    };
+	    ElementsUtils.generateFaceTangents = function (indexAttributes, positionAttributes, uvAttributes, output, count, offset, useFaceWeights) {
+	        if (offset === void 0) { offset = 0; }
+	        if (useFaceWeights === void 0) { useFaceWeights = false; }
+	        var indices = indexAttributes.get(count, offset);
+	        var positions = positionAttributes.get(positionAttributes.count);
+	        var uvs = uvAttributes.get(uvAttributes.count);
+	        if (output == null)
+	            output = new Float3Attributes_1.default(count + offset);
+	        else if (output.count < count + offset)
+	            output.count = count + offset;
+	        var positionDim = positionAttributes.dimensions;
+	        var uvDim = uvAttributes.dimensions;
+	        var indexDim = indexAttributes.dimensions;
+	        var faceTangents = output.get(count, offset);
+	        var i = 0;
+	        var index1;
+	        var index2;
+	        var index3;
+	        var v0;
+	        var v1;
+	        var v2;
+	        var dv1;
+	        var dv2;
+	        var denom;
+	        var x0, y0, z0;
+	        var dx1, dy1, dz1;
+	        var dx2, dy2, dz2;
+	        var cx, cy, cz;
+	        //multiply by dimension to get index length
+	        count *= indexDim;
+	        while (i < count) {
+	            index1 = indices[i];
+	            index2 = indices[i + 1];
+	            index3 = indices[i + 2];
+	            v0 = uvs[index1 * uvDim + 1];
+	            dv1 = uvs[index2 * uvDim + 1] - v0;
+	            dv2 = uvs[index3 * uvDim + 1] - v0;
+	            v0 = index1 * positionDim;
+	            v1 = index2 * positionDim;
+	            v2 = index3 * positionDim;
+	            x0 = positions[v0];
+	            dx1 = positions[v1] - x0;
+	            dx2 = positions[v2] - x0;
+	            cx = dv2 * dx1 - dv1 * dx2;
+	            y0 = positions[v0 + 1];
+	            dy1 = positions[v1 + 1] - y0;
+	            dy2 = positions[v2 + 1] - y0;
+	            cy = dv2 * dy1 - dv1 * dy2;
+	            if (positionDim == 3) {
+	                z0 = positions[v0 + 2];
+	                dz1 = positions[v1 + 2] - z0;
+	                dz2 = positions[v2 + 2] - z0;
+	                cz = dv2 * dz1 - dv1 * dz2;
+	            }
+	            else {
+	                cz = 0;
+	            }
+	            denom = 1 / Math.sqrt(cx * cx + cy * cy + cz * cz);
+	            faceTangents[i++] = denom * cx;
+	            faceTangents[i++] = denom * cy;
+	            faceTangents[i++] = denom * cz;
+	        }
+	        output.set(faceTangents, offset);
+	        return output;
+	    };
+	    ElementsUtils.generateTangents = function (indexAttributes, faceTangentAttributes, faceNormalAttributes, output, concatenatedBuffer) {
+	        var indices = indexAttributes.get(indexAttributes.count);
+	        var faceTangents = faceTangentAttributes.get(faceTangentAttributes.count);
+	        var faceNormals = faceNormalAttributes.get(faceNormalAttributes.count);
+	        if (output == null)
+	            output = new Float3Attributes_1.default(concatenatedBuffer);
+	        var indexDim = indexAttributes.dimensions;
+	        var outputDim = output.dimensions;
+	        var tangents = output.get(output.count);
+	        var i = 0;
+	        var len = output.count * outputDim;
+	        //clear tangent values
+	        while (i < len) {
+	            tangents[i++] = 0;
+	            tangents[i++] = 0;
+	            tangents[i++] = 0;
+	        }
+	        var weight;
+	        var index;
+	        var f1 = 0;
+	        var f2 = 1;
+	        var f3 = 2;
+	        var f4 = 3;
+	        i = 0;
+	        len = indexAttributes.count * indexDim;
+	        //collect face tangents
+	        while (i < len) {
+	            weight = faceNormals[f4];
+	            index = indices[i++] * outputDim;
+	            tangents[index++] += faceTangents[f1] * weight;
+	            tangents[index++] += faceTangents[f2] * weight;
+	            tangents[index] += faceTangents[f3] * weight;
+	            index = indices[i++] * outputDim;
+	            tangents[index++] += faceTangents[f1] * weight;
+	            tangents[index++] += faceTangents[f2] * weight;
+	            tangents[index] += faceTangents[f3] * weight;
+	            index = indices[i++] * outputDim;
+	            tangents[index++] += faceTangents[f1] * weight;
+	            tangents[index++] += faceTangents[f2] * weight;
+	            tangents[index] += faceTangents[f3] * weight;
+	            f1 += 3;
+	            f2 += 3;
+	            f3 += 3;
+	            f4 += 4;
+	        }
+	        i = 0;
+	        len = output.count * outputDim;
+	        var vx;
+	        var vy;
+	        var vz;
+	        var d;
+	        //normalise tangents collections
+	        while (i < len) {
+	            vx = tangents[i];
+	            vy = tangents[i + 1];
+	            vz = tangents[i + 2];
+	            d = 1.0 / Math.sqrt(vx * vx + vy * vy + vz * vz);
+	            tangents[i++] = vx * d;
+	            tangents[i++] = vy * d;
+	            tangents[i++] = vz * d;
+	        }
+	        output.set(tangents);
+	        return output;
+	    };
+	    ElementsUtils.generateColors = function (indexAttributes, output, concatenatedBuffer, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (output == null)
+	            output = new Byte4Attributes_1.default(concatenatedBuffer);
+	        var index = 0;
+	        var colors = new Uint8Array(count * 4);
+	        while (index < count * 4) {
+	            if (index / 4 & 1) {
+	                colors[index] = 0xFF;
+	                colors[index + 1] = 0xFF;
+	                colors[index + 2] = 0xFF;
+	                colors[index + 3] = 0xFF;
+	            }
+	            else {
+	                colors[index] = 0xFF;
+	                colors[index + 1] = 0xFF;
+	                colors[index + 2] = 0xFF;
+	                colors[index + 3] = 0xFF;
+	            }
+	            index += 4;
+	        }
+	        output.set(colors, offset);
+	        return output;
+	    };
+	    ElementsUtils.scaleUVs = function (scaleU, scaleV, output, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (output.count < count + offset)
+	            output.count = count + offset;
+	        var outputDim = output.dimensions;
+	        var uvs = output.get(count, offset);
+	        var i = 0;
+	        var j = 0;
+	        var len = count * outputDim;
+	        while (i < len) {
+	            uvs[i++] *= scaleU;
+	            uvs[i++] *= scaleV;
+	        }
+	        output.set(uvs, offset);
+	    };
+	    ElementsUtils.scale = function (scale, output, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        if (output.count < count + offset)
+	            output.count = count + offset;
+	        var outputDim = output.dimensions;
+	        var positions = output.get(count, offset);
+	        var i = 0;
+	        var j = 0;
+	        var len = count * outputDim;
+	        while (i < len) {
+	            positions[i++] *= scale;
+	            positions[i++] *= scale;
+	            positions[i++] *= scale;
+	        }
+	        output.set(positions, offset);
+	    };
+	    ElementsUtils.applyTransformation = function (transform, positionAttributes, normalAttributes, tangentAttributes, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        //todo: make this compatible with 2-dimensional positions
+	        var positions = positionAttributes.get(count, offset);
+	        var positionDim = positionAttributes.dimensions;
+	        var normals;
+	        var normalDim;
+	        if (normalAttributes) {
+	            normals = normalAttributes.get(count, offset);
+	            normalDim = normalAttributes.dimensions;
+	        }
+	        var tangents;
+	        var tangentDim;
+	        if (tangentAttributes) {
+	            tangents = tangentAttributes.get(count, offset);
+	            tangentDim = tangentAttributes.dimensions;
+	        }
+	        var i;
+	        var i1;
+	        var i2;
+	        var vector = new Vector3D_1.default();
+	        var invTranspose;
+	        if (normalAttributes || tangentAttributes) {
+	            invTranspose = transform.clone();
+	            invTranspose.invert();
+	            invTranspose.transpose();
+	        }
+	        var vi0 = 0;
+	        var ni0 = 0;
+	        var ti0 = 0;
+	        for (i = 0; i < count; ++i) {
+	            // bake position
+	            i1 = vi0 + 1;
+	            i2 = vi0 + 2;
+	            vector.x = positions[vi0];
+	            vector.y = positions[i1];
+	            vector.z = positions[i2];
+	            vector = transform.transformVector(vector);
+	            positions[vi0] = vector.x;
+	            positions[i1] = vector.y;
+	            positions[i2] = vector.z;
+	            vi0 += positionDim;
+	            if (normals) {
+	                // bake normal
+	                i1 = ni0 + 1;
+	                i2 = ni0 + 2;
+	                vector.x = normals[ni0];
+	                vector.y = normals[i1];
+	                vector.z = normals[i2];
+	                vector = invTranspose.deltaTransformVector(vector);
+	                vector.normalize();
+	                normals[ni0] = vector.x;
+	                normals[i1] = vector.y;
+	                normals[i2] = vector.z;
+	                ni0 += normalDim;
+	            }
+	            if (tangents) {
+	                // bake tangent
+	                i1 = ti0 + 1;
+	                i2 = ti0 + 2;
+	                vector.x = tangents[ti0];
+	                vector.y = tangents[i1];
+	                vector.z = tangents[i2];
+	                vector = invTranspose.deltaTransformVector(vector);
+	                vector.normalize();
+	                tangents[ti0] = vector.x;
+	                tangents[i1] = vector.y;
+	                tangents[i2] = vector.z;
+	                ti0 += tangentDim;
+	            }
+	        }
+	        positionAttributes.set(positions, offset);
+	        if (normalAttributes)
+	            normalAttributes.set(normals, offset);
+	        if (tangentAttributes)
+	            tangentAttributes.set(tangents, offset);
+	    };
+	    ElementsUtils.getSubIndices = function (indexAttributes, numVertices, indexMappings, indexOffset) {
+	        if (indexOffset === void 0) { indexOffset = 0; }
+	        var buffer = indexAttributes.buffer;
+	        var numIndices = indexAttributes.length;
+	        //reset mappings
+	        indexMappings.length = 0;
+	        //shortcut for those buffers that fit into the maximum buffer sizes
+	        if (numIndices < ElementsUtils.LIMIT_INDICES && numVertices < ElementsUtils.LIMIT_VERTS)
+	            return buffer;
+	        var i;
+	        var indices = indexAttributes.get(indexAttributes.count, indexOffset);
+	        var splitIndices = new Array();
+	        var indexSwap = ElementsUtils._indexSwap;
+	        indexSwap.length = numIndices;
+	        for (i = 0; i < numIndices; i++)
+	            indexSwap[i] = -1;
+	        var originalIndex;
+	        var splitIndex;
+	        var index = 0;
+	        var offsetLength = indexOffset * indexAttributes.dimensions;
+	        // Loop over all triangles
+	        i = 0;
+	        while (i < numIndices + offsetLength && i + 1 < ElementsUtils.LIMIT_INDICES && index + 1 < ElementsUtils.LIMIT_VERTS) {
+	            originalIndex = indices[i];
+	            if (indexSwap[originalIndex] >= 0) {
+	                splitIndex = indexSwap[originalIndex];
+	            }
+	            else {
+	                // This vertex does not yet exist in the split list and
+	                // needs to be copied from the long list.
+	                splitIndex = index++;
+	                indexSwap[originalIndex] = splitIndex;
+	                indexMappings[splitIndex] = originalIndex;
+	            }
+	            // Store new index, which may have come from the swap look-up,
+	            // or from copying a new set of vertex data from the original vector
+	            splitIndices[i++] = splitIndex;
+	        }
+	        buffer = new AttributesBuffer_1.default(indexAttributes.size * indexAttributes.dimensions, splitIndices.length / indexAttributes.dimensions);
+	        indexAttributes = indexAttributes.clone(buffer);
+	        indexAttributes.set(splitIndices);
+	        return buffer;
+	    };
+	    ElementsUtils.getSubVertices = function (vertexBuffer, indexMappings) {
+	        if (!indexMappings.length)
+	            return vertexBuffer;
+	        var stride = vertexBuffer.stride;
+	        var vertices = vertexBuffer.bufferView;
+	        var splitVerts = new Uint8Array(indexMappings.length * stride);
+	        var splitIndex;
+	        var originalIndex;
+	        var i = 0;
+	        var j = 0;
+	        var len = indexMappings.length;
+	        for (i = 0; i < len; i++) {
+	            splitIndex = i * stride;
+	            originalIndex = indexMappings[i] * stride;
+	            for (j = 0; j < stride; j++)
+	                splitVerts[splitIndex + j] = vertices[originalIndex + j];
+	        }
+	        vertexBuffer = new AttributesBuffer_1.default(stride, len);
+	        vertexBuffer.bufferView = splitVerts;
+	        return vertexBuffer;
+	    };
+	    //TODO - generate this dyanamically based on num tris
+	    ElementsUtils.hitTestTriangleElements = function (x, y, z, box, triangleElements, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        var positionAttributes = triangleElements.positions;
+	        var curveAttributes = triangleElements.getCustomAtributes("curves");
+	        var posDim = positionAttributes.dimensions;
+	        var curveDim = curveAttributes.dimensions;
+	        var positions = positionAttributes.get(count, offset);
+	        var curves = curveAttributes ? curveAttributes.get(count, offset) : null;
+	        var id0;
+	        var id1;
+	        var id2;
+	        var ax;
+	        var ay;
+	        var bx;
+	        var by;
+	        var cx;
+	        var cy;
+	        var hitTestCache = triangleElements.hitTestCache[offset] || (triangleElements.hitTestCache[offset] = new HitTestCache_1.default());
+	        var index = hitTestCache.lastCollisionIndex;
+	        if (index != -1 && index < count) {
+	            precheck: {
+	                id0 = index + 2;
+	                id1 = index + 1;
+	                id2 = index + 0;
+	                ax = positions[id0 * posDim];
+	                ay = positions[id0 * posDim + 1];
+	                bx = positions[id1 * posDim];
+	                by = positions[id1 * posDim + 1];
+	                cx = positions[id2 * posDim];
+	                cy = positions[id2 * posDim + 1];
+	                //console.log(ax, ay, bx, by, cx, cy);
+	                //from a to p
+	                var dx = ax - x;
+	                var dy = ay - y;
+	                //edge normal (a-b)
+	                var nx = by - ay;
+	                var ny = -(bx - ax);
+	                //console.log(ax,ay,bx,by,cx,cy);
+	                var dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    break precheck;
+	                dx = bx - x;
+	                dy = by - y;
+	                nx = cy - by;
+	                ny = -(cx - bx);
+	                dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    break precheck;
+	                dx = cx - x;
+	                dy = cy - y;
+	                nx = ay - cy;
+	                ny = -(ax - cx);
+	                dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    break precheck;
+	                if (curves) {
+	                    var curvey0 = curves[id0 * curveDim + 2];
+	                    var curvey1 = curves[id1 * curveDim + 2];
+	                    var curvey2 = curves[id2 * curveDim + 2];
+	                    //check if not solid
+	                    if (curvey0 || curvey1 || curvey2) {
+	                        var v0x = bx - ax;
+	                        var v0y = by - ay;
+	                        var v1x = cx - ax;
+	                        var v1y = cy - ay;
+	                        var v2x = x - ax;
+	                        var v2y = y - ay;
+	                        var den = v0x * v1y - v1x * v0y;
+	                        var v = (v2x * v1y - v1x * v2y) / den;
+	                        var w = (v0x * v2y - v2x * v0y) / den;
+	                        //var u:number = 1 - v - w;	//commented out as inlined away
+	                        //here be dragons
+	                        var uu = 0.5 * v + w;
+	                        var vv = w;
+	                        var d = uu * uu - vv;
+	                        var az = curves[id0 * curveDim];
+	                        if (d > 0 && az == -128) {
+	                            break precheck;
+	                            ;
+	                        }
+	                        else if (d < 0 && az == 127) {
+	                            break precheck;
+	                            ;
+	                        }
+	                    }
+	                }
+	                return true;
+	            }
+	        }
+	        //hard coded min vertex count to bother using a grid for
+	        if (count > 150) {
+	            var cells = hitTestCache.cells;
+	            var divisions = cells.length ? hitTestCache.divisions : (hitTestCache.divisions = Math.min(Math.ceil(Math.sqrt(count)), 32));
+	            var conversionX = divisions / box.width;
+	            var conversionY = divisions / box.height;
+	            var minx = box.x;
+	            var miny = box.y;
+	            if (!cells.length) {
+	                //now we have bounds start creating grid cells and filling
+	                cells.length = divisions * divisions;
+	                for (var k = 0; k < count; k += 3) {
+	                    id0 = k + 2;
+	                    id1 = k + 1;
+	                    id2 = k + 0;
+	                    ax = positions[id0 * posDim];
+	                    ay = positions[id0 * posDim + 1];
+	                    bx = positions[id1 * posDim];
+	                    by = positions[id1 * posDim + 1];
+	                    cx = positions[id2 * posDim];
+	                    cy = positions[id2 * posDim + 1];
+	                    //subtractions to push into positive space
+	                    var min_index_x = Math.floor((Math.min(ax, bx, cx) - minx) * conversionX);
+	                    var min_index_y = Math.floor((Math.min(ay, by, cy) - miny) * conversionY);
+	                    var max_index_x = Math.floor((Math.max(ax, bx, cx) - minx) * conversionX);
+	                    var max_index_y = Math.floor((Math.max(ay, by, cy) - miny) * conversionY);
+	                    for (var i = min_index_x; i <= max_index_x; i++) {
+	                        for (var j = min_index_y; j <= max_index_y; j++) {
+	                            var index = i + j * divisions;
+	                            var nodes = cells[index] || (cells[index] = new Array());
+	                            //push in the triangle ids
+	                            nodes.push(id0, id1, id2);
+	                        }
+	                    }
+	                }
+	            }
+	            var index_x = Math.floor((x - minx) * conversionX);
+	            var index_y = Math.floor((y - miny) * conversionY);
+	            if ((index_x < 0 || index_x > divisions || index_y < 0 || index_y > divisions))
+	                return false;
+	            var nodes = cells[index_x + index_y * divisions];
+	            if (nodes == null)
+	                return false;
+	            var nodeCount = nodes.length;
+	            for (var k = 0; k < nodeCount; k += 3) {
+	                id2 = nodes[k + 2];
+	                if (id2 == index)
+	                    continue;
+	                id1 = nodes[k + 1];
+	                id0 = nodes[k];
+	                ax = positions[id0 * posDim];
+	                ay = positions[id0 * posDim + 1];
+	                bx = positions[id1 * posDim];
+	                by = positions[id1 * posDim + 1];
+	                cx = positions[id2 * posDim];
+	                cy = positions[id2 * posDim + 1];
+	                //from a to p
+	                var dx = ax - x;
+	                var dy = ay - y;
+	                //edge normal (a-b)
+	                var nx = by - ay;
+	                var ny = -(bx - ax);
+	                var dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    continue;
+	                dx = bx - x;
+	                dy = by - y;
+	                nx = cy - by;
+	                ny = -(cx - bx);
+	                dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    continue;
+	                dx = cx - x;
+	                dy = cy - y;
+	                nx = ay - cy;
+	                ny = -(ax - cx);
+	                dot = (dx * nx) + (dy * ny);
+	                if (dot > 0)
+	                    continue;
+	                if (curves) {
+	                    var curvey0 = curves[id0 * curveDim + 2];
+	                    var curvey1 = curves[id1 * curveDim + 2];
+	                    var curvey2 = curves[id2 * curveDim + 2];
+	                    //check if not solid
+	                    if (curvey0 || curvey1 || curvey2) {
+	                        var v0x = bx - ax;
+	                        var v0y = by - ay;
+	                        var v1x = cx - ax;
+	                        var v1y = cy - ay;
+	                        var v2x = x - ax;
+	                        var v2y = y - ay;
+	                        var den = v0x * v1y - v1x * v0y;
+	                        var v = (v2x * v1y - v1x * v2y) / den;
+	                        var w = (v0x * v2y - v2x * v0y) / den;
+	                        //var u:number = 1 - v - w;	//commented out as inlined away
+	                        //here be dragons
+	                        var uu = 0.5 * v + w;
+	                        var vv = w;
+	                        var d = uu * uu - vv;
+	                        var az = curves[id0 * curveDim];
+	                        if (d > 0 && az == -128)
+	                            continue;
+	                        else if (d < 0 && az == 127)
+	                            continue;
+	                    }
+	                }
+	                hitTestCache.lastCollisionIndex = id2;
+	                return true;
+	            }
+	            return false;
+	        }
+	        //brute force
+	        for (var k = 0; k < count; k += 3) {
+	            id2 = k + 0;
+	            if (id2 == index)
+	                continue;
+	            id1 = k + 1;
+	            id0 = k + 2;
+	            ax = positions[id0 * posDim];
+	            ay = positions[id0 * posDim + 1];
+	            bx = positions[id1 * posDim];
+	            by = positions[id1 * posDim + 1];
+	            cx = positions[id2 * posDim];
+	            cy = positions[id2 * posDim + 1];
+	            //console.log(ax, ay, bx, by, cx, cy);
+	            //from a to p
+	            var dx = ax - x;
+	            var dy = ay - y;
+	            //edge normal (a-b)
+	            var nx = by - ay;
+	            var ny = -(bx - ax);
+	            //console.log(ax,ay,bx,by,cx,cy);
+	            var dot = (dx * nx) + (dy * ny);
+	            if (dot > 0)
+	                continue;
+	            dx = bx - x;
+	            dy = by - y;
+	            nx = cy - by;
+	            ny = -(cx - bx);
+	            dot = (dx * nx) + (dy * ny);
+	            if (dot > 0)
+	                continue;
+	            dx = cx - x;
+	            dy = cy - y;
+	            nx = ay - cy;
+	            ny = -(ax - cx);
+	            dot = (dx * nx) + (dy * ny);
+	            if (dot > 0)
+	                continue;
+	            if (curves) {
+	                var curvey0 = curves[id0 * curveDim + 2];
+	                var curvey1 = curves[id1 * curveDim + 2];
+	                var curvey2 = curves[id2 * curveDim + 2];
+	                //check if not solid
+	                if (curvey0 || curvey1 || curvey2) {
+	                    var v0x = bx - ax;
+	                    var v0y = by - ay;
+	                    var v1x = cx - ax;
+	                    var v1y = cy - ay;
+	                    var v2x = x - ax;
+	                    var v2y = y - ay;
+	                    var den = v0x * v1y - v1x * v0y;
+	                    var v = (v2x * v1y - v1x * v2y) / den;
+	                    var w = (v0x * v2y - v2x * v0y) / den;
+	                    //var u:number = 1 - v - w;	//commented out as inlined away
+	                    //here be dragons
+	                    var uu = 0.5 * v + w;
+	                    var vv = w;
+	                    var d = uu * uu - vv;
+	                    var az = curves[id0 * curveDim];
+	                    if (d > 0 && az == -128) {
+	                        continue;
+	                    }
+	                    else if (d < 0 && az == 127) {
+	                        continue;
+	                    }
+	                }
+	            }
+	            hitTestCache.lastCollisionIndex = id2;
+	            return true;
+	        }
+	        return false;
+	    };
+	    ElementsUtils.getTriangleGraphicsBoxBounds = function (positionAttributes, output, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        var positions = positionAttributes.get(count, offset);
+	        var posDim = positionAttributes.dimensions;
+	        var pos;
+	        var minX = 0, minY = 0, minZ = 0;
+	        var maxX = 0, maxY = 0, maxZ = 0;
+	        var len = count * posDim;
+	        for (var i = 0; i < len; i += posDim) {
+	            if (i == 0) {
+	                maxX = minX = positions[i];
+	                maxY = minY = positions[i + 1];
+	                maxZ = minZ = (posDim == 3) ? positions[i + 2] : 0;
+	            }
+	            else {
+	                pos = positions[i];
+	                if (pos < minX)
+	                    minX = pos;
+	                else if (pos > maxX)
+	                    maxX = pos;
+	                pos = positions[i + 1];
+	                if (pos < minY)
+	                    minY = pos;
+	                else if (pos > maxY)
+	                    maxY = pos;
+	                if (posDim == 3) {
+	                    pos = positions[i + 2];
+	                    if (pos < minZ)
+	                        minZ = pos;
+	                    else if (pos > maxZ)
+	                        maxZ = pos;
+	                }
+	            }
+	        }
+	        if (output == null)
+	            output = new Box_1.default();
+	        output.x = minX;
+	        output.y = minY;
+	        output.z = minZ;
+	        output.right = maxX;
+	        output.bottom = maxY;
+	        output.back = maxZ;
+	        return output;
+	    };
+	    ElementsUtils.getTriangleGraphicsSphereBounds = function (positionAttributes, center, output, count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        var positions = positionAttributes.get(count, offset);
+	        var posDim = positionAttributes.dimensions;
+	        var maxRadiusSquared = 0;
+	        var radiusSquared;
+	        var len = count * posDim;
+	        var distanceX;
+	        var distanceY;
+	        var distanceZ;
+	        for (var i = 0; i < len; i += posDim) {
+	            distanceX = positions[i] - center.x;
+	            distanceY = positions[i + 1] - center.y;
+	            distanceZ = (posDim == 3) ? positions[i + 2] - center.z : -center.z;
+	            radiusSquared = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
+	            if (maxRadiusSquared < radiusSquared)
+	                maxRadiusSquared = radiusSquared;
+	        }
+	        if (output == null)
+	            output = new Sphere_1.default();
+	        output.x = center.x;
+	        output.y = center.y;
+	        output.z = center.z;
+	        output.radius = Math.sqrt(maxRadiusSquared);
+	        return output;
+	    };
+	    ElementsUtils.tempFloat32x4 = new Float32Array(4);
+	    ElementsUtils.LIMIT_VERTS = 0xffff;
+	    ElementsUtils.LIMIT_INDICES = 0xffffff;
+	    ElementsUtils._indexSwap = new Array();
+	    return ElementsUtils;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ElementsUtils;
+
+
+/***/ },
+/* 94 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AttributesView_1 = __webpack_require__(86);
+	var Float4Attributes = (function (_super) {
+	    __extends(Float4Attributes, _super);
+	    function Float4Attributes(attributesBufferLength) {
+	        _super.call(this, Float32Array, 4, attributesBufferLength);
+	    }
+	    Object.defineProperty(Float4Attributes.prototype, "assetType", {
+	        /**
+	         *
+	         * @returns {string}
+	         */
+	        get: function () {
+	            return Float4Attributes.assetType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Float4Attributes.prototype.set = function (values, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        _super.prototype.set.call(this, values, offset);
+	    };
+	    Float4Attributes.prototype.get = function (count, offset) {
+	        if (offset === void 0) { offset = 0; }
+	        return _super.prototype.get.call(this, count, offset);
+	    };
+	    Float4Attributes.prototype._internalClone = function (attributesBuffer) {
+	        return (this._cloneCache = new Float4Attributes(attributesBuffer));
+	    };
+	    Float4Attributes.prototype.clone = function (attributesBuffer) {
+	        if (attributesBuffer === void 0) { attributesBuffer = null; }
+	        return _super.prototype.clone.call(this, attributesBuffer);
+	    };
+	    Float4Attributes.assetType = "[attributes Float4Attributes]";
+	    return Float4Attributes;
+	}(AttributesView_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Float4Attributes;
+
+
+/***/ },
 /* 95 */
+/***/ function(module, exports) {
+
+	"use strict";
+	/**
+	 * @class away.base.HitTestCache
+	 */
+	var HitTestCache = (function () {
+	    function HitTestCache() {
+	        /**
+	         *
+	         */
+	        this.cells = new Array();
+	        /**
+	         *
+	         */
+	        this.lastCollisionIndex = -1;
+	    }
+	    return HitTestCache;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = HitTestCache;
+
+
+/***/ },
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17448,13 +17558,13 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var BlendMode_1 = __webpack_require__(96);
+	var BlendMode_1 = __webpack_require__(97);
 	var DisplayObject_1 = __webpack_require__(16);
 	var BoundsType_1 = __webpack_require__(31);
 	var RenderableEvent_1 = __webpack_require__(60);
-	var SurfaceEvent_1 = __webpack_require__(97);
-	var SingleCubeTexture_1 = __webpack_require__(98);
-	var Style_1 = __webpack_require__(100);
+	var SurfaceEvent_1 = __webpack_require__(98);
+	var SingleCubeTexture_1 = __webpack_require__(99);
+	var Style_1 = __webpack_require__(101);
 	var StyleEvent_1 = __webpack_require__(61);
 	/**
 	 * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
@@ -17658,8 +17768,11 @@
 	    Skybox.prototype.invalidatePasses = function () {
 	        this.dispatchEvent(new SurfaceEvent_1.default(SurfaceEvent_1.default.INVALIDATE_PASSES, this));
 	    };
+	    Skybox.prototype.invalidateElements = function () {
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this));
+	    };
 	    Skybox.prototype.invalidateSurface = function () {
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_SURFACE, this));
 	    };
 	    Skybox.prototype.addTexture = function (texture) {
 	        this._textures.push(texture);
@@ -17677,6 +17790,9 @@
 	    };
 	    Skybox.prototype._onInvalidateProperties = function (event) {
 	        this.invalidatePasses();
+	    };
+	    Skybox.prototype._acceptTraverser = function (traverser) {
+	        traverser.applyRenderable(this);
 	    };
 	    /**
 	     * //TODO
@@ -17697,7 +17813,7 @@
 
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -17882,7 +17998,7 @@
 
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17931,7 +18047,7 @@
 
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17940,7 +18056,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBase_1 = __webpack_require__(99);
+	var TextureBase_1 = __webpack_require__(100);
 	var SingleCubeTexture = (function (_super) {
 	    __extends(SingleCubeTexture, _super);
 	    function SingleCubeTexture(imageCube) {
@@ -18000,7 +18116,7 @@
 
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18056,7 +18172,7 @@
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18178,7 +18294,7 @@
 
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18187,9 +18303,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(81);
-	var MaterialBase_1 = __webpack_require__(102);
-	var Single2DTexture_1 = __webpack_require__(103);
+	var Image2D_1 = __webpack_require__(75);
+	var MaterialBase_1 = __webpack_require__(103);
+	var Single2DTexture_1 = __webpack_require__(104);
 	/**
 	 * BasicMaterial forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -18259,7 +18375,7 @@
 
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18268,13 +18384,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(96);
-	var ImageBase_1 = __webpack_require__(82);
+	var BlendMode_1 = __webpack_require__(97);
+	var ImageBase_1 = __webpack_require__(76);
 	var ColorTransform_1 = __webpack_require__(19);
 	var AssetEvent_1 = __webpack_require__(1);
 	var AssetBase_1 = __webpack_require__(27);
-	var SurfaceEvent_1 = __webpack_require__(97);
-	var Style_1 = __webpack_require__(100);
+	var SurfaceEvent_1 = __webpack_require__(98);
+	var Style_1 = __webpack_require__(101);
 	var StyleEvent_1 = __webpack_require__(61);
 	/**
 	 * MaterialBase forms an abstract base class for any material.
@@ -18755,7 +18871,7 @@
 
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18765,9 +18881,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ErrorBase_1 = __webpack_require__(14);
-	var ImageUtils_1 = __webpack_require__(83);
-	var MappingMode_1 = __webpack_require__(104);
-	var TextureBase_1 = __webpack_require__(99);
+	var ImageUtils_1 = __webpack_require__(77);
+	var MappingMode_1 = __webpack_require__(105);
+	var TextureBase_1 = __webpack_require__(100);
 	var Single2DTexture = (function (_super) {
 	    __extends(Single2DTexture, _super);
 	    function Single2DTexture(image2D) {
@@ -18842,7 +18958,7 @@
 
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -18872,7 +18988,7 @@
 
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18881,7 +18997,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	var Float2Attributes = (function (_super) {
 	    __extends(Float2Attributes, _super);
 	    function Float2Attributes(attributesBufferLength) {
@@ -18921,11 +19037,11 @@
 
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CapsStyle_1 = __webpack_require__(75);
+	var CapsStyle_1 = __webpack_require__(69);
 	var Point_1 = __webpack_require__(26);
 	var MathConsts_1 = __webpack_require__(22);
 	/**
@@ -19097,7 +19213,7 @@
 
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19106,11 +19222,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(105);
-	var ElementsBase_1 = __webpack_require__(93);
-	var ElementsUtils_1 = __webpack_require__(63);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Float2Attributes_1 = __webpack_require__(106);
+	var ElementsBase_1 = __webpack_require__(90);
+	var ElementsUtils_1 = __webpack_require__(93);
 	/**
 	 * @class away.base.TriangleElements
 	 */
@@ -19118,25 +19234,16 @@
 	    __extends(TriangleElements, _super);
 	    function TriangleElements() {
 	        _super.apply(this, arguments);
-	        this._numVertices = 0;
 	        this._faceNormalsDirty = true;
 	        this._faceTangentsDirty = true;
 	        this._autoDeriveNormals = true;
 	        this._autoDeriveTangents = true;
 	        //used for hittesting geometry
-	        this.cells = new Array();
-	        this.lastCollisionIndex = -1;
+	        this.hitTestCache = new Object();
 	    }
 	    Object.defineProperty(TriangleElements.prototype, "assetType", {
 	        get: function () {
 	            return TriangleElements.assetType;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(TriangleElements.prototype, "numVertices", {
-	        get: function () {
-	            return this._numVertices;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -19306,16 +19413,22 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    TriangleElements.prototype.getBoxBounds = function (target) {
+	    TriangleElements.prototype.getBoxBounds = function (target, count, offset) {
 	        if (target === void 0) { target = null; }
-	        return ElementsUtils_1.default.getTriangleGraphicsBoxBounds(this.positions, target, this._numVertices);
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        return ElementsUtils_1.default.getTriangleGraphicsBoxBounds(this.positions, target, count || this._numVertices, offset);
 	    };
-	    TriangleElements.prototype.getSphereBounds = function (center, target) {
+	    TriangleElements.prototype.getSphereBounds = function (center, target, count, offset) {
 	        if (target === void 0) { target = null; }
-	        return ElementsUtils_1.default.getTriangleGraphicsSphereBounds(this.positions, center, target, this._numVertices);
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        return ElementsUtils_1.default.getTriangleGraphicsSphereBounds(this.positions, center, target, count || this._numVertices, offset);
 	    };
-	    TriangleElements.prototype.hitTestPoint = function (x, y, z) {
-	        return true;
+	    TriangleElements.prototype.hitTestPoint = function (x, y, z, box, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        return ElementsUtils_1.default.hitTestTriangleElements(x, y, 0, box, this, count || this._numVertices, offset);
 	    };
 	    TriangleElements.prototype.setPositions = function (values, offset) {
 	        if (offset === void 0) { offset = 0; }
@@ -19525,8 +19638,10 @@
 	    TriangleElements.prototype.copyTo = function (elements) {
 	        _super.prototype.copyTo.call(this, elements);
 	        //temp disable auto derives
-	        elements.autoDeriveNormals = false;
-	        elements.autoDeriveTangents = false;
+	        var autoDeriveNormals = this._autoDeriveNormals;
+	        var autoDeriveTangents = this._autoDeriveTangents;
+	        elements.autoDeriveNormals = this._autoDeriveNormals = false;
+	        elements.autoDeriveTangents = this._autoDeriveTangents = false;
 	        elements.setPositions(this.positions.clone());
 	        if (this.normals)
 	            elements.setNormals(this.normals.clone());
@@ -19540,8 +19655,8 @@
 	        if (this.jointWeights)
 	            elements.setJointWeights(this.jointWeights.clone());
 	        //return auto derives to cloned values
-	        elements.autoDeriveNormals = this._autoDeriveNormals;
-	        elements.autoDeriveTangents = this._autoDeriveTangents;
+	        elements.autoDeriveNormals = this._autoDeriveNormals = autoDeriveNormals;
+	        elements.autoDeriveTangents = this._autoDeriveTangents = autoDeriveTangents;
 	    };
 	    /**
 	     * Clones the current object
@@ -19552,21 +19667,27 @@
 	        this.copyTo(clone);
 	        return clone;
 	    };
-	    TriangleElements.prototype.scaleUV = function (scaleU, scaleV) {
+	    TriangleElements.prototype.scaleUV = function (scaleU, scaleV, count, offset) {
 	        if (scaleU === void 0) { scaleU = 1; }
 	        if (scaleV === void 0) { scaleV = 1; }
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
 	        if (this.uvs)
-	            ElementsUtils_1.default.scaleUVs(scaleU, scaleV, this.uvs, this._numVertices);
+	            ElementsUtils_1.default.scaleUVs(scaleU, scaleV, this.uvs, count || this._numVertices, offset);
 	    };
 	    /**
 	     * Scales the geometry.
 	     * @param scale The amount by which to scale.
 	     */
-	    TriangleElements.prototype.scale = function (scale) {
-	        ElementsUtils_1.default.scale(scale, this.positions, this._numVertices);
+	    TriangleElements.prototype.scale = function (scale, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        ElementsUtils_1.default.scale(scale, this.positions, count || this._numVertices, offset);
 	    };
-	    TriangleElements.prototype.applyTransformation = function (transform) {
-	        ElementsUtils_1.default.applyTransformation(transform, this.positions, this.normals, this.tangents, this._numVertices);
+	    TriangleElements.prototype.applyTransformation = function (transform, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        ElementsUtils_1.default.applyTransformation(transform, this.positions, this.normals, this.tangents, count || this._numVertices, offset);
 	    };
 	    /**
 	     * Updates the tangents for each face.
@@ -19582,8 +19703,10 @@
 	        this._faceNormals = ElementsUtils_1.default.generateFaceNormals(this.indices, this.positions, this._faceNormals, this.numElements);
 	        this._faceNormalsDirty = false;
 	    };
-	    TriangleElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision) {
-	        return pickingCollider.testTriangleCollision(this, material, pickingCollision);
+	    TriangleElements.prototype._iTestCollision = function (pickingCollider, material, pickingCollision, count, offset) {
+	        if (count === void 0) { count = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        return pickingCollider.testTriangleCollision(this, material, pickingCollision, count || this._numVertices, offset);
 	    };
 	    TriangleElements.assetType = "[asset TriangleElements]";
 	    return TriangleElements;
@@ -19593,20 +19716,20 @@
 
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var MathConsts_1 = __webpack_require__(22);
-	var JointStyle_1 = __webpack_require__(74);
-	var GraphicsPathCommand_1 = __webpack_require__(71);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var JointStyle_1 = __webpack_require__(68);
+	var GraphicsPathCommand_1 = __webpack_require__(65);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var Point_1 = __webpack_require__(26);
-	var AttributesView_1 = __webpack_require__(66);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(105);
-	var GraphicsFactoryHelper_1 = __webpack_require__(106);
-	var TriangleElements_1 = __webpack_require__(107);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Float2Attributes_1 = __webpack_require__(106);
+	var GraphicsFactoryHelper_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	/**
 	 * The Graphics class contains a set of methods that you can use to create a
 	 * vector shape. Display objects that support drawing include Sprite and Shape
@@ -20083,7 +20206,7 @@
 
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20116,7 +20239,7 @@
 
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20129,8 +20252,8 @@
 	var DisplayObject_1 = __webpack_require__(16);
 	var BoundsType_1 = __webpack_require__(31);
 	var RenderableEvent_1 = __webpack_require__(60);
-	var SurfaceEvent_1 = __webpack_require__(97);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var SurfaceEvent_1 = __webpack_require__(98);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var StyleEvent_1 = __webpack_require__(61);
 	/**
 	 * The Billboard class represents display objects that represent bitmap images.
@@ -20327,10 +20450,13 @@
 	            this._billboardRect = new Rectangle_1.default(0, 0, 1, 1);
 	        }
 	        this._pInvalidateBounds();
+	        this.invalidateElements();
+	    };
+	    Billboard.prototype.invalidateElements = function () {
 	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this));
 	    };
 	    Billboard.prototype.invalidateSurface = function () {
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_SURFACE, this));
 	    };
 	    Billboard.prototype._onInvalidateProperties = function (event) {
 	        if (event === void 0) { event = null; }
@@ -20345,7 +20471,7 @@
 
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20356,7 +20482,7 @@
 	};
 	var MathConsts_1 = __webpack_require__(22);
 	var Vector3D_1 = __webpack_require__(18);
-	var LookAtController_1 = __webpack_require__(112);
+	var LookAtController_1 = __webpack_require__(113);
 	/**
 	 * Extended camera used to hover round a specified target object.
 	 *
@@ -20650,7 +20776,7 @@
 
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20660,7 +20786,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ControllerBase_1 = __webpack_require__(113);
+	var ControllerBase_1 = __webpack_require__(114);
 	var DisplayObjectEvent_1 = __webpack_require__(37);
 	var LookAtController = (function (_super) {
 	    __extends(LookAtController, _super);
@@ -20730,7 +20856,7 @@
 
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20797,7 +20923,7 @@
 
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20806,10 +20932,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AssetLibraryBundle_1 = __webpack_require__(115);
-	var Loader_1 = __webpack_require__(117);
+	var AssetLibraryBundle_1 = __webpack_require__(116);
+	var Loader_1 = __webpack_require__(118);
 	var AssetEvent_1 = __webpack_require__(1);
-	var URLLoaderEvent_1 = __webpack_require__(121);
+	var URLLoaderEvent_1 = __webpack_require__(122);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ParserEvent_1 = __webpack_require__(6);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
@@ -21364,7 +21490,7 @@
 
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21373,14 +21499,14 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AssetLibraryIterator_1 = __webpack_require__(116);
-	var Loader_1 = __webpack_require__(117);
-	var ConflictPrecedence_1 = __webpack_require__(123);
-	var ConflictStrategy_1 = __webpack_require__(124);
+	var AssetLibraryIterator_1 = __webpack_require__(117);
+	var Loader_1 = __webpack_require__(118);
+	var ConflictPrecedence_1 = __webpack_require__(124);
+	var ConflictStrategy_1 = __webpack_require__(125);
 	var AssetBase_1 = __webpack_require__(27);
 	var ErrorBase_1 = __webpack_require__(14);
 	var AssetEvent_1 = __webpack_require__(1);
-	var URLLoaderEvent_1 = __webpack_require__(121);
+	var URLLoaderEvent_1 = __webpack_require__(122);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ParserEvent_1 = __webpack_require__(6);
@@ -21832,7 +21958,7 @@
 
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -21901,7 +22027,7 @@
 
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21910,14 +22036,14 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoader_1 = __webpack_require__(118);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoader_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var AssetEvent_1 = __webpack_require__(1);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var URLLoaderEvent_1 = __webpack_require__(121);
+	var URLLoaderEvent_1 = __webpack_require__(122);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ParserEvent_1 = __webpack_require__(6);
-	var ResourceDependency_1 = __webpack_require__(122);
+	var ResourceDependency_1 = __webpack_require__(123);
 	/**
 	 * Dispatched when any asset finishes parsing. Also see specific events for each
 	 * individual asset type (meshes, materials et c.)
@@ -22488,7 +22614,7 @@
 
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22497,11 +22623,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequestMethod_1 = __webpack_require__(4);
-	var URLVariables_1 = __webpack_require__(120);
+	var URLVariables_1 = __webpack_require__(121);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var URLLoaderEvent_1 = __webpack_require__(121);
+	var URLLoaderEvent_1 = __webpack_require__(122);
 	/**
 	 * The URLLoader is used to load a single file, as part of a resource.
 	 *
@@ -22834,7 +22960,7 @@
 
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22873,7 +22999,7 @@
 
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -22944,7 +23070,7 @@
 
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22988,7 +23114,7 @@
 
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23155,7 +23281,7 @@
 
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23188,13 +23314,13 @@
 
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ErrorConflictStrategy_1 = __webpack_require__(125);
-	var IgnoreConflictStrategy_1 = __webpack_require__(127);
-	var NumSuffixConflictStrategy_1 = __webpack_require__(128);
+	var ErrorConflictStrategy_1 = __webpack_require__(126);
+	var IgnoreConflictStrategy_1 = __webpack_require__(128);
+	var NumSuffixConflictStrategy_1 = __webpack_require__(129);
 	/**
 	 * Enumeration class for bundled conflict strategies. Set one of these values (or an
 	 * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
@@ -23234,7 +23360,7 @@
 
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23243,7 +23369,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(126);
+	var ConflictStrategyBase_1 = __webpack_require__(127);
 	var ErrorBase_1 = __webpack_require__(14);
 	var ErrorConflictStrategy = (function (_super) {
 	    __extends(ErrorConflictStrategy, _super);
@@ -23263,11 +23389,11 @@
 
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ConflictPrecedence_1 = __webpack_require__(123);
+	var ConflictPrecedence_1 = __webpack_require__(124);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AssetEvent_1 = __webpack_require__(1);
 	/**
@@ -23328,7 +23454,7 @@
 
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23337,7 +23463,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(126);
+	var ConflictStrategyBase_1 = __webpack_require__(127);
 	var IgnoreConflictStrategy = (function (_super) {
 	    __extends(IgnoreConflictStrategy, _super);
 	    function IgnoreConflictStrategy() {
@@ -23357,7 +23483,7 @@
 
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23366,7 +23492,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ConflictStrategyBase_1 = __webpack_require__(126);
+	var ConflictStrategyBase_1 = __webpack_require__(127);
 	var NumSuffixConflictStrategy = (function (_super) {
 	    __extends(NumSuffixConflictStrategy, _super);
 	    function NumSuffixConflictStrategy(separator) {
@@ -23418,7 +23544,7 @@
 
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23427,18 +23553,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var Matrix3D_1 = __webpack_require__(23);
-	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var BitmapImage2D_1 = __webpack_require__(74);
 	var ContextGLClearMask_1 = __webpack_require__(131);
 	var RendererBase_1 = __webpack_require__(132);
 	var DepthRenderer_1 = __webpack_require__(194);
 	var DistanceRenderer_1 = __webpack_require__(206);
 	var Filter3DRenderer_1 = __webpack_require__(208);
-	var GL_SkyboxElements_1 = __webpack_require__(211);
 	var RTTBufferManager_1 = __webpack_require__(210);
-	var SurfacePool_1 = __webpack_require__(191);
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -23459,7 +23580,6 @@
 	        if (profile === void 0) { profile = "baseline"; }
 	        if (mode === void 0) { mode = "auto"; }
 	        _super.call(this, stage, null, forceSoftware, profile, mode);
-	        this._skyboxProjection = new Matrix3D_1.default();
 	        this._antiAlias = 0;
 	        this._directionalLights = new Array();
 	        this._pointLights = new Array();
@@ -23477,7 +23597,6 @@
 	            this.height = window.innerHeight;
 	        else
 	            this._pRttBufferManager.viewHeight = this._height;
-	        this._skyBoxSurfacePool = new SurfacePool_1.default(GL_SkyboxElements_1.default, this._pStage);
 	    }
 	    Object.defineProperty(DefaultRenderer.prototype, "antiAlias", {
 	        get: function () {
@@ -23616,47 +23735,6 @@
 	        }
 	    };
 	    /**
-	     * @inheritDoc
-	     */
-	    DefaultRenderer.prototype.pDraw = function (camera) {
-	        if (this._skybox) {
-	            this._pContext.setDepthTest(false, ContextGLCompareMode_1.default.ALWAYS);
-	            this.drawSkybox(camera);
-	        }
-	        _super.prototype.pDraw.call(this, camera);
-	    };
-	    /**
-	     * Draw the skybox if present.
-	     **/
-	    DefaultRenderer.prototype.drawSkybox = function (camera) {
-	        var renderable = this.getAbstraction(this._skybox);
-	        renderable.renderSceneTransform = this._skybox.getRenderSceneTransform(this._cameraTransform);
-	        this.updateSkyboxProjection(camera);
-	        var pass = this._skyBoxSurfacePool.getAbstraction(renderable.surfaceGL.surface).passes[0];
-	        this.activatePass(renderable, pass, camera);
-	        renderable._iRender(pass, camera, this._skyboxProjection);
-	        this.deactivatePass(renderable, pass);
-	    };
-	    DefaultRenderer.prototype.updateSkyboxProjection = function (camera) {
-	        var near = new Vector3D_1.default();
-	        this._skyboxProjection.copyFrom(this._pRttViewProjectionMatrix);
-	        this._skyboxProjection.copyRowTo(2, near);
-	        var camPos = camera.scenePosition;
-	        var cx = near.x;
-	        var cy = near.y;
-	        var cz = near.z;
-	        var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
-	        var signX = cx >= 0 ? 1 : -1;
-	        var signY = cy >= 0 ? 1 : -1;
-	        var p = new Vector3D_1.default(signX, signY, 1, 1);
-	        var inverse = this._skyboxProjection.clone();
-	        inverse.invert();
-	        var q = inverse.transformVector(p);
-	        this._skyboxProjection.copyRowTo(3, p);
-	        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
-	        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.default(cx * a, cy * a, cz * a, cw * a));
-	    };
-	    /**
 	     *
 	     * @param entity
 	     */
@@ -23676,13 +23754,6 @@
 	     */
 	    DefaultRenderer.prototype.applyPointLight = function (entity) {
 	        this._pointLights.push(entity);
-	    };
-	    /**
-	     *
-	     * @param entity
-	     */
-	    DefaultRenderer.prototype.applySkybox = function (entity) {
-	        this._skybox = entity;
 	    };
 	    DefaultRenderer.prototype.dispose = function () {
 	        if (!this.shareContext)
@@ -23753,28 +23824,6 @@
 
 
 /***/ },
-/* 130 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var ContextGLCompareMode = (function () {
-	    function ContextGLCompareMode() {
-	    }
-	    ContextGLCompareMode.ALWAYS = "always";
-	    ContextGLCompareMode.EQUAL = "equal";
-	    ContextGLCompareMode.GREATER = "greater";
-	    ContextGLCompareMode.GREATER_EQUAL = "greaterEqual";
-	    ContextGLCompareMode.LESS = "less";
-	    ContextGLCompareMode.LESS_EQUAL = "lessEqual";
-	    ContextGLCompareMode.NEVER = "never";
-	    ContextGLCompareMode.NOT_EQUAL = "notEqual";
-	    return ContextGLCompareMode;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ContextGLCompareMode;
-
-
-/***/ },
 /* 131 */
 /***/ function(module, exports) {
 
@@ -23811,11 +23860,10 @@
 	var RendererEvent_1 = __webpack_require__(53);
 	var AGALMiniAssembler_1 = __webpack_require__(133);
 	var ContextGLBlendFactor_1 = __webpack_require__(144);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
-	var StageEvent_1 = __webpack_require__(145);
-	var StageManager_1 = __webpack_require__(146);
-	var SurfacePool_1 = __webpack_require__(191);
-	var ElementsPool_1 = __webpack_require__(192);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
+	var StageEvent_1 = __webpack_require__(146);
+	var StageManager_1 = __webpack_require__(147);
+	var SurfacePool_1 = __webpack_require__(192);
 	var RenderableMergeSort_1 = __webpack_require__(193);
 	/**
 	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
@@ -23870,14 +23918,13 @@
 	        this._pStage.addEventListener(StageEvent_1.default.CONTEXT_CREATED, this._onContextUpdateDelegate);
 	        this._pStage.addEventListener(StageEvent_1.default.CONTEXT_RECREATED, this._onContextUpdateDelegate);
 	        this._pStage.addEventListener(StageEvent_1.default.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+	        this._surfaceClassGL = surfaceClassGL;
 	        /*
 	         if (_backgroundImageRenderer)
 	         _backgroundImageRenderer.stage = value;
 	         */
 	        if (this._pStage.context)
 	            this._pContext = this._pStage.context;
-	        for (var i in ElementsPool_1.default._abstractionClassPool)
-	            this._objectPools[i] = new SurfacePool_1.default(ElementsPool_1.default._abstractionClassPool[i], this._pStage, surfaceClassGL);
 	    }
 	    Object.defineProperty(RendererBase.prototype, "cullPlanes", {
 	        /**
@@ -24033,7 +24080,7 @@
 	     * @returns SurfacePool
 	     */
 	    RendererBase.prototype.getSurfacePool = function (elements) {
-	        return this._objectPools[elements.assetType];
+	        return this._objectPools[elements.elementsType] || (this._objectPools[elements.elementsType] = new SurfacePool_1.default(elements.elementsClass, this._pStage, this._surfaceClassGL));
 	    };
 	    /**
 	     *
@@ -24042,12 +24089,13 @@
 	    RendererBase.registerAbstraction = function (renderableClass, assetClass) {
 	        RendererBase._abstractionClassPool[assetClass.assetType] = renderableClass;
 	    };
-	    RendererBase.prototype.activatePass = function (renderableGL, pass, camera) {
+	    RendererBase.prototype.activatePass = function (pass, camera) {
 	        //clear unused vertex streams
-	        for (var i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
+	        var i;
+	        for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
 	            this._pContext.setVertexBufferAt(i, null);
 	        //clear unused texture streams
-	        for (var i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
+	        for (i = pass.shader.numUsedTextures; i < this._numUsedTextures; i++)
 	            this._pContext.setTextureAt(i, null);
 	        //check program data is uploaded
 	        var programData = pass.shader.programData;
@@ -24059,12 +24107,12 @@
 	        }
 	        //set program data
 	        this._pContext.setProgram(programData.program);
-	        //activate shader object through renderableGL
-	        renderableGL._iActivate(pass, camera);
+	        //activate shader object through pass
+	        pass._iActivate(camera);
 	    };
-	    RendererBase.prototype.deactivatePass = function (renderableGL, pass) {
-	        //deactivate shader object
-	        renderableGL._iDeactivate(pass);
+	    RendererBase.prototype.deactivatePass = function (pass) {
+	        //deactivate shader object through pass
+	        pass._iDeactivate();
 	        this._numUsedStreams = pass.shader.numUsedStreams;
 	        this._numUsedTextures = pass.shader.numUsedTextures;
 	    };
@@ -24353,7 +24401,7 @@
 	                for (i = 0; i < len; i++) {
 	                    renderableGL2 = renderableGL;
 	                    pass = passes[i];
-	                    this.activatePass(renderableGL, pass, camera);
+	                    this.activatePass(pass, camera);
 	                    do {
 	                        if (renderableGL2.maskId !== -1) {
 	                            if (i == 0)
@@ -24364,7 +24412,7 @@
 	                        }
 	                        renderableGL2 = renderableGL2.next;
 	                    } while (renderableGL2 && renderableGL2.surfaceGL == surfaceGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
-	                    this.deactivatePass(renderableGL, pass);
+	                    this.deactivatePass(pass);
 	                }
 	            }
 	            renderableGL = renderableGL2;
@@ -24480,7 +24528,7 @@
 	     * @returns {boolean}
 	     */
 	    RendererBase.prototype.enterNode = function (node) {
-	        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+	        var enter = node._iCollectionMark != RendererBase._iCollectionMark && node.isRenderable() && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 	        node._iCollectionMark = RendererBase._iCollectionMark;
 	        return enter;
 	    };
@@ -24514,7 +24562,7 @@
 	            renderableGL.next = this._pOpaqueRenderableHead;
 	            this._pOpaqueRenderableHead = renderableGL;
 	        }
-	        this._pNumElements += renderableGL.elements.numElements;
+	        this._pNumElements += renderableGL.elementsGL.elements.numElements;
 	    };
 	    /**
 	     *
@@ -24596,10 +24644,10 @@
 	        var passes = surfaceGL.passes;
 	        var len = passes.length;
 	        var pass = passes[len - 1];
-	        this.activatePass(renderableGL, pass, camera);
+	        this.activatePass(pass, camera);
 	        // only render last pass for now
 	        renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
-	        this.deactivatePass(renderableGL, pass);
+	        this.deactivatePass(pass);
 	    };
 	    RendererBase.prototype._checkMasksConfig = function (masksConfig) {
 	        if (this._activeMasksConfig.length != masksConfig.length)
@@ -25676,6 +25724,28 @@
 
 /***/ },
 /* 145 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var ContextGLCompareMode = (function () {
+	    function ContextGLCompareMode() {
+	    }
+	    ContextGLCompareMode.ALWAYS = "always";
+	    ContextGLCompareMode.EQUAL = "equal";
+	    ContextGLCompareMode.GREATER = "greater";
+	    ContextGLCompareMode.GREATER_EQUAL = "greaterEqual";
+	    ContextGLCompareMode.LESS = "less";
+	    ContextGLCompareMode.LESS_EQUAL = "lessEqual";
+	    ContextGLCompareMode.NEVER = "never";
+	    ContextGLCompareMode.NOT_EQUAL = "notEqual";
+	    return ContextGLCompareMode;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = ContextGLCompareMode;
+
+
+/***/ },
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25734,7 +25804,7 @@
 
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25745,8 +25815,8 @@
 	};
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ArgumentError_1 = __webpack_require__(13);
-	var Stage_1 = __webpack_require__(147);
-	var StageEvent_1 = __webpack_require__(145);
+	var Stage_1 = __webpack_require__(148);
+	var StageEvent_1 = __webpack_require__(146);
 	/**
 	 * The StageManager class provides a multiton object that handles management for Stage objects.
 	 *
@@ -25887,7 +25957,7 @@
 
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -25898,17 +25968,17 @@
 	};
 	var EventDispatcher_1 = __webpack_require__(29);
 	var Rectangle_1 = __webpack_require__(51);
-	var CSS_1 = __webpack_require__(148);
-	var ContextMode_1 = __webpack_require__(149);
-	var ContextGLMipFilter_1 = __webpack_require__(150);
-	var ContextGLTextureFilter_1 = __webpack_require__(151);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ContextGLWrapMode_1 = __webpack_require__(153);
-	var ContextWebGL_1 = __webpack_require__(154);
-	var ContextStage3D_1 = __webpack_require__(174);
-	var ContextSoftware_1 = __webpack_require__(182);
-	var StageEvent_1 = __webpack_require__(145);
-	var ProgramDataPool_1 = __webpack_require__(189);
+	var CSS_1 = __webpack_require__(149);
+	var ContextMode_1 = __webpack_require__(150);
+	var ContextGLMipFilter_1 = __webpack_require__(151);
+	var ContextGLTextureFilter_1 = __webpack_require__(152);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ContextGLWrapMode_1 = __webpack_require__(154);
+	var ContextWebGL_1 = __webpack_require__(155);
+	var ContextStage3D_1 = __webpack_require__(175);
+	var ContextSoftware_1 = __webpack_require__(183);
+	var StageEvent_1 = __webpack_require__(146);
+	var ProgramDataPool_1 = __webpack_require__(190);
 	/**
 	 * Stage provides a proxy class to handle the creation and attachment of the Context
 	 * (and in turn the back buffer) it uses. Stage should never be created directly,
@@ -25939,6 +26009,8 @@
 	        //private _touch3DManager:Touch3DManager; //TODO: imeplement dependency Touch3DManager
 	        this._initialised = false;
 	        this._bufferFormatDictionary = new Array(5);
+	        this.globalDisableMipmap = false;
+	        this.globalDisableSmooth = false;
 	        this._programDataPool = new ProgramDataPool_1.default(this);
 	        this._container = container;
 	        if (this._container) {
@@ -26376,8 +26448,8 @@
 	    };
 	    Stage.prototype.setSamplerState = function (index, repeat, smooth, mipmap) {
 	        var wrap = repeat ? ContextGLWrapMode_1.default.REPEAT : ContextGLWrapMode_1.default.CLAMP;
-	        var filter = smooth ? ContextGLTextureFilter_1.default.LINEAR : ContextGLTextureFilter_1.default.NEAREST;
-	        var mipfilter = mipmap ? ContextGLMipFilter_1.default.MIPLINEAR : ContextGLMipFilter_1.default.MIPNONE;
+	        var filter = (smooth && !this.globalDisableSmooth) ? ContextGLTextureFilter_1.default.LINEAR : ContextGLTextureFilter_1.default.NEAREST;
+	        var mipfilter = (mipmap && !this.globalDisableMipmap) ? ContextGLMipFilter_1.default.MIPLINEAR : ContextGLMipFilter_1.default.MIPNONE;
 	        this._context.setSamplerStateAt(index, wrap, filter, mipfilter);
 	    };
 	    Stage._abstractionClassPool = new Object();
@@ -26388,7 +26460,7 @@
 
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26468,7 +26540,7 @@
 
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26487,7 +26559,7 @@
 
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26504,7 +26576,7 @@
 
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26520,7 +26592,7 @@
 
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26554,7 +26626,7 @@
 
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26570,30 +26642,29 @@
 
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Rectangle_1 = __webpack_require__(51);
 	var ByteArray_1 = __webpack_require__(139);
 	var ContextGLBlendFactor_1 = __webpack_require__(144);
-	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
 	var ContextGLClearMask_1 = __webpack_require__(131);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
-	var ContextGLMipFilter_1 = __webpack_require__(150);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var ContextGLStencilAction_1 = __webpack_require__(157);
-	var ContextGLTextureFilter_1 = __webpack_require__(151);
-	var ContextGLTriangleFace_1 = __webpack_require__(158);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ContextGLWrapMode_1 = __webpack_require__(153);
-	var CubeTextureWebGL_1 = __webpack_require__(159);
-	var IndexBufferWebGL_1 = __webpack_require__(161);
-	var ProgramWebGL_1 = __webpack_require__(162);
-	var TextureWebGL_1 = __webpack_require__(171);
-	var SamplerState_1 = __webpack_require__(172);
-	var VertexBufferWebGL_1 = __webpack_require__(173);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
+	var ContextGLMipFilter_1 = __webpack_require__(151);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var ContextGLStencilAction_1 = __webpack_require__(158);
+	var ContextGLTextureFilter_1 = __webpack_require__(152);
+	var ContextGLTriangleFace_1 = __webpack_require__(159);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ContextGLWrapMode_1 = __webpack_require__(154);
+	var CubeTextureWebGL_1 = __webpack_require__(160);
+	var IndexBufferWebGL_1 = __webpack_require__(162);
+	var ProgramWebGL_1 = __webpack_require__(163);
+	var TextureWebGL_1 = __webpack_require__(172);
+	var SamplerState_1 = __webpack_require__(173);
+	var VertexBufferWebGL_1 = __webpack_require__(174);
 	var ContextWebGL = (function () {
 	    function ContextWebGL(canvas) {
 	        this._blendFactorDictionary = new Object();
@@ -26883,42 +26954,9 @@
 	        this._currentProgram = program;
 	        program.focusProgram();
 	    };
-	    ContextWebGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-	        //this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
-	        if (transposedMatrix === void 0) { transposedMatrix = false; }
-	        //TODO remove special case for WebGL matrix calls?
-	        var d = matrix.rawData;
-	        if (transposedMatrix) {
-	            var raw = Matrix3DUtils_1.default.RAW_DATA_CONTAINER;
-	            raw[0] = d[0];
-	            raw[1] = d[4];
-	            raw[2] = d[8];
-	            raw[3] = d[12];
-	            raw[4] = d[1];
-	            raw[5] = d[5];
-	            raw[6] = d[9];
-	            raw[7] = d[13];
-	            raw[8] = d[2];
-	            raw[9] = d[6];
-	            raw[10] = d[10];
-	            raw[11] = d[14];
-	            raw[12] = d[3];
-	            raw[13] = d[7];
-	            raw[14] = d[11];
-	            raw[15] = d[15];
-	            this.setProgramConstantsFromArray(programType, firstRegister, raw, 4);
-	        }
-	        else {
-	            this.setProgramConstantsFromArray(programType, firstRegister, d, 4);
-	        }
-	    };
-	    ContextWebGL.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
-	        if (numRegisters === void 0) { numRegisters = -1; }
-	        var startIndex;
-	        for (var i = 0; i < numRegisters; i++) {
-	            startIndex = i * 4;
-	            this._gl.uniform4f(this._currentProgram.getUniformLocation(programType, (firstRegister + i)), data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
-	        }
+	    ContextWebGL.prototype.setProgramConstantsFromArray = function (programType, data) {
+	        if (data.length)
+	            this._gl.uniform4fv(this._currentProgram.getUniformLocation(programType), data);
 	    };
 	    ContextWebGL.prototype.setScissorRectangle = function (rectangle) {
 	        if (!rectangle) {
@@ -27017,7 +27055,6 @@
 	        }
 	    };
 	    ContextWebGL.MAX_SAMPLERS = 8;
-	    ContextWebGL._float4 = new Float32Array(4);
 	    ContextWebGL.modulo = 0;
 	    return ContextWebGL;
 	}());
@@ -27034,7 +27071,7 @@
 
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27050,7 +27087,7 @@
 
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27067,7 +27104,7 @@
 
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27089,7 +27126,7 @@
 
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27107,7 +27144,7 @@
 
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27116,7 +27153,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBaseWebGL_1 = __webpack_require__(160);
+	var TextureBaseWebGL_1 = __webpack_require__(161);
 	var CubeTextureWebGL = (function (_super) {
 	    __extends(CubeTextureWebGL, _super);
 	    function CubeTextureWebGL(gl, size) {
@@ -27165,7 +27202,7 @@
 
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27192,7 +27229,7 @@
 
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27240,12 +27277,12 @@
 
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AGALTokenizer_1 = __webpack_require__(163);
-	var AGLSLParser_1 = __webpack_require__(170);
+	var AGALTokenizer_1 = __webpack_require__(164);
+	var AGLSLParser_1 = __webpack_require__(171);
 	var ProgramWebGL = (function () {
 	    function ProgramWebGL(gl) {
 	        this._uniforms = [[], [], []];
@@ -27277,10 +27314,20 @@
 	        this._attribs.length = 0;
 	    };
 	    ProgramWebGL.prototype.getUniformLocation = function (programType, index) {
+	        if (index === void 0) { index = -1; }
 	        if (this._uniforms[programType][index] != null)
 	            return this._uniforms[programType][index];
-	        return (this._uniforms[programType][index] = this._gl.getUniformLocation(this._program, ProgramWebGL._uniformLocationNameDictionary[programType] + index));
+	        var name = (index == -1) ? ProgramWebGL._uniformLocationNameDictionary[programType] : ProgramWebGL._uniformLocationNameDictionary[programType] + index;
+	        return (this._uniforms[programType][index] = this._gl.getUniformLocation(this._program, name));
 	    };
+	    //
+	    // public getUniformLocation(programType:number, index:number):WebGLUniformLocation
+	    // {
+	    // 	if (this._uniforms[programType][index] != null)
+	    // 		return this._uniforms[programType][index];
+	    //
+	    // 	return (this._uniforms[programType][index] = this._gl.getUniformLocation(this._program, ProgramWebGL._uniformLocationNameDictionary[programType] + index));
+	    // }
 	    ProgramWebGL.prototype.getAttribLocation = function (index) {
 	        if (this._attribs[index] != null)
 	            return this._attribs[index];
@@ -27309,14 +27356,14 @@
 
 
 /***/ },
-/* 163 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Description_1 = __webpack_require__(164);
-	var Header_1 = __webpack_require__(165);
-	var Mapping_1 = __webpack_require__(166);
-	var Token_1 = __webpack_require__(168);
+	var Description_1 = __webpack_require__(165);
+	var Header_1 = __webpack_require__(166);
+	var Mapping_1 = __webpack_require__(167);
+	var Token_1 = __webpack_require__(169);
 	var AGALTokenizer = (function () {
 	    function AGALTokenizer() {
 	    }
@@ -27436,11 +27483,11 @@
 
 
 /***/ },
-/* 164 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Header_1 = __webpack_require__(165);
+	var Header_1 = __webpack_require__(166);
 	var Description = (function () {
 	    function Description() {
 	        this.regread = [
@@ -27476,7 +27523,7 @@
 
 
 /***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27493,11 +27540,11 @@
 
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var OpLUT_1 = __webpack_require__(167);
+	var OpLUT_1 = __webpack_require__(168);
 	var Mapping = (function () {
 	    //TODO: get rid of hack that fixes including definition file
 	    function Mapping(include) {
@@ -27545,7 +27592,7 @@
 
 
 /***/ },
-/* 167 */
+/* 168 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27570,11 +27617,11 @@
 
 
 /***/ },
-/* 168 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Destination_1 = __webpack_require__(169);
+	var Destination_1 = __webpack_require__(170);
 	var Token = (function () {
 	    function Token() {
 	        this.dest = new Destination_1.default();
@@ -27589,7 +27636,7 @@
 
 
 /***/ },
-/* 169 */
+/* 170 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27617,11 +27664,11 @@
 
 
 /***/ },
-/* 170 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Mapping_1 = __webpack_require__(166);
+	var Mapping_1 = __webpack_require__(167);
 	var AGLSLParser = (function () {
 	    function AGLSLParser() {
 	    }
@@ -27634,16 +27681,18 @@
 	        if (desc.header.type == "vertex") {
 	            header += "uniform float yflip;\n";
 	        }
-	        if (!desc.hasindirect) {
-	            for (var i = 0; i < desc.regread[0x1].length; i++) {
-	                if (desc.regread[0x1][i]) {
-	                    header += "uniform vec4 " + tag + "c" + i + ";\n";
-	                }
-	            }
-	        }
-	        else {
-	            header += "uniform vec4 " + tag + "carrr[" + AGLSLParser.maxvertexconstants + "];\n"; // use max const count instead
-	        }
+	        // if (!desc.hasindirect) {
+	        // 	for (var i:number = 0; i < desc.regread[0x1].length; i++) {
+	        // 		if (desc.regread[0x1][i]) {
+	        // 			header += "uniform vec4 " + tag + "c" + i + ";\n";
+	        // 		}
+	        // 	}
+	        // } else {
+	        // 	header += "uniform vec4 " + tag + "carrr[" + AGLSLParser.maxvertexconstants + "];\n";                // use max const count instead
+	        // }
+	        var constcount = desc.regread[0x1].length;
+	        if (constcount > 0)
+	            header += "uniform vec4 " + tag + "c[" + constcount + "];\n";
 	        // declare temps
 	        for (var i = 0; i < desc.regread[0x2].length || i < desc.regwrite[0x2].length; i++) {
 	            if (desc.regread[0x2][i] || desc.regwrite[0x2][i]) {
@@ -27791,12 +27840,13 @@
 	            case 0x0:
 	                return "va" + regnum;
 	            case 0x1:
-	                if (desc.hasindirect && desc.header.type == "vertex") {
-	                    return "vcarrr[" + regnum + "]";
-	                }
-	                else {
-	                    return tag + "c" + regnum;
-	                }
+	                return desc.header.type[0] + "c[" + regnum + "]";
+	            // case 0x1:
+	            // 	if (desc.hasindirect && desc.header.type == "vertex") {
+	            // 		return "vcarrr[" + regnum + "]";
+	            // 	} else {
+	            // 		return tag + "c" + regnum;
+	            // 	}
 	            case 0x2:
 	                return tag + "t" + regnum;
 	            case 0x3:
@@ -27862,7 +27912,7 @@
 
 
 /***/ },
-/* 171 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27871,7 +27921,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TextureBaseWebGL_1 = __webpack_require__(160);
+	var TextureBaseWebGL_1 = __webpack_require__(161);
 	var TextureWebGL = (function (_super) {
 	    __extends(TextureWebGL, _super);
 	    function TextureWebGL(gl, width, height) {
@@ -27950,7 +28000,7 @@
 
 
 /***/ },
-/* 172 */
+/* 173 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -27964,7 +28014,7 @@
 
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -28020,20 +28070,19 @@
 
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Matrix3DUtils_1 = __webpack_require__(25);
 	//import swfobject					from "../swfobject";
 	var ContextGLClearMask_1 = __webpack_require__(131);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var CubeTextureFlash_1 = __webpack_require__(175);
-	var IndexBufferFlash_1 = __webpack_require__(178);
-	var OpCodes_1 = __webpack_require__(176);
-	var ProgramFlash_1 = __webpack_require__(179);
-	var TextureFlash_1 = __webpack_require__(180);
-	var VertexBufferFlash_1 = __webpack_require__(181);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var CubeTextureFlash_1 = __webpack_require__(176);
+	var IndexBufferFlash_1 = __webpack_require__(179);
+	var OpCodes_1 = __webpack_require__(177);
+	var ProgramFlash_1 = __webpack_require__(180);
+	var TextureFlash_1 = __webpack_require__(181);
+	var VertexBufferFlash_1 = __webpack_require__(182);
 	var ContextStage3D = (function () {
 	    //TODO: get rid of hack that fixes including definition file
 	    function ContextStage3D(container, callback) {
@@ -28168,42 +28217,13 @@
 	        if (numVertices === void 0) { numVertices = -1; }
 	        //can't be done in Stage3D
 	    };
-	    ContextStage3D.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-	        //this._gl.uniformMatrix4fv(this._gl.getUniformLocation(this._currentProgram.glProgram, this._uniformLocationNameDictionary[programType]), !transposedMatrix, new Float32Array(matrix.rawData));
-	        if (transposedMatrix === void 0) { transposedMatrix = false; }
-	        //TODO remove special case for WebGL matrix calls?
-	        var d = matrix.rawData;
-	        if (transposedMatrix) {
-	            var raw = Matrix3DUtils_1.default.RAW_DATA_CONTAINER;
-	            raw[0] = d[0];
-	            raw[1] = d[4];
-	            raw[2] = d[8];
-	            raw[3] = d[12];
-	            raw[4] = d[1];
-	            raw[5] = d[5];
-	            raw[6] = d[9];
-	            raw[7] = d[13];
-	            raw[8] = d[2];
-	            raw[9] = d[6];
-	            raw[10] = d[10];
-	            raw[11] = d[14];
-	            raw[12] = d[3];
-	            raw[13] = d[7];
-	            raw[14] = d[11];
-	            raw[15] = d[15];
-	            this.setProgramConstantsFromArray(programType, firstRegister, raw, 4);
-	        }
-	        else {
-	            this.setProgramConstantsFromArray(programType, firstRegister, d, 4);
-	        }
-	    };
-	    ContextStage3D.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
-	        if (numRegisters === void 0) { numRegisters = -1; }
+	    ContextStage3D.prototype.setProgramConstantsFromArray = function (programType, data) {
 	        var startIndex;
+	        var numRegisters = data.length / 4;
 	        var target = (programType == ContextGLProgramType_1.default.VERTEX) ? OpCodes_1.default.trueValue : OpCodes_1.default.falseValue;
 	        for (var i = 0; i < numRegisters; i++) {
 	            startIndex = i * 4;
-	            this.addStream(String.fromCharCode(OpCodes_1.default.setProgramConstant, target, (firstRegister + i) + OpCodes_1.default.intMask) + data[startIndex] + "," + data[startIndex + 1] + "," + data[startIndex + 2] + "," + data[startIndex + 3] + ",");
+	            this.addStream(String.fromCharCode(OpCodes_1.default.setProgramConstant, target, i + OpCodes_1.default.intMask) + data[startIndex] + "," + data[startIndex + 1] + "," + data[startIndex + 2] + "," + data[startIndex + 3] + ",");
 	            if (ContextStage3D.debug)
 	                this.execute();
 	        }
@@ -28363,7 +28383,7 @@
 
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28373,8 +28393,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ByteArrayBase_1 = __webpack_require__(140);
-	var OpCodes_1 = __webpack_require__(176);
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var OpCodes_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	var CubeTextureFlash = (function (_super) {
 	    __extends(CubeTextureFlash, _super);
 	    function CubeTextureFlash(context, size, format, forRTT, streaming) {
@@ -28428,7 +28448,7 @@
 
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -28486,7 +28506,7 @@
 
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -28509,7 +28529,7 @@
 
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28518,8 +28538,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var OpCodes_1 = __webpack_require__(176);
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var OpCodes_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	var IndexBufferFlash = (function (_super) {
 	    __extends(IndexBufferFlash, _super);
 	    function IndexBufferFlash(context, numIndices) {
@@ -28556,7 +28576,7 @@
 
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28565,9 +28585,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextStage3D_1 = __webpack_require__(174);
-	var OpCodes_1 = __webpack_require__(176);
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var ContextStage3D_1 = __webpack_require__(175);
+	var OpCodes_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	var ProgramFlash = (function (_super) {
 	    __extends(ProgramFlash, _super);
 	    function ProgramFlash(context) {
@@ -28595,7 +28615,7 @@
 
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28605,8 +28625,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ByteArrayBase_1 = __webpack_require__(140);
-	var OpCodes_1 = __webpack_require__(176);
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var OpCodes_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	var TextureFlash = (function (_super) {
 	    __extends(TextureFlash, _super);
 	    function TextureFlash(context, width, height, format, forRTT, streaming) {
@@ -28665,7 +28685,7 @@
 
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28674,8 +28694,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var OpCodes_1 = __webpack_require__(176);
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var OpCodes_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	var VertexBufferFlash = (function (_super) {
 	    __extends(VertexBufferFlash, _super);
 	    function VertexBufferFlash(context, numVertices, dataPerVertex) {
@@ -28720,28 +28740,27 @@
 
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImage2D_1 = __webpack_require__(74);
 	var Matrix3D_1 = __webpack_require__(23);
-	var Matrix_1 = __webpack_require__(87);
+	var Matrix_1 = __webpack_require__(81);
 	var Point_1 = __webpack_require__(26);
 	var Vector3D_1 = __webpack_require__(18);
 	var Rectangle_1 = __webpack_require__(51);
 	var ColorUtils_1 = __webpack_require__(20);
-	var Matrix3DUtils_1 = __webpack_require__(25);
 	var ContextGLBlendFactor_1 = __webpack_require__(144);
 	var ContextGLClearMask_1 = __webpack_require__(131);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var ContextGLTriangleFace_1 = __webpack_require__(158);
-	var IndexBufferSoftware_1 = __webpack_require__(183);
-	var VertexBufferSoftware_1 = __webpack_require__(184);
-	var TextureSoftware_1 = __webpack_require__(185);
-	var ProgramSoftware_1 = __webpack_require__(186);
-	var SoftwareSamplerState_1 = __webpack_require__(188);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var ContextGLTriangleFace_1 = __webpack_require__(159);
+	var IndexBufferSoftware_1 = __webpack_require__(184);
+	var VertexBufferSoftware_1 = __webpack_require__(185);
+	var TextureSoftware_1 = __webpack_require__(186);
+	var ProgramSoftware_1 = __webpack_require__(187);
+	var SoftwareSamplerState_1 = __webpack_require__(189);
 	var ContextSoftware = (function () {
 	    function ContextSoftware(canvas) {
 	        this._backBufferRect = new Rectangle_1.default();
@@ -28896,35 +28915,8 @@
 	    ContextSoftware.prototype.setProgram = function (program) {
 	        this._program = program;
 	    };
-	    ContextSoftware.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
-	        console.log("setProgramConstantsFromMatrix: programType" + programType + " firstRegister: " + firstRegister + " matrix: " + matrix + " transposedMatrix: " + transposedMatrix);
-	        var d = matrix.rawData;
-	        if (transposedMatrix) {
-	            var raw = Matrix3DUtils_1.default.RAW_DATA_CONTAINER;
-	            raw[0] = d[0];
-	            raw[1] = d[4];
-	            raw[2] = d[8];
-	            raw[3] = d[12];
-	            raw[4] = d[1];
-	            raw[5] = d[5];
-	            raw[6] = d[9];
-	            raw[7] = d[13];
-	            raw[8] = d[2];
-	            raw[9] = d[6];
-	            raw[10] = d[10];
-	            raw[11] = d[14];
-	            raw[12] = d[3];
-	            raw[13] = d[7];
-	            raw[14] = d[11];
-	            raw[15] = d[15];
-	            this.setProgramConstantsFromArray(programType, firstRegister, raw, 4);
-	        }
-	        else {
-	            this.setProgramConstantsFromArray(programType, firstRegister, d, 4);
-	        }
-	    };
-	    ContextSoftware.prototype.setProgramConstantsFromArray = function (programType, firstRegister, data, numRegisters) {
-	        console.log("setProgramConstantsFromArray: programType" + programType + " firstRegister: " + firstRegister + " data: " + data + " numRegisters: " + numRegisters);
+	    ContextSoftware.prototype.setProgramConstantsFromArray = function (programType, data) {
+	        console.log("setProgramConstantsFromArray: programType" + programType + " data: " + data);
 	        var target;
 	        if (programType == ContextGLProgramType_1.default.VERTEX) {
 	            target = this._vertexConstants;
@@ -28933,7 +28925,8 @@
 	            target = this._fragmentConstants;
 	        }
 	        var k = 0;
-	        for (var i = firstRegister; i < firstRegister + numRegisters; i++) {
+	        var len = data.length / 4;
+	        for (var i = 0; i < len; i++) {
 	            target[i] = new Vector3D_1.default(data[k++], data[k++], data[k++], data[k++]);
 	        }
 	    };
@@ -29278,7 +29271,7 @@
 
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29325,7 +29318,7 @@
 
 
 /***/ },
-/* 184 */
+/* 185 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29391,7 +29384,7 @@
 
 
 /***/ },
-/* 185 */
+/* 186 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -29437,19 +29430,19 @@
 
 
 /***/ },
-/* 186 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AGALTokenizer_1 = __webpack_require__(163);
-	var ProgramVOSoftware_1 = __webpack_require__(187);
+	var AGALTokenizer_1 = __webpack_require__(164);
+	var ProgramVOSoftware_1 = __webpack_require__(188);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var SoftwareSamplerState_1 = __webpack_require__(188);
-	var ContextGLTextureFilter_1 = __webpack_require__(151);
-	var ContextGLMipFilter_1 = __webpack_require__(150);
-	var ContextGLWrapMode_1 = __webpack_require__(153);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var SoftwareSamplerState_1 = __webpack_require__(189);
+	var ContextGLTextureFilter_1 = __webpack_require__(152);
+	var ContextGLMipFilter_1 = __webpack_require__(151);
+	var ContextGLWrapMode_1 = __webpack_require__(154);
 	var ProgramSoftware = (function () {
 	    function ProgramSoftware() {
 	    }
@@ -30484,7 +30477,7 @@
 
 
 /***/ },
-/* 187 */
+/* 188 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -30506,13 +30499,13 @@
 
 
 /***/ },
-/* 188 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ContextGLTextureFilter_1 = __webpack_require__(151);
-	var ContextGLMipFilter_1 = __webpack_require__(150);
-	var ContextGLWrapMode_1 = __webpack_require__(153);
+	var ContextGLTextureFilter_1 = __webpack_require__(152);
+	var ContextGLMipFilter_1 = __webpack_require__(151);
+	var ContextGLWrapMode_1 = __webpack_require__(154);
 	/**
 	 * The same as SamplerState, but with strings
 	 * TODO: replace two similar classes with one
@@ -30530,11 +30523,11 @@
 
 
 /***/ },
-/* 189 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ProgramData_1 = __webpack_require__(190);
+	var ProgramData_1 = __webpack_require__(191);
 	/**
 	 * @class away.pool.ProgramDataPool
 	 */
@@ -30573,7 +30566,7 @@
 
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -30612,7 +30605,7 @@
 
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -30668,56 +30661,6 @@
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = SurfacePool;
-
-
-/***/ },
-/* 192 */
-/***/ function(module, exports) {
-
-	"use strict";
-	/**
-	 * @class away.pool.SurfacePool
-	 */
-	var ElementsPool = (function () {
-	    /**
-	     * //TODO
-	     *
-	     * @param surfaceClassGL
-	     */
-	    function ElementsPool(shader, elementsClass) {
-	        this._abstractionPool = new Object();
-	        this._shader = shader;
-	        this._elementsClass = elementsClass;
-	    }
-	    /**
-	     * //TODO
-	     *
-	     * @param renderable
-	     * @returns IRenderable
-	     */
-	    ElementsPool.prototype.getAbstraction = function (elements) {
-	        return (this._abstractionPool[elements.id] || (this._abstractionPool[elements.id] = new (this._elementsClass)(elements, this._shader, this)));
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param renderable
-	     */
-	    ElementsPool.prototype.clearAbstraction = function (elements) {
-	        delete this._abstractionPool[elements.id];
-	    };
-	    /**
-	     *
-	     * @param imageObjectClass
-	     */
-	    ElementsPool.registerAbstraction = function (elementsClass, assetClass) {
-	        ElementsPool._abstractionClassPool[assetClass.assetType] = elementsClass;
-	    };
-	    ElementsPool._abstractionClassPool = new Object();
-	    return ElementsPool;
-	}());
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ElementsPool;
 
 
 /***/ },
@@ -31056,7 +30999,7 @@
 	     * Marks the shader program as invalid, so it will be recompiled before the next render.
 	     */
 	    GL_SurfacePassBase.prototype.invalidate = function () {
-	        this._shader.invalidateShader();
+	        this._shader.invalidateProgram();
 	        this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
 	    };
 	    GL_SurfacePassBase.prototype.dispose = function () {
@@ -31076,8 +31019,8 @@
 	     *
 	     * @internal
 	     */
-	    GL_SurfacePassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-	        this._shader._iRender(renderable, camera, viewProjection);
+	    GL_SurfacePassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        this._shader._setRenderState(renderable, camera, viewProjection);
 	    };
 	    /**
 	     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
@@ -31178,9 +31121,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractionBase_1 = __webpack_require__(199);
-	var SurfaceEvent_1 = __webpack_require__(97);
-	var MaterialBase_1 = __webpack_require__(102);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var SurfaceEvent_1 = __webpack_require__(98);
+	var MaterialBase_1 = __webpack_require__(103);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var PassEvent_1 = __webpack_require__(197);
 	/**
 	 *
@@ -31193,6 +31136,7 @@
 	        _super.call(this, surface, renderPool);
 	        this.usages = 0;
 	        this._forceSeparateMVP = false;
+	        this._usesAnimation = true;
 	        this._invalidAnimation = true;
 	        this._invalidRender = true;
 	        this._invalidImages = true;
@@ -31321,19 +31265,23 @@
 	        if (this._invalidRender)
 	            this._pUpdateRender();
 	        this._invalidAnimation = false;
-	        var enabledGPUAnimation = this._getEnabledGPUAnimation();
+	        var usesAnimation = this._getEnabledGPUAnimation();
 	        var renderOrderId = 0;
 	        var mult = 1;
 	        var shader;
 	        var len = this._passes.length;
 	        for (var i = 0; i < len; i++) {
 	            shader = this._passes[i].shader;
-	            if (shader.usesAnimation != enabledGPUAnimation) {
-	                shader.usesAnimation = enabledGPUAnimation;
-	                shader.invalidateProgram();
-	            }
+	            shader.usesAnimation = usesAnimation;
 	            renderOrderId += shader.programData.id * mult;
 	            mult *= 1000;
+	        }
+	        if (this._usesAnimation != usesAnimation) {
+	            this._usesAnimation = usesAnimation;
+	            var renderables = this._surface.iOwners;
+	            var numOwners = renderables.length;
+	            for (var j = 0; j < numOwners; j++)
+	                renderables[j].invalidateElements();
 	        }
 	        this._renderOrderId = renderOrderId;
 	    };
@@ -31409,13 +31357,17 @@
 	    GL_SurfaceBase.prototype._getEnabledGPUAnimation = function () {
 	        if (this._surface.animationSet) {
 	            this._surface.animationSet.resetGPUCompatibility();
-	            var owners = this._surface.iOwners;
-	            var numOwners = owners.length;
+	            var renderables = this._surface.iOwners;
+	            var numOwners = renderables.length;
 	            var len = this._passes.length;
-	            for (var i = 0; i < len; i++)
+	            var shader;
+	            for (var i = 0; i < len; i++) {
+	                shader = this._passes[i].shader;
+	                shader.usesAnimation = false;
 	                for (var j = 0; j < numOwners; j++)
-	                    if (owners[j].animator)
-	                        owners[j].animator.testGPUCompatibility(this._passes[i].shader);
+	                    if (renderables[j].animator)
+	                        renderables[j].animator.testGPUCompatibility(shader);
+	            }
 	            return !this._surface.animationSet.usesCPU;
 	        }
 	        return false;
@@ -31482,12 +31434,11 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BlendMode_1 = __webpack_require__(96);
+	var BlendMode_1 = __webpack_require__(97);
 	var ArgumentError_1 = __webpack_require__(13);
 	var ContextGLBlendFactor_1 = __webpack_require__(144);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
-	var ContextGLTriangleFace_1 = __webpack_require__(158);
-	var ElementsPool_1 = __webpack_require__(192);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
+	var ContextGLTriangleFace_1 = __webpack_require__(159);
 	var CompilerBase_1 = __webpack_require__(201);
 	/**
 	 * ShaderBase keeps track of the number of dependencies for "named registers" used across a pass.
@@ -31505,7 +31456,6 @@
 	        this._abstractionPool = new Object();
 	        this._blendFactorSource = ContextGLBlendFactor_1.default.ONE;
 	        this._blendFactorDest = ContextGLBlendFactor_1.default.ZERO;
-	        this._invalidShader = true;
 	        this._invalidProgram = true;
 	        this._animationVertexCode = "";
 	        this._animationFragmentCode = "";
@@ -31544,13 +31494,67 @@
 	        this._pass = pass;
 	        this._stage = stage;
 	        this.profile = this._stage.profile;
-	        this._elementsPool = new ElementsPool_1.default(this, elementsClass);
 	    }
 	    Object.defineProperty(ShaderBase.prototype, "programData", {
 	        get: function () {
 	            if (this._invalidProgram)
 	                this._updateProgram();
 	            return this._programData;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShaderBase.prototype, "usesAnimation", {
+	        get: function () {
+	            return this._usesAnimation;
+	        },
+	        set: function (value) {
+	            if (this._usesAnimation == value)
+	                return;
+	            this._usesAnimation = value;
+	            this.invalidateProgram();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShaderBase.prototype, "numUsedVertexConstants", {
+	        get: function () {
+	            if (this._invalidProgram)
+	                this._updateProgram();
+	            return this._numUsedVertexConstants;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShaderBase.prototype, "numUsedFragmentConstants", {
+	        get: function () {
+	            if (this._invalidProgram)
+	                this._updateProgram();
+	            return this._numUsedFragmentConstants;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShaderBase.prototype, "numUsedStreams", {
+	        /**
+	         * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
+	         */
+	        get: function () {
+	            if (this._invalidProgram)
+	                this._updateProgram();
+	            return this._numUsedStreams;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShaderBase.prototype, "numUsedTextures", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            if (this._invalidProgram)
+	                this._updateProgram();
+	            return this._numUsedTextures;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -31630,20 +31634,14 @@
 	    /**
 	     * Initializes the unchanging constant data for this shader object.
 	     */
-	    ShaderBase.prototype.initConstantData = function (registerCache, animatableAttributes, animationTargetRegisters, uvSource, uvTarget) {
+	    ShaderBase.prototype.initConstantData = function (registerCache) {
 	        //Updates the amount of used register indices.
-	        this.numUsedVertexConstants = registerCache.numUsedVertexConstants;
-	        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-	        this.numUsedStreams = registerCache.numUsedStreams;
-	        this.numUsedTextures = registerCache.numUsedTextures;
-	        this.numUsedVaryings = registerCache.numUsedVaryings;
-	        this.numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
-	        this.animatableAttributes = animatableAttributes;
-	        this.animationTargetRegisters = animationTargetRegisters;
-	        this.uvSource = uvSource;
-	        this.uvTarget = uvTarget;
-	        this.vertexConstantData = new Float32Array(this.numUsedVertexConstants * 4);
-	        this.fragmentConstantData = new Float32Array(this.numUsedFragmentConstants * 4);
+	        this._numUsedVertexConstants = registerCache.numUsedVertexConstants;
+	        this._numUsedFragmentConstants = registerCache.numUsedFragmentConstants;
+	        this._numUsedStreams = registerCache.numUsedStreams;
+	        this._numUsedTextures = registerCache.numUsedTextures;
+	        this.vertexConstantData = new Float32Array(registerCache.numUsedVertexConstants * 4);
+	        this.fragmentConstantData = new Float32Array(registerCache.numUsedFragmentConstants * 4);
 	        //Initializes commonly required constant values.
 	        if (this.commonsDataIndex >= 0) {
 	            this.fragmentConstantData[this.commonsDataIndex] = .5;
@@ -31675,6 +31673,11 @@
 	        }
 	        if (this.cameraPositionIndex >= 0)
 	            this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
+	        // init constant data in pass
+	        this._pass._iInitConstantData(this);
+	        //init constant data in animation
+	        if (this.usesAnimation)
+	            this._pass.animationSet.doneAGALCode(this);
 	    };
 	    /**
 	     * The blend mode to use when drawing this renderable. The following blend modes are supported:
@@ -31721,8 +31724,6 @@
 	     * @inheritDoc
 	     */
 	    ShaderBase.prototype._iActivate = function (camera) {
-	        if (this.usesAnimation)
-	            this._pass.animationSet.activate(this, this._stage);
 	        this._stage.context.setCulling(this.useBothSides ? ContextGLTriangleFace_1.default.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 	        if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
 	            var pos = camera.scenePosition;
@@ -31733,15 +31734,15 @@
 	        this._stage.context.setDepthTest((this.writeDepth && !this.usesBlending), this.depthCompareMode);
 	        if (this.usesBlending)
 	            this._stage.context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
+	        this.activeElements = null;
 	    };
 	    /**
 	     * @inheritDoc
 	     */
 	    ShaderBase.prototype._iDeactivate = function () {
-	        if (this.usesAnimation)
-	            this._pass.animationSet.deactivate(this, this._stage);
 	        //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
 	        this._stage.context.setDepthTest(true, ContextGLCompareMode_1.default.LESS_EQUAL);
+	        this.activeElements = null;
 	    };
 	    /**
 	     *
@@ -31750,9 +31751,9 @@
 	     * @param stage
 	     * @param camera
 	     */
-	    ShaderBase.prototype._iRender = function (renderable, camera, viewProjection) {
+	    ShaderBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
 	        if (renderable.renderable.animator)
-	            renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera, this.numUsedVertexConstants, this.numUsedStreams);
+	            renderable.renderable.animator.setRenderState(this, renderable, this._stage, camera);
 	        if (this.usesUVTransform) {
 	            var uvMatrix = renderable.uvMatrix;
 	            if (uvMatrix) {
@@ -31811,23 +31812,17 @@
 	    ShaderBase.prototype.invalidateProgram = function () {
 	        this._invalidProgram = true;
 	    };
-	    ShaderBase.prototype.invalidateShader = function () {
-	        this._invalidShader = true;
-	        this._invalidProgram = true;
-	    };
 	    ShaderBase.prototype.dispose = function () {
 	        this._programData.dispose();
 	        this._programData = null;
 	    };
 	    ShaderBase.prototype._updateProgram = function () {
 	        this._invalidProgram = false;
-	        var compiler;
-	        if (this._invalidShader) {
-	            this._invalidShader = false;
-	            compiler = this.createCompiler(this._elementsClass, this._pass);
-	            compiler.compile();
-	        }
-	        this._calcAnimationCode(compiler.shadedTarget);
+	        var compiler = this.createCompiler(this._elementsClass, this._pass);
+	        compiler.compile();
+	        this._calcAnimationCode(compiler._pRegisterCache, compiler.shadedTarget, compiler._pSharedRegisters);
+	        //initialise the required shader constants
+	        this.initConstantData(compiler._pRegisterCache);
 	        var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
 	        //check program data hasn't changed, keep count of program usages
 	        if (this._programData != programData) {
@@ -31837,29 +31832,75 @@
 	            programData.usages++;
 	        }
 	    };
-	    ShaderBase.prototype._calcAnimationCode = function (shadedTarget) {
+	    ShaderBase.prototype._calcAnimationCode = function (registerCache, shadedTarget, sharedRegisters) {
 	        //reset code
 	        this._animationVertexCode = "";
 	        this._animationFragmentCode = "";
 	        //check to see if GPU animation is used
 	        if (this.usesAnimation) {
 	            var animationSet = this._pass.animationSet;
-	            this._animationVertexCode += animationSet.getAGALVertexCode(this);
+	            this._animationVertexCode += animationSet.getAGALVertexCode(this, registerCache, sharedRegisters);
 	            if (this.uvDependencies > 0 && !this.usesUVTransform)
-	                this._animationVertexCode += animationSet.getAGALUVCode(this);
+	                this._animationVertexCode += animationSet.getAGALUVCode(this, registerCache, sharedRegisters);
 	            if (this.usesFragmentAnimation)
-	                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, shadedTarget);
-	            animationSet.doneAGALCode(this);
+	                this._animationFragmentCode += animationSet.getAGALFragmentCode(this, registerCache, shadedTarget);
 	        }
 	        else {
 	            // simply write attributes to targets, do not animate them
 	            // projection will pick up on targets[0] to do the projection
-	            var len = this.animatableAttributes.length;
+	            var len = sharedRegisters.animatableAttributes.length;
 	            for (var i = 0; i < len; ++i)
-	                this._animationVertexCode += "mov " + this.animationTargetRegisters[i] + ", " + this.animatableAttributes[i] + "\n";
+	                this._animationVertexCode += "mov " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animatableAttributes[i] + "\n";
 	            if (this.uvDependencies > 0 && !this.usesUVTransform)
-	                this._animationVertexCode += "mov " + this.uvTarget + "," + this.uvSource + "\n";
+	                this._animationVertexCode += "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
 	        }
+	    };
+	    ShaderBase.prototype.setVertexConst = function (index, x, y, z, w) {
+	        if (x === void 0) { x = 0; }
+	        if (y === void 0) { y = 0; }
+	        if (z === void 0) { z = 0; }
+	        if (w === void 0) { w = 0; }
+	        index *= 4;
+	        this.vertexConstantData[index++] = x;
+	        this.vertexConstantData[index++] = y;
+	        this.vertexConstantData[index++] = z;
+	        this.vertexConstantData[index] = w;
+	    };
+	    ShaderBase.prototype.setVertexConstFromArray = function (index, data) {
+	        index *= 4;
+	        for (var i = 0; i < data.length; i++)
+	            this.vertexConstantData[index++] = data[i];
+	    };
+	    ShaderBase.prototype.setVertexConstFromMatrix = function (index, matrix) {
+	        index *= 4;
+	        var rawData = matrix.rawData;
+	        this.vertexConstantData[index++] = rawData[0];
+	        this.vertexConstantData[index++] = rawData[4];
+	        this.vertexConstantData[index++] = rawData[8];
+	        this.vertexConstantData[index++] = rawData[12];
+	        this.vertexConstantData[index++] = rawData[1];
+	        this.vertexConstantData[index++] = rawData[5];
+	        this.vertexConstantData[index++] = rawData[9];
+	        this.vertexConstantData[index++] = rawData[13];
+	        this.vertexConstantData[index++] = rawData[2];
+	        this.vertexConstantData[index++] = rawData[6];
+	        this.vertexConstantData[index++] = rawData[10];
+	        this.vertexConstantData[index++] = rawData[14];
+	        this.vertexConstantData[index++] = rawData[3];
+	        this.vertexConstantData[index++] = rawData[7];
+	        this.vertexConstantData[index++] = rawData[11];
+	        this.vertexConstantData[index] = rawData[15];
+	    };
+	    ShaderBase.prototype.setFragmentConst = function (index, x, y, z, w) {
+	        if (x === void 0) { x = 0; }
+	        if (y === void 0) { y = 0; }
+	        if (z === void 0) { z = 0; }
+	        if (w === void 0) { w = 0; }
+	        index *= 4;
+	        this.fragmentConstantData[index++] = x;
+	        this.fragmentConstantData[index++] = y;
+	        this.fragmentConstantData[index++] = z;
+	        this.fragmentConstantData[index] = w;
 	    };
 	    ShaderBase._abstractionClassPool = new Object();
 	    return ShaderBase;
@@ -31890,17 +31931,11 @@
 	        this._pVertexCode = ''; // Changed to emtpy string- AwayTS
 	        this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
 	        this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
-	        //The attributes that need to be animated by animators.
-	        this._pAnimatableAttributes = new Array();
-	        //The target registers for animated properties, written to by the animators.
-	        this._pAnimationTargetRegisters = new Array();
 	        this._pElementsClass = elementsClass;
 	        this._pRenderPass = pass;
 	        this._pShader = shader;
 	        this._pSharedRegisters = new ShaderRegisterData_1.default();
 	        this._pRegisterCache = new ShaderRegisterCache_1.default(shader.profile);
-	        this._pRegisterCache.vertexAttributesOffset = elementsClass.vertexAttributesOffset;
-	        this._pRegisterCache.reset();
 	    }
 	    /**
 	     * Compiles the code after all setup on the compiler has finished.
@@ -31920,9 +31955,6 @@
 	        //assign the final output color to the output register
 	        this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
 	        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
-	        //initialise the required shader constants
-	        this._pShader.initConstantData(this._pRegisterCache, this._pAnimatableAttributes, this._pAnimationTargetRegisters, this._uvSource, this._uvTarget);
-	        this._pRenderPass._iInitConstantData(this._pShader);
 	    };
 	    /**
 	     * Calculate the transformed colours
@@ -32013,8 +32045,8 @@
 	        }
 	        else {
 	            this._pShader.uvMatrixIndex = -1;
-	            this._uvTarget = varying.toString();
-	            this._uvSource = uvAttributeReg.toString();
+	            this._pSharedRegisters.uvTarget = varying;
+	            this._pSharedRegisters.uvSource = uvAttributeReg;
 	        }
 	    };
 	    /**
@@ -32147,8 +32179,8 @@
 	        this._pShader.pInitRegisterIndices();
 	        this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp();
 	        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedPosition, 1);
-	        this._pAnimatableAttributes.push("va0");
-	        this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedPosition.toString());
+	        this._pSharedRegisters.animatableAttributes.push(this._pRegisterCache.getFreeVertexAttribute());
+	        this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedPosition);
 	        this._pVertexCode = "";
 	        this._pFragmentCode = "";
 	        this._pPostAnimationFragmentCode = "";
@@ -32168,16 +32200,16 @@
 	                this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
 	                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
 	            }
-	            this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
-	            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
+	            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.tangentInput);
+	            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedTangent);
 	        }
 	        if (this._pShader.normalDependencies > 0) {
 	            this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
 	            this._pShader.normalIndex = this._pSharedRegisters.normalInput.index;
 	            this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
 	            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
-	            this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
-	            this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
+	            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.normalInput);
+	            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedNormal);
 	        }
 	        if (this._pShader.colorDependencies > 0) {
 	            this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
@@ -32226,10 +32258,10 @@
 	    });
 	    Object.defineProperty(CompilerBase.prototype, "shadedTarget", {
 	        /**
-	         * The register name containing the final shaded colour.
+	         * The register containing the final shaded colour.
 	         */
 	        get: function () {
-	            return this._pSharedRegisters.shadedTarget.toString();
+	            return this._pSharedRegisters.shadedTarget;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -32263,6 +32295,7 @@
 	        this._numUsedTextures = 0;
 	        this._numUsedVaryings = 0;
 	        this._profile = profile;
+	        this.reset();
 	    }
 	    /**
 	     * Resets all registers.
@@ -32282,15 +32315,6 @@
 	        this._numUsedTextures = 0;
 	        this._numUsedVaryings = 0;
 	        this._numUsedFragmentConstants = 0;
-	        var i;
-	        for (i = 0; i < this._vertexAttributesOffset; ++i)
-	            this.getFreeVertexAttribute();
-	        for (i = 0; i < this._vertexConstantOffset; ++i)
-	            this.getFreeVertexConstant();
-	        for (i = 0; i < this._varyingsOffset; ++i)
-	            this.getFreeVarying();
-	        for (i = 0; i < this._fragmentConstantOffset; ++i)
-	            this.getFreeFragmentConstant();
 	    };
 	    /**
 	     * Disposes all resources used.
@@ -32401,58 +32425,6 @@
 	        ++this._numUsedTextures;
 	        return this._textureCache.requestFreeVectorReg();
 	    };
-	    Object.defineProperty(ShaderRegisterCache.prototype, "vertexConstantOffset", {
-	        /**
-	         * Indicates the start index from which to retrieve vertex constants.
-	         */
-	        get: function () {
-	            return this._vertexConstantOffset;
-	        },
-	        set: function (vertexConstantOffset) {
-	            this._vertexConstantOffset = vertexConstantOffset;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ShaderRegisterCache.prototype, "vertexAttributesOffset", {
-	        /**
-	         * Indicates the start index from which to retrieve vertex attributes.
-	         */
-	        get: function () {
-	            return this._vertexAttributesOffset;
-	        },
-	        set: function (value) {
-	            this._vertexAttributesOffset = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ShaderRegisterCache.prototype, "varyingsOffset", {
-	        /**
-	         * Indicates the start index from which to retrieve varying registers.
-	         */
-	        get: function () {
-	            return this._varyingsOffset;
-	        },
-	        set: function (value) {
-	            this._varyingsOffset = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentConstantOffset", {
-	        /**
-	         * Indicates the start index from which to retrieve fragment constants.
-	         */
-	        get: function () {
-	            return this._fragmentConstantOffset;
-	        },
-	        set: function (value) {
-	            this._fragmentConstantOffset = value;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
 	    Object.defineProperty(ShaderRegisterCache.prototype, "fragmentOutputRegister", {
 	        /**
 	         * The fragment output register.
@@ -32750,7 +32722,9 @@
 	 */
 	var ShaderRegisterData = (function () {
 	    function ShaderRegisterData() {
-	        this.textures = Array();
+	        this.textures = new Array();
+	        this.animatableAttributes = new Array();
+	        this.animationTargetRegisters = new Array();
 	    }
 	    return ShaderRegisterData;
 	}());
@@ -32917,9 +32891,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
 	var ContextGLBlendFactor_1 = __webpack_require__(144);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
 	var RTTEvent_1 = __webpack_require__(209);
 	var RTTBufferManager_1 = __webpack_require__(210);
 	/**
@@ -33005,19 +32979,19 @@
 	        len = this._tasks.length;
 	        if (len > 1) {
 	            context.setProgram(this._tasks[0].getProgram(stage));
-	            context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-	            context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+	            context.setVertexBufferAt(this._tasks[0]._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+	            context.setVertexBufferAt(this._tasks[0]._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
 	        }
 	        for (i = 0; i < len; ++i) {
 	            task = this._tasks[i];
 	            stage.setRenderTarget(task.target);
 	            context.setProgram(task.getProgram(stage));
-	            stage.getAbstraction(task.getMainInputTexture(stage)).activate(0, false);
+	            stage.getAbstraction(task.getMainInputTexture(stage)).activate(task._inputTextureIndex, false);
 	            if (!task.target) {
 	                stage.scissorRect = null;
 	                vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-	                context.setVertexBufferAt(0, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
-	                context.setVertexBufferAt(1, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+	                context.setVertexBufferAt(task._positionIndex, vertexBuffer, 0, ContextGLVertexBufferFormat_1.default.FLOAT_2);
+	                context.setVertexBufferAt(task._uvIndex, vertexBuffer, 8, ContextGLVertexBufferFormat_1.default.FLOAT_2);
 	            }
 	            context.clear(0.0, 0.0, 0.0, 0.0);
 	            task.activate(stage, camera, depthTexture);
@@ -33103,7 +33077,7 @@
 	};
 	var Rectangle_1 = __webpack_require__(51);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var ImageUtils_1 = __webpack_require__(83);
+	var ImageUtils_1 = __webpack_require__(77);
 	var RTTEvent_1 = __webpack_require__(209);
 	var RTTBufferManager = (function (_super) {
 	    __extends(RTTBufferManager, _super);
@@ -33327,498 +33301,95 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_TriangleElements_1 = __webpack_require__(212);
-	/**
-	 *
-	 * @class away.pool.GL_SkyboxElements
-	 */
-	var GL_SkyboxElements = (function (_super) {
-	    __extends(GL_SkyboxElements, _super);
-	    function GL_SkyboxElements() {
-	        _super.apply(this, arguments);
-	    }
-	    GL_SkyboxElements._iIncludeDependencies = function (shader) {
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    GL_SkyboxElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-	        return "mul vt0, va0, vc5\n" +
-	            "add vt0, vt0, vc4\n" +
-	            "m44 op, vt0, vc0\n";
-	    };
-	    GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-	        return "";
-	    };
-	    GL_SkyboxElements.vertexAttributesOffset = 1;
-	    return GL_SkyboxElements;
-	}(GL_TriangleElements_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GL_SkyboxElements;
-
-
-/***/ },
-/* 212 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Matrix3DUtils_1 = __webpack_require__(25);
-	var ContextGLDrawMode_1 = __webpack_require__(155);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var GL_ElementsBase_1 = __webpack_require__(213);
-	/**
-	 *
-	 * @class away.pool.GL_TriangleElements
-	 */
-	var GL_TriangleElements = (function (_super) {
-	    __extends(GL_TriangleElements, _super);
-	    function GL_TriangleElements(triangleElements, shader, pool) {
-	        _super.call(this, triangleElements, shader, pool);
-	        this._triangleElements = triangleElements;
-	    }
-	    GL_TriangleElements._iIncludeDependencies = function (shader) {
-	    };
-	    GL_TriangleElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-	        var code = "";
-	        //get the projection coordinates
-	        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
-	        //reserving vertex constants for projection matrix
-	        var viewMatrixReg = registerCache.getFreeVertexConstant();
-	        registerCache.getFreeVertexConstant();
-	        registerCache.getFreeVertexConstant();
-	        registerCache.getFreeVertexConstant();
-	        shader.viewMatrixIndex = viewMatrixReg.index * 4;
-	        if (shader.projectionDependencies > 0) {
-	            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
-	            var temp = registerCache.getFreeVertexVectorTemp();
-	            code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" +
-	                "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
-	                "mov op, " + temp + "\n";
-	        }
-	        else {
-	            code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
-	        }
-	        return code;
-	    };
-	    GL_TriangleElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-	        return "";
-	    };
-	    GL_TriangleElements.prototype.onClear = function (event) {
-	        _super.prototype.onClear.call(this, event);
-	        this._triangleElements = null;
-	    };
-	    GL_TriangleElements.prototype._render = function (renderable, camera, viewProjection) {
-	        //set buffers
-	        //TODO: find a better way to update a concatenated buffer when autoderiving
-	        if (this._shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
-	            this._triangleElements.normals;
-	        if (this._shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
-	            this._triangleElements.tangents;
-	        if (this._shader.curvesIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
-	        if (this._shader.uvIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
-	        if (this._shader.secondaryUVIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
-	        if (this._shader.normalIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.normalIndex, this._triangleElements.normals);
-	        if (this._shader.tangentIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.tangentIndex, this._triangleElements.tangents);
-	        if (this._shader.jointIndexIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointIndices);
-	        if (this._shader.jointWeightIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.jointIndexIndex, this._triangleElements.jointWeights);
-	        this.activateVertexBufferVO(0, this._triangleElements.positions);
-	        //set constants
-	        if (this._shader.sceneMatrixIndex >= 0) {
-	            renderable.renderSceneTransform.copyRawDataTo(this._shader.vertexConstantData, this._shader.sceneMatrixIndex, true);
-	            viewProjection.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
-	        }
-	        else {
-	            var matrix3D = Matrix3DUtils_1.default.CALCULATION_MATRIX;
-	            matrix3D.copyFrom(renderable.renderSceneTransform);
-	            matrix3D.append(viewProjection);
-	            matrix3D.copyRawDataTo(this._shader.vertexConstantData, this._shader.viewMatrixIndex, true);
-	        }
-	        var context = this._stage.context;
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 0, this._shader.vertexConstantData, this._shader.numUsedVertexConstants);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._shader.fragmentConstantData, this._shader.numUsedFragmentConstants);
-	        _super.prototype._render.call(this, renderable, camera, viewProjection);
-	    };
-	    GL_TriangleElements.prototype._drawElements = function (firstIndex, numIndices) {
-	        this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, firstIndex, numIndices);
-	    };
-	    GL_TriangleElements.prototype._drawArrays = function (firstVertex, numVertices) {
-	        this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, firstVertex, numVertices);
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param renderable
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.GL_GraphicRenderable}
-	     * @protected
-	     */
-	    GL_TriangleElements.prototype._pGetOverflowElements = function () {
-	        return new GL_TriangleElements(this._triangleElements, this._shader, this._pool);
-	    };
-	    GL_TriangleElements.vertexAttributesOffset = 1;
-	    return GL_TriangleElements;
-	}(GL_ElementsBase_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GL_TriangleElements;
-
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AbstractionBase_1 = __webpack_require__(199);
-	var AbstractMethodError_1 = __webpack_require__(28);
-	var AssetEvent_1 = __webpack_require__(1);
-	var ElementsEvent_1 = __webpack_require__(62);
-	var ElementsUtils_1 = __webpack_require__(63);
-	/**
-	 *
-	 * @class away.pool.GL_ElementsBaseBase
-	 */
-	var GL_ElementsBase = (function (_super) {
-	    __extends(GL_ElementsBase, _super);
-	    function GL_ElementsBase(elements, shader, pool) {
-	        var _this = this;
-	        _super.call(this, elements, pool);
-	        this.usages = 0;
-	        this._vertices = new Object();
-	        this._verticesUpdated = new Object();
-	        this._indexMappings = Array();
-	        this._numIndices = 0;
-	        this._elements = elements;
-	        this._shader = shader;
-	        this._stage = shader._stage;
-	        this._onInvalidateIndicesDelegate = function (event) { return _this._onInvalidateIndices(event); };
-	        this._onClearIndicesDelegate = function (event) { return _this._onClearIndices(event); };
-	        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
-	        this._onClearVerticesDelegate = function (event) { return _this._onClearVertices(event); };
-	        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
-	        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
-	        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
-	        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-	    }
-	    Object.defineProperty(GL_ElementsBase.prototype, "elements", {
-	        get: function () {
-	            return this._elements;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(GL_ElementsBase.prototype, "numIndices", {
-	        /**
-	         *
-	         */
-	        get: function () {
-	            return this._numIndices;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     *
-	     */
-	    GL_ElementsBase.prototype.getIndexMappings = function () {
-	        if (!this._indicesUpdated)
-	            this._updateIndices();
-	        return this._indexMappings;
-	    };
-	    /**
-	     *
-	     */
-	    GL_ElementsBase.prototype.getIndexBufferGL = function () {
-	        if (!this._indicesUpdated)
-	            this._updateIndices();
-	        return this._indices;
-	    };
-	    /**
-	     *
-	     */
-	    GL_ElementsBase.prototype.getVertexBufferGL = function (attributesView) {
-	        //first check if indices need updating which may affect vertices
-	        if (!this._indicesUpdated)
-	            this._updateIndices();
-	        var bufferId = attributesView.buffer.id;
-	        if (!this._verticesUpdated[bufferId])
-	            this._updateVertices(attributesView);
-	        return this._vertices[bufferId];
-	    };
-	    /**
-	     *
-	     */
-	    GL_ElementsBase.prototype.activateVertexBufferVO = function (index, attributesView, dimensions, offset) {
-	        if (dimensions === void 0) { dimensions = 0; }
-	        if (offset === void 0) { offset = 0; }
-	        this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
-	    };
-	    /**
-	     *
-	     */
-	    GL_ElementsBase.prototype.onClear = function (event) {
-	        _super.prototype.onClear.call(this, event);
-	        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
-	        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
-	        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
-	        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-	        this._elements = null;
-	        if (this._overflow) {
-	            this._overflow.onClear(event);
-	            this._overflow = null;
-	        }
-	    };
-	    GL_ElementsBase.prototype._iRender = function (renderable, camera, viewProjection) {
-	        if (!this._verticesUpdated)
-	            this._updateIndices();
-	        this._render(renderable, camera, viewProjection);
-	        if (this._overflow)
-	            this._overflow._iRender(renderable, camera, viewProjection);
-	    };
-	    GL_ElementsBase.prototype._render = function (renderable, camera, viewProjection) {
-	        if (this._indices)
-	            this._drawElements(0, this._numIndices);
-	        else
-	            this._drawArrays(0, this._numVertices);
-	    };
-	    GL_ElementsBase.prototype._drawElements = function (firstIndex, numIndices) {
-	        throw new AbstractMethodError_1.default();
-	    };
-	    GL_ElementsBase.prototype._drawArrays = function (firstVertex, numVertices) {
-	        throw new AbstractMethodError_1.default();
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._updateIndices = function (indexOffset) {
-	        if (indexOffset === void 0) { indexOffset = 0; }
-	        var indices = this._elements.indices;
-	        if (indices) {
-	            this._indices = this._stage.getAbstraction(ElementsUtils_1.default.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
-	            this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
-	        }
-	        else {
-	            this._indices = null;
-	            this._numIndices = 0;
-	            this._indexMappings = Array();
-	        }
-	        indexOffset += this._numIndices;
-	        //check if there is more to split
-	        if (indices && indexOffset < indices.count * this._elements.indices.dimensions) {
-	            if (!this._overflow)
-	                this._overflow = this._pGetOverflowElements();
-	            this._overflow._updateIndices(indexOffset);
-	        }
-	        else if (this._overflow) {
-	            this._overflow.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._elements));
-	            this._overflow = null;
-	        }
-	        this._indicesUpdated = true;
-	        //invalidate vertices if index mappings exist
-	        if (this._indexMappings.length)
-	            for (var key in this._verticesUpdated)
-	                this._verticesUpdated[key] = false;
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param attributesView
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._updateVertices = function (attributesView) {
-	        this._numVertices = attributesView.count;
-	        var bufferId = attributesView.buffer.id;
-	        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.default.getSubVertices(attributesView.buffer, this._indexMappings));
-	        this._verticesUpdated[bufferId] = true;
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._onInvalidateIndices = function (event) {
-	        if (!event.attributesView)
-	            return;
-	        this._indicesUpdated = false;
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._onClearIndices = function (event) {
-	        if (!event.attributesView)
-	            return;
-	        this._indices.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
-	        this._indices = null;
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._onInvalidateVertices = function (event) {
-	        if (!event.attributesView)
-	            return;
-	        var bufferId = event.attributesView.buffer.id;
-	        this._verticesUpdated[bufferId] = false;
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param event
-	     * @private
-	     */
-	    GL_ElementsBase.prototype._onClearVertices = function (event) {
-	        if (!event.attributesView)
-	            return;
-	        var bufferId = event.attributesView.buffer.id;
-	        if (this._vertices[bufferId]) {
-	            this._vertices[bufferId].onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
-	            delete this._vertices[bufferId];
-	            delete this._verticesUpdated[bufferId];
-	        }
-	    };
-	    /**
-	     * //TODO
-	     *
-	     * @param pool
-	     * @param renderable
-	     * @param level
-	     * @param indexOffset
-	     * @returns {away.pool.GL_GraphicRenderable}
-	     * @protected
-	     */
-	    GL_ElementsBase.prototype._pGetOverflowElements = function () {
-	        throw new AbstractMethodError_1.default();
-	    };
-	    return GL_ElementsBase;
-	}(AbstractionBase_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = GL_ElementsBase;
-
-
-/***/ },
-/* 214 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var Float3Attributes_1 = __webpack_require__(65);
-	var Float2Attributes_1 = __webpack_require__(105);
-	var Byte4Attributes_1 = __webpack_require__(68);
-	var BitmapImageCube_1 = __webpack_require__(89);
-	var BlendMode_1 = __webpack_require__(96);
-	var Sampler2D_1 = __webpack_require__(78);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var Float3Attributes_1 = __webpack_require__(91);
+	var Float2Attributes_1 = __webpack_require__(106);
+	var Byte4Attributes_1 = __webpack_require__(88);
+	var BitmapImageCube_1 = __webpack_require__(83);
+	var BlendMode_1 = __webpack_require__(97);
+	var Sampler2D_1 = __webpack_require__(72);
 	var ColorTransform_1 = __webpack_require__(19);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
 	var PerspectiveProjection_1 = __webpack_require__(48);
-	var OrthographicProjection_1 = __webpack_require__(219);
-	var OrthographicOffCenterProjection_1 = __webpack_require__(220);
+	var OrthographicProjection_1 = __webpack_require__(216);
+	var OrthographicOffCenterProjection_1 = __webpack_require__(217);
 	var ByteArray_1 = __webpack_require__(139);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Graphics_1 = __webpack_require__(58);
-	var TriangleElements_1 = __webpack_require__(107);
-	var DirectionalLight_1 = __webpack_require__(221);
-	var PointLight_1 = __webpack_require__(227);
+	var TriangleElements_1 = __webpack_require__(108);
+	var DirectionalLight_1 = __webpack_require__(218);
+	var PointLight_1 = __webpack_require__(224);
 	var Camera_1 = __webpack_require__(45);
 	var Sprite_1 = __webpack_require__(57);
-	var Billboard_1 = __webpack_require__(110);
-	var Skybox_1 = __webpack_require__(95);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var CubeMapShadowMapper_1 = __webpack_require__(228);
-	var DirectionalShadowMapper_1 = __webpack_require__(224);
-	var PrefabBase_1 = __webpack_require__(233);
-	var PrimitiveCapsulePrefab_1 = __webpack_require__(234);
-	var PrimitiveConePrefab_1 = __webpack_require__(237);
-	var PrimitiveCubePrefab_1 = __webpack_require__(239);
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
-	var SingleCubeTexture_1 = __webpack_require__(98);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var VertexAnimationSet_1 = __webpack_require__(243);
-	var VertexAnimator_1 = __webpack_require__(247);
-	var SkeletonAnimationSet_1 = __webpack_require__(250);
-	var SkeletonAnimator_1 = __webpack_require__(251);
-	var JointPose_1 = __webpack_require__(252);
-	var Skeleton_1 = __webpack_require__(256);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var SkeletonJoint_1 = __webpack_require__(257);
-	var SkeletonClipNode_1 = __webpack_require__(258);
-	var VertexClipNode_1 = __webpack_require__(264);
-	var MethodMaterialMode_1 = __webpack_require__(266);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var AmbientEnvMapMethod_1 = __webpack_require__(275);
-	var DiffuseDepthMethod_1 = __webpack_require__(276);
-	var DiffuseCelMethod_1 = __webpack_require__(277);
-	var DiffuseGradientMethod_1 = __webpack_require__(279);
-	var DiffuseLightMapMethod_1 = __webpack_require__(280);
-	var DiffuseWrapMethod_1 = __webpack_require__(281);
-	var EffectAlphaMaskMethod_1 = __webpack_require__(282);
-	var EffectColorMatrixMethod_1 = __webpack_require__(284);
-	var EffectColorTransformMethod_1 = __webpack_require__(285);
-	var EffectEnvMapMethod_1 = __webpack_require__(286);
-	var EffectFogMethod_1 = __webpack_require__(287);
-	var EffectFresnelEnvMapMethod_1 = __webpack_require__(288);
-	var EffectLightMapMethod_1 = __webpack_require__(289);
-	var EffectRimLightMethod_1 = __webpack_require__(290);
-	var NormalSimpleWaterMethod_1 = __webpack_require__(291);
-	var ShadowDitheredMethod_1 = __webpack_require__(292);
-	var ShadowFilteredMethod_1 = __webpack_require__(295);
-	var SpecularFresnelMethod_1 = __webpack_require__(296);
-	var ShadowHardMethod_1 = __webpack_require__(298);
-	var SpecularAnisotropicMethod_1 = __webpack_require__(299);
-	var SpecularCelMethod_1 = __webpack_require__(300);
-	var SpecularPhongMethod_1 = __webpack_require__(301);
-	var ShadowNearMethod_1 = __webpack_require__(302);
-	var ShadowSoftMethod_1 = __webpack_require__(303);
-	var BasicMaterial_1 = __webpack_require__(101);
-	var AS2SceneGraphFactory_1 = __webpack_require__(305);
-	var Timeline_1 = __webpack_require__(311);
-	var AssetLibrary_1 = __webpack_require__(307);
-	var Font_1 = __webpack_require__(315);
-	var TextFormat_1 = __webpack_require__(318);
-	var AWDBlock_1 = __webpack_require__(319);
+	var Billboard_1 = __webpack_require__(111);
+	var Skybox_1 = __webpack_require__(96);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var CubeMapShadowMapper_1 = __webpack_require__(225);
+	var DirectionalShadowMapper_1 = __webpack_require__(221);
+	var PrefabBase_1 = __webpack_require__(230);
+	var PrimitiveCapsulePrefab_1 = __webpack_require__(231);
+	var PrimitiveConePrefab_1 = __webpack_require__(234);
+	var PrimitiveCubePrefab_1 = __webpack_require__(236);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(235);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(238);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(239);
+	var SingleCubeTexture_1 = __webpack_require__(99);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var VertexAnimationSet_1 = __webpack_require__(240);
+	var VertexAnimator_1 = __webpack_require__(245);
+	var SkeletonAnimationSet_1 = __webpack_require__(248);
+	var SkeletonAnimator_1 = __webpack_require__(249);
+	var JointPose_1 = __webpack_require__(250);
+	var Skeleton_1 = __webpack_require__(254);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var SkeletonJoint_1 = __webpack_require__(255);
+	var SkeletonClipNode_1 = __webpack_require__(256);
+	var VertexClipNode_1 = __webpack_require__(262);
+	var MethodMaterialMode_1 = __webpack_require__(264);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var AmbientEnvMapMethod_1 = __webpack_require__(273);
+	var DiffuseDepthMethod_1 = __webpack_require__(274);
+	var DiffuseCelMethod_1 = __webpack_require__(275);
+	var DiffuseGradientMethod_1 = __webpack_require__(277);
+	var DiffuseLightMapMethod_1 = __webpack_require__(278);
+	var DiffuseWrapMethod_1 = __webpack_require__(279);
+	var EffectAlphaMaskMethod_1 = __webpack_require__(280);
+	var EffectColorMatrixMethod_1 = __webpack_require__(282);
+	var EffectColorTransformMethod_1 = __webpack_require__(283);
+	var EffectEnvMapMethod_1 = __webpack_require__(284);
+	var EffectFogMethod_1 = __webpack_require__(285);
+	var EffectFresnelEnvMapMethod_1 = __webpack_require__(286);
+	var EffectLightMapMethod_1 = __webpack_require__(287);
+	var EffectRimLightMethod_1 = __webpack_require__(288);
+	var NormalSimpleWaterMethod_1 = __webpack_require__(289);
+	var ShadowDitheredMethod_1 = __webpack_require__(290);
+	var ShadowFilteredMethod_1 = __webpack_require__(293);
+	var SpecularFresnelMethod_1 = __webpack_require__(294);
+	var ShadowHardMethod_1 = __webpack_require__(296);
+	var SpecularAnisotropicMethod_1 = __webpack_require__(297);
+	var SpecularCelMethod_1 = __webpack_require__(298);
+	var SpecularPhongMethod_1 = __webpack_require__(299);
+	var ShadowNearMethod_1 = __webpack_require__(300);
+	var ShadowSoftMethod_1 = __webpack_require__(301);
+	var BasicMaterial_1 = __webpack_require__(102);
+	var AS2SceneGraphFactory_1 = __webpack_require__(303);
+	var Timeline_1 = __webpack_require__(309);
+	var AssetLibrary_1 = __webpack_require__(305);
+	var Font_1 = __webpack_require__(313);
+	var TextFormat_1 = __webpack_require__(316);
+	var AWDBlock_1 = __webpack_require__(317);
 	var Rectangle_1 = __webpack_require__(51);
-	var Style_1 = __webpack_require__(100);
-	var Matrix_1 = __webpack_require__(87);
-	var MappingMode_1 = __webpack_require__(104);
-	var ElementsType_1 = __webpack_require__(235);
+	var Style_1 = __webpack_require__(101);
+	var Matrix_1 = __webpack_require__(81);
+	var MappingMode_1 = __webpack_require__(105);
+	var ElementsType_1 = __webpack_require__(232);
 	/**
 	 * AWDParser provides a parser for the AWD data type.
 	 */
@@ -34853,7 +34424,10 @@
 	        var props = this.parseProperties(AWDParser.graphicsProperties);
 	        var geoScaleU = props.get(1, 1);
 	        var geoScaleV = props.get(2, 1);
-	        //console.log("numElements "+numElements);
+	        var target_start_idx = 0;
+	        var target_vert_cnt = 0;
+	        var element_type = ElementType.STANDART_STREAMS;
+	        var target_element = null;
 	        // Loop through sub sprites
 	        for (var elements_parsed = 0; elements_parsed < numElements; elements_parsed++) {
 	            var is_curve_elements = false;
@@ -34861,6 +34435,10 @@
 	            var sm_len, sm_end;
 	            var w_indices;
 	            var weights;
+	            target_start_idx = 0;
+	            target_vert_cnt = 0;
+	            element_type = ElementType.STANDART_STREAMS;
+	            target_element = null;
 	            sm_len = this._newBlockBytes.readUnsignedInt();
 	            sm_end = this._newBlockBytes.position + sm_len;
 	            var elementsProps = this.parseProperties(AWDParser.elementsProperties);
@@ -34917,29 +34495,39 @@
 	                    this._newBlockBytes.position = str_end;
 	                }
 	                else if (str_type == 10) {
-	                    is_curve_elements = true;
+	                    element_type = ElementType.CONCENATED_STREAMS;
 	                    attr_count = 28;
 	                    var curveData = new ByteArray_1.default(str_len);
 	                    this._newBlockBytes.readBytes(curveData, 0, str_len);
 	                }
 	                else if (str_type == 11) {
-	                    is_curve_elements = true;
+	                    element_type = ElementType.CONCENATED_STREAMS;
 	                    attr_count = 20;
 	                    var curveData = new ByteArray_1.default(str_len);
 	                    this._newBlockBytes.readBytes(curveData, 0, str_len);
 	                }
 	                else if (str_type == 12) {
-	                    is_curve_elements = true;
+	                    element_type = ElementType.CONCENATED_STREAMS;
 	                    attr_count = 12;
 	                    var curveData = new ByteArray_1.default(str_len);
 	                    this._newBlockBytes.readBytes(curveData, 0, str_len);
 	                }
+	                else if (str_type == 13) {
+	                    element_type = ElementType.SHARED_BUFFER;
+	                    var targetGraphic = (this._blocks[this._newBlockBytes.readUnsignedInt()].data);
+	                    var element_idx = this._newBlockBytes.readUnsignedByte();
+	                    target_element = targetGraphic.getGraphicAt(element_idx).elements;
+	                    target_start_idx = this._newBlockBytes.readUnsignedInt();
+	                    target_vert_cnt = this._newBlockBytes.readUnsignedInt();
+	                }
 	                else {
+	                    console.log("skipping unknown subgeom stream");
 	                    this._newBlockBytes.position = str_end;
 	                }
 	            }
 	            this.parseUserAttributes(); // Ignore sub-sprite attributes for now
-	            if (is_curve_elements) {
+	            if (element_type == ElementType.CONCENATED_STREAMS) {
+	                //console.log("str_len/attr_count = "+str_len/attr_count)
 	                var vertexBuffer = new AttributesBuffer_1.default(attr_count, str_len / attr_count);
 	                vertexBuffer.bufferView = new Uint8Array(curveData.arraybytes);
 	                var curve_elements = new TriangleElements_1.default(vertexBuffer);
@@ -34956,7 +34544,7 @@
 	                if (this._debug)
 	                    console.log("Parsed a TriangleElements with curves");
 	            }
-	            else {
+	            else if (element_type == ElementType.STANDART_STREAMS) {
 	                var triangle_elements = new TriangleElements_1.default(new AttributesBuffer_1.default());
 	                if (weights)
 	                    triangle_elements.jointsPerVertex = weights.length / (verts.length / 3);
@@ -34982,6 +34570,13 @@
 	                graphics.addGraphic(triangle_elements);
 	                if (this._debug)
 	                    console.log("Parsed a TriangleElements");
+	            }
+	            else if (element_type == ElementType.SHARED_BUFFER) {
+	                var graphic = graphics.addGraphic(target_element);
+	                graphic.offset = target_start_idx;
+	                graphic.count = target_vert_cnt;
+	                if (this._debug)
+	                    console.log("Parsed a TriangleElements that shares buffer from target geom");
 	            }
 	        }
 	        if ((geoScaleU != 1) || (geoScaleV != 1))
@@ -36438,6 +36033,14 @@
 	}(ParserBase_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = AWDParser;
+	var ElementType = (function () {
+	    function ElementType() {
+	    }
+	    ElementType.STANDART_STREAMS = 0;
+	    ElementType.CONCENATED_STREAMS = 1;
+	    ElementType.SHARED_BUFFER = 2;
+	    return ElementType;
+	}());
 	var AWDProperties = (function () {
 	    function AWDProperties() {
 	    }
@@ -36479,7 +36082,7 @@
 
 
 /***/ },
-/* 215 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36492,11 +36095,11 @@
 	var AssetEvent_1 = __webpack_require__(1);
 	var EventDispatcher_1 = __webpack_require__(29);
 	var ParserEvent_1 = __webpack_require__(6);
-	var TimerEvent_1 = __webpack_require__(216);
-	var ParserUtils_1 = __webpack_require__(217);
-	var ResourceDependency_1 = __webpack_require__(122);
-	var ImageUtils_1 = __webpack_require__(83);
-	var Timer_1 = __webpack_require__(218);
+	var TimerEvent_1 = __webpack_require__(213);
+	var ParserUtils_1 = __webpack_require__(214);
+	var ResourceDependency_1 = __webpack_require__(123);
+	var ImageUtils_1 = __webpack_require__(77);
+	var Timer_1 = __webpack_require__(215);
 	var getTimer_1 = __webpack_require__(8);
 	/**
 	 * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
@@ -36801,7 +36404,7 @@
 
 
 /***/ },
-/* 216 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36831,11 +36434,11 @@
 
 
 /***/ },
-/* 217 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImage2D_1 = __webpack_require__(74);
 	var ByteArray_1 = __webpack_require__(139);
 	var ParserUtils = (function () {
 	    function ParserUtils() {
@@ -36988,7 +36591,7 @@
 
 
 /***/ },
-/* 218 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36999,7 +36602,7 @@
 	};
 	var ErrorBase_1 = __webpack_require__(14);
 	var EventDispatcher_1 = __webpack_require__(29);
-	var TimerEvent_1 = __webpack_require__(216);
+	var TimerEvent_1 = __webpack_require__(213);
 	var Timer = (function (_super) {
 	    __extends(Timer, _super);
 	    function Timer(delay, repeatCount) {
@@ -37084,7 +36687,7 @@
 
 
 /***/ },
-/* 219 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37190,7 +36793,7 @@
 
 
 /***/ },
-/* 220 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37301,7 +36904,7 @@
 
 
 /***/ },
-/* 221 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37313,10 +36916,10 @@
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var LightBase_1 = __webpack_require__(222);
+	var LightBase_1 = __webpack_require__(219);
 	var HierarchicalProperties_1 = __webpack_require__(30);
 	var BoundsType_1 = __webpack_require__(31);
-	var DirectionalShadowMapper_1 = __webpack_require__(224);
+	var DirectionalShadowMapper_1 = __webpack_require__(221);
 	var DirectionalLight = (function (_super) {
 	    __extends(DirectionalLight, _super);
 	    function DirectionalLight(xDir, yDir, zDir) {
@@ -37468,7 +37071,7 @@
 
 
 /***/ },
-/* 222 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37479,7 +37082,7 @@
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
-	var LightEvent_1 = __webpack_require__(223);
+	var LightEvent_1 = __webpack_require__(220);
 	var LightBase = (function (_super) {
 	    __extends(LightBase, _super);
 	    function LightBase() {
@@ -37633,7 +37236,7 @@
 
 
 /***/ },
-/* 223 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37660,7 +37263,7 @@
 
 
 /***/ },
-/* 224 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37669,13 +37272,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var FreeMatrixProjection_1 = __webpack_require__(225);
+	var FreeMatrixProjection_1 = __webpack_require__(222);
 	var Camera_1 = __webpack_require__(45);
-	var ShadowMapperBase_1 = __webpack_require__(226);
-	var Single2DTexture_1 = __webpack_require__(103);
+	var ShadowMapperBase_1 = __webpack_require__(223);
+	var Single2DTexture_1 = __webpack_require__(104);
 	var DirectionalShadowMapper = (function (_super) {
 	    __extends(DirectionalShadowMapper, _super);
 	    function DirectionalShadowMapper() {
@@ -37844,7 +37447,7 @@
 
 
 /***/ },
-/* 225 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37906,7 +37509,7 @@
 
 
 /***/ },
-/* 226 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38011,7 +37614,7 @@
 
 
 /***/ },
-/* 227 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38023,9 +37626,9 @@
 	var Matrix3D_1 = __webpack_require__(23);
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Vector3D_1 = __webpack_require__(18);
-	var LightBase_1 = __webpack_require__(222);
+	var LightBase_1 = __webpack_require__(219);
 	var BoundsType_1 = __webpack_require__(31);
-	var CubeMapShadowMapper_1 = __webpack_require__(228);
+	var CubeMapShadowMapper_1 = __webpack_require__(225);
 	var PointLight = (function (_super) {
 	    __extends(PointLight, _super);
 	    function PointLight() {
@@ -38128,7 +37731,7 @@
 
 
 /***/ },
-/* 228 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38137,10 +37740,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ImageCube_1 = __webpack_require__(90);
+	var ImageCube_1 = __webpack_require__(84);
 	var Camera_1 = __webpack_require__(45);
-	var ShadowMapperBase_1 = __webpack_require__(226);
-	var SingleCubeTexture_1 = __webpack_require__(98);
+	var ShadowMapperBase_1 = __webpack_require__(223);
+	var SingleCubeTexture_1 = __webpack_require__(99);
 	var CubeMapShadowMapper = (function (_super) {
 	    __extends(CubeMapShadowMapper, _super);
 	    function CubeMapShadowMapper() {
@@ -38201,7 +37804,7 @@
 
 
 /***/ },
-/* 229 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38211,11 +37814,11 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var DirectionalLight_1 = __webpack_require__(221);
-	var LightProbe_1 = __webpack_require__(230);
-	var PointLight_1 = __webpack_require__(227);
-	var LightEvent_1 = __webpack_require__(223);
-	var LightPickerBase_1 = __webpack_require__(232);
+	var DirectionalLight_1 = __webpack_require__(218);
+	var LightProbe_1 = __webpack_require__(227);
+	var PointLight_1 = __webpack_require__(224);
+	var LightEvent_1 = __webpack_require__(220);
+	var LightPickerBase_1 = __webpack_require__(229);
 	/**
 	 * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
 	 * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
@@ -38355,7 +37958,7 @@
 
 
 /***/ },
-/* 230 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38364,9 +37967,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerCube_1 = __webpack_require__(231);
+	var SamplerCube_1 = __webpack_require__(228);
 	var ErrorBase_1 = __webpack_require__(14);
-	var LightBase_1 = __webpack_require__(222);
+	var LightBase_1 = __webpack_require__(219);
 	var BoundsType_1 = __webpack_require__(31);
 	var LightProbe = (function (_super) {
 	    __extends(LightProbe, _super);
@@ -38401,7 +38004,7 @@
 
 
 /***/ },
-/* 231 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38410,7 +38013,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SamplerBase_1 = __webpack_require__(79);
+	var SamplerBase_1 = __webpack_require__(73);
 	/**
 	 * The Bitmap class represents display objects that represent bitmap images.
 	 * These can be images that you load with the <code>flash.Assets</code> or
@@ -38462,7 +38065,7 @@
 
 
 /***/ },
-/* 232 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38671,7 +38274,7 @@
 
 
 /***/ },
-/* 233 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38724,7 +38327,7 @@
 
 
 /***/ },
-/* 234 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38733,8 +38336,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A Capsule primitive sprite.
 	 */
@@ -38996,7 +38599,7 @@
 
 
 /***/ },
-/* 235 */
+/* 232 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -39018,7 +38621,7 @@
 
 
 /***/ },
-/* 236 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39027,13 +38630,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
+	var AttributesBuffer_1 = __webpack_require__(87);
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var ElementsType_1 = __webpack_require__(235);
-	var TriangleElements_1 = __webpack_require__(107);
-	var LineElements_1 = __webpack_require__(91);
+	var ElementsType_1 = __webpack_require__(232);
+	var TriangleElements_1 = __webpack_require__(108);
+	var LineElements_1 = __webpack_require__(85);
 	var Sprite_1 = __webpack_require__(57);
-	var PrefabBase_1 = __webpack_require__(233);
+	var PrefabBase_1 = __webpack_require__(230);
 	/**
 	 * PrimitivePrefabBase is an abstract base class for polytope prefabs, which are simple pre-built geometric shapes
 	 */
@@ -39188,7 +38791,7 @@
 
 
 /***/ },
-/* 237 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39197,7 +38800,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(235);
 	/**
 	 * A UV Cone primitive sprite.
 	 */
@@ -39243,7 +38846,7 @@
 
 
 /***/ },
-/* 238 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39252,8 +38855,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A Cylinder primitive sprite.
 	 */
@@ -39825,7 +39428,7 @@
 
 
 /***/ },
-/* 239 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39834,8 +39437,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A Cube primitive prefab.
 	 */
@@ -40368,7 +39971,7 @@
 
 
 /***/ },
-/* 240 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40377,8 +39980,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A Plane primitive sprite.
 	 */
@@ -40677,7 +40280,7 @@
 
 
 /***/ },
-/* 241 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40686,8 +40289,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A UV Sphere primitive sprite.
 	 */
@@ -40976,7 +40579,7 @@
 
 
 /***/ },
-/* 242 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40985,8 +40588,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	/**
 	 * A UV Cylinder primitive sprite.
 	 */
@@ -41240,7 +40843,7 @@
 
 
 /***/ },
-/* 243 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41249,8 +40852,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(244);
-	var VertexAnimationMode_1 = __webpack_require__(246);
+	var AnimationSetBase_1 = __webpack_require__(241);
+	var AnimationRegisterData_1 = __webpack_require__(243);
+	var VertexAnimationMode_1 = __webpack_require__(244);
 	/**
 	 * The animation data set used by vertex-based animators, containing vertex animation state data.
 	 *
@@ -41303,44 +40907,27 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    VertexAnimationSet.prototype.getAGALVertexCode = function (shader) {
+	    VertexAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+	        //grab animationRegisterData from the materialpassbase or create a new one if the first time
+	        this._iAnimationRegisterData = shader.animationRegisterData;
+	        if (this._iAnimationRegisterData == null)
+	            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
 	        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE)
-	            return this.getAbsoluteAGALCode(shader);
+	            return this.getAbsoluteAGALCode(shader, registerCache, sharedRegisters);
 	        else
-	            return this.getAdditiveAGALCode(shader);
+	            return this.getAdditiveAGALCode(shader, registerCache, sharedRegisters);
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    VertexAnimationSet.prototype.activate = function (shader, stage) {
-	        //			var uID:number = pass._iUniqueId;
-	        //			this._uploadNormals = <boolean> this._useNormals[uID];
-	        //			this._uploadTangents = <boolean> this._useTangents[uID];
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    VertexAnimationSet.prototype.deactivate = function (shader, stage) {
-	        //			var uID:number = pass._iUniqueId;
-	        //			var index:number /*uint*/ = this._streamIndices[uID];
-	        //			var context:IContextGL = <IContextGL> stage.context;
-	        //			context.setVertexBufferAt(index, null);
-	        //			if (this._uploadNormals)
-	        //				context.setVertexBufferAt(index + 1, null);
-	        //			if (this._uploadTangents)
-	        //				context.setVertexBufferAt(index + 2, null);
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    VertexAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
+	    VertexAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
 	        return "";
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    VertexAnimationSet.prototype.getAGALUVCode = function (shader) {
-	        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+	    VertexAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
+	        return "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
 	    };
 	    /**
 	     * @inheritDoc
@@ -41350,60 +40937,75 @@
 	    /**
 	     * Generates the vertex AGAL code for absolute blending.
 	     */
-	    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shader) {
+	    VertexAnimationSet.prototype.getAbsoluteAGALCode = function (shader, registerCache, sharedRegisters) {
 	        var code = "";
-	        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-	        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
-	        var regs = new Array("x", "y", "z", "w");
-	        var len = shader.animatableAttributes.length;
-	        var constantReg = "vc" + shader.numUsedVertexConstants;
+	        var temp1 = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp1, 1);
+	        var temp2 = registerCache.getFreeVertexVectorTemp();
+	        var regs = new Array(".x", ".y", ".z", ".w");
+	        var len = sharedRegisters.animatableAttributes.length;
+	        var constantReg = registerCache.getFreeVertexConstant();
+	        this._iAnimationRegisterData.weightsIndex = constantReg.index;
+	        this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
+	        var poseInput;
+	        var k = 0;
 	        if (len > 2)
 	            len = 2;
-	        var streamIndex = shader.numUsedStreams;
 	        for (var i = 0; i < len; ++i) {
-	            code += "mul " + temp1 + ", " + shader.animatableAttributes[i] + ", " + constantReg + "." + regs[0] + "\n";
+	            code += "mul " + temp1 + ", " + sharedRegisters.animatableAttributes[i] + ", " + constantReg + regs[0] + "\n";
 	            for (var j = 1; j < this._numPoses; ++j) {
-	                code += "mul " + temp2 + ", va" + streamIndex + ", " + constantReg + "." + regs[j] + "\n";
+	                poseInput = registerCache.getFreeVertexAttribute();
+	                this._iAnimationRegisterData.poseIndices[k++] = poseInput.index;
+	                code += "mul " + temp2 + ", " + poseInput + ", " + constantReg + regs[j] + "\n";
 	                if (j < this._numPoses - 1)
 	                    code += "add " + temp1 + ", " + temp1 + ", " + temp2 + "\n";
-	                ++streamIndex;
 	            }
-	            code += "add " + shader.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
+	            code += "add " + sharedRegisters.animationTargetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
 	        }
 	        // add code for bitangents if tangents are used
 	        if (shader.tangentDependencies > 0 || shader.outputsNormals) {
-	            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" +
-	                "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
-	                "sub " + shader.animationTargetRegisters[2] + ", " + shader.animationTargetRegisters[2] + ", " + temp1 + "\n";
+	            code += "dp3 " + temp1 + ".x, " + sharedRegisters.animatableAttributes[2] + ", " + sharedRegisters.animationTargetRegisters[1] + "\n" +
+	                "mul " + temp1 + ", " + sharedRegisters.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+	                "sub " + sharedRegisters.animationTargetRegisters[2] + ", " + sharedRegisters.animationTargetRegisters[2] + ", " + temp1 + "\n";
 	        }
+	        //
+	        // // simply write attributes to targets, do not animate them
+	        // // projection will pick up on targets[0] to do the projection
+	        // var len:number = sharedRegisters.animatableAttributes.length;
+	        // for (var i:number = 0; i < len; ++i)
+	        // 	code += "mov " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animatableAttributes[i] + "\n";
 	        return code;
 	    };
 	    /**
 	     * Generates the vertex AGAL code for additive blending.
 	     */
-	    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shader) {
+	    VertexAnimationSet.prototype.getAdditiveAGALCode = function (shader, registerCache, sharedRegisters) {
 	        var code = "";
-	        var len = shader.animatableAttributes.length;
-	        var regs = ["x", "y", "z", "w"];
-	        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-	        var k;
-	        var streamIndex = shader.numUsedStreams;
+	        var len = sharedRegisters.animatableAttributes.length;
+	        var regs = [".x", ".y", ".z", ".w"];
+	        var temp1 = registerCache.getFreeVertexVectorTemp();
+	        var constantReg = registerCache.getFreeVertexConstant();
+	        this._iAnimationRegisterData.weightsIndex = constantReg.index;
+	        this._iAnimationRegisterData.poseIndices = new Array(this._numPoses);
+	        var poseInput;
+	        var k = 0;
 	        if (len > 2)
 	            len = 2;
-	        code += "mov  " + shader.animationTargetRegisters[0] + ", " + shader.animatableAttributes[0] + "\n";
+	        code += "mov  " + sharedRegisters.animationTargetRegisters[0] + ", " + sharedRegisters.animatableAttributes[0] + "\n";
 	        if (shader.normalDependencies > 0)
-	            code += "mov " + shader.animationTargetRegisters[1] + ", " + shader.animatableAttributes[1] + "\n";
+	            code += "mov " + sharedRegisters.animationTargetRegisters[1] + ", " + sharedRegisters.animatableAttributes[1] + "\n";
 	        for (var i = 0; i < len; ++i) {
 	            for (var j = 0; j < this._numPoses; ++j) {
-	                code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + shader.numUsedVertexConstants + "." + regs[j] + "\n" +
-	                    "add " + shader.animationTargetRegisters[i] + ", " + shader.animationTargetRegisters[i] + ", " + temp1 + "\n";
-	                k++;
+	                poseInput = registerCache.getFreeVertexAttribute();
+	                this._iAnimationRegisterData.poseIndices[k++] = poseInput.index;
+	                code += "mul " + temp1 + ", " + poseInput + ", " + constantReg + regs[j] + "\n" +
+	                    "add " + sharedRegisters.animationTargetRegisters[i] + ", " + sharedRegisters.animationTargetRegisters[i] + ", " + temp1 + "\n";
 	            }
 	        }
 	        if (shader.tangentDependencies > 0 || shader.outputsNormals) {
-	            code += "dp3 " + temp1 + ".x, " + shader.animatableAttributes[2] + ", " + shader.animationTargetRegisters[1] + "\n" +
-	                "mul " + temp1 + ", " + shader.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
-	                "sub " + shader.animationTargetRegisters[2] + ", " + shader.animatableAttributes[2] + ", " + temp1 + "\n";
+	            code += "dp3 " + temp1 + ".x, " + sharedRegisters.animatableAttributes[2] + ", " + sharedRegisters.animationTargetRegisters[1] + "\n" +
+	                "mul " + temp1 + ", " + sharedRegisters.animationTargetRegisters[1] + ", " + temp1 + ".x\n" +
+	                "sub " + sharedRegisters.animationTargetRegisters[2] + ", " + sharedRegisters.animatableAttributes[2] + ", " + temp1 + "\n";
 	        }
 	        return code;
 	    };
@@ -41414,7 +41016,7 @@
 
 
 /***/ },
-/* 244 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41425,7 +41027,7 @@
 	};
 	var AssetBase_1 = __webpack_require__(27);
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var AnimationSetError_1 = __webpack_require__(245);
+	var AnimationSetError_1 = __webpack_require__(242);
 	/**
 	 * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
 	 *
@@ -41484,31 +41086,19 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    AnimationSetBase.prototype.getAGALVertexCode = function (shader) {
+	    AnimationSetBase.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
 	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    AnimationSetBase.prototype.activate = function (shader, stage) {
+	    AnimationSetBase.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
 	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    AnimationSetBase.prototype.deactivate = function (shader, stage) {
-	        throw new AbstractMethodError_1.default();
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    AnimationSetBase.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
-	        throw new AbstractMethodError_1.default();
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    AnimationSetBase.prototype.getAGALUVCode = function (shader) {
+	    AnimationSetBase.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
 	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
@@ -41589,7 +41179,7 @@
 
 
 /***/ },
-/* 245 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41611,7 +41201,71 @@
 
 
 /***/ },
-/* 246 */
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var ShaderRegisterElement_1 = __webpack_require__(204);
+	/**
+	 * ...
+	 */
+	var AnimationRegisterData = (function () {
+	    function AnimationRegisterData() {
+	        this.indexDictionary = new Object();
+	    }
+	    AnimationRegisterData.prototype.reset = function (registerCache, sharedRegisters, needVelocity) {
+	        this.rotationRegisters = new Array();
+	        this.positionAttribute = sharedRegisters.animatableAttributes[0];
+	        this.scaleAndRotateTarget = sharedRegisters.animationTargetRegisters[0];
+	        for (var i = 1; i < sharedRegisters.animationTargetRegisters.length; i++)
+	            this.rotationRegisters.push(sharedRegisters.animationTargetRegisters[i]);
+	        //allot const register
+	        this.vertexZeroConst = registerCache.getFreeVertexConstant();
+	        this.vertexZeroConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
+	        this.vertexOneConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 1);
+	        this.vertexTwoConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 2);
+	        //allot temp register
+	        this.positionTarget = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(this.positionTarget, 1);
+	        this.positionTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
+	        if (needVelocity) {
+	            this.velocityTarget = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(this.velocityTarget, 1);
+	            this.velocityTarget = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index);
+	            this.vertexTime = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index, 3);
+	            this.vertexLife = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index, 3);
+	        }
+	        else {
+	            var tempTime = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(tempTime, 1);
+	            this.vertexTime = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 0);
+	            this.vertexLife = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 1);
+	        }
+	    };
+	    AnimationRegisterData.prototype.setUVSourceAndTarget = function (sharedRegisters) {
+	        this.uvVar = sharedRegisters.uvTarget;
+	        this.uvAttribute = sharedRegisters.uvSource;
+	        //uv action is processed after normal actions,so use offsetTarget as uvTarget
+	        this.uvTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
+	    };
+	    AnimationRegisterData.prototype.setRegisterIndex = function (node, parameterIndex, registerIndex) {
+	        //8 should be enough for any node.
+	        var t = this.indexDictionary[node.id];
+	        if (t == null)
+	            t = this.indexDictionary[node.id] = new Array(8);
+	        t[parameterIndex] = registerIndex;
+	    };
+	    AnimationRegisterData.prototype.getRegisterIndex = function (node, parameterIndex) {
+	        return this.indexDictionary[node.id][parameterIndex];
+	    };
+	    return AnimationRegisterData;
+	}());
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = AnimationRegisterData;
+
+
+/***/ },
+/* 244 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -41638,7 +41292,7 @@
 
 
 /***/ },
-/* 247 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41647,10 +41301,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var TriangleElements_1 = __webpack_require__(107);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var AnimatorBase_1 = __webpack_require__(248);
-	var VertexAnimationMode_1 = __webpack_require__(246);
+	var TriangleElements_1 = __webpack_require__(108);
+	var AnimatorBase_1 = __webpack_require__(246);
+	var VertexAnimationMode_1 = __webpack_require__(244);
 	/**
 	 * Provides an interface for assigning vertex-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -41668,8 +41321,6 @@
 	        this._poses = new Array();
 	        this._weights = new Float32Array([1, 0, 0, 0]);
 	        this._vertexAnimationSet = vertexAnimationSet;
-	        this._numPoses = vertexAnimationSet.numPoses;
-	        this._blendMode = vertexAnimationSet.blendMode;
 	    }
 	    /**
 	     * @inheritDoc
@@ -41713,63 +41364,58 @@
 	            this._poses[0] = this._activeVertexState.currentGraphics;
 	            geometryFlag = true;
 	        }
-	        if (this._poses[1] != this._activeVertexState.nextGraphics) {
+	        if (this._poses[1] != this._activeVertexState.nextGraphics)
 	            this._poses[1] = this._activeVertexState.nextGraphics;
-	            geometryFlag = true;
-	        }
 	        this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
-	        if (geometryFlag) {
-	            //invalidate sprites
-	            var sprite;
-	            var len = this._pOwners.length;
-	            for (var i = 0; i < len; i++) {
-	                sprite = this._pOwners[i];
-	                sprite.graphics.invalidateElements();
-	            }
-	        }
+	        if (geometryFlag)
+	            this.invalidateElements();
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+	    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
 	        // todo: add code for when running on cpu
 	        // this type of animation can only be SubSprite
 	        var graphic = renderable.graphic;
 	        var elements = graphic.elements;
 	        // if no poses defined, set temp data
 	        if (!this._poses.length) {
-	            this.setNullPose(shader, elements, stage, vertexConstantOffset, vertexStreamOffset);
+	            this.setNullPose(shader, elements, stage);
 	            return;
 	        }
+	        var animationRegisterData = shader.animationRegisterData;
 	        var i;
-	        var len = this._numPoses;
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._weights, 1);
-	        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE)
+	        var len = this._vertexAnimationSet.numPoses;
+	        shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
+	        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE)
 	            i = 1;
 	        else
 	            i = 0;
 	        var elementsGL;
+	        var k = 0;
 	        for (; i < len; ++i) {
 	            elements = this._poses[i].getGraphicAt(graphic._iIndex).elements || graphic.elements;
-	            elementsGL = shader._elementsPool.getAbstraction(elements);
-	            elementsGL._indexMappings = shader._elementsPool.getAbstraction(graphic.elements).getIndexMappings();
+	            elementsGL = stage.getAbstraction(elements);
+	            elementsGL._indexMappings = stage.getAbstraction(graphic.elements).getIndexMappings();
 	            if (elements.isAsset(TriangleElements_1.default)) {
-	                elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.positions);
+	                elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
 	                if (shader.normalDependencies > 0)
-	                    elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.normals);
+	                    elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
 	            }
 	        }
 	    };
-	    VertexAnimator.prototype.setNullPose = function (shader, elements, stage, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._weights, 1);
-	        var elementsGL = shader._elementsPool.getAbstraction(elements);
-	        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
-	            var len = this._numPoses;
+	    VertexAnimator.prototype.setNullPose = function (shader, elements, stage) {
+	        var animationRegisterData = shader.animationRegisterData;
+	        shader.setVertexConstFromArray(animationRegisterData.weightsIndex, this._weights);
+	        var elementsGL = stage.getAbstraction(elements);
+	        var k = 0;
+	        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE) {
+	            var len = this._vertexAnimationSet.numPoses;
 	            for (var i = 1; i < len; ++i) {
 	                if (elements.isAsset(TriangleElements_1.default)) {
-	                    elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.positions);
+	                    elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.positions);
 	                    if (shader.normalDependencies > 0)
-	                        elementsGL.activateVertexBufferVO(vertexStreamOffset++, elements.normals);
+	                        elementsGL.activateVertexBufferVO(animationRegisterData.poseIndices[k++], elements.normals);
 	                }
 	            }
 	        }
@@ -41782,7 +41428,7 @@
 	    VertexAnimator.prototype.testGPUCompatibility = function (shader) {
 	    };
 	    VertexAnimator.prototype.getRenderableElements = function (renderable, sourceElements) {
-	        if (this._blendMode == VertexAnimationMode_1.default.ABSOLUTE && this._poses.length)
+	        if (this._vertexAnimationSet.blendMode == VertexAnimationMode_1.default.ABSOLUTE && this._poses.length)
 	            return this._poses[0].getGraphicAt(renderable.graphic._iIndex).elements || sourceElements;
 	        //nothing to do here
 	        return sourceElements;
@@ -41794,7 +41440,7 @@
 
 
 /***/ },
-/* 248 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41807,7 +41453,7 @@
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var getTimer_1 = __webpack_require__(8);
-	var AnimatorEvent_1 = __webpack_require__(249);
+	var AnimatorEvent_1 = __webpack_require__(247);
 	/**
 	 * Dispatched when playback of an animation inside the animator object starts.
 	 *
@@ -41949,7 +41595,7 @@
 	        get: function () {
 	            return this._time;
 	        },
-	        set: function (value /*int*/) {
+	        set: function (value) {
 	            if (this._time == value)
 	                return;
 	            this.update(value);
@@ -41978,7 +41624,7 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+	    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera) {
 	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
@@ -42021,7 +41667,7 @@
 	     * @see #stop()
 	     * @see #autoUpdate
 	     */
-	    AnimatorBase.prototype.update = function (time /*int*/) {
+	    AnimatorBase.prototype.update = function (time) {
 	        var dt = (time - this._time) * this.playbackSpeed;
 	        this._pUpdateDeltaTime(dt);
 	        this._time = time;
@@ -42097,6 +41743,14 @@
 	     */
 	    AnimatorBase.prototype.dispose = function () {
 	    };
+	    AnimatorBase.prototype.invalidateElements = function () {
+	        var sprite;
+	        var len = this._pOwners.length;
+	        for (var i = 0; i < len; i++) {
+	            sprite = this._pOwners[i];
+	            sprite.graphics.invalidateElements();
+	        }
+	    };
 	    /**
 	     * @inheritDoc
 	     */
@@ -42125,7 +41779,7 @@
 
 
 /***/ },
-/* 249 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42184,7 +41838,7 @@
 
 
 /***/ },
-/* 250 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42193,7 +41847,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(244);
+	var AnimationSetBase_1 = __webpack_require__(241);
 	/**
 	 * The animation data set used by skeleton-based animators, containing skeleton animation data.
 	 *
@@ -42222,67 +41876,65 @@
 	        enumerable: true,
 	        configurable: true
 	    });
+	    Object.defineProperty(SkeletonAnimationSet.prototype, "matricesIndex", {
+	        get: function () {
+	            return this._matricesIndex;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shader) {
-	        var len = shader.animatableAttributes.length;
-	        var indexOffset0 = shader.numUsedVertexConstants;
-	        var indexOffset1 = indexOffset0 + 1;
-	        var indexOffset2 = indexOffset0 + 2;
-	        var indexStream = "va" + shader.numUsedStreams;
-	        var weightStream = "va" + (shader.numUsedStreams + 1);
+	    SkeletonAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+	        this._matricesIndex = registerCache.numUsedVertexConstants;
+	        var indexOffset0 = this._matricesIndex;
+	        var indexOffset1 = this._matricesIndex + 1;
+	        var indexOffset2 = this._matricesIndex + 2;
+	        var indexStream = registerCache.getFreeVertexAttribute();
+	        shader.jointIndexIndex = indexStream.index;
+	        var weightStream = registerCache.getFreeVertexAttribute();
+	        shader.jointWeightIndex = weightStream.index;
 	        var indices = [indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w"];
 	        var weights = [weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w"];
-	        var temp1 = this._pFindTempReg(shader.animationTargetRegisters);
-	        var temp2 = this._pFindTempReg(shader.animationTargetRegisters, temp1);
+	        var temp1 = registerCache.getFreeVertexVectorTemp();
 	        var dot = "dp4";
 	        var code = "";
+	        var len = sharedRegisters.animatableAttributes.length;
 	        for (var i = 0; i < len; ++i) {
-	            var src = shader.animatableAttributes[i];
+	            var source = sharedRegisters.animatableAttributes[i];
+	            var target = sharedRegisters.animationTargetRegisters[i];
 	            for (var j = 0; j < this._jointsPerVertex; ++j) {
-	                code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" +
-	                    dot + " " + temp1 + ".y, " + src + ", vc[" + indices[j] + "+" + indexOffset1 + "]\n" +
-	                    dot + " " + temp1 + ".z, " + src + ", vc[" + indices[j] + "+" + indexOffset2 + "]\n" +
-	                    "mov " + temp1 + ".w, " + src + ".w\n" +
+	                registerCache.getFreeVertexConstant();
+	                registerCache.getFreeVertexConstant();
+	                registerCache.getFreeVertexConstant();
+	                code += dot + " " + temp1 + ".x, " + source + ", vc[" + indices[j] + "+" + indexOffset0 + "]\n" +
+	                    dot + " " + temp1 + ".y, " + source + ", vc[" + indices[j] + "+" + indexOffset1 + "]\n" +
+	                    dot + " " + temp1 + ".z, " + source + ", vc[" + indices[j] + "+" + indexOffset2 + "]\n" +
+	                    "mov " + temp1 + ".w, " + source + ".w\n" +
 	                    "mul " + temp1 + ", " + temp1 + ", " + weights[j] + "\n"; // apply weight
 	                // add or mov to target. Need to write to a temp reg first, because an output can be a target
 	                if (j == 0)
-	                    code += "mov " + temp2 + ", " + temp1 + "\n";
+	                    code += "mov " + target + ", " + temp1 + "\n";
 	                else
-	                    code += "add " + temp2 + ", " + temp2 + ", " + temp1 + "\n";
+	                    code += "add " + target + ", " + target + ", " + temp1 + "\n";
 	            }
 	            // switch to dp3 once positions have been transformed, from now on, it should only be vectors instead of points
 	            dot = "dp3";
-	            code += "mov " + shader.animationTargetRegisters[i] + ", " + temp2 + "\n";
 	        }
 	        return code;
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonAnimationSet.prototype.activate = function (shader, stage) {
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    SkeletonAnimationSet.prototype.deactivate = function (shader, stage) {
-	        //			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-	        //			var context:IContextGL = <IContextGL> stage.context;
-	        //			context.setVertexBufferAt(streamOffset, null);
-	        //			context.setVertexBufferAt(streamOffset + 1, null);
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
+	    SkeletonAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
 	        return "";
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonAnimationSet.prototype.getAGALUVCode = function (shader) {
-	        return "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+	    SkeletonAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
+	        return "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
 	    };
 	    /**
 	     * @inheritDoc
@@ -42296,7 +41948,7 @@
 
 
 /***/ },
-/* 251 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -42306,11 +41958,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ElementsEvent_1 = __webpack_require__(62);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var AnimatorBase_1 = __webpack_require__(248);
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationStateEvent_1 = __webpack_require__(255);
+	var AnimatorBase_1 = __webpack_require__(246);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationStateEvent_1 = __webpack_require__(253);
 	/**
 	 * Provides an interface for assigning skeleton-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -42332,6 +41983,7 @@
 	        this._globalPose = new SkeletonPose_1.default();
 	        this._morphedElements = new Object();
 	        this._morphedElementsDirty = new Object();
+	        this._skeletonAnimationSet = animationSet;
 	        this._skeleton = skeleton;
 	        this._forceCPU = forceCPU;
 	        this._jointsPerVertex = animationSet.jointsPerVertex;
@@ -42425,9 +42077,7 @@
 	     * @inheritDoc
 	     */
 	    SkeletonAnimator.prototype.clone = function () {
-	        /* The cast to SkeletonAnimationSet should never fail, as _animationSet can only be set
-	         through the constructor, which will only accept a SkeletonAnimationSet. */
-	        return new SkeletonAnimator(this._pAnimationSet, this._skeleton, this._forceCPU);
+	        return new SkeletonAnimator(this._skeletonAnimationSet, this._skeleton, this._forceCPU);
 	    };
 	    /**
 	     * Plays an animation state registered with the given name in the animation data set.
@@ -42466,7 +42116,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
+	    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
 	        // do on request of globalProperties
 	        if (this._globalPropertiesDirty)
 	            this.updateGlobalProperties();
@@ -42475,7 +42125,7 @@
 	        if (this._useCondensedIndices) {
 	            // using a condensed data set
 	            this.updateCondensedMatrices(elements.condensedIndexLookUp);
-	            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._condensedMatrices, this._condensedMatrices.length / 4);
+	            shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._condensedMatrices);
 	        }
 	        else {
 	            if (this._pAnimationSet.usesCPU) {
@@ -42483,10 +42133,8 @@
 	                    this.morphElements(renderable, elements);
 	                return;
 	            }
-	            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
+	            shader.setVertexConstFromArray(this._skeletonAnimationSet.matricesIndex, this._globalMatrices);
 	        }
-	        shader.jointIndexIndex = vertexStreamOffset++;
-	        shader.jointWeightIndex = vertexStreamOffset++;
 	    };
 	    /**
 	     * @inheritDoc
@@ -42504,8 +42152,7 @@
 	        this._globalPropertiesDirty = true;
 	        //trigger geometry invalidation if using CPU animation
 	        if (this._pAnimationSet.usesCPU)
-	            for (var key in this._morphedElementsDirty)
-	                this._morphedElementsDirty[key] = true;
+	            this.invalidateElements();
 	    };
 	    SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp) {
 	        var j = 0, k = 0;
@@ -42609,6 +42256,8 @@
 	        var targetElements;
 	        if (!(targetElements = this._morphedElements[sourceElements.id])) {
 	            //not yet stored
+	            sourceElements.normals;
+	            sourceElements.tangents;
 	            targetElements = this._morphedElements[sourceElements.id] = sourceElements.clone();
 	            //turn off auto calculations on the morphed geometry
 	            targetElements.autoDeriveNormals = false;
@@ -42841,12 +42490,12 @@
 
 
 /***/ },
-/* 252 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Matrix3D_1 = __webpack_require__(23);
-	var Quaternion_1 = __webpack_require__(253);
+	var Quaternion_1 = __webpack_require__(251);
 	var Vector3D_1 = __webpack_require__(18);
 	/**
 	 * Contains transformation data for a skeleton joint, used for skeleton animation.
@@ -42904,7 +42553,7 @@
 
 
 /***/ },
-/* 253 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43241,7 +42890,7 @@
 
 
 /***/ },
-/* 254 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43251,7 +42900,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var JointPose_1 = __webpack_require__(252);
+	var JointPose_1 = __webpack_require__(250);
 	/**
 	 * A collection of pose objects, determining the pose for an entire skeleton.
 	 * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
@@ -43359,7 +43008,7 @@
 
 
 /***/ },
-/* 255 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43437,7 +43086,7 @@
 
 
 /***/ },
-/* 256 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43536,7 +43185,7 @@
 
 
 /***/ },
-/* 257 */
+/* 255 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -43564,7 +43213,7 @@
 
 
 /***/ },
-/* 258 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43573,8 +43222,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationClipNodeBase_1 = __webpack_require__(259);
-	var SkeletonClipState_1 = __webpack_require__(261);
+	var AnimationClipNodeBase_1 = __webpack_require__(257);
+	var SkeletonClipState_1 = __webpack_require__(259);
 	/**
 	 * A skeleton animation node containing time-based animation data as individual skeleton poses.
 	 */
@@ -43609,7 +43258,7 @@
 	     * @param skeletonPose The skeleton pose object to add to the timeline of the node.
 	     * @param duration The specified duration of the frame in milliseconds.
 	     */
-	    SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration /*number /*uint*/) {
+	    SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration) {
 	        this._frames.push(skeletonPose);
 	        this._pDurations.push(duration);
 	        this._pNumFrames = this._pDurations.length;
@@ -43654,7 +43303,7 @@
 
 
 /***/ },
-/* 259 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43664,7 +43313,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var AnimationNodeBase_1 = __webpack_require__(260);
+	var AnimationNodeBase_1 = __webpack_require__(258);
 	/**
 	 * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
 	 */
@@ -43775,7 +43424,7 @@
 
 
 /***/ },
-/* 260 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43826,7 +43475,7 @@
 
 
 /***/ },
-/* 261 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -43836,9 +43485,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationClipState_1 = __webpack_require__(262);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationClipState_1 = __webpack_require__(260);
 	/**
 	 *
 	 */
@@ -43887,7 +43536,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonClipState.prototype._pUpdateTime = function (time /*int*/) {
+	    SkeletonClipState.prototype._pUpdateTime = function (time) {
 	        this._skeletonPoseDirty = true;
 	        _super.prototype._pUpdateTime.call(this, time);
 	    };
@@ -43993,7 +43642,7 @@
 
 
 /***/ },
-/* 262 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44002,8 +43651,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationStateBase_1 = __webpack_require__(263);
-	var AnimationStateEvent_1 = __webpack_require__(255);
+	var AnimationStateBase_1 = __webpack_require__(261);
+	var AnimationStateEvent_1 = __webpack_require__(253);
 	/**
 	 *
 	 */
@@ -44057,7 +43706,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    AnimationClipState.prototype.update = function (time /*int*/) {
+	    AnimationClipState.prototype.update = function (time) {
 	        if (!this._animationClipNode.looping) {
 	            if (time > this._pStartTime + this._animationClipNode.totalDuration)
 	                time = this._pStartTime + this._animationClipNode.totalDuration;
@@ -44080,7 +43729,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    AnimationClipState.prototype._pUpdateTime = function (time /*int*/) {
+	    AnimationClipState.prototype._pUpdateTime = function (time) {
 	        this._pFramesDirty = true;
 	        this._pTimeDir = (time - this._pStartTime > this._pTime) ? 1 : -1;
 	        _super.prototype._pUpdateTime.call(this, time);
@@ -44150,7 +43799,7 @@
 
 
 /***/ },
-/* 263 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44229,7 +43878,7 @@
 
 
 /***/ },
-/* 264 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44239,8 +43888,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var AnimationClipNodeBase_1 = __webpack_require__(259);
-	var VertexClipState_1 = __webpack_require__(265);
+	var AnimationClipNodeBase_1 = __webpack_require__(257);
+	var VertexClipState_1 = __webpack_require__(263);
 	/**
 	 * A vertex animation node containing time-based animation data as individual geometry obejcts.
 	 */
@@ -44272,7 +43921,7 @@
 	     * @param duration The specified duration of the frame in milliseconds.
 	     * @param translation The absolute translation of the frame, used in root delta calculations for sprite movement.
 	     */
-	    VertexClipNode.prototype.addFrame = function (geometry, duration /*uint*/, translation) {
+	    VertexClipNode.prototype.addFrame = function (geometry, duration, translation) {
 	        if (translation === void 0) { translation = null; }
 	        this._frames.push(geometry);
 	        this._pDurations.push(duration);
@@ -44313,7 +43962,7 @@
 
 
 /***/ },
-/* 265 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44322,7 +43971,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationClipState_1 = __webpack_require__(262);
+	var AnimationClipState_1 = __webpack_require__(260);
 	/**
 	 *
 	 */
@@ -44383,7 +44032,7 @@
 
 
 /***/ },
-/* 266 */
+/* 264 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -44405,7 +44054,7 @@
 
 
 /***/ },
-/* 267 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44414,15 +44063,15 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(81);
-	var MaterialBase_1 = __webpack_require__(102);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
-	var MethodMaterialMode_1 = __webpack_require__(266);
-	var AmbientBasicMethod_1 = __webpack_require__(268);
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
-	var NormalBasicMethod_1 = __webpack_require__(273);
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var Image2D_1 = __webpack_require__(75);
+	var MaterialBase_1 = __webpack_require__(103);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
+	var MethodMaterialMode_1 = __webpack_require__(264);
+	var AmbientBasicMethod_1 = __webpack_require__(266);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
+	var NormalBasicMethod_1 = __webpack_require__(271);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	/**
 	 * MethodMaterial forms an abstract base class for the default shaded materials provided by Stage,
 	 * using material methods to define their appearance.
@@ -44655,7 +44304,7 @@
 
 
 /***/ },
-/* 268 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44665,7 +44314,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
 	 */
@@ -44822,7 +44471,7 @@
 
 
 /***/ },
-/* 269 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -44832,7 +44481,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
 	/**
 	 * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
 	 * the final shading program.
@@ -45020,7 +44669,7 @@
 
 
 /***/ },
-/* 270 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45043,7 +44692,7 @@
 
 
 /***/ },
-/* 271 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45053,7 +44702,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightingMethodBase_1 = __webpack_require__(272);
+	var LightingMethodBase_1 = __webpack_require__(270);
 	/**
 	 * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
 	 */
@@ -45350,7 +44999,7 @@
 
 
 /***/ },
-/* 272 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45359,7 +45008,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * LightingMethodBase provides an abstract base method for shading methods that uses lights.
 	 * Used for diffuse and specular shaders only.
@@ -45421,7 +45070,7 @@
 
 
 /***/ },
-/* 273 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45430,7 +45079,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * NormalBasicMethod is the default method for standard tangent-space normal mapping.
 	 */
@@ -45532,7 +45181,7 @@
 
 
 /***/ },
-/* 274 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45542,7 +45191,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightingMethodBase_1 = __webpack_require__(272);
+	var LightingMethodBase_1 = __webpack_require__(270);
 	/**
 	 * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
 	 * version of Phong specularity).
@@ -45811,7 +45460,7 @@
 
 
 /***/ },
-/* 275 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45821,7 +45470,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var AmbientBasicMethod_1 = __webpack_require__(268);
+	var AmbientBasicMethod_1 = __webpack_require__(266);
 	/**
 	 * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
 	 * approximate global lighting rather than lights.
@@ -45863,7 +45512,7 @@
 
 
 /***/ },
-/* 276 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45872,7 +45521,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
 	/**
 	 * DiffuseDepthMethod provides a debug method to visualise depth maps
 	 */
@@ -45938,7 +45587,7 @@
 
 
 /***/ },
-/* 277 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45947,7 +45596,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(278);
+	var DiffuseCompositeMethod_1 = __webpack_require__(276);
 	/**
 	 * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
 	 */
@@ -46063,7 +45712,7 @@
 
 
 /***/ },
-/* 278 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46072,8 +45721,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(270);
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
 	/**
 	 * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
 	 * calculated diffuse reflection strength.
@@ -46266,7 +45915,7 @@
 
 
 /***/ },
-/* 279 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46275,7 +45924,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
 	/**
 	 * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
 	 * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
@@ -46394,7 +46043,7 @@
 
 
 /***/ },
-/* 280 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46403,7 +46052,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(278);
+	var DiffuseCompositeMethod_1 = __webpack_require__(276);
 	/**
 	 * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
 	 * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
@@ -46546,7 +46195,7 @@
 
 
 /***/ },
-/* 281 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46555,7 +46204,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
 	/**
 	 * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
 	 * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
@@ -46648,7 +46297,7 @@
 
 
 /***/ },
-/* 282 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46657,7 +46306,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
 	 * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
@@ -46752,7 +46401,7 @@
 
 
 /***/ },
-/* 283 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46762,7 +46411,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
 	 * and are in essence post-process effects on the materials.
@@ -46800,7 +46449,7 @@
 
 
 /***/ },
-/* 284 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46809,7 +46458,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
 	 */
@@ -46895,7 +46544,7 @@
 
 
 /***/ },
-/* 285 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46904,7 +46553,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
 	 * ColorTransform object.
@@ -46965,7 +46614,7 @@
 
 
 /***/ },
-/* 286 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -46974,7 +46623,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
 	 */
@@ -47115,7 +46764,7 @@
 
 
 /***/ },
-/* 287 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47124,7 +46773,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectFogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -47242,7 +46891,7 @@
 
 
 /***/ },
-/* 288 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47251,7 +46900,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
 	 * stronger as the viewing angle becomes more grazing.
@@ -47437,7 +47086,7 @@
 
 
 /***/ },
-/* 289 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47446,7 +47095,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
 	 * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
@@ -47581,7 +47230,7 @@
 
 
 /***/ },
-/* 290 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47590,7 +47239,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
 	 */
@@ -47744,7 +47393,7 @@
 
 
 /***/ },
-/* 291 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47753,7 +47402,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var NormalBasicMethod_1 = __webpack_require__(273);
+	var NormalBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
 	 */
@@ -47927,7 +47576,7 @@
 
 
 /***/ },
-/* 292 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -47936,9 +47585,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	/**
 	 * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
 	 */
@@ -48188,7 +47837,7 @@
 
 
 /***/ },
-/* 293 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48198,8 +47847,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
-	var PointLight_1 = __webpack_require__(227);
-	var ShadowMapMethodBase_1 = __webpack_require__(294);
+	var PointLight_1 = __webpack_require__(224);
+	var ShadowMapMethodBase_1 = __webpack_require__(292);
 	/**
 	 * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
 	 */
@@ -48395,7 +48044,7 @@
 
 
 /***/ },
-/* 294 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48404,7 +48053,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * ShadowMapMethodBase provides an abstract base method for shadow map methods.
 	 */
@@ -48478,7 +48127,7 @@
 
 
 /***/ },
-/* 295 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48487,7 +48136,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	/**
 	 * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
 	 * results of neighbouring pixels.
@@ -48619,7 +48268,7 @@
 
 
 /***/ },
-/* 296 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48628,7 +48277,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularCompositeMethod_1 = __webpack_require__(297);
+	var SpecularCompositeMethod_1 = __webpack_require__(295);
 	/**
 	 * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
 	 */
@@ -48752,7 +48401,7 @@
 
 
 /***/ },
-/* 297 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48761,8 +48410,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(270);
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	/**
 	 * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
 	 * calculated specular reflection strength.
@@ -48959,7 +48608,7 @@
 
 
 /***/ },
-/* 298 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48968,7 +48617,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	/**
 	 * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
 	 */
@@ -49040,7 +48689,7 @@
 
 
 /***/ },
-/* 299 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49049,7 +48698,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	/**
 	 * SpecularAnisotropicMethod provides a specular method resulting in anisotropic highlights. These are typical for
 	 * surfaces with microfacet details such as tiny grooves. In particular, this uses the Heidrich-Seidel distrubution.
@@ -49124,7 +48773,7 @@
 
 
 /***/ },
-/* 300 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49133,7 +48782,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularCompositeMethod_1 = __webpack_require__(297);
+	var SpecularCompositeMethod_1 = __webpack_require__(295);
 	/**
 	 * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
 	 */
@@ -49227,7 +48876,7 @@
 
 
 /***/ },
-/* 301 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49236,7 +48885,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	/**
 	 * SpecularPhongMethod provides a specular method that provides Phong highlights.
 	 */
@@ -49303,7 +48952,7 @@
 
 
 /***/ },
-/* 302 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49312,8 +48961,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ShadingMethodEvent_1 = __webpack_require__(270);
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	// TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 	/**
 	 * ShadowNearMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
@@ -49500,7 +49149,7 @@
 
 
 /***/ },
-/* 303 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49509,8 +49158,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PoissonLookup_1 = __webpack_require__(304);
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var PoissonLookup_1 = __webpack_require__(302);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	/**
 	 * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
 	 */
@@ -49681,7 +49330,7 @@
 
 
 /***/ },
-/* 304 */
+/* 302 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -49738,14 +49387,14 @@
 
 
 /***/ },
-/* 305 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AS2MovieClipAdapter_1 = __webpack_require__(306);
-	var AS2TextFieldAdapter_1 = __webpack_require__(314);
-	var TextField_1 = __webpack_require__(309);
-	var MovieClip_1 = __webpack_require__(308);
+	var AS2MovieClipAdapter_1 = __webpack_require__(304);
+	var AS2TextFieldAdapter_1 = __webpack_require__(312);
+	var TextField_1 = __webpack_require__(307);
+	var MovieClip_1 = __webpack_require__(306);
 	var AS2SceneGraphFactory = (function () {
 	    function AS2SceneGraphFactory(view) {
 	        this._view = view;
@@ -49767,7 +49416,7 @@
 
 
 /***/ },
-/* 306 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -49778,11 +49427,11 @@
 	};
 	var AssetEvent_1 = __webpack_require__(1);
 	var Point_1 = __webpack_require__(26);
-	var AssetLibrary_1 = __webpack_require__(307);
-	var MovieClip_1 = __webpack_require__(308);
+	var AssetLibrary_1 = __webpack_require__(305);
+	var MovieClip_1 = __webpack_require__(306);
 	var MouseEvent_1 = __webpack_require__(55);
-	var AS2SymbolAdapter_1 = __webpack_require__(312);
-	var AS2MCSoundProps_1 = __webpack_require__(313);
+	var AS2SymbolAdapter_1 = __webpack_require__(310);
+	var AS2MCSoundProps_1 = __webpack_require__(311);
 	var includeString = 'var Color			= require("awayjs-player/lib/adapters/AS2ColorAdapter").default;\n' +
 	    'var System				= require("awayjs-player/lib/adapters/AS2SystemAdapter").default;\n' +
 	    'var Sound				= require("awayjs-player/lib/adapters/AS2SoundAdapter").default;\n' +
@@ -50088,12 +49737,12 @@
 
 
 /***/ },
-/* 307 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AssetLibraryBundle_1 = __webpack_require__(115);
-	var Loader_1 = __webpack_require__(117);
+	var AssetLibraryBundle_1 = __webpack_require__(116);
+	var Loader_1 = __webpack_require__(118);
 	/**
 	 * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
 	 * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
@@ -50305,7 +49954,7 @@
 
 
 /***/ },
-/* 308 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50316,9 +49965,9 @@
 	};
 	var AssetEvent_1 = __webpack_require__(1);
 	var Sprite_1 = __webpack_require__(57);
-	var TextField_1 = __webpack_require__(309);
+	var TextField_1 = __webpack_require__(307);
 	var MouseEvent_1 = __webpack_require__(55);
-	var Timeline_1 = __webpack_require__(311);
+	var Timeline_1 = __webpack_require__(309);
 	var FrameScriptManager_1 = __webpack_require__(56);
 	var MovieClip = (function (_super) {
 	    __extends(MovieClip, _super);
@@ -50640,7 +50289,7 @@
 
 
 /***/ },
-/* 309 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50649,17 +50298,17 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
-	var Float2Attributes_1 = __webpack_require__(105);
-	var Byte4Attributes_1 = __webpack_require__(68);
-	var Matrix_1 = __webpack_require__(87);
+	var AttributesView_1 = __webpack_require__(86);
+	var Float2Attributes_1 = __webpack_require__(106);
+	var Byte4Attributes_1 = __webpack_require__(88);
+	var Matrix_1 = __webpack_require__(81);
 	var ColorTransform_1 = __webpack_require__(19);
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	var HierarchicalProperties_1 = __webpack_require__(30);
-	var Style_1 = __webpack_require__(100);
-	var TextFieldType_1 = __webpack_require__(310);
+	var Style_1 = __webpack_require__(101);
+	var TextFieldType_1 = __webpack_require__(308);
 	var Sprite_1 = __webpack_require__(57);
-	var TriangleElements_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	/**
 	 * The TextField class is used to create display objects for text display and
 	 * input. <ph outputclass="flexonly">You can use the TextField class to
@@ -51532,7 +51181,7 @@
 
 
 /***/ },
-/* 310 */
+/* 308 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -51564,7 +51213,7 @@
 
 
 /***/ },
-/* 311 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -51940,7 +51589,7 @@
 
 
 /***/ },
-/* 312 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52215,7 +51864,7 @@
 
 
 /***/ },
-/* 313 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52283,7 +51932,7 @@
 
 
 /***/ },
-/* 314 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52292,8 +51941,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AS2SymbolAdapter_1 = __webpack_require__(312);
-	var TextField_1 = __webpack_require__(309);
+	var AS2SymbolAdapter_1 = __webpack_require__(310);
+	var TextField_1 = __webpack_require__(307);
 	var AS2TextFieldAdapter = (function (_super) {
 	    __extends(AS2TextFieldAdapter, _super);
 	    function AS2TextFieldAdapter(adaptee, view) {
@@ -52340,7 +51989,7 @@
 
 
 /***/ },
-/* 315 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52350,7 +51999,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var TesselatedFontTable_1 = __webpack_require__(316);
+	var TesselatedFontTable_1 = __webpack_require__(314);
 	/**
 	 * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
 	 *
@@ -52419,7 +52068,7 @@
 
 
 /***/ },
-/* 316 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52429,7 +52078,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetBase_1 = __webpack_require__(27);
-	var TesselatedFontChar_1 = __webpack_require__(317);
+	var TesselatedFontChar_1 = __webpack_require__(315);
 	/**
 	 * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
 	 *
@@ -52540,7 +52189,7 @@
 
 
 /***/ },
-/* 317 */
+/* 315 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -52589,7 +52238,7 @@
 
 
 /***/ },
-/* 318 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52719,11 +52368,11 @@
 
 
 /***/ },
-/* 319 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AWD3Utils_1 = __webpack_require__(320);
+	var AWD3Utils_1 = __webpack_require__(318);
 	var AWDBlock = (function () {
 	    function AWDBlock(this_id, this_type) {
 	        this.type = this_type;
@@ -52754,7 +52403,7 @@
 
 
 /***/ },
-/* 320 */
+/* 318 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -52796,7 +52445,7 @@
 
 
 /***/ },
-/* 321 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52805,7 +52454,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SceneGraphNode_1 = __webpack_require__(322);
+	var SceneGraphNode_1 = __webpack_require__(320);
 	var PartitionBase_1 = __webpack_require__(43);
 	/**
 	 * @class away.partition.Partition
@@ -52882,7 +52531,7 @@
 
 
 /***/ },
-/* 322 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52891,7 +52540,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DisplayObjectNode_1 = __webpack_require__(323);
+	var DisplayObjectNode_1 = __webpack_require__(321);
 	/**
 	 * Maintains scenegraph heirarchy when collecting nodes
 	 */
@@ -52978,7 +52627,7 @@
 
 
 /***/ },
-/* 323 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -52988,8 +52637,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AbstractionBase_1 = __webpack_require__(199);
-	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
-	var BoundingSphere_1 = __webpack_require__(325);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(322);
+	var BoundingSphere_1 = __webpack_require__(323);
 	var BoundsType_1 = __webpack_require__(31);
 	var NullBounds_1 = __webpack_require__(40);
 	var DisplayObjectEvent_1 = __webpack_require__(37);
@@ -53066,6 +52715,13 @@
 	        return true;
 	    };
 	    /**
+	     *
+	     * @returns {boolean}
+	     */
+	    DisplayObjectNode.prototype.isRenderable = function () {
+	        return true;
+	    };
+	    /**
 	     * @inheritDoc
 	     */
 	    DisplayObjectNode.prototype.acceptTraverser = function (traverser) {
@@ -53092,7 +52748,7 @@
 
 
 /***/ },
-/* 324 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53102,9 +52758,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var PlaneClassification_1 = __webpack_require__(41);
-	var ElementsType_1 = __webpack_require__(235);
+	var ElementsType_1 = __webpack_require__(232);
 	var BoundingVolumeBase_1 = __webpack_require__(42);
-	var PrimitiveCubePrefab_1 = __webpack_require__(239);
+	var PrimitiveCubePrefab_1 = __webpack_require__(236);
 	/**
 	 * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
 	 * This is useful for most sprites.
@@ -53221,7 +52877,7 @@
 
 
 /***/ },
-/* 325 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53231,9 +52887,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var PlaneClassification_1 = __webpack_require__(41);
-	var ElementsType_1 = __webpack_require__(235);
+	var ElementsType_1 = __webpack_require__(232);
 	var BoundingVolumeBase_1 = __webpack_require__(42);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(238);
 	var BoundingSphere = (function (_super) {
 	    __extends(BoundingSphere, _super);
 	    function BoundingSphere(entity) {
@@ -53320,7 +52976,7 @@
 
 
 /***/ },
-/* 326 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53370,7 +53026,8 @@
 	     * @param pickingCollision
 	     * @returns {boolean}
 	     */
-	    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision) {
+	    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision, count, offset) {
+	        if (offset === void 0) { offset = 0; }
 	        var rayPosition = pickingCollision.rayPosition;
 	        var rayDirection = pickingCollision.rayDirection;
 	        var t;
@@ -53388,16 +53045,12 @@
 	        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
 	        var collisionTriangleIndex = -1;
 	        var bothSides = material.bothSides;
-	        var positions = triangleElements.positions.get(triangleElements.numVertices);
+	        var positions = triangleElements.positions.get(count, offset);
 	        var posDim = triangleElements.positions.dimensions;
 	        var indices;
-	        var count;
 	        if (triangleElements.indices) {
 	            indices = triangleElements.indices.get(triangleElements.numElements);
 	            count = indices.length;
-	        }
-	        else {
-	            count = triangleElements.numVertices;
 	        }
 	        for (var index = 0; index < count; index += 3) {
 	            // evaluate triangle indices
@@ -53646,7 +53299,8 @@
 	     * @param pickingCollision
 	     * @returns {boolean}
 	     */
-	    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision) {
+	    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision, count, offset) {
+	        if (offset === void 0) { offset = 0; }
 	        return false;
 	    };
 	    return JSPickingCollider;
@@ -53656,7 +53310,7 @@
 
 
 /***/ },
-/* 327 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53665,9 +53319,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var BitmapImageChannel_1 = __webpack_require__(328);
-	var Image2D_1 = __webpack_require__(81);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImageChannel_1 = __webpack_require__(326);
+	var Image2D_1 = __webpack_require__(75);
 	var Point_1 = __webpack_require__(26);
 	/**
 	 *
@@ -53816,7 +53470,7 @@
 
 
 /***/ },
-/* 328 */
+/* 326 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -53834,7 +53488,7 @@
 
 
 /***/ },
-/* 329 */
+/* 327 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -53992,7 +53646,7 @@
 
 
 /***/ },
-/* 330 */
+/* 328 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -54819,7 +54473,7 @@
 
 
 /***/ },
-/* 331 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -54829,7 +54483,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var MathConsts_1 = __webpack_require__(22);
-	var ControllerBase_1 = __webpack_require__(113);
+	var ControllerBase_1 = __webpack_require__(114);
 	/**
 	 * Extended camera used to hover round a specified target object.
 	 *
@@ -55056,13 +54710,13 @@
 
 
 /***/ },
-/* 332 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AttributesBuffer_1 = __webpack_require__(64);
+	var AttributesBuffer_1 = __webpack_require__(87);
 	var Matrix3DUtils_1 = __webpack_require__(25);
-	var TriangleElements_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	var Sprite_1 = __webpack_require__(57);
 	/**
 	 *  Class Merge merges two or more static sprites into one.<code>Merge</code>
@@ -55345,11 +54999,11 @@
 
 
 /***/ },
-/* 333 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var PartialImplementationError_1 = __webpack_require__(109);
+	var PartialImplementationError_1 = __webpack_require__(110);
 	/**
 	 *
 	 */
@@ -55401,7 +55055,7 @@
 
 
 /***/ },
-/* 334 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -55410,21 +55064,21 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Sampler2D_1 = __webpack_require__(78);
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var Sampler2D_1 = __webpack_require__(72);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
-	var TriangleElements_1 = __webpack_require__(107);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
+	var TriangleElements_1 = __webpack_require__(108);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var MethodMaterialMode_1 = __webpack_require__(266);
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var MethodMaterialMode_1 = __webpack_require__(264);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	/**
 	 * OBJParser provides a parser for the OBJ data type.
 	 */
@@ -56285,7 +55939,7 @@
 
 
 /***/ },
-/* 335 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56294,13 +55948,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationSetBase_1 = __webpack_require__(244);
-	var AnimationRegisterCache_1 = __webpack_require__(336);
-	var AnimationElements_1 = __webpack_require__(337);
-	var ParticleAnimationData_1 = __webpack_require__(338);
-	var ParticleProperties_1 = __webpack_require__(339);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleTimeNode_1 = __webpack_require__(341);
+	var AnimationSetBase_1 = __webpack_require__(241);
+	var AnimationRegisterData_1 = __webpack_require__(243);
+	var AnimationElements_1 = __webpack_require__(334);
+	var ParticleAnimationData_1 = __webpack_require__(335);
+	var ParticleProperties_1 = __webpack_require__(336);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleTimeNode_1 = __webpack_require__(338);
 	/**
 	 * The animation data set used by particle-based animators, containing particle animation data.
 	 *
@@ -56366,97 +56020,95 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAnimationSet.prototype.activate = function (shader, stage) {
-	        //			this._iAnimationRegisterCache = pass.animationRegisterCache;
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    ParticleAnimationSet.prototype.deactivate = function (shader, stage) {
-	        //			var context:IContextGL = <IContextGL> stage.context;
-	        //			var offset:number /*int*/ = this._iAnimationRegisterCache.vertexAttributesOffset;
-	        //			var used:number /*int*/ = this._iAnimationRegisterCache.numUsedStreams;
-	        //			for (var i:number /*int*/ = offset; i < used; i++)
-	        //				context.setVertexBufferAt(i, null);
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    ParticleAnimationSet.prototype.getAGALVertexCode = function (shader) {
-	        //grab animationRegisterCache from the materialpassbase or create a new one if the first time
-	        this._iAnimationRegisterCache = shader.animationRegisterCache;
-	        if (this._iAnimationRegisterCache == null)
-	            this._iAnimationRegisterCache = shader.animationRegisterCache = new AnimationRegisterCache_1.default(shader.profile);
-	        //reset animationRegisterCache
-	        this._iAnimationRegisterCache.vertexConstantOffset = shader.numUsedVertexConstants;
-	        this._iAnimationRegisterCache.vertexAttributesOffset = shader.numUsedStreams;
-	        this._iAnimationRegisterCache.varyingsOffset = shader.numUsedVaryings;
-	        this._iAnimationRegisterCache.fragmentConstantOffset = shader.numUsedFragmentConstants;
-	        this._iAnimationRegisterCache.hasUVNode = this.hasUVNode;
-	        this._iAnimationRegisterCache.needVelocity = this.needVelocity;
-	        this._iAnimationRegisterCache.hasBillboard = this.hasBillboard;
-	        this._iAnimationRegisterCache.sourceRegisters = shader.animatableAttributes;
-	        this._iAnimationRegisterCache.targetRegisters = shader.animationTargetRegisters;
-	        this._iAnimationRegisterCache.needFragmentAnimation = shader.usesFragmentAnimation;
-	        this._iAnimationRegisterCache.needUVAnimation = !shader.usesUVTransform;
-	        this._iAnimationRegisterCache.hasColorAddNode = this.hasColorAddNode;
-	        this._iAnimationRegisterCache.hasColorMulNode = this.hasColorMulNode;
-	        this._iAnimationRegisterCache.reset();
+	    ParticleAnimationSet.prototype.getAGALVertexCode = function (shader, registerCache, sharedRegisters) {
+	        //grab animationRegisterData from the materialpassbase or create a new one if the first time
+	        this._iAnimationRegisterData = shader.animationRegisterData;
+	        if (this._iAnimationRegisterData == null)
+	            this._iAnimationRegisterData = shader.animationRegisterData = new AnimationRegisterData_1.default();
+	        //reset animationRegisterData
+	        this._iAnimationRegisterData.reset(registerCache, sharedRegisters, this.needVelocity);
 	        var code = "";
-	        code += this._iAnimationRegisterCache.getInitCode();
+	        var len = sharedRegisters.animatableAttributes.length;
+	        for (var i = 0; i < len; i++)
+	            code += "mov " + sharedRegisters.animationTargetRegisters[i] + "," + sharedRegisters.animatableAttributes[i] + "\n";
+	        code += "mov " + this._iAnimationRegisterData.positionTarget + ".xyz," + this._iAnimationRegisterData.vertexZeroConst + "\n";
+	        if (this.needVelocity)
+	            code += "mov " + this._iAnimationRegisterData.velocityTarget + ".xyz," + this._iAnimationRegisterData.vertexZeroConst + "\n";
 	        var node;
 	        var i;
 	        for (i = 0; i < this._particleNodes.length; i++) {
 	            node = this._particleNodes[i];
 	            if (node.priority < ParticleAnimationSet.POST_PRIORITY)
-	                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+	                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
 	        }
-	        code += this._iAnimationRegisterCache.getCombinationCode();
+	        code += "add " + this._iAnimationRegisterData.scaleAndRotateTarget + ".xyz," + this._iAnimationRegisterData.scaleAndRotateTarget + ".xyz," + this._iAnimationRegisterData.positionTarget + ".xyz\n";
 	        for (i = 0; i < this._particleNodes.length; i++) {
 	            node = this._particleNodes[i];
 	            if (node.priority >= ParticleAnimationSet.POST_PRIORITY && node.priority < ParticleAnimationSet.COLOR_PRIORITY)
-	                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+	                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
 	        }
-	        code += this._iAnimationRegisterCache.initColorRegisters();
+	        if (this.hasColorMulNode) {
+	            this._iAnimationRegisterData.colorMulTarget = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(this._iAnimationRegisterData.colorMulTarget, 1);
+	            this._iAnimationRegisterData.colorMulVary = registerCache.getFreeVarying();
+	            code += "mov " + this._iAnimationRegisterData.colorMulTarget + "," + this._iAnimationRegisterData.vertexOneConst + "\n";
+	        }
+	        if (this.hasColorAddNode) {
+	            this._iAnimationRegisterData.colorAddTarget = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(this._iAnimationRegisterData.colorAddTarget, 1);
+	            this._iAnimationRegisterData.colorAddVary = registerCache.getFreeVarying();
+	            code += "mov " + this._iAnimationRegisterData.colorAddTarget + "," + this._iAnimationRegisterData.vertexZeroConst + "\n";
+	        }
 	        for (i = 0; i < this._particleNodes.length; i++) {
 	            node = this._particleNodes[i];
 	            if (node.priority >= ParticleAnimationSet.COLOR_PRIORITY)
-	                code += node.getAGALVertexCode(shader, this._iAnimationRegisterCache);
+	                code += node.getAGALVertexCode(shader, this, registerCache, this._iAnimationRegisterData);
 	        }
-	        code += this._iAnimationRegisterCache.getColorPassCode();
+	        if (shader.usesFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
+	            if (this.hasColorMulNode)
+	                code += "mov " + this._iAnimationRegisterData.colorMulVary + "," + this._iAnimationRegisterData.colorMulTarget + "\n";
+	            if (this.hasColorAddNode)
+	                code += "mov " + this._iAnimationRegisterData.colorAddVary + "," + this._iAnimationRegisterData.colorAddTarget + "\n";
+	        }
 	        return code;
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAnimationSet.prototype.getAGALUVCode = function (shader) {
+	    ParticleAnimationSet.prototype.getAGALUVCode = function (shader, registerCache, sharedRegisters) {
 	        var code = "";
 	        if (this.hasUVNode) {
-	            this._iAnimationRegisterCache.setUVSourceAndTarget(shader.uvSource, shader.uvTarget);
-	            code += "mov " + this._iAnimationRegisterCache.uvTarget + ".xy," + this._iAnimationRegisterCache.uvAttribute.toString() + "\n";
+	            this._iAnimationRegisterData.setUVSourceAndTarget(sharedRegisters);
+	            code += "mov " + this._iAnimationRegisterData.uvTarget + ".xy," + this._iAnimationRegisterData.uvAttribute.toString() + "\n";
 	            var node;
 	            for (var i = 0; i < this._particleNodes.length; i++)
 	                node = this._particleNodes[i];
-	            code += node.getAGALUVCode(shader, this._iAnimationRegisterCache);
-	            code += "mov " + this._iAnimationRegisterCache.uvVar.toString() + "," + this._iAnimationRegisterCache.uvTarget + ".xy\n";
+	            code += node.getAGALUVCode(shader, this, registerCache, this._iAnimationRegisterData);
+	            code += "mov " + this._iAnimationRegisterData.uvVar + "," + this._iAnimationRegisterData.uvTarget + ".xy\n";
 	        }
 	        else
-	            code += "mov " + shader.uvTarget + "," + shader.uvSource + "\n";
+	            code += "mov " + sharedRegisters.uvTarget + "," + sharedRegisters.uvSource + "\n";
 	        return code;
 	    };
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shader, shadedTarget) {
-	        return this._iAnimationRegisterCache.getColorCombinationCode(shadedTarget);
+	    ParticleAnimationSet.prototype.getAGALFragmentCode = function (shader, registerCache, shadedTarget) {
+	        var code = "";
+	        if (shader.usesFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
+	            if (this.hasColorMulNode)
+	                code += "mul " + shadedTarget + "," + shadedTarget + "," + this._iAnimationRegisterData.colorMulVary + "\n";
+	            if (this.hasColorAddNode)
+	                code += "add " + shadedTarget + "," + shadedTarget + "," + this._iAnimationRegisterData.colorAddVary + "\n";
+	        }
+	        return code;
 	    };
 	    /**
 	     * @inheritDoc
 	     */
 	    ParticleAnimationSet.prototype.doneAGALCode = function (shader) {
-	        this._iAnimationRegisterCache.setDataLength();
 	        //set vertexZeroConst,vertexOneConst,vertexTwoConst
-	        this._iAnimationRegisterCache.setVertexConst(this._iAnimationRegisterCache.vertexZeroConst.index, 0, 1, 2, 0);
+	        shader.setVertexConst(this._iAnimationRegisterData.vertexZeroConst.index, 0, 1, 2, 0);
 	    };
 	    Object.defineProperty(ParticleAnimationSet.prototype, "usesCPU", {
 	        /**
@@ -56489,7 +56141,7 @@
 	    ParticleAnimationSet.prototype._iGenerateAnimationElements = function (graphics) {
 	        if (this.initParticleFunc == null)
 	            throw (new Error("no initParticleFunc set"));
-	        var i /*int*/, j /*int*/, k;
+	        var i, j, k;
 	        var animationElements;
 	        var newAnimationElements = false;
 	        var elements;
@@ -56597,206 +56249,7 @@
 
 
 /***/ },
-/* 336 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var ShaderRegisterCache_1 = __webpack_require__(202);
-	var ShaderRegisterElement_1 = __webpack_require__(204);
-	/**
-	 * ...
-	 */
-	var AnimationRegisterCache = (function (_super) {
-	    __extends(AnimationRegisterCache, _super);
-	    function AnimationRegisterCache(profile) {
-	        _super.call(this, profile);
-	        this.indexDictionary = new Object();
-	    }
-	    AnimationRegisterCache.prototype.reset = function () {
-	        _super.prototype.reset.call(this);
-	        this.rotationRegisters = new Array();
-	        this.positionAttribute = this.getRegisterFromString(this.sourceRegisters[0]);
-	        this.scaleAndRotateTarget = this.getRegisterFromString(this.targetRegisters[0]);
-	        this.addVertexTempUsages(this.scaleAndRotateTarget, 1);
-	        for (var i = 1; i < this.targetRegisters.length; i++) {
-	            this.rotationRegisters.push(this.getRegisterFromString(this.targetRegisters[i]));
-	            this.addVertexTempUsages(this.rotationRegisters[i - 1], 1);
-	        }
-	        this.scaleAndRotateTarget = new ShaderRegisterElement_1.default(this.scaleAndRotateTarget.regName, this.scaleAndRotateTarget.index); //only use xyz, w is used as vertexLife
-	        //allot const register
-	        this.vertexZeroConst = this.getFreeVertexConstant();
-	        this.vertexZeroConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 0);
-	        this.vertexOneConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 1);
-	        this.vertexTwoConst = new ShaderRegisterElement_1.default(this.vertexZeroConst.regName, this.vertexZeroConst.index, 2);
-	        //allot temp register
-	        this.positionTarget = this.getFreeVertexVectorTemp();
-	        this.addVertexTempUsages(this.positionTarget, 1);
-	        this.positionTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
-	        if (this.needVelocity) {
-	            this.velocityTarget = this.getFreeVertexVectorTemp();
-	            this.addVertexTempUsages(this.velocityTarget, 1);
-	            this.velocityTarget = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index);
-	            this.vertexTime = new ShaderRegisterElement_1.default(this.velocityTarget.regName, this.velocityTarget.index, 3);
-	            this.vertexLife = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index, 3);
-	        }
-	        else {
-	            var tempTime = this.getFreeVertexVectorTemp();
-	            this.addVertexTempUsages(tempTime, 1);
-	            this.vertexTime = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 0);
-	            this.vertexLife = new ShaderRegisterElement_1.default(tempTime.regName, tempTime.index, 1);
-	        }
-	    };
-	    AnimationRegisterCache.prototype.setUVSourceAndTarget = function (UVAttribute, UVVaring) {
-	        this.uvVar = this.getRegisterFromString(UVVaring);
-	        this.uvAttribute = this.getRegisterFromString(UVAttribute);
-	        //uv action is processed after normal actions,so use offsetTarget as uvTarget
-	        this.uvTarget = new ShaderRegisterElement_1.default(this.positionTarget.regName, this.positionTarget.index);
-	    };
-	    AnimationRegisterCache.prototype.setRegisterIndex = function (node, parameterIndex /*int*/, registerIndex /*int*/) {
-	        //8 should be enough for any node.
-	        var t = this.indexDictionary[node.id];
-	        if (t == null)
-	            t = this.indexDictionary[node.id] = new Array(8) /*int*/;
-	        t[parameterIndex] = registerIndex;
-	    };
-	    AnimationRegisterCache.prototype.getRegisterIndex = function (node, parameterIndex /*int*/) {
-	        return this.indexDictionary[node.id][parameterIndex];
-	    };
-	    AnimationRegisterCache.prototype.getInitCode = function () {
-	        var len = this.sourceRegisters.length;
-	        var code = "";
-	        for (var i = 0; i < len; i++)
-	            code += "mov " + this.targetRegisters[i] + "," + this.sourceRegisters[i] + "\n";
-	        code += "mov " + this.positionTarget + ".xyz," + this.vertexZeroConst.toString() + "\n";
-	        if (this.needVelocity)
-	            code += "mov " + this.velocityTarget + ".xyz," + this.vertexZeroConst.toString() + "\n";
-	        return code;
-	    };
-	    AnimationRegisterCache.prototype.getCombinationCode = function () {
-	        return "add " + this.scaleAndRotateTarget + ".xyz," + this.scaleAndRotateTarget + ".xyz," + this.positionTarget + ".xyz\n";
-	    };
-	    AnimationRegisterCache.prototype.initColorRegisters = function () {
-	        var code = "";
-	        if (this.hasColorMulNode) {
-	            this.colorMulTarget = this.getFreeVertexVectorTemp();
-	            this.addVertexTempUsages(this.colorMulTarget, 1);
-	            this.colorMulVary = this.getFreeVarying();
-	            code += "mov " + this.colorMulTarget + "," + this.vertexOneConst + "\n";
-	        }
-	        if (this.hasColorAddNode) {
-	            this.colorAddTarget = this.getFreeVertexVectorTemp();
-	            this.addVertexTempUsages(this.colorAddTarget, 1);
-	            this.colorAddVary = this.getFreeVarying();
-	            code += "mov " + this.colorAddTarget + "," + this.vertexZeroConst + "\n";
-	        }
-	        return code;
-	    };
-	    AnimationRegisterCache.prototype.getColorPassCode = function () {
-	        var code = "";
-	        if (this.needFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
-	            if (this.hasColorMulNode)
-	                code += "mov " + this.colorMulVary + "," + this.colorMulTarget + "\n";
-	            if (this.hasColorAddNode)
-	                code += "mov " + this.colorAddVary + "," + this.colorAddTarget + "\n";
-	        }
-	        return code;
-	    };
-	    AnimationRegisterCache.prototype.getColorCombinationCode = function (shadedTarget) {
-	        var code = "";
-	        if (this.needFragmentAnimation && (this.hasColorAddNode || this.hasColorMulNode)) {
-	            var colorTarget = this.getRegisterFromString(shadedTarget);
-	            this.addFragmentTempUsages(colorTarget, 1);
-	            if (this.hasColorMulNode)
-	                code += "mul " + colorTarget + "," + colorTarget + "," + this.colorMulVary + "\n";
-	            if (this.hasColorAddNode)
-	                code += "add " + colorTarget + "," + colorTarget + "," + this.colorAddVary + "\n";
-	        }
-	        return code;
-	    };
-	    AnimationRegisterCache.prototype.getRegisterFromString = function (code) {
-	        var temp = code.split(/(\d+)/);
-	        return new ShaderRegisterElement_1.default(temp[0], parseInt(temp[1]));
-	    };
-	    Object.defineProperty(AnimationRegisterCache.prototype, "numVertexConstant", {
-	        get: function () {
-	            return this._numVertexConstant;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(AnimationRegisterCache.prototype, "numFragmentConstant", {
-	        get: function () {
-	            return this._numFragmentConstant;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    AnimationRegisterCache.prototype.setDataLength = function () {
-	        this._numVertexConstant = this.numUsedVertexConstants - this.vertexConstantOffset;
-	        this._numFragmentConstant = this.numUsedFragmentConstants - this.fragmentConstantOffset;
-	        this.vertexConstantData = new Float32Array(this._numVertexConstant * 4);
-	        this.fragmentConstantData = new Float32Array(this._numFragmentConstant * 4);
-	    };
-	    AnimationRegisterCache.prototype.setVertexConst = function (index /*int*/, x, y, z, w) {
-	        if (x === void 0) { x = 0; }
-	        if (y === void 0) { y = 0; }
-	        if (z === void 0) { z = 0; }
-	        if (w === void 0) { w = 0; }
-	        var _index = (index - this.vertexConstantOffset) * 4;
-	        this.vertexConstantData[_index++] = x;
-	        this.vertexConstantData[_index++] = y;
-	        this.vertexConstantData[_index++] = z;
-	        this.vertexConstantData[_index] = w;
-	    };
-	    AnimationRegisterCache.prototype.setVertexConstFromArray = function (index /*int*/, data) {
-	        var _index = (index - this.vertexConstantOffset) * 4;
-	        for (var i = 0; i < data.length; i++)
-	            this.vertexConstantData[_index++] = data[i];
-	    };
-	    AnimationRegisterCache.prototype.setVertexConstFromMatrix = function (index /*int*/, matrix) {
-	        var rawData = matrix.rawData;
-	        var _index = (index - this.vertexConstantOffset) * 4;
-	        this.vertexConstantData[_index++] = rawData[0];
-	        this.vertexConstantData[_index++] = rawData[4];
-	        this.vertexConstantData[_index++] = rawData[8];
-	        this.vertexConstantData[_index++] = rawData[12];
-	        this.vertexConstantData[_index++] = rawData[1];
-	        this.vertexConstantData[_index++] = rawData[5];
-	        this.vertexConstantData[_index++] = rawData[9];
-	        this.vertexConstantData[_index++] = rawData[13];
-	        this.vertexConstantData[_index++] = rawData[2];
-	        this.vertexConstantData[_index++] = rawData[6];
-	        this.vertexConstantData[_index++] = rawData[10];
-	        this.vertexConstantData[_index++] = rawData[14];
-	        this.vertexConstantData[_index++] = rawData[3];
-	        this.vertexConstantData[_index++] = rawData[7];
-	        this.vertexConstantData[_index++] = rawData[11];
-	        this.vertexConstantData[_index] = rawData[15];
-	    };
-	    AnimationRegisterCache.prototype.setFragmentConst = function (index /*int*/, x, y, z, w) {
-	        if (x === void 0) { x = 0; }
-	        if (y === void 0) { y = 0; }
-	        if (z === void 0) { z = 0; }
-	        if (w === void 0) { w = 0; }
-	        var _index = (index - this.fragmentConstantOffset) * 4;
-	        this.fragmentConstantData[_index++] = x;
-	        this.fragmentConstantData[_index++] = y;
-	        this.fragmentConstantData[_index++] = z;
-	        this.fragmentConstantData[_index] = w;
-	    };
-	    return AnimationRegisterCache;
-	}(ShaderRegisterCache_1.default));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = AnimationRegisterCache;
-
-
-/***/ },
-/* 337 */
+/* 334 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56815,12 +56268,12 @@
 	            this._pBufferDirty[i] = true;
 	        this._iUniqueId = AnimationElements.SUBGEOM_ID_COUNT++;
 	    }
-	    AnimationElements.prototype.createVertexData = function (numVertices /*uint*/, totalLenOfOneVertex /*uint*/) {
+	    AnimationElements.prototype.createVertexData = function (numVertices, totalLenOfOneVertex) {
 	        this._numVertices = numVertices;
 	        this._totalLenOfOneVertex = totalLenOfOneVertex;
 	        this._pVertexData = new Array(numVertices * totalLenOfOneVertex);
 	    };
-	    AnimationElements.prototype.activateVertexBuffer = function (index /*int*/, bufferOffset /*int*/, stage, format) {
+	    AnimationElements.prototype.activateVertexBuffer = function (index, bufferOffset, stage, format) {
 	        var contextIndex = stage.stageIndex;
 	        var context = stage.context;
 	        var buffer = this._pVertexBuffer[contextIndex];
@@ -56875,7 +56328,7 @@
 
 
 /***/ },
-/* 338 */
+/* 335 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56883,7 +56336,7 @@
 	 * ...
 	 */
 	var ParticleAnimationData = (function () {
-	    function ParticleAnimationData(index /*uint*/, startTime, duration, delay, particle) {
+	    function ParticleAnimationData(index, startTime, duration, delay, particle) {
 	        this.index = index;
 	        this.startTime = startTime;
 	        this.totalTime = duration + delay;
@@ -56899,7 +56352,7 @@
 
 
 /***/ },
-/* 339 */
+/* 336 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56917,7 +56370,7 @@
 
 
 /***/ },
-/* 340 */
+/* 337 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -56946,7 +56399,7 @@
 
 
 /***/ },
-/* 341 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -56955,9 +56408,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleTimeState_1 = __webpack_require__(343);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleTimeState_1 = __webpack_require__(340);
 	/**
 	 * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
 	 */
@@ -56983,40 +56436,40 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var timeStreamRegister = animationRegisterCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
-	        animationRegisterCache.setRegisterIndex(this, ParticleTimeState_1.default.TIME_STREAM_INDEX, timeStreamRegister.index);
-	        var timeConst = animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.setRegisterIndex(this, ParticleTimeState_1.default.TIME_CONSTANT_INDEX, timeConst.index);
+	    ParticleTimeNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var timeStreamRegister = registerCache.getFreeVertexAttribute(); //timeStreamRegister.x is start，timeStreamRegister.y is during time
+	        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_STREAM_INDEX, timeStreamRegister.index);
+	        var timeConst = registerCache.getFreeVertexConstant();
+	        animationRegisterData.setRegisterIndex(this, ParticleTimeState_1.default.TIME_CONSTANT_INDEX, timeConst.index);
 	        var code = "";
-	        code += "sub " + animationRegisterCache.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
+	        code += "sub " + animationRegisterData.vertexTime + "," + timeConst + "," + timeStreamRegister + ".x\n";
 	        //if time=0,set the position to zero.
-	        var temp = animationRegisterCache.getFreeVertexSingleTemp();
-	        code += "sge " + temp + "," + animationRegisterCache.vertexTime + "," + animationRegisterCache.vertexZeroConst + "\n";
-	        code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+	        var temp = registerCache.getFreeVertexSingleTemp();
+	        code += "sge " + temp + "," + animationRegisterData.vertexTime + "," + animationRegisterData.vertexZeroConst + "\n";
+	        code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
 	        if (this._iUsesDuration) {
 	            if (this._iUsesLooping) {
-	                var div = animationRegisterCache.getFreeVertexSingleTemp();
+	                var div = registerCache.getFreeVertexSingleTemp();
 	                if (this._iUsesDelay) {
-	                    code += "div " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".z\n";
+	                    code += "div " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".z\n";
 	                    code += "frc " + div + "," + div + "\n";
-	                    code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
-	                    code += "slt " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".y\n";
-	                    code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + div + "\n";
+	                    code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".z\n";
+	                    code += "slt " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".y\n";
+	                    code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + div + "\n";
 	                }
 	                else {
-	                    code += "mul " + div + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+	                    code += "mul " + div + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
 	                    code += "frc " + div + "," + div + "\n";
-	                    code += "mul " + animationRegisterCache.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
+	                    code += "mul " + animationRegisterData.vertexTime + "," + div + "," + timeStreamRegister + ".y\n";
 	                }
 	            }
 	            else {
-	                var sge = animationRegisterCache.getFreeVertexSingleTemp();
-	                code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterCache.vertexTime + "\n";
-	                code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + sge + "\n";
+	                var sge = registerCache.getFreeVertexSingleTemp();
+	                code += "sge " + sge + "," + timeStreamRegister + ".y," + animationRegisterData.vertexTime + "\n";
+	                code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + sge + "\n";
 	            }
 	        }
-	        code += "mul " + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexTime + "," + timeStreamRegister + ".w\n";
+	        code += "mul " + animationRegisterData.vertexLife + "," + animationRegisterData.vertexTime + "," + timeStreamRegister + ".w\n";
 	        return code;
 	    };
 	    /**
@@ -57041,7 +56494,7 @@
 
 
 /***/ },
-/* 342 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57050,7 +56503,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(260);
+	var AnimationNodeBase_1 = __webpack_require__(258);
 	/**
 	 * Provides an abstract base class for particle animation nodes.
 	 */
@@ -57064,7 +56517,7 @@
 	     * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
 	     * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
 	     */
-	    function ParticleNodeBase(name, mode /*uint*/, dataLength /*uint*/, priority) {
+	    function ParticleNodeBase(name, mode, dataLength, priority) {
 	        if (priority === void 0) { priority = 1; }
 	        _super.call(this);
 	        this._pDataLength = 3;
@@ -57129,19 +56582,19 @@
 	    /**
 	     * Returns the AGAL code of the particle animation node for use in the vertex shader.
 	     */
-	    ParticleNodeBase.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleNodeBase.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        return "";
 	    };
 	    /**
 	     * Returns the AGAL code of the particle animation node for use in the fragment shader.
 	     */
-	    ParticleNodeBase.prototype.getAGALFragmentCode = function (shader, animationRegisterCache) {
+	    ParticleNodeBase.prototype.getAGALFragmentCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        return "";
 	    };
 	    /**
 	     * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
 	     */
-	    ParticleNodeBase.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+	    ParticleNodeBase.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        return "";
 	    };
 	    /**
@@ -57173,7 +56626,7 @@
 
 
 /***/ },
-/* 343 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57182,8 +56635,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -57193,10 +56646,10 @@
 	        _super.call(this, animator, particleTimeNode, true);
 	        this._particleTimeNode = particleTimeNode;
 	    }
-	    ParticleTimeState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	    ParticleTimeState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	        var particleTime = this._pTime / 1000;
-	        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
+	        shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
 	    };
 	    /** @private */
 	    ParticleTimeState.TIME_STREAM_INDEX = 0;
@@ -57209,7 +56662,7 @@
 
 
 /***/ },
-/* 344 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57218,7 +56671,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	/**
 	 * ...
 	 */
@@ -57229,6 +56682,7 @@
 	        _super.call(this, animator, particleNode);
 	        this._pDynamicProperties = new Array();
 	        this._pDynamicPropertiesDirty = new Object();
+	        this._pParticleAnimator = animator;
 	        this._particleNode = particleNode;
 	        this._pNeedUpdateTime = needUpdateTime;
 	    }
@@ -57239,7 +56693,7 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleStateBase.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticleStateBase.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	    };
 	    ParticleStateBase.prototype._pUpdateDynamicProperties = function (animationElements) {
 	        this._pDynamicPropertiesDirty[animationElements._iUniqueId] = true;
@@ -57249,12 +56703,12 @@
 	        var dataLength = this._particleNode.dataLength;
 	        var dataOffset = this._particleNode._iDataOffset;
 	        var vertexLength;
-	        //			var particleOffset:number /*uint*/;
+	        //			var particleOffset:number;
 	        var startingOffset;
 	        var vertexOffset;
 	        var data;
 	        var animationParticle;
-	        //			var numParticles:number /*uint*/ = _positions.length/dataLength;
+	        //			var numParticles:number = _positions.length/dataLength;
 	        var numParticles = this._pDynamicProperties.length;
 	        var i = 0;
 	        var j = 0;
@@ -57293,7 +56747,7 @@
 
 
 /***/ },
-/* 345 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57302,10 +56756,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var AnimatorBase_1 = __webpack_require__(248);
-	var AnimationElements_1 = __webpack_require__(337);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var AnimatorBase_1 = __webpack_require__(246);
+	var AnimationElements_1 = __webpack_require__(334);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
 	/**
 	 * Provides an interface for assigning paricle-based animation data sets to sprite-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
@@ -57356,24 +56809,20 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera, vertexConstantOffset /*int*/, vertexStreamOffset /*int*/) {
-	        var animationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
+	    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
+	        var animationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
 	        var graphic = renderable.graphic;
-	        var state;
-	        var i;
 	        if (!graphic)
 	            throw (new Error("Must be graphic"));
 	        //process animation sub geometries
 	        var animationElements = this._particleAnimationSet.getAnimationElements(graphic);
+	        var i;
 	        for (i = 0; i < this._animationParticleStates.length; i++)
-	            this._animationParticleStates[i].setRenderState(stage, renderable, animationElements, animationRegisterCache, camera);
+	            this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
 	        //process animator subgeometries
 	        var animatorElements = this.getAnimatorElements(graphic);
 	        for (i = 0; i < this._animatorParticleStates.length; i++)
-	            this._animatorParticleStates[i].setRenderState(stage, renderable, animatorElements, animationRegisterCache, camera);
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
-	        if (animationRegisterCache.numFragmentConstant > 0)
-	            stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+	            this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
 	    };
 	    /**
 	     * @inheritDoc
@@ -57426,7 +56875,7 @@
 
 
 /***/ },
-/* 346 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57435,9 +56884,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleBillboardState_1 = __webpack_require__(347);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleBillboardState_1 = __webpack_require__(344);
 	/**
 	 * A particle animation node that controls the rotation of a particle to always face the camera.
 	 */
@@ -57455,18 +56904,18 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.setRegisterIndex(this, ParticleBillboardState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-	        animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.getFreeVertexConstant();
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-	        var code = "m33 " + temp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + "," + rotationMatrixRegister + "\n" +
-	            "mov " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+	    ParticleBillboardNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+	        animationRegisterData.setRegisterIndex(this, ParticleBillboardState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        var temp = registerCache.getFreeVertexVectorTemp();
+	        var code = "m33 " + temp + ".xyz," + animationRegisterData.scaleAndRotateTarget + "," + rotationMatrixRegister + "\n" +
+	            "mov " + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
 	        var shaderRegisterElement;
-	        for (var i = 0; i < animationRegisterCache.rotationRegisters.length; i++) {
-	            shaderRegisterElement = animationRegisterCache.rotationRegisters[i];
+	        for (var i = 0; i < animationRegisterData.rotationRegisters.length; i++) {
+	            shaderRegisterElement = animationRegisterData.rotationRegisters[i];
 	            code += "m33 " + temp + ".xyz," + shaderRegisterElement + "," + rotationMatrixRegister + "\n" +
 	                "mov " + shaderRegisterElement + ".xyz," + shaderRegisterElement + "\n";
 	        }
@@ -57491,7 +56940,7 @@
 
 
 /***/ },
-/* 347 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57503,7 +56952,7 @@
 	var MathConsts_1 = __webpack_require__(22);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Orientation3D_1 = __webpack_require__(24);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -57517,7 +56966,7 @@
 	        this._matrix = new Matrix3D_1.default;
 	        this._billboardAxis = particleNode._iBillboardAxis;
 	    }
-	    ParticleBillboardState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticleBillboardState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	        var comps;
 	        if (this._billboardAxis) {
 	            var pos = renderable.sourceEntity.sceneTransform.position;
@@ -57546,7 +56995,7 @@
 	            this._matrix.appendRotation(-comps[1].w * MathConsts_1.default.RADIANS_TO_DEGREES, comps[1]);
 	        }
 	        //set a new matrix transform constant
-	        animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
+	        shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBillboardState.MATRIX_INDEX), this._matrix);
 	    };
 	    Object.defineProperty(ParticleBillboardState.prototype, "billboardAxis", {
 	        /**
@@ -57572,7 +57021,7 @@
 
 
 /***/ },
-/* 348 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57581,9 +57030,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleScaleState_1 = __webpack_require__(349);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleScaleState_1 = __webpack_require__(346);
 	/**
 	 * A particle animation node used to control the scale variation of a particle over time.
 	 */
@@ -57600,7 +57049,7 @@
 	     * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
 	     * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
 	     */
-	    function ParticleScaleNode(mode /*uint*/, usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
+	    function ParticleScaleNode(mode, usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
 	        if (minScale === void 0) { minScale = 1; }
 	        if (maxScale === void 0) { maxScale = 1; }
 	        if (cycleDuration === void 0) { cycleDuration = 1; }
@@ -57617,20 +57066,20 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleScaleNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        var temp = animationRegisterCache.getFreeVertexSingleTemp();
-	        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleScaleState_1.default.SCALE_INDEX, scaleRegister.index);
+	        var temp = registerCache.getFreeVertexSingleTemp();
+	        var scaleRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleScaleState_1.default.SCALE_INDEX, scaleRegister.index);
 	        if (this._iUsesCycle) {
-	            code += "mul " + temp + "," + animationRegisterCache.vertexTime + "," + scaleRegister + ".z\n";
+	            code += "mul " + temp + "," + animationRegisterData.vertexTime + "," + scaleRegister + ".z\n";
 	            if (this._iUsesPhase)
 	                code += "add " + temp + "," + temp + "," + scaleRegister + ".w\n";
 	            code += "sin " + temp + "," + temp + "\n";
 	        }
-	        code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle) ? temp : animationRegisterCache.vertexLife) + "\n";
+	        code += "mul " + temp + "," + scaleRegister + ".y," + ((this._iUsesCycle) ? temp : animationRegisterData.vertexLife) + "\n";
 	        code += "add " + temp + "," + scaleRegister + ".x," + temp + "\n";
-	        code += "mul " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp + "\n";
+	        code += "mul " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp + "\n";
 	        return code;
 	    };
 	    /**
@@ -57672,7 +57121,7 @@
 
 
 /***/ },
-/* 349 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57682,9 +57131,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -57757,8 +57206,8 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleScaleState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
+	    ParticleScaleState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
 	        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
 	            if (this._usesCycle) {
 	                if (this._usesPhase)
@@ -57770,7 +57219,7 @@
 	                animationElements.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
 	        }
 	        else
-	            animationRegisterCache.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
+	            shader.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
 	    };
 	    ParticleScaleState.prototype.updateScaleData = function () {
 	        if (this._particleScaleNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
@@ -57792,7 +57241,7 @@
 
 
 /***/ },
-/* 350 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57802,9 +57251,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleVelocityState_1 = __webpack_require__(351);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleVelocityState_1 = __webpack_require__(348);
 	/**
 	 * A particle animation node used to set the starting velocity of a particle.
 	 */
@@ -57816,7 +57265,7 @@
 	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	     * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
 	     */
-	    function ParticleVelocityNode(mode /*uint*/, velocity) {
+	    function ParticleVelocityNode(mode, velocity) {
 	        if (velocity === void 0) { velocity = null; }
 	        _super.call(this, "ParticleVelocity", mode, 3);
 	        this._pStateClass = ParticleVelocityState_1.default;
@@ -57825,15 +57274,15 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var velocityValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleVelocityState_1.default.VELOCITY_INDEX, velocityValue.index);
-	        var distance = animationRegisterCache.getFreeVertexVectorTemp();
+	    ParticleVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var velocityValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleVelocityState_1.default.VELOCITY_INDEX, velocityValue.index);
+	        var distance = registerCache.getFreeVertexVectorTemp();
 	        var code = "";
-	        code += "mul " + distance + "," + animationRegisterCache.vertexTime + "," + velocityValue + "\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + "," + animationRegisterCache.positionTarget + ".xyz\n";
-	        if (animationRegisterCache.needVelocity)
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	        code += "mul " + distance + "," + animationRegisterData.vertexTime + "," + velocityValue + "\n";
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + "," + animationRegisterData.positionTarget + ".xyz\n";
+	        if (animationSet.needVelocity)
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + velocityValue + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	        return code;
 	    };
 	    /**
@@ -57865,7 +57314,7 @@
 
 
 /***/ },
-/* 351 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57874,9 +57323,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -57910,12 +57359,12 @@
 	        this._pDynamicProperties = value;
 	        this._pDynamicPropertiesDirty = new Object();
 	    };
-	    ParticleVelocityState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticleVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 	            this._pUpdateDynamicProperties(animationElements);
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
 	        if (this._particleVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-	            animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
+	            shader.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
 	        else
 	            animationElements.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	    };
@@ -57928,7 +57377,7 @@
 
 
 /***/ },
-/* 352 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -57938,10 +57387,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ColorTransform_1 = __webpack_require__(19);
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleColorState_1 = __webpack_require__(353);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleColorState_1 = __webpack_require__(350);
 	/**
 	 * A particle animation node used to control the color variation of a particle over time.
 	 */
@@ -57960,7 +57409,7 @@
 	     * @param    [optional] cycleDuration   Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
 	     * @param    [optional] cyclePhase      Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
 	     */
-	    function ParticleColorNode(mode /*uint*/, usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
+	    function ParticleColorNode(mode, usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
 	        if (usesMultiplier === void 0) { usesMultiplier = true; }
 	        if (usesOffset === void 0) { usesOffset = true; }
 	        if (usesCycle === void 0) { usesCycle = false; }
@@ -57983,38 +57432,38 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        if (animationRegisterCache.needFragmentAnimation) {
-	            var temp = animationRegisterCache.getFreeVertexVectorTemp();
+	        if (shader.usesFragmentAnimation) {
+	            var temp = registerCache.getFreeVertexVectorTemp();
 	            if (this._iUsesCycle) {
-	                var cycleConst = animationRegisterCache.getFreeVertexConstant();
-	                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.CYCLE_INDEX, cycleConst.index);
-	                animationRegisterCache.addVertexTempUsages(temp, 1);
-	                var sin = animationRegisterCache.getFreeVertexSingleTemp();
-	                animationRegisterCache.removeVertexTempUsage(temp);
-	                code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + cycleConst + ".x\n";
+	                var cycleConst = registerCache.getFreeVertexConstant();
+	                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.CYCLE_INDEX, cycleConst.index);
+	                registerCache.addVertexTempUsages(temp, 1);
+	                var sin = registerCache.getFreeVertexSingleTemp();
+	                registerCache.removeVertexTempUsage(temp);
+	                code += "mul " + sin + "," + animationRegisterData.vertexTime + "," + cycleConst + ".x\n";
 	                if (this._iUsesPhase)
 	                    code += "add " + sin + "," + sin + "," + cycleConst + ".y\n";
 	                code += "sin " + sin + "," + sin + "\n";
 	            }
 	            if (this._iUsesMultiplier) {
-	                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.START_MULTIPLIER_INDEX, startMultiplierValue.index);
-	                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
-	                code += "mul " + temp + "," + deltaMultiplierValue + "," + (this._iUsesCycle ? sin : animationRegisterCache.vertexLife) + "\n";
+	                var startMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	                var deltaMultiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_MULTIPLIER_INDEX, startMultiplierValue.index);
+	                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
+	                code += "mul " + temp + "," + deltaMultiplierValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
 	                code += "add " + temp + "," + temp + "," + startMultiplierValue + "\n";
-	                code += "mul " + animationRegisterCache.colorMulTarget + "," + temp + "," + animationRegisterCache.colorMulTarget + "\n";
+	                code += "mul " + animationRegisterData.colorMulTarget + "," + temp + "," + animationRegisterData.colorMulTarget + "\n";
 	            }
 	            if (this._iUsesOffset) {
-	                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-	                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-	                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
-	                animationRegisterCache.setRegisterIndex(this, ParticleColorState_1.default.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
-	                code += "mul " + temp + "," + deltaOffsetValue + "," + (this._iUsesCycle ? sin : animationRegisterCache.vertexLife) + "\n";
+	                var startOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+	                var deltaOffsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+	                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
+	                animationRegisterData.setRegisterIndex(this, ParticleColorState_1.default.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
+	                code += "mul " + temp + "," + deltaOffsetValue + "," + (this._iUsesCycle ? sin : animationRegisterData.vertexLife) + "\n";
 	                code += "add " + temp + "," + temp + "," + startOffsetValue + "\n";
-	                code += "add " + animationRegisterCache.colorAddTarget + "," + temp + "," + animationRegisterCache.colorAddTarget + "\n";
+	                code += "add " + animationRegisterData.colorAddTarget + "," + temp + "," + animationRegisterData.colorAddTarget + "\n";
 	            }
 	        }
 	        return code;
@@ -58111,7 +57560,7 @@
 
 
 /***/ },
-/* 353 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58121,9 +57570,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 * @author ...
@@ -58199,33 +57648,33 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        if (animationRegisterCache.needFragmentAnimation) {
+	    ParticleColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (shader.usesFragmentAnimation) {
 	            var dataOffset = this._particleColorNode._iDataOffset;
+	            var index;
 	            if (this._usesCycle)
-	                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
+	                shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
 	            if (this._usesMultiplier) {
 	                if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	                    dataOffset += 4;
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	                    dataOffset += 4;
 	                }
 	                else {
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
 	                }
 	            }
 	            if (this._usesOffset) {
 	                if (this._particleColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	                    dataOffset += 4;
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
-	                    dataOffset += 4;
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	                }
 	                else {
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleColorState.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
 	                }
 	            }
 	        }
@@ -58276,15 +57725,15 @@
 
 
 /***/ },
-/* 354 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AttributesBuffer_1 = __webpack_require__(64);
+	var AttributesBuffer_1 = __webpack_require__(87);
 	var Point_1 = __webpack_require__(26);
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticleData_1 = __webpack_require__(355);
-	var TriangleElements_1 = __webpack_require__(107);
+	var ParticleData_1 = __webpack_require__(352);
+	var TriangleElements_1 = __webpack_require__(108);
 	/**
 	 * ...
 	 */
@@ -58459,7 +57908,7 @@
 
 
 /***/ },
-/* 355 */
+/* 352 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -58473,7 +57922,7 @@
 
 
 /***/ },
-/* 356 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58482,21 +57931,21 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(80);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var BitmapImage2D_1 = __webpack_require__(74);
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
-	var TriangleElements_1 = __webpack_require__(107);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
+	var TriangleElements_1 = __webpack_require__(108);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var MethodMaterialMode_1 = __webpack_require__(266);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var MethodMaterialMode_1 = __webpack_require__(264);
 	/**
 	 * Max3DSParser provides a parser for the 3ds data type.
 	 */
@@ -59172,11 +58621,11 @@
 
 
 /***/ },
-/* 357 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CrossfadeTransitionNode_1 = __webpack_require__(358);
+	var CrossfadeTransitionNode_1 = __webpack_require__(355);
 	/**
 	 *
 	 */
@@ -59185,7 +58634,7 @@
 	        this.blendSpeed = 0.5;
 	        this.blendSpeed = blendSpeed;
 	    }
-	    CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend /*int*/) {
+	    CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend) {
 	        var crossFadeTransitionNode = new CrossfadeTransitionNode_1.default();
 	        crossFadeTransitionNode.inputA = startNode;
 	        crossFadeTransitionNode.inputB = endNode;
@@ -59200,7 +58649,7 @@
 
 
 /***/ },
-/* 358 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59209,8 +58658,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SkeletonBinaryLERPNode_1 = __webpack_require__(359);
-	var CrossfadeTransitionState_1 = __webpack_require__(361);
+	var SkeletonBinaryLERPNode_1 = __webpack_require__(356);
+	var CrossfadeTransitionState_1 = __webpack_require__(358);
 	/**
 	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -59230,7 +58679,7 @@
 
 
 /***/ },
-/* 359 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59239,8 +58688,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(260);
-	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
+	var AnimationNodeBase_1 = __webpack_require__(258);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(357);
 	/**
 	 * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -59266,7 +58715,7 @@
 
 
 /***/ },
-/* 360 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59275,9 +58724,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	/**
 	 *
 	 */
@@ -59323,7 +58772,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonBinaryLERPState.prototype._pUpdateTime = function (time /*int*/) {
+	    SkeletonBinaryLERPState.prototype._pUpdateTime = function (time) {
 	        this._skeletonPoseDirty = true;
 	        this._inputA.update(time);
 	        this._inputB.update(time);
@@ -59388,7 +58837,7 @@
 
 
 /***/ },
-/* 361 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59397,8 +58846,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
-	var AnimationStateEvent_1 = __webpack_require__(255);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(357);
+	var AnimationStateEvent_1 = __webpack_require__(253);
 	/**
 	 *
 	 */
@@ -59411,7 +58860,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    CrossfadeTransitionState.prototype._pUpdateTime = function (time /*int*/) {
+	    CrossfadeTransitionState.prototype._pUpdateTime = function (time) {
 	        this.blendWeight = Math.abs(time - this._crossfadeTransitionNode.startBlend) / (1000 * this._crossfadeTransitionNode.blendSpeed);
 	        if (this.blendWeight >= 1) {
 	            this.blendWeight = 1;
@@ -59428,7 +58877,7 @@
 
 
 /***/ },
-/* 362 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59437,7 +58886,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DirectionalShadowMapper_1 = __webpack_require__(224);
+	var DirectionalShadowMapper_1 = __webpack_require__(221);
 	var NearDirectionalShadowMapper = (function (_super) {
 	    __extends(NearDirectionalShadowMapper, _super);
 	    function NearDirectionalShadowMapper(coverageRatio) {
@@ -59479,7 +58928,7 @@
 
 
 /***/ },
-/* 363 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -59488,13 +58937,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Quaternion_1 = __webpack_require__(253);
+	var Quaternion_1 = __webpack_require__(251);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
-	var ParserBase_1 = __webpack_require__(215);
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var SkeletonClipNode_1 = __webpack_require__(258);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
+	var ParserBase_1 = __webpack_require__(212);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var SkeletonClipNode_1 = __webpack_require__(256);
 	/**
 	 * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
 	 *
@@ -60005,7 +59454,7 @@
 
 
 /***/ },
-/* 364 */
+/* 361 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60014,17 +59463,17 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var Quaternion_1 = __webpack_require__(253);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var Quaternion_1 = __webpack_require__(251);
 	var Vector3D_1 = __webpack_require__(18);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
-	var ParserBase_1 = __webpack_require__(215);
-	var TriangleElements_1 = __webpack_require__(107);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
+	var ParserBase_1 = __webpack_require__(212);
+	var TriangleElements_1 = __webpack_require__(108);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var SkeletonAnimationSet_1 = __webpack_require__(250);
-	var Skeleton_1 = __webpack_require__(256);
-	var SkeletonJoint_1 = __webpack_require__(257);
+	var SkeletonAnimationSet_1 = __webpack_require__(248);
+	var Skeleton_1 = __webpack_require__(254);
+	var SkeletonJoint_1 = __webpack_require__(255);
 	// todo: create animation system, parse skeleton
 	/**
 	 * MD5MeshParser provides a parser for the md5mesh data type, providing the graphics of the md5 format.
@@ -60559,7 +60008,7 @@
 
 
 /***/ },
-/* 365 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60632,7 +60081,7 @@
 	            if (this._startPosition == value)
 	                return;
 	            this._startPosition = value;
-	            this.invalidateGraphics();
+	            this.invalidateElements();
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -60648,7 +60097,7 @@
 	            if (this._endPosition == value)
 	                return;
 	            this._endPosition = value;
-	            this.invalidateGraphics();
+	            this.invalidateElements();
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -60681,7 +60130,7 @@
 	            if (this._halfThickness == value)
 	                return;
 	            this._halfThickness = value * 0.5;
-	            this.invalidateGraphics();
+	            this.invalidateElements();
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -60732,11 +60181,11 @@
 	    /**
 	     * @private
 	     */
-	    LineSegment.prototype.invalidateGraphics = function () {
+	    LineSegment.prototype.invalidateElements = function () {
 	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this)); //TODO improve performance by only using one geometry for all line segments
 	    };
 	    LineSegment.prototype.invalidateSurface = function () {
-	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this));
+	        this.dispatchEvent(new RenderableEvent_1.default(RenderableEvent_1.default.INVALIDATE_SURFACE, this));
 	    };
 	    LineSegment.prototype._onInvalidateProperties = function (event) {
 	        this.invalidateSurface();
@@ -60764,7 +60213,7 @@
 
 
 /***/ },
-/* 366 */
+/* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60774,9 +60223,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleBezierCurveState_1 = __webpack_require__(367);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleBezierCurveState_1 = __webpack_require__(364);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time along a bezier curve.
@@ -60790,7 +60239,7 @@
 	     * @param    [optional] controlPoint    Defines the default control point of the node, used when in global mode.
 	     * @param    [optional] endPoint        Defines the default end point of the node, used when in global mode.
 	     */
-	    function ParticleBezierCurveNode(mode /*uint*/, controlPoint, endPoint) {
+	    function ParticleBezierCurveNode(mode, controlPoint, endPoint) {
 	        if (controlPoint === void 0) { controlPoint = null; }
 	        if (endPoint === void 0) { endPoint = null; }
 	        _super.call(this, "ParticleBezierCurve", mode, 6);
@@ -60801,36 +60250,36 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var controlValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_CONTROL_INDEX, controlValue.index);
-	        var endValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_END_INDEX, endValue.index);
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+	    ParticleBezierCurveNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var controlValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_CONTROL_INDEX, controlValue.index);
+	        var endValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleBezierCurveState_1.default.BEZIER_END_INDEX, endValue.index);
+	        var temp = registerCache.getFreeVertexVectorTemp();
 	        var rev_time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
 	        var time_2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
 	        var time_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-	        animationRegisterCache.addVertexTempUsages(temp, 1);
-	        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp, 1);
+	        var temp2 = registerCache.getFreeVertexVectorTemp();
 	        var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
-	        animationRegisterCache.removeVertexTempUsage(temp);
+	        registerCache.removeVertexTempUsage(temp);
 	        var code = "";
-	        code += "sub " + rev_time + "," + animationRegisterCache.vertexOneConst + "," + animationRegisterCache.vertexLife + "\n";
-	        code += "mul " + time_2 + "," + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexLife + "\n";
-	        code += "mul " + time_temp + "," + animationRegisterCache.vertexLife + "," + rev_time + "\n";
-	        code += "mul " + time_temp + "," + time_temp + "," + animationRegisterCache.vertexTwoConst + "\n";
+	        code += "sub " + rev_time + "," + animationRegisterData.vertexOneConst + "," + animationRegisterData.vertexLife + "\n";
+	        code += "mul " + time_2 + "," + animationRegisterData.vertexLife + "," + animationRegisterData.vertexLife + "\n";
+	        code += "mul " + time_temp + "," + animationRegisterData.vertexLife + "," + rev_time + "\n";
+	        code += "mul " + time_temp + "," + time_temp + "," + animationRegisterData.vertexTwoConst + "\n";
 	        code += "mul " + distance + ".xyz," + time_temp + "," + controlValue + "\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 	        code += "mul " + distance + ".xyz," + time_2 + "," + endValue + "\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-	        if (animationRegisterCache.needVelocity) {
-	            code += "mul " + time_2 + "," + animationRegisterCache.vertexLife + "," + animationRegisterCache.vertexTwoConst + "\n";
-	            code += "sub " + time_temp + "," + animationRegisterCache.vertexOneConst + "," + time_2 + "\n";
-	            code += "mul " + time_temp + "," + animationRegisterCache.vertexTwoConst + "," + time_temp + "\n";
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+	        if (animationSet.needVelocity) {
+	            code += "mul " + time_2 + "," + animationRegisterData.vertexLife + "," + animationRegisterData.vertexTwoConst + "\n";
+	            code += "sub " + time_temp + "," + animationRegisterData.vertexOneConst + "," + time_2 + "\n";
+	            code += "mul " + time_temp + "," + animationRegisterData.vertexTwoConst + "," + time_temp + "\n";
 	            code += "mul " + distance + ".xyz," + controlValue + "," + time_temp + "\n";
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	            code += "mul " + distance + ".xyz," + endValue + "," + time_2 + "\n";
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	        }
 	        return code;
 	    };
@@ -60874,7 +60323,7 @@
 
 
 /***/ },
-/* 367 */
+/* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60883,9 +60332,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -60923,16 +60372,16 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleBezierCurveState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
-	        var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
+	    ParticleBezierCurveState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var controlIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
+	        var endIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
 	        if (this._particleBezierCurveNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
 	            animationElements.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	            animationElements.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        }
 	        else {
-	            animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
-	            animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
+	            shader.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
+	            shader.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
 	        }
 	    };
 	    /** @private */
@@ -60946,7 +60395,7 @@
 
 
 /***/ },
-/* 368 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -60956,16 +60405,16 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var ColorTransform_1 = __webpack_require__(19);
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleInitialColorState_1 = __webpack_require__(369);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleInitialColorState_1 = __webpack_require__(366);
 	/**
 	 *
 	 */
 	var ParticleInitialColorNode = (function (_super) {
 	    __extends(ParticleInitialColorNode, _super);
-	    function ParticleInitialColorNode(mode /*uint*/, usesMultiplier, usesOffset, initialColor) {
+	    function ParticleInitialColorNode(mode, usesMultiplier, usesOffset, initialColor) {
 	        if (usesMultiplier === void 0) { usesMultiplier = true; }
 	        if (usesOffset === void 0) { usesOffset = false; }
 	        if (initialColor === void 0) { initialColor = null; }
@@ -60978,18 +60427,18 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleInitialColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        if (animationRegisterCache.needFragmentAnimation) {
+	        if (shader.usesFragmentAnimation) {
 	            if (this._iUsesMultiplier) {
-	                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	                animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState_1.default.MULTIPLIER_INDEX, multiplierValue.index);
-	                code += "mul " + animationRegisterCache.colorMulTarget + "," + multiplierValue + "," + animationRegisterCache.colorMulTarget + "\n";
+	                var multiplierValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.MULTIPLIER_INDEX, multiplierValue.index);
+	                code += "mul " + animationRegisterData.colorMulTarget + "," + multiplierValue + "," + animationRegisterData.colorMulTarget + "\n";
 	            }
 	            if (this._iUsesOffset) {
-	                var offsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-	                animationRegisterCache.setRegisterIndex(this, ParticleInitialColorState_1.default.OFFSET_INDEX, offsetValue.index);
-	                code += "add " + animationRegisterCache.colorAddTarget + "," + offsetValue + "," + animationRegisterCache.colorAddTarget + "\n";
+	                var offsetValue = (this._pMode == ParticlePropertiesMode_1.default.LOCAL_STATIC) ? registerCache.getFreeVertexAttribute() : registerCache.getFreeVertexConstant();
+	                animationRegisterData.setRegisterIndex(this, ParticleInitialColorState_1.default.OFFSET_INDEX, offsetValue.index);
+	                code += "add " + animationRegisterData.colorAddTarget + "," + offsetValue + "," + animationRegisterData.colorAddTarget + "\n";
 	            }
 	        }
 	        return code;
@@ -61038,7 +60487,7 @@
 
 
 /***/ },
-/* 369 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61048,9 +60497,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	*
 	*/
@@ -61080,25 +60529,23 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleInitialColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        // TODO: not used
-	        renderable = renderable;
-	        camera = camera;
-	        if (animationRegisterCache.needFragmentAnimation) {
+	    ParticleInitialColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (shader.usesFragmentAnimation) {
+	            var index;
 	            if (this._particleInitialColorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
 	                var dataOffset = this._particleInitialColorNode._iDataOffset;
 	                if (this._usesMultiplier) {
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	                    dataOffset += 4;
 	                }
 	                if (this._usesOffset)
-	                    animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
+	                    animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), dataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	            }
 	            else {
 	                if (this._usesMultiplier)
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
 	                if (this._usesOffset)
-	                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
+	                    shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleInitialColorState.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
 	            }
 	        }
 	    };
@@ -61121,7 +60568,7 @@
 
 
 /***/ },
-/* 370 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61131,9 +60578,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticlePositionState_1 = __webpack_require__(371);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticlePositionState_1 = __webpack_require__(368);
 	/**
 	 * A particle animation node used to set the starting position of a particle.
 	 */
@@ -61145,7 +60592,7 @@
 	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	     * @param    [optional] position        Defines the default position of the particle when in global mode. Defaults to 0,0,0.
 	     */
-	    function ParticlePositionNode(mode /*uint*/, position) {
+	    function ParticlePositionNode(mode, position) {
 	        if (position === void 0) { position = null; }
 	        _super.call(this, "ParticlePosition", mode, 3);
 	        this._pStateClass = ParticlePositionState_1.default;
@@ -61154,10 +60601,10 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticlePositionState_1.default.POSITION_INDEX, positionAttribute.index);
-	        return "add " + animationRegisterCache.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+	    ParticlePositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticlePositionState_1.default.POSITION_INDEX, positionAttribute.index);
+	        return "add " + animationRegisterData.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 	    };
 	    /**
 	     * @inheritDoc
@@ -61188,7 +60635,7 @@
 
 
 /***/ },
-/* 371 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61197,9 +60644,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 * @author ...
@@ -61237,12 +60684,12 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticlePositionState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticlePositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 	            this._pUpdateDynamicProperties(animationElements);
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
 	        if (this._particlePositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-	            animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
+	            shader.setVertexConst(index, this._position.x, this._position.y, this._position.z);
 	        else
 	            animationElements.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	    };
@@ -61255,7 +60702,7 @@
 
 
 /***/ },
-/* 372 */
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61264,20 +60711,20 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
 	var Graphics_1 = __webpack_require__(58);
-	var TriangleElements_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Sprite_1 = __webpack_require__(57);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
-	var VertexClipNode_1 = __webpack_require__(264);
-	var VertexAnimationSet_1 = __webpack_require__(243);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var MethodMaterialMode_1 = __webpack_require__(266);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var VertexClipNode_1 = __webpack_require__(262);
+	var VertexAnimationSet_1 = __webpack_require__(240);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var MethodMaterialMode_1 = __webpack_require__(264);
 	/**
 	 * MD2Parser provides a parser for the MD2 data type.
 	 */
@@ -61652,35 +61099,35 @@
 
 
 /***/ },
-/* 373 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var attributes = __webpack_require__(374);
+	var attributes = __webpack_require__(371);
 	exports.attributes = attributes;
-	var audio = __webpack_require__(379);
+	var audio = __webpack_require__(376);
 	exports.audio = audio;
-	var errors = __webpack_require__(384);
+	var errors = __webpack_require__(381);
 	exports.errors = errors;
-	var events = __webpack_require__(386);
+	var events = __webpack_require__(383);
 	exports.events = events;
-	var geom = __webpack_require__(387);
+	var geom = __webpack_require__(384);
 	exports.geom = geom;
-	var image = __webpack_require__(388);
+	var image = __webpack_require__(385);
 	exports.image = image;
-	var library = __webpack_require__(389);
+	var library = __webpack_require__(386);
 	exports.library = library;
-	var managers = __webpack_require__(392);
+	var managers = __webpack_require__(389);
 	exports.managers = managers;
-	var net = __webpack_require__(393);
+	var net = __webpack_require__(390);
 	exports.net = net;
-	var parsers = __webpack_require__(395);
+	var parsers = __webpack_require__(392);
 	exports.parsers = parsers;
-	var projections = __webpack_require__(402);
+	var projections = __webpack_require__(399);
 	exports.projections = projections;
-	var ui = __webpack_require__(404);
+	var ui = __webpack_require__(401);
 	exports.ui = ui;
-	var utils = __webpack_require__(405);
+	var utils = __webpack_require__(402);
 	exports.utils = utils;
 	library.Loader.enableParser(parsers.Image2DParser);
 	library.Loader.enableParser(parsers.ImageCubeParser);
@@ -61689,38 +61136,38 @@
 
 
 /***/ },
-/* 374 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	exports.AttributesView = AttributesView_1.default;
-	var AttributesBuffer_1 = __webpack_require__(64);
+	var AttributesBuffer_1 = __webpack_require__(87);
 	exports.AttributesBuffer = AttributesBuffer_1.default;
-	var Byte1Attributes_1 = __webpack_require__(375);
+	var Byte1Attributes_1 = __webpack_require__(372);
 	exports.Byte1Attributes = Byte1Attributes_1.default;
-	var Byte2Attributes_1 = __webpack_require__(376);
+	var Byte2Attributes_1 = __webpack_require__(373);
 	exports.Byte2Attributes = Byte2Attributes_1.default;
-	var Byte3Attributes_1 = __webpack_require__(377);
+	var Byte3Attributes_1 = __webpack_require__(374);
 	exports.Byte3Attributes = Byte3Attributes_1.default;
-	var Byte4Attributes_1 = __webpack_require__(68);
+	var Byte4Attributes_1 = __webpack_require__(88);
 	exports.Byte4Attributes = Byte4Attributes_1.default;
-	var Float1Attributes_1 = __webpack_require__(92);
+	var Float1Attributes_1 = __webpack_require__(89);
 	exports.Float1Attributes = Float1Attributes_1.default;
-	var Float2Attributes_1 = __webpack_require__(105);
+	var Float2Attributes_1 = __webpack_require__(106);
 	exports.Float2Attributes = Float2Attributes_1.default;
-	var Float3Attributes_1 = __webpack_require__(65);
+	var Float3Attributes_1 = __webpack_require__(91);
 	exports.Float3Attributes = Float3Attributes_1.default;
-	var Float4Attributes_1 = __webpack_require__(67);
+	var Float4Attributes_1 = __webpack_require__(94);
 	exports.Float4Attributes = Float4Attributes_1.default;
-	var Short2Attributes_1 = __webpack_require__(378);
+	var Short2Attributes_1 = __webpack_require__(375);
 	exports.Short2Attributes = Short2Attributes_1.default;
-	var Short3Attributes_1 = __webpack_require__(94);
+	var Short3Attributes_1 = __webpack_require__(92);
 	exports.Short3Attributes = Short3Attributes_1.default;
 
 
 /***/ },
-/* 375 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61729,7 +61176,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	var Byte1Attributes = (function (_super) {
 	    __extends(Byte1Attributes, _super);
 	    function Byte1Attributes(attributesBufferLength, unsigned) {
@@ -61770,7 +61217,7 @@
 
 
 /***/ },
-/* 376 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61779,7 +61226,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	var Byte2Attributes = (function (_super) {
 	    __extends(Byte2Attributes, _super);
 	    function Byte2Attributes(attributesBufferLength, unsigned) {
@@ -61820,7 +61267,7 @@
 
 
 /***/ },
-/* 377 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61829,7 +61276,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	var Byte3Attributes = (function (_super) {
 	    __extends(Byte3Attributes, _super);
 	    function Byte3Attributes(attributesBufferLength, unsigned) {
@@ -61870,7 +61317,7 @@
 
 
 /***/ },
-/* 378 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61879,7 +61326,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesView_1 = __webpack_require__(66);
+	var AttributesView_1 = __webpack_require__(86);
 	var Short2Attributes = (function (_super) {
 	    __extends(Short2Attributes, _super);
 	    function Short2Attributes(attributesBufferLength, unsigned) {
@@ -61920,16 +61367,16 @@
 
 
 /***/ },
-/* 379 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var WaveAudio_1 = __webpack_require__(380);
+	var WaveAudio_1 = __webpack_require__(377);
 	exports.WaveAudio = WaveAudio_1.default;
 
 
 /***/ },
-/* 380 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -61938,7 +61385,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AudioManager_1 = __webpack_require__(381);
+	var AudioManager_1 = __webpack_require__(378);
 	var AssetBase_1 = __webpack_require__(27);
 	// TODO: Audio should probably be an interface containing play/stop/seek functionality
 	var WaveAudio = (function (_super) {
@@ -62024,12 +61471,12 @@
 
 
 /***/ },
-/* 381 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StreamingAudioChannel_1 = __webpack_require__(382);
-	var WebAudioChannel_1 = __webpack_require__(383);
+	var StreamingAudioChannel_1 = __webpack_require__(379);
+	var WebAudioChannel_1 = __webpack_require__(380);
 	var AudioManager = (function () {
 	    function AudioManager() {
 	    }
@@ -62063,7 +61510,7 @@
 
 
 /***/ },
-/* 382 */
+/* 379 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62200,7 +61647,7 @@
 
 
 /***/ },
-/* 383 */
+/* 380 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62332,7 +61779,7 @@
 
 
 /***/ },
-/* 384 */
+/* 381 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62340,18 +61787,18 @@
 	exports.AbstractMethodError = AbstractMethodError_1.default;
 	var ArgumentError_1 = __webpack_require__(13);
 	exports.ArgumentError = ArgumentError_1.default;
-	var DocumentError_1 = __webpack_require__(385);
+	var DocumentError_1 = __webpack_require__(382);
 	exports.DocumentError = DocumentError_1.default;
 	var ErrorBase_1 = __webpack_require__(14);
 	exports.ErrorBase = ErrorBase_1.default;
-	var PartialImplementationError_1 = __webpack_require__(109);
+	var PartialImplementationError_1 = __webpack_require__(110);
 	exports.PartialImplementationError = PartialImplementationError_1.default;
 	var RangeError_1 = __webpack_require__(15);
 	exports.RangeError = RangeError_1.default;
 
 
 /***/ },
-/* 385 */
+/* 382 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62376,7 +61823,7 @@
 
 
 /***/ },
-/* 386 */
+/* 383 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62392,14 +61839,14 @@
 	exports.ParserEvent = ParserEvent_1.default;
 	var ProjectionEvent_1 = __webpack_require__(47);
 	exports.ProjectionEvent = ProjectionEvent_1.default;
-	var TimerEvent_1 = __webpack_require__(216);
+	var TimerEvent_1 = __webpack_require__(213);
 	exports.TimerEvent = TimerEvent_1.default;
-	var URLLoaderEvent_1 = __webpack_require__(121);
+	var URLLoaderEvent_1 = __webpack_require__(122);
 	exports.URLLoaderEvent = URLLoaderEvent_1.default;
 
 
 /***/ },
-/* 387 */
+/* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62409,7 +61856,7 @@
 	exports.ColorTransform = ColorTransform_1.default;
 	var MathConsts_1 = __webpack_require__(22);
 	exports.MathConsts = MathConsts_1.default;
-	var Matrix_1 = __webpack_require__(87);
+	var Matrix_1 = __webpack_require__(81);
 	exports.Matrix = Matrix_1.default;
 	var Matrix3D_1 = __webpack_require__(23);
 	exports.Matrix3D = Matrix3D_1.default;
@@ -62423,9 +61870,9 @@
 	exports.PlaneClassification = PlaneClassification_1.default;
 	var Point_1 = __webpack_require__(26);
 	exports.Point = Point_1.default;
-	var PoissonLookup_1 = __webpack_require__(304);
+	var PoissonLookup_1 = __webpack_require__(302);
 	exports.PoissonLookup = PoissonLookup_1.default;
-	var Quaternion_1 = __webpack_require__(253);
+	var Quaternion_1 = __webpack_require__(251);
 	exports.Quaternion = Quaternion_1.default;
 	var Rectangle_1 = __webpack_require__(51);
 	exports.Rectangle = Rectangle_1.default;
@@ -62436,42 +61883,42 @@
 
 
 /***/ },
-/* 388 */
+/* 385 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(80);
+	var BitmapImage2D_1 = __webpack_require__(74);
 	exports.BitmapImage2D = BitmapImage2D_1.default;
-	var BitmapImageChannel_1 = __webpack_require__(328);
+	var BitmapImageChannel_1 = __webpack_require__(326);
 	exports.BitmapImageChannel = BitmapImageChannel_1.default;
-	var BitmapImageCube_1 = __webpack_require__(89);
+	var BitmapImageCube_1 = __webpack_require__(83);
 	exports.BitmapImageCube = BitmapImageCube_1.default;
-	var BlendMode_1 = __webpack_require__(96);
+	var BlendMode_1 = __webpack_require__(97);
 	exports.BlendMode = BlendMode_1.default;
-	var CPUCanvas_1 = __webpack_require__(85);
+	var CPUCanvas_1 = __webpack_require__(79);
 	exports.CPUCanvas = CPUCanvas_1.default;
-	var CPURenderingContext2D_1 = __webpack_require__(86);
+	var CPURenderingContext2D_1 = __webpack_require__(80);
 	exports.CPURenderingContext2D = CPURenderingContext2D_1.default;
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	exports.Image2D = Image2D_1.default;
-	var ImageBase_1 = __webpack_require__(82);
+	var ImageBase_1 = __webpack_require__(76);
 	exports.ImageBase = ImageBase_1.default;
-	var ImageCube_1 = __webpack_require__(90);
+	var ImageCube_1 = __webpack_require__(84);
 	exports.ImageCube = ImageCube_1.default;
-	var ImageData_1 = __webpack_require__(88);
+	var ImageData_1 = __webpack_require__(82);
 	exports.ImageData = ImageData_1.default;
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	exports.Sampler2D = Sampler2D_1.default;
-	var SamplerBase_1 = __webpack_require__(79);
+	var SamplerBase_1 = __webpack_require__(73);
 	exports.SamplerBase = SamplerBase_1.default;
-	var SamplerCube_1 = __webpack_require__(231);
+	var SamplerCube_1 = __webpack_require__(228);
 	exports.SamplerCube = SamplerCube_1.default;
-	var SpecularImage2D_1 = __webpack_require__(327);
+	var SpecularImage2D_1 = __webpack_require__(325);
 	exports.SpecularImage2D = SpecularImage2D_1.default;
 
 
 /***/ },
-/* 389 */
+/* 386 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62479,36 +61926,36 @@
 	exports.AbstractionBase = AbstractionBase_1.default;
 	var AssetBase_1 = __webpack_require__(27);
 	exports.AssetBase = AssetBase_1.default;
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	exports.AssetLibrary = AssetLibrary_1.default;
-	var AssetLibraryBundle_1 = __webpack_require__(115);
+	var AssetLibraryBundle_1 = __webpack_require__(116);
 	exports.AssetLibraryBundle = AssetLibraryBundle_1.default;
-	var AssetLibraryIterator_1 = __webpack_require__(116);
+	var AssetLibraryIterator_1 = __webpack_require__(117);
 	exports.AssetLibraryIterator = AssetLibraryIterator_1.default;
-	var ConflictPrecedence_1 = __webpack_require__(123);
+	var ConflictPrecedence_1 = __webpack_require__(124);
 	exports.ConflictPrecedence = ConflictPrecedence_1.default;
-	var ConflictStrategy_1 = __webpack_require__(124);
+	var ConflictStrategy_1 = __webpack_require__(125);
 	exports.ConflictStrategy = ConflictStrategy_1.default;
-	var ConflictStrategyBase_1 = __webpack_require__(126);
+	var ConflictStrategyBase_1 = __webpack_require__(127);
 	exports.ConflictStrategyBase = ConflictStrategyBase_1.default;
-	var ErrorConflictStrategy_1 = __webpack_require__(125);
+	var ErrorConflictStrategy_1 = __webpack_require__(126);
 	exports.ErrorConflictStrategy = ErrorConflictStrategy_1.default;
-	var IDUtil_1 = __webpack_require__(390);
+	var IDUtil_1 = __webpack_require__(387);
 	exports.IDUtil = IDUtil_1.default;
-	var IgnoreConflictStrategy_1 = __webpack_require__(127);
+	var IgnoreConflictStrategy_1 = __webpack_require__(128);
 	exports.IgnoreConflictStrategy = IgnoreConflictStrategy_1.default;
-	var Loader_1 = __webpack_require__(117);
+	var Loader_1 = __webpack_require__(118);
 	exports.Loader = Loader_1.default;
-	var LoaderContext_1 = __webpack_require__(329);
+	var LoaderContext_1 = __webpack_require__(327);
 	exports.LoaderContext = LoaderContext_1.default;
-	var LoaderInfo_1 = __webpack_require__(391);
+	var LoaderInfo_1 = __webpack_require__(388);
 	exports.LoaderInfo = LoaderInfo_1.default;
-	var NumSuffixConflictStrategy_1 = __webpack_require__(128);
+	var NumSuffixConflictStrategy_1 = __webpack_require__(129);
 	exports.NumSuffixConflictStrategy = NumSuffixConflictStrategy_1.default;
 
 
 /***/ },
-/* 390 */
+/* 387 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62573,7 +62020,7 @@
 
 
 /***/ },
-/* 391 */
+/* 388 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62829,39 +62276,39 @@
 
 
 /***/ },
-/* 392 */
+/* 389 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AudioManager_1 = __webpack_require__(381);
+	var AudioManager_1 = __webpack_require__(378);
 	exports.AudioManager = AudioManager_1.default;
-	var StreamingAudioChannel_1 = __webpack_require__(382);
+	var StreamingAudioChannel_1 = __webpack_require__(379);
 	exports.StreamingAudioChannel = StreamingAudioChannel_1.default;
-	var WebAudioChannel_1 = __webpack_require__(383);
+	var WebAudioChannel_1 = __webpack_require__(380);
 	exports.WebAudioChannel = WebAudioChannel_1.default;
 
 
 /***/ },
-/* 393 */
+/* 390 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CrossDomainPolicy_1 = __webpack_require__(394);
+	var CrossDomainPolicy_1 = __webpack_require__(391);
 	exports.CrossDomainPolicy = CrossDomainPolicy_1.default;
-	var URLLoader_1 = __webpack_require__(118);
+	var URLLoader_1 = __webpack_require__(119);
 	exports.URLLoader = URLLoader_1.default;
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	exports.URLLoaderDataFormat = URLLoaderDataFormat_1.default;
 	var URLRequest_1 = __webpack_require__(3);
 	exports.URLRequest = URLRequest_1.default;
 	var URLRequestMethod_1 = __webpack_require__(4);
 	exports.URLRequestMethod = URLRequestMethod_1.default;
-	var URLVariables_1 = __webpack_require__(120);
+	var URLVariables_1 = __webpack_require__(121);
 	exports.URLVariables = URLVariables_1.default;
 
 
 /***/ },
-/* 394 */
+/* 391 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62877,30 +62324,30 @@
 
 
 /***/ },
-/* 395 */
+/* 392 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2DParser_1 = __webpack_require__(396);
+	var Image2DParser_1 = __webpack_require__(393);
 	exports.Image2DParser = Image2DParser_1.default;
-	var ImageCubeParser_1 = __webpack_require__(397);
+	var ImageCubeParser_1 = __webpack_require__(394);
 	exports.ImageCubeParser = ImageCubeParser_1.default;
-	var ParserBase_1 = __webpack_require__(215);
+	var ParserBase_1 = __webpack_require__(212);
 	exports.ParserBase = ParserBase_1.default;
-	var ParserDataFormat_1 = __webpack_require__(398);
+	var ParserDataFormat_1 = __webpack_require__(395);
 	exports.ParserDataFormat = ParserDataFormat_1.default;
-	var ParserUtils_1 = __webpack_require__(217);
+	var ParserUtils_1 = __webpack_require__(214);
 	exports.ParserUtils = ParserUtils_1.default;
-	var ResourceDependency_1 = __webpack_require__(122);
+	var ResourceDependency_1 = __webpack_require__(123);
 	exports.ResourceDependency = ResourceDependency_1.default;
-	var TextureAtlasParser_1 = __webpack_require__(399);
+	var TextureAtlasParser_1 = __webpack_require__(396);
 	exports.TextureAtlasParser = TextureAtlasParser_1.default;
-	var WaveAudioParser_1 = __webpack_require__(401);
+	var WaveAudioParser_1 = __webpack_require__(398);
 	exports.WaveAudioParser = WaveAudioParser_1.default;
 
 
 /***/ },
-/* 396 */
+/* 393 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62909,9 +62356,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
 	var ByteArray_1 = __webpack_require__(139);
 	/**
 	 * Image2DParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
@@ -63025,7 +62472,7 @@
 
 
 /***/ },
-/* 397 */
+/* 394 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -63034,10 +62481,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BitmapImageCube_1 = __webpack_require__(89);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var BitmapImageCube_1 = __webpack_require__(83);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
+	var ParserBase_1 = __webpack_require__(212);
 	/**
 	 * ImageCubeParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -63153,7 +62600,7 @@
 
 
 /***/ },
-/* 398 */
+/* 395 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -63182,7 +62629,7 @@
 
 
 /***/ },
-/* 399 */
+/* 396 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -63191,13 +62638,13 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	var Rectangle_1 = __webpack_require__(51);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserBase_1 = __webpack_require__(215);
-	var ParserUtils_1 = __webpack_require__(217);
-	var XmlUtils_1 = __webpack_require__(400);
+	var ParserBase_1 = __webpack_require__(212);
+	var ParserUtils_1 = __webpack_require__(214);
+	var XmlUtils_1 = __webpack_require__(397);
 	/**
 	 * TextureAtlasParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapImage2DResource so resource management can happen consistently without
@@ -63334,7 +62781,7 @@
 
 
 /***/ },
-/* 400 */
+/* 397 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -63416,7 +62863,7 @@
 
 
 /***/ },
-/* 401 */
+/* 398 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -63425,9 +62872,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var WaveAudio_1 = __webpack_require__(380);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
-	var ParserBase_1 = __webpack_require__(215);
+	var WaveAudio_1 = __webpack_require__(377);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
+	var ParserBase_1 = __webpack_require__(212);
 	var ByteArray_1 = __webpack_require__(139);
 	var WaveAudioParser = (function (_super) {
 	    __extends(WaveAudioParser, _super);
@@ -63484,19 +62931,19 @@
 
 
 /***/ },
-/* 402 */
+/* 399 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var CoordinateSystem_1 = __webpack_require__(49);
 	exports.CoordinateSystem = CoordinateSystem_1.default;
-	var FreeMatrixProjection_1 = __webpack_require__(225);
+	var FreeMatrixProjection_1 = __webpack_require__(222);
 	exports.FreeMatrixProjection = FreeMatrixProjection_1.default;
-	var ObliqueNearPlaneProjection_1 = __webpack_require__(403);
+	var ObliqueNearPlaneProjection_1 = __webpack_require__(400);
 	exports.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection_1.default;
-	var OrthographicOffCenterProjection_1 = __webpack_require__(220);
+	var OrthographicOffCenterProjection_1 = __webpack_require__(217);
 	exports.OrthographicOffCenterProjection = OrthographicOffCenterProjection_1.default;
-	var OrthographicProjection_1 = __webpack_require__(219);
+	var OrthographicProjection_1 = __webpack_require__(216);
 	exports.OrthographicProjection = OrthographicProjection_1.default;
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	exports.PerspectiveProjection = PerspectiveProjection_1.default;
@@ -63505,7 +62952,7 @@
 
 
 /***/ },
-/* 403 */
+/* 400 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -63622,51 +63069,51 @@
 
 
 /***/ },
-/* 404 */
+/* 401 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Keyboard_1 = __webpack_require__(330);
+	var Keyboard_1 = __webpack_require__(328);
 	exports.Keyboard = Keyboard_1.default;
 
 
 /***/ },
-/* 405 */
+/* 402 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImageUtils_1 = __webpack_require__(84);
+	var BitmapImageUtils_1 = __webpack_require__(78);
 	exports.BitmapImageUtils = BitmapImageUtils_1.default;
 	var ByteArray_1 = __webpack_require__(139);
 	exports.ByteArray = ByteArray_1.default;
 	var ByteArrayBase_1 = __webpack_require__(140);
 	exports.ByteArrayBase = ByteArrayBase_1.default;
-	var ByteArrayBuffer_1 = __webpack_require__(406);
+	var ByteArrayBuffer_1 = __webpack_require__(403);
 	exports.ByteArrayBuffer = ByteArrayBuffer_1.default;
 	var ColorUtils_1 = __webpack_require__(20);
 	exports.ColorUtils = ColorUtils_1.default;
-	var CSS_1 = __webpack_require__(148);
+	var CSS_1 = __webpack_require__(149);
 	exports.CSS = CSS_1.default;
-	var Debug_1 = __webpack_require__(333);
+	var Debug_1 = __webpack_require__(331);
 	exports.Debug = Debug_1.default;
-	var Extensions_1 = __webpack_require__(407);
+	var Extensions_1 = __webpack_require__(404);
 	exports.Extensions = Extensions_1.default;
 	var getTimer_1 = __webpack_require__(8);
 	exports.getTimer = getTimer_1.default;
-	var ImageUtils_1 = __webpack_require__(83);
+	var ImageUtils_1 = __webpack_require__(77);
 	exports.ImageUtils = ImageUtils_1.default;
-	var MipmapGenerator_1 = __webpack_require__(408);
+	var MipmapGenerator_1 = __webpack_require__(405);
 	exports.MipmapGenerator = MipmapGenerator_1.default;
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	exports.RequestAnimationFrame = RequestAnimationFrame_1.default;
-	var Timer_1 = __webpack_require__(218);
+	var Timer_1 = __webpack_require__(215);
 	exports.Timer = Timer_1.default;
-	var XmlUtils_1 = __webpack_require__(400);
+	var XmlUtils_1 = __webpack_require__(397);
 	exports.XmlUtils = XmlUtils_1.default;
 
 
 /***/ },
-/* 406 */
+/* 403 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -63792,7 +63239,7 @@
 
 
 /***/ },
-/* 407 */
+/* 404 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -63810,12 +63257,12 @@
 
 
 /***/ },
-/* 408 */
+/* 405 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var Matrix_1 = __webpack_require__(87);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var Matrix_1 = __webpack_require__(81);
 	var Rectangle_1 = __webpack_require__(51);
 	var MipmapGenerator = (function () {
 	    function MipmapGenerator() {
@@ -64050,47 +63497,47 @@
 
 
 /***/ },
-/* 409 */
+/* 406 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var adapters = __webpack_require__(410);
+	var adapters = __webpack_require__(407);
 	exports.adapters = adapters;
-	var animators = __webpack_require__(411);
+	var animators = __webpack_require__(408);
 	exports.animators = animators;
-	var base = __webpack_require__(412);
+	var base = __webpack_require__(409);
 	exports.base = base;
-	var bounds = __webpack_require__(413);
+	var bounds = __webpack_require__(410);
 	exports.bounds = bounds;
-	var controllers = __webpack_require__(414);
+	var controllers = __webpack_require__(411);
 	exports.controllers = controllers;
-	var display = __webpack_require__(417);
+	var display = __webpack_require__(414);
 	exports.display = display;
-	var draw = __webpack_require__(419);
+	var draw = __webpack_require__(416);
 	exports.draw = draw;
-	var errors = __webpack_require__(426);
+	var errors = __webpack_require__(423);
 	exports.errors = errors;
-	var events = __webpack_require__(428);
+	var events = __webpack_require__(425);
 	exports.events = events;
-	var factories = __webpack_require__(431);
+	var factories = __webpack_require__(428);
 	exports.factories = factories;
-	var graphics = __webpack_require__(432);
+	var graphics = __webpack_require__(429);
 	exports.graphics = graphics;
-	var managers = __webpack_require__(433);
+	var managers = __webpack_require__(430);
 	exports.managers = managers;
-	var materials = __webpack_require__(435);
+	var materials = __webpack_require__(432);
 	exports.materials = materials;
-	var partition = __webpack_require__(438);
+	var partition = __webpack_require__(435);
 	exports.partition = partition;
-	var pick = __webpack_require__(445);
+	var pick = __webpack_require__(442);
 	exports.pick = pick;
-	var prefabs = __webpack_require__(446);
+	var prefabs = __webpack_require__(443);
 	exports.prefabs = prefabs;
-	var text = __webpack_require__(448);
+	var text = __webpack_require__(445);
 	exports.text = text;
-	var textures = __webpack_require__(455);
+	var textures = __webpack_require__(452);
 	exports.textures = textures;
-	var utils = __webpack_require__(456);
+	var utils = __webpack_require__(453);
 	exports.utils = utils;
 	var View_1 = __webpack_require__(9);
 	exports.View = View_1.default;
@@ -64108,25 +63555,25 @@
 
 
 /***/ },
-/* 410 */
+/* 407 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 411 */
+/* 408 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ParticleData_1 = __webpack_require__(355);
+	var ParticleData_1 = __webpack_require__(352);
 	exports.ParticleData = ParticleData_1.default;
-	var AnimationNodeBase_1 = __webpack_require__(260);
+	var AnimationNodeBase_1 = __webpack_require__(258);
 	exports.AnimationNodeBase = AnimationNodeBase_1.default;
 
 
 /***/ },
-/* 412 */
+/* 409 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64136,9 +63583,9 @@
 	exports.HierarchicalProperties = HierarchicalProperties_1.default;
 	var OrientationMode_1 = __webpack_require__(33);
 	exports.OrientationMode = OrientationMode_1.default;
-	var Style_1 = __webpack_require__(100);
+	var Style_1 = __webpack_require__(101);
 	exports.Style = Style_1.default;
-	var Timeline_1 = __webpack_require__(311);
+	var Timeline_1 = __webpack_require__(309);
 	exports.Timeline = Timeline_1.default;
 	var TouchPoint_1 = __webpack_require__(10);
 	exports.TouchPoint = TouchPoint_1.default;
@@ -64147,13 +63594,13 @@
 
 
 /***/ },
-/* 413 */
+/* 410 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(322);
 	exports.AxisAlignedBoundingBox = AxisAlignedBoundingBox_1.default;
-	var BoundingSphere_1 = __webpack_require__(325);
+	var BoundingSphere_1 = __webpack_require__(323);
 	exports.BoundingSphere = BoundingSphere_1.default;
 	var BoundingVolumeBase_1 = __webpack_require__(42);
 	exports.BoundingVolumeBase = BoundingVolumeBase_1.default;
@@ -64164,26 +63611,26 @@
 
 
 /***/ },
-/* 414 */
+/* 411 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ControllerBase_1 = __webpack_require__(113);
+	var ControllerBase_1 = __webpack_require__(114);
 	exports.ControllerBase = ControllerBase_1.default;
-	var FirstPersonController_1 = __webpack_require__(331);
+	var FirstPersonController_1 = __webpack_require__(329);
 	exports.FirstPersonController = FirstPersonController_1.default;
-	var FollowController_1 = __webpack_require__(415);
+	var FollowController_1 = __webpack_require__(412);
 	exports.FollowController = FollowController_1.default;
-	var HoverController_1 = __webpack_require__(111);
+	var HoverController_1 = __webpack_require__(112);
 	exports.HoverController = HoverController_1.default;
-	var LookAtController_1 = __webpack_require__(112);
+	var LookAtController_1 = __webpack_require__(113);
 	exports.LookAtController = LookAtController_1.default;
-	var SpringController_1 = __webpack_require__(416);
+	var SpringController_1 = __webpack_require__(413);
 	exports.SpringController = SpringController_1.default;
 
 
 /***/ },
-/* 415 */
+/* 412 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64192,7 +63639,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var HoverController_1 = __webpack_require__(111);
+	var HoverController_1 = __webpack_require__(112);
 	/**
 	 * Controller used to follow behind an object on the XZ plane, with an optional
 	 * elevation (tiltAngle).
@@ -64222,7 +63669,7 @@
 
 
 /***/ },
-/* 416 */
+/* 413 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64232,7 +63679,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var LookAtController_1 = __webpack_require__(112);
+	var LookAtController_1 = __webpack_require__(113);
 	/**
 	 * Uses spring physics to animate the target object towards a position that is
 	 * defined as the lookAtTarget object's position plus the vector defined by the
@@ -64292,46 +63739,46 @@
 
 
 /***/ },
-/* 417 */
+/* 414 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Billboard_1 = __webpack_require__(110);
+	var Billboard_1 = __webpack_require__(111);
 	exports.Billboard = Billboard_1.default;
 	var Camera_1 = __webpack_require__(45);
 	exports.Camera = Camera_1.default;
-	var DirectionalLight_1 = __webpack_require__(221);
+	var DirectionalLight_1 = __webpack_require__(218);
 	exports.DirectionalLight = DirectionalLight_1.default;
 	var DisplayObject_1 = __webpack_require__(16);
 	exports.DisplayObject = DisplayObject_1.default;
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	exports.DisplayObjectContainer = DisplayObjectContainer_1.default;
-	var LightBase_1 = __webpack_require__(222);
+	var LightBase_1 = __webpack_require__(219);
 	exports.LightBase = LightBase_1.default;
-	var LightProbe_1 = __webpack_require__(230);
+	var LightProbe_1 = __webpack_require__(227);
 	exports.LightProbe = LightProbe_1.default;
-	var LineSegment_1 = __webpack_require__(365);
+	var LineSegment_1 = __webpack_require__(362);
 	exports.LineSegment = LineSegment_1.default;
-	var LoaderContainer_1 = __webpack_require__(114);
+	var LoaderContainer_1 = __webpack_require__(115);
 	exports.LoaderContainer = LoaderContainer_1.default;
-	var MovieClip_1 = __webpack_require__(308);
+	var MovieClip_1 = __webpack_require__(306);
 	exports.MovieClip = MovieClip_1.default;
-	var PointLight_1 = __webpack_require__(227);
+	var PointLight_1 = __webpack_require__(224);
 	exports.PointLight = PointLight_1.default;
 	var Scene_1 = __webpack_require__(11);
 	exports.Scene = Scene_1.default;
-	var Shape_1 = __webpack_require__(418);
+	var Shape_1 = __webpack_require__(415);
 	exports.Shape = Shape_1.default;
-	var Skybox_1 = __webpack_require__(95);
+	var Skybox_1 = __webpack_require__(96);
 	exports.Skybox = Skybox_1.default;
 	var Sprite_1 = __webpack_require__(57);
 	exports.Sprite = Sprite_1.default;
-	var TextField_1 = __webpack_require__(309);
+	var TextField_1 = __webpack_require__(307);
 	exports.TextField = TextField_1.default;
 
 
 /***/ },
-/* 418 */
+/* 415 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64562,46 +64009,46 @@
 
 
 /***/ },
-/* 419 */
+/* 416 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CapsStyle_1 = __webpack_require__(75);
+	var CapsStyle_1 = __webpack_require__(69);
 	exports.CapsStyle = CapsStyle_1.default;
-	var GradientType_1 = __webpack_require__(420);
+	var GradientType_1 = __webpack_require__(417);
 	exports.GradientType = GradientType_1.default;
-	var GraphicsFactoryFills_1 = __webpack_require__(76);
+	var GraphicsFactoryFills_1 = __webpack_require__(70);
 	exports.GraphicsFactoryFills = GraphicsFactoryFills_1.default;
-	var GraphicsFactoryHelper_1 = __webpack_require__(106);
+	var GraphicsFactoryHelper_1 = __webpack_require__(107);
 	exports.GraphicsFactoryHelper = GraphicsFactoryHelper_1.default;
-	var GraphicsFactoryStrokes_1 = __webpack_require__(108);
+	var GraphicsFactoryStrokes_1 = __webpack_require__(109);
 	exports.GraphicsFactoryStrokes = GraphicsFactoryStrokes_1.default;
-	var GraphicsFillStyle_1 = __webpack_require__(72);
+	var GraphicsFillStyle_1 = __webpack_require__(66);
 	exports.GraphicsFillStyle = GraphicsFillStyle_1.default;
-	var GraphicsStrokeStyle_1 = __webpack_require__(73);
+	var GraphicsStrokeStyle_1 = __webpack_require__(67);
 	exports.GraphicsStrokeStyle = GraphicsStrokeStyle_1.default;
-	var GraphicsPath_1 = __webpack_require__(69);
+	var GraphicsPath_1 = __webpack_require__(63);
 	exports.GraphicsPath = GraphicsPath_1.default;
-	var GraphicsPathCommand_1 = __webpack_require__(71);
+	var GraphicsPathCommand_1 = __webpack_require__(65);
 	exports.GraphicsPathCommand = GraphicsPathCommand_1.default;
-	var GraphicsPathWinding_1 = __webpack_require__(70);
+	var GraphicsPathWinding_1 = __webpack_require__(64);
 	exports.GraphicsPathWinding = GraphicsPathWinding_1.default;
-	var InterpolationMethod_1 = __webpack_require__(421);
+	var InterpolationMethod_1 = __webpack_require__(418);
 	exports.InterpolationMethod = InterpolationMethod_1.default;
-	var JointStyle_1 = __webpack_require__(74);
+	var JointStyle_1 = __webpack_require__(68);
 	exports.JointStyle = JointStyle_1.default;
-	var LineScaleMode_1 = __webpack_require__(422);
+	var LineScaleMode_1 = __webpack_require__(419);
 	exports.LineScaleMode = LineScaleMode_1.default;
-	var PixelSnapping_1 = __webpack_require__(423);
+	var PixelSnapping_1 = __webpack_require__(420);
 	exports.PixelSnapping = PixelSnapping_1.default;
-	var SpreadMethod_1 = __webpack_require__(424);
+	var SpreadMethod_1 = __webpack_require__(421);
 	exports.SpreadMethod = SpreadMethod_1.default;
-	var TriangleCulling_1 = __webpack_require__(425);
+	var TriangleCulling_1 = __webpack_require__(422);
 	exports.TriangleCulling = TriangleCulling_1.default;
 
 
 /***/ },
-/* 420 */
+/* 417 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64629,7 +64076,7 @@
 
 
 /***/ },
-/* 421 */
+/* 418 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64676,7 +64123,7 @@
 
 
 /***/ },
-/* 422 */
+/* 419 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64725,7 +64172,7 @@
 
 
 /***/ },
-/* 423 */
+/* 420 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64765,7 +64212,7 @@
 
 
 /***/ },
-/* 424 */
+/* 421 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64799,7 +64246,7 @@
 
 
 /***/ },
-/* 425 */
+/* 422 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64847,16 +64294,16 @@
 
 
 /***/ },
-/* 426 */
+/* 423 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var CastError_1 = __webpack_require__(427);
+	var CastError_1 = __webpack_require__(424);
 	exports.CastError = CastError_1.default;
 
 
 /***/ },
-/* 427 */
+/* 424 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64878,7 +64325,7 @@
 
 
 /***/ },
-/* 428 */
+/* 425 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64888,7 +64335,7 @@
 	exports.DisplayObjectEvent = DisplayObjectEvent_1.default;
 	var ElementsEvent_1 = __webpack_require__(62);
 	exports.ElementsEvent = ElementsEvent_1.default;
-	var LightEvent_1 = __webpack_require__(223);
+	var LightEvent_1 = __webpack_require__(220);
 	exports.LightEvent = LightEvent_1.default;
 	var MouseEvent_1 = __webpack_require__(55);
 	exports.MouseEvent = MouseEvent_1.default;
@@ -64896,20 +64343,20 @@
 	exports.RenderableEvent = RenderableEvent_1.default;
 	var RendererEvent_1 = __webpack_require__(53);
 	exports.RendererEvent = RendererEvent_1.default;
-	var ResizeEvent_1 = __webpack_require__(429);
+	var ResizeEvent_1 = __webpack_require__(426);
 	exports.ResizeEvent = ResizeEvent_1.default;
 	var StyleEvent_1 = __webpack_require__(61);
 	exports.StyleEvent = StyleEvent_1.default;
-	var SurfaceEvent_1 = __webpack_require__(97);
+	var SurfaceEvent_1 = __webpack_require__(98);
 	exports.SurfaceEvent = SurfaceEvent_1.default;
-	var TouchEvent_1 = __webpack_require__(430);
+	var TouchEvent_1 = __webpack_require__(427);
 	exports.TouchEvent = TouchEvent_1.default;
 	var TransformEvent_1 = __webpack_require__(35);
 	exports.TransformEvent = TransformEvent_1.default;
 
 
 /***/ },
-/* 429 */
+/* 426 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -64958,7 +64405,7 @@
 
 
 /***/ },
-/* 430 */
+/* 427 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65081,53 +64528,53 @@
 
 
 /***/ },
-/* 431 */
+/* 428 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 432 */
+/* 429 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ElementsBase_1 = __webpack_require__(93);
+	var ElementsBase_1 = __webpack_require__(90);
 	exports.ElementsBase = ElementsBase_1.default;
-	var ElementsType_1 = __webpack_require__(235);
+	var ElementsType_1 = __webpack_require__(232);
 	exports.ElementsType = ElementsType_1.default;
 	var Graphic_1 = __webpack_require__(59);
 	exports.Graphic = Graphic_1.default;
 	var Graphics_1 = __webpack_require__(58);
 	exports.Graphics = Graphics_1.default;
-	var LineElements_1 = __webpack_require__(91);
+	var LineElements_1 = __webpack_require__(85);
 	exports.LineElements = LineElements_1.default;
-	var TriangleElements_1 = __webpack_require__(107);
+	var TriangleElements_1 = __webpack_require__(108);
 	exports.TriangleElements = TriangleElements_1.default;
 
 
 /***/ },
-/* 433 */
+/* 430 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	exports.DefaultMaterialManager = DefaultMaterialManager_1.default;
 	var FrameScriptManager_1 = __webpack_require__(56);
 	exports.FrameScriptManager = FrameScriptManager_1.default;
 	var MouseManager_1 = __webpack_require__(54);
 	exports.MouseManager = MouseManager_1.default;
-	var TouchManager_1 = __webpack_require__(434);
+	var TouchManager_1 = __webpack_require__(431);
 	exports.TouchManager = TouchManager_1.default;
 
 
 /***/ },
-/* 434 */
+/* 431 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Vector3D_1 = __webpack_require__(18);
-	var TouchEvent_1 = __webpack_require__(430);
+	var TouchEvent_1 = __webpack_require__(427);
 	var TouchManager = (function () {
 	    function TouchManager() {
 	        var _this = this;
@@ -65306,34 +64753,34 @@
 
 
 /***/ },
-/* 435 */
+/* 432 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var LightPickerBase_1 = __webpack_require__(232);
+	var LightPickerBase_1 = __webpack_require__(229);
 	exports.LightPickerBase = LightPickerBase_1.default;
-	var StaticLightPicker_1 = __webpack_require__(229);
+	var StaticLightPicker_1 = __webpack_require__(226);
 	exports.StaticLightPicker = StaticLightPicker_1.default;
-	var CascadeShadowMapper_1 = __webpack_require__(436);
+	var CascadeShadowMapper_1 = __webpack_require__(433);
 	exports.CascadeShadowMapper = CascadeShadowMapper_1.default;
-	var CubeMapShadowMapper_1 = __webpack_require__(228);
+	var CubeMapShadowMapper_1 = __webpack_require__(225);
 	exports.CubeMapShadowMapper = CubeMapShadowMapper_1.default;
-	var DirectionalShadowMapper_1 = __webpack_require__(224);
+	var DirectionalShadowMapper_1 = __webpack_require__(221);
 	exports.DirectionalShadowMapper = DirectionalShadowMapper_1.default;
-	var NearDirectionalShadowMapper_1 = __webpack_require__(362);
+	var NearDirectionalShadowMapper_1 = __webpack_require__(359);
 	exports.NearDirectionalShadowMapper = NearDirectionalShadowMapper_1.default;
-	var ShadowMapperBase_1 = __webpack_require__(226);
+	var ShadowMapperBase_1 = __webpack_require__(223);
 	exports.ShadowMapperBase = ShadowMapperBase_1.default;
-	var BasicMaterial_1 = __webpack_require__(101);
+	var BasicMaterial_1 = __webpack_require__(102);
 	exports.BasicMaterial = BasicMaterial_1.default;
-	var LightSources_1 = __webpack_require__(437);
+	var LightSources_1 = __webpack_require__(434);
 	exports.LightSources = LightSources_1.default;
-	var MaterialBase_1 = __webpack_require__(102);
+	var MaterialBase_1 = __webpack_require__(103);
 	exports.MaterialBase = MaterialBase_1.default;
 
 
 /***/ },
-/* 436 */
+/* 433 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65345,9 +64792,9 @@
 	var Matrix3DUtils_1 = __webpack_require__(25);
 	var Rectangle_1 = __webpack_require__(51);
 	var AssetEvent_1 = __webpack_require__(1);
-	var FreeMatrixProjection_1 = __webpack_require__(225);
+	var FreeMatrixProjection_1 = __webpack_require__(222);
 	var Camera_1 = __webpack_require__(45);
-	var DirectionalShadowMapper_1 = __webpack_require__(224);
+	var DirectionalShadowMapper_1 = __webpack_require__(221);
 	var CascadeShadowMapper = (function (_super) {
 	    __extends(CascadeShadowMapper, _super);
 	    function CascadeShadowMapper(numCascades) {
@@ -65527,7 +64974,7 @@
 
 
 /***/ },
-/* 437 */
+/* 434 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -65567,38 +65014,38 @@
 
 
 /***/ },
-/* 438 */
+/* 435 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var BasicPartition_1 = __webpack_require__(38);
 	exports.BasicPartition = BasicPartition_1.default;
-	var CameraNode_1 = __webpack_require__(439);
+	var CameraNode_1 = __webpack_require__(436);
 	exports.CameraNode = CameraNode_1.default;
-	var DirectionalLightNode_1 = __webpack_require__(441);
+	var DirectionalLightNode_1 = __webpack_require__(438);
 	exports.DirectionalLightNode = DirectionalLightNode_1.default;
-	var DisplayObjectNode_1 = __webpack_require__(323);
+	var DisplayObjectNode_1 = __webpack_require__(321);
 	exports.DisplayObjectNode = DisplayObjectNode_1.default;
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	exports.EntityNode = EntityNode_1.default;
-	var LightProbeNode_1 = __webpack_require__(442);
+	var LightProbeNode_1 = __webpack_require__(439);
 	exports.LightProbeNode = LightProbeNode_1.default;
 	var NodeBase_1 = __webpack_require__(39);
 	exports.NodeBase = NodeBase_1.default;
 	var PartitionBase_1 = __webpack_require__(43);
 	exports.PartitionBase = PartitionBase_1.default;
-	var PointLightNode_1 = __webpack_require__(443);
+	var PointLightNode_1 = __webpack_require__(440);
 	exports.PointLightNode = PointLightNode_1.default;
-	var SceneGraphNode_1 = __webpack_require__(322);
+	var SceneGraphNode_1 = __webpack_require__(320);
 	exports.SceneGraphNode = SceneGraphNode_1.default;
-	var SceneGraphPartition_1 = __webpack_require__(321);
+	var SceneGraphPartition_1 = __webpack_require__(319);
 	exports.SceneGraphPartition = SceneGraphPartition_1.default;
-	var SkyboxNode_1 = __webpack_require__(444);
+	var SkyboxNode_1 = __webpack_require__(441);
 	exports.SkyboxNode = SkyboxNode_1.default;
 
 
 /***/ },
-/* 439 */
+/* 436 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65607,7 +65054,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	/**
 	 * @class away.partition.CameraNode
 	 */
@@ -65629,7 +65076,7 @@
 
 
 /***/ },
-/* 440 */
+/* 437 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65639,7 +65086,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var DisplayObjectNode_1 = __webpack_require__(323);
+	var DisplayObjectNode_1 = __webpack_require__(321);
 	/**
 	 * @class away.partition.EntityNode
 	 */
@@ -65688,6 +65135,13 @@
 	        return true;
 	    };
 	    /**
+	     *
+	     * @returns {boolean}
+	     */
+	    EntityNode.prototype.isRenderable = function () {
+	        return this._displayObject._iAssignedColorTransform()._isRenderable();
+	    };
+	    /**
 	     * @inheritDoc
 	     */
 	    EntityNode.prototype.acceptTraverser = function (traverser) {
@@ -65730,7 +65184,7 @@
 
 
 /***/ },
-/* 441 */
+/* 438 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65739,7 +65193,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	/**
 	 * @class away.partition.DirectionalLightNode
 	 */
@@ -65769,7 +65223,7 @@
 
 
 /***/ },
-/* 442 */
+/* 439 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65778,7 +65232,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	/**
 	 * @class away.partition.LightProbeNode
 	 */
@@ -65808,7 +65262,7 @@
 
 
 /***/ },
-/* 443 */
+/* 440 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65817,7 +65271,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	/**
 	 * @class away.partition.PointLightNode
 	 */
@@ -65847,7 +65301,7 @@
 
 
 /***/ },
-/* 444 */
+/* 441 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65856,7 +65310,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EntityNode_1 = __webpack_require__(440);
+	var EntityNode_1 = __webpack_require__(437);
 	/**
 	 * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
 	 *
@@ -65867,13 +65321,6 @@
 	    function SkyboxNode() {
 	        _super.apply(this, arguments);
 	    }
-	    /**
-	     * @inheritDoc
-	     */
-	    SkyboxNode.prototype.acceptTraverser = function (traverser) {
-	        if (traverser.enterNode(this))
-	            traverser.applySkybox(this._displayObject);
-	    };
 	    /**
 	     *
 	     * @param planes
@@ -65886,6 +65333,13 @@
 	        //a skybox is always in view unless its visibility is set to false
 	        return true;
 	    };
+	    /**
+	     *
+	     * @returns {boolean}
+	     */
+	    SkyboxNode.prototype.isCastingShadow = function () {
+	        return false; //skybox never casts shadows
+	    };
 	    return SkyboxNode;
 	}(EntityNode_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -65893,11 +65347,11 @@
 
 
 /***/ },
-/* 445 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var JSPickingCollider_1 = __webpack_require__(326);
+	var JSPickingCollider_1 = __webpack_require__(324);
 	exports.JSPickingCollider = JSPickingCollider_1.default;
 	var PickingCollision_1 = __webpack_require__(36);
 	exports.PickingCollision = PickingCollision_1.default;
@@ -65906,34 +65360,34 @@
 
 
 /***/ },
-/* 446 */
+/* 443 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var PrefabBase_1 = __webpack_require__(233);
+	var PrefabBase_1 = __webpack_require__(230);
 	exports.PrefabBase = PrefabBase_1.default;
-	var PrimitiveCapsulePrefab_1 = __webpack_require__(234);
+	var PrimitiveCapsulePrefab_1 = __webpack_require__(231);
 	exports.PrimitiveCapsulePrefab = PrimitiveCapsulePrefab_1.default;
-	var PrimitiveConePrefab_1 = __webpack_require__(237);
+	var PrimitiveConePrefab_1 = __webpack_require__(234);
 	exports.PrimitiveConePrefab = PrimitiveConePrefab_1.default;
-	var PrimitiveCubePrefab_1 = __webpack_require__(239);
+	var PrimitiveCubePrefab_1 = __webpack_require__(236);
 	exports.PrimitiveCubePrefab = PrimitiveCubePrefab_1.default;
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(235);
 	exports.PrimitiveCylinderPrefab = PrimitiveCylinderPrefab_1.default;
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
 	exports.PrimitivePlanePrefab = PrimitivePlanePrefab_1.default;
-	var PrimitivePolygonPrefab_1 = __webpack_require__(447);
+	var PrimitivePolygonPrefab_1 = __webpack_require__(444);
 	exports.PrimitivePolygonPrefab = PrimitivePolygonPrefab_1.default;
-	var PrimitivePrefabBase_1 = __webpack_require__(236);
+	var PrimitivePrefabBase_1 = __webpack_require__(233);
 	exports.PrimitivePrefabBase = PrimitivePrefabBase_1.default;
-	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(238);
 	exports.PrimitiveSpherePrefab = PrimitiveSpherePrefab_1.default;
-	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(239);
 	exports.PrimitiveTorusPrefab = PrimitiveTorusPrefab_1.default;
 
 
 /***/ },
-/* 447 */
+/* 444 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -65942,7 +65396,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var PrimitiveCylinderPrefab_1 = __webpack_require__(238);
+	var PrimitiveCylinderPrefab_1 = __webpack_require__(235);
 	/**
 	 * A UV RegularPolygon primitive sprite.
 	 */
@@ -66009,36 +65463,36 @@
 
 
 /***/ },
-/* 448 */
+/* 445 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AntiAliasType_1 = __webpack_require__(449);
+	var AntiAliasType_1 = __webpack_require__(446);
 	exports.AntiAliasType = AntiAliasType_1.default;
-	var Font_1 = __webpack_require__(315);
+	var Font_1 = __webpack_require__(313);
 	exports.Font = Font_1.default;
-	var GridFitType_1 = __webpack_require__(450);
+	var GridFitType_1 = __webpack_require__(447);
 	exports.GridFitType = GridFitType_1.default;
-	var TesselatedFontChar_1 = __webpack_require__(317);
+	var TesselatedFontChar_1 = __webpack_require__(315);
 	exports.TesselatedFontChar = TesselatedFontChar_1.default;
-	var TesselatedFontTable_1 = __webpack_require__(316);
+	var TesselatedFontTable_1 = __webpack_require__(314);
 	exports.TesselatedFontTable = TesselatedFontTable_1.default;
-	var TextFieldAutoSize_1 = __webpack_require__(451);
+	var TextFieldAutoSize_1 = __webpack_require__(448);
 	exports.TextFieldAutoSize = TextFieldAutoSize_1.default;
-	var TextFieldType_1 = __webpack_require__(310);
+	var TextFieldType_1 = __webpack_require__(308);
 	exports.TextFieldType = TextFieldType_1.default;
-	var TextFormat_1 = __webpack_require__(318);
+	var TextFormat_1 = __webpack_require__(316);
 	exports.TextFormat = TextFormat_1.default;
-	var TextFormatAlign_1 = __webpack_require__(452);
+	var TextFormatAlign_1 = __webpack_require__(449);
 	exports.TextFormatAlign = TextFormatAlign_1.default;
-	var TextInteractionMode_1 = __webpack_require__(453);
+	var TextInteractionMode_1 = __webpack_require__(450);
 	exports.TextInteractionMode = TextInteractionMode_1.default;
-	var TextLineMetrics_1 = __webpack_require__(454);
+	var TextLineMetrics_1 = __webpack_require__(451);
 	exports.TextLineMetrics = TextLineMetrics_1.default;
 
 
 /***/ },
-/* 449 */
+/* 446 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66074,7 +65528,7 @@
 
 
 /***/ },
-/* 450 */
+/* 447 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66117,7 +65571,7 @@
 
 
 /***/ },
-/* 451 */
+/* 448 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66157,7 +65611,7 @@
 
 
 /***/ },
-/* 452 */
+/* 449 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66195,7 +65649,7 @@
 
 
 /***/ },
-/* 453 */
+/* 450 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66228,7 +65682,7 @@
 
 
 /***/ },
-/* 454 */
+/* 451 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66272,40 +65726,40 @@
 
 
 /***/ },
-/* 455 */
+/* 452 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var MappingMode_1 = __webpack_require__(104);
+	var MappingMode_1 = __webpack_require__(105);
 	exports.MappingMode = MappingMode_1.default;
-	var Single2DTexture_1 = __webpack_require__(103);
+	var Single2DTexture_1 = __webpack_require__(104);
 	exports.Single2DTexture = Single2DTexture_1.default;
-	var SingleCubeTexture_1 = __webpack_require__(98);
+	var SingleCubeTexture_1 = __webpack_require__(99);
 	exports.SingleCubeTexture = SingleCubeTexture_1.default;
-	var TextureBase_1 = __webpack_require__(99);
+	var TextureBase_1 = __webpack_require__(100);
 	exports.TextureBase = TextureBase_1.default;
 
 
 /***/ },
-/* 456 */
+/* 453 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Cast_1 = __webpack_require__(457);
+	var Cast_1 = __webpack_require__(454);
 	exports.Cast = Cast_1.default;
-	var ElementsUtils_1 = __webpack_require__(63);
+	var ElementsUtils_1 = __webpack_require__(93);
 	exports.ElementsUtils = ElementsUtils_1.default;
 
 
 /***/ },
-/* 457 */
+/* 454 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	var ByteArray_1 = __webpack_require__(139);
-	var CastError_1 = __webpack_require__(427);
-	var Single2DTexture_1 = __webpack_require__(103);
+	var CastError_1 = __webpack_require__(424);
+	var Single2DTexture_1 = __webpack_require__(104);
 	/**
 	 * Helper class for casting assets to usable objects
 	 */
@@ -66575,32 +66029,32 @@
 
 
 /***/ },
-/* 458 */
+/* 455 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var aglsl = __webpack_require__(459);
+	var aglsl = __webpack_require__(456);
 	exports.aglsl = aglsl;
-	var attributes = __webpack_require__(460);
+	var attributes = __webpack_require__(457);
 	exports.attributes = attributes;
-	var base = __webpack_require__(462);
+	var base = __webpack_require__(459);
 	exports.base = base;
-	var events = __webpack_require__(465);
+	var events = __webpack_require__(462);
 	exports.events = events;
-	var image = __webpack_require__(466);
+	var image = __webpack_require__(463);
 	exports.image = image;
-	var library = __webpack_require__(477);
+	var library = __webpack_require__(474);
 	exports.library = library;
-	var managers = __webpack_require__(478);
+	var managers = __webpack_require__(475);
 	exports.managers = managers;
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var BitmapImageCube_1 = __webpack_require__(89);
-	var Image2D_1 = __webpack_require__(81);
-	var ImageCube_1 = __webpack_require__(90);
-	var SpecularImage2D_1 = __webpack_require__(327);
-	var Sampler2D_1 = __webpack_require__(78);
-	var SamplerCube_1 = __webpack_require__(231);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImageCube_1 = __webpack_require__(83);
+	var Image2D_1 = __webpack_require__(75);
+	var ImageCube_1 = __webpack_require__(84);
+	var SpecularImage2D_1 = __webpack_require__(325);
+	var Sampler2D_1 = __webpack_require__(72);
+	var SamplerCube_1 = __webpack_require__(228);
 	base.Stage.registerAbstraction(attributes.GL_AttributesBuffer, AttributesBuffer_1.default);
 	base.Stage.registerAbstraction(image.GL_RenderImage2D, Image2D_1.default);
 	base.Stage.registerAbstraction(image.GL_RenderImageCube, ImageCube_1.default);
@@ -66612,7 +66066,7 @@
 
 
 /***/ },
-/* 459 */
+/* 456 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66634,35 +66088,35 @@
 	exports.Sampler = Sampler_1.default;
 	var SamplerMap_1 = __webpack_require__(142);
 	exports.SamplerMap = SamplerMap_1.default;
-	var AGALTokenizer_1 = __webpack_require__(163);
+	var AGALTokenizer_1 = __webpack_require__(164);
 	exports.AGALTokenizer = AGALTokenizer_1.default;
-	var AGLSLParser_1 = __webpack_require__(170);
+	var AGLSLParser_1 = __webpack_require__(171);
 	exports.AGLSLParser = AGLSLParser_1.default;
-	var Description_1 = __webpack_require__(164);
+	var Description_1 = __webpack_require__(165);
 	exports.Description = Description_1.default;
-	var Destination_1 = __webpack_require__(169);
+	var Destination_1 = __webpack_require__(170);
 	exports.Destination = Destination_1.default;
-	var Header_1 = __webpack_require__(165);
+	var Header_1 = __webpack_require__(166);
 	exports.Header = Header_1.default;
-	var Mapping_1 = __webpack_require__(166);
+	var Mapping_1 = __webpack_require__(167);
 	exports.Mapping = Mapping_1.default;
-	var OpLUT_1 = __webpack_require__(167);
+	var OpLUT_1 = __webpack_require__(168);
 	exports.OpLUT = OpLUT_1.default;
-	var Token_1 = __webpack_require__(168);
+	var Token_1 = __webpack_require__(169);
 	exports.Token = Token_1.default;
 
 
 /***/ },
-/* 460 */
+/* 457 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_AttributesBuffer_1 = __webpack_require__(461);
+	var GL_AttributesBuffer_1 = __webpack_require__(458);
 	exports.GL_AttributesBuffer = GL_AttributesBuffer_1.default;
 
 
 /***/ },
-/* 461 */
+/* 458 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66734,7 +66188,7 @@
 
 
 /***/ },
-/* 462 */
+/* 459 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66742,82 +66196,82 @@
 	exports.ContextGLBlendFactor = ContextGLBlendFactor_1.default;
 	var ContextGLClearMask_1 = __webpack_require__(131);
 	exports.ContextGLClearMask = ContextGLClearMask_1.default;
-	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
 	exports.ContextGLCompareMode = ContextGLCompareMode_1.default;
-	var ContextGLDrawMode_1 = __webpack_require__(155);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
 	exports.ContextGLDrawMode = ContextGLDrawMode_1.default;
-	var ContextGLMipFilter_1 = __webpack_require__(150);
+	var ContextGLMipFilter_1 = __webpack_require__(151);
 	exports.ContextGLMipFilter = ContextGLMipFilter_1.default;
-	var ContextGLProfile_1 = __webpack_require__(463);
+	var ContextGLProfile_1 = __webpack_require__(460);
 	exports.ContextGLProfile = ContextGLProfile_1.default;
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
 	exports.ContextGLProgramType = ContextGLProgramType_1.default;
-	var ContextGLStencilAction_1 = __webpack_require__(157);
+	var ContextGLStencilAction_1 = __webpack_require__(158);
 	exports.ContextGLStencilAction = ContextGLStencilAction_1.default;
-	var ContextGLTextureFilter_1 = __webpack_require__(151);
+	var ContextGLTextureFilter_1 = __webpack_require__(152);
 	exports.ContextGLTextureFilter = ContextGLTextureFilter_1.default;
-	var ContextGLTextureFormat_1 = __webpack_require__(464);
+	var ContextGLTextureFormat_1 = __webpack_require__(461);
 	exports.ContextGLTextureFormat = ContextGLTextureFormat_1.default;
-	var ContextGLTriangleFace_1 = __webpack_require__(158);
+	var ContextGLTriangleFace_1 = __webpack_require__(159);
 	exports.ContextGLTriangleFace = ContextGLTriangleFace_1.default;
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
 	exports.ContextGLVertexBufferFormat = ContextGLVertexBufferFormat_1.default;
-	var ContextGLWrapMode_1 = __webpack_require__(153);
+	var ContextGLWrapMode_1 = __webpack_require__(154);
 	exports.ContextGLWrapMode = ContextGLWrapMode_1.default;
-	var ContextMode_1 = __webpack_require__(149);
+	var ContextMode_1 = __webpack_require__(150);
 	exports.ContextMode = ContextMode_1.default;
-	var ContextSoftware_1 = __webpack_require__(182);
+	var ContextSoftware_1 = __webpack_require__(183);
 	exports.ContextSoftware = ContextSoftware_1.default;
-	var ContextStage3D_1 = __webpack_require__(174);
+	var ContextStage3D_1 = __webpack_require__(175);
 	exports.ContextStage3D = ContextStage3D_1.default;
-	var ContextWebGL_1 = __webpack_require__(154);
+	var ContextWebGL_1 = __webpack_require__(155);
 	exports.ContextWebGL = ContextWebGL_1.default;
-	var CubeTextureFlash_1 = __webpack_require__(175);
+	var CubeTextureFlash_1 = __webpack_require__(176);
 	exports.CubeTextureFlash = CubeTextureFlash_1.default;
-	var CubeTextureWebGL_1 = __webpack_require__(159);
+	var CubeTextureWebGL_1 = __webpack_require__(160);
 	exports.CubeTextureWebGL = CubeTextureWebGL_1.default;
-	var IndexBufferFlash_1 = __webpack_require__(178);
+	var IndexBufferFlash_1 = __webpack_require__(179);
 	exports.IndexBufferFlash = IndexBufferFlash_1.default;
-	var IndexBufferSoftware_1 = __webpack_require__(183);
+	var IndexBufferSoftware_1 = __webpack_require__(184);
 	exports.IndexBufferSoftware = IndexBufferSoftware_1.default;
-	var IndexBufferWebGL_1 = __webpack_require__(161);
+	var IndexBufferWebGL_1 = __webpack_require__(162);
 	exports.IndexBufferWebGL = IndexBufferWebGL_1.default;
-	var OpCodes_1 = __webpack_require__(176);
+	var OpCodes_1 = __webpack_require__(177);
 	exports.OpCodes = OpCodes_1.default;
-	var ProgramFlash_1 = __webpack_require__(179);
+	var ProgramFlash_1 = __webpack_require__(180);
 	exports.ProgramFlash = ProgramFlash_1.default;
-	var ProgramSoftware_1 = __webpack_require__(186);
+	var ProgramSoftware_1 = __webpack_require__(187);
 	exports.ProgramSoftware = ProgramSoftware_1.default;
-	var ProgramVOSoftware_1 = __webpack_require__(187);
+	var ProgramVOSoftware_1 = __webpack_require__(188);
 	exports.ProgramVOSoftware = ProgramVOSoftware_1.default;
-	var ProgramWebGL_1 = __webpack_require__(162);
+	var ProgramWebGL_1 = __webpack_require__(163);
 	exports.ProgramWebGL = ProgramWebGL_1.default;
-	var ResourceBaseFlash_1 = __webpack_require__(177);
+	var ResourceBaseFlash_1 = __webpack_require__(178);
 	exports.ResourceBaseFlash = ResourceBaseFlash_1.default;
-	var SamplerState_1 = __webpack_require__(172);
+	var SamplerState_1 = __webpack_require__(173);
 	exports.SamplerState = SamplerState_1.default;
-	var SoftwareSamplerState_1 = __webpack_require__(188);
+	var SoftwareSamplerState_1 = __webpack_require__(189);
 	exports.SoftwareSamplerState = SoftwareSamplerState_1.default;
-	var Stage_1 = __webpack_require__(147);
+	var Stage_1 = __webpack_require__(148);
 	exports.Stage = Stage_1.default;
-	var TextureBaseWebGL_1 = __webpack_require__(160);
+	var TextureBaseWebGL_1 = __webpack_require__(161);
 	exports.TextureBaseWebGL = TextureBaseWebGL_1.default;
-	var TextureFlash_1 = __webpack_require__(180);
+	var TextureFlash_1 = __webpack_require__(181);
 	exports.TextureFlash = TextureFlash_1.default;
-	var TextureSoftware_1 = __webpack_require__(185);
+	var TextureSoftware_1 = __webpack_require__(186);
 	exports.TextureSoftware = TextureSoftware_1.default;
-	var TextureWebGL_1 = __webpack_require__(171);
+	var TextureWebGL_1 = __webpack_require__(172);
 	exports.TextureWebGL = TextureWebGL_1.default;
-	var VertexBufferFlash_1 = __webpack_require__(181);
+	var VertexBufferFlash_1 = __webpack_require__(182);
 	exports.VertexBufferFlash = VertexBufferFlash_1.default;
-	var VertexBufferSoftware_1 = __webpack_require__(184);
+	var VertexBufferSoftware_1 = __webpack_require__(185);
 	exports.VertexBufferSoftware = VertexBufferSoftware_1.default;
-	var VertexBufferWebGL_1 = __webpack_require__(173);
+	var VertexBufferWebGL_1 = __webpack_require__(174);
 	exports.VertexBufferWebGL = VertexBufferWebGL_1.default;
 
 
 /***/ },
-/* 463 */
+/* 460 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66834,7 +66288,7 @@
 
 
 /***/ },
-/* 464 */
+/* 461 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -66853,47 +66307,47 @@
 
 
 /***/ },
-/* 465 */
+/* 462 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StageEvent_1 = __webpack_require__(145);
+	var StageEvent_1 = __webpack_require__(146);
 	exports.StageEvent = StageEvent_1.default;
 
 
 /***/ },
-/* 466 */
+/* 463 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var GL_BitmapImage2D_1 = __webpack_require__(467);
+	var GL_BitmapImage2D_1 = __webpack_require__(464);
 	exports.GL_BitmapImage2D = GL_BitmapImage2D_1.default;
-	var GL_BitmapImageCube_1 = __webpack_require__(470);
+	var GL_BitmapImageCube_1 = __webpack_require__(467);
 	exports.GL_BitmapImageCube = GL_BitmapImageCube_1.default;
-	var GL_Image2D_1 = __webpack_require__(468);
+	var GL_Image2D_1 = __webpack_require__(465);
 	exports.GL_Image2D = GL_Image2D_1.default;
-	var GL_ImageBase_1 = __webpack_require__(469);
+	var GL_ImageBase_1 = __webpack_require__(466);
 	exports.GL_ImageBase = GL_ImageBase_1.default;
-	var GL_ImageCube_1 = __webpack_require__(471);
+	var GL_ImageCube_1 = __webpack_require__(468);
 	exports.GL_ImageCube = GL_ImageCube_1.default;
-	var GL_RenderImage2D_1 = __webpack_require__(472);
+	var GL_RenderImage2D_1 = __webpack_require__(469);
 	exports.GL_RenderImage2D = GL_RenderImage2D_1.default;
-	var GL_RenderImageCube_1 = __webpack_require__(473);
+	var GL_RenderImageCube_1 = __webpack_require__(470);
 	exports.GL_RenderImageCube = GL_RenderImageCube_1.default;
-	var GL_Sampler2D_1 = __webpack_require__(474);
+	var GL_Sampler2D_1 = __webpack_require__(471);
 	exports.GL_Sampler2D = GL_Sampler2D_1.default;
-	var GL_SamplerBase_1 = __webpack_require__(475);
+	var GL_SamplerBase_1 = __webpack_require__(472);
 	exports.GL_SamplerBase = GL_SamplerBase_1.default;
-	var GL_SamplerCube_1 = __webpack_require__(476);
+	var GL_SamplerCube_1 = __webpack_require__(473);
 	exports.GL_SamplerCube = GL_SamplerCube_1.default;
-	var ProgramData_1 = __webpack_require__(190);
+	var ProgramData_1 = __webpack_require__(191);
 	exports.ProgramData = ProgramData_1.default;
-	var ProgramDataPool_1 = __webpack_require__(189);
+	var ProgramDataPool_1 = __webpack_require__(190);
 	exports.ProgramDataPool = ProgramDataPool_1.default;
 
 
 /***/ },
-/* 467 */
+/* 464 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66902,8 +66356,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MipmapGenerator_1 = __webpack_require__(408);
-	var GL_Image2D_1 = __webpack_require__(468);
+	var MipmapGenerator_1 = __webpack_require__(405);
+	var GL_Image2D_1 = __webpack_require__(465);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -66914,6 +66368,8 @@
 	        _super.apply(this, arguments);
 	    }
 	    GL_BitmapImage2D.prototype.activate = function (index, mipmap) {
+	        if (mipmap && this._stage.globalDisableMipmap)
+	            mipmap = false;
 	        if (!this._texture) {
 	            this._createTexture();
 	            this._invalid = true;
@@ -66955,7 +66411,7 @@
 
 
 /***/ },
-/* 468 */
+/* 465 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66964,8 +66420,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLTextureFormat_1 = __webpack_require__(464);
-	var GL_ImageBase_1 = __webpack_require__(469);
+	var ContextGLTextureFormat_1 = __webpack_require__(461);
+	var GL_ImageBase_1 = __webpack_require__(466);
 	/**
 	 *
 	 * @class away.pool.GL_ImageBase
@@ -66990,7 +66446,7 @@
 
 
 /***/ },
-/* 469 */
+/* 466 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67046,7 +66502,7 @@
 
 
 /***/ },
-/* 470 */
+/* 467 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67055,8 +66511,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MipmapGenerator_1 = __webpack_require__(408);
-	var GL_ImageCube_1 = __webpack_require__(471);
+	var MipmapGenerator_1 = __webpack_require__(405);
+	var GL_ImageCube_1 = __webpack_require__(468);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -67068,6 +66524,8 @@
 	        this._mipmapDataArray = new Array(6);
 	    }
 	    GL_BitmapImageCube.prototype.activate = function (index, mipmap) {
+	        if (mipmap && this._stage.globalDisableMipmap)
+	            mipmap = false;
 	        if (!this._texture) {
 	            this._createTexture();
 	            this._invalid = true;
@@ -67114,7 +66572,7 @@
 
 
 /***/ },
-/* 471 */
+/* 468 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67123,8 +66581,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLTextureFormat_1 = __webpack_require__(464);
-	var GL_ImageBase_1 = __webpack_require__(469);
+	var ContextGLTextureFormat_1 = __webpack_require__(461);
+	var GL_ImageBase_1 = __webpack_require__(466);
 	/**
 	 *
 	 * @class away.pool.GL_ImageCubeBase
@@ -67149,7 +66607,7 @@
 
 
 /***/ },
-/* 472 */
+/* 469 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67158,7 +66616,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_Image2D_1 = __webpack_require__(468);
+	var GL_Image2D_1 = __webpack_require__(465);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -67179,7 +66637,7 @@
 
 
 /***/ },
-/* 473 */
+/* 470 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67188,7 +66646,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_ImageCube_1 = __webpack_require__(471);
+	var GL_ImageCube_1 = __webpack_require__(468);
 	/**
 	 *
 	 * @class away.pool.ImageObjectBase
@@ -67209,7 +66667,7 @@
 
 
 /***/ },
-/* 474 */
+/* 471 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67218,7 +66676,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SamplerBase_1 = __webpack_require__(475);
+	var GL_SamplerBase_1 = __webpack_require__(472);
 	/**
 	 *
 	 * @class away.pool.GL_SamplerBase
@@ -67239,7 +66697,7 @@
 
 
 /***/ },
-/* 475 */
+/* 472 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67270,7 +66728,7 @@
 
 
 /***/ },
-/* 476 */
+/* 473 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67279,7 +66737,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var GL_SamplerBase_1 = __webpack_require__(475);
+	var GL_SamplerBase_1 = __webpack_require__(472);
 	/**
 	 *
 	 * @class away.pool.GL_SamplerBase
@@ -67300,29 +66758,29 @@
 
 
 /***/ },
-/* 477 */
+/* 474 */
 /***/ function(module, exports) {
 
 	"use strict";
 
 
 /***/ },
-/* 478 */
+/* 475 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var StageManager_1 = __webpack_require__(146);
+	var StageManager_1 = __webpack_require__(147);
 	exports.StageManager = StageManager_1.default;
 
 
 /***/ },
-/* 479 */
+/* 476 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var animators = __webpack_require__(480);
+	var animators = __webpack_require__(477);
 	exports.animators = animators;
-	var elements = __webpack_require__(508);
+	var elements = __webpack_require__(505);
 	exports.elements = elements;
 	var errors = __webpack_require__(510);
 	exports.errors = errors;
@@ -67346,7 +66804,7 @@
 	exports.tools = tools;
 	var utils = __webpack_require__(545);
 	exports.utils = utils;
-	var DefaultRenderer_1 = __webpack_require__(129);
+	var DefaultRenderer_1 = __webpack_require__(130);
 	exports.DefaultRenderer = DefaultRenderer_1.default;
 	var DepthRenderer_1 = __webpack_require__(194);
 	exports.DepthRenderer = DepthRenderer_1.default;
@@ -67356,19 +66814,20 @@
 	exports.Filter3DRenderer = Filter3DRenderer_1.default;
 	var RendererBase_1 = __webpack_require__(132);
 	exports.RendererBase = RendererBase_1.default;
-	var BasicMaterial_1 = __webpack_require__(101);
-	var Skybox_1 = __webpack_require__(95);
-	var Billboard_1 = __webpack_require__(110);
-	var LineSegment_1 = __webpack_require__(365);
-	var LineElements_1 = __webpack_require__(91);
-	var TriangleElements_1 = __webpack_require__(107);
+	var BasicMaterial_1 = __webpack_require__(102);
+	var Skybox_1 = __webpack_require__(96);
+	var Billboard_1 = __webpack_require__(111);
+	var LineSegment_1 = __webpack_require__(362);
+	var LineElements_1 = __webpack_require__(85);
+	var TriangleElements_1 = __webpack_require__(108);
 	var Graphic_1 = __webpack_require__(59);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var SingleCubeTexture_1 = __webpack_require__(98);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var SingleCubeTexture_1 = __webpack_require__(99);
+	var Stage_1 = __webpack_require__(148);
 	surfaces.SurfacePool.registerAbstraction(surfaces.GL_BasicMaterialSurface, BasicMaterial_1.default);
 	surfaces.SurfacePool.registerAbstraction(surfaces.GL_SkyboxSurface, Skybox_1.default);
-	elements.ElementsPool.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
-	elements.ElementsPool.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
+	Stage_1.default.registerAbstraction(elements.GL_LineElements, LineElements_1.default);
+	Stage_1.default.registerAbstraction(elements.GL_TriangleElements, TriangleElements_1.default);
 	shaders.ShaderBase.registerAbstraction(textures.GL_Single2DTexture, Single2DTexture_1.default);
 	shaders.ShaderBase.registerAbstraction(textures.GL_SingleCubeTexture, SingleCubeTexture_1.default);
 	RendererBase_1.default.registerAbstraction(renderables.GL_BillboardRenderable, Billboard_1.default);
@@ -67378,164 +66837,164 @@
 
 
 /***/ },
-/* 480 */
+/* 477 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationElements_1 = __webpack_require__(337);
+	var AnimationElements_1 = __webpack_require__(334);
 	exports.AnimationElements = AnimationElements_1.default;
-	var AnimationRegisterCache_1 = __webpack_require__(336);
-	exports.AnimationRegisterCache = AnimationRegisterCache_1.default;
-	var ColorSegmentPoint_1 = __webpack_require__(481);
+	var AnimationRegisterData_1 = __webpack_require__(243);
+	exports.AnimationRegisterData = AnimationRegisterData_1.default;
+	var ColorSegmentPoint_1 = __webpack_require__(478);
 	exports.ColorSegmentPoint = ColorSegmentPoint_1.default;
-	var JointPose_1 = __webpack_require__(252);
+	var JointPose_1 = __webpack_require__(250);
 	exports.JointPose = JointPose_1.default;
-	var ParticleAnimationData_1 = __webpack_require__(338);
+	var ParticleAnimationData_1 = __webpack_require__(335);
 	exports.ParticleAnimationData = ParticleAnimationData_1.default;
-	var ParticleProperties_1 = __webpack_require__(339);
+	var ParticleProperties_1 = __webpack_require__(336);
 	exports.ParticleProperties = ParticleProperties_1.default;
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
 	exports.ParticlePropertiesMode = ParticlePropertiesMode_1.default;
-	var Skeleton_1 = __webpack_require__(256);
+	var Skeleton_1 = __webpack_require__(254);
 	exports.Skeleton = Skeleton_1.default;
-	var SkeletonJoint_1 = __webpack_require__(257);
+	var SkeletonJoint_1 = __webpack_require__(255);
 	exports.SkeletonJoint = SkeletonJoint_1.default;
-	var SkeletonPose_1 = __webpack_require__(254);
+	var SkeletonPose_1 = __webpack_require__(252);
 	exports.SkeletonPose = SkeletonPose_1.default;
-	var VertexAnimationMode_1 = __webpack_require__(246);
+	var VertexAnimationMode_1 = __webpack_require__(244);
 	exports.VertexAnimationMode = VertexAnimationMode_1.default;
-	var AnimationClipNodeBase_1 = __webpack_require__(259);
+	var AnimationClipNodeBase_1 = __webpack_require__(257);
 	exports.AnimationClipNodeBase = AnimationClipNodeBase_1.default;
-	var ParticleAccelerationNode_1 = __webpack_require__(482);
+	var ParticleAccelerationNode_1 = __webpack_require__(479);
 	exports.ParticleAccelerationNode = ParticleAccelerationNode_1.default;
-	var ParticleBezierCurveNode_1 = __webpack_require__(366);
+	var ParticleBezierCurveNode_1 = __webpack_require__(363);
 	exports.ParticleBezierCurveNode = ParticleBezierCurveNode_1.default;
-	var ParticleBillboardNode_1 = __webpack_require__(346);
+	var ParticleBillboardNode_1 = __webpack_require__(343);
 	exports.ParticleBillboardNode = ParticleBillboardNode_1.default;
-	var ParticleColorNode_1 = __webpack_require__(352);
+	var ParticleColorNode_1 = __webpack_require__(349);
 	exports.ParticleColorNode = ParticleColorNode_1.default;
-	var ParticleFollowNode_1 = __webpack_require__(484);
+	var ParticleFollowNode_1 = __webpack_require__(481);
 	exports.ParticleFollowNode = ParticleFollowNode_1.default;
-	var ParticleInitialColorNode_1 = __webpack_require__(368);
+	var ParticleInitialColorNode_1 = __webpack_require__(365);
 	exports.ParticleInitialColorNode = ParticleInitialColorNode_1.default;
-	var ParticleNodeBase_1 = __webpack_require__(342);
+	var ParticleNodeBase_1 = __webpack_require__(339);
 	exports.ParticleNodeBase = ParticleNodeBase_1.default;
-	var ParticleOrbitNode_1 = __webpack_require__(486);
+	var ParticleOrbitNode_1 = __webpack_require__(483);
 	exports.ParticleOrbitNode = ParticleOrbitNode_1.default;
-	var ParticleOscillatorNode_1 = __webpack_require__(488);
+	var ParticleOscillatorNode_1 = __webpack_require__(485);
 	exports.ParticleOscillatorNode = ParticleOscillatorNode_1.default;
-	var ParticlePositionNode_1 = __webpack_require__(370);
+	var ParticlePositionNode_1 = __webpack_require__(367);
 	exports.ParticlePositionNode = ParticlePositionNode_1.default;
-	var ParticleRotateToHeadingNode_1 = __webpack_require__(490);
+	var ParticleRotateToHeadingNode_1 = __webpack_require__(487);
 	exports.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode_1.default;
-	var ParticleRotateToPositionNode_1 = __webpack_require__(492);
+	var ParticleRotateToPositionNode_1 = __webpack_require__(489);
 	exports.ParticleRotateToPositionNode = ParticleRotateToPositionNode_1.default;
-	var ParticleRotationalVelocityNode_1 = __webpack_require__(494);
+	var ParticleRotationalVelocityNode_1 = __webpack_require__(491);
 	exports.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode_1.default;
-	var ParticleScaleNode_1 = __webpack_require__(348);
+	var ParticleScaleNode_1 = __webpack_require__(345);
 	exports.ParticleScaleNode = ParticleScaleNode_1.default;
-	var ParticleSegmentedColorNode_1 = __webpack_require__(496);
+	var ParticleSegmentedColorNode_1 = __webpack_require__(493);
 	exports.ParticleSegmentedColorNode = ParticleSegmentedColorNode_1.default;
-	var ParticleSpriteSheetNode_1 = __webpack_require__(498);
+	var ParticleSpriteSheetNode_1 = __webpack_require__(495);
 	exports.ParticleSpriteSheetNode = ParticleSpriteSheetNode_1.default;
-	var ParticleTimeNode_1 = __webpack_require__(341);
+	var ParticleTimeNode_1 = __webpack_require__(338);
 	exports.ParticleTimeNode = ParticleTimeNode_1.default;
-	var ParticleUVNode_1 = __webpack_require__(500);
+	var ParticleUVNode_1 = __webpack_require__(497);
 	exports.ParticleUVNode = ParticleUVNode_1.default;
-	var ParticleVelocityNode_1 = __webpack_require__(350);
+	var ParticleVelocityNode_1 = __webpack_require__(347);
 	exports.ParticleVelocityNode = ParticleVelocityNode_1.default;
-	var SkeletonBinaryLERPNode_1 = __webpack_require__(359);
+	var SkeletonBinaryLERPNode_1 = __webpack_require__(356);
 	exports.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode_1.default;
-	var SkeletonClipNode_1 = __webpack_require__(258);
+	var SkeletonClipNode_1 = __webpack_require__(256);
 	exports.SkeletonClipNode = SkeletonClipNode_1.default;
-	var SkeletonDifferenceNode_1 = __webpack_require__(502);
+	var SkeletonDifferenceNode_1 = __webpack_require__(499);
 	exports.SkeletonDifferenceNode = SkeletonDifferenceNode_1.default;
-	var SkeletonDirectionalNode_1 = __webpack_require__(504);
+	var SkeletonDirectionalNode_1 = __webpack_require__(501);
 	exports.SkeletonDirectionalNode = SkeletonDirectionalNode_1.default;
-	var SkeletonNaryLERPNode_1 = __webpack_require__(506);
+	var SkeletonNaryLERPNode_1 = __webpack_require__(503);
 	exports.SkeletonNaryLERPNode = SkeletonNaryLERPNode_1.default;
-	var VertexClipNode_1 = __webpack_require__(264);
+	var VertexClipNode_1 = __webpack_require__(262);
 	exports.VertexClipNode = VertexClipNode_1.default;
-	var AnimationClipState_1 = __webpack_require__(262);
+	var AnimationClipState_1 = __webpack_require__(260);
 	exports.AnimationClipState = AnimationClipState_1.default;
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	exports.AnimationStateBase = AnimationStateBase_1.default;
-	var ParticleAccelerationState_1 = __webpack_require__(483);
+	var ParticleAccelerationState_1 = __webpack_require__(480);
 	exports.ParticleAccelerationState = ParticleAccelerationState_1.default;
-	var ParticleBezierCurveState_1 = __webpack_require__(367);
+	var ParticleBezierCurveState_1 = __webpack_require__(364);
 	exports.ParticleBezierCurveState = ParticleBezierCurveState_1.default;
-	var ParticleBillboardState_1 = __webpack_require__(347);
+	var ParticleBillboardState_1 = __webpack_require__(344);
 	exports.ParticleBillboardState = ParticleBillboardState_1.default;
-	var ParticleColorState_1 = __webpack_require__(353);
+	var ParticleColorState_1 = __webpack_require__(350);
 	exports.ParticleColorState = ParticleColorState_1.default;
-	var ParticleFollowState_1 = __webpack_require__(485);
+	var ParticleFollowState_1 = __webpack_require__(482);
 	exports.ParticleFollowState = ParticleFollowState_1.default;
-	var ParticleInitialColorState_1 = __webpack_require__(369);
+	var ParticleInitialColorState_1 = __webpack_require__(366);
 	exports.ParticleInitialColorState = ParticleInitialColorState_1.default;
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	exports.ParticleStateBase = ParticleStateBase_1.default;
-	var ParticleOrbitState_1 = __webpack_require__(487);
+	var ParticleOrbitState_1 = __webpack_require__(484);
 	exports.ParticleOrbitState = ParticleOrbitState_1.default;
-	var ParticleOscillatorState_1 = __webpack_require__(489);
+	var ParticleOscillatorState_1 = __webpack_require__(486);
 	exports.ParticleOscillatorState = ParticleOscillatorState_1.default;
-	var ParticlePositionState_1 = __webpack_require__(371);
+	var ParticlePositionState_1 = __webpack_require__(368);
 	exports.ParticlePositionState = ParticlePositionState_1.default;
-	var ParticleRotateToHeadingState_1 = __webpack_require__(491);
+	var ParticleRotateToHeadingState_1 = __webpack_require__(488);
 	exports.ParticleRotateToHeadingState = ParticleRotateToHeadingState_1.default;
-	var ParticleRotateToPositionState_1 = __webpack_require__(493);
+	var ParticleRotateToPositionState_1 = __webpack_require__(490);
 	exports.ParticleRotateToPositionState = ParticleRotateToPositionState_1.default;
-	var ParticleRotationalVelocityState_1 = __webpack_require__(495);
+	var ParticleRotationalVelocityState_1 = __webpack_require__(492);
 	exports.ParticleRotationalVelocityState = ParticleRotationalVelocityState_1.default;
-	var ParticleScaleState_1 = __webpack_require__(349);
+	var ParticleScaleState_1 = __webpack_require__(346);
 	exports.ParticleScaleState = ParticleScaleState_1.default;
-	var ParticleSegmentedColorState_1 = __webpack_require__(497);
+	var ParticleSegmentedColorState_1 = __webpack_require__(494);
 	exports.ParticleSegmentedColorState = ParticleSegmentedColorState_1.default;
-	var ParticleSpriteSheetState_1 = __webpack_require__(499);
+	var ParticleSpriteSheetState_1 = __webpack_require__(496);
 	exports.ParticleSpriteSheetState = ParticleSpriteSheetState_1.default;
-	var ParticleTimeState_1 = __webpack_require__(343);
+	var ParticleTimeState_1 = __webpack_require__(340);
 	exports.ParticleTimeState = ParticleTimeState_1.default;
-	var ParticleUVState_1 = __webpack_require__(501);
+	var ParticleUVState_1 = __webpack_require__(498);
 	exports.ParticleUVState = ParticleUVState_1.default;
-	var ParticleVelocityState_1 = __webpack_require__(351);
+	var ParticleVelocityState_1 = __webpack_require__(348);
 	exports.ParticleVelocityState = ParticleVelocityState_1.default;
-	var SkeletonBinaryLERPState_1 = __webpack_require__(360);
+	var SkeletonBinaryLERPState_1 = __webpack_require__(357);
 	exports.SkeletonBinaryLERPState = SkeletonBinaryLERPState_1.default;
-	var SkeletonClipState_1 = __webpack_require__(261);
+	var SkeletonClipState_1 = __webpack_require__(259);
 	exports.SkeletonClipState = SkeletonClipState_1.default;
-	var SkeletonDifferenceState_1 = __webpack_require__(503);
+	var SkeletonDifferenceState_1 = __webpack_require__(500);
 	exports.SkeletonDifferenceState = SkeletonDifferenceState_1.default;
-	var SkeletonDirectionalState_1 = __webpack_require__(505);
+	var SkeletonDirectionalState_1 = __webpack_require__(502);
 	exports.SkeletonDirectionalState = SkeletonDirectionalState_1.default;
-	var SkeletonNaryLERPState_1 = __webpack_require__(507);
+	var SkeletonNaryLERPState_1 = __webpack_require__(504);
 	exports.SkeletonNaryLERPState = SkeletonNaryLERPState_1.default;
-	var VertexClipState_1 = __webpack_require__(265);
+	var VertexClipState_1 = __webpack_require__(263);
 	exports.VertexClipState = VertexClipState_1.default;
-	var CrossfadeTransition_1 = __webpack_require__(357);
+	var CrossfadeTransition_1 = __webpack_require__(354);
 	exports.CrossfadeTransition = CrossfadeTransition_1.default;
-	var CrossfadeTransitionNode_1 = __webpack_require__(358);
+	var CrossfadeTransitionNode_1 = __webpack_require__(355);
 	exports.CrossfadeTransitionNode = CrossfadeTransitionNode_1.default;
-	var CrossfadeTransitionState_1 = __webpack_require__(361);
+	var CrossfadeTransitionState_1 = __webpack_require__(358);
 	exports.CrossfadeTransitionState = CrossfadeTransitionState_1.default;
-	var AnimationSetBase_1 = __webpack_require__(244);
+	var AnimationSetBase_1 = __webpack_require__(241);
 	exports.AnimationSetBase = AnimationSetBase_1.default;
-	var AnimatorBase_1 = __webpack_require__(248);
+	var AnimatorBase_1 = __webpack_require__(246);
 	exports.AnimatorBase = AnimatorBase_1.default;
-	var ParticleAnimationSet_1 = __webpack_require__(335);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
 	exports.ParticleAnimationSet = ParticleAnimationSet_1.default;
-	var ParticleAnimator_1 = __webpack_require__(345);
+	var ParticleAnimator_1 = __webpack_require__(342);
 	exports.ParticleAnimator = ParticleAnimator_1.default;
-	var SkeletonAnimationSet_1 = __webpack_require__(250);
+	var SkeletonAnimationSet_1 = __webpack_require__(248);
 	exports.SkeletonAnimationSet = SkeletonAnimationSet_1.default;
-	var SkeletonAnimator_1 = __webpack_require__(251);
+	var SkeletonAnimator_1 = __webpack_require__(249);
 	exports.SkeletonAnimator = SkeletonAnimator_1.default;
-	var VertexAnimationSet_1 = __webpack_require__(243);
+	var VertexAnimationSet_1 = __webpack_require__(240);
 	exports.VertexAnimationSet = VertexAnimationSet_1.default;
-	var VertexAnimator_1 = __webpack_require__(247);
+	var VertexAnimator_1 = __webpack_require__(245);
 	exports.VertexAnimator = VertexAnimator_1.default;
 
 
 /***/ },
-/* 481 */
+/* 478 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -67568,7 +67027,7 @@
 
 
 /***/ },
-/* 482 */
+/* 479 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67578,9 +67037,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleAccelerationState_1 = __webpack_require__(483);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleAccelerationState_1 = __webpack_require__(480);
 	/**
 	 * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
 	 */
@@ -67592,7 +67051,7 @@
 	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	     * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
 	     */
-	    function ParticleAccelerationNode(mode /*uint*/, acceleration) {
+	    function ParticleAccelerationNode(mode, acceleration) {
 	        if (acceleration === void 0) { acceleration = null; }
 	        _super.call(this, "ParticleAcceleration", mode, 3);
 	        this._pStateClass = ParticleAccelerationState_1.default;
@@ -67601,20 +67060,20 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (shader, animationRegisterCache) {
-	        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleAccelerationState_1.default.ACCELERATION_INDEX, accelerationValue.index);
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-	        animationRegisterCache.addVertexTempUsages(temp, 1);
-	        var code = "mul " + temp + "," + animationRegisterCache.vertexTime + "," + accelerationValue + "\n";
-	        if (animationRegisterCache.needVelocity) {
-	            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-	            code += "mul " + temp2 + "," + temp + "," + animationRegisterCache.vertexTwoConst + "\n";
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	    ParticleAccelerationNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var accelerationValue = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleAccelerationState_1.default.ACCELERATION_INDEX, accelerationValue.index);
+	        var temp = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp, 1);
+	        var code = "mul " + temp + "," + animationRegisterData.vertexTime + "," + accelerationValue + "\n";
+	        if (animationSet.needVelocity) {
+	            var temp2 = registerCache.getFreeVertexVectorTemp();
+	            code += "mul " + temp2 + "," + temp + "," + animationRegisterData.vertexTwoConst + "\n";
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + temp2 + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	        }
-	        animationRegisterCache.removeVertexTempUsage(temp);
-	        code += "mul " + temp + "," + temp + "," + animationRegisterCache.vertexTime + "\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + temp + "," + animationRegisterCache.positionTarget + ".xyz\n";
+	        registerCache.removeVertexTempUsage(temp);
+	        code += "mul " + temp + "," + temp + "," + animationRegisterData.vertexTime + "\n";
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + temp + "," + animationRegisterData.positionTarget + ".xyz\n";
 	        return code;
 	    };
 	    /**
@@ -67646,7 +67105,7 @@
 
 
 /***/ },
-/* 483 */
+/* 480 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67656,9 +67115,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -67689,12 +67148,12 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleAccelerationState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
+	    ParticleAccelerationState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
 	        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
 	            animationElements.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        else
-	            animationRegisterCache.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
+	            shader.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
 	    };
 	    ParticleAccelerationState.prototype.updateAccelerationData = function () {
 	        if (this._particleAccelerationNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
@@ -67709,7 +67168,7 @@
 
 
 /***/ },
-/* 484 */
+/* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67718,10 +67177,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleFollowState_1 = __webpack_require__(485);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleFollowState_1 = __webpack_require__(482);
 	/**
 	 * A particle animation node used to create a follow behaviour on a particle system.
 	 */
@@ -67747,84 +67206,84 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleFollowNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleFollowNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        //TODO: use Quaternion to implement this function
 	        var code = "";
 	        if (this._iUsesRotation) {
-	            var rotationAttribute = animationRegisterCache.getFreeVertexAttribute();
-	            animationRegisterCache.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
-	            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp1, 1);
-	            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp2, 1);
-	            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
+	            var rotationAttribute = registerCache.getFreeVertexAttribute();
+	            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_ROTATION_INDEX, rotationAttribute.index);
+	            var temp1 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp1, 1);
+	            var temp2 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp2, 1);
+	            var temp3 = registerCache.getFreeVertexVectorTemp();
 	            var temp4;
-	            if (animationRegisterCache.hasBillboard) {
-	                animationRegisterCache.addVertexTempUsages(temp3, 1);
-	                temp4 = animationRegisterCache.getFreeVertexVectorTemp();
+	            if (animationSet.hasBillboard) {
+	                registerCache.addVertexTempUsages(temp3, 1);
+	                temp4 = registerCache.getFreeVertexVectorTemp();
 	            }
-	            animationRegisterCache.removeVertexTempUsage(temp1);
-	            animationRegisterCache.removeVertexTempUsage(temp2);
-	            if (animationRegisterCache.hasBillboard)
-	                animationRegisterCache.removeVertexTempUsage(temp3);
-	            var len = animationRegisterCache.rotationRegisters.length;
+	            registerCache.removeVertexTempUsage(temp1);
+	            registerCache.removeVertexTempUsage(temp2);
+	            if (animationSet.hasBillboard)
+	                registerCache.removeVertexTempUsage(temp3);
+	            var len = animationRegisterData.rotationRegisters.length;
 	            var i;
 	            //x axis
-	            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mov " + temp1 + ".x," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + ".x," + animationRegisterData.vertexOneConst + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "sin " + temp3 + ".y," + rotationAttribute + ".x\n";
 	            code += "cos " + temp3 + ".z," + rotationAttribute + ".x\n";
-	            code += "mov " + temp2 + ".x," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + ".x," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp2 + ".y," + temp3 + ".z\n";
 	            code += "neg " + temp2 + ".z," + temp3 + ".y\n";
-	            if (animationRegisterCache.hasBillboard)
-	                code += "m33 " + temp4 + ".xyz," + animationRegisterCache.positionTarget + ".xyz," + temp1 + "\n";
+	            if (animationSet.hasBillboard)
+	                code += "m33 " + temp4 + ".xyz," + animationRegisterData.positionTarget + ".xyz," + temp1 + "\n";
 	            else {
-	                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+	                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
 	                for (i = 0; i < len; i++)
-	                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+	                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
 	            }
 	            //y axis
-	            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "cos " + temp1 + ".x," + rotationAttribute + ".y\n";
 	            code += "sin " + temp1 + ".z," + rotationAttribute + ".y\n";
-	            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mov " + temp2 + ".y," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + ".y," + animationRegisterData.vertexOneConst + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "neg " + temp3 + ".x," + temp1 + ".z\n";
 	            code += "mov " + temp3 + ".z," + temp1 + ".x\n";
-	            if (animationRegisterCache.hasBillboard)
+	            if (animationSet.hasBillboard)
 	                code += "m33 " + temp4 + ".xyz," + temp4 + ".xyz," + temp1 + "\n";
 	            else {
-	                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+	                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
 	                for (i = 0; i < len; i++)
-	                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+	                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
 	            }
 	            //z axis
-	            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "sin " + temp2 + ".x," + rotationAttribute + ".z\n";
 	            code += "cos " + temp2 + ".y," + rotationAttribute + ".z\n";
-	            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp1 + ".x," + temp2 + ".y\n";
 	            code += "neg " + temp1 + ".y," + temp2 + ".x\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-	            if (animationRegisterCache.hasBillboard) {
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+	            if (animationSet.hasBillboard) {
 	                code += "m33 " + temp4 + ".xyz," + temp4 + ".xyz," + temp1 + "\n";
-	                code += "sub " + temp4 + ".xyz," + temp4 + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-	                code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp4 + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	                code += "sub " + temp4 + ".xyz," + temp4 + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+	                code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp4 + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	            }
 	            else {
-	                code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+	                code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
 	                for (i = 0; i < len; i++)
-	                    code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+	                    code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
 	            }
 	        }
 	        if (this._iUsesPosition) {
-	            var positionAttribute = animationRegisterCache.getFreeVertexAttribute();
-	            animationRegisterCache.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_POSITION_INDEX, positionAttribute.index);
-	            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + positionAttribute + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	            var positionAttribute = registerCache.getFreeVertexAttribute();
+	            animationRegisterData.setRegisterIndex(this, ParticleFollowState_1.default.FOLLOW_POSITION_INDEX, positionAttribute.index);
+	            code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + positionAttribute + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	        }
 	        return code;
 	    };
@@ -67841,7 +67300,7 @@
 
 
 /***/ },
-/* 485 */
+/* 482 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -67852,8 +67311,8 @@
 	};
 	var MathConsts_1 = __webpack_require__(22);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -67891,7 +67350,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleFollowState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticleFollowState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	        if (this._followTarget) {
 	            if (this._particleFollowNode._iUsesPosition) {
 	                this._targetPos.x = this._followTarget.transform.position.x / renderable.sourceEntity.scaleX;
@@ -67917,18 +67376,18 @@
 	        if (this._particleFollowNode._iUsesPosition && this._particleFollowNode._iUsesRotation) {
 	            if (needProcess)
 	                this.processPositionAndRotation(currentTime, deltaTime, animationElements);
-	            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
-	            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+	            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+	            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        }
 	        else if (this._particleFollowNode._iUsesPosition) {
 	            if (needProcess)
 	                this.processPosition(currentTime, deltaTime, animationElements);
-	            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+	            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        }
 	        else if (this._particleFollowNode._iUsesRotation) {
 	            if (needProcess)
 	                this.precessRotation(currentTime, deltaTime, animationElements);
-	            animationElements.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
+	            animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleFollowState.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        }
 	        this._prePos.copyFrom(this._targetPos);
 	        this._targetEuler.copyFrom(this._targetEuler);
@@ -68065,7 +67524,7 @@
 
 
 /***/ },
-/* 486 */
+/* 483 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68075,9 +67534,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleOrbitState_1 = __webpack_require__(487);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleOrbitState_1 = __webpack_require__(484);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time around a circular orbit.
@@ -68096,7 +67555,7 @@
 	     * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
 	     * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
 	     */
-	    function ParticleOrbitNode(mode /*uint*/, usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
+	    function ParticleOrbitNode(mode, usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
 	        if (usesEulers === void 0) { usesEulers = true; }
 	        if (usesCycle === void 0) { usesCycle = false; }
 	        if (usesPhase === void 0) { usesPhase = false; }
@@ -68120,49 +67579,49 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleOrbitState_1.default.ORBIT_INDEX, orbitRegister.index);
-	        var eulersMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.setRegisterIndex(this, ParticleOrbitState_1.default.EULERS_INDEX, eulersMatrixRegister.index);
-	        animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.getFreeVertexConstant();
-	        var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-	        animationRegisterCache.addVertexTempUsages(temp1, 1);
+	    ParticleOrbitNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var orbitRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.ORBIT_INDEX, orbitRegister.index);
+	        var eulersMatrixRegister = registerCache.getFreeVertexConstant();
+	        animationRegisterData.setRegisterIndex(this, ParticleOrbitState_1.default.EULERS_INDEX, eulersMatrixRegister.index);
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        var temp1 = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp1, 1);
 	        var distance = new ShaderRegisterElement_1.default(temp1.regName, temp1.index);
-	        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+	        var temp2 = registerCache.getFreeVertexVectorTemp();
 	        var cos = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 0);
 	        var sin = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 1);
 	        var degree = new ShaderRegisterElement_1.default(temp2.regName, temp2.index, 2);
-	        animationRegisterCache.removeVertexTempUsage(temp1);
+	        registerCache.removeVertexTempUsage(temp1);
 	        var code = "";
 	        if (this._iUsesCycle) {
-	            code += "mul " + degree + "," + animationRegisterCache.vertexTime + "," + orbitRegister + ".y\n";
+	            code += "mul " + degree + "," + animationRegisterData.vertexTime + "," + orbitRegister + ".y\n";
 	            if (this._iUsesPhase)
 	                code += "add " + degree + "," + degree + "," + orbitRegister + ".w\n";
 	        }
 	        else
-	            code += "mul " + degree + "," + animationRegisterCache.vertexLife + "," + orbitRegister + ".y\n";
+	            code += "mul " + degree + "," + animationRegisterData.vertexLife + "," + orbitRegister + ".y\n";
 	        code += "cos " + cos + "," + degree + "\n";
 	        code += "sin " + sin + "," + degree + "\n";
 	        code += "mul " + distance + ".x," + cos + "," + orbitRegister + ".x\n";
 	        code += "mul " + distance + ".y," + sin + "," + orbitRegister + ".x\n";
-	        code += "mov " + distance + ".wz" + animationRegisterCache.vertexZeroConst + "\n";
+	        code += "mov " + distance + ".wz" + animationRegisterData.vertexZeroConst + "\n";
 	        if (this._iUsesEulers)
 	            code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-	        if (animationRegisterCache.needVelocity) {
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+	        if (animationSet.needVelocity) {
 	            code += "neg " + distance + ".x," + sin + "\n";
 	            code += "mov " + distance + ".y," + cos + "\n";
-	            code += "mov " + distance + ".zw," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + distance + ".zw," + animationRegisterData.vertexZeroConst + "\n";
 	            if (this._iUsesEulers)
 	                code += "m44 " + distance + "," + distance + "," + eulersMatrixRegister + "\n";
 	            code += "mul " + distance + "," + distance + "," + orbitRegister + ".z\n";
 	            code += "div " + distance + "," + distance + "," + orbitRegister + ".y\n";
 	            if (!this._iUsesCycle)
-	                code += "div " + distance + "," + distance + "," + animationRegisterCache.vertexLife + "\n";
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz\n";
+	                code += "div " + distance + "," + distance + "," + animationRegisterData.vertexLife + "\n";
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz\n";
 	        }
 	        return code;
 	    };
@@ -68200,7 +67659,7 @@
 
 
 /***/ },
-/* 487 */
+/* 484 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68211,9 +67670,9 @@
 	};
 	var Matrix3D_1 = __webpack_require__(23);
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -68287,8 +67746,8 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleOrbitState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
+	    ParticleOrbitState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
 	        if (this._particleOrbitNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
 	            if (this._usesPhase)
 	                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
@@ -68296,9 +67755,9 @@
 	                animationElements.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
 	        }
 	        else
-	            animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
+	            shader.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 	        if (this._usesEulers)
-	            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
+	            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.EULERS_INDEX), this._eulersMatrix);
 	    };
 	    ParticleOrbitState.prototype.updateOrbitData = function () {
 	        if (this._usesEulers) {
@@ -68329,7 +67788,7 @@
 
 
 /***/ },
-/* 488 */
+/* 485 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68339,9 +67798,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleOscillatorState_1 = __webpack_require__(489);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleOscillatorState_1 = __webpack_require__(486);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the position of a particle over time using simple harmonic motion.
@@ -68354,7 +67813,7 @@
 	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	     * @param    [optional] oscillator      Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the node, used when in global mode.
 	     */
-	    function ParticleOscillatorNode(mode /*uint*/, oscillator) {
+	    function ParticleOscillatorNode(mode, oscillator) {
 	        if (oscillator === void 0) { oscillator = null; }
 	        _super.call(this, "ParticleOscillator", mode, 4);
 	        this._pStateClass = ParticleOscillatorState_1.default;
@@ -68363,26 +67822,26 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleOscillatorState_1.default.OSCILLATOR_INDEX, oscillatorRegister.index);
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+	    ParticleOscillatorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var oscillatorRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleOscillatorState_1.default.OSCILLATOR_INDEX, oscillatorRegister.index);
+	        var temp = registerCache.getFreeVertexVectorTemp();
 	        var dgree = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
 	        var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
 	        var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
-	        animationRegisterCache.addVertexTempUsages(temp, 1);
-	        var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp, 1);
+	        var temp2 = registerCache.getFreeVertexVectorTemp();
 	        var distance = new ShaderRegisterElement_1.default(temp2.regName, temp2.index);
-	        animationRegisterCache.removeVertexTempUsage(temp);
+	        registerCache.removeVertexTempUsage(temp);
 	        var code = "";
-	        code += "mul " + dgree + "," + animationRegisterCache.vertexTime + "," + oscillatorRegister + ".w\n";
+	        code += "mul " + dgree + "," + animationRegisterData.vertexTime + "," + oscillatorRegister + ".w\n";
 	        code += "sin " + sin + "," + dgree + "\n";
 	        code += "mul " + distance + ".xyz," + sin + "," + oscillatorRegister + ".xyz\n";
-	        code += "add " + animationRegisterCache.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
-	        if (animationRegisterCache.needVelocity) {
+	        code += "add " + animationRegisterData.positionTarget + ".xyz," + distance + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
+	        if (animationSet.needVelocity) {
 	            code += "cos " + cos + "," + dgree + "\n";
 	            code += "mul " + distance + ".xyz," + cos + "," + oscillatorRegister + ".xyz\n";
-	            code += "add " + animationRegisterCache.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	            code += "add " + animationRegisterData.velocityTarget + ".xyz," + distance + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	        }
 	        return code;
 	    };
@@ -68419,7 +67878,7 @@
 
 
 /***/ },
-/* 489 */
+/* 486 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68429,9 +67888,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -68460,12 +67919,12 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleOscillatorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
+	    ParticleOscillatorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
 	        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC)
 	            animationElements.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	        else
-	            animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
+	            shader.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
 	    };
 	    ParticleOscillatorState.prototype.updateOscillatorData = function () {
 	        if (this._particleOscillatorNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
@@ -68488,7 +67947,7 @@
 
 
 /***/ },
-/* 490 */
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68497,9 +67956,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleRotateToHeadingState_1 = __webpack_require__(491);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleRotateToHeadingState_1 = __webpack_require__(488);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the rotation of a particle to match its heading vector.
@@ -68516,73 +67975,73 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        var len = animationRegisterCache.rotationRegisters.length;
+	        var len = animationRegisterData.rotationRegisters.length;
 	        var i;
-	        if (animationRegisterCache.hasBillboard) {
-	            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp1, 1);
-	            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp2, 1);
-	            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
-	            var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.setRegisterIndex(this, ParticleRotateToHeadingState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.removeVertexTempUsage(temp1);
-	            animationRegisterCache.removeVertexTempUsage(temp2);
+	        if (animationSet.hasBillboard) {
+	            var temp1 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp1, 1);
+	            var temp2 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp2, 1);
+	            var temp3 = registerCache.getFreeVertexVectorTemp();
+	            var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+	            animationRegisterData.setRegisterIndex(this, ParticleRotateToHeadingState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+	            registerCache.getFreeVertexConstant();
+	            registerCache.getFreeVertexConstant();
+	            registerCache.getFreeVertexConstant();
+	            registerCache.removeVertexTempUsage(temp1);
+	            registerCache.removeVertexTempUsage(temp2);
 	            //process the velocity
-	            code += "m33 " + temp1 + ".xyz," + animationRegisterCache.velocityTarget + ".xyz," + rotationMatrixRegister + "\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "m33 " + temp1 + ".xyz," + animationRegisterData.velocityTarget + ".xyz," + rotationMatrixRegister + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp3 + ".xy," + temp1 + ".xy\n";
 	            code += "nrm " + temp3 + ".xyz," + temp3 + ".xyz\n";
 	            //temp3.x=cos,temp3.y=sin
 	            //only process z axis
-	            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp2 + ".x," + temp3 + ".y\n";
 	            code += "mov " + temp2 + ".y," + temp3 + ".x\n";
-	            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp1 + ".x," + temp3 + ".x\n";
 	            code += "neg " + temp1 + ".y," + temp3 + ".y\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+	            code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
 	            for (i = 0; i < len; i++)
-	                code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+	                code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
 	        }
 	        else {
-	            var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(nrmVel, 1);
-	            var xAxis = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(xAxis, 1);
-	            var R = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(R, 1);
-	            var R_rev = animationRegisterCache.getFreeVertexVectorTemp();
+	            var nrmVel = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(nrmVel, 1);
+	            var xAxis = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(xAxis, 1);
+	            var R = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(R, 1);
+	            var R_rev = registerCache.getFreeVertexVectorTemp();
 	            var cos = new ShaderRegisterElement_1.default(R.regName, R.index, 3);
 	            var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
 	            var cos2 = new ShaderRegisterElement_1.default(nrmVel.regName, nrmVel.index, 3);
 	            var tempSingle = sin;
-	            animationRegisterCache.removeVertexTempUsage(nrmVel);
-	            animationRegisterCache.removeVertexTempUsage(xAxis);
-	            animationRegisterCache.removeVertexTempUsage(R);
-	            code += "mov " + xAxis + ".x," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "mov " + xAxis + ".yz," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "nrm " + nrmVel + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	            registerCache.removeVertexTempUsage(nrmVel);
+	            registerCache.removeVertexTempUsage(xAxis);
+	            registerCache.removeVertexTempUsage(R);
+	            code += "mov " + xAxis + ".x," + animationRegisterData.vertexOneConst + "\n";
+	            code += "mov " + xAxis + ".yz," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "nrm " + nrmVel + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	            code += "dp3 " + cos2 + "," + nrmVel + ".xyz," + xAxis + ".xyz\n";
 	            code += "crs " + nrmVel + ".xyz," + xAxis + ".xyz," + nrmVel + ".xyz\n";
 	            code += "nrm " + nrmVel + ".xyz," + nrmVel + ".xyz\n";
 	            //use R as temp to judge if nrm is (0,0,0).
 	            //if nrm is (0,0,0) ,change it to (0,0,1).
 	            code += "dp3 " + R + ".x," + nrmVel + ".xyz," + nrmVel + ".xyz\n";
-	            code += "sge " + R + ".x," + animationRegisterCache.vertexZeroConst + "," + R + ".x\n";
+	            code += "sge " + R + ".x," + animationRegisterData.vertexZeroConst + "," + R + ".x\n";
 	            code += "add " + nrmVel + ".z," + R + ".x," + nrmVel + ".z\n";
-	            code += "add " + tempSingle + "," + cos2 + "," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+	            code += "add " + tempSingle + "," + cos2 + "," + animationRegisterData.vertexOneConst + "\n";
+	            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
 	            code += "sqt " + cos + "," + tempSingle + "\n";
-	            code += "sub " + tempSingle + "," + animationRegisterCache.vertexOneConst + "," + cos2 + "\n";
-	            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+	            code += "sub " + tempSingle + "," + animationRegisterData.vertexOneConst + "," + cos2 + "\n";
+	            code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
 	            code += "sqt " + sin + "," + tempSingle + "\n";
 	            code += "mul " + R + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	            //use cos as R.w
@@ -68590,49 +68049,49 @@
 	            code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
 	            //use cos as R_rev.w
 	            //nrmVel and xAxis are used as temp register
-	            code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	            code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	            //use cos as R.w
-	            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	            code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-	            code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	            code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	            code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 	            code += "crs " + R + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
 	            //code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," +R_rev + ".w\n";
 	            code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
 	            code += "add " + R + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
 	            code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-	            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
+	            code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
 	            for (i = 0; i < len; i++) {
 	                //just repeat the calculate above
 	                //because of the limited registers, no need to optimise
-	                code += "mov " + xAxis + ".x," + animationRegisterCache.vertexOneConst + "\n";
-	                code += "mov " + xAxis + ".yz," + animationRegisterCache.vertexZeroConst + "\n";
-	                code += "nrm " + nrmVel + ".xyz," + animationRegisterCache.velocityTarget + ".xyz\n";
+	                code += "mov " + xAxis + ".x," + animationRegisterData.vertexOneConst + "\n";
+	                code += "mov " + xAxis + ".yz," + animationRegisterData.vertexZeroConst + "\n";
+	                code += "nrm " + nrmVel + ".xyz," + animationRegisterData.velocityTarget + ".xyz\n";
 	                code += "dp3 " + cos2 + "," + nrmVel + ".xyz," + xAxis + ".xyz\n";
 	                code += "crs " + nrmVel + ".xyz," + xAxis + ".xyz," + nrmVel + ".xyz\n";
 	                code += "nrm " + nrmVel + ".xyz," + nrmVel + ".xyz\n";
 	                code += "dp3 " + R + ".x," + nrmVel + ".xyz," + nrmVel + ".xyz\n";
-	                code += "sge " + R + ".x," + animationRegisterCache.vertexZeroConst + "," + R + ".x\n";
+	                code += "sge " + R + ".x," + animationRegisterData.vertexZeroConst + "," + R + ".x\n";
 	                code += "add " + nrmVel + ".z," + R + ".x," + nrmVel + ".z\n";
-	                code += "add " + tempSingle + "," + cos2 + "," + animationRegisterCache.vertexOneConst + "\n";
-	                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+	                code += "add " + tempSingle + "," + cos2 + "," + animationRegisterData.vertexOneConst + "\n";
+	                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
 	                code += "sqt " + cos + "," + tempSingle + "\n";
-	                code += "sub " + tempSingle + "," + animationRegisterCache.vertexOneConst + "," + cos2 + "\n";
-	                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterCache.vertexTwoConst + "\n";
+	                code += "sub " + tempSingle + "," + animationRegisterData.vertexOneConst + "," + cos2 + "\n";
+	                code += "div " + tempSingle + "," + tempSingle + "," + animationRegisterData.vertexTwoConst + "\n";
 	                code += "sqt " + sin + "," + tempSingle + "\n";
 	                code += "mul " + R + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	                code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	                code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
-	                code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
-	                code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
+	                code += "crs " + nrmVel + ".xyz," + R + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
+	                code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
 	                code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-	                code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
+	                code += "dp3 " + xAxis + ".w," + R + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
 	                code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 	                code += "crs " + R + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
 	                code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
 	                code += "add " + R + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
 	                code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-	                code += "add " + animationRegisterCache.rotationRegisters[i] + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
+	                code += "add " + animationRegisterData.rotationRegisters[i] + ".xyz," + R + ".xyz," + xAxis + ".xyz\n";
 	            }
 	        }
 	        return code;
@@ -68656,7 +68115,7 @@
 
 
 /***/ },
-/* 491 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68666,7 +68125,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -68676,11 +68135,11 @@
 	        _super.call(this, animator, particleNode);
 	        this._matrix = new Matrix3D_1.default();
 	    }
-	    ParticleRotateToHeadingState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        if (animationRegisterCache.hasBillboard) {
+	    ParticleRotateToHeadingState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (this._pParticleAnimator.animationSet.hasBillboard) {
 	            this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 	            this._matrix.append(camera.inverseSceneTransform);
-	            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
+	            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
 	        }
 	    };
 	    /** @private */
@@ -68692,7 +68151,7 @@
 
 
 /***/ },
-/* 492 */
+/* 489 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68702,9 +68161,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleRotateToPositionState_1 = __webpack_require__(493);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleRotateToPositionState_1 = __webpack_require__(490);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the rotation of a particle to face to a position
@@ -68714,7 +68173,7 @@
 	    /**
 	     * Creates a new <code>ParticleRotateToPositionNode</code>
 	     */
-	    function ParticleRotateToPositionNode(mode /*uint*/, position) {
+	    function ParticleRotateToPositionNode(mode, position) {
 	        if (position === void 0) { position = null; }
 	        _super.call(this, "ParticleRotateToPosition", mode, 3, 3);
 	        this._pStateClass = ParticleRotateToPositionState_1.default;
@@ -68723,129 +68182,129 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionState_1.default.POSITION_INDEX, positionAttribute.index);
+	    ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var positionAttribute = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.POSITION_INDEX, positionAttribute.index);
 	        var code = "";
-	        var len = animationRegisterCache.rotationRegisters.length;
+	        var len = animationRegisterData.rotationRegisters.length;
 	        var i;
-	        if (animationRegisterCache.hasBillboard) {
-	            var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp1, 1);
-	            var temp2 = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp2, 1);
-	            var temp3 = animationRegisterCache.getFreeVertexVectorTemp();
-	            var rotationMatrixRegister = animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.removeVertexTempUsage(temp1);
-	            animationRegisterCache.removeVertexTempUsage(temp2);
+	        if (animationSet.hasBillboard) {
+	            var temp1 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp1, 1);
+	            var temp2 = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp2, 1);
+	            var temp3 = registerCache.getFreeVertexVectorTemp();
+	            var rotationMatrixRegister = registerCache.getFreeVertexConstant();
+	            animationRegisterData.setRegisterIndex(this, ParticleRotateToPositionState_1.default.MATRIX_INDEX, rotationMatrixRegister.index);
+	            registerCache.getFreeVertexConstant();
+	            registerCache.getFreeVertexConstant();
+	            registerCache.getFreeVertexConstant();
+	            registerCache.removeVertexTempUsage(temp1);
+	            registerCache.removeVertexTempUsage(temp2);
 	            //process the position
-	            code += "sub " + temp1 + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+	            code += "sub " + temp1 + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 	            code += "m33 " + temp1 + ".xyz," + temp1 + ".xyz," + rotationMatrixRegister + "\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp3 + ".xy," + temp1 + ".xy\n";
 	            code += "nrm " + temp3 + ".xyz," + temp3 + ".xyz\n";
 	            //temp3.x=cos,temp3.y=sin
 	            //only process z axis
-	            code += "mov " + temp2 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp2 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp2 + ".x," + temp3 + ".y\n";
 	            code += "mov " + temp2 + ".y," + temp3 + ".x\n";
-	            code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + temp1 + "," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "mov " + temp1 + ".x," + temp3 + ".x\n";
 	            code += "neg " + temp1 + ".y," + temp3 + ".y\n";
-	            code += "mov " + temp3 + "," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mov " + temp3 + ".z," + animationRegisterCache.vertexOneConst + "\n";
-	            code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
+	            code += "mov " + temp3 + "," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mov " + temp3 + ".z," + animationRegisterData.vertexOneConst + "\n";
+	            code += "m33 " + animationRegisterData.scaleAndRotateTarget + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
 	            for (i = 0; i < len; i++)
-	                code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
+	                code += "m33 " + animationRegisterData.rotationRegisters[i] + ".xyz," + animationRegisterData.rotationRegisters[i] + "," + temp1 + "\n";
 	        }
 	        else {
-	            var nrmDirection = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(nrmDirection, 1);
-	            var temp = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(temp, 1);
+	            var nrmDirection = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(nrmDirection, 1);
+	            var temp = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(temp, 1);
 	            var cos = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
 	            var sin = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
 	            var o_temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
 	            var tempSingle = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
-	            var R = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(R, 1);
-	            animationRegisterCache.removeVertexTempUsage(nrmDirection);
-	            animationRegisterCache.removeVertexTempUsage(temp);
-	            animationRegisterCache.removeVertexTempUsage(R);
-	            code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+	            var R = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(R, 1);
+	            registerCache.removeVertexTempUsage(nrmDirection);
+	            registerCache.removeVertexTempUsage(temp);
+	            registerCache.removeVertexTempUsage(R);
+	            code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 	            code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
 	            code += "mov " + sin + "," + nrmDirection + ".y\n";
 	            code += "mul " + cos + "," + sin + "," + sin + "\n";
-	            code += "sub " + cos + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+	            code += "sub " + cos + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
 	            code += "sqt " + cos + "," + cos + "\n";
-	            code += "mul " + R + ".x," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".y\n";
-	            code += "mul " + R + ".y," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-	            code += "mul " + R + ".z," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".y\n";
-	            code += "mul " + R + ".w," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-	            code += "sub " + animationRegisterCache.scaleAndRotateTarget + ".y," + R + ".x," + R + ".y\n";
-	            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
+	            code += "mul " + R + ".x," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".y\n";
+	            code += "mul " + R + ".y," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+	            code += "mul " + R + ".z," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".y\n";
+	            code += "mul " + R + ".w," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+	            code += "sub " + animationRegisterData.scaleAndRotateTarget + ".y," + R + ".x," + R + ".y\n";
+	            code += "add " + animationRegisterData.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
 	            code += "abs " + R + ".y," + nrmDirection + ".y\n";
-	            code += "sge " + R + ".z," + R + ".y," + animationRegisterCache.vertexOneConst + "\n";
+	            code += "sge " + R + ".z," + R + ".y," + animationRegisterData.vertexOneConst + "\n";
 	            code += "mul " + R + ".x," + R + ".y," + nrmDirection + ".y\n";
 	            //judgu if nrmDirection=(0,1,0);
-	            code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "dp3 " + sin + "," + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-	            code += "sge " + tempSingle + "," + animationRegisterCache.vertexZeroConst + "," + sin + "\n";
-	            code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+	            code += "sge " + tempSingle + "," + animationRegisterData.vertexZeroConst + "," + sin + "\n";
+	            code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
 	            code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-	            code += "sub " + sin + "," + animationRegisterCache.vertexOneConst + "," + tempSingle + "\n";
+	            code += "sub " + sin + "," + animationRegisterData.vertexOneConst + "," + tempSingle + "\n";
 	            code += "mul " + sin + "," + sin + "," + nrmDirection + ".x\n";
 	            code += "mov " + cos + "," + nrmDirection + ".z\n";
 	            code += "neg " + cos + "," + cos + "\n";
-	            code += "sub " + o_temp + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+	            code += "sub " + o_temp + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
 	            code += "mul " + o_temp + "," + R + ".x," + tempSingle + "\n";
 	            code += "add " + cos + "," + cos + "," + o_temp + "\n";
-	            code += "mul " + R + ".x," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".x\n";
-	            code += "mul " + R + ".y," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-	            code += "mul " + R + ".z," + sin + "," + animationRegisterCache.scaleAndRotateTarget + ".x\n";
-	            code += "mul " + R + ".w," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".z\n";
-	            code += "sub " + animationRegisterCache.scaleAndRotateTarget + ".x," + R + ".x," + R + ".y\n";
-	            code += "add " + animationRegisterCache.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
+	            code += "mul " + R + ".x," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".x\n";
+	            code += "mul " + R + ".y," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+	            code += "mul " + R + ".z," + sin + "," + animationRegisterData.scaleAndRotateTarget + ".x\n";
+	            code += "mul " + R + ".w," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".z\n";
+	            code += "sub " + animationRegisterData.scaleAndRotateTarget + ".x," + R + ".x," + R + ".y\n";
+	            code += "add " + animationRegisterData.scaleAndRotateTarget + ".z," + R + ".z," + R + ".w\n";
 	            for (i = 0; i < len; i++) {
 	                //just repeat the calculate above
 	                //because of the limited registers, no need to optimise
-	                code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
+	                code += "sub " + nrmDirection + ".xyz," + positionAttribute + ".xyz," + animationRegisterData.positionTarget + ".xyz\n";
 	                code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
 	                code += "mov " + sin + "," + nrmDirection + ".y\n";
 	                code += "mul " + cos + "," + sin + "," + sin + "\n";
-	                code += "sub " + cos + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+	                code += "sub " + cos + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
 	                code += "sqt " + cos + "," + cos + "\n";
-	                code += "mul " + R + ".x," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".y\n";
-	                code += "mul " + R + ".y," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-	                code += "mul " + R + ".z," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".y\n";
-	                code += "mul " + R + ".w," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-	                code += "sub " + animationRegisterCache.rotationRegisters[i] + ".y," + R + ".x," + R + ".y\n";
-	                code += "add " + animationRegisterCache.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
+	                code += "mul " + R + ".x," + cos + "," + animationRegisterData.rotationRegisters[i] + ".y\n";
+	                code += "mul " + R + ".y," + sin + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+	                code += "mul " + R + ".z," + sin + "," + animationRegisterData.rotationRegisters[i] + ".y\n";
+	                code += "mul " + R + ".w," + cos + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+	                code += "sub " + animationRegisterData.rotationRegisters[i] + ".y," + R + ".x," + R + ".y\n";
+	                code += "add " + animationRegisterData.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
 	                code += "abs " + R + ".y," + nrmDirection + ".y\n";
-	                code += "sge " + R + ".z," + R + ".y," + animationRegisterCache.vertexOneConst + "\n";
+	                code += "sge " + R + ".z," + R + ".y," + animationRegisterData.vertexOneConst + "\n";
 	                code += "mul " + R + ".x," + R + ".y," + nrmDirection + ".y\n";
-	                code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+	                code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
 	                code += "dp3 " + sin + "," + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-	                code += "sge " + tempSingle + "," + animationRegisterCache.vertexZeroConst + "," + sin + "\n";
-	                code += "mov " + nrmDirection + ".y," + animationRegisterCache.vertexZeroConst + "\n";
+	                code += "sge " + tempSingle + "," + animationRegisterData.vertexZeroConst + "," + sin + "\n";
+	                code += "mov " + nrmDirection + ".y," + animationRegisterData.vertexZeroConst + "\n";
 	                code += "nrm " + nrmDirection + ".xyz," + nrmDirection + ".xyz\n";
-	                code += "sub " + sin + "," + animationRegisterCache.vertexOneConst + "," + tempSingle + "\n";
+	                code += "sub " + sin + "," + animationRegisterData.vertexOneConst + "," + tempSingle + "\n";
 	                code += "mul " + sin + "," + sin + "," + nrmDirection + ".x\n";
 	                code += "mov " + cos + "," + nrmDirection + ".z\n";
 	                code += "neg " + cos + "," + cos + "\n";
-	                code += "sub " + o_temp + "," + animationRegisterCache.vertexOneConst + "," + cos + "\n";
+	                code += "sub " + o_temp + "," + animationRegisterData.vertexOneConst + "," + cos + "\n";
 	                code += "mul " + o_temp + "," + R + ".x," + tempSingle + "\n";
 	                code += "add " + cos + "," + cos + "," + o_temp + "\n";
-	                code += "mul " + R + ".x," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".x\n";
-	                code += "mul " + R + ".y," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-	                code += "mul " + R + ".z," + sin + "," + animationRegisterCache.rotationRegisters[i] + ".x\n";
-	                code += "mul " + R + ".w," + cos + "," + animationRegisterCache.rotationRegisters[i] + ".z\n";
-	                code += "sub " + animationRegisterCache.rotationRegisters[i] + ".x," + R + ".x," + R + ".y\n";
-	                code += "add " + animationRegisterCache.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
+	                code += "mul " + R + ".x," + cos + "," + animationRegisterData.rotationRegisters[i] + ".x\n";
+	                code += "mul " + R + ".y," + sin + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+	                code += "mul " + R + ".z," + sin + "," + animationRegisterData.rotationRegisters[i] + ".x\n";
+	                code += "mul " + R + ".w," + cos + "," + animationRegisterData.rotationRegisters[i] + ".z\n";
+	                code += "sub " + animationRegisterData.rotationRegisters[i] + ".x," + R + ".x," + R + ".y\n";
+	                code += "add " + animationRegisterData.rotationRegisters[i] + ".z," + R + ".z," + R + ".w\n";
 	            }
 	        }
 	        return code;
@@ -68879,7 +68338,7 @@
 
 
 /***/ },
-/* 493 */
+/* 490 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68889,9 +68348,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -68916,16 +68375,16 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleRotateToPositionState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
-	        if (animationRegisterCache.hasBillboard) {
+	    ParticleRotateToPositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
+	        if (this._pParticleAnimator.animationSet.hasBillboard) {
 	            this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 	            this._matrix.append(camera.inverseSceneTransform);
-	            animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
+	            shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
 	        }
 	        if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode_1.default.GLOBAL) {
 	            this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
-	            animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
+	            shader.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
 	        }
 	        else
 	            animationElements.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
@@ -68941,7 +68400,7 @@
 
 
 /***/ },
-/* 494 */
+/* 491 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -68951,9 +68410,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleRotationalVelocityState_1 = __webpack_require__(495);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleRotationalVelocityState_1 = __webpack_require__(492);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to set the starting rotational velocity of a particle.
@@ -68965,7 +68424,7 @@
 	     *
 	     * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
 	     */
-	    function ParticleRotationalVelocityNode(mode /*uint*/, rotationalVelocity) {
+	    function ParticleRotationalVelocityNode(mode, rotationalVelocity) {
 	        if (rotationalVelocity === void 0) { rotationalVelocity = null; }
 	        _super.call(this, "ParticleRotationalVelocity", mode, 4);
 	        this._pStateClass = ParticleRotationalVelocityState_1.default;
@@ -68974,64 +68433,64 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
-	        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityState_1.default.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
-	        var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
-	        animationRegisterCache.addVertexTempUsages(nrmVel, 1);
-	        var xAxis = animationRegisterCache.getFreeVertexVectorTemp();
-	        animationRegisterCache.addVertexTempUsages(xAxis, 1);
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
-	        animationRegisterCache.addVertexTempUsages(temp, 1);
+	    ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
+	        var rotationRegister = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleRotationalVelocityState_1.default.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
+	        var nrmVel = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(nrmVel, 1);
+	        var xAxis = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(xAxis, 1);
+	        var temp = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(temp, 1);
 	        var Rtemp = new ShaderRegisterElement_1.default(temp.regName, temp.index);
-	        var R_rev = animationRegisterCache.getFreeVertexVectorTemp();
+	        var R_rev = registerCache.getFreeVertexVectorTemp();
 	        R_rev = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index);
 	        var cos = new ShaderRegisterElement_1.default(Rtemp.regName, Rtemp.index, 3);
 	        var sin = new ShaderRegisterElement_1.default(R_rev.regName, R_rev.index, 3);
-	        animationRegisterCache.removeVertexTempUsage(nrmVel);
-	        animationRegisterCache.removeVertexTempUsage(xAxis);
-	        animationRegisterCache.removeVertexTempUsage(temp);
+	        registerCache.removeVertexTempUsage(nrmVel);
+	        registerCache.removeVertexTempUsage(xAxis);
+	        registerCache.removeVertexTempUsage(temp);
 	        var code = "";
 	        code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-	        code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
-	        code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+	        code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
+	        code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
 	        code += "sin " + sin + "," + cos + "\n";
 	        code += "cos " + cos + "," + cos + "\n";
 	        code += "mul " + Rtemp + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	        code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	        code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
 	        //nrmVel and xAxis are used as temp register
-	        code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
-	        code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	        code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
+	        code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	        code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-	        code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz\n";
+	        code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.scaleAndRotateTarget + ".xyz\n";
 	        code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 	        code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
 	        //use cos as R_rev.w
 	        code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
 	        code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 	        code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-	        code += "add " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
-	        var len = animationRegisterCache.rotationRegisters.length;
+	        code += "add " + animationRegisterData.scaleAndRotateTarget + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+	        var len = animationRegisterData.rotationRegisters.length;
 	        for (var i = 0; i < len; i++) {
 	            code += "mov " + nrmVel + ".xyz," + rotationRegister + ".xyz\n";
-	            code += "mov " + nrmVel + ".w," + animationRegisterCache.vertexZeroConst + "\n";
-	            code += "mul " + cos + "," + animationRegisterCache.vertexTime + "," + rotationRegister + ".w\n";
+	            code += "mov " + nrmVel + ".w," + animationRegisterData.vertexZeroConst + "\n";
+	            code += "mul " + cos + "," + animationRegisterData.vertexTime + "," + rotationRegister + ".w\n";
 	            code += "sin " + sin + "," + cos + "\n";
 	            code += "cos " + cos + "," + cos + "\n";
 	            code += "mul " + Rtemp + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	            code += "mul " + R_rev + ".xyz," + sin + "," + nrmVel + ".xyz\n";
 	            code += "neg " + R_rev + ".xyz," + R_rev + ".xyz\n";
-	            code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + ".xyz\n";
-	            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterCache.rotationRegisters[i] + "\n";
+	            code += "crs " + nrmVel + ".xyz," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + ".xyz\n";
+	            code += "mul " + xAxis + ".xyz," + cos + "," + animationRegisterData.rotationRegisters[i] + "\n";
 	            code += "add " + nrmVel + ".xyz," + nrmVel + ".xyz," + xAxis + ".xyz\n";
-	            code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterCache.rotationRegisters[i] + "\n";
+	            code += "dp3 " + xAxis + ".w," + Rtemp + ".xyz," + animationRegisterData.rotationRegisters[i] + "\n";
 	            code += "neg " + nrmVel + ".w," + xAxis + ".w\n";
 	            code += "crs " + Rtemp + ".xyz," + nrmVel + ".xyz," + R_rev + ".xyz\n";
 	            code += "mul " + xAxis + ".xyzw," + nrmVel + ".xyzw," + cos + "\n";
 	            code += "add " + Rtemp + ".xyz," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 	            code += "mul " + xAxis + ".xyz," + nrmVel + ".w," + R_rev + ".xyz\n";
-	            code += "add " + animationRegisterCache.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
+	            code += "add " + animationRegisterData.rotationRegisters[i] + "," + Rtemp + ".xyz," + xAxis + ".xyz\n";
 	        }
 	        return code;
 	    };
@@ -69073,7 +68532,7 @@
 
 
 /***/ },
-/* 495 */
+/* 492 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69083,9 +68542,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -69124,12 +68583,12 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleRotationalVelocityState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
+	    ParticleRotationalVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
 	        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
 	            this._pUpdateDynamicProperties(animationElements);
-	        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
+	        var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
 	        if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode_1.default.GLOBAL)
-	            animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
+	            shader.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
 	        else
 	            animationElements.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_4);
 	    };
@@ -69155,7 +68614,7 @@
 
 
 /***/ },
-/* 496 */
+/* 493 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69164,17 +68623,17 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleSegmentedColorState_1 = __webpack_require__(497);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleSegmentedColorState_1 = __webpack_require__(494);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 *
 	 */
 	var ParticleSegmentedColorNode = (function (_super) {
 	    __extends(ParticleSegmentedColorNode, _super);
-	    function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint /*int*/, startColor, endColor, segmentPoints) {
+	    function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint, startColor, endColor, segmentPoints) {
 	        //because of the stage3d register limitation, it only support the global mode
 	        _super.call(this, "ParticleSegmentedColor", ParticlePropertiesMode_1.default.GLOBAL, 0, ParticleAnimationSet_1.default.COLOR_PRIORITY);
 	        this._pStateClass = ParticleSegmentedColorState_1.default;
@@ -69199,67 +68658,67 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shader, animationRegisterCache) {
+	    ParticleSegmentedColorNode.prototype.getAGALVertexCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        if (animationRegisterCache.needFragmentAnimation) {
+	        if (shader.usesFragmentAnimation) {
 	            var accMultiplierColor;
 	            //var accOffsetColor:ShaderRegisterElement;
 	            if (this._iUsesMultiplier) {
-	                accMultiplierColor = animationRegisterCache.getFreeVertexVectorTemp();
-	                animationRegisterCache.addVertexTempUsages(accMultiplierColor, 1);
+	                accMultiplierColor = registerCache.getFreeVertexVectorTemp();
+	                registerCache.addVertexTempUsages(accMultiplierColor, 1);
 	            }
-	            var tempColor = animationRegisterCache.getFreeVertexVectorTemp();
-	            animationRegisterCache.addVertexTempUsages(tempColor, 1);
-	            var temp = animationRegisterCache.getFreeVertexVectorTemp();
+	            var tempColor = registerCache.getFreeVertexVectorTemp();
+	            registerCache.addVertexTempUsages(tempColor, 1);
+	            var temp = registerCache.getFreeVertexVectorTemp();
 	            var accTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
 	            var tempTime = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
 	            if (this._iUsesMultiplier)
-	                animationRegisterCache.removeVertexTempUsage(accMultiplierColor);
-	            animationRegisterCache.removeVertexTempUsage(tempColor);
+	                registerCache.removeVertexTempUsage(accMultiplierColor);
+	            registerCache.removeVertexTempUsage(tempColor);
 	            //for saving all the life values (at most 4)
-	            var lifeTimeRegister = animationRegisterCache.getFreeVertexConstant();
-	            animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.TIME_DATA_INDEX, lifeTimeRegister.index);
+	            var lifeTimeRegister = registerCache.getFreeVertexConstant();
+	            animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.TIME_DATA_INDEX, lifeTimeRegister.index);
 	            var i;
 	            var startMulValue;
 	            var deltaMulValues;
 	            if (this._iUsesMultiplier) {
-	                startMulValue = animationRegisterCache.getFreeVertexConstant();
-	                animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_MULTIPLIER_INDEX, startMulValue.index);
+	                startMulValue = registerCache.getFreeVertexConstant();
+	                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_MULTIPLIER_INDEX, startMulValue.index);
 	                deltaMulValues = new Array();
 	                for (i = 0; i < this._iNumSegmentPoint + 1; i++)
-	                    deltaMulValues.push(animationRegisterCache.getFreeVertexConstant());
+	                    deltaMulValues.push(registerCache.getFreeVertexConstant());
 	            }
 	            var startOffsetValue;
 	            var deltaOffsetValues;
 	            if (this._iUsesOffset) {
-	                startOffsetValue = animationRegisterCache.getFreeVertexConstant();
-	                animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
+	                startOffsetValue = registerCache.getFreeVertexConstant();
+	                animationRegisterData.setRegisterIndex(this, ParticleSegmentedColorState_1.default.START_OFFSET_INDEX, startOffsetValue.index);
 	                deltaOffsetValues = new Array();
 	                for (i = 0; i < this._iNumSegmentPoint + 1; i++)
-	                    deltaOffsetValues.push(animationRegisterCache.getFreeVertexConstant());
+	                    deltaOffsetValues.push(registerCache.getFreeVertexConstant());
 	            }
 	            if (this._iUsesMultiplier)
 	                code += "mov " + accMultiplierColor + "," + startMulValue + "\n";
 	            if (this._iUsesOffset)
-	                code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + startOffsetValue + "\n";
+	                code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + startOffsetValue + "\n";
 	            for (i = 0; i < this._iNumSegmentPoint; i++) {
 	                switch (i) {
 	                    case 0:
-	                        code += "min " + tempTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
+	                        code += "min " + tempTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
 	                        break;
 	                    case 1:
-	                        code += "sub " + accTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
-	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+	                        code += "sub " + accTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
+	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
 	                        code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".y\n";
 	                        break;
 	                    case 2:
 	                        code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".y\n";
-	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
 	                        code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".z\n";
 	                        break;
 	                    case 3:
 	                        code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".z\n";
-	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+	                        code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
 	                        code += "min " + tempTime + "," + tempTime + "," + lifeTimeRegister + ".w\n";
 	                        break;
 	                }
@@ -69269,16 +68728,16 @@
 	                }
 	                if (this._iUsesOffset) {
 	                    code += "mul " + tempColor + "," + tempTime + "," + deltaOffsetValues[i] + "\n";
-	                    code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + tempColor + "\n";
+	                    code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + tempColor + "\n";
 	                }
 	            }
 	            //for the last segment:
 	            if (this._iNumSegmentPoint == 0)
-	                tempTime = animationRegisterCache.vertexLife;
+	                tempTime = animationRegisterData.vertexLife;
 	            else {
 	                switch (this._iNumSegmentPoint) {
 	                    case 1:
-	                        code += "sub " + accTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
+	                        code += "sub " + accTime + "," + animationRegisterData.vertexLife + "," + lifeTimeRegister + ".x\n";
 	                        break;
 	                    case 2:
 	                        code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".y\n";
@@ -69290,16 +68749,16 @@
 	                        code += "sub " + accTime + "," + accTime + "," + lifeTimeRegister + ".w\n";
 	                        break;
 	                }
-	                code += "max " + tempTime + "," + accTime + "," + animationRegisterCache.vertexZeroConst + "\n";
+	                code += "max " + tempTime + "," + accTime + "," + animationRegisterData.vertexZeroConst + "\n";
 	            }
 	            if (this._iUsesMultiplier) {
 	                code += "mul " + tempColor + "," + tempTime + "," + deltaMulValues[this._iNumSegmentPoint] + "\n";
 	                code += "add " + accMultiplierColor + "," + accMultiplierColor + "," + tempColor + "\n";
-	                code += "mul " + animationRegisterCache.colorMulTarget + "," + animationRegisterCache.colorMulTarget + "," + accMultiplierColor + "\n";
+	                code += "mul " + animationRegisterData.colorMulTarget + "," + animationRegisterData.colorMulTarget + "," + accMultiplierColor + "\n";
 	            }
 	            if (this._iUsesOffset) {
 	                code += "mul " + tempColor + "," + tempTime + "," + deltaOffsetValues[this._iNumSegmentPoint] + "\n";
-	                code += "add " + animationRegisterCache.colorAddTarget + "," + animationRegisterCache.colorAddTarget + "," + tempColor + "\n";
+	                code += "add " + animationRegisterData.colorAddTarget + "," + animationRegisterData.colorAddTarget + "," + tempColor + "\n";
 	            }
 	        }
 	        return code;
@@ -69311,7 +68770,7 @@
 
 
 /***/ },
-/* 497 */
+/* 494 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69320,7 +68779,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 *
 	 */
@@ -69402,59 +68861,103 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleSegmentedColorState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        if (animationRegisterCache.needFragmentAnimation) {
+	    ParticleSegmentedColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (shader.usesFragmentAnimation) {
 	            if (this._numSegmentPoint > 0)
-	                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
+	                shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
 	            if (this._usesMultiplier)
-	                animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_MULTIPLIER_INDEX), this._multiplierData);
+	                shader.setVertexConstFromArray(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_MULTIPLIER_INDEX), this._multiplierData);
 	            if (this._usesOffset)
-	                animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_OFFSET_INDEX), this._offsetData);
+	                shader.setVertexConstFromArray(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.START_OFFSET_INDEX), this._offsetData);
 	        }
 	    };
 	    ParticleSegmentedColorState.prototype.updateColorData = function () {
-	        this._timeLifeData = new Array();
-	        this._multiplierData = new Array();
-	        this._offsetData = new Array();
+	        this._timeLifeData = new Float32Array(4);
+	        this._multiplierData = new Float32Array(4 * (this._numSegmentPoint + 1));
+	        this._offsetData = new Float32Array(4 * (this._numSegmentPoint + 1));
+	        //cut off the time data
 	        var i;
-	        for (i = 0; i < this._numSegmentPoint; i++) {
+	        var j = 0;
+	        var count = this._numSegmentPoint > 3 ? 3 : this._numSegmentPoint;
+	        for (i = 0; i < count; i++) {
 	            if (i == 0)
-	                this._timeLifeData.push(this._segmentPoints[i].life);
+	                this._timeLifeData[j++] = this._segmentPoints[i].life;
 	            else
-	                this._timeLifeData.push(this._segmentPoints[i].life - this._segmentPoints[i - 1].life);
+	                this._timeLifeData[j++] = this._segmentPoints[i].life - this._segmentPoints[i - 1].life;
 	        }
+	        i = count;
 	        if (this._numSegmentPoint == 0)
-	            this._timeLifeData.push(1);
+	            this._timeLifeData[j++] = 1;
 	        else
-	            this._timeLifeData.push(1 - this._segmentPoints[i - 1].life);
+	            this._timeLifeData[j++] = 1 - this._segmentPoints[i - 1].life;
 	        if (this._usesMultiplier) {
-	            this._multiplierData.push(this._startColor.redMultiplier, this._startColor.greenMultiplier, this._startColor.blueMultiplier, this._startColor.alphaMultiplier);
+	            j = 0;
+	            this._multiplierData[j++] = this._startColor.redMultiplier;
+	            this._multiplierData[j++] = this._startColor.greenMultiplier;
+	            this._multiplierData[j++] = this._startColor.blueMultiplier;
+	            this._multiplierData[j++] = this._startColor.alphaMultiplier;
 	            for (i = 0; i < this._numSegmentPoint; i++) {
-	                if (i == 0)
-	                    this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._startColor.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._startColor.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._startColor.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._startColor.alphaMultiplier) / this._timeLifeData[i]);
-	                else
-	                    this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
+	                if (i == 0) {
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.redMultiplier - this._startColor.redMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.greenMultiplier - this._startColor.greenMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.blueMultiplier - this._startColor.blueMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.alphaMultiplier - this._startColor.alphaMultiplier) / this._timeLifeData[i];
+	                }
+	                else {
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i];
+	                    this._multiplierData[j++] = (this._segmentPoints[i].color.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i];
+	                }
 	            }
-	            if (this._numSegmentPoint == 0)
-	                this._multiplierData.push(this._endColor.redMultiplier - this._startColor.redMultiplier, this._endColor.greenMultiplier - this._startColor.greenMultiplier, this._endColor.blueMultiplier - this._startColor.blueMultiplier, this._endColor.alphaMultiplier - this._startColor.alphaMultiplier);
-	            else
-	                this._multiplierData.push((this._endColor.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._endColor.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._endColor.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._endColor.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
+	            i = this._numSegmentPoint;
+	            if (this._numSegmentPoint == 0) {
+	                this._multiplierData[j++] = this._endColor.redMultiplier - this._startColor.redMultiplier;
+	                this._multiplierData[j++] = this._endColor.greenMultiplier - this._startColor.greenMultiplier;
+	                this._multiplierData[j++] = this._endColor.blueMultiplier - this._startColor.blueMultiplier;
+	                this._multiplierData[j++] = this._endColor.alphaMultiplier - this._startColor.alphaMultiplier;
+	            }
+	            else {
+	                this._multiplierData[j++] = (this._endColor.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i];
+	                this._multiplierData[j++] = (this._endColor.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i];
+	                this._multiplierData[j++] = (this._endColor.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i];
+	                this._multiplierData[j++] = (this._endColor.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i];
+	            }
 	        }
 	        if (this._usesOffset) {
-	            this._offsetData.push(this._startColor.redOffset / 255, this._startColor.greenOffset / 255, this._startColor.blueOffset / 255, this._startColor.alphaOffset / 255);
+	            j = 0;
+	            this._offsetData[j++] = this._startColor.redOffset / 255;
+	            this._offsetData[j++] = this._startColor.greenOffset / 255;
+	            this._offsetData[j++] = this._startColor.blueOffset / 255;
+	            this._offsetData[j++] = this._startColor.alphaOffset / 255;
 	            for (i = 0; i < this._numSegmentPoint; i++) {
-	                if (i == 0)
-	                    this._offsetData.push((this._segmentPoints[i].color.redOffset - this._startColor.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._startColor.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._startColor.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._startColor.alphaOffset) / this._timeLifeData[i] / 255);
-	                else
-	                    this._offsetData.push((this._segmentPoints[i].color.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
+	                if (i == 0) {
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.redOffset - this._startColor.redOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.greenOffset - this._startColor.greenOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.blueOffset - this._startColor.blueOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.alphaOffset - this._startColor.alphaOffset) / this._timeLifeData[i] / 255;
+	                }
+	                else {
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255;
+	                    this._offsetData[j++] = (this._segmentPoints[i].color.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255;
+	                }
 	            }
-	            if (this._numSegmentPoint == 0)
-	                this._offsetData.push((this._endColor.redOffset - this._startColor.redOffset) / 255, (this._endColor.greenOffset - this._startColor.greenOffset) / 255, (this._endColor.blueOffset - this._startColor.blueOffset) / 255, (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255);
-	            else
-	                this._offsetData.push((this._endColor.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._endColor.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._endColor.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._endColor.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
+	            i = this._numSegmentPoint;
+	            if (this._numSegmentPoint == 0) {
+	                this._offsetData[j++] = (this._endColor.redOffset - this._startColor.redOffset) / 255;
+	                this._offsetData[j++] = (this._endColor.greenOffset - this._startColor.greenOffset) / 255;
+	                this._offsetData[j++] = (this._endColor.blueOffset - this._startColor.blueOffset) / 255;
+	                this._offsetData[j++] = (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255;
+	            }
+	            else {
+	                this._offsetData[i] = (this._endColor.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255;
+	                this._offsetData[j++] = (this._endColor.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255;
+	                this._offsetData[j++] = (this._endColor.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255;
+	                this._offsetData[j++] = (this._endColor.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255;
+	            }
 	        }
-	        //cut off the data
-	        this._timeLifeData.length = 4;
 	    };
 	    /** @private */
 	    ParticleSegmentedColorState.START_MULTIPLIER_INDEX = 0;
@@ -69469,7 +68972,7 @@
 
 
 /***/ },
-/* 498 */
+/* 495 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69478,10 +68981,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleSpriteSheetState_1 = __webpack_require__(499);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleSpriteSheetState_1 = __webpack_require__(496);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used when a spritesheet texture is required to animate the particle.
@@ -69500,7 +69003,7 @@
 	     * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
 	     * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
 	     */
-	    function ParticleSpriteSheetNode(mode /*uint*/, usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
+	    function ParticleSpriteSheetNode(mode, usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
 	        if (numColumns === void 0) { numColumns = 1; }
 	        if (numRows === void 0) { numRows = 1; }
 	        if (cycleDuration === void 0) { cycleDuration = 1; }
@@ -69549,25 +69052,25 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+	    ParticleSpriteSheetNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        //get 2 vc
-	        var uvParamConst1 = animationRegisterCache.getFreeVertexConstant();
-	        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-	        animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_0, uvParamConst1.index);
-	        animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_1, uvParamConst2.index);
+	        var uvParamConst1 = registerCache.getFreeVertexConstant();
+	        var uvParamConst2 = (this._pMode == ParticlePropertiesMode_1.default.GLOBAL) ? registerCache.getFreeVertexConstant() : registerCache.getFreeVertexAttribute();
+	        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_0, uvParamConst1.index);
+	        animationRegisterData.setRegisterIndex(this, ParticleSpriteSheetState_1.default.UV_INDEX_1, uvParamConst2.index);
 	        var uTotal = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 0);
 	        var uStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 1);
 	        var vStep = new ShaderRegisterElement_1.default(uvParamConst1.regName, uvParamConst1.index, 2);
 	        var uSpeed = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 0);
 	        var cycle = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 1);
 	        var phaseTime = new ShaderRegisterElement_1.default(uvParamConst2.regName, uvParamConst2.index, 2);
-	        var temp = animationRegisterCache.getFreeVertexVectorTemp();
+	        var temp = registerCache.getFreeVertexVectorTemp();
 	        var time = new ShaderRegisterElement_1.default(temp.regName, temp.index, 0);
 	        var vOffset = new ShaderRegisterElement_1.default(temp.regName, temp.index, 1);
 	        temp = new ShaderRegisterElement_1.default(temp.regName, temp.index, 2);
 	        var temp2 = new ShaderRegisterElement_1.default(temp.regName, temp.index, 3);
-	        var u = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 0);
-	        var v = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, 1);
+	        var u = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 0);
+	        var v = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, 1);
 	        var code = "";
 	        //scale uv
 	        code += "mul " + u + "," + u + "," + uStep + "\n";
@@ -69575,16 +69078,16 @@
 	            code += "mul " + v + "," + v + "," + vStep + "\n";
 	        if (this._iUsesCycle) {
 	            if (this._iUsesPhase)
-	                code += "add " + time + "," + animationRegisterCache.vertexTime + "," + phaseTime + "\n";
+	                code += "add " + time + "," + animationRegisterData.vertexTime + "," + phaseTime + "\n";
 	            else
-	                code += "mov " + time + "," + animationRegisterCache.vertexTime + "\n";
+	                code += "mov " + time + "," + animationRegisterData.vertexTime + "\n";
 	            code += "div " + time + "," + time + "," + cycle + "\n";
 	            code += "frc " + time + "," + time + "\n";
 	            code += "mul " + time + "," + time + "," + cycle + "\n";
 	            code += "mul " + temp + "," + time + "," + uSpeed + "\n";
 	        }
 	        else
-	            code += "mul " + temp.toString() + "," + animationRegisterCache.vertexLife + "," + uTotal + "\n";
+	            code += "mul " + temp.toString() + "," + animationRegisterData.vertexLife + "," + uTotal + "\n";
 	        if (this._iNumRows > 1) {
 	            code += "frc " + temp2 + "," + temp + "\n";
 	            code += "sub " + vOffset + "," + temp + "," + temp2 + "\n";
@@ -69641,7 +69144,7 @@
 
 
 /***/ },
-/* 499 */
+/* 496 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69650,9 +69153,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLVertexBufferFormat_1 = __webpack_require__(152);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ContextGLVertexBufferFormat_1 = __webpack_require__(153);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -69698,11 +69201,11 @@
 	        enumerable: true,
 	        configurable: true
 	    });
-	    ParticleSpriteSheetState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        if (animationRegisterCache.needUVAnimation) {
-	            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
+	    ParticleSpriteSheetState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (!shader.usesUVTransform) {
+	            shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
 	            if (this._usesCycle) {
-	                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
+	                var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_1);
 	                if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode_1.default.LOCAL_STATIC) {
 	                    if (this._usesPhase)
 	                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_3);
@@ -69710,7 +69213,7 @@
 	                        animationElements.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stage, ContextGLVertexBufferFormat_1.default.FLOAT_2);
 	                }
 	                else
-	                    animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
+	                    shader.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
 	            }
 	        }
 	    };
@@ -69740,7 +69243,7 @@
 
 
 /***/ },
-/* 500 */
+/* 497 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69750,10 +69253,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector3D_1 = __webpack_require__(18);
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleNodeBase_1 = __webpack_require__(342);
-	var ParticleUVState_1 = __webpack_require__(501);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleNodeBase_1 = __webpack_require__(339);
+	var ParticleUVState_1 = __webpack_require__(498);
 	var ShaderRegisterElement_1 = __webpack_require__(204);
 	/**
 	 * A particle animation node used to control the UV offset and scale of a particle over time.
@@ -69768,7 +69271,7 @@
 	     * @param    [optional] scale           Defines whether the time track is in loop mode. Defaults to false.
 	     * @param    [optional] axis            Defines whether the time track is in loop mode. Defaults to false.
 	     */
-	    function ParticleUVNode(mode /*uint*/, cycle, scale, axis) {
+	    function ParticleUVNode(mode, cycle, scale, axis) {
 	        if (cycle === void 0) { cycle = 1; }
 	        if (scale === void 0) { scale = 1; }
 	        if (axis === void 0) { axis = "x"; }
@@ -69824,16 +69327,16 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    ParticleUVNode.prototype.getAGALUVCode = function (shader, animationRegisterCache) {
+	    ParticleUVNode.prototype.getAGALUVCode = function (shader, animationSet, registerCache, animationRegisterData) {
 	        var code = "";
-	        var uvConst = animationRegisterCache.getFreeVertexConstant();
-	        animationRegisterCache.setRegisterIndex(this, ParticleUVState_1.default.UV_INDEX, uvConst.index);
+	        var uvConst = registerCache.getFreeVertexConstant();
+	        animationRegisterData.setRegisterIndex(this, ParticleUVState_1.default.UV_INDEX, uvConst.index);
 	        var axisIndex = this._axis == "x" ? 0 : (this._axis == "y" ? 1 : 2);
-	        var target = new ShaderRegisterElement_1.default(animationRegisterCache.uvTarget.regName, animationRegisterCache.uvTarget.index, axisIndex);
-	        var sin = animationRegisterCache.getFreeVertexSingleTemp();
+	        var target = new ShaderRegisterElement_1.default(animationRegisterData.uvTarget.regName, animationRegisterData.uvTarget.index, axisIndex);
+	        var sin = registerCache.getFreeVertexSingleTemp();
 	        if (this._scale != 1)
 	            code += "mul " + target + "," + target + "," + uvConst + ".y\n";
-	        code += "mul " + sin + "," + animationRegisterCache.vertexTime + "," + uvConst + ".x\n";
+	        code += "mul " + sin + "," + animationRegisterData.vertexTime + "," + uvConst + ".x\n";
 	        code += "sin " + sin + "," + sin + "\n";
 	        code += "add " + target + "," + target + "," + sin + "\n";
 	        return code;
@@ -69868,7 +69371,7 @@
 
 
 /***/ },
-/* 501 */
+/* 498 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69877,7 +69380,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ParticleStateBase_1 = __webpack_require__(344);
+	var ParticleStateBase_1 = __webpack_require__(341);
 	/**
 	 * ...
 	 */
@@ -69887,11 +69390,11 @@
 	        _super.call(this, animator, particleUVNode);
 	        this._particleUVNode = particleUVNode;
 	    }
-	    ParticleUVState.prototype.setRenderState = function (stage, renderable, animationElements, animationRegisterCache, camera) {
-	        if (animationRegisterCache.needUVAnimation) {
-	            var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);
+	    ParticleUVState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+	        if (!shader.usesUVTransform) {
+	            var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);
 	            var data = this._particleUVNode._iUvData;
-	            animationRegisterCache.setVertexConst(index, data.x, data.y);
+	            shader.setVertexConst(index, data.x, data.y);
 	        }
 	    };
 	    /** @private */
@@ -69903,7 +69406,7 @@
 
 
 /***/ },
-/* 502 */
+/* 499 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69912,8 +69415,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(260);
-	var SkeletonDifferenceState_1 = __webpack_require__(503);
+	var AnimationNodeBase_1 = __webpack_require__(258);
+	var SkeletonDifferenceState_1 = __webpack_require__(500);
 	/**
 	 * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
 	 */
@@ -69939,7 +69442,7 @@
 
 
 /***/ },
-/* 503 */
+/* 500 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -69948,10 +69451,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Quaternion_1 = __webpack_require__(253);
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var Quaternion_1 = __webpack_require__(251);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	/**
 	 *
 	 */
@@ -69997,7 +69500,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonDifferenceState.prototype._pUpdateTime = function (time /*int*/) {
+	    SkeletonDifferenceState.prototype._pUpdateTime = function (time) {
 	        this._skeletonPoseDirty = true;
 	        this._baseInput.update(time);
 	        this._differenceInput.update(time);
@@ -70064,7 +69567,7 @@
 
 
 /***/ },
-/* 504 */
+/* 501 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70073,8 +69576,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(260);
-	var SkeletonDirectionalState_1 = __webpack_require__(505);
+	var AnimationNodeBase_1 = __webpack_require__(258);
+	var SkeletonDirectionalState_1 = __webpack_require__(502);
 	/**
 	 * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
 	 */
@@ -70097,7 +69600,7 @@
 
 
 /***/ },
-/* 505 */
+/* 502 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70106,9 +69609,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	/**
 	 *
 	 */
@@ -70160,7 +69663,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonDirectionalState.prototype._pUdateTime = function (time /*int*/) {
+	    SkeletonDirectionalState.prototype._pUdateTime = function (time) {
 	        if (this._blendDirty)
 	            this.updateBlend();
 	        this._skeletonPoseDirty = true;
@@ -70264,7 +69767,7 @@
 
 
 /***/ },
-/* 506 */
+/* 503 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70273,8 +69776,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AnimationNodeBase_1 = __webpack_require__(260);
-	var SkeletonNaryLERPState_1 = __webpack_require__(507);
+	var AnimationNodeBase_1 = __webpack_require__(258);
+	var SkeletonNaryLERPState_1 = __webpack_require__(504);
 	/**
 	 * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
 	 */
@@ -70308,7 +69811,7 @@
 	     *
 	     * @param index The input index for which the skeleton animation node is requested.
 	     */
-	    SkeletonNaryLERPNode.prototype.getInputAt = function (index /*uint*/) {
+	    SkeletonNaryLERPNode.prototype.getInputAt = function (index) {
 	        return this._iInputs[index];
 	    };
 	    /**
@@ -70330,7 +69833,7 @@
 
 
 /***/ },
-/* 507 */
+/* 504 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70339,9 +69842,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var JointPose_1 = __webpack_require__(252);
-	var SkeletonPose_1 = __webpack_require__(254);
-	var AnimationStateBase_1 = __webpack_require__(263);
+	var JointPose_1 = __webpack_require__(250);
+	var SkeletonPose_1 = __webpack_require__(252);
+	var AnimationStateBase_1 = __webpack_require__(261);
 	/**
 	 *
 	 */
@@ -70372,7 +69875,7 @@
 	    /**
 	     * @inheritDoc
 	     */
-	    SkeletonNaryLERPState.prototype._pUdateTime = function (time /*int*/) {
+	    SkeletonNaryLERPState.prototype._pUdateTime = function (time) {
 	        for (var j = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 	            if (this._blendWeights[j])
 	                this._inputs[j].update(time);
@@ -70392,7 +69895,7 @@
 	     *
 	     * @param index The input index for which the skeleton animation node blend weight is requested.
 	     */
-	    SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index /*uint*/) {
+	    SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index) {
 	        return this._blendWeights[index];
 	    };
 	    /**
@@ -70401,7 +69904,7 @@
 	     * @param index The input index on which the skeleton animation node blend weight is to be set.
 	     * @param blendWeight The blend weight value to use for the given skeleton animation node index.
 	     */
-	    SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index /*uint*/, blendWeight) {
+	    SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index, blendWeight) {
 	        this._blendWeights[index] = blendWeight;
 	        this._pPositionDeltaDirty = true;
 	        this._skeletonPoseDirty = true;
@@ -70516,24 +70019,282 @@
 
 
 /***/ },
-/* 508 */
+/* 505 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ElementsPool_1 = __webpack_require__(192);
-	exports.ElementsPool = ElementsPool_1.default;
-	var GL_ElementsBase_1 = __webpack_require__(213);
+	var GL_ElementsBase_1 = __webpack_require__(506);
 	exports.GL_ElementsBase = GL_ElementsBase_1.default;
-	var GL_LineElements_1 = __webpack_require__(509);
+	var GL_LineElements_1 = __webpack_require__(507);
 	exports.GL_LineElements = GL_LineElements_1.default;
-	var GL_SkyboxElements_1 = __webpack_require__(211);
+	var GL_SkyboxElements_1 = __webpack_require__(508);
 	exports.GL_SkyboxElements = GL_SkyboxElements_1.default;
-	var GL_TriangleElements_1 = __webpack_require__(212);
+	var GL_TriangleElements_1 = __webpack_require__(509);
 	exports.GL_TriangleElements = GL_TriangleElements_1.default;
 
 
 /***/ },
-/* 509 */
+/* 506 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var AbstractionBase_1 = __webpack_require__(199);
+	var AbstractMethodError_1 = __webpack_require__(28);
+	var AssetEvent_1 = __webpack_require__(1);
+	var ElementsEvent_1 = __webpack_require__(62);
+	var ElementsUtils_1 = __webpack_require__(93);
+	/**
+	 *
+	 * @class away.pool.GL_ElementsBaseBase
+	 */
+	var GL_ElementsBase = (function (_super) {
+	    __extends(GL_ElementsBase, _super);
+	    function GL_ElementsBase(elements, stage) {
+	        var _this = this;
+	        _super.call(this, elements, stage);
+	        this.usages = 0;
+	        this._vertices = new Object();
+	        this._verticesUpdated = new Object();
+	        this._indexMappings = Array();
+	        this._numIndices = 0;
+	        this._elements = elements;
+	        this._stage = stage;
+	        this._onInvalidateIndicesDelegate = function (event) { return _this._onInvalidateIndices(event); };
+	        this._onClearIndicesDelegate = function (event) { return _this._onClearIndices(event); };
+	        this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
+	        this._onClearVerticesDelegate = function (event) { return _this._onClearVertices(event); };
+	        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
+	        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+	        this._elements.addEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
+	        this._elements.addEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+	    }
+	    Object.defineProperty(GL_ElementsBase.prototype, "elementsType", {
+	        get: function () {
+	            throw new AbstractMethodError_1.default();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_ElementsBase.prototype, "elementsClass", {
+	        get: function () {
+	            throw new AbstractMethodError_1.default();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_ElementsBase.prototype, "elements", {
+	        get: function () {
+	            return this._elements;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_ElementsBase.prototype, "numIndices", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._numIndices;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_ElementsBase.prototype, "numVertices", {
+	        /**
+	         *
+	         */
+	        get: function () {
+	            return this._numVertices;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     *
+	     */
+	    GL_ElementsBase.prototype.getIndexMappings = function () {
+	        if (!this._indicesUpdated)
+	            this._updateIndices();
+	        return this._indexMappings;
+	    };
+	    /**
+	     *
+	     */
+	    GL_ElementsBase.prototype.getIndexBufferGL = function () {
+	        if (!this._indicesUpdated)
+	            this._updateIndices();
+	        return this._indices;
+	    };
+	    /**
+	     *
+	     */
+	    GL_ElementsBase.prototype.getVertexBufferGL = function (attributesView) {
+	        //first check if indices need updating which may affect vertices
+	        if (!this._indicesUpdated)
+	            this._updateIndices();
+	        var bufferId = attributesView.buffer.id;
+	        if (!this._verticesUpdated[bufferId])
+	            this._updateVertices(attributesView);
+	        return this._vertices[bufferId];
+	    };
+	    /**
+	     *
+	     */
+	    GL_ElementsBase.prototype.activateVertexBufferVO = function (index, attributesView, dimensions, offset) {
+	        if (dimensions === void 0) { dimensions = 0; }
+	        if (offset === void 0) { offset = 0; }
+	        this.getVertexBufferGL(attributesView).activate(index, attributesView.size, dimensions || attributesView.dimensions, attributesView.offset + offset, attributesView.unsigned);
+	    };
+	    /**
+	     *
+	     */
+	    GL_ElementsBase.prototype.onClear = function (event) {
+	        _super.prototype.onClear.call(this, event);
+	        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_INDICES, this._onClearIndicesDelegate);
+	        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_INDICES, this._onInvalidateIndicesDelegate);
+	        this._elements.removeEventListener(ElementsEvent_1.default.CLEAR_VERTICES, this._onClearVerticesDelegate);
+	        this._elements.removeEventListener(ElementsEvent_1.default.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+	        this._elements = null;
+	        if (this._overflow) {
+	            this._overflow.onClear(event);
+	            this._overflow = null;
+	        }
+	    };
+	    GL_ElementsBase.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+	        if (!this._verticesUpdated)
+	            this._updateIndices();
+	        //TODO replace overflow system with something sensible
+	        //this._render(renderable, camera, viewProjection);
+	        //
+	        // if (this._overflow)
+	        // 	this._overflow._iRender(renderable, camera, viewProjection);
+	    };
+	    GL_ElementsBase.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+	        throw new AbstractMethodError_1.default();
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._updateIndices = function (indexOffset) {
+	        if (indexOffset === void 0) { indexOffset = 0; }
+	        var indices = this._elements.indices;
+	        if (indices) {
+	            this._indices = this._stage.getAbstraction(ElementsUtils_1.default.getSubIndices(indices, this._elements.numVertices, this._indexMappings, indexOffset));
+	            this._numIndices = this._indices._attributesBuffer.count * indices.dimensions;
+	        }
+	        else {
+	            this._indices = null;
+	            this._numIndices = 0;
+	            this._indexMappings = Array();
+	        }
+	        indexOffset += this._numIndices;
+	        //check if there is more to split
+	        if (indices && indexOffset < indices.count * this._elements.indices.dimensions) {
+	            if (!this._overflow)
+	                this._overflow = this._pGetOverflowElements();
+	            this._overflow._updateIndices(indexOffset);
+	        }
+	        else if (this._overflow) {
+	            this._overflow.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._elements));
+	            this._overflow = null;
+	        }
+	        this._indicesUpdated = true;
+	        //invalidate vertices if index mappings exist
+	        if (this._indexMappings.length)
+	            for (var key in this._verticesUpdated)
+	                this._verticesUpdated[key] = false;
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param attributesView
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._updateVertices = function (attributesView) {
+	        this._numVertices = this._elements.numVertices;
+	        var bufferId = attributesView.buffer.id;
+	        this._vertices[bufferId] = this._stage.getAbstraction(ElementsUtils_1.default.getSubVertices(attributesView.buffer, this._indexMappings));
+	        this._verticesUpdated[bufferId] = true;
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._onInvalidateIndices = function (event) {
+	        if (!event.attributesView)
+	            return;
+	        this._indicesUpdated = false;
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._onClearIndices = function (event) {
+	        if (!event.attributesView)
+	            return;
+	        this._indices.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
+	        this._indices = null;
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._onInvalidateVertices = function (event) {
+	        if (!event.attributesView)
+	            return;
+	        var bufferId = event.attributesView.buffer.id;
+	        this._verticesUpdated[bufferId] = false;
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param event
+	     * @private
+	     */
+	    GL_ElementsBase.prototype._onClearVertices = function (event) {
+	        if (!event.attributesView)
+	            return;
+	        var bufferId = event.attributesView.buffer.id;
+	        if (this._vertices[bufferId]) {
+	            this._vertices[bufferId].onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, event.attributesView));
+	            delete this._vertices[bufferId];
+	            delete this._verticesUpdated[bufferId];
+	        }
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderable
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.GL_GraphicRenderable}
+	     * @protected
+	     */
+	    GL_ElementsBase.prototype._pGetOverflowElements = function () {
+	        throw new AbstractMethodError_1.default();
+	    };
+	    return GL_ElementsBase;
+	}(AbstractionBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GL_ElementsBase;
+
+
+/***/ },
+/* 507 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -70543,71 +70304,112 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Matrix3D_1 = __webpack_require__(23);
-	var ContextGLDrawMode_1 = __webpack_require__(155);
-	var ContextGLProgramType_1 = __webpack_require__(156);
-	var GL_ElementsBase_1 = __webpack_require__(213);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var GL_ElementsBase_1 = __webpack_require__(506);
 	/**
 	 *
 	 * @class away.pool.GL_LineElements
 	 */
 	var GL_LineElements = (function (_super) {
 	    __extends(GL_LineElements, _super);
-	    function GL_LineElements(lineElements, shader, pool) {
-	        _super.call(this, lineElements, shader, pool);
-	        this._constants = new Float32Array([0, 0, 0, 0]);
+	    function GL_LineElements(lineElements, stage) {
+	        _super.call(this, lineElements, stage);
 	        this._calcMatrix = new Matrix3D_1.default();
 	        this._thickness = 1.25;
 	        this._lineElements = lineElements;
-	        this._constants[1] = 1 / 255;
 	    }
+	    Object.defineProperty(GL_LineElements.prototype, "elementsType", {
+	        get: function () {
+	            return GL_LineElements.elementsType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_LineElements.prototype, "elementsClass", {
+	        get: function () {
+	            return GL_LineElements;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    GL_LineElements._iIncludeDependencies = function (shader) {
 	        shader.colorDependencies++;
 	    };
 	    GL_LineElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-	        return "m44 vt0, va0, vc8			\n" +
-	            "m44 vt1, va1, vc8			\n" +
-	            "sub vt2, vt1, vt0 			\n" +
+	        //get the projection coordinates
+	        var position0 = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+	        var position1 = registerCache.getFreeVertexAttribute();
+	        var thickness = registerCache.getFreeVertexAttribute();
+	        //reserving vertex constants for projection matrix
+	        var viewMatrixReg = registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+	        registerCache.getFreeVertexConstant(); // not used
+	        var constOne = registerCache.getFreeVertexConstant();
+	        var constNegOne = registerCache.getFreeVertexConstant();
+	        var misc = registerCache.getFreeVertexConstant();
+	        var sceneMatrixReg = registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        shader.sceneMatrixIndex = sceneMatrixReg.index * 4;
+	        var q0 = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(q0, 1);
+	        var q1 = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(q1, 1);
+	        var l = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(l, 1);
+	        var behind = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(behind, 1);
+	        var qclipped = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(qclipped, 1);
+	        var offset = registerCache.getFreeVertexVectorTemp();
+	        registerCache.addVertexTempUsages(offset, 1);
+	        return "m44 " + q0 + ", " + position0 + ", " + sceneMatrixReg + "			\n" +
+	            "m44 " + q1 + ", " + position1 + ", " + sceneMatrixReg + "			\n" +
+	            "sub " + l + ", " + q1 + ", " + q0 + " 			\n" +
 	            // test if behind camera near plane
 	            // if 0 - Q0.z < Camera.near then the point needs to be clipped
-	            //"neg vt5.x, vt0.z				\n" + // 0 - Q0.z
-	            "slt vt5.x, vt0.z, vc7.z			\n" +
-	            "sub vt5.y, vc5.x, vt5.x			\n" +
+	            "slt " + behind + ".x, " + q0 + ".z, " + misc + ".z			\n" +
+	            "sub " + behind + ".y, " + constOne + ".x, " + behind + ".x			\n" +
 	            // p = point on the plane (0,0,-near)
 	            // n = plane normal (0,0,-1)
 	            // D = Q1 - Q0
 	            // t = ( dot( n, ( p - Q0 ) ) / ( dot( n, d )
 	            // solve for t where line crosses Camera.near
-	            "add vt4.x, vt0.z, vc7.z			\n" +
-	            "sub vt4.y, vt0.z, vt1.z			\n" +
+	            "add " + offset + ".x, " + q0 + ".z, " + misc + ".z			\n" +
+	            "sub " + offset + ".y, " + q0 + ".z, " + q1 + ".z			\n" +
 	            // fix divide by zero for horizontal lines
-	            "seq vt4.z, vt4.y vc6.x			\n" +
-	            "add vt4.y, vt4.y, vt4.z			\n" +
-	            "div vt4.z, vt4.x, vt4.y			\n" +
-	            "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" +
-	            "add vt3.xyz, vt0.xyz, vt4.xyz	\n" +
-	            "mov vt3.w, vc5.x			\n" +
+	            "seq " + offset + ".z, " + offset + ".y " + constNegOne + ".x			\n" +
+	            "add " + offset + ".y, " + offset + ".y, " + offset + ".z			\n" +
+	            "div " + offset + ".z, " + offset + ".x, " + offset + ".y			\n" +
+	            "mul " + offset + ".xyz, " + offset + ".zzz, " + l + ".xyz	\n" +
+	            "add " + qclipped + ".xyz, " + q0 + ".xyz, " + offset + ".xyz	\n" +
+	            "mov " + qclipped + ".w, " + constOne + ".x			\n" +
 	            // If necessary, replace Q0 with new Qclipped
-	            "mul vt0, vt0, vt5.yyyy			\n" +
-	            "mul vt3, vt3, vt5.xxxx			\n" +
-	            "add vt0, vt0, vt3				\n" +
+	            "mul " + q0 + ", " + q0 + ", " + behind + ".yyyy			\n" +
+	            "mul " + qclipped + ", " + qclipped + ", " + behind + ".xxxx			\n" +
+	            "add " + q0 + ", " + q0 + ", " + qclipped + "				\n" +
 	            // calculate side vector for line
-	            "sub vt2, vt1, vt0 			\n" +
-	            "nrm vt2.xyz, vt2.xyz			\n" +
-	            "nrm vt5.xyz, vt0.xyz			\n" +
-	            "mov vt5.w, vc5.x				\n" +
-	            "crs vt3.xyz, vt2, vt5			\n" +
-	            "nrm vt3.xyz, vt3.xyz			\n" +
+	            "nrm " + l + ".xyz, " + l + ".xyz			\n" +
+	            "nrm " + behind + ".xyz, " + q0 + ".xyz			\n" +
+	            "mov " + behind + ".w, " + constOne + ".x				\n" +
+	            "crs " + qclipped + ".xyz, " + l + ", " + behind + "			\n" +
+	            "nrm " + qclipped + ".xyz, " + qclipped + ".xyz			\n" +
 	            // face the side vector properly for the given point
-	            "mul vt3.xyz, vt3.xyz, va2.xxx	\n" +
-	            "mov vt3.w, vc5.x			\n" +
+	            "mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + thickness + ".xxx	\n" +
+	            "mov " + qclipped + ".w, " + constOne + ".x			\n" +
 	            // calculate the amount required to move at the point's distance to correspond to the line's pixel width
 	            // scale the side vector by that amount
-	            "dp3 vt4.x, vt0, vc6			\n" +
-	            "mul vt4.x, vt4.x, vc7.x			\n" +
-	            "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" +
+	            "dp3 " + offset + ".x, " + q0 + ", " + constNegOne + "			\n" +
+	            "mul " + offset + ".x, " + offset + ".x, " + misc + ".x			\n" +
+	            "mul " + qclipped + ".xyz, " + qclipped + ".xyz, " + offset + ".xxx	\n" +
 	            // add scaled side vector to Q0 and transform to clip space
-	            "add vt0.xyz, vt0.xyz, vt3.xyz	\n" +
-	            "m44 op, vt0, vc0			\n"; // transform Q0 to clip space
+	            "add " + q0 + ".xyz, " + q0 + ".xyz, " + qclipped + ".xyz	\n" +
+	            "m44 op, " + q0 + ", " + viewMatrixReg + "			\n"; // transform Q0 to clip space
 	    };
 	    GL_LineElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
 	        return "";
@@ -70616,31 +70418,35 @@
 	        _super.prototype.onClear.call(this, event);
 	        this._lineElements = null;
 	    };
-	    GL_LineElements.prototype._render = function (renderable, camera, viewProjection) {
-	        if (this._shader.colorBufferIndex >= 0)
-	            this.activateVertexBufferVO(this._shader.colorBufferIndex, this._lineElements.colors);
+	    GL_LineElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
+	        if (shader.colorBufferIndex >= 0)
+	            this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
+	        this.activateVertexBufferVO(0, this._lineElements.positions, 3);
+	        this.activateVertexBufferVO(2, this._lineElements.positions, 3, 12);
+	        this.activateVertexBufferVO(3, this._lineElements.thickness);
+	        shader.vertexConstantData[4 + 16] = 1;
+	        shader.vertexConstantData[5 + 16] = 1;
+	        shader.vertexConstantData[6 + 16] = 1;
+	        shader.vertexConstantData[7 + 16] = 1;
+	        shader.vertexConstantData[10 + 16] = -1;
+	        shader.vertexConstantData[12 + 16] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
+	        shader.vertexConstantData[13 + 16] = 1 / 255;
+	        shader.vertexConstantData[14 + 16] = camera.projection.near;
 	        var context = this._stage.context;
-	        this._constants[0] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
-	        // value to convert distance from camera to model length per pixel width
-	        this._constants[2] = camera.projection.near;
+	    };
+	    GL_LineElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+	        var context = this._stage.context;
 	        // projection matrix
-	        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, camera.projection.matrix, true);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 5, GL_LineElements.pONE_VECTOR, 1);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 6, GL_LineElements.pFRONT_VECTOR, 1);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 7, this._constants, 1);
+	        camera.projection.matrix.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
 	        this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 	        this._calcMatrix.append(camera.inverseSceneTransform);
-	        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 8, this._calcMatrix, true);
-	        this.activateVertexBufferVO(0, this._lineElements.positions, 3);
-	        this.activateVertexBufferVO(1, this._lineElements.positions, 3, 12);
-	        this.activateVertexBufferVO(2, this._lineElements.thickness);
-	        _super.prototype._render.call(this, renderable, camera, viewProjection);
-	    };
-	    GL_LineElements.prototype._drawElements = function (firstIndex, numIndices) {
-	        this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, numIndices);
-	    };
-	    GL_LineElements.prototype._drawArrays = function (firstVertex, numVertices) {
-	        this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, firstVertex, numVertices);
+	        this._calcMatrix.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+	        if (this._indices)
+	            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+	        else
+	            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
 	    };
 	    /**
 	     * //TODO
@@ -70653,11 +70459,9 @@
 	     * @protected
 	     */
 	    GL_LineElements.prototype._pGetOverflowElements = function () {
-	        return new GL_LineElements(this._lineElements, this._shader, this._pool);
+	        return new GL_LineElements(this._lineElements, this._stage);
 	    };
-	    GL_LineElements.pONE_VECTOR = new Float32Array([1, 1, 1, 1]);
-	    GL_LineElements.pFRONT_VECTOR = new Float32Array([0, 0, -1, 0]);
-	    GL_LineElements.vertexAttributesOffset = 3;
+	    GL_LineElements.elementsType = "[elements Line]";
 	    return GL_LineElements;
 	}(GL_ElementsBase_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -70665,11 +70469,267 @@
 
 
 /***/ },
+/* 508 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Matrix3D_1 = __webpack_require__(23);
+	var Vector3D_1 = __webpack_require__(18);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var GL_TriangleElements_1 = __webpack_require__(509);
+	/**
+	 *
+	 * @class away.pool.GL_SkyboxElements
+	 */
+	var GL_SkyboxElements = (function (_super) {
+	    __extends(GL_SkyboxElements, _super);
+	    function GL_SkyboxElements() {
+	        _super.apply(this, arguments);
+	        this._skyboxProjection = new Matrix3D_1.default();
+	    }
+	    Object.defineProperty(GL_SkyboxElements.prototype, "elementsType", {
+	        get: function () {
+	            return GL_SkyboxElements.elementsType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_SkyboxElements.prototype, "elementsClass", {
+	        get: function () {
+	            return GL_SkyboxElements;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    GL_SkyboxElements._iIncludeDependencies = function (shader) {
+	    };
+	    /**
+	     * @inheritDoc
+	     */
+	    GL_SkyboxElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+	        var code = "";
+	        //get the projection coordinates
+	        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+	        //reserving vertex constants for projection matrix
+	        var viewMatrixReg = registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+	        var scenePosition = registerCache.getFreeVertexConstant();
+	        shader.scenePositionIndex = scenePosition.index * 4;
+	        var skyboxScale = registerCache.getFreeVertexConstant();
+	        var temp = registerCache.getFreeVertexVectorTemp();
+	        code += "mul " + temp + ", " + position + ", " + skyboxScale + "\n" +
+	            "add " + temp + ", " + temp + ", " + scenePosition + "\n";
+	        if (shader.projectionDependencies > 0) {
+	            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+	            code += "m44 " + temp + ", " + temp + ", " + viewMatrixReg + "\n" +
+	                "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
+	                "mov op, " + temp + "\n";
+	        }
+	        else {
+	            code += "m44 op, " + temp + ", " + viewMatrixReg + "\n";
+	        }
+	        return code;
+	    };
+	    GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+	        return "";
+	    };
+	    GL_SkyboxElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+	        var index = shader.scenePositionIndex;
+	        var pos = camera.scenePosition;
+	        shader.vertexConstantData[index++] = 2 * pos.x;
+	        shader.vertexConstantData[index++] = 2 * pos.y;
+	        shader.vertexConstantData[index++] = 2 * pos.z;
+	        shader.vertexConstantData[index++] = 1;
+	        shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far / Math.sqrt(3);
+	        shader.vertexConstantData[index] = 1;
+	        var near = new Vector3D_1.default();
+	        this._skyboxProjection.copyFrom(viewProjection);
+	        this._skyboxProjection.copyRowTo(2, near);
+	        var camPos = camera.scenePosition;
+	        var cx = near.x;
+	        var cy = near.y;
+	        var cz = near.z;
+	        var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
+	        var signX = cx >= 0 ? 1 : -1;
+	        var signY = cy >= 0 ? 1 : -1;
+	        var p = new Vector3D_1.default(signX, signY, 1, 1);
+	        var inverse = this._skyboxProjection.clone();
+	        inverse.invert();
+	        var q = inverse.transformVector(p);
+	        this._skyboxProjection.copyRowTo(3, p);
+	        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+	        this._skyboxProjection.copyRowFrom(2, new Vector3D_1.default(cx * a, cy * a, cz * a, cw * a));
+	        //set constants
+	        if (shader.sceneMatrixIndex >= 0) {
+	            renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+	            this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+	        }
+	        else {
+	            this._skyboxProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+	        }
+	        var context = this._stage.context;
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
+	        if (this._indices)
+	            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+	        else
+	            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+	    };
+	    GL_SkyboxElements.elementsType = "[elements Skybox]";
+	    return GL_SkyboxElements;
+	}(GL_TriangleElements_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GL_SkyboxElements;
+
+
+/***/ },
+/* 509 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Matrix3DUtils_1 = __webpack_require__(25);
+	var ContextGLDrawMode_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
+	var GL_ElementsBase_1 = __webpack_require__(506);
+	/**
+	 *
+	 * @class away.pool.GL_TriangleElements
+	 */
+	var GL_TriangleElements = (function (_super) {
+	    __extends(GL_TriangleElements, _super);
+	    function GL_TriangleElements(triangleElements, stage) {
+	        _super.call(this, triangleElements, stage);
+	        this._triangleElements = triangleElements;
+	    }
+	    Object.defineProperty(GL_TriangleElements.prototype, "elementsType", {
+	        get: function () {
+	            return GL_TriangleElements.elementsType;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(GL_TriangleElements.prototype, "elementsClass", {
+	        get: function () {
+	            return GL_TriangleElements;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    GL_TriangleElements._iIncludeDependencies = function (shader) {
+	    };
+	    GL_TriangleElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+	        var code = "";
+	        //get the projection coordinates
+	        var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
+	        //reserving vertex constants for projection matrix
+	        var viewMatrixReg = registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        registerCache.getFreeVertexConstant();
+	        shader.viewMatrixIndex = viewMatrixReg.index * 4;
+	        if (shader.projectionDependencies > 0) {
+	            sharedRegisters.projectionFragment = registerCache.getFreeVarying();
+	            var temp = registerCache.getFreeVertexVectorTemp();
+	            code += "m44 " + temp + ", " + position + ", " + viewMatrixReg + "\n" +
+	                "mov " + sharedRegisters.projectionFragment + ", " + temp + "\n" +
+	                "mov op, " + temp + "\n";
+	        }
+	        else {
+	            code += "m44 op, " + position + ", " + viewMatrixReg + "\n";
+	        }
+	        return code;
+	    };
+	    GL_TriangleElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+	        return "";
+	    };
+	    GL_TriangleElements.prototype.onClear = function (event) {
+	        _super.prototype.onClear.call(this, event);
+	        this._triangleElements = null;
+	    };
+	    GL_TriangleElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
+	        //set buffers
+	        //TODO: find a better way to update a concatenated buffer when autoderiving
+	        if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
+	            this._triangleElements.normals;
+	        if (shader.tangentIndex >= 0 && this._triangleElements.autoDeriveTangents)
+	            this._triangleElements.tangents;
+	        if (shader.curvesIndex >= 0)
+	            this.activateVertexBufferVO(shader.curvesIndex, this._triangleElements.getCustomAtributes("curves"));
+	        if (shader.uvIndex >= 0)
+	            this.activateVertexBufferVO(shader.uvIndex, this._triangleElements.uvs || this._triangleElements.positions);
+	        if (shader.secondaryUVIndex >= 0)
+	            this.activateVertexBufferVO(shader.secondaryUVIndex, this._triangleElements.getCustomAtributes("secondaryUVs") || this._triangleElements.uvs || this._triangleElements.positions);
+	        if (shader.normalIndex >= 0)
+	            this.activateVertexBufferVO(shader.normalIndex, this._triangleElements.normals);
+	        if (shader.tangentIndex >= 0)
+	            this.activateVertexBufferVO(shader.tangentIndex, this._triangleElements.tangents);
+	        if (shader.jointIndexIndex >= 0)
+	            this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointIndices);
+	        if (shader.jointWeightIndex >= 0)
+	            this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
+	        this.activateVertexBufferVO(0, this._triangleElements.positions);
+	    };
+	    GL_TriangleElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+	        //set constants
+	        if (shader.sceneMatrixIndex >= 0) {
+	            renderable.renderSceneTransform.copyRawDataTo(shader.vertexConstantData, shader.sceneMatrixIndex, true);
+	            viewProjection.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+	        }
+	        else {
+	            var matrix3D = Matrix3DUtils_1.default.CALCULATION_MATRIX;
+	            matrix3D.copyFrom(renderable.renderSceneTransform);
+	            matrix3D.append(viewProjection);
+	            matrix3D.copyRawDataTo(shader.vertexConstantData, shader.viewMatrixIndex, true);
+	        }
+	        var context = this._stage.context;
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, shader.vertexConstantData);
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, shader.fragmentConstantData);
+	        if (this._indices)
+	            this.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, this.numIndices);
+	        else
+	            this._stage.context.drawVertices(ContextGLDrawMode_1.default.TRIANGLES, offset, count || this.numVertices);
+	    };
+	    /**
+	     * //TODO
+	     *
+	     * @param pool
+	     * @param renderable
+	     * @param level
+	     * @param indexOffset
+	     * @returns {away.pool.GL_GraphicRenderable}
+	     * @protected
+	     */
+	    GL_TriangleElements.prototype._pGetOverflowElements = function () {
+	        return new GL_TriangleElements(this._triangleElements, this._stage);
+	    };
+	    GL_TriangleElements.elementsType = "[elements Triangle]";
+	    return GL_TriangleElements;
+	}(GL_ElementsBase_1.default));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = GL_TriangleElements;
+
+
+/***/ },
 /* 510 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationSetError_1 = __webpack_require__(245);
+	var AnimationSetError_1 = __webpack_require__(242);
 	exports.AnimationSetError = AnimationSetError_1.default;
 
 
@@ -70678,15 +70738,15 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AnimationStateEvent_1 = __webpack_require__(255);
+	var AnimationStateEvent_1 = __webpack_require__(253);
 	exports.AnimationStateEvent = AnimationStateEvent_1.default;
-	var AnimatorEvent_1 = __webpack_require__(249);
+	var AnimatorEvent_1 = __webpack_require__(247);
 	exports.AnimatorEvent = AnimatorEvent_1.default;
 	var PassEvent_1 = __webpack_require__(197);
 	exports.PassEvent = PassEvent_1.default;
 	var RTTEvent_1 = __webpack_require__(209);
 	exports.RTTEvent = RTTEvent_1.default;
-	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
 	exports.ShadingMethodEvent = ShadingMethodEvent_1.default;
 
 
@@ -70725,7 +70785,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
 	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DCompositeTask = (function (_super) {
 	    __extends(Filter3DCompositeTask, _super);
@@ -70758,36 +70818,51 @@
 	        configurable: true
 	    });
 	    Filter3DCompositeTask.prototype.getFragmentCode = function () {
+	        var temp1 = this._registerCache.getFreeFragmentVectorTemp();
+	        this._registerCache.addFragmentTempUsages(temp1, 1);
+	        var temp2 = this._registerCache.getFreeFragmentVectorTemp();
+	        this._registerCache.addFragmentTempUsages(temp2, 1);
+	        var temp3 = this._registerCache.getFreeFragmentVectorTemp();
+	        this._registerCache.addFragmentTempUsages(temp3, 1);
+	        var temp4 = this._registerCache.getFreeFragmentVectorTemp();
+	        this._registerCache.addFragmentTempUsages(temp4, 1);
+	        var inputTexture = this._registerCache.getFreeTextureReg();
+	        this._inputTextureIndex = inputTexture.index;
+	        var overlayTexture = this._registerCache.getFreeTextureReg();
+	        this._overlayTextureIndex = overlayTexture.index;
+	        var exposure = this._registerCache.getFreeFragmentConstant();
+	        this._exposureIndex = exposure.index * 4;
+	        var scaling = this._registerCache.getFreeFragmentConstant();
+	        this._scalingIndex = scaling.index * 4;
 	        var code;
-	        var op;
-	        code = "tex ft0, v0, fs0 <2d,linear,clamp>\n" +
-	            "mul ft1, v0, fc1.zw\n" +
-	            "add ft1, ft1, fc1.xy\n" +
-	            "tex ft1, ft1, fs1 <2d,linear,clamp>\n" +
-	            "mul ft1, ft1, fc0.xxx\n" +
-	            "add ft1, ft1, fc0.xxx\n";
+	        code = "tex " + temp1 + ", " + this._uvVarying + ", " + inputTexture + " <2d,linear,clamp>\n" +
+	            "mul " + temp2 + ", " + this._uvVarying + ", " + scaling + ".zw\n" +
+	            "add " + temp2 + ", " + temp2 + ", " + scaling + ".xy\n" +
+	            "tex " + temp2 + ", " + temp2 + ", " + overlayTexture + " <2d,linear,clamp>\n" +
+	            "mul " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n" +
+	            "add " + temp2 + ", " + temp2 + ", " + exposure + ".xxx\n";
 	        switch (this._blendMode) {
 	            case "multiply":
-	                code += "mul oc, ft0, ft1\n";
+	                code += "mul oc, " + temp1 + ", " + temp2 + "\n";
 	                break;
 	            case "add":
-	                code += "add oc, ft0, ft1\n";
+	                code += "add oc, " + temp1 + ", " + temp2 + "\n";
 	                break;
 	            case "subtract":
-	                code += "sub oc, ft0, ft1\n";
+	                code += "sub oc, " + temp1 + ", " + temp2 + "\n";
 	                break;
 	            case "overlay":
-	                code += "sge ft2, ft0, fc0.yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
-	                code += "sub ft0, ft2, ft0\n"; // base = (1 : 0 - base)
-	                code += "sub ft1, ft1, ft2\n"; // blend = (blend - 1 : 0)
-	                code += "mul ft1, ft1, ft0\n"; // blend = blend * base
-	                code += "sub ft3, ft2, fc0.yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
-	                code += "div ft1, ft1, ft3\n"; // blend = blend / ( 0.5 : -0.5)
-	                code += "add oc, ft1, ft2\n";
+	                code += "sge " + temp3 + ", " + temp1 + ", " + exposure + ".yyy\n"; // t2 = (blend >= 0.5)? 1 : 0
+	                code += "sub " + temp1 + ", " + temp3 + ", " + temp1 + "\n"; // base = (1 : 0 - base)
+	                code += "sub " + temp2 + ", " + temp2 + ", " + temp3 + "\n"; // blend = (blend - 1 : 0)
+	                code += "mul " + temp2 + ", " + temp2 + ", " + temp1 + "\n"; // blend = blend * base
+	                code += "sub " + temp4 + ", " + temp3 + ", " + exposure + ".yyy\n"; // t3 = (blend >= 0.5)? 0.5 : -0.5
+	                code += "div " + temp2 + ", " + temp2 + ", " + temp4 + "\n"; // blend = blend / ( 0.5 : -0.5)
+	                code += "add oc, " + temp2 + ", " + temp3 + "\n";
 	                break;
 	            case "normal":
 	                // for debugging purposes
-	                code += "mov oc, ft0\n";
+	                code += "mov oc, " + temp1 + "\n";
 	                break;
 	            default:
 	                throw new Error("Unknown blend mode");
@@ -70800,8 +70875,8 @@
 	        this._data[6] = this._scaledTextureWidth / this._overlayWidth;
 	        this._data[7] = this._scaledTextureHeight / this._overlayHeight;
 	        var context = stage.context;
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 2);
-	        stage.getAbstraction(this._overlayTexture).activate(1, false);
+	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
+	        stage.getAbstraction(this._overlayTexture).activate(this._overlayTextureIndex, false);
 	    };
 	    Filter3DCompositeTask.prototype.deactivate = function (stage) {
 	        stage.context.setTextureAt(1, null);
@@ -70817,9 +70892,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AGALMiniAssembler_1 = __webpack_require__(133);
+	var ShaderRegisterCache_1 = __webpack_require__(202);
 	var Filter3DTaskBase = (function () {
 	    function Filter3DTaskBase(requireDepthRender) {
 	        if (requireDepthRender === void 0) { requireDepthRender = false; }
@@ -70831,7 +70907,9 @@
 	        this._program3DInvalid = true;
 	        this._textureScale = 0;
 	        this._requireDepthRender = requireDepthRender;
+	        this._registerCache = new ShaderRegisterCache_1.default("baseline");
 	    }
+	    ;
 	    Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
 	        /**
 	         * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
@@ -70919,13 +70997,22 @@
 	        if (this._program3D)
 	            this._program3D.dispose();
 	        this._program3D = stage.context.createProgram();
+	        this._registerCache.reset();
 	        var vertexByteCode = (new AGALMiniAssembler_1.default().assemble("part vertex 1\n" + this.getVertexCode() + "endpart"))['vertex'].data;
 	        var fragmentByteCode = (new AGALMiniAssembler_1.default().assemble("part fragment 1\n" + this.getFragmentCode() + "endpart"))['fragment'].data;
 	        this._program3D.upload(vertexByteCode, fragmentByteCode);
 	        this._program3DInvalid = false;
 	    };
 	    Filter3DTaskBase.prototype.getVertexCode = function () {
-	        return "mov op, va0\n" + "mov v0, va1\n";
+	        var position = this._registerCache.getFreeVertexAttribute();
+	        this._positionIndex = position.index;
+	        var uv = this._registerCache.getFreeVertexAttribute();
+	        this._uvIndex = uv.index;
+	        this._uvVarying = this._registerCache.getFreeVarying();
+	        var code;
+	        code = "mov op, " + position + "\n" +
+	            "mov " + this._uvVarying + ", " + uv + "\n";
+	        return code;
 	    };
 	    Filter3DTaskBase.prototype.getFragmentCode = function () {
 	        throw new AbstractMethodError_1.default();
@@ -70968,7 +71055,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
 	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DFXAATask = (function (_super) {
 	    __extends(Filter3DFXAATask, _super);
@@ -71159,7 +71246,7 @@
 	        return code.join(" ");
 	    };
 	    Filter3DFXAATask.prototype.activate = function (stage, camera3D, depthTexture) {
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 6);
+	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
 	    };
 	    Filter3DFXAATask.prototype.updateTextures = function (stage) {
 	        _super.prototype.updateTextures.call(this, stage);
@@ -71193,7 +71280,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
 	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DHBlurTask = (function (_super) {
 	    __extends(Filter3DHBlurTask, _super);
@@ -71257,7 +71344,7 @@
 	        return code;
 	    };
 	    Filter3DHBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 1);
+	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
 	    };
 	    Filter3DHBlurTask.prototype.updateTextures = function (stage) {
 	        _super.prototype.updateTextures.call(this, stage);
@@ -71289,7 +71376,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var ContextGLProgramType_1 = __webpack_require__(157);
 	var Filter3DTaskBase_1 = __webpack_require__(514);
 	var Filter3DVBlurTask = (function (_super) {
 	    __extends(Filter3DVBlurTask, _super);
@@ -71352,7 +71439,7 @@
 	        return code;
 	    };
 	    Filter3DVBlurTask.prototype.activate = function (stage, camera3D, depthTexture) {
-	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._data, 1);
+	        stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, this._data);
 	    };
 	    Filter3DVBlurTask.prototype.updateTextures = function (stage) {
 	        _super.prototype.updateTextures.call(this, stage);
@@ -71672,9 +71759,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var TriangleElements_1 = __webpack_require__(107);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var TriangleElements_1 = __webpack_require__(108);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.RenderableListItem
@@ -71723,10 +71810,10 @@
 	        else {
 	            elements.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
 	        }
-	        return elements;
+	        return this._stage.getAbstraction(elements);
 	    };
 	    GL_Billboard.prototype._pGetSurface = function () {
-	        return this._billboard.material;
+	        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._billboard.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
 	    };
 	    GL_Billboard._samplerElements = new Object();
 	    return GL_Billboard;
@@ -71749,7 +71836,6 @@
 	var AssetEvent_1 = __webpack_require__(1);
 	var AbstractionBase_1 = __webpack_require__(199);
 	var RenderableEvent_1 = __webpack_require__(60);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
 	/**
 	 * @class RenderableListItem
 	 */
@@ -71765,24 +71851,26 @@
 	    function GL_RenderableBase(renderable, renderer) {
 	        var _this = this;
 	        _super.call(this, renderable, renderer);
+	        this._count = 0;
+	        this._offset = 0;
 	        this._elementsDirty = true;
 	        this._surfaceDirty = true;
 	        this.images = new Array();
 	        this.samplers = new Array();
-	        this._onSurfaceUpdatedDelegate = function (event) { return _this._onSurfaceUpdated(event); };
+	        this._onInvalidateSurfaceDelegate = function (event) { return _this._onInvalidateSurface(event); };
 	        this._onInvalidateElementsDelegate = function (event) { return _this.onInvalidateElements(event); };
 	        //store a reference to the pool for later disposal
 	        this._renderer = renderer;
 	        this._stage = renderer.stage;
 	        this.renderable = renderable;
-	        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+	        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
 	        this.renderable.addEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	    }
-	    Object.defineProperty(GL_RenderableBase.prototype, "elements", {
+	    Object.defineProperty(GL_RenderableBase.prototype, "elementsGL", {
 	        get: function () {
 	            if (this._elementsDirty)
 	                this._updateElements();
-	            return this._elements;
+	            return this._elementsGL;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -71804,19 +71892,19 @@
 	        this._renderer = null;
 	        this._stage = null;
 	        this.sourceEntity = null;
-	        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_RENDER_OWNER, this._onSurfaceUpdatedDelegate);
+	        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_SURFACE, this._onInvalidateSurfaceDelegate);
 	        this.renderable.removeEventListener(RenderableEvent_1.default.INVALIDATE_ELEMENTS, this._onInvalidateElementsDelegate);
 	        this.renderable = null;
 	        this._surfaceGL.usages--;
 	        if (!this._surfaceGL.usages)
 	            this._surfaceGL.onClear(new AssetEvent_1.default(AssetEvent_1.default.CLEAR, this._surfaceGL.surface));
 	        this._surfaceGL = null;
-	        this._elements = null;
+	        this._elementsGL = null;
 	    };
 	    GL_RenderableBase.prototype.onInvalidateElements = function (event) {
 	        this._elementsDirty = true;
 	    };
-	    GL_RenderableBase.prototype._onSurfaceUpdated = function (event) {
+	    GL_RenderableBase.prototype._onInvalidateSurface = function (event) {
 	        this._surfaceDirty = true;
 	    };
 	    GL_RenderableBase.prototype._pGetElements = function () {
@@ -71826,37 +71914,22 @@
 	        throw new AbstractMethodError_1.default();
 	    };
 	    /**
-	     * Sets the surface state for the pass that is independent of the rendered object. This needs to be called before
-	     * calling pass. Before activating a pass, the previously used pass needs to be deactivated.
-	     * @param stage The Stage object which is currently used for rendering.
-	     * @param camera The camera from which the scene is viewed.
-	     * @private
-	     */
-	    GL_RenderableBase.prototype._iActivate = function (pass, camera) {
-	        pass._iActivate(camera);
-	    };
-	    /**
 	     * Renders an object to the current render target.
 	     *
 	     * @private
 	     */
 	    GL_RenderableBase.prototype._iRender = function (pass, camera, viewProjection) {
 	        this._setRenderState(pass, camera, viewProjection);
-	        if (this._elementsDirty)
-	            this._updateElements();
-	        pass.shader._elementsPool.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this._elements) : this._elements)._iRender(this, camera, viewProjection);
+	        this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset);
 	    };
 	    GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
-	        pass._iRender(this, camera, viewProjection);
-	    };
-	    /**
-	     * Clears the surface state for the pass. This needs to be called before activating another pass.
-	     * @param stage The Stage used for rendering
-	     *
-	     * @private
-	     */
-	    GL_RenderableBase.prototype._iDeactivate = function (pass) {
-	        pass._iDeactivate();
+	        if (this._elementsDirty)
+	            this._updateElements();
+	        pass._setRenderState(this, camera, viewProjection);
+	        if (pass.shader.activeElements != this._elementsGL) {
+	            pass.shader.activeElements = this._elementsGL;
+	            this._elementsGL._setRenderState(this, pass.shader, camera, viewProjection);
+	        }
 	    };
 	    /**
 	     * //TODO
@@ -71864,12 +71937,11 @@
 	     * @private
 	     */
 	    GL_RenderableBase.prototype._updateElements = function () {
-	        this._elements = this._pGetElements();
+	        this._elementsGL = this._pGetElements();
 	        this._elementsDirty = false;
 	    };
 	    GL_RenderableBase.prototype._updateSurface = function () {
-	        var surface = this._pGetSurface() || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable);
-	        var surfaceGL = this._renderer.getSurfacePool(this.elements).getAbstraction(surface);
+	        var surfaceGL = this._pGetSurface();
 	        if (this._surfaceGL != surfaceGL) {
 	            if (this._surfaceGL) {
 	                this._surfaceGL.usages--;
@@ -71884,15 +71956,15 @@
 	        var numImages = surfaceGL.numImages;
 	        this.images.length = numImages;
 	        this.samplers.length = numImages;
-	        this.uvMatrix = this.renderable.style ? this.renderable.style.uvMatrix : surface.style ? surface.style.uvMatrix : null;
-	        var numTextures = surface.getNumTextures();
+	        this.uvMatrix = this.renderable.style ? this.renderable.style.uvMatrix : this._surfaceGL.surface.style ? this._surfaceGL.surface.style.uvMatrix : null;
+	        var numTextures = this._surfaceGL.surface.getNumTextures();
 	        var texture;
 	        var numImages;
 	        var image;
 	        var sampler;
 	        var index;
 	        for (var i = 0; i < numTextures; i++) {
-	            texture = surface.getTextureAt(i);
+	            texture = this._surfaceGL.surface.getTextureAt(i);
 	            numImages = texture.getNumImages();
 	            for (var j = 0; j < numImages; j++) {
 	                index = surfaceGL.getImageIndex(texture, j);
@@ -71920,6 +71992,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.GL_GraphicRenderable
@@ -71948,10 +72021,12 @@
 	     * @protected
 	     */
 	    GL_GraphicRenderable.prototype._pGetElements = function () {
-	        return this.graphic.elements;
+	        this._offset = this.graphic.offset;
+	        this._count = this.graphic.count;
+	        return this._stage.getAbstraction((this.renderable.animator) ? this.renderable.animator.getRenderableElements(this, this.graphic.elements) : this.graphic.elements);
 	    };
 	    GL_GraphicRenderable.prototype._pGetSurface = function () {
-	        return this.graphic.material;
+	        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this.graphic.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
 	    };
 	    return GL_GraphicRenderable;
 	}(GL_RenderableBase_1.default));
@@ -71969,7 +72044,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var LineElements_1 = __webpack_require__(91);
+	var LineElements_1 = __webpack_require__(85);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
 	var GL_RenderableBase_1 = __webpack_require__(525);
 	/**
 	 * @class away.pool.GL_LineSegmentRenderable
@@ -71999,18 +72075,11 @@
 	     * @protected
 	     */
 	    GL_LineSegmentRenderable.prototype._pGetElements = function () {
-	        var geometry = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.default());
+	        var elements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new LineElements_1.default());
 	        var start = this._lineSegment.startPostion;
 	        var end = this._lineSegment.endPosition;
-	        var positions;
-	        var thickness;
-	        //if (geometry.indices != null) {
-	        //	positions = <Float32Array> geometry.positions.get(geometry.numVertices);
-	        //	thickness = geometry.thickness.get(geometry.numVertices);
-	        //} else {
-	        positions = new Float32Array(6);
-	        thickness = new Float32Array(1);
-	        //}
+	        var positions = new Float32Array(6);
+	        var thickness = new Float32Array(1);
 	        positions[0] = start.x;
 	        positions[1] = start.y;
 	        positions[2] = start.z;
@@ -72018,12 +72087,12 @@
 	        positions[4] = end.y;
 	        positions[5] = end.z;
 	        thickness[0] = this._lineSegment.thickness;
-	        geometry.setPositions(positions);
-	        geometry.setThickness(thickness);
-	        return geometry;
+	        elements.setPositions(positions);
+	        elements.setThickness(thickness);
+	        return this._stage.getAbstraction(elements);
 	    };
 	    GL_LineSegmentRenderable.prototype._pGetSurface = function () {
-	        return this._lineSegment.material;
+	        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._lineSegment.material || DefaultMaterialManager_1.default.getDefaultMaterial(this.renderable));
 	    };
 	    /**
 	     * //TODO
@@ -72055,10 +72124,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AttributesBuffer_1 = __webpack_require__(64);
-	var TriangleElements_1 = __webpack_require__(107);
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var AttributesBuffer_1 = __webpack_require__(87);
+	var TriangleElements_1 = __webpack_require__(108);
 	var GL_RenderableBase_1 = __webpack_require__(525);
+	var GL_SkyboxElements_1 = __webpack_require__(508);
 	/**
 	 * @class away.pool.GL_SkyboxRenderable
 	 */
@@ -72073,7 +72142,6 @@
 	    function GL_SkyboxRenderable(skybox, renderer) {
 	        _super.call(this, skybox, renderer);
 	        this._skybox = skybox;
-	        this._vertexArray = new Float32Array([0, 0, 0, 0, 1, 1, 1, 1]);
 	    }
 	    /**
 	     * //TODO
@@ -72082,47 +72150,22 @@
 	     * @private
 	     */
 	    GL_SkyboxRenderable.prototype._pGetElements = function () {
-	        var geometry = GL_SkyboxRenderable._geometry;
-	        if (!geometry) {
-	            geometry = GL_SkyboxRenderable._geometry = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
-	            geometry.autoDeriveNormals = false;
-	            geometry.autoDeriveTangents = false;
-	            geometry.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
-	            geometry.setPositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
+	        var elementsGL = GL_SkyboxRenderable._elementsGL;
+	        if (!elementsGL) {
+	            var elements = new TriangleElements_1.default(new AttributesBuffer_1.default(11, 4));
+	            elements.autoDeriveNormals = false;
+	            elements.autoDeriveTangents = false;
+	            elements.setIndices(Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2));
+	            elements.setPositions(Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1));
+	            elementsGL = GL_SkyboxRenderable._elementsGL = new GL_SkyboxElements_1.default(elements, this._stage);
 	        }
-	        return geometry;
+	        return elementsGL;
 	    };
 	    GL_SkyboxRenderable.prototype._pGetSurface = function () {
-	        return this._skybox;
+	        return this._renderer.getSurfacePool(this.elementsGL).getAbstraction(this._skybox);
 	    };
 	    GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
 	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    GL_SkyboxRenderable._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
-	        return "mul vt0, va0, vc5\n" +
-	            "add vt0, vt0, vc4\n" +
-	            "m44 op, vt0, vc0\n";
-	    };
-	    GL_SkyboxRenderable._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-	        return "";
-	    };
-	    /**
-	     * @inheritDoc
-	     */
-	    GL_SkyboxRenderable.prototype._setRenderState = function (pass, camera, viewProjection) {
-	        _super.prototype._setRenderState.call(this, pass, camera, viewProjection);
-	        var context = this._stage.context;
-	        var pos = camera.scenePosition;
-	        this._vertexArray[0] = pos.x;
-	        this._vertexArray[1] = pos.y;
-	        this._vertexArray[2] = pos.z;
-	        this._vertexArray[4] = this._vertexArray[5] = this._vertexArray[6] = camera.projection.far / Math.sqrt(3);
-	        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, viewProjection, true);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 4, this._vertexArray, 2);
-	    };
-	    GL_SkyboxRenderable.vertexAttributesOffset = 1;
 	    return GL_SkyboxRenderable;
 	}(GL_RenderableBase_1.default));
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -72406,8 +72449,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var LightSources_1 = __webpack_require__(437);
-	var ContextGLProfile_1 = __webpack_require__(463);
+	var LightSources_1 = __webpack_require__(434);
+	var ContextGLProfile_1 = __webpack_require__(460);
 	var ShaderBase_1 = __webpack_require__(200);
 	var LightingCompiler_1 = __webpack_require__(530);
 	/**
@@ -72466,8 +72509,8 @@
 	     * @param stage
 	     * @param camera
 	     */
-	    LightingShader.prototype._iRender = function (renderable, camera, viewProjection) {
-	        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+	    LightingShader.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
 	        if (this._lightingPass.lightPicker)
 	            this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);
 	        if (this.usesLights)
@@ -72698,7 +72741,7 @@
 	exports.GL_SurfaceBase = GL_SurfaceBase_1.default;
 	var GL_SurfacePassBase_1 = __webpack_require__(196);
 	exports.GL_SurfacePassBase = GL_SurfacePassBase_1.default;
-	var SurfacePool_1 = __webpack_require__(191);
+	var SurfacePool_1 = __webpack_require__(192);
 	exports.SurfacePool = SurfacePool_1.default;
 
 
@@ -72780,8 +72823,8 @@
 	        }
 	        return code;
 	    };
-	    BasicMaterialPass.prototype._iRender = function (renderable, camera, viewProjection) {
-	        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+	    BasicMaterialPass.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
 	        if (this._textureVO != null)
 	            this._textureVO._setRenderState(renderable);
 	    };
@@ -72896,7 +72939,7 @@
 	     * Marks the shader program as invalid, so it will be recompiled before the next render.
 	     */
 	    PassBase.prototype.invalidate = function () {
-	        this._shader.invalidateShader();
+	        this._shader.invalidateProgram();
 	        this.dispatchEvent(new PassEvent_1.default(PassEvent_1.default.INVALIDATE, this));
 	    };
 	    /**
@@ -72924,8 +72967,8 @@
 	     *
 	     * @internal
 	     */
-	    PassBase.prototype._iRender = function (renderable, camera, viewProjection) {
-	        this._shader._iRender(renderable, camera, viewProjection);
+	    PassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        this._shader._setRenderState(renderable, camera, viewProjection);
 	    };
 	    /**
 	     * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
@@ -72987,7 +73030,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(96);
+	var BlendMode_1 = __webpack_require__(97);
 	var BasicMaterialPass_1 = __webpack_require__(535);
 	var GL_SurfaceBase_1 = __webpack_require__(198);
 	/**
@@ -73032,8 +73075,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var BlendMode_1 = __webpack_require__(96);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var BlendMode_1 = __webpack_require__(97);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
 	var GL_SurfacePassBase_1 = __webpack_require__(196);
 	var ShaderBase_1 = __webpack_require__(200);
 	/**
@@ -73073,8 +73116,8 @@
 	    GL_SkyboxSurface.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
 	        return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
 	    };
-	    GL_SkyboxSurface.prototype._iRender = function (renderable, camera, viewProjection) {
-	        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+	    GL_SkyboxSurface.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
 	        this._texture._setRenderState(renderable);
 	    };
 	    /**
@@ -73114,7 +73157,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MappingMode_1 = __webpack_require__(104);
+	var MappingMode_1 = __webpack_require__(105);
 	var GL_TextureBase_1 = __webpack_require__(541);
 	/**
 	 *
@@ -73234,7 +73277,7 @@
 	};
 	var AbstractMethodError_1 = __webpack_require__(28);
 	var AbstractionBase_1 = __webpack_require__(199);
-	var ContextGLTextureFormat_1 = __webpack_require__(464);
+	var ContextGLTextureFormat_1 = __webpack_require__(461);
 	/**
 	 *
 	 * @class away.pool.GL_TextureBaseBase
@@ -73364,7 +73407,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Merge_1 = __webpack_require__(332);
+	var Merge_1 = __webpack_require__(330);
 	exports.Merge = Merge_1.default;
 	var ParticleGraphicsTransform_1 = __webpack_require__(544);
 	exports.ParticleGraphicsTransform = ParticleGraphicsTransform_1.default;
@@ -73422,7 +73465,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var ParticleGraphicsHelper_1 = __webpack_require__(354);
+	var ParticleGraphicsHelper_1 = __webpack_require__(351);
 	exports.ParticleGraphicsHelper = ParticleGraphicsHelper_1.default;
 	var PerspectiveMatrix3D_1 = __webpack_require__(546);
 	exports.PerspectiveMatrix3D = PerspectiveMatrix3D_1.default;
@@ -73485,11 +73528,11 @@
 	exports.methods = methods;
 	var surfaces = __webpack_require__(556);
 	exports.surfaces = surfaces;
-	var MethodMaterial_1 = __webpack_require__(267);
+	var MethodMaterial_1 = __webpack_require__(265);
 	exports.MethodMaterial = MethodMaterial_1.default;
-	var MethodMaterialMode_1 = __webpack_require__(266);
+	var MethodMaterialMode_1 = __webpack_require__(264);
 	exports.MethodMaterialMode = MethodMaterialMode_1.default;
-	var SurfacePool_1 = __webpack_require__(191);
+	var SurfacePool_1 = __webpack_require__(192);
 	SurfacePool_1.default.registerAbstraction(surfaces.GL_MethodMaterialSurface, MethodMaterial_1.default);
 
 
@@ -73547,85 +73590,85 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AmbientBasicMethod_1 = __webpack_require__(268);
+	var AmbientBasicMethod_1 = __webpack_require__(266);
 	exports.AmbientBasicMethod = AmbientBasicMethod_1.default;
-	var AmbientEnvMapMethod_1 = __webpack_require__(275);
+	var AmbientEnvMapMethod_1 = __webpack_require__(273);
 	exports.AmbientEnvMapMethod = AmbientEnvMapMethod_1.default;
 	var CurveBasicMethod_1 = __webpack_require__(551);
 	exports.CurveBasicMethod = CurveBasicMethod_1.default;
-	var DiffuseBasicMethod_1 = __webpack_require__(271);
+	var DiffuseBasicMethod_1 = __webpack_require__(269);
 	exports.DiffuseBasicMethod = DiffuseBasicMethod_1.default;
-	var DiffuseCelMethod_1 = __webpack_require__(277);
+	var DiffuseCelMethod_1 = __webpack_require__(275);
 	exports.DiffuseCelMethod = DiffuseCelMethod_1.default;
-	var DiffuseCompositeMethod_1 = __webpack_require__(278);
+	var DiffuseCompositeMethod_1 = __webpack_require__(276);
 	exports.DiffuseCompositeMethod = DiffuseCompositeMethod_1.default;
-	var DiffuseDepthMethod_1 = __webpack_require__(276);
+	var DiffuseDepthMethod_1 = __webpack_require__(274);
 	exports.DiffuseDepthMethod = DiffuseDepthMethod_1.default;
-	var DiffuseGradientMethod_1 = __webpack_require__(279);
+	var DiffuseGradientMethod_1 = __webpack_require__(277);
 	exports.DiffuseGradientMethod = DiffuseGradientMethod_1.default;
-	var DiffuseLightMapMethod_1 = __webpack_require__(280);
+	var DiffuseLightMapMethod_1 = __webpack_require__(278);
 	exports.DiffuseLightMapMethod = DiffuseLightMapMethod_1.default;
 	var DiffuseSubSurfaceMethod_1 = __webpack_require__(552);
 	exports.DiffuseSubSurfaceMethod = DiffuseSubSurfaceMethod_1.default;
-	var DiffuseWrapMethod_1 = __webpack_require__(281);
+	var DiffuseWrapMethod_1 = __webpack_require__(279);
 	exports.DiffuseWrapMethod = DiffuseWrapMethod_1.default;
-	var EffectAlphaMaskMethod_1 = __webpack_require__(282);
+	var EffectAlphaMaskMethod_1 = __webpack_require__(280);
 	exports.EffectAlphaMaskMethod = EffectAlphaMaskMethod_1.default;
-	var EffectColorMatrixMethod_1 = __webpack_require__(284);
+	var EffectColorMatrixMethod_1 = __webpack_require__(282);
 	exports.EffectColorMatrixMethod = EffectColorMatrixMethod_1.default;
-	var EffectColorTransformMethod_1 = __webpack_require__(285);
+	var EffectColorTransformMethod_1 = __webpack_require__(283);
 	exports.EffectColorTransformMethod = EffectColorTransformMethod_1.default;
-	var EffectEnvMapMethod_1 = __webpack_require__(286);
+	var EffectEnvMapMethod_1 = __webpack_require__(284);
 	exports.EffectEnvMapMethod = EffectEnvMapMethod_1.default;
-	var EffectFogMethod_1 = __webpack_require__(287);
+	var EffectFogMethod_1 = __webpack_require__(285);
 	exports.EffectFogMethod = EffectFogMethod_1.default;
-	var EffectFresnelEnvMapMethod_1 = __webpack_require__(288);
+	var EffectFresnelEnvMapMethod_1 = __webpack_require__(286);
 	exports.EffectFresnelEnvMapMethod = EffectFresnelEnvMapMethod_1.default;
-	var EffectLightMapMethod_1 = __webpack_require__(289);
+	var EffectLightMapMethod_1 = __webpack_require__(287);
 	exports.EffectLightMapMethod = EffectLightMapMethod_1.default;
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	exports.EffectMethodBase = EffectMethodBase_1.default;
 	var EffectRefractionEnvMapMethod_1 = __webpack_require__(553);
 	exports.EffectRefractionEnvMapMethod = EffectRefractionEnvMapMethod_1.default;
-	var EffectRimLightMethod_1 = __webpack_require__(290);
+	var EffectRimLightMethod_1 = __webpack_require__(288);
 	exports.EffectRimLightMethod = EffectRimLightMethod_1.default;
-	var LightingMethodBase_1 = __webpack_require__(272);
+	var LightingMethodBase_1 = __webpack_require__(270);
 	exports.LightingMethodBase = LightingMethodBase_1.default;
-	var NormalBasicMethod_1 = __webpack_require__(273);
+	var NormalBasicMethod_1 = __webpack_require__(271);
 	exports.NormalBasicMethod = NormalBasicMethod_1.default;
 	var NormalHeightMapMethod_1 = __webpack_require__(554);
 	exports.NormalHeightMapMethod = NormalHeightMapMethod_1.default;
-	var NormalSimpleWaterMethod_1 = __webpack_require__(291);
+	var NormalSimpleWaterMethod_1 = __webpack_require__(289);
 	exports.NormalSimpleWaterMethod = NormalSimpleWaterMethod_1.default;
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	exports.ShadingMethodBase = ShadingMethodBase_1.default;
 	var ShadowCascadeMethod_1 = __webpack_require__(555);
 	exports.ShadowCascadeMethod = ShadowCascadeMethod_1.default;
-	var ShadowDitheredMethod_1 = __webpack_require__(292);
+	var ShadowDitheredMethod_1 = __webpack_require__(290);
 	exports.ShadowDitheredMethod = ShadowDitheredMethod_1.default;
-	var ShadowFilteredMethod_1 = __webpack_require__(295);
+	var ShadowFilteredMethod_1 = __webpack_require__(293);
 	exports.ShadowFilteredMethod = ShadowFilteredMethod_1.default;
-	var ShadowHardMethod_1 = __webpack_require__(298);
+	var ShadowHardMethod_1 = __webpack_require__(296);
 	exports.ShadowHardMethod = ShadowHardMethod_1.default;
-	var ShadowMapMethodBase_1 = __webpack_require__(294);
+	var ShadowMapMethodBase_1 = __webpack_require__(292);
 	exports.ShadowMapMethodBase = ShadowMapMethodBase_1.default;
-	var ShadowMethodBase_1 = __webpack_require__(293);
+	var ShadowMethodBase_1 = __webpack_require__(291);
 	exports.ShadowMethodBase = ShadowMethodBase_1.default;
-	var ShadowNearMethod_1 = __webpack_require__(302);
+	var ShadowNearMethod_1 = __webpack_require__(300);
 	exports.ShadowNearMethod = ShadowNearMethod_1.default;
-	var ShadowSoftMethod_1 = __webpack_require__(303);
+	var ShadowSoftMethod_1 = __webpack_require__(301);
 	exports.ShadowSoftMethod = ShadowSoftMethod_1.default;
-	var SpecularAnisotropicMethod_1 = __webpack_require__(299);
+	var SpecularAnisotropicMethod_1 = __webpack_require__(297);
 	exports.SpecularAnisotropicMethod = SpecularAnisotropicMethod_1.default;
-	var SpecularBasicMethod_1 = __webpack_require__(274);
+	var SpecularBasicMethod_1 = __webpack_require__(272);
 	exports.SpecularBasicMethod = SpecularBasicMethod_1.default;
-	var SpecularCelMethod_1 = __webpack_require__(300);
+	var SpecularCelMethod_1 = __webpack_require__(298);
 	exports.SpecularCelMethod = SpecularCelMethod_1.default;
-	var SpecularCompositeMethod_1 = __webpack_require__(297);
+	var SpecularCompositeMethod_1 = __webpack_require__(295);
 	exports.SpecularCompositeMethod = SpecularCompositeMethod_1.default;
-	var SpecularFresnelMethod_1 = __webpack_require__(296);
+	var SpecularFresnelMethod_1 = __webpack_require__(294);
 	exports.SpecularFresnelMethod = SpecularFresnelMethod_1.default;
-	var SpecularPhongMethod_1 = __webpack_require__(301);
+	var SpecularPhongMethod_1 = __webpack_require__(299);
 	exports.SpecularPhongMethod = SpecularPhongMethod_1.default;
 
 
@@ -73640,7 +73683,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var ShadingMethodBase_1 = __webpack_require__(269);
+	var ShadingMethodBase_1 = __webpack_require__(267);
 	/**
 	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
 	 */
@@ -73814,7 +73857,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var DiffuseCompositeMethod_1 = __webpack_require__(278);
+	var DiffuseCompositeMethod_1 = __webpack_require__(276);
 	/**
 	 * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
 	 * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
@@ -74046,7 +74089,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var EffectMethodBase_1 = __webpack_require__(283);
+	var EffectMethodBase_1 = __webpack_require__(281);
 	/**
 	 * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
 	 */
@@ -74312,7 +74355,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var NormalBasicMethod_1 = __webpack_require__(273);
+	var NormalBasicMethod_1 = __webpack_require__(271);
 	/**
 	 * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
 	 */
@@ -74403,10 +74446,10 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var DirectionalLight_1 = __webpack_require__(221);
-	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var DirectionalLight_1 = __webpack_require__(218);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
 	var MethodVO_1 = __webpack_require__(549);
-	var ShadowMapMethodBase_1 = __webpack_require__(294);
+	var ShadowMapMethodBase_1 = __webpack_require__(292);
 	/**
 	 * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
 	 * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
@@ -74628,13 +74671,13 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var AssetEvent_1 = __webpack_require__(1);
-	var LightSources_1 = __webpack_require__(437);
+	var LightSources_1 = __webpack_require__(434);
 	var LightingShader_1 = __webpack_require__(531);
-	var ShadingMethodEvent_1 = __webpack_require__(270);
+	var ShadingMethodEvent_1 = __webpack_require__(268);
 	var ShaderBase_1 = __webpack_require__(200);
 	var PassBase_1 = __webpack_require__(536);
 	var MethodVO_1 = __webpack_require__(549);
-	var EffectColorTransformMethod_1 = __webpack_require__(285);
+	var EffectColorTransformMethod_1 = __webpack_require__(283);
 	var MethodPassMode_1 = __webpack_require__(558);
 	/**
 	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
@@ -75068,8 +75111,8 @@
 	     * @param stage
 	     * @param camera
 	     */
-	    MethodPass.prototype._iRender = function (renderable, camera, viewProjection) {
-	        _super.prototype._iRender.call(this, renderable, camera, viewProjection);
+	    MethodPass.prototype._setRenderState = function (renderable, camera, viewProjection) {
+	        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
 	        var methodVO;
 	        var len = this._iMethodVOs.length;
 	        for (var i = 0; i < len; ++i) {
@@ -75394,11 +75437,9 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Image2D_1 = __webpack_require__(81);
+	var Image2D_1 = __webpack_require__(75);
 	var Matrix3D_1 = __webpack_require__(23);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var ContextGLDrawMode_1 = __webpack_require__(155);
-	var ContextGLProgramType_1 = __webpack_require__(156);
+	var Single2DTexture_1 = __webpack_require__(104);
 	var PassBase_1 = __webpack_require__(536);
 	/**
 	 * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
@@ -75539,13 +75580,12 @@
 	        matrix = light.iGetObjectProjectionMatrix(renderableGL.sourceEntity, camera.sceneTransform, this._projections[rId]);
 	        this._stage.setRenderTarget(this._textures[rId], true);
 	        context.clear(1.0, 1.0, 1.0);
-	        context.setProgramConstantsFromMatrix(ContextGLProgramType_1.default.VERTEX, 0, matrix, true);
-	        context.setProgramConstantsFromArray(ContextGLProgramType_1.default.FRAGMENT, 0, this._enc, 2);
-	        var elements = renderableGL.elements;
-	        var elementsGL = this._shader._elementsPool.getAbstraction(elements);
-	        elementsGL.activateVertexBufferVO(0, elements.positions);
-	        elementsGL.activateVertexBufferVO(1, elements.normals);
-	        elementsGL.getIndexBufferGL().draw(ContextGLDrawMode_1.default.TRIANGLES, 0, elements.numElements);
+	        //context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
+	        //context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
+	        var elementsGL = renderableGL.elementsGL;
+	        // elementsGL.activateVertexBufferVO(0, elements.positions);
+	        // elementsGL.activateVertexBufferVO(1, elements.normals);
+	        // elementsGL.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, elements.numElements);
 	    };
 	    /**
 	     * @inheritDoc
@@ -75555,7 +75595,7 @@
 	            this.updateProjectionTextures();
 	        // never scale
 	        _super.prototype._iActivate.call(this, camera);
-	        this._stage.context.setProgramConstantsFromArray(ContextGLProgramType_1.default.VERTEX, 4, this._polyOffset, 1);
+	        //this._stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
 	    };
 	    return SingleObjectDepthPass;
 	}(PassBase_1.default));
@@ -75573,11 +75613,11 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var BlendMode_1 = __webpack_require__(96);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var ContextGLCompareMode_1 = __webpack_require__(130);
+	var BlendMode_1 = __webpack_require__(97);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var ContextGLCompareMode_1 = __webpack_require__(145);
 	var GL_SurfaceBase_1 = __webpack_require__(198);
-	var MethodMaterialMode_1 = __webpack_require__(266);
+	var MethodMaterialMode_1 = __webpack_require__(264);
 	var MethodPassMode_1 = __webpack_require__(558);
 	var MethodPass_1 = __webpack_require__(557);
 	/**
@@ -75842,11 +75882,11 @@
 	exports.AS2ColorAdapter = AS2ColorAdapter_1.default;
 	var AS2KeyAdapter_1 = __webpack_require__(564);
 	exports.AS2KeyAdapter = AS2KeyAdapter_1.default;
-	var AS2MCSoundProps_1 = __webpack_require__(313);
+	var AS2MCSoundProps_1 = __webpack_require__(311);
 	exports.AS2MCSoundProps = AS2MCSoundProps_1.default;
 	var AS2MouseAdapter_1 = __webpack_require__(565);
 	exports.AS2MouseAdapter = AS2MouseAdapter_1.default;
-	var AS2MovieClipAdapter_1 = __webpack_require__(306);
+	var AS2MovieClipAdapter_1 = __webpack_require__(304);
 	exports.AS2MovieClipAdapter = AS2MovieClipAdapter_1.default;
 	var AS2SharedObjectAdapter_1 = __webpack_require__(566);
 	exports.AS2SharedObjectAdapter = AS2SharedObjectAdapter_1.default;
@@ -75854,11 +75894,11 @@
 	exports.AS2SoundAdapter = AS2SoundAdapter_1.default;
 	var AS2StageAdapter_1 = __webpack_require__(568);
 	exports.AS2StageAdapter = AS2StageAdapter_1.default;
-	var AS2SymbolAdapter_1 = __webpack_require__(312);
+	var AS2SymbolAdapter_1 = __webpack_require__(310);
 	exports.AS2SymbolAdapter = AS2SymbolAdapter_1.default;
 	var AS2SystemAdapter_1 = __webpack_require__(569);
 	exports.AS2SystemAdapter = AS2SystemAdapter_1.default;
-	var AS2TextFieldAdapter_1 = __webpack_require__(314);
+	var AS2TextFieldAdapter_1 = __webpack_require__(312);
 	exports.AS2TextFieldAdapter = AS2TextFieldAdapter_1.default;
 
 
@@ -76098,8 +76138,8 @@
 
 	"use strict";
 	var AssetEvent_1 = __webpack_require__(1);
-	var AS2MCSoundProps_1 = __webpack_require__(313);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AS2MCSoundProps_1 = __webpack_require__(311);
+	var AssetLibrary_1 = __webpack_require__(305);
 	// also contains global AS2 functions
 	var AS2SoundAdapter = (function () {
 	    // TODO: Any real Sound stuff should be externalized for AwayJS use. For now use internally since it's only 2D.
@@ -76292,7 +76332,7 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var AxisAlignedBoundingBox_1 = __webpack_require__(324);
+	var AxisAlignedBoundingBox_1 = __webpack_require__(322);
 	/**
 	 * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
 	 * This is useful for most meshes.
@@ -76361,7 +76401,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AS2SceneGraphFactory_1 = __webpack_require__(305);
+	var AS2SceneGraphFactory_1 = __webpack_require__(303);
 	exports.AS2SceneGraphFactory = AS2SceneGraphFactory_1.default;
 
 
@@ -76370,17 +76410,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var AWDParser_1 = __webpack_require__(214);
+	var AWDParser_1 = __webpack_require__(211);
 	exports.AWDParser = AWDParser_1.default;
-	var Max3DSParser_1 = __webpack_require__(356);
+	var Max3DSParser_1 = __webpack_require__(353);
 	exports.Max3DSParser = Max3DSParser_1.default;
-	var MD2Parser_1 = __webpack_require__(372);
+	var MD2Parser_1 = __webpack_require__(369);
 	exports.MD2Parser = MD2Parser_1.default;
-	var MD5AnimParser_1 = __webpack_require__(363);
+	var MD5AnimParser_1 = __webpack_require__(360);
 	exports.MD5AnimParser = MD5AnimParser_1.default;
-	var MD5MeshParser_1 = __webpack_require__(364);
+	var MD5MeshParser_1 = __webpack_require__(361);
 	exports.MD5MeshParser = MD5MeshParser_1.default;
-	var OBJParser_1 = __webpack_require__(334);
+	var OBJParser_1 = __webpack_require__(332);
 	exports.OBJParser = OBJParser_1.default;
 	var Parsers_1 = __webpack_require__(574);
 	exports.Parsers = Parsers_1.default;
@@ -76391,11 +76431,11 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Loader_1 = __webpack_require__(117);
-	var AWDParser_1 = __webpack_require__(214);
-	var Max3DSParser_1 = __webpack_require__(356);
-	var MD2Parser_1 = __webpack_require__(372);
-	var OBJParser_1 = __webpack_require__(334);
+	var Loader_1 = __webpack_require__(118);
+	var AWDParser_1 = __webpack_require__(211);
+	var Max3DSParser_1 = __webpack_require__(353);
+	var MD2Parser_1 = __webpack_require__(369);
+	var OBJParser_1 = __webpack_require__(332);
 	/**
 	 *
 	 */

@@ -42,28 +42,28 @@ webpackJsonp([18],[
 	
 	*/
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	var AssetEvent_1 = __webpack_require__(1);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
-	var Keyboard_1 = __webpack_require__(330);
+	var Keyboard_1 = __webpack_require__(328);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(111);
-	var DirectionalLight_1 = __webpack_require__(221);
+	var HoverController_1 = __webpack_require__(112);
+	var DirectionalLight_1 = __webpack_require__(218);
 	var Sprite_1 = __webpack_require__(57);
-	var ElementsType_1 = __webpack_require__(235);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var AnimationSetBase_1 = __webpack_require__(244);
-	var VertexAnimator_1 = __webpack_require__(247);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var ShadowFilteredMethod_1 = __webpack_require__(295);
-	var MD2Parser_1 = __webpack_require__(372);
+	var ElementsType_1 = __webpack_require__(232);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var AnimationSetBase_1 = __webpack_require__(241);
+	var VertexAnimator_1 = __webpack_require__(245);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var ShadowFilteredMethod_1 = __webpack_require__(293);
+	var MD2Parser_1 = __webpack_require__(369);
 	var Intermediate_PerelithKnight = (function () {
 	    /**
 	     * Constructor

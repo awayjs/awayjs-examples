@@ -39,27 +39,27 @@ webpackJsonp([7],[
 	
 	*/
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var Scene_1 = __webpack_require__(11);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(111);
+	var HoverController_1 = __webpack_require__(112);
 	var Camera_1 = __webpack_require__(45);
-	var DirectionalLight_1 = __webpack_require__(221);
-	var DefaultMaterialManager_1 = __webpack_require__(77);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var PrimitiveCubePrefab_1 = __webpack_require__(239);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var ElementsType_1 = __webpack_require__(235);
+	var DirectionalLight_1 = __webpack_require__(218);
+	var DefaultMaterialManager_1 = __webpack_require__(71);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var PrimitiveCubePrefab_1 = __webpack_require__(236);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(238);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(239);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var ElementsType_1 = __webpack_require__(232);
 	/**
 	 *
 	 */

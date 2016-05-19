@@ -165,7 +165,7 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        loader.load(new URLRequest("assets/AWD3/TextTest.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/_concat_streams.awd"), null, null, new AWDParser(this._view));
 
         //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
         //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
@@ -293,7 +293,7 @@ class AWD3ViewerMinimal
         this._view.x         = 0;
         this._view.width     = window.innerWidth;
         this._view.height    = window.innerHeight;
-        this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*360/Math.PI;
+        this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*800/Math.PI;
         this._projection.originX = (0.5 - 0.5*(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth));
     }
 

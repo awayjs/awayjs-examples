@@ -3,31 +3,31 @@ webpackJsonp([3],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
+	var Sampler2D_1 = __webpack_require__(72);
 	var LoaderEvent_1 = __webpack_require__(5);
-	var Matrix_1 = __webpack_require__(87);
+	var Matrix_1 = __webpack_require__(81);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
-	var Debug_1 = __webpack_require__(333);
+	var Debug_1 = __webpack_require__(331);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(221);
+	var DirectionalLight_1 = __webpack_require__(218);
 	var Sprite_1 = __webpack_require__(57);
-	var Skybox_1 = __webpack_require__(95);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var SingleCubeTexture_1 = __webpack_require__(98);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var ElementsType_1 = __webpack_require__(235);
-	var Style_1 = __webpack_require__(100);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var EffectEnvMapMethod_1 = __webpack_require__(286);
-	var NormalSimpleWaterMethod_1 = __webpack_require__(291);
-	var SpecularFresnelMethod_1 = __webpack_require__(296);
-	var OBJParser_1 = __webpack_require__(334);
+	var Skybox_1 = __webpack_require__(96);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var SingleCubeTexture_1 = __webpack_require__(99);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var ElementsType_1 = __webpack_require__(232);
+	var Style_1 = __webpack_require__(101);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var EffectEnvMapMethod_1 = __webpack_require__(284);
+	var NormalSimpleWaterMethod_1 = __webpack_require__(289);
+	var SpecularFresnelMethod_1 = __webpack_require__(294);
+	var OBJParser_1 = __webpack_require__(332);
 	var AircraftDemo = (function () {
 	    //}
 	    function AircraftDemo() {

@@ -38,23 +38,23 @@ webpackJsonp([11],[
 	 THE SOFTWARE.
 	
 	 */
-	var AS2MovieClipAdapter_1 = __webpack_require__(306);
+	var AS2MovieClipAdapter_1 = __webpack_require__(304);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var Graphics_1 = __webpack_require__(58);
 	var View_1 = __webpack_require__(9);
 	var Sprite_1 = __webpack_require__(57);
-	var HoverController_1 = __webpack_require__(111);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var SceneGraphPartition_1 = __webpack_require__(321);
-	var MovieClip_1 = __webpack_require__(308);
+	var HoverController_1 = __webpack_require__(112);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var SceneGraphPartition_1 = __webpack_require__(319);
+	var MovieClip_1 = __webpack_require__(306);
 	var CoordinateSystem_1 = __webpack_require__(49);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var Camera_1 = __webpack_require__(45);
 	var MouseEvent_1 = __webpack_require__(55);
 	var ColorTransform_1 = __webpack_require__(19);
-	var GraphicsFactoryHelper_1 = __webpack_require__(106);
-	var CapsStyle_1 = __webpack_require__(75);
-	var JointStyle_1 = __webpack_require__(74);
+	var GraphicsFactoryHelper_1 = __webpack_require__(107);
+	var CapsStyle_1 = __webpack_require__(69);
+	var JointStyle_1 = __webpack_require__(68);
 	var Graphics_Drawing = (function () {
 	    /**
 	     * Constructor
@@ -108,7 +108,7 @@ webpackJsonp([11],[
 	        this._activePoint = null;
 	        // for now i did not find a way to activate this other than doing it in js (not in ts)
 	        // so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
-	        GraphicsFactoryHelper_1.default._tess_obj = new TESS();
+	        GraphicsFactoryHelper_1.default._tess_obj = null; //new TESS();
 	        this._view.scene.addChild(this.drawingMC);
 	        this._points = new Array();
 	        if (GraphicsFactoryHelper_1.default._tess_obj)
@@ -164,7 +164,7 @@ webpackJsonp([11],[
 	            this._points[i].graphics.copyFrom(thisshape);
 	            this._points[i].visible = false;
 	            this._view.scene.addChild(this._points[i]);
-	            this._points[i].addEventListener(MouseEvent_1.default.MOUSE_DOWN, function (event) { return _this.onPointDown(event); });
+	            this._points[i].addEventListener(MouseEvent_1.default.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
 	        }
 	        this._view.scene.addEventListener(MouseEvent_1.default.MOUSE_MOVE, function (event) { return _this.onMouseMove(event); });
 	        document.onmouseup = function (event) { return _this.onMouseUp(event); };
@@ -177,7 +177,7 @@ webpackJsonp([11],[
 	    };
 	    Graphics_Drawing.prototype.onMouseUp = function (event) {
 	        this._activePoint = null;
-	        this.draw_shape();
+	        //this.draw_shape();
 	    };
 	    Graphics_Drawing.prototype.onMouseMove = function (event) {
 	        if (this._activePoint) {

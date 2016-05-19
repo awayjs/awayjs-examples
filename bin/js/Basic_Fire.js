@@ -41,38 +41,38 @@ webpackJsonp([4],[
 	
 	*/
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
-	var BlendMode_1 = __webpack_require__(96);
+	var Sampler2D_1 = __webpack_require__(72);
+	var BlendMode_1 = __webpack_require__(97);
 	var LoaderEvent_1 = __webpack_require__(5);
-	var TimerEvent_1 = __webpack_require__(216);
+	var TimerEvent_1 = __webpack_require__(213);
 	var ColorTransform_1 = __webpack_require__(19);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
-	var Timer_1 = __webpack_require__(218);
+	var Timer_1 = __webpack_require__(215);
 	var Scene_1 = __webpack_require__(11);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(111);
-	var DirectionalLight_1 = __webpack_require__(221);
+	var HoverController_1 = __webpack_require__(112);
+	var DirectionalLight_1 = __webpack_require__(218);
 	var Camera_1 = __webpack_require__(45);
 	var Sprite_1 = __webpack_require__(57);
-	var PointLight_1 = __webpack_require__(227);
-	var ElementsType_1 = __webpack_require__(235);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var PrimitivePlanePrefab_1 = __webpack_require__(240);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var ParticleAnimationSet_1 = __webpack_require__(335);
-	var ParticleAnimator_1 = __webpack_require__(345);
-	var ParticlePropertiesMode_1 = __webpack_require__(340);
-	var ParticleBillboardNode_1 = __webpack_require__(346);
-	var ParticleScaleNode_1 = __webpack_require__(348);
-	var ParticleVelocityNode_1 = __webpack_require__(350);
-	var ParticleColorNode_1 = __webpack_require__(352);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var MethodMaterialMode_1 = __webpack_require__(266);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var ParticleGraphicsHelper_1 = __webpack_require__(354);
+	var PointLight_1 = __webpack_require__(224);
+	var ElementsType_1 = __webpack_require__(232);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var PrimitivePlanePrefab_1 = __webpack_require__(237);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var ParticleAnimationSet_1 = __webpack_require__(333);
+	var ParticleAnimator_1 = __webpack_require__(342);
+	var ParticlePropertiesMode_1 = __webpack_require__(337);
+	var ParticleBillboardNode_1 = __webpack_require__(343);
+	var ParticleScaleNode_1 = __webpack_require__(345);
+	var ParticleVelocityNode_1 = __webpack_require__(347);
+	var ParticleColorNode_1 = __webpack_require__(349);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var MethodMaterialMode_1 = __webpack_require__(264);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var ParticleGraphicsHelper_1 = __webpack_require__(351);
 	var Basic_Fire = (function () {
 	    /**
 	     * Constructor

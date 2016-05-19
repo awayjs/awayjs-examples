@@ -42,16 +42,16 @@ webpackJsonp([6],[
 	"use strict";
 	var AssetEvent_1 = __webpack_require__(1);
 	var Vector3D_1 = __webpack_require__(18);
-	var AssetLibrary_1 = __webpack_require__(307);
+	var AssetLibrary_1 = __webpack_require__(305);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(221);
+	var DirectionalLight_1 = __webpack_require__(218);
 	var Sprite_1 = __webpack_require__(57);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var AWDParser_1 = __webpack_require__(214);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var AWDParser_1 = __webpack_require__(211);
 	var Basic_LoadAWD = (function () {
 	    /**
 	     * Constructor

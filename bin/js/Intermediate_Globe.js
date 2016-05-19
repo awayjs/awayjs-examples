@@ -40,37 +40,37 @@ webpackJsonp([13],[
 	THE SOFTWARE.
 	
 	*/
-	var BitmapImage2D_1 = __webpack_require__(80);
-	var BitmapImageChannel_1 = __webpack_require__(328);
-	var BlendMode_1 = __webpack_require__(96);
+	var BitmapImage2D_1 = __webpack_require__(74);
+	var BitmapImageChannel_1 = __webpack_require__(326);
+	var BlendMode_1 = __webpack_require__(97);
 	var LoaderEvent_1 = __webpack_require__(5);
 	var ColorTransform_1 = __webpack_require__(19);
 	var Vector3D_1 = __webpack_require__(18);
 	var Point_1 = __webpack_require__(26);
-	var AssetLibrary_1 = __webpack_require__(307);
-	var LoaderContext_1 = __webpack_require__(329);
+	var AssetLibrary_1 = __webpack_require__(305);
+	var LoaderContext_1 = __webpack_require__(327);
 	var URLRequest_1 = __webpack_require__(3);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var DisplayObjectContainer_1 = __webpack_require__(12);
 	var Scene_1 = __webpack_require__(11);
 	var View_1 = __webpack_require__(9);
-	var HoverController_1 = __webpack_require__(111);
+	var HoverController_1 = __webpack_require__(112);
 	var OrientationMode_1 = __webpack_require__(33);
 	var AlignmentMode_1 = __webpack_require__(32);
 	var Camera_1 = __webpack_require__(45);
-	var Billboard_1 = __webpack_require__(110);
-	var PointLight_1 = __webpack_require__(227);
-	var Skybox_1 = __webpack_require__(95);
-	var ElementsType_1 = __webpack_require__(235);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var PrimitiveSpherePrefab_1 = __webpack_require__(241);
-	var Single2DTexture_1 = __webpack_require__(103);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
-	var DiffuseCompositeMethod_1 = __webpack_require__(278);
-	var SpecularCompositeMethod_1 = __webpack_require__(297);
-	var SpecularFresnelMethod_1 = __webpack_require__(296);
-	var SpecularPhongMethod_1 = __webpack_require__(301);
+	var Billboard_1 = __webpack_require__(111);
+	var PointLight_1 = __webpack_require__(224);
+	var Skybox_1 = __webpack_require__(96);
+	var ElementsType_1 = __webpack_require__(232);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var PrimitiveSpherePrefab_1 = __webpack_require__(238);
+	var Single2DTexture_1 = __webpack_require__(104);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
+	var DiffuseCompositeMethod_1 = __webpack_require__(276);
+	var SpecularCompositeMethod_1 = __webpack_require__(295);
+	var SpecularFresnelMethod_1 = __webpack_require__(294);
+	var SpecularPhongMethod_1 = __webpack_require__(299);
 	var Intermediate_Globe = (function () {
 	    /**
 	     * Constructor

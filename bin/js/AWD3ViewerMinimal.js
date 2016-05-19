@@ -45,17 +45,17 @@ webpackJsonp([0],[
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
 	var Sprite_1 = __webpack_require__(57);
-	var Billboard_1 = __webpack_require__(110);
-	var HoverController_1 = __webpack_require__(111);
-	var LoaderContainer_1 = __webpack_require__(114);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var AWDParser_1 = __webpack_require__(214);
-	var SceneGraphPartition_1 = __webpack_require__(321);
-	var MovieClip_1 = __webpack_require__(308);
+	var Billboard_1 = __webpack_require__(111);
+	var HoverController_1 = __webpack_require__(112);
+	var LoaderContainer_1 = __webpack_require__(115);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var AWDParser_1 = __webpack_require__(211);
+	var SceneGraphPartition_1 = __webpack_require__(319);
+	var MovieClip_1 = __webpack_require__(306);
 	var CoordinateSystem_1 = __webpack_require__(49);
 	var PerspectiveProjection_1 = __webpack_require__(48);
 	var Camera_1 = __webpack_require__(45);
-	var TextField_1 = __webpack_require__(309);
+	var TextField_1 = __webpack_require__(307);
 	var AWD3ViewerMinimal = (function () {
 	    /**
 	     * Constructor
@@ -116,7 +116,7 @@ webpackJsonp([0],[
 	        //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 	        //for plugin preview-runtime:
 	        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
-	        loader.load(new URLRequest_1.default("assets/AWD3/TextTest.awd"), null, null, new AWDParser_1.default(this._view));
+	        loader.load(new URLRequest_1.default("assets/AWD3/_concat_streams.awd"), null, null, new AWDParser_1.default(this._view));
 	        //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
 	        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 	        //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -213,7 +213,7 @@ webpackJsonp([0],[
 	        this._view.x = 0;
 	        this._view.width = window.innerWidth;
 	        this._view.height = window.innerHeight;
-	        this._projection.fieldOfView = Math.atan(this._stage_height / 2000) * 360 / Math.PI;
+	        this._projection.fieldOfView = Math.atan(this._stage_height / 2000) * 800 / Math.PI;
 	        this._projection.originX = (0.5 - 0.5 * (window.innerHeight / this._stage_height) * (this._stage_width / window.innerWidth));
 	    };
 	    return AWD3ViewerMinimal;

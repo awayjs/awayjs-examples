@@ -211,7 +211,7 @@ class Intermediate_PerelithKnight
         document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
         document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
         document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-        document.onmousewheel = (event:MouseWheelEvent) => this.onMouseWheel(event);
+        document.onmousewheel = (event:WheelEvent) => this.onMouseWheel(event);
         document.onkeydown = (event:KeyboardEvent) => this.onKeyDown(event);
         document.onkeyup = (event:KeyboardEvent) => this.onKeyUp(event);
         this.onResize();
@@ -419,7 +419,7 @@ class Intermediate_PerelithKnight
     /**
      * Mouse wheel listener for navigation
      */
-    private onMouseWheel(event:MouseWheelEvent):void
+    private onMouseWheel(event:WheelEvent):void
     {
         this._cameraController.distance -= event.wheelDelta;
 

@@ -3,20 +3,20 @@ webpackJsonp([20],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Sampler2D_1 = __webpack_require__(78);
-	var URLLoaderEvent_1 = __webpack_require__(121);
-	var URLLoader_1 = __webpack_require__(118);
-	var URLLoaderDataFormat_1 = __webpack_require__(119);
+	var Sampler2D_1 = __webpack_require__(72);
+	var URLLoaderEvent_1 = __webpack_require__(122);
+	var URLLoader_1 = __webpack_require__(119);
+	var URLLoaderDataFormat_1 = __webpack_require__(120);
 	var URLRequest_1 = __webpack_require__(3);
-	var ParserUtils_1 = __webpack_require__(217);
+	var ParserUtils_1 = __webpack_require__(214);
 	var RequestAnimationFrame_1 = __webpack_require__(7);
 	var View_1 = __webpack_require__(9);
-	var DirectionalLight_1 = __webpack_require__(221);
-	var ElementsType_1 = __webpack_require__(235);
-	var PrimitiveTorusPrefab_1 = __webpack_require__(242);
-	var StaticLightPicker_1 = __webpack_require__(229);
-	var DefaultRenderer_1 = __webpack_require__(129);
-	var MethodMaterial_1 = __webpack_require__(267);
+	var DirectionalLight_1 = __webpack_require__(218);
+	var ElementsType_1 = __webpack_require__(232);
+	var PrimitiveTorusPrefab_1 = __webpack_require__(239);
+	var StaticLightPicker_1 = __webpack_require__(226);
+	var DefaultRenderer_1 = __webpack_require__(130);
+	var MethodMaterial_1 = __webpack_require__(265);
 	var TorusPrimitive = (function () {
 	    function TorusPrimitive() {
 	        var _this = this;
