@@ -15,6 +15,8 @@ var livereload = require('gulp-livereload');
 var tsify = require('tsify');
 //var webpack = require('webpack-stream');
 var ts = require('gulp-typescript');
+var typescript = require('typescript');
+
 
 var watch;
 
@@ -34,7 +36,7 @@ function _package(filename, callback) {
         fullPaths: false
     });
 
-    b.plugin('tsify', {target:'ES5', sourceRoot:'./', moduleResolution:'classic'});
+    b.plugin('tsify', {target:'ES5', sourceRoot:'./', typescript:typescript});
 
     glob('./node_modules/awayjs-**/lib/**/*.ts', {}, function (error, files) {
         files.forEach(function (file) {
