@@ -36,33 +36,33 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import Sampler2D					from "awayjs-core/lib/image/Sampler2D";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import LoaderContext				from "awayjs-core/lib/library/LoaderContext";
-import IAsset						from "awayjs-core/lib/library/IAsset";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {LoaderContext}				from "awayjs-core/lib/library/LoaderContext";
+import {IAsset}						from "awayjs-core/lib/library/IAsset";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import LoaderContainer				from "awayjs-display/lib/display/LoaderContainer";
-import View							from "awayjs-display/lib/View";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
-import DirectionalLight				from "awayjs-display/lib/display/DirectionalLight";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
-import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {LoaderContainer}				from "awayjs-display/lib/display/LoaderContainer";
+import {View}							from "awayjs-display/lib/View";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
+import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
+import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import {PrimitivePlanePrefab}			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
-import ShadowSoftMethod				from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
+import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
+import {ShadowSoftMethod}				from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
 
-import Max3DSParser					from "awayjs-parsers/lib/Max3DSParser";
+import {Max3DSParser}					from "awayjs-parsers/lib/Max3DSParser";
 
 class Basic_Load3DS
 {

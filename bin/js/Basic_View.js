@@ -58,24 +58,24 @@ webpackJsonp([9],[
 	    function Basic_View() {
 	        var _this = this;
 	        //setup the view
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        //setup the camera
 	        this._view.camera.z = -600;
 	        this._view.camera.y = 500;
-	        this._view.camera.lookAt(new Vector3D_1.default());
+	        this._view.camera.lookAt(new Vector3D_1.Vector3D());
 	        //setup the materials
-	        this._planeMaterial = new BasicMaterial_1.default();
+	        this._planeMaterial = new BasicMaterial_1.BasicMaterial();
 	        //setup the scene
-	        this._plane = new PrimitivePlanePrefab_1.default(this._planeMaterial, ElementsType_1.default.TRIANGLE, 700, 700).getNewObject();
+	        this._plane = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this._planeMaterial, ElementsType_1.ElementsType.TRIANGLE, 700, 700).getNewObject();
 	        this._view.scene.addChild(this._plane);
 	        //setup the render loop
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //plane textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_diffuse.jpg"));
 	    }
 	    /**
 	     * render loop
@@ -96,7 +96,7 @@ webpackJsonp([9],[
 	            switch (event.url) {
 	                //plane textures
 	                case "assets/floor_diffuse.jpg":
-	                    this._planeMaterial.texture = new Single2DTexture_1.default(asset);
+	                    this._planeMaterial.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	            }
 	        }

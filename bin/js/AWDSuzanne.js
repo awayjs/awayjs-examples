@@ -20,9 +20,9 @@ webpackJsonp([1],[
 	var AWDSuzanne = (function () {
 	    function AWDSuzanne() {
 	        var _this = this;
-	        this._lookAtPosition = new Vector3D_1.default();
+	        this._lookAtPosition = new Vector3D_1.Vector3D();
 	        this._cameraIncrement = 0;
-	        this._mouseOverMaterial = new MethodMaterial_1.default(0xFF0000);
+	        this._mouseOverMaterial = new MethodMaterial_1.MethodMaterial(0xFF0000);
 	        this.initView();
 	        this.loadAssets();
 	        this.initLights();
@@ -33,8 +33,8 @@ webpackJsonp([1],[
 	     *
 	     */
 	    AWDSuzanne.prototype.initView = function () {
-	        this._renderer = new DefaultRenderer_1.default();
-	        this._view = new View_1.default(this._renderer);
+	        this._renderer = new DefaultRenderer_1.DefaultRenderer();
+	        this._view = new View_1.View(this._renderer);
 	        this._view.camera.projection.far = 6000;
 	        this._view.forceMouseMove = true;
 	    };
@@ -43,26 +43,26 @@ webpackJsonp([1],[
 	     */
 	    AWDSuzanne.prototype.loadAssets = function () {
 	        var _this = this;
-	        this._timer = new RequestAnimationFrame_1.default(this.render, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.render, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.enableParser(AWDParser_1.default);
-	        var session = AssetLibrary_1.default.getLoader();
-	        session.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
-	        session.load(new URLRequest_1.default('assets/suzanne.awd'));
+	        AssetLibrary_1.AssetLibrary.enableParser(AWDParser_1.AWDParser);
+	        var session = AssetLibrary_1.AssetLibrary.getLoader();
+	        session.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        session.load(new URLRequest_1.URLRequest('assets/suzanne.awd'));
 	    };
 	    /**
 	     *
 	     */
 	    AWDSuzanne.prototype.initLights = function () {
-	        this._light = new DirectionalLight_1.default();
+	        this._light = new DirectionalLight_1.DirectionalLight();
 	        this._light.color = 0x683019;
-	        this._light.direction = new Vector3D_1.default(1, 0, 0);
+	        this._light.direction = new Vector3D_1.Vector3D(1, 0, 0);
 	        this._light.ambient = 0.1;
 	        this._light.ambientColor = 0x85b2cd;
 	        this._light.diffuse = 2.8;
 	        this._light.specular = 1.8;
 	        this._view.scene.addChild(this._light);
-	        this._lightPicker = new StaticLightPicker_1.default([this._light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light]);
 	    };
 	    /**
 	     *
@@ -100,7 +100,7 @@ webpackJsonp([1],[
 	        for (var i = 0; i < numAssets; ++i) {
 	            var asset = loader.baseDependency.assets[i];
 	            switch (asset.assetType) {
-	                case Sprite_1.default.assetType:
+	                case Sprite_1.Sprite.assetType:
 	                    var sprite = asset;
 	                    this._suzane = sprite;
 	                    this._suzane.material.lightPicker = this._lightPicker;
@@ -114,14 +114,14 @@ webpackJsonp([1],[
 	                        clone.z = this.getRandom(-2000, 2000);
 	                        clone.transform.scaleTo(scale, scale, scale);
 	                        clone.rotationY = this.getRandom(0, 360);
-	                        clone.addEventListener(MouseEvent_1.default.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
-	                        clone.addEventListener(MouseEvent_1.default.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
+	                        clone.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
+	                        clone.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
 	                        this._view.scene.addChild(clone);
 	                    }
 	                    sprite.transform.scaleTo(500, 500, 500);
-	                    sprite.pickingCollider = new JSPickingCollider_1.default();
-	                    sprite.addEventListener(MouseEvent_1.default.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
-	                    sprite.addEventListener(MouseEvent_1.default.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
+	                    sprite.pickingCollider = new JSPickingCollider_1.JSPickingCollider();
+	                    sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OVER, function (event) { return _this.onMouseOver(event); });
+	                    sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OUT, function (event) { return _this.onMouseOut(event); });
 	                    this._view.scene.addChild(sprite);
 	                    break;
 	            }

@@ -83,7 +83,7 @@ webpackJsonp([14],[
 	     * Constructor
 	     */
 	    function Intermediate_MD5Animation() {
-	        this.stateTransition = new CrossfadeTransition_1.default(0.5);
+	        this.stateTransition = new CrossfadeTransition_1.CrossfadeTransition(0.5);
 	        this.currentRotationInc = 0;
 	        this.count = 0;
 	        this._time = 0;
@@ -104,16 +104,16 @@ webpackJsonp([14],[
 	     * Initialise the engine
 	     */
 	    Intermediate_MD5Animation.prototype.initEngine = function () {
-	        this.view = new View_1.default(new DefaultRenderer_1.default());
+	        this.view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this.scene = this.view.scene;
 	        this.camera = this.view.camera;
 	        this.camera.projection.far = 5000;
 	        this.camera.z = -200;
 	        this.camera.y = 160;
 	        //setup controller to be used on the camera
-	        this.placeHolder = new DisplayObjectContainer_1.default();
+	        this.placeHolder = new DisplayObjectContainer_1.DisplayObjectContainer();
 	        this.placeHolder.y = 50;
-	        this.cameraController = new LookAtController_1.default(this.camera, this.placeHolder);
+	        this.cameraController = new LookAtController_1.LookAtController(this.camera, this.placeHolder);
 	    };
 	    /**
 	     * Create an instructions overlay
@@ -138,61 +138,61 @@ webpackJsonp([14],[
 	     */
 	    Intermediate_MD5Animation.prototype.initLights = function () {
 	        //create a light for shadows that mimics the sun's position in the skybox
-	        this.redLight = new PointLight_1.default();
+	        this.redLight = new PointLight_1.PointLight();
 	        this.redLight.x = -1000;
 	        this.redLight.y = 200;
 	        this.redLight.z = -1400;
 	        this.redLight.color = 0xff1111;
 	        this.scene.addChild(this.redLight);
-	        this.blueLight = new PointLight_1.default();
+	        this.blueLight = new PointLight_1.PointLight();
 	        this.blueLight.x = 1000;
 	        this.blueLight.y = 200;
 	        this.blueLight.z = 1400;
 	        this.blueLight.color = 0x1111ff;
 	        this.scene.addChild(this.blueLight);
-	        this.whiteLight = new DirectionalLight_1.default(-50, -20, 10);
+	        this.whiteLight = new DirectionalLight_1.DirectionalLight(-50, -20, 10);
 	        this.whiteLight.color = 0xffffee;
 	        this.whiteLight.castsShadows = true;
 	        this.whiteLight.ambient = 1;
 	        this.whiteLight.ambientColor = 0x303040;
-	        this.whiteLight.shadowMapper = new NearDirectionalShadowMapper_1.default(.2);
+	        this.whiteLight.shadowMapper = new NearDirectionalShadowMapper_1.NearDirectionalShadowMapper(.2);
 	        this.scene.addChild(this.whiteLight);
-	        this.lightPicker = new StaticLightPicker_1.default([this.redLight, this.blueLight, this.whiteLight]);
+	        this.lightPicker = new StaticLightPicker_1.StaticLightPicker([this.redLight, this.blueLight, this.whiteLight]);
 	        //create a global shadow method
-	        this.shadowMapMethod = new ShadowNearMethod_1.default(new ShadowSoftMethod_1.default(this.whiteLight, 15, 8));
+	        this.shadowMapMethod = new ShadowNearMethod_1.ShadowNearMethod(new ShadowSoftMethod_1.ShadowSoftMethod(this.whiteLight, 15, 8));
 	        this.shadowMapMethod.epsilon = .1;
 	        //create a global fog method
-	        this.fogMethod = new EffectFogMethod_1.default(0, this.camera.projection.far * 0.5, 0x000000);
+	        this.fogMethod = new EffectFogMethod_1.EffectFogMethod(0, this.camera.projection.far * 0.5, 0x000000);
 	    };
 	    /**
 	     * Initialise the materials
 	     */
 	    Intermediate_MD5Animation.prototype.initMaterials = function () {
 	        //red light material
-	        this.redLightMaterial = new MethodMaterial_1.default();
+	        this.redLightMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.redLightMaterial.alphaBlending = true;
 	        this.redLightMaterial.addEffectMethod(this.fogMethod);
 	        //blue light material
-	        this.blueLightMaterial = new MethodMaterial_1.default();
+	        this.blueLightMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.blueLightMaterial.alphaBlending = true;
 	        this.blueLightMaterial.addEffectMethod(this.fogMethod);
 	        //ground material
-	        this.groundMaterial = new MethodMaterial_1.default();
-	        this.groundMaterial.style.sampler = new Sampler2D_1.default(true, true);
+	        this.groundMaterial = new MethodMaterial_1.MethodMaterial();
+	        this.groundMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true);
 	        this.groundMaterial.lightPicker = this.lightPicker;
 	        this.groundMaterial.shadowMethod = this.shadowMapMethod;
 	        this.groundMaterial.addEffectMethod(this.fogMethod);
 	        //body material
-	        this.bodyMaterial = new MethodMaterial_1.default();
+	        this.bodyMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.bodyMaterial.specularMethod.gloss = 20;
 	        this.bodyMaterial.specularMethod.strength = 1.5;
 	        this.bodyMaterial.addEffectMethod(this.fogMethod);
 	        this.bodyMaterial.lightPicker = this.lightPicker;
 	        this.bodyMaterial.shadowMethod = this.shadowMapMethod;
 	        //gob material
-	        this.gobMaterial = new MethodMaterial_1.default();
+	        this.gobMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.gobMaterial.alphaBlending = true;
-	        this.gobMaterial.style.sampler = new Sampler2D_1.default(true, true);
+	        this.gobMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true);
 	        this.gobMaterial.animateUVs = true;
 	        this.gobMaterial.addEffectMethod(this.fogMethod);
 	        this.gobMaterial.lightPicker = this.lightPicker;
@@ -203,20 +203,20 @@ webpackJsonp([14],[
 	     */
 	    Intermediate_MD5Animation.prototype.initObjects = function () {
 	        //create light billboards
-	        var redSprite = new Billboard_1.default(this.redLightMaterial);
+	        var redSprite = new Billboard_1.Billboard(this.redLightMaterial);
 	        redSprite.width = 200;
 	        redSprite.height = 200;
 	        redSprite.castsShadows = false;
-	        var blueSprite = new Billboard_1.default(this.blueLightMaterial);
+	        var blueSprite = new Billboard_1.Billboard(this.blueLightMaterial);
 	        blueSprite.width = 200;
 	        blueSprite.height = 200;
 	        blueSprite.castsShadows = false;
 	        this.redLight.addChild(redSprite);
 	        this.blueLight.addChild(blueSprite);
-	        AssetLibrary_1.default.enableParser(MD5MeshParser_1.default);
-	        AssetLibrary_1.default.enableParser(MD5AnimParser_1.default);
+	        AssetLibrary_1.AssetLibrary.enableParser(MD5MeshParser_1.MD5MeshParser);
+	        AssetLibrary_1.AssetLibrary.enableParser(MD5AnimParser_1.MD5AnimParser);
 	        //create a rocky ground plane
-	        this.ground = new PrimitivePlanePrefab_1.default(this.groundMaterial, ElementsType_1.default.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+	        this.ground = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this.groundMaterial, ElementsType_1.ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
 	        this.ground.graphics.scaleUV(200, 200);
 	        this.ground.castsShadows = false;
 	        this.scene.addChild(this.ground);
@@ -230,29 +230,29 @@ webpackJsonp([14],[
 	        document.onkeydown = function (event) { return _this.onKeyDown(event); };
 	        document.onkeyup = function (event) { return _this.onKeyUp(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	        //setup the url map for textures in the cubemap file
-	        var loaderContext = new LoaderContext_1.default();
+	        var loaderContext = new LoaderContext_1.LoaderContext();
 	        loaderContext.dependencyBaseUrl = "assets/skybox/";
 	        //load hellknight sprite
-	        AssetLibrary_1.default.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser_1.default());
+	        AssetLibrary_1.AssetLibrary.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser_1.MD5MeshParser());
 	        //load environment texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/skybox/grimnight_texture.cube"), loaderContext);
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/skybox/grimnight_texture.cube"), loaderContext);
 	        //load light textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/redlight.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/bluelight.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/redlight.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/bluelight.png"));
 	        //load floor textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/rockbase_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/rockbase_normals.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/rockbase_specular.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/rockbase_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/rockbase_normals.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/rockbase_specular.png"));
 	        //load hellknight textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/hellknight_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/hellknight_normals.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/hellknight_specular.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/gob.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/hellknight_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/hellknight_normals.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/hellknight_specular.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/gob.png"));
 	    };
 	    /**
 	     * Navigation and render loop
@@ -279,7 +279,7 @@ webpackJsonp([14],[
 	     */
 	    Intermediate_MD5Animation.prototype.onAssetComplete = function (event) {
 	        var _this = this;
-	        if (event.asset.isAsset(AnimationNodeBase_1.default)) {
+	        if (event.asset.isAsset(AnimationNodeBase_1.AnimationNodeBase)) {
 	            var node = event.asset;
 	            var name = event.asset.assetNamespace;
 	            node.name = name;
@@ -289,30 +289,30 @@ webpackJsonp([14],[
 	            }
 	            else {
 	                node.looping = false;
-	                node.addEventListener(AnimationStateEvent_1.default.PLAYBACK_COMPLETE, function (event) { return _this.onPlaybackComplete(event); });
+	                node.addEventListener(AnimationStateEvent_1.AnimationStateEvent.PLAYBACK_COMPLETE, function (event) { return _this.onPlaybackComplete(event); });
 	            }
 	            if (name == Intermediate_MD5Animation.IDLE_NAME)
 	                this.stop();
 	        }
-	        else if (event.asset.isAsset(AnimationSetBase_1.default)) {
+	        else if (event.asset.isAsset(AnimationSetBase_1.AnimationSetBase)) {
 	            this.animationSet = event.asset;
-	            this.animator = new SkeletonAnimator_1.default(this.animationSet, this.skeleton);
+	            this.animator = new SkeletonAnimator_1.SkeletonAnimator(this.animationSet, this.skeleton);
 	            for (var i = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
-	                AssetLibrary_1.default.load(new URLRequest_1.default("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser_1.default());
+	                AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser_1.MD5AnimParser());
 	            this.sprite.animator = this.animator;
 	        }
-	        else if (event.asset.isAsset(Skeleton_1.default)) {
+	        else if (event.asset.isAsset(Skeleton_1.Skeleton)) {
 	            this.skeleton = event.asset;
 	        }
-	        else if (event.asset.isAsset(Sprite_1.default)) {
+	        else if (event.asset.isAsset(Sprite_1.Sprite)) {
 	            //grab sprite object and assign our material object
 	            this.sprite = event.asset;
 	            this.sprite.graphics.getGraphicAt(0).material = this.bodyMaterial;
 	            this.sprite.graphics.getGraphicAt(1).material = this.sprite.graphics.getGraphicAt(2).material = this.sprite.graphics.getGraphicAt(3).material = this.gobMaterial;
 	            this.sprite.castsShadows = true;
 	            this.sprite.rotationY = 180;
-	            this.gobStyle = this.sprite.graphics.getGraphicAt(1).style = this.sprite.graphics.getGraphicAt(2).style = this.sprite.graphics.getGraphicAt(3).style = new Style_1.default();
-	            this.gobStyle.uvMatrix = new Matrix_1.default();
+	            this.gobStyle = this.sprite.graphics.getGraphicAt(1).style = this.sprite.graphics.getGraphicAt(2).style = this.sprite.graphics.getGraphicAt(3).style = new Style_1.Style();
+	            this.gobStyle.uvMatrix = new Matrix_1.Matrix();
 	            this.scene.addChild(this.sprite);
 	            //add our lookat object to the sprite
 	            this.sprite.addChild(this.placeHolder);
@@ -325,38 +325,38 @@ webpackJsonp([14],[
 	        switch (event.url) {
 	            //environment texture
 	            case 'assets/skybox/grimnight_texture.cube':
-	                this.skyBox = new Skybox_1.default(event.assets[0]);
+	                this.skyBox = new Skybox_1.Skybox(event.assets[0]);
 	                this.scene.addChild(this.skyBox);
 	                break;
 	            //entities textures
 	            case "assets/redlight.png":
-	                this.redLightMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.redLightMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/bluelight.png":
-	                this.blueLightMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.blueLightMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            //floor textures
 	            case "assets/rockbase_diffuse.jpg":
-	                this.groundMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/rockbase_normals.png":
-	                this.groundMaterial.normalMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/rockbase_specular.png":
-	                this.groundMaterial.specularMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            //hellknight textures
 	            case "assets/hellknight/hellknight_diffuse.jpg":
-	                this.bodyMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.bodyMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/hellknight/hellknight_normals.png":
-	                this.bodyMaterial.normalMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.bodyMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/hellknight/hellknight_specular.png":
-	                this.bodyMaterial.specularMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.bodyMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/hellknight/gob.png":
-	                this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	        }
 	    };
@@ -377,27 +377,27 @@ webpackJsonp([14],[
 	     */
 	    Intermediate_MD5Animation.prototype.onKeyDown = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.SHIFT:
+	            case Keyboard_1.Keyboard.SHIFT:
 	                this.isRunning = true;
 	                if (this.isMoving)
 	                    this.updateMovement(this.movementDirection);
 	                break;
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.Z:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.Z:
 	                this.updateMovement(this.movementDirection = 1);
 	                break;
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this.updateMovement(this.movementDirection = -1);
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.Q:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.Q:
 	                this.currentRotationInc = -Intermediate_MD5Animation.ROTATION_SPEED;
 	                break;
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this.currentRotationInc = Intermediate_MD5Animation.ROTATION_SPEED;
 	                break;
 	        }
@@ -407,50 +407,50 @@ webpackJsonp([14],[
 	     */
 	    Intermediate_MD5Animation.prototype.onKeyUp = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.SHIFT:
+	            case Keyboard_1.Keyboard.SHIFT:
 	                this.isRunning = false;
 	                if (this.isMoving)
 	                    this.updateMovement(this.movementDirection);
 	                break;
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.Z: //fr
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.Z: //fr
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this.stop();
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.Q: //fr
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.Q: //fr
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this.currentRotationInc = 0;
 	                break;
-	            case Keyboard_1.default.NUMBER_1:
+	            case Keyboard_1.Keyboard.NUMBER_1:
 	                this.playAction(1);
 	                break;
-	            case Keyboard_1.default.NUMBER_2:
+	            case Keyboard_1.Keyboard.NUMBER_2:
 	                this.playAction(2);
 	                break;
-	            case Keyboard_1.default.NUMBER_3:
+	            case Keyboard_1.Keyboard.NUMBER_3:
 	                this.playAction(3);
 	                break;
-	            case Keyboard_1.default.NUMBER_4:
+	            case Keyboard_1.Keyboard.NUMBER_4:
 	                this.playAction(4);
 	                break;
-	            case Keyboard_1.default.NUMBER_5:
+	            case Keyboard_1.Keyboard.NUMBER_5:
 	                this.playAction(5);
 	                break;
-	            case Keyboard_1.default.NUMBER_6:
+	            case Keyboard_1.Keyboard.NUMBER_6:
 	                this.playAction(6);
 	                break;
-	            case Keyboard_1.default.NUMBER_7:
+	            case Keyboard_1.Keyboard.NUMBER_7:
 	                this.playAction(7);
 	                break;
-	            case Keyboard_1.default.NUMBER_8:
+	            case Keyboard_1.Keyboard.NUMBER_8:
 	                this.playAction(8);
 	                break;
-	            case Keyboard_1.default.NUMBER_9:
+	            case Keyboard_1.Keyboard.NUMBER_9:
 	                this.playAction(9);
 	                break;
 	        }

@@ -78,13 +78,13 @@ webpackJsonp([18],[
 	        this._pKnightMaterials = new Array();
 	        this._time = 0;
 	        this._move = false;
-	        this._lookAtPosition = new Vector3D_1.default();
+	        this._lookAtPosition = new Vector3D_1.Vector3D();
 	        //setup the view
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        //setup the camera for optimal rendering
 	        this._view.camera.projection.far = 5000;
 	        //setup controller to be used on the camera
-	        this._cameraController = new HoverController_1.default(this._view.camera, null, 45, 20, 2000, 5);
+	        this._cameraController = new HoverController_1.HoverController(this._view.camera, null, 45, 20, 2000, 5);
 	        //setup the help text
 	        /*
 	        var text:TextField = new TextField();
@@ -105,35 +105,35 @@ webpackJsonp([18],[
 	        addChild(text);
 	        */
 	        //setup the lights for the scene
-	        this._light = new DirectionalLight_1.default(-0.5, -1, -1);
+	        this._light = new DirectionalLight_1.DirectionalLight(-0.5, -1, -1);
 	        this._light.ambient = 0.4;
-	        this._lightPicker = new StaticLightPicker_1.default([this._light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light]);
 	        this._view.scene.addChild(this._light);
 	        //setup listeners on AssetLibrary
-	        AssetLibrary_1.default.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //load perilith knight textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/pknight1.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/pknight2.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/pknight3.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/pknight4.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/pknight1.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/pknight2.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/pknight3.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/pknight4.png"));
 	        //load floor texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_diffuse.jpg"));
 	        //load perelith knight data
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/pknight.md2"), null, null, new MD2Parser_1.default());
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/pknight.md2"), null, null, new MD2Parser_1.MD2Parser());
 	        //create a global shadow map method
-	        this._shadowMapMethod = new ShadowFilteredMethod_1.default(this._light);
+	        this._shadowMapMethod = new ShadowFilteredMethod_1.ShadowFilteredMethod(this._light);
 	        this._shadowMapMethod.epsilon = 0.2;
 	        //setup floor material
-	        this._floorMaterial = new MethodMaterial_1.default();
+	        this._floorMaterial = new MethodMaterial_1.MethodMaterial();
 	        this._floorMaterial.lightPicker = this._lightPicker;
 	        this._floorMaterial.specularMethod.strength = 0;
 	        this._floorMaterial.ambientMethod.strength = 1;
 	        this._floorMaterial.shadowMethod = this._shadowMapMethod;
-	        this._floorMaterial.style.sampler = new Sampler2D_1.default(true);
+	        this._floorMaterial.style.sampler = new Sampler2D_1.Sampler2D(true);
 	        //setup knight materials
 	        for (var i = 0; i < this._pKnightTextures.length; i++) {
-	            var knightMaterial = new MethodMaterial_1.default();
+	            var knightMaterial = new MethodMaterial_1.MethodMaterial();
 	            //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
 	            //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
 	            knightMaterial.lightPicker = this._lightPicker;
@@ -144,7 +144,7 @@ webpackJsonp([18],[
 	            this._pKnightMaterials.push(knightMaterial);
 	        }
 	        //setup the floor
-	        this._floor = new PrimitivePlanePrefab_1.default(this._floorMaterial, ElementsType_1.default.TRIANGLE, 5000, 5000).getNewObject();
+	        this._floor = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this._floorMaterial, ElementsType_1.ElementsType.TRIANGLE, 5000, 5000).getNewObject();
 	        this._floor.graphics.scaleUV(5, 5);
 	        //setup the scene
 	        this._view.scene.addChild(this._floor);
@@ -159,7 +159,7 @@ webpackJsonp([18],[
 	        document.onkeydown = function (event) { return _this.onKeyDown(event); };
 	        document.onkeyup = function (event) { return _this.onKeyUp(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    }
 	    /**
@@ -184,14 +184,14 @@ webpackJsonp([18],[
 	    Intermediate_PerelithKnight.prototype.onAssetComplete = function (event) {
 	        var asset = event.asset;
 	        switch (asset.assetType) {
-	            case Sprite_1.default.assetType:
+	            case Sprite_1.Sprite.assetType:
 	                this._sprite = event.asset;
 	                //adjust the sprite
 	                this._sprite.y = 120;
 	                this._sprite.transform.scaleTo(5, 5, 5);
 	                this._spriteInitialised = true;
 	                break;
-	            case AnimationSetBase_1.default.assetType:
+	            case AnimationSetBase_1.AnimationSetBase.assetType:
 	                this._animationSet = event.asset;
 	                this._animationSetInitialised = true;
 	                break;
@@ -212,7 +212,7 @@ webpackJsonp([18],[
 	                    clone.material = this._pKnightMaterials[Math.floor(Math.random() * this._pKnightMaterials.length)];
 	                    this._view.scene.addChild(clone);
 	                    //create animator
-	                    var vertexAnimator = new VertexAnimator_1.default(this._animationSet);
+	                    var vertexAnimator = new VertexAnimator_1.VertexAnimator(this._animationSet);
 	                    //play specified state
 	                    vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random() * this._animationSet.animationNames.length)], null, Math.random() * 1000);
 	                    clone.animator = vertexAnimator;
@@ -233,14 +233,14 @@ webpackJsonp([18],[
 	            switch (event.url) {
 	                //floor texture
 	                case "assets/floor_diffuse.jpg":
-	                    this._floorMaterial.ambientMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._floorMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //knight textures
 	                case "assets/pknight1.png":
 	                case "assets/pknight2.png":
 	                case "assets/pknight3.png":
 	                case "assets/pknight4.png":
-	                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //knight data
 	                case "assets/pknight.md2":
@@ -253,22 +253,22 @@ webpackJsonp([18],[
 	     */
 	    Intermediate_PerelithKnight.prototype.onKeyDown = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.Z:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.Z:
 	                this._keyUp = true;
 	                break;
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._keyDown = true;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.Q:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.Q:
 	                this._keyLeft = true;
 	                break;
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._keyRight = true;
 	                break;
 	        }
@@ -278,22 +278,22 @@ webpackJsonp([18],[
 	     */
 	    Intermediate_PerelithKnight.prototype.onKeyUp = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.Z:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.Z:
 	                this._keyUp = false;
 	                break;
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._keyDown = false;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.Q:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.Q:
 	                this._keyLeft = false;
 	                break;
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._keyRight = false;
 	                break;
 	        }

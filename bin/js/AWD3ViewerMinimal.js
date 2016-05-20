@@ -80,9 +80,9 @@ webpackJsonp([0],[
 	     */
 	    AWD3ViewerMinimal.prototype.initEngine = function () {
 	        //create the view
-	        this._renderer = new DefaultRenderer_1.default();
+	        this._renderer = new DefaultRenderer_1.DefaultRenderer();
 	        this._renderer.renderableSorter = null; //new RenderableSort2D();
-	        this._view = new View_1.default(this._renderer);
+	        this._view = new View_1.View(this._renderer);
 	        this._view.backgroundColor = 0x000000;
 	        this._stage_width = 200;
 	        this._stage_height = 200;
@@ -93,14 +93,14 @@ webpackJsonp([0],[
 	                 this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
 	        */
 	        this._isperspective = true;
-	        this._projection = new PerspectiveProjection_1.default();
-	        this._projection.coordinateSystem = CoordinateSystem_1.default.RIGHT_HANDED;
+	        this._projection = new PerspectiveProjection_1.PerspectiveProjection();
+	        this._projection.coordinateSystem = CoordinateSystem_1.CoordinateSystem.RIGHT_HANDED;
 	        this._projection.fieldOfView = 30;
 	        this._projection.originX = 0;
 	        this._projection.originY = 0;
-	        var camera = new Camera_1.default();
+	        var camera = new Camera_1.Camera();
 	        camera.projection = this._projection;
-	        this._hoverControl = new HoverController_1.default(camera, null, 180, 0, 1000);
+	        this._hoverControl = new HoverController_1.HoverController(camera, null, 180, 0, 1000);
 	        this._view.camera = camera;
 	    };
 	    /**
@@ -109,14 +109,14 @@ webpackJsonp([0],[
 	    AWD3ViewerMinimal.prototype.initObjects = function () {
 	        var _this = this;
 	        //kickoff asset loading
-	        var loader = new LoaderContainer_1.default();
-	        loader.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        loader.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
-	        loader.addEventListener(ParserEvent_1.default.PARSE_ERROR, function (event) { return _this.onParseError(event); });
+	        var loader = new LoaderContainer_1.LoaderContainer();
+	        loader.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        loader.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onRessourceComplete(event); });
+	        loader.addEventListener(ParserEvent_1.ParserEvent.PARSE_ERROR, function (event) { return _this.onParseError(event); });
 	        //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 	        //for plugin preview-runtime:
 	        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
-	        loader.load(new URLRequest_1.default("assets/AWD3/_concat_streams.awd"), null, null, new AWDParser_1.default(this._view));
+	        loader.load(new URLRequest_1.URLRequest("assets/AWD3/_concat_streams.awd"), null, null, new AWDParser_1.AWDParser(this._view));
 	        //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
 	        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
 	        //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
@@ -141,24 +141,24 @@ webpackJsonp([0],[
 	        var _this = this;
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    };
 	    /**
 	     * loader listener for asset complete events
 	     */
 	    AWD3ViewerMinimal.prototype.onAssetComplete = function (event) {
-	        if (event.asset.isAsset(TextField_1.default)) {
+	        if (event.asset.isAsset(TextField_1.TextField)) {
 	            var one_textfield = event.asset;
 	        }
-	        else if (event.asset.isAsset(Sprite_1.default)) {
+	        else if (event.asset.isAsset(Sprite_1.Sprite)) {
 	            var one_sprite = event.asset;
 	            one_sprite.debugVisible = true;
 	        }
-	        else if (event.asset.isAsset(Billboard_1.default)) {
+	        else if (event.asset.isAsset(Billboard_1.Billboard)) {
 	            var one_billboard = event.asset;
 	        }
-	        else if (event.asset.isAsset(MovieClip_1.default)) {
+	        else if (event.asset.isAsset(MovieClip_1.MovieClip)) {
 	            this._rootTimeLine = event.asset;
 	        }
 	    };
@@ -182,7 +182,7 @@ webpackJsonp([0],[
 	     */
 	    AWD3ViewerMinimal.prototype.onRessourceComplete = function (event) {
 	        if (this._rootTimeLine) {
-	            this._rootTimeLine.partition = new SceneGraphPartition_1.default();
+	            this._rootTimeLine.partition = new SceneGraphPartition_1.SceneGraphPartition();
 	            //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 	            this._view.scene.addChild(this._rootTimeLine);
 	        }

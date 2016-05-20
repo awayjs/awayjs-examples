@@ -35,40 +35,40 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import AssetEvent					from "awayjs-core/lib/events/AssetEvent";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import Loader						from "awayjs-core/lib/library/Loader";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Keyboard						from "awayjs-core/lib/ui/Keyboard";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {Loader}						from "awayjs-core/lib/library/Loader";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Keyboard}						from "awayjs-core/lib/ui/Keyboard";
 
-import Scene						from "awayjs-display/lib/display/Scene";
-import View							from "awayjs-display/lib/View";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
-import BoundsType					from "awayjs-display/lib/bounds/BoundsType";
-import Camera						from "awayjs-display/lib/display/Camera";
-import LineSegment					from "awayjs-display/lib/display/LineSegment";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import PointLight					from "awayjs-display/lib/display/PointLight";
-import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
-import StaticLightPicker			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import PickingCollision				from "awayjs-display/lib/pick/PickingCollision";
-import RaycastPicker				from "awayjs-display/lib/pick/RaycastPicker";
-import JSPickingCollider			from "awayjs-display/lib/pick/JSPickingCollider";
-import PrimitiveCubePrefab			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
-import PrimitiveCylinderPrefab		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
-import PrimitiveSpherePrefab		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
-import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
+import {Scene}						from "awayjs-display/lib/display/Scene";
+import {View}							from "awayjs-display/lib/View";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
+import {BoundsType}					from "awayjs-display/lib/bounds/BoundsType";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {PointLight}					from "awayjs-display/lib/display/PointLight";
+import {MouseEvent}				from "awayjs-display/lib/events/MouseEvent";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
+import {PickingCollision}				from "awayjs-display/lib/pick/PickingCollision";
+import {RaycastPicker}				from "awayjs-display/lib/pick/RaycastPicker";
+import {JSPickingCollider}			from "awayjs-display/lib/pick/JSPickingCollider";
+import {PrimitiveCubePrefab}			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
+import {PrimitiveCylinderPrefab}		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
+import {PrimitiveSpherePrefab}		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
+import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
+import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
 
-import OBJParser					from "awayjs-parsers/lib/OBJParser";
+import {OBJParser}					from "awayjs-parsers/lib/OBJParser";
 
 /**
  *
@@ -356,7 +356,7 @@ class Intermediate_MouseInteraction
 			sprite.material = this._blackMaterial;
 		}
 		else {
-			if( !sprite.hasEventListener( AwayMouseEvent.MOUSE_MOVE ) ) {
+			if( !sprite.hasEventListener( MouseEvent.MOUSE_MOVE ) ) {
 				sprite.material = this._grayMaterial;
 			}
 			else {
@@ -377,9 +377,9 @@ class Intermediate_MouseInteraction
 	{
 		window.onresize  = (event:UIEvent) => this.onResize(event);
 
-		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
-		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
-		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+		document.onmousedown = (event) => this.onMouseDown(event);
+		document.onmouseup = (event) => this.onMouseUp(event);
+		document.onmousemove = (event) => this.onMouseMove(event);
 		document.onmousewheel = (event:WheelEvent) => this.onMouseWheel(event);
 		document.onkeydown = (event:KeyboardEvent) => this.onKeyDown(event);
 		document.onkeyup = (event:KeyboardEvent) => this.onKeyUp(event);
@@ -493,16 +493,16 @@ class Intermediate_MouseInteraction
 
 	private enableSpriteMouseListeners(sprite:Sprite):void
 	{
-		sprite.addEventListener(AwayMouseEvent.MOUSE_OVER, (event:AwayMouseEvent) => this.onSpriteMouseOver(event));
-		sprite.addEventListener(AwayMouseEvent.MOUSE_OUT, (event:AwayMouseEvent) => this.onSpriteMouseOut(event));
-		sprite.addEventListener(AwayMouseEvent.MOUSE_MOVE, (event:AwayMouseEvent) => this.onSpriteMouseMove(event));
-		sprite.addEventListener(AwayMouseEvent.MOUSE_DOWN, (event:AwayMouseEvent) => this.onSpriteMouseDown(event));
+		sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onSpriteMouseOver(event));
+		sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onSpriteMouseOut(event));
+		sprite.addEventListener(MouseEvent.MOUSE_MOVE, (event:MouseEvent) => this.onSpriteMouseMove(event));
+		sprite.addEventListener(MouseEvent.MOUSE_DOWN, (event:MouseEvent) => this.onSpriteMouseDown(event));
 	}
 
 	/**
 	 * sprite listener for mouse down interaction
 	 */
-	private onSpriteMouseDown(event:AwayMouseEvent):void
+	private onSpriteMouseDown(event:MouseEvent):void
 	{
 		//var sprite:Sprite = <Sprite> event.object;
 		//// Paint on the head's material.
@@ -522,7 +522,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * sprite listener for mouse over interaction
 	 */
-	private onSpriteMouseOver(event:AwayMouseEvent):void
+	private onSpriteMouseOver(event:MouseEvent):void
 	{
 		var sprite:Sprite = <Sprite> event.entity;
 		sprite.debugVisible = true;
@@ -534,7 +534,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * sprite listener for mouse out interaction
 	 */
-	private onSpriteMouseOut(event:AwayMouseEvent):void
+	private onSpriteMouseOut(event:MouseEvent):void
 	{
 		var sprite:Sprite = <Sprite> event.entity;
 		sprite.debugVisible = false;
@@ -546,7 +546,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * sprite listener for mouse move interaction
 	 */
-	private onSpriteMouseMove(event:AwayMouseEvent):void
+	private onSpriteMouseMove(event:MouseEvent):void
 	{
 		var pos:Vector3D;
 
@@ -568,7 +568,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * Mouse down listener for navigation
 	 */
-	private onMouseDown(event:MouseEvent):void
+	private onMouseDown(event):void
 	{
 		this._lastPanAngle = this._cameraController.panAngle;
 		this._lastTiltAngle = this._cameraController.tiltAngle;
@@ -580,7 +580,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * Mouse up listener for navigation
 	 */
-	private onMouseUp(event:MouseEvent):void
+	private onMouseUp(event):void
 	{
 		this._move = false;
 	}
@@ -588,7 +588,7 @@ class Intermediate_MouseInteraction
 	/**
 	 * Mouse move listener for navigation
 	 */
-	private onMouseMove(event:MouseEvent)
+	private onMouseMove(event)
 	{
 		if (this._move) {
 			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;

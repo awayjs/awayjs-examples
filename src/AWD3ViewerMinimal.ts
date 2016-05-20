@@ -34,31 +34,31 @@
 
  */
 
-import AssetEvent							from "awayjs-core/lib/events/AssetEvent";
-import URLRequest							from "awayjs-core/lib/net/URLRequest";
-import LoaderEvent							from "awayjs-core/lib/events/LoaderEvent";
-import ParserEvent							from "awayjs-core/lib/events/ParserEvent";
-import OrthographicProjection				from "awayjs-core/lib/projections/OrthographicProjection";
-import RequestAnimationFrame				from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {AssetEvent}							from "awayjs-core/lib/events/AssetEvent";
+import {URLRequest}							from "awayjs-core/lib/net/URLRequest";
+import {LoaderEvent}							from "awayjs-core/lib/events/LoaderEvent";
+import {ParserEvent}							from "awayjs-core/lib/events/ParserEvent";
+import {OrthographicProjection}				from "awayjs-core/lib/projections/OrthographicProjection";
+import {RequestAnimationFrame}				from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View									from "awayjs-display/lib/View";
-import Sprite								from "awayjs-display/lib/display/Sprite";
-import Billboard							from "awayjs-display/lib/display/Billboard";
-import HoverController						from "awayjs-display/lib/controllers/HoverController";
-import Loader								from "awayjs-display/lib/display/LoaderContainer";
+import {View}									from "awayjs-display/lib/View";
+import {Sprite}								from "awayjs-display/lib/display/Sprite";
+import {Billboard}							from "awayjs-display/lib/display/Billboard";
+import {HoverController}						from "awayjs-display/lib/controllers/HoverController";
+import {LoaderContainer}						from "awayjs-display/lib/display/LoaderContainer";
 
-import DefaultRenderer					    from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}					    from "awayjs-renderergl/lib/DefaultRenderer";
 
 
-import AWDParser							from "awayjs-parsers/lib/AWDParser";
-import SceneGraphPartition					from "awayjs-display/lib/partition/SceneGraphPartition";
-import MovieClip							from "awayjs-display/lib/display/MovieClip";
+import {AWDParser}							from "awayjs-parsers/lib/AWDParser";
+import {SceneGraphPartition}					from "awayjs-display/lib/partition/SceneGraphPartition";
+import {MovieClip}							from "awayjs-display/lib/display/MovieClip";
 
-import CoordinateSystem						from "awayjs-core/lib/projections/CoordinateSystem";
-import PerspectiveProjection				from "awayjs-core/lib/projections/PerspectiveProjection";
-import Camera								from "awayjs-display/lib/display/Camera";
+import {CoordinateSystem}						from "awayjs-core/lib/projections/CoordinateSystem";
+import {PerspectiveProjection}				from "awayjs-core/lib/projections/PerspectiveProjection";
+import {Camera}								from "awayjs-display/lib/display/Camera";
 
-import TextField							from "awayjs-display/lib/display/TextField";
+import {TextField}							from "awayjs-display/lib/display/TextField";
 
 class AWD3ViewerMinimal
 {
@@ -156,7 +156,7 @@ class AWD3ViewerMinimal
     private initObjects(): void
     {
         //kickoff asset loading
-        var loader:Loader = new Loader();
+        var loader:LoaderContainer = new LoaderContainer();
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
         loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
         loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));

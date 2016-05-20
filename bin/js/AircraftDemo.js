@@ -42,8 +42,8 @@ webpackJsonp([3],[
 	        this._seaInitialized = false;
 	        this._f14Initialized = false;
 	        this._skyboxInitialized = false;
-	        Debug_1.default.LOG_PI_ERRORS = false;
-	        Debug_1.default.THROW_ERRORS = false;
+	        Debug_1.Debug.LOG_PI_ERRORS = false;
+	        Debug_1.Debug.THROW_ERRORS = false;
 	        this.initView();
 	        this.initLights();
 	        this.initAnimation();
@@ -58,18 +58,18 @@ webpackJsonp([3],[
 	    };
 	    AircraftDemo.prototype.loadAsset = function (path) {
 	        var _this = this;
-	        var session = AssetLibrary_1.default.getLoader();
-	        session.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
-	        session.load(new URLRequest_1.default(path));
+	        var session = AssetLibrary_1.AssetLibrary.getLoader();
+	        session.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        session.load(new URLRequest_1.URLRequest(path));
 	    };
 	    AircraftDemo.prototype.initParsers = function () {
-	        AssetLibrary_1.default.enableParser(OBJParser_1.default);
+	        AssetLibrary_1.AssetLibrary.enableParser(OBJParser_1.OBJParser);
 	    };
 	    AircraftDemo.prototype.initAnimation = function () {
-	        this._timer = new RequestAnimationFrame_1.default(this.render, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.render, this);
 	    };
 	    AircraftDemo.prototype.initView = function () {
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this._view.camera.z = -500;
 	        this._view.camera.y = 250;
 	        this._view.camera.rotationX = 20;
@@ -86,21 +86,21 @@ webpackJsonp([3],[
 	        }
 	    };
 	    AircraftDemo.prototype.initLights = function () {
-	        var light = new DirectionalLight_1.default();
+	        var light = new DirectionalLight_1.DirectionalLight();
 	        light.color = 0x974523;
-	        light.direction = new Vector3D_1.default(-300, -300, -5000);
+	        light.direction = new Vector3D_1.Vector3D(-300, -300, -5000);
 	        light.ambient = 1;
 	        light.ambientColor = 0x7196ac;
 	        light.diffuse = 1.2;
 	        light.specular = 1.1;
 	        this._view.scene.addChild(light);
-	        this._lightPicker = new StaticLightPicker_1.default([light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([light]);
 	    };
 	    AircraftDemo.prototype.initF14 = function () {
 	        var _this = this;
 	        this._f14Initialized = true;
-	        var f14Material = new MethodMaterial_1.default(this._seaNormalImage); // will be the cubemap
-	        f14Material.style.sampler = new Sampler2D_1.default(true, true, false);
+	        var f14Material = new MethodMaterial_1.MethodMaterial(this._seaNormalImage); // will be the cubemap
+	        f14Material.style.sampler = new Sampler2D_1.Sampler2D(true, true, false);
 	        f14Material.lightPicker = this._lightPicker;
 	        this._view.scene.addChild(this._f14Geom);
 	        this._f14Geom.transform.scaleTo(20, 20, 20);
@@ -110,26 +110,26 @@ webpackJsonp([3],[
 	        document.onmousedown = function (event) { return _this.onMouseDown(event); };
 	    };
 	    AircraftDemo.prototype.initSea = function () {
-	        this._seaMaterial = new MethodMaterial_1.default(this._seaNormalImage); // will be the cubemap
-	        this._seaMaterial.style.sampler = new Sampler2D_1.default(true, true, false);
-	        this._waterMethod = new NormalSimpleWaterMethod_1.default(new Single2DTexture_1.default(this._seaNormalImage), new Single2DTexture_1.default(this._seaNormalImage));
-	        var fresnelMethod = new SpecularFresnelMethod_1.default();
+	        this._seaMaterial = new MethodMaterial_1.MethodMaterial(this._seaNormalImage); // will be the cubemap
+	        this._seaMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true, false);
+	        this._waterMethod = new NormalSimpleWaterMethod_1.NormalSimpleWaterMethod(new Single2DTexture_1.Single2DTexture(this._seaNormalImage), new Single2DTexture_1.Single2DTexture(this._seaNormalImage));
+	        var fresnelMethod = new SpecularFresnelMethod_1.SpecularFresnelMethod();
 	        fresnelMethod.normalReflectance = .3;
 	        fresnelMethod.gloss = 10;
 	        fresnelMethod.strength = 1;
 	        this._seaMaterial.alphaBlending = true;
 	        this._seaMaterial.lightPicker = this._lightPicker;
-	        this._seaMaterial.style.sampler = new Sampler2D_1.default(true);
+	        this._seaMaterial.style.sampler = new Sampler2D_1.Sampler2D(true);
 	        this._seaMaterial.animateUVs = true;
 	        this._seaMaterial.normalMethod = this._waterMethod;
-	        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod_1.default(new SingleCubeTexture_1.default(this._skyboxImageCube)));
+	        this._seaMaterial.addEffectMethod(new EffectEnvMapMethod_1.EffectEnvMapMethod(new SingleCubeTexture_1.SingleCubeTexture(this._skyboxImageCube)));
 	        this._seaMaterial.specularMethod = fresnelMethod;
-	        this._seaGeom = new PrimitivePlanePrefab_1.default(this._seaMaterial, ElementsType_1.default.TRIANGLE, 50000, 50000, 1, 1, true, false);
+	        this._seaGeom = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this._seaMaterial, ElementsType_1.ElementsType.TRIANGLE, 50000, 50000, 1, 1, true, false);
 	        this._seaSprite = this._seaGeom.getNewObject();
 	        this._seaSprite.graphics.scaleUV(100, 100);
-	        this._seaSprite.style = new Style_1.default();
-	        this._seaSprite.style.uvMatrix = new Matrix_1.default();
-	        this._view.scene.addChild(new Skybox_1.default(this._skyboxImageCube));
+	        this._seaSprite.style = new Style_1.Style();
+	        this._seaSprite.style.uvMatrix = new Matrix_1.Matrix();
+	        this._view.scene.addChild(new Skybox_1.Skybox(this._skyboxImageCube));
 	        this._view.scene.addChild(this._seaSprite);
 	    };
 	    AircraftDemo.prototype.onResourceComplete = function (event) {
@@ -141,11 +141,11 @@ webpackJsonp([3],[
 	                this._seaNormalImage = loader.baseDependency.assets[0];
 	                break;
 	            case 'assets/f14/f14d.obj':
-	                this._f14Geom = new DisplayObjectContainer_1.default();
+	                this._f14Geom = new DisplayObjectContainer_1.DisplayObjectContainer();
 	                for (i = 0; i < numAssets; ++i) {
 	                    var asset = loader.baseDependency.assets[i];
 	                    switch (asset.assetType) {
-	                        case Sprite_1.default.assetType:
+	                        case Sprite_1.Sprite.assetType:
 	                            var sprite = asset;
 	                            this._f14Geom.addChild(sprite);
 	                            break;

@@ -98,15 +98,15 @@ webpackJsonp([13],[
 	     * Initialise the engine
 	     */
 	    Intermediate_Globe.prototype.initEngine = function () {
-	        this.scene = new Scene_1.default();
+	        this.scene = new Scene_1.Scene();
 	        //setup camera for optimal skybox rendering
-	        this.camera = new Camera_1.default();
+	        this.camera = new Camera_1.Camera();
 	        this.camera.projection.far = 100000;
-	        this.view = new View_1.default(new DefaultRenderer_1.default());
+	        this.view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this.view.scene = this.scene;
 	        this.view.camera = this.camera;
 	        //setup controller to be used on the camera
-	        this.cameraController = new HoverController_1.default(this.camera, null, 0, 0, 600, -90, 90);
+	        this.cameraController = new HoverController_1.HoverController(this.camera, null, 0, 0, 600, -90, 90);
 	        this.cameraController.autoUpdate = false;
 	        this.cameraController.yFactor = 1;
 	    };
@@ -114,11 +114,11 @@ webpackJsonp([13],[
 	     * Initialise the lights
 	     */
 	    Intermediate_Globe.prototype.initLights = function () {
-	        this.light = new PointLight_1.default();
+	        this.light = new PointLight_1.PointLight();
 	        this.light.x = 10000;
 	        this.light.ambient = 1;
 	        this.light.diffuse = 2;
-	        this.lightPicker = new StaticLightPicker_1.default([this.light]);
+	        this.lightPicker = new StaticLightPicker_1.StaticLightPicker([this.light]);
 	    };
 	    /*
 	        private initLensFlare():void
@@ -144,31 +144,31 @@ webpackJsonp([13],[
 	        //adjust specular map
 	        //var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
 	        //specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-	        var specular = new SpecularFresnelMethod_1.default(true, new SpecularPhongMethod_1.default());
+	        var specular = new SpecularFresnelMethod_1.SpecularFresnelMethod(true, new SpecularPhongMethod_1.SpecularPhongMethod());
 	        specular.fresnelPower = 1;
 	        specular.normalReflectance = 0.1;
 	        specular.gloss = 5;
 	        specular.strength = 1;
-	        this.sunMaterial = new MethodMaterial_1.default();
-	        this.sunMaterial.blendMode = BlendMode_1.default.ADD;
-	        this.groundMaterial = new MethodMaterial_1.default();
+	        this.sunMaterial = new MethodMaterial_1.MethodMaterial();
+	        this.sunMaterial.blendMode = BlendMode_1.BlendMode.ADD;
+	        this.groundMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.groundMaterial.specularMethod = specular;
 	        this.groundMaterial.lightPicker = this.lightPicker;
 	        this.groundMaterial.ambientMethod.strength = 1;
 	        this.groundMaterial.diffuseMethod.multiply = false;
-	        this.cloudMaterial = new MethodMaterial_1.default();
+	        this.cloudMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.cloudMaterial.alphaBlending = true;
 	        this.cloudMaterial.lightPicker = this.lightPicker;
 	        this.cloudMaterial.style.color = 0x1b2048;
 	        this.cloudMaterial.specularMethod.strength = 0;
 	        this.cloudMaterial.ambientMethod.strength = 1;
 	        this.cloudMaterial.diffuseMethod.multiply = false;
-	        this.atmosphereDiffuseMethod = new DiffuseCompositeMethod_1.default(this.modulateDiffuseMethod);
-	        this.atmosphereSpecularMethod = new SpecularCompositeMethod_1.default(this.modulateSpecularMethod, new SpecularPhongMethod_1.default());
-	        this.atmosphereMaterial = new MethodMaterial_1.default();
+	        this.atmosphereDiffuseMethod = new DiffuseCompositeMethod_1.DiffuseCompositeMethod(this.modulateDiffuseMethod);
+	        this.atmosphereSpecularMethod = new SpecularCompositeMethod_1.SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod_1.SpecularPhongMethod());
+	        this.atmosphereMaterial = new MethodMaterial_1.MethodMaterial();
 	        this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
 	        this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
-	        this.atmosphereMaterial.blendMode = BlendMode_1.default.ADD;
+	        this.atmosphereMaterial.blendMode = BlendMode_1.BlendMode.ADD;
 	        this.atmosphereMaterial.lightPicker = this.lightPicker;
 	        this.atmosphereMaterial.specularMethod.strength = 0.5;
 	        this.atmosphereMaterial.specularMethod.gloss = 5;
@@ -199,22 +199,22 @@ webpackJsonp([13],[
 	     * Initialise the scene objects
 	     */
 	    Intermediate_Globe.prototype.initObjects = function () {
-	        this.orbitContainer = new DisplayObjectContainer_1.default();
+	        this.orbitContainer = new DisplayObjectContainer_1.DisplayObjectContainer();
 	        this.orbitContainer.addChild(this.light);
 	        this.scene.addChild(this.orbitContainer);
-	        this.sun = new Billboard_1.default(this.sunMaterial);
+	        this.sun = new Billboard_1.Billboard(this.sunMaterial);
 	        this.sun.width = 3000;
 	        this.sun.height = 3000;
-	        this.sun.pivot = new Vector3D_1.default(1500, 1500, 0);
-	        this.sun.orientationMode = OrientationMode_1.default.CAMERA_PLANE;
-	        this.sun.alignmentMode = AlignmentMode_1.default.PIVOT_POINT;
+	        this.sun.pivot = new Vector3D_1.Vector3D(1500, 1500, 0);
+	        this.sun.orientationMode = OrientationMode_1.OrientationMode.CAMERA_PLANE;
+	        this.sun.alignmentMode = AlignmentMode_1.AlignmentMode.PIVOT_POINT;
 	        this.sun.x = 10000;
 	        this.orbitContainer.addChild(this.sun);
-	        this.earth = new PrimitiveSpherePrefab_1.default(this.groundMaterial, ElementsType_1.default.TRIANGLE, 200, 200, 100).getNewObject();
-	        this.clouds = new PrimitiveSpherePrefab_1.default(this.cloudMaterial, ElementsType_1.default.TRIANGLE, 202, 200, 100).getNewObject();
-	        this.atmosphere = new PrimitiveSpherePrefab_1.default(this.atmosphereMaterial, ElementsType_1.default.TRIANGLE, 210, 200, 100).getNewObject();
+	        this.earth = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(this.groundMaterial, ElementsType_1.ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
+	        this.clouds = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(this.cloudMaterial, ElementsType_1.ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
+	        this.atmosphere = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType_1.ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
 	        this.atmosphere.scaleX = -1;
-	        this.tiltContainer = new DisplayObjectContainer_1.default();
+	        this.tiltContainer = new DisplayObjectContainer_1.DisplayObjectContainer();
 	        this.tiltContainer.rotationX = -23;
 	        this.tiltContainer.addChild(this.earth);
 	        this.tiltContainer.addChild(this.clouds);
@@ -233,30 +233,30 @@ webpackJsonp([13],[
 	        document.onmousemove = function (event) { return _this.onMouseMove(event); };
 	        document.onmousewheel = function (event) { return _this.onMouseWheel(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //setup the url map for textures in the cubemap file
-	        var loaderContext = new LoaderContext_1.default();
+	        var loaderContext = new LoaderContext_1.LoaderContext();
 	        loaderContext.dependencyBaseUrl = "assets/skybox/";
 	        //environment texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/skybox/space_texture.cube"), loaderContext);
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/skybox/space_texture.cube"), loaderContext);
 	        //globe textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/globe/cloud_combined_2048.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/globe/earth_specular_2048.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/globe/EarthNormal.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/globe/land_lights_16384.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/globe/land_ocean_ice_2048_match.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/globe/cloud_combined_2048.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/globe/earth_specular_2048.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/globe/EarthNormal.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/globe/land_lights_16384.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/globe/land_ocean_ice_2048_match.jpg"));
 	        //flare textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare2.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare3.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare4.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare6.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare7.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare8.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare10.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare11.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/lensflare/flare12.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare2.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare3.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare4.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare6.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare7.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare8.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare10.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare11.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/lensflare/flare12.jpg"));
 	    };
 	    /**
 	     * Navigation and render loop
@@ -289,7 +289,7 @@ webpackJsonp([13],[
 	        }
 	        //update flare position
 	        if (this.flareVisible) {
-	            var flareDirection = new Point_1.default(xOffset, yOffset);
+	            var flareDirection = new Point_1.Point(xOffset, yOffset);
 	            for (var i = 0; i < this.flares.length; i++) {
 	                flareObject = this.flares[i];
 	                if (flareObject) {
@@ -306,28 +306,28 @@ webpackJsonp([13],[
 	        switch (event.url) {
 	            //environment texture
 	            case 'assets/skybox/space_texture.cube':
-	                this.skyBox = new Skybox_1.default(event.assets[0]);
+	                this.skyBox = new Skybox_1.Skybox(event.assets[0]);
 	                this.scene.addChild(this.skyBox);
 	                break;
 	            //globe textures
 	            case "assets/globe/cloud_combined_2048.jpg":
-	                var cloudBitmapImage2D = new BitmapImage2D_1.default(2048, 1024, true, 0xFFFFFFFF);
-	                cloudBitmapImage2D.copyChannel(event.assets[0], cloudBitmapImage2D.rect, new Point_1.default(), BitmapImageChannel_1.default.RED, BitmapImageChannel_1.default.ALPHA);
-	                this.cloudMaterial.ambientMethod.texture = new Single2DTexture_1.default(cloudBitmapImage2D);
+	                var cloudBitmapImage2D = new BitmapImage2D_1.BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
+	                cloudBitmapImage2D.copyChannel(event.assets[0], cloudBitmapImage2D.rect, new Point_1.Point(), BitmapImageChannel_1.BitmapImageChannel.RED, BitmapImageChannel_1.BitmapImageChannel.ALPHA);
+	                this.cloudMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(cloudBitmapImage2D);
 	                break;
 	            case "assets/globe/earth_specular_2048.jpg":
 	                var specBitmapImage2D = event.assets[0];
-	                specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform_1.default(1, 1, 1, 1, 64, 64, 64));
-	                this.groundMaterial.specularMethod.texture = new Single2DTexture_1.default(specBitmapImage2D);
+	                specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform_1.ColorTransform(1, 1, 1, 1, 64, 64, 64));
+	                this.groundMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(specBitmapImage2D);
 	                break;
 	            case "assets/globe/EarthNormal.png":
-	                this.groundMaterial.normalMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/globe/land_lights_16384.jpg":
-	                this.groundMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            case "assets/globe/land_ocean_ice_2048_match.jpg":
-	                this.groundMaterial.diffuseMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.groundMaterial.diffuseMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                break;
 	            //flare textures
 	            case "assets/lensflare/flare2.jpg":
@@ -352,7 +352,7 @@ webpackJsonp([13],[
 	                this.flares[9] = new FlareObject(event.assets[0], 0.5, 2.21, 33.15, this.scene);
 	                break;
 	            case "assets/lensflare/flare10.jpg":
-	                this.sunMaterial.ambientMethod.texture = new Single2DTexture_1.default(event.assets[0]);
+	                this.sunMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(event.assets[0]);
 	                this.flares[0] = new FlareObject(event.assets[0], 3.2, -0.01, 100, this.scene);
 	                break;
 	            case "assets/lensflare/flare11.jpg":
@@ -470,18 +470,18 @@ webpackJsonp([13],[
 	     */
 	    function FlareObject(bitmapData, size, position, opacity, scene) {
 	        this.flareSize = 14.4;
-	        var bd = new BitmapImage2D_1.default(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
-	        bd.copyChannel(bitmapData, bitmapData.rect, new Point_1.default(), BitmapImageChannel_1.default.RED, BitmapImageChannel_1.default.ALPHA);
-	        var billboardMaterial = new MethodMaterial_1.default(bd);
+	        var bd = new BitmapImage2D_1.BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
+	        bd.copyChannel(bitmapData, bitmapData.rect, new Point_1.Point(), BitmapImageChannel_1.BitmapImageChannel.RED, BitmapImageChannel_1.BitmapImageChannel.ALPHA);
+	        var billboardMaterial = new MethodMaterial_1.MethodMaterial(bd);
 	        billboardMaterial.alpha = opacity / 100;
 	        billboardMaterial.alphaBlending = true;
 	        //billboardMaterial.blendMode = BlendMode.LAYER;
-	        this.billboard = new Billboard_1.default(billboardMaterial);
+	        this.billboard = new Billboard_1.Billboard(billboardMaterial);
 	        this.billboard.width = size * this.flareSize;
 	        this.billboard.height = size * this.flareSize;
-	        this.billboard.pivot = new Vector3D_1.default(size * this.flareSize / 2, size * this.flareSize / 2, 0);
-	        this.billboard.orientationMode = OrientationMode_1.default.CAMERA_PLANE;
-	        this.billboard.alignmentMode = AlignmentMode_1.default.PIVOT_POINT;
+	        this.billboard.pivot = new Vector3D_1.Vector3D(size * this.flareSize / 2, size * this.flareSize / 2, 0);
+	        this.billboard.orientationMode = OrientationMode_1.OrientationMode.CAMERA_PLANE;
+	        this.billboard.alignmentMode = AlignmentMode_1.AlignmentMode.PIVOT_POINT;
 	        this.billboard.visible = false;
 	        this.size = size;
 	        this.position = position;

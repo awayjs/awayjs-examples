@@ -36,23 +36,23 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				from "awayjs-core/lib/image/BitmapImage2D";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import IAsset						from "awayjs-core/lib/library/IAsset";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {IAsset}						from "awayjs-core/lib/library/IAsset";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							from "awayjs-display/lib/View";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import PrimitivePlanePrefab			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
-import Single2DTexture				from "awayjs-display/lib/textures/Single2DTexture";
+import {View}							from "awayjs-display/lib/View";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {PrimitivePlanePrefab}			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import BasicMaterial				from "awayjs-display/lib/materials/BasicMaterial";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
+import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
 
 class Basic_View
 {

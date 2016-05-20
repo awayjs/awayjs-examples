@@ -98,14 +98,14 @@ webpackJsonp([4],[
 	     * Initialise the engine
 	     */
 	    Basic_Fire.prototype.initEngine = function () {
-	        this.scene = new Scene_1.default();
-	        this.camera = new Camera_1.default();
-	        this.view = new View_1.default(new DefaultRenderer_1.default());
+	        this.scene = new Scene_1.Scene();
+	        this.camera = new Camera_1.Camera();
+	        this.view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        //this.view.antiAlias = 4;
 	        this.view.scene = this.scene;
 	        this.view.camera = this.camera;
 	        //setup controller to be used on the camera
-	        this.cameraController = new HoverController_1.default(this.camera);
+	        this.cameraController = new HoverController_1.HoverController(this.camera);
 	        this.cameraController.distance = 1000;
 	        this.cameraController.minTiltAngle = 0;
 	        this.cameraController.maxTiltAngle = 90;
@@ -116,7 +116,7 @@ webpackJsonp([4],[
 	     * Initialise the lights
 	     */
 	    Basic_Fire.prototype.initLights = function () {
-	        this.directionalLight = new DirectionalLight_1.default(0, -1, 0);
+	        this.directionalLight = new DirectionalLight_1.DirectionalLight(0, -1, 0);
 	        this.directionalLight.castsShadows = false;
 	        this.directionalLight.color = 0xeedddd;
 	        this.directionalLight.diffuse = .5;
@@ -124,51 +124,51 @@ webpackJsonp([4],[
 	        this.directionalLight.specular = 0;
 	        this.directionalLight.ambientColor = 0x808090;
 	        this.view.scene.addChild(this.directionalLight);
-	        this.lightPicker = new StaticLightPicker_1.default([this.directionalLight]);
+	        this.lightPicker = new StaticLightPicker_1.StaticLightPicker([this.directionalLight]);
 	    };
 	    /**
 	     * Initialise the materials
 	     */
 	    Basic_Fire.prototype.initMaterials = function () {
-	        this.planeMaterial = new MethodMaterial_1.default();
-	        this.planeMaterial.mode = MethodMaterialMode_1.default.MULTI_PASS;
+	        this.planeMaterial = new MethodMaterial_1.MethodMaterial();
+	        this.planeMaterial.mode = MethodMaterialMode_1.MethodMaterialMode.MULTI_PASS;
 	        this.planeMaterial.lightPicker = this.lightPicker;
-	        this.planeMaterial.style.sampler = new Sampler2D_1.default(true, true, false);
+	        this.planeMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true, false);
 	        this.planeMaterial.specularMethod.strength = 10;
-	        this.particleMaterial = new MethodMaterial_1.default();
-	        this.particleMaterial.blendMode = BlendMode_1.default.ADD;
+	        this.particleMaterial = new MethodMaterial_1.MethodMaterial();
+	        this.particleMaterial.blendMode = BlendMode_1.BlendMode.ADD;
 	    };
 	    /**
 	     * Initialise the particles
 	     */
 	    Basic_Fire.prototype.initParticles = function () {
 	        //create the particle animation set
-	        this.fireAnimationSet = new ParticleAnimationSet_1.default(true, true);
+	        this.fireAnimationSet = new ParticleAnimationSet_1.ParticleAnimationSet(true, true);
 	        //add some animations which can control the particles:
 	        //the global animations can be set directly, because they influence all the particles with the same factor
-	        this.fireAnimationSet.addAnimation(new ParticleBillboardNode_1.default());
-	        this.fireAnimationSet.addAnimation(new ParticleScaleNode_1.default(ParticlePropertiesMode_1.default.GLOBAL, false, false, 2.5, 0.5));
-	        this.fireAnimationSet.addAnimation(new ParticleVelocityNode_1.default(ParticlePropertiesMode_1.default.GLOBAL, new Vector3D_1.default(0, 80, 0)));
-	        this.fireAnimationSet.addAnimation(new ParticleColorNode_1.default(ParticlePropertiesMode_1.default.GLOBAL, true, true, false, false, new ColorTransform_1.default(0, 0, 0, 1, 0xFF, 0x33, 0x01), new ColorTransform_1.default(0, 0, 0, 1, 0x99)));
+	        this.fireAnimationSet.addAnimation(new ParticleBillboardNode_1.ParticleBillboardNode());
+	        this.fireAnimationSet.addAnimation(new ParticleScaleNode_1.ParticleScaleNode(ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, false, false, 2.5, 0.5));
+	        this.fireAnimationSet.addAnimation(new ParticleVelocityNode_1.ParticleVelocityNode(ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, new Vector3D_1.Vector3D(0, 80, 0)));
+	        this.fireAnimationSet.addAnimation(new ParticleColorNode_1.ParticleColorNode(ParticlePropertiesMode_1.ParticlePropertiesMode.GLOBAL, true, true, false, false, new ColorTransform_1.ColorTransform(0, 0, 0, 1, 0xFF, 0x33, 0x01), new ColorTransform_1.ColorTransform(0, 0, 0, 1, 0x99)));
 	        //no need to set the local animations here, because they influence all the particle with different factors.
-	        this.fireAnimationSet.addAnimation(new ParticleVelocityNode_1.default(ParticlePropertiesMode_1.default.LOCAL_STATIC));
+	        this.fireAnimationSet.addAnimation(new ParticleVelocityNode_1.ParticleVelocityNode(ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC));
 	        //set the initParticleFunc. It will be invoked for the local static property initialization of every particle
 	        this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 	        //create the original particle geometry
-	        var particle = (new PrimitivePlanePrefab_1.default(null, ElementsType_1.default.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
+	        var particle = (new PrimitivePlanePrefab_1.PrimitivePlanePrefab(null, ElementsType_1.ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
 	        //combine them into a list
 	        var graphicsSet = new Array();
 	        for (var i = 0; i < 500; i++)
 	            graphicsSet.push(particle.graphics);
-	        this.particleSprite = new Sprite_1.default(this.particleMaterial);
-	        ParticleGraphicsHelper_1.default.generateGraphics(this.particleSprite.graphics, graphicsSet);
+	        this.particleSprite = new Sprite_1.Sprite(this.particleMaterial);
+	        ParticleGraphicsHelper_1.ParticleGraphicsHelper.generateGraphics(this.particleSprite.graphics, graphicsSet);
 	    };
 	    /**
 	     * Initialise the scene objects
 	     */
 	    Basic_Fire.prototype.initObjects = function () {
 	        var _this = this;
-	        this.plane = new PrimitivePlanePrefab_1.default(this.planeMaterial, ElementsType_1.default.TRIANGLE, 1000, 1000).getNewObject();
+	        this.plane = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this.planeMaterial, ElementsType_1.ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 	        this.plane.material = this.planeMaterial;
 	        this.plane.graphics.scaleUV(2, 2);
 	        this.plane.y = -20;
@@ -176,7 +176,7 @@ webpackJsonp([4],[
 	        //create fire object sprites from geomtry and material, and apply particle animators to each
 	        for (var i = 0; i < Basic_Fire.NUM_FIRES; i++) {
 	            var particleSprite = this.particleSprite.clone();
-	            var animator = new ParticleAnimator_1.default(this.fireAnimationSet);
+	            var animator = new ParticleAnimator_1.ParticleAnimator(this.fireAnimationSet);
 	            particleSprite.animator = animator;
 	            //position the sprite
 	            var degree = i / Basic_Fire.NUM_FIRES * Math.PI * 2;
@@ -188,8 +188,8 @@ webpackJsonp([4],[
 	            this.view.scene.addChild(particleSprite);
 	        }
 	        //setup timer for triggering each particle aniamtor
-	        this.fireTimer = new Timer_1.default(1000, this.fireObjects.length);
-	        this.fireTimer.addEventListener(TimerEvent_1.default.TIMER, function (event) { return _this.onTimer(event); });
+	        this.fireTimer = new Timer_1.Timer(1000, this.fireObjects.length);
+	        this.fireTimer.addEventListener(TimerEvent_1.TimerEvent.TIMER, function (event) { return _this.onTimer(event); });
 	        this.fireTimer.start();
 	    };
 	    /**
@@ -202,15 +202,15 @@ webpackJsonp([4],[
 	        document.onmouseup = function (event) { return _this.onMouseUp(event); };
 	        document.onmousemove = function (event) { return _this.onMouseMove(event); };
 	        this.onResize();
-	        this.timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this.timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this.timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //plane textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_normal.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_specular.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_normal.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_specular.jpg"));
 	        //particle texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/blue.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/blue.png"));
 	    };
 	    /**
 	     * Initialiser for particle properties
@@ -221,7 +221,7 @@ webpackJsonp([4],[
 	        var degree1 = Math.random() * Math.PI * 2;
 	        var degree2 = Math.random() * Math.PI * 2;
 	        var r = 15;
-	        prop[ParticleVelocityNode_1.default.VELOCITY_VECTOR3D] = new Vector3D_1.default(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
+	        prop[ParticleVelocityNode_1.ParticleVelocityNode.VELOCITY_VECTOR3D] = new Vector3D_1.Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
 	    };
 	    /**
 	     * Returns an array of active lights in the scene
@@ -245,7 +245,7 @@ webpackJsonp([4],[
 	        //start the animator
 	        fireObject.animator.start();
 	        //create the lightsource
-	        var light = new PointLight_1.default();
+	        var light = new PointLight_1.PointLight();
 	        light.color = 0xFF3301;
 	        light.diffuse = 0;
 	        light.specular = 0;
@@ -288,17 +288,17 @@ webpackJsonp([4],[
 	            switch (event.url) {
 	                //plane textures
 	                case "assets/floor_diffuse.jpg":
-	                    this.planeMaterial.ambientMethod.texture = new Single2DTexture_1.default(asset);
+	                    this.planeMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                case "assets/floor_normal.jpg":
-	                    this.planeMaterial.normalMethod.texture = new Single2DTexture_1.default(asset);
+	                    this.planeMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                case "assets/floor_specular.jpg":
-	                    this.planeMaterial.specularMethod.texture = new Single2DTexture_1.default(asset);
+	                    this.planeMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //particle texture
 	                case "assets/blue.png":
-	                    this.particleMaterial.ambientMethod.texture = new Single2DTexture_1.default(asset);
+	                    this.particleMaterial.ambientMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	            }
 	        }

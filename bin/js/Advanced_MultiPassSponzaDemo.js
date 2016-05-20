@@ -102,7 +102,7 @@ webpackJsonp([2],[
 	        this._numTexStrings = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	        this._spriteReference = new Array(25);
 	        //flame data objects
-	        this._flameData = Array(new FlameVO(new Vector3D_1.default(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D_1.default(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D_1.default(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D_1.default(485, 165, -148), 0xffaa44));
+	        this._flameData = Array(new FlameVO(new Vector3D_1.Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D_1.Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D_1.Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D_1.Vector3D(485, 165, -148), 0xffaa44));
 	        //material dictionaries to hold instances
 	        this._textureDictionary = new Object();
 	        this._multiMaterialDictionary = new Object();
@@ -159,11 +159,11 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.initEngine = function () {
 	        //create the view
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this._view.camera.y = 150;
 	        this._view.camera.z = 0;
 	        //setup controller to be used on the camera
-	        this._cameraController = new FirstPersonController_1.default(this._view.camera, 90, 0, -80, 80);
+	        this._cameraController = new FirstPersonController_1.FirstPersonController(this._view.camera, 90, 0, -80, 80);
 	    };
 	    /**
 	     * Initialise the lights
@@ -174,7 +174,7 @@ webpackJsonp([2],[
 	        //create global directional light
 	        //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 	        //			this._cascadeShadowMapper.lightOffset = 20000;
-	        this._directionalLight = new DirectionalLight_1.default(-1, -15, 1);
+	        this._directionalLight = new DirectionalLight_1.DirectionalLight(-1, -15, 1);
 	        //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
 	        this._directionalLight.color = 0xeedddd;
 	        this._directionalLight.ambient = .35;
@@ -187,7 +187,7 @@ webpackJsonp([2],[
 	        var len = this._flameData.length;
 	        for (var i = 0; i < len; i++) {
 	            flameVO = this._flameData[i];
-	            var light = flameVO.light = new PointLight_1.default();
+	            var light = flameVO.light = new PointLight_1.PointLight();
 	            light.radius = 200;
 	            light.fallOff = 600;
 	            light.color = flameVO.color;
@@ -195,11 +195,11 @@ webpackJsonp([2],[
 	            this._lights.push(light);
 	        }
 	        //create our global light picker
-	        this._lightPicker = new StaticLightPicker_1.default(this._lights);
-	        this._baseShadowMethod = new ShadowSoftMethod_1.default(this._directionalLight, 10, 5);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker(this._lights);
+	        this._baseShadowMethod = new ShadowSoftMethod_1.ShadowSoftMethod(this._directionalLight, 10, 5);
 	        //			this._baseShadowMethod = new ShadowFilteredMethod(this._directionalLight);
 	        //create our global fog method
-	        this._fogMethod = new EffectFogMethod_1.default(0, 4000, 0x9090e7);
+	        this._fogMethod = new EffectFogMethod_1.EffectFogMethod(0, 4000, 0x9090e7);
 	        //			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
 	    };
 	    /**
@@ -207,9 +207,9 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.initObjects = function () {
 	        //create skybox
-	        this._view.scene.addChild(new Skybox_1.default(this._skyMap));
+	        this._view.scene.addChild(new Skybox_1.Skybox(this._skyMap));
 	        //create flame sprites
-	        this._flameGraphics = new PrimitivePlanePrefab_1.default(this._flameMaterial, ElementsType_1.default.TRIANGLE, 40, 80, 1, 1, false, true);
+	        this._flameGraphics = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this._flameMaterial, ElementsType_1.ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
 	        var flameVO;
 	        var len = this._flameData.length;
 	        for (var i = 0; i < len; i++) {
@@ -217,8 +217,8 @@ webpackJsonp([2],[
 	            var sprite = flameVO.sprite = this._flameGraphics.getNewObject();
 	            sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
 	            var graphic = sprite.graphics.getGraphicAt(0);
-	            graphic.style = new Style_1.default();
-	            graphic.style.uvMatrix = new Matrix_1.default();
+	            graphic.style = new Style_1.Style();
+	            graphic.style.uvMatrix = new Matrix_1.Matrix();
 	            graphic.style.uvMatrix.scale(1 / 16, 1);
 	            this._view.scene.addChild(sprite);
 	            sprite.addChild(flameVO.light);
@@ -243,7 +243,7 @@ webpackJsonp([2],[
 	        this.onBitmapCompleteDelegate = function (event) { return _this.onBitmapComplete(event); };
 	        this.onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
 	        this.onResourceCompleteDelegate = function (event) { return _this.onResourceComplete(event); };
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    };
 	    /**
@@ -270,7 +270,7 @@ webpackJsonp([2],[
 	     * Updates the direction of the directional lightsource
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.updateDirection = function () {
-	        this._directionalLight.direction = new Vector3D_1.default(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
+	        this._directionalLight.direction = new Vector3D_1.Vector3D(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
 	    };
 	    /**
 	     * Count the total number of textures to be loaded
@@ -300,25 +300,25 @@ webpackJsonp([2],[
 	     * Global binary file loader
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.load = function (url) {
-	        var loader = new URLLoader_1.default();
+	        var loader = new URLLoader_1.URLLoader();
 	        switch (url.substring(url.length - 3)) {
 	            case "AWD":
 	            case "awd":
-	                loader.dataFormat = URLLoaderDataFormat_1.default.ARRAY_BUFFER;
+	                loader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.ARRAY_BUFFER;
 	                this._loadingText = "Loading Model";
-	                loader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseAWDDelegate);
+	                loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 	                break;
 	            case "png":
 	            case "jpg":
-	                loader.dataFormat = URLLoaderDataFormat_1.default.BLOB;
+	                loader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.BLOB;
 	                this._currentTexture++;
 	                this._loadingText = "Loading Textures";
-	                loader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseBitmapDelegate);
+	                loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 	                url = "sponza/" + url;
 	                break;
 	        }
-	        loader.addEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
-	        var urlReq = new URLRequest_1.default(this._assetsRoot + url);
+	        loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+	        var urlReq = new URLRequest_1.URLRequest(this._assetsRoot + url);
 	        loader.load(urlReq);
 	    };
 	    /**
@@ -374,10 +374,10 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.parseBitmap = function (e) {
 	        var urlLoader = e.target;
-	        var image = ParserUtils_1.default.blobToImage(urlLoader.data);
+	        var image = ParserUtils_1.ParserUtils.blobToImage(urlLoader.data);
 	        image.onload = this.onBitmapCompleteDelegate;
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseBitmapDelegate);
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 	        urlLoader = null;
 	    };
 	    /**
@@ -388,7 +388,7 @@ webpackJsonp([2],[
 	        image.onload = null;
 	        //create bitmap texture in dictionary
 	        if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-	            this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture_1.default((this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularImage2D_1.default(ParserUtils_1.default.imageToBitmapImage2D(image)) : ParserUtils_1.default.imageToBitmapImage2D(image));
+	            this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture_1.Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings) ? new SpecularImage2D_1.SpecularImage2D(ParserUtils_1.ParserUtils.imageToBitmapImage2D(image)) : ParserUtils_1.ParserUtils.imageToBitmapImage2D(image));
 	        //skip null textures
 	        while (this._n++ < this._loadingTextureStrings.length - 1)
 	            if (this._loadingTextureStrings[this._n])
@@ -417,19 +417,19 @@ webpackJsonp([2],[
 	    Advanced_MultiPassSponzaDemo.prototype.parseAWD = function (event) {
 	        console.log("Parsing Data");
 	        var urlLoader = event.target;
-	        var loader = new LoaderContainer_1.default(false);
-	        loader.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-	        loader.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, this.onResourceCompleteDelegate);
-	        loader.loadData(urlLoader.data, new LoaderContext_1.default(false), null, new AWDParser_1.default());
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseAWDDelegate);
+	        var loader = new LoaderContainer_1.LoaderContainer(false);
+	        loader.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+	        loader.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+	        loader.loadData(urlLoader.data, new LoaderContext_1.LoaderContext(false), null, new AWDParser_1.AWDParser());
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 	        urlLoader = null;
 	    };
 	    /**
 	     * Listener for asset complete event on loader
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.onAssetComplete = function (event) {
-	        if (event.asset.isAsset(Sprite_1.default)) {
+	        if (event.asset.isAsset(Sprite_1.Sprite)) {
 	            //store sprites
 	            this._sprites.push(event.asset);
 	        }
@@ -439,10 +439,10 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.onResourceComplete = function (event) {
 	        var _this = this;
-	        var merge = new Merge_1.default(false, false, true);
+	        var merge = new Merge_1.Merge(false, false, true);
 	        var loader = event.target;
-	        loader.removeEventListener(AssetEvent_1.default.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-	        loader.removeEventListener(LoaderEvent_1.default.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+	        loader.removeEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+	        loader.removeEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 	        //reassign materials
 	        var sprite;
 	        var name;
@@ -463,8 +463,8 @@ webpackJsonp([2],[
 	                }
 	                else {
 	                    this.colSpritees.push(sprite);
-	                    var colMerge = new Merge_1.default();
-	                    var colSprite = new Sprite_1.default();
+	                    var colMerge = new Merge_1.Merge();
+	                    var colSprite = new Sprite_1.Sprite();
 	                    colMerge.applyToSpritees(colSprite, this.colSpritees);
 	                    sprite = colSprite;
 	                    this.colSpritees = new Array();
@@ -478,8 +478,8 @@ webpackJsonp([2],[
 	                }
 	                else {
 	                    this.vaseSpritees.push(sprite);
-	                    var vaseMerge = new Merge_1.default();
-	                    var vaseSprite = new Sprite_1.default();
+	                    var vaseMerge = new Merge_1.Merge();
+	                    var vaseSprite = new Sprite_1.Sprite();
 	                    vaseMerge.applyToSpritees(vaseSprite, this.vaseSpritees);
 	                    sprite = vaseSprite;
 	                    this.vaseSpritees = new Array();
@@ -493,8 +493,8 @@ webpackJsonp([2],[
 	                }
 	                else if (poleNum >= 0) {
 	                    this.poleSpritees.push(sprite);
-	                    var poleMerge = new Merge_1.default();
-	                    var poleSprite = new Sprite_1.default();
+	                    var poleMerge = new Merge_1.Merge();
+	                    var poleSprite = new Sprite_1.Sprite();
 	                    poleMerge.applyToSpritees(poleSprite, this.poleSpritees);
 	                    sprite = poleSprite;
 	                    this.poleSpritees = new Array();
@@ -545,16 +545,16 @@ webpackJsonp([2],[
 	            var multiMaterial = this._multiMaterialDictionary[name];
 	            if (!multiMaterial) {
 	                //create multipass material
-	                multiMaterial = new MethodMaterial_1.default();
+	                multiMaterial = new MethodMaterial_1.MethodMaterial();
 	                multiMaterial.ambientMethod.texture = this._textureDictionary[textureName];
-	                multiMaterial.mode = MethodMaterialMode_1.default.MULTI_PASS;
+	                multiMaterial.mode = MethodMaterialMode_1.MethodMaterialMode.MULTI_PASS;
 	                multiMaterial.name = name;
 	                multiMaterial.lightPicker = this._lightPicker;
 	                //					multiMaterial.shadowMethod = this._cascadeMethod;
 	                multiMaterial.shadowMethod = this._baseShadowMethod;
 	                multiMaterial.addEffectMethod(this._fogMethod);
-	                multiMaterial.style.sampler = new Sampler2D_1.default(true, true, true);
-	                multiMaterial.style.addSamplerAt(new Sampler2D_1.default(true, true), this._directionalLight.shadowMapper.depthMap);
+	                multiMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true, true);
+	                multiMaterial.style.addSamplerAt(new Sampler2D_1.Sampler2D(true, true), this._directionalLight.shadowMapper.depthMap);
 	                multiMaterial.specularMethod.strength = 2;
 	                //use alpha transparancy if texture is png
 	                if (textureName.substring(textureName.length - 3) == "png")
@@ -589,14 +589,14 @@ webpackJsonp([2],[
 	            z++;
 	        }
 	        //load skybox and flame texture
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
 	        //setup the url map for textures in the cubemap file
-	        var loaderContext = new LoaderContext_1.default();
+	        var loaderContext = new LoaderContext_1.LoaderContext();
 	        loaderContext.dependencyBaseUrl = "assets/skybox/";
 	        //environment texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/skybox/hourglass_texture.cube"), loaderContext);
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/skybox/hourglass_texture.cube"), loaderContext);
 	        //globe textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/fire.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/fire.png"));
 	    };
 	    /**
 	     * Triggered once extra resources are loaded
@@ -608,8 +608,8 @@ webpackJsonp([2],[
 	                this._skyMap = event.assets[0];
 	                break;
 	            case "assets/fire.png":
-	                this._flameMaterial = new MethodMaterial_1.default(event.assets[0]);
-	                this._flameMaterial.blendMode = BlendMode_1.default.ADD;
+	                this._flameMaterial = new MethodMaterial_1.MethodMaterial(event.assets[0]);
+	                this._flameMaterial.blendMode = BlendMode_1.BlendMode.ADD;
 	                this._flameMaterial.animateUVs = true;
 	                break;
 	        }
@@ -660,26 +660,26 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.onKeyDown = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
 	                this._walkAcceleration = this._walkIncrement;
 	                break;
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._walkAcceleration = -this._walkIncrement;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
 	                this._strafeAcceleration = -this._strafeIncrement;
 	                break;
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._strafeAcceleration = this._strafeIncrement;
 	                break;
-	            case Keyboard_1.default.F:
+	            case Keyboard_1.Keyboard.F:
 	                //stage.displayState = StageDisplayState.FULL_SCREEN;
 	                break;
-	            case Keyboard_1.default.C:
+	            case Keyboard_1.Keyboard.C:
 	                this._cameraController.fly = !this._cameraController.fly;
 	        }
 	    };
@@ -688,16 +688,16 @@ webpackJsonp([2],[
 	     */
 	    Advanced_MultiPassSponzaDemo.prototype.onKeyUp = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._walkAcceleration = 0;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._strafeAcceleration = 0;
 	                break;
 	        }

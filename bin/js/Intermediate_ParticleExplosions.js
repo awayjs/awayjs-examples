@@ -91,18 +91,18 @@ webpackJsonp([17],[
 	     * Initialise the engine
 	     */
 	    Intermediate_ParticleExplosions.prototype.initEngine = function () {
-	        this.scene = new Scene_1.default();
-	        this.camera = new Camera_1.default();
-	        this.view = new View_1.default(new DefaultRenderer_1.default(), this.scene, this.camera);
+	        this.scene = new Scene_1.Scene();
+	        this.camera = new Camera_1.Camera();
+	        this.view = new View_1.View(new DefaultRenderer_1.DefaultRenderer(), this.scene, this.camera);
 	        //setup controller to be used on the camera
-	        this.cameraController = new HoverController_1.default(this.camera, null, 225, 10, 1000);
+	        this.cameraController = new HoverController_1.HoverController(this.camera, null, 225, 10, 1000);
 	    };
 	    /**
 	     * Initialise the lights
 	     */
 	    Intermediate_ParticleExplosions.prototype.initLights = function () {
 	        //create a green point light
-	        this.greenLight = new PointLight_1.default();
+	        this.greenLight = new PointLight_1.PointLight();
 	        this.greenLight.color = 0x00FF00;
 	        this.greenLight.ambient = 1;
 	        this.greenLight.fallOff = 600;
@@ -110,21 +110,21 @@ webpackJsonp([17],[
 	        this.greenLight.specular = 2;
 	        this.scene.addChild(this.greenLight);
 	        //create a red pointlight
-	        this.blueLight = new PointLight_1.default();
+	        this.blueLight = new PointLight_1.PointLight();
 	        this.blueLight.color = 0x0000FF;
 	        this.blueLight.fallOff = 600;
 	        this.blueLight.radius = 100;
 	        this.blueLight.specular = 2;
 	        this.scene.addChild(this.blueLight);
 	        //create a lightpicker for the green and red light
-	        this.lightPicker = new StaticLightPicker_1.default([this.greenLight, this.blueLight]);
+	        this.lightPicker = new StaticLightPicker_1.StaticLightPicker([this.greenLight, this.blueLight]);
 	    };
 	    /**
 	     * Initialise the materials
 	     */
 	    Intermediate_ParticleExplosions.prototype.initMaterials = function () {
 	        //setup the particle material
-	        this.colorMaterial = new MethodMaterial_1.default(0xFFFFFF);
+	        this.colorMaterial = new MethodMaterial_1.MethodMaterial(0xFFFFFF);
 	        this.colorMaterial.bothSides = true;
 	        this.colorMaterial.lightPicker = this.lightPicker;
 	    };
@@ -139,10 +139,10 @@ webpackJsonp([17],[
 	        var color; /*uint*/
 	        for (i = 0; i < this.chromeBitmapImage2D.width; i++) {
 	            for (j = 0; j < this.chromeBitmapImage2D.height; j++) {
-	                point = new Vector3D_1.default(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.chromeBitmapImage2D.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.chromeBitmapImage2D.height / 2));
+	                point = new Vector3D_1.Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.chromeBitmapImage2D.width / 2 - 100), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.chromeBitmapImage2D.height / 2));
 	                color = this.chromeBitmapImage2D.getPixel32(i, j);
 	                if (((color >> 24) & 0xff) > 0xb0) {
-	                    this.colorValues.push(new Vector3D_1.default(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
+	                    this.colorValues.push(new Vector3D_1.Vector3D(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
 	                    this.colorPoints.push(point);
 	                }
 	            }
@@ -151,10 +151,10 @@ webpackJsonp([17],[
 	        this.colorChromeSeparation = this.colorPoints.length;
 	        for (i = 0; i < this.firefoxBitmapImage2D.width; i++) {
 	            for (j = 0; j < this.firefoxBitmapImage2D.height; j++) {
-	                point = new Vector3D_1.default(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.firefoxBitmapImage2D.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.firefoxBitmapImage2D.height / 2));
+	                point = new Vector3D_1.Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.firefoxBitmapImage2D.width / 2 + 100), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.firefoxBitmapImage2D.height / 2));
 	                color = this.firefoxBitmapImage2D.getPixel32(i, j);
 	                if (((color >> 24) & 0xff) > 0xb0) {
-	                    this.colorValues.push(new Vector3D_1.default(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
+	                    this.colorValues.push(new Vector3D_1.Vector3D(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
 	                    this.colorPoints.push(point);
 	                }
 	            }
@@ -163,10 +163,10 @@ webpackJsonp([17],[
 	        this.colorFirefoxSeparation = this.colorPoints.length;
 	        for (i = 0; i < this.safariBitmapImage2D.width; i++) {
 	            for (j = 0; j < this.safariBitmapImage2D.height; j++) {
-	                point = new Vector3D_1.default(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.safariBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.safariBitmapImage2D.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE * 100);
+	                point = new Vector3D_1.Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.safariBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.safariBitmapImage2D.height / 2), -Intermediate_ParticleExplosions.PARTICLE_SIZE * 100);
 	                color = this.safariBitmapImage2D.getPixel32(i, j);
 	                if (((color >> 24) & 0xff) > 0xb0) {
-	                    this.colorValues.push(new Vector3D_1.default(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
+	                    this.colorValues.push(new Vector3D_1.Vector3D(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
 	                    this.colorPoints.push(point);
 	                }
 	            }
@@ -175,20 +175,20 @@ webpackJsonp([17],[
 	        this.colorSafariSeparation = this.colorPoints.length;
 	        for (i = 0; i < this.ieBitmapImage2D.width; i++) {
 	            for (j = 0; j < this.ieBitmapImage2D.height; j++) {
-	                point = new Vector3D_1.default(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.ieBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.ieBitmapImage2D.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * 100);
+	                point = new Vector3D_1.Vector3D(Intermediate_ParticleExplosions.PARTICLE_SIZE * (i - this.ieBitmapImage2D.width / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * (-j + this.ieBitmapImage2D.height / 2), Intermediate_ParticleExplosions.PARTICLE_SIZE * 100);
 	                color = this.ieBitmapImage2D.getPixel32(i, j);
 	                if (((color >> 24) & 0xff) > 0xb0) {
-	                    this.colorValues.push(new Vector3D_1.default(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
+	                    this.colorValues.push(new Vector3D_1.Vector3D(((color & 0xff0000) >> 16) / 255, ((color & 0xff00) >> 8) / 255, (color & 0xff) / 255));
 	                    this.colorPoints.push(point);
 	                }
 	            }
 	        }
 	        //define the particle animations and init function
-	        this.colorAnimationSet = new ParticleAnimationSet_1.default();
-	        this.colorAnimationSet.addAnimation(new ParticleBillboardNode_1.default());
-	        this.colorAnimationSet.addAnimation(new ParticleBezierCurveNode_1.default(ParticlePropertiesMode_1.default.LOCAL_STATIC));
-	        this.colorAnimationSet.addAnimation(new ParticlePositionNode_1.default(ParticlePropertiesMode_1.default.LOCAL_STATIC));
-	        this.colorAnimationSet.addAnimation(new ParticleInitialColorNode_1.default(ParticlePropertiesMode_1.default.LOCAL_STATIC, true, false, new ColorTransform_1.default(0, 1, 0, 1)));
+	        this.colorAnimationSet = new ParticleAnimationSet_1.ParticleAnimationSet();
+	        this.colorAnimationSet.addAnimation(new ParticleBillboardNode_1.ParticleBillboardNode());
+	        this.colorAnimationSet.addAnimation(new ParticleBezierCurveNode_1.ParticleBezierCurveNode(ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC));
+	        this.colorAnimationSet.addAnimation(new ParticlePositionNode_1.ParticlePositionNode(ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC));
+	        this.colorAnimationSet.addAnimation(new ParticleInitialColorNode_1.ParticleInitialColorNode(ParticlePropertiesMode_1.ParticlePropertiesMode.LOCAL_STATIC, true, false, new ColorTransform_1.ColorTransform(0, 1, 0, 1)));
 	        this.colorAnimationSet.initParticleFunc = this.iniColorParticleFunc;
 	        this.colorAnimationSet.initParticleScope = this;
 	    };
@@ -197,16 +197,16 @@ webpackJsonp([17],[
 	     */
 	    Intermediate_ParticleExplosions.prototype.initObjects = function () {
 	        //setup the base graphics for one particle
-	        var plane = (new PrimitivePlanePrefab_1.default(null, ElementsType_1.default.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE, 1, 1, false)).getNewObject();
+	        var plane = (new PrimitivePlanePrefab_1.PrimitivePlanePrefab(null, ElementsType_1.ElementsType.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE, 1, 1, false)).getNewObject();
 	        //combine them into a list
 	        var colorGraphicsSet = new Array();
 	        var len = this.colorPoints.length;
 	        for (i = 0; i < len; i++)
 	            colorGraphicsSet.push(plane.graphics);
 	        //create the particle sprite
-	        this.colorParticleSprite = new Sprite_1.default(this.colorMaterial);
+	        this.colorParticleSprite = new Sprite_1.Sprite(this.colorMaterial);
 	        //generate the particle geometries
-	        ParticleGraphicsHelper_1.default.generateGraphics(this.colorParticleSprite.graphics, colorGraphicsSet);
+	        ParticleGraphicsHelper_1.ParticleGraphicsHelper.generateGraphics(this.colorParticleSprite.graphics, colorGraphicsSet);
 	        //initialise animators vectors
 	        this.colorAnimators = new Array(Intermediate_ParticleExplosions.NUM_ANIMATORS);
 	        var i = 0;
@@ -216,7 +216,7 @@ webpackJsonp([17],[
 	            this.colorParticleSprite.rotationY = 45 * (i - 1);
 	            this.scene.addChild(this.colorParticleSprite);
 	            //create and start the particle animator
-	            this.colorAnimators[i] = new ParticleAnimator_1.default(this.colorAnimationSet);
+	            this.colorAnimators[i] = new ParticleAnimator_1.ParticleAnimator(this.colorAnimationSet);
 	            this.colorParticleSprite.animator = this.colorAnimators[i];
 	            this.scene.addChild(this.colorParticleSprite);
 	        }
@@ -231,14 +231,14 @@ webpackJsonp([17],[
 	        document.onmouseup = function (event) { return _this.onMouseUp(event); };
 	        document.onmousemove = function (event) { return _this.onMouseMove(event); };
 	        this.onResize();
-	        this.timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this.timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this.timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //image textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/firefox.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/chrome.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/safari.png"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/ie.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/firefox.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/chrome.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/safari.png"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/ie.png"));
 	    };
 	    /**
 	     * Initialiser for particle properties
@@ -250,17 +250,17 @@ webpackJsonp([17],[
 	        var degree2 = Math.random() * Math.PI * 2;
 	        var r = 500;
 	        if (properties.index < this.colorChromeSeparation)
-	            properties[ParticleBezierCurveNode_1.default.BEZIER_END_VECTOR3D] = new Vector3D_1.default(300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
+	            properties[ParticleBezierCurveNode_1.ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D_1.Vector3D(300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
 	        else if (properties.index < this.colorFirefoxSeparation)
-	            properties[ParticleBezierCurveNode_1.default.BEZIER_END_VECTOR3D] = new Vector3D_1.default(-300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
+	            properties[ParticleBezierCurveNode_1.ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D_1.Vector3D(-300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
 	        else if (properties.index < this.colorSafariSeparation)
-	            properties[ParticleBezierCurveNode_1.default.BEZIER_END_VECTOR3D] = new Vector3D_1.default(0, 0, 300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
+	            properties[ParticleBezierCurveNode_1.ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D_1.Vector3D(0, 0, 300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
 	        else
-	            properties[ParticleBezierCurveNode_1.default.BEZIER_END_VECTOR3D] = new Vector3D_1.default(0, 0, -300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
+	            properties[ParticleBezierCurveNode_1.ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D_1.Vector3D(0, 0, -300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
 	        var rgb = this.colorValues[properties.index];
-	        properties[ParticleInitialColorNode_1.default.COLOR_INITIAL_COLORTRANSFORM] = new ColorTransform_1.default(rgb.x, rgb.y, rgb.z, 1);
-	        properties[ParticleBezierCurveNode_1.default.BEZIER_CONTROL_VECTOR3D] = new Vector3D_1.default(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
-	        properties[ParticlePositionNode_1.default.POSITION_VECTOR3D] = this.colorPoints[properties.index];
+	        properties[ParticleInitialColorNode_1.ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM] = new ColorTransform_1.ColorTransform(rgb.x, rgb.y, rgb.z, 1);
+	        properties[ParticleBezierCurveNode_1.ParticleBezierCurveNode.BEZIER_CONTROL_VECTOR3D] = new Vector3D_1.Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
+	        properties[ParticlePositionNode_1.ParticlePositionNode.POSITION_VECTOR3D] = this.colorPoints[properties.index];
 	    };
 	    /**
 	     * Navigation and render loop

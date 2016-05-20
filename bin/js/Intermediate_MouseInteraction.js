@@ -74,7 +74,7 @@ webpackJsonp([16],[
 	     */
 	    function Intermediate_MouseInteraction() {
 	        this._time = 0;
-	        this._raycastPicker = new RaycastPicker_1.default(false);
+	        this._raycastPicker = new RaycastPicker_1.RaycastPicker(false);
 	        //navigation variables
 	        this._move = false;
 	        this._tiltSpeed = 4;
@@ -99,23 +99,23 @@ webpackJsonp([16],[
 	     * Initialise the engine
 	     */
 	    Intermediate_MouseInteraction.prototype.initEngine = function () {
-	        this._renderer = new DefaultRenderer_1.default();
-	        this._view = new View_1.default(this._renderer);
+	        this._renderer = new DefaultRenderer_1.DefaultRenderer();
+	        this._view = new View_1.View(this._renderer);
 	        this._view.forceMouseMove = true;
 	        this._scene = this._view.scene;
 	        this._camera = this._view.camera;
-	        this._view.mousePicker = new RaycastPicker_1.default(true);
+	        this._view.mousePicker = new RaycastPicker_1.RaycastPicker(true);
 	        //setup controller to be used on the camera
-	        this._cameraController = new HoverController_1.default(this._camera, null, 180, 20, 320, 5);
+	        this._cameraController = new HoverController_1.HoverController(this._camera, null, 180, 20, 320, 5);
 	    };
 	    /**
 	     * Initialise the lights
 	     */
 	    Intermediate_MouseInteraction.prototype.initLights = function () {
 	        //create a light for the camera
-	        this._pointLight = new PointLight_1.default();
+	        this._pointLight = new PointLight_1.PointLight();
 	        this._scene.addChild(this._pointLight);
-	        this._lightPicker = new StaticLightPicker_1.default([this._pointLight]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._pointLight]);
 	    };
 	    /**
 	     * Initialise the material
@@ -127,15 +127,15 @@ webpackJsonp([16],[
 	        //this._painter.graphics.drawCircle( 0, 0, 10 );
 	        //this._painter.graphics.endFill();
 	        // locator materials
-	        this._whiteMaterial = new MethodMaterial_1.default(0xFFFFFF);
+	        this._whiteMaterial = new MethodMaterial_1.MethodMaterial(0xFFFFFF);
 	        this._whiteMaterial.lightPicker = this._lightPicker;
-	        this._blackMaterial = new MethodMaterial_1.default(0x333333);
+	        this._blackMaterial = new MethodMaterial_1.MethodMaterial(0x333333);
 	        this._blackMaterial.lightPicker = this._lightPicker;
-	        this._grayMaterial = new MethodMaterial_1.default(0xCCCCCC);
+	        this._grayMaterial = new MethodMaterial_1.MethodMaterial(0xCCCCCC);
 	        this._grayMaterial.lightPicker = this._lightPicker;
-	        this._blueMaterial = new MethodMaterial_1.default(0x0000FF);
+	        this._blueMaterial = new MethodMaterial_1.MethodMaterial(0x0000FF);
 	        this._blueMaterial.lightPicker = this._lightPicker;
-	        this._redMaterial = new MethodMaterial_1.default(0xFF0000);
+	        this._redMaterial = new MethodMaterial_1.MethodMaterial(0xFF0000);
 	        this._redMaterial.lightPicker = this._lightPicker;
 	    };
 	    /**
@@ -144,28 +144,28 @@ webpackJsonp([16],[
 	    Intermediate_MouseInteraction.prototype.initObjects = function () {
 	        var _this = this;
 	        // To trace mouse hit position.
-	        this._pickingPositionTracer = new PrimitiveSpherePrefab_1.default(new MethodMaterial_1.default(0x00FF00, 0.5), ElementsType_1.default.TRIANGLE, 2).getNewObject();
+	        this._pickingPositionTracer = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(new MethodMaterial_1.MethodMaterial(0x00FF00, 0.5), ElementsType_1.ElementsType.TRIANGLE, 2).getNewObject();
 	        this._pickingPositionTracer.visible = false;
 	        this._pickingPositionTracer.mouseEnabled = false;
 	        this._pickingPositionTracer.mouseChildren = false;
 	        this._scene.addChild(this._pickingPositionTracer);
-	        this._scenePositionTracer = new PrimitiveSpherePrefab_1.default(new MethodMaterial_1.default(0x0000FF, 0.5), ElementsType_1.default.TRIANGLE, 2).getNewObject();
+	        this._scenePositionTracer = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(new MethodMaterial_1.MethodMaterial(0x0000FF, 0.5), ElementsType_1.ElementsType.TRIANGLE, 2).getNewObject();
 	        this._scenePositionTracer.visible = false;
 	        this._scenePositionTracer.mouseEnabled = false;
 	        this._scene.addChild(this._scenePositionTracer);
 	        // To trace picking normals.
-	        this._pickingNormalTracer = new LineSegment_1.default(new BasicMaterial_1.default(0xFFFFFF), new Vector3D_1.default(), new Vector3D_1.default(), 3);
+	        this._pickingNormalTracer = new LineSegment_1.LineSegment(new BasicMaterial_1.BasicMaterial(0xFFFFFF), new Vector3D_1.Vector3D(), new Vector3D_1.Vector3D(), 3);
 	        this._pickingNormalTracer.mouseEnabled = false;
 	        this._pickingNormalTracer.visible = false;
 	        this._view.scene.addChild(this._pickingNormalTracer);
-	        this._sceneNormalTracer = new LineSegment_1.default(new BasicMaterial_1.default(0xFFFFFF), new Vector3D_1.default(), new Vector3D_1.default(), 3);
+	        this._sceneNormalTracer = new LineSegment_1.LineSegment(new BasicMaterial_1.BasicMaterial(0xFFFFFF), new Vector3D_1.Vector3D(), new Vector3D_1.Vector3D(), 3);
 	        this._sceneNormalTracer.mouseEnabled = false;
 	        this._sceneNormalTracer.visible = false;
 	        this._view.scene.addChild(this._sceneNormalTracer);
 	        // Load a head model that we will be able to paint on on mouse down.
-	        this._session = AssetLibrary_1.default.getLoader();
-	        this._session.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        this._session.load(new URLRequest_1.default('assets/head.obj'), null, null, new OBJParser_1.default(25));
+	        this._session = AssetLibrary_1.AssetLibrary.getLoader();
+	        this._session.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        this._session.load(new URLRequest_1.URLRequest('assets/head.obj'), null, null, new OBJParser_1.OBJParser(25));
 	        // Produce a bunch of objects to be around the scene.
 	        this.createABunchOfObjects();
 	        this._raycastPicker.setIgnoreList([this._sceneNormalTracer, this._scenePositionTracer]);
@@ -175,29 +175,29 @@ webpackJsonp([16],[
 	     * Listener for asset complete event on loader
 	     */
 	    Intermediate_MouseInteraction.prototype.onAssetComplete = function (event) {
-	        if (event.asset.isAsset(Sprite_1.default)) {
+	        if (event.asset.isAsset(Sprite_1.Sprite)) {
 	            this.initializeHeadModel(event.asset);
 	        }
 	    };
 	    Intermediate_MouseInteraction.prototype.initializeHeadModel = function (model) {
 	        this._head = model;
 	        // Apply a bitmap material that can be painted on.
-	        var bmd = new BitmapImage2D_1.default(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
+	        var bmd = new BitmapImage2D_1.BitmapImage2D(Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, Intermediate_MouseInteraction.PAINT_TEXTURE_SIZE, false, 0xCCCCCC);
 	        //bmd.perlinNoise(50, 50, 8, 1, false, true, 7, true);
-	        var textureMaterial = new MethodMaterial_1.default(bmd);
+	        var textureMaterial = new MethodMaterial_1.MethodMaterial(bmd);
 	        textureMaterial.lightPicker = this._lightPicker;
 	        model.material = textureMaterial;
-	        model.pickingCollider = new JSPickingCollider_1.default();
+	        model.pickingCollider = new JSPickingCollider_1.JSPickingCollider();
 	        // Apply mouse interactivity.
 	        model.mouseEnabled = model.mouseChildren = true;
 	        this.enableSpriteMouseListeners(model);
 	        this._view.scene.addChild(model);
 	    };
 	    Intermediate_MouseInteraction.prototype.createABunchOfObjects = function () {
-	        this._cubePrefab = new PrimitiveCubePrefab_1.default(null, ElementsType_1.default.TRIANGLE, 25, 50, 25);
-	        this._spherePrefab = new PrimitiveSpherePrefab_1.default(null, ElementsType_1.default.TRIANGLE, 12);
-	        this._cylinderPrefab = new PrimitiveCylinderPrefab_1.default(null, ElementsType_1.default.TRIANGLE, 12, 12, 25);
-	        this._torusPrefab = new PrimitiveTorusPrefab_1.default(null, ElementsType_1.default.TRIANGLE, 12, 12);
+	        this._cubePrefab = new PrimitiveCubePrefab_1.PrimitiveCubePrefab(null, ElementsType_1.ElementsType.TRIANGLE, 25, 50, 25);
+	        this._spherePrefab = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(null, ElementsType_1.ElementsType.TRIANGLE, 12);
+	        this._cylinderPrefab = new PrimitiveCylinderPrefab_1.PrimitiveCylinderPrefab(null, ElementsType_1.ElementsType.TRIANGLE, 12, 12, 25);
+	        this._torusPrefab = new PrimitiveTorusPrefab_1.PrimitiveTorusPrefab(null, ElementsType_1.ElementsType.TRIANGLE, 12, 12);
 	        for (var i = 0; i < 40; i++) {
 	            // Create object.
 	            var object = this.createSimpleObject();
@@ -224,7 +224,7 @@ webpackJsonp([16],[
 	        }
 	        else if (randGeometry > 0.5) {
 	            sprite = this._spherePrefab.getNewObject();
-	            boundsType = BoundsType_1.default.SPHERE; // better on spherical sprites with bound picking colliders
+	            boundsType = BoundsType_1.BoundsType.SPHERE; // better on spherical sprites with bound picking colliders
 	        }
 	        else if (randGeometry > 0.25) {
 	            sprite = this._cylinderPrefab.getNewObject();
@@ -239,7 +239,7 @@ webpackJsonp([16],[
 	        if (usesTriangleCollider) {
 	            // AS3 triangle pickers for sprites with low poly counts are faster than pixel bender ones.
 	            //				sprite.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all sprites
-	            sprite.pickingCollider = new JSPickingCollider_1.default();
+	            sprite.pickingCollider = new JSPickingCollider_1.JSPickingCollider();
 	        }
 	        // Enable mouse interactivity?
 	        var isMouseEnabled = Math.random() > 0.25;
@@ -260,7 +260,7 @@ webpackJsonp([16],[
 	            sprite.material = this._blackMaterial;
 	        }
 	        else {
-	            if (!sprite.hasEventListener(MouseEvent_1.default.MOUSE_MOVE)) {
+	            if (!sprite.hasEventListener(MouseEvent_1.MouseEvent.MOUSE_MOVE)) {
 	                sprite.material = this._grayMaterial;
 	            }
 	            else {
@@ -286,7 +286,7 @@ webpackJsonp([16],[
 	        document.onkeydown = function (event) { return _this.onKeyDown(event); };
 	        document.onkeyup = function (event) { return _this.onKeyUp(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    };
 	    /**
@@ -325,26 +325,26 @@ webpackJsonp([16],[
 	     */
 	    Intermediate_MouseInteraction.prototype.onKeyDown = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
 	                this._tiltIncrement = this._tiltSpeed;
 	                break;
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._tiltIncrement = -this._tiltSpeed;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
 	                this._panIncrement = this._panSpeed;
 	                break;
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._panIncrement = -this._panSpeed;
 	                break;
-	            case Keyboard_1.default.Z:
+	            case Keyboard_1.Keyboard.Z:
 	                this._distanceIncrement = this._distanceSpeed;
 	                break;
-	            case Keyboard_1.default.X:
+	            case Keyboard_1.Keyboard.X:
 	                this._distanceIncrement = -this._distanceSpeed;
 	                break;
 	        }
@@ -354,20 +354,20 @@ webpackJsonp([16],[
 	     */
 	    Intermediate_MouseInteraction.prototype.onKeyUp = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.UP:
-	            case Keyboard_1.default.W:
-	            case Keyboard_1.default.DOWN:
-	            case Keyboard_1.default.S:
+	            case Keyboard_1.Keyboard.UP:
+	            case Keyboard_1.Keyboard.W:
+	            case Keyboard_1.Keyboard.DOWN:
+	            case Keyboard_1.Keyboard.S:
 	                this._tiltIncrement = 0;
 	                break;
-	            case Keyboard_1.default.LEFT:
-	            case Keyboard_1.default.A:
-	            case Keyboard_1.default.RIGHT:
-	            case Keyboard_1.default.D:
+	            case Keyboard_1.Keyboard.LEFT:
+	            case Keyboard_1.Keyboard.A:
+	            case Keyboard_1.Keyboard.RIGHT:
+	            case Keyboard_1.Keyboard.D:
 	                this._panIncrement = 0;
 	                break;
-	            case Keyboard_1.default.Z:
-	            case Keyboard_1.default.X:
+	            case Keyboard_1.Keyboard.Z:
+	            case Keyboard_1.Keyboard.X:
 	                this._distanceIncrement = 0;
 	                break;
 	        }
@@ -377,10 +377,10 @@ webpackJsonp([16],[
 	    // ---------------------------------------------------------------------
 	    Intermediate_MouseInteraction.prototype.enableSpriteMouseListeners = function (sprite) {
 	        var _this = this;
-	        sprite.addEventListener(MouseEvent_1.default.MOUSE_OVER, function (event) { return _this.onSpriteMouseOver(event); });
-	        sprite.addEventListener(MouseEvent_1.default.MOUSE_OUT, function (event) { return _this.onSpriteMouseOut(event); });
-	        sprite.addEventListener(MouseEvent_1.default.MOUSE_MOVE, function (event) { return _this.onSpriteMouseMove(event); });
-	        sprite.addEventListener(MouseEvent_1.default.MOUSE_DOWN, function (event) { return _this.onSpriteMouseDown(event); });
+	        sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OVER, function (event) { return _this.onSpriteMouseOver(event); });
+	        sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_OUT, function (event) { return _this.onSpriteMouseOut(event); });
+	        sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_MOVE, function (event) { return _this.onSpriteMouseMove(event); });
+	        sprite.addEventListener(MouseEvent_1.MouseEvent.MOUSE_DOWN, function (event) { return _this.onSpriteMouseDown(event); });
 	    };
 	    /**
 	     * sprite listener for mouse down interaction

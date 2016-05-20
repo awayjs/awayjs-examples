@@ -1,47 +1,53 @@
-var path = require("path");
-var glob = require("glob");
+var path = require('path');
+var fs = require('fs');
 var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebPackPlugin = require('copy-webpack-plugin');
+var CompressionPlugin = require('compression-webpack-plugin');
+var HtmlWebPackPlugin = require('html-webpack-plugin');
+
+var examples = fs.readdirSync('./src').filter(function (file) {
+    return (file.slice(-3) == ".ts");
+});
+var entry = {};
+
+for (var i = 0; i < examples.length; i++) {
+    var name = examples[i].split('.')[0];
+    entry[String(name)] = './src/' + examples[i];
+}
+
+entry['awayjs'] = ['awayjs-core', 'awayjs-stagegl', 'awayjs-display', 'awayjs-renderergl', 'awayjs-methodmaterials', 'awayjs-player', 'awayjs-parsers'];
+
+var plugins = [
+    new webpack.optimize.CommonsChunkPlugin('awayjs', 'js/awayjs.bundle.js'),
+
+    new CopyWebPackPlugin([{
+        from: 'src/assets',
+        to: 'assets'
+    }]),
+
+    // new CompressionPlugin({
+    //     test: /\.js$/
+    // })
+];
+
+for (var i = 0; i < examples.length; i++) {
+    var name = examples[i].split('.')[0];
+    plugins.push(new HtmlWebPackPlugin({
+        title: name,
+        template: 'html-template/index.html',
+        filename: name + '.html',
+        inject: false,
+        commonChunk: 'awayjs'
+    }));
+}
 
 module.exports = {
-    
-    entry: {
 
-        Advanced_MultiPassSponzaDemo: './src/Advanced_MultiPassSponzaDemo.ts',
-        AircraftDemo: './src/AircraftDemo.ts',
-        AWD3ViewerMinimal: './src/AWD3ViewerMinimal.ts',
-        AWDSuzanne: './src/AWDSuzanne.ts',
-        Basic_Fire: './src/Basic_Fire.ts',
-        Basic_Load3DS: './src/Basic_Load3DS.ts',
-        Basic_LoadAWD: './src/Basic_LoadAWD.ts',
-        Basic_Shading: './src/Basic_Shading.ts',
-        Basic_Skybox: './src/Basic_Skybox.ts',
-        Basic_View: './src/Basic_View.ts',
-        CubePrimitive: './src/CubePrimitive.ts',
-        Intermediate_AWDViewer: './src/Intermediate_AWDViewer.ts',
-        Intermediate_Globe: './src/Intermediate_Globe.ts',
-        Intermediate_MD5Animation: './src/Intermediate_MD5Animation.ts',
-        Intermediate_MonsterHeadShading: './src/Intermediate_MonsterHeadShading.ts',
-        Intermediate_MouseInteraction: './src/Intermediate_MouseInteraction.ts',
-        Intermediate_ParticleExplosions: './src/Intermediate_ParticleExplosions.ts',
-        Intermediate_PerelithKnight: './src/Intermediate_PerelithKnight.ts',
-        ObjLoaderMasterChief: './src/ObjLoaderMasterChief.ts',
-        TorusPrimitive: './src/TorusPrimitive.ts',
-        Graphics_Drawing: './src/Graphics_Drawing.ts',
-         awayjs: [
-         'awayjs-core',
-         'awayjs-display',
-         'awayjs-stagegl',
-         'awayjs-renderergl',
-         'awayjs-methodmaterials',
-         'awayjs-player',
-         'awayjs-parsers'
-         ]
-    },
+    entry: entry,
     devtool: 'source-map',
     output: {
-        path: './bin/js',
-        filename: '[name].js'
+        path: './bin',
+        filename: 'js/[name].js'
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
@@ -54,10 +60,8 @@ module.exports = {
     module: {
         loaders: [
             // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-            { test: /\.ts(x?)$/, loader: require.resolve('ts-loader') }
+            { test: /\.ts(x?)$/, loader: require.resolve('awesome-typescript-loader') }
         ]
     },
-    plugins: [
-        new webpack.optimize.CommonsChunkPlugin('awayjs', 'awayjs.bundle.js')
-    ]
+    plugins: plugins
 };

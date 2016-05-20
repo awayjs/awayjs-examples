@@ -86,13 +86,13 @@ webpackJsonp([7],[
 	     * Initialise the engine
 	     */
 	    Basic_Shading.prototype.initEngine = function () {
-	        this._scene = new Scene_1.default();
-	        this._camera = new Camera_1.default();
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._scene = new Scene_1.Scene();
+	        this._camera = new Camera_1.Camera();
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this._view.scene = this._scene;
 	        this._view.camera = this._camera;
 	        //setup controller to be used on the camera
-	        this._cameraController = new HoverController_1.default(this._camera);
+	        this._cameraController = new HoverController_1.HoverController(this._camera);
 	        this._cameraController.distance = 1000;
 	        this._cameraController.minTiltAngle = 0;
 	        this._cameraController.maxTiltAngle = 90;
@@ -103,54 +103,54 @@ webpackJsonp([7],[
 	     * Initialise the entities
 	     */
 	    Basic_Shading.prototype.initLights = function () {
-	        this._light1 = new DirectionalLight_1.default();
-	        this._light1.direction = new Vector3D_1.default(0, -1, 0);
+	        this._light1 = new DirectionalLight_1.DirectionalLight();
+	        this._light1.direction = new Vector3D_1.Vector3D(0, -1, 0);
 	        this._light1.ambient = 0.1;
 	        this._light1.diffuse = 0.7;
 	        this._scene.addChild(this._light1);
-	        this._light2 = new DirectionalLight_1.default();
-	        this._light2.direction = new Vector3D_1.default(0, -1, 0);
+	        this._light2 = new DirectionalLight_1.DirectionalLight();
+	        this._light2.direction = new Vector3D_1.Vector3D(0, -1, 0);
 	        this._light2.color = 0x00FFFF;
 	        this._light2.ambient = 0.1;
 	        this._light2.diffuse = 0.7;
 	        this._scene.addChild(this._light2);
-	        this._lightPicker = new StaticLightPicker_1.default([this._light1, this._light2]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light1, this._light2]);
 	    };
 	    /**
 	     * Initialise the materials
 	     */
 	    Basic_Shading.prototype.initMaterials = function () {
-	        this._planeMaterial = new MethodMaterial_1.default(DefaultMaterialManager_1.default.getDefaultImage2D());
+	        this._planeMaterial = new MethodMaterial_1.MethodMaterial(DefaultMaterialManager_1.DefaultMaterialManager.getDefaultImage2D());
 	        this._planeMaterial.lightPicker = this._lightPicker;
-	        this._planeMaterial.style.sampler = new Sampler2D_1.default(true, true, true);
-	        this._sphereMaterial = new MethodMaterial_1.default(DefaultMaterialManager_1.default.getDefaultImage2D());
+	        this._planeMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true, true);
+	        this._sphereMaterial = new MethodMaterial_1.MethodMaterial(DefaultMaterialManager_1.DefaultMaterialManager.getDefaultImage2D());
 	        this._sphereMaterial.lightPicker = this._lightPicker;
-	        this._cubeMaterial = new MethodMaterial_1.default(DefaultMaterialManager_1.default.getDefaultImage2D());
+	        this._cubeMaterial = new MethodMaterial_1.MethodMaterial(DefaultMaterialManager_1.DefaultMaterialManager.getDefaultImage2D());
 	        this._cubeMaterial.lightPicker = this._lightPicker;
-	        this._cubeMaterial.style.sampler = new Sampler2D_1.default(true, true);
-	        this._torusMaterial = new MethodMaterial_1.default(DefaultMaterialManager_1.default.getDefaultImage2D());
+	        this._cubeMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true);
+	        this._torusMaterial = new MethodMaterial_1.MethodMaterial(DefaultMaterialManager_1.DefaultMaterialManager.getDefaultImage2D());
 	        this._torusMaterial.lightPicker = this._lightPicker;
-	        this._torusMaterial.style.sampler = new Sampler2D_1.default(true, true, true);
+	        this._torusMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true, true);
 	    };
 	    /**
 	     * Initialise the scene objects
 	     */
 	    Basic_Shading.prototype.initObjects = function () {
-	        this._plane = new PrimitivePlanePrefab_1.default(this._planeMaterial, ElementsType_1.default.TRIANGLE, 1000, 1000).getNewObject();
+	        this._plane = new PrimitivePlanePrefab_1.PrimitivePlanePrefab(this._planeMaterial, ElementsType_1.ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 	        this._plane.graphics.scaleUV(2, 2);
 	        this._plane.y = -20;
 	        this._scene.addChild(this._plane);
-	        this._sphere = new PrimitiveSpherePrefab_1.default(this._sphereMaterial, ElementsType_1.default.TRIANGLE, 150, 40, 20).getNewObject();
+	        this._sphere = new PrimitiveSpherePrefab_1.PrimitiveSpherePrefab(this._sphereMaterial, ElementsType_1.ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
 	        this._sphere.x = 300;
 	        this._sphere.y = 160;
 	        this._sphere.z = 300;
 	        this._scene.addChild(this._sphere);
-	        this._cube = new PrimitiveCubePrefab_1.default(this._cubeMaterial, ElementsType_1.default.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
+	        this._cube = new PrimitiveCubePrefab_1.PrimitiveCubePrefab(this._cubeMaterial, ElementsType_1.ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
 	        this._cube.x = 300;
 	        this._cube.y = 160;
 	        this._cube.z = -250;
 	        this._scene.addChild(this._cube);
-	        this._torus = new PrimitiveTorusPrefab_1.default(this._torusMaterial, ElementsType_1.default.TRIANGLE, 150, 60, 40, 20).getNewObject();
+	        this._torus = new PrimitiveTorusPrefab_1.PrimitiveTorusPrefab(this._torusMaterial, ElementsType_1.ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 	        this._torus.graphics.scaleUV(10, 5);
 	        this._torus.x = -250;
 	        this._torus.y = 160;
@@ -168,30 +168,30 @@ webpackJsonp([7],[
 	        document.onmousemove = function (event) { return _this.onMouseMove(event); };
 	        document.onmousewheel = function (event) { return _this.onMouseWheel(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onLoadComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onLoadComplete(event); });
 	        //plane textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_normal.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/floor_specular.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_normal.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/floor_specular.jpg"));
 	        //sphere textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/beachball_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/beachball_specular.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/beachball_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/beachball_specular.jpg"));
 	        //cube textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/trinket_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/trinket_normal.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/trinket_specular.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/trinket_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/trinket_normal.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/trinket_specular.jpg"));
 	        //torus textures
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/weave_diffuse.jpg"));
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/weave_normal.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/weave_diffuse.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/weave_normal.jpg"));
 	    };
 	    /**
 	     * Navigation and render loop
 	     */
 	    Basic_Shading.prototype.onEnterFrame = function (dt) {
 	        this._time += dt;
-	        this._light1.direction = new Vector3D_1.default(Math.sin(this._time / 10000) * 150000, -1000, Math.cos(this._time / 10000) * 150000);
+	        this._light1.direction = new Vector3D_1.Vector3D(Math.sin(this._time / 10000) * 150000, -1000, Math.cos(this._time / 10000) * 150000);
 	        this._view.render();
 	    };
 	    /**
@@ -209,34 +209,34 @@ webpackJsonp([7],[
 	                    this._planeMaterial.style.image = asset;
 	                    break;
 	                case "assets/floor_normal.jpg":
-	                    this._planeMaterial.normalMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._planeMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                case "assets/floor_specular.jpg":
-	                    this._planeMaterial.specularMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._planeMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //sphere textures
 	                case "assets/beachball_diffuse.jpg":
 	                    this._sphereMaterial.style.image = asset;
 	                    break;
 	                case "assets/beachball_specular.jpg":
-	                    this._sphereMaterial.specularMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._sphereMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //cube textures
 	                case "assets/trinket_diffuse.jpg":
 	                    this._cubeMaterial.style.image = asset;
 	                    break;
 	                case "assets/trinket_normal.jpg":
-	                    this._cubeMaterial.normalMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._cubeMaterial.normalMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                case "assets/trinket_specular.jpg":
-	                    this._cubeMaterial.specularMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._cubeMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	                //torus textures
 	                case "assets/weave_diffuse.jpg":
 	                    this._torusMaterial.style.image = asset;
 	                    break;
 	                case "assets/weave_normal.jpg":
-	                    this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture_1.default(asset);
+	                    this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture_1.Single2DTexture(asset);
 	                    break;
 	            }
 	        }

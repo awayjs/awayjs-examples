@@ -32,7 +32,7 @@ webpackJsonp([10],[
 	     *
 	     */
 	    CubePrimitive.prototype.initView = function () {
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this._view.backgroundColor = 0x000000;
 	        this._view.camera.x = 130;
 	        this._view.camera.y = 0;
@@ -42,21 +42,21 @@ webpackJsonp([10],[
 	     *
 	     */
 	    CubePrimitive.prototype.initLights = function () {
-	        this._light = new DirectionalLight_1.default();
+	        this._light = new DirectionalLight_1.DirectionalLight();
 	        this._light.color = 0xffffff;
-	        this._light.direction = new Vector3D_1.default(1, 0, 0);
+	        this._light.direction = new Vector3D_1.Vector3D(1, 0, 0);
 	        this._light.ambient = 0.4;
 	        this._light.ambientColor = 0x85b2cd;
 	        this._light.diffuse = 2.8;
 	        this._light.specular = 1.8;
-	        this._lightPicker = new StaticLightPicker_1.default([this._light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light]);
 	    };
 	    /**
 	     *
 	     */
 	    CubePrimitive.prototype.initCamera = function () {
-	        this._cameraAxis = new Vector3D_1.default(0, 0, 1);
-	        this._view.camera.projection = new PerspectiveProjection_1.default(120);
+	        this._cameraAxis = new Vector3D_1.Vector3D(0, 0, 1);
+	        this._view.camera.projection = new PerspectiveProjection_1.PerspectiveProjection(120);
 	        this._view.camera.projection.near = 0.1;
 	    };
 	    /**
@@ -64,10 +64,10 @@ webpackJsonp([10],[
 	     */
 	    CubePrimitive.prototype.loadResources = function () {
 	        var _this = this;
-	        var urlRequest = new URLRequest_1.default("assets/spacy_texture.png");
-	        var imgLoader = new URLLoader_1.default();
-	        imgLoader.dataFormat = URLLoaderDataFormat_1.default.BLOB;
-	        imgLoader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.urlCompleteHandler(event); });
+	        var urlRequest = new URLRequest_1.URLRequest("assets/spacy_texture.png");
+	        var imgLoader = new URLLoader_1.URLLoader();
+	        imgLoader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.BLOB;
+	        imgLoader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, function (event) { return _this.urlCompleteHandler(event); });
 	        imgLoader.load(urlRequest);
 	    };
 	    /**
@@ -77,7 +77,7 @@ webpackJsonp([10],[
 	    CubePrimitive.prototype.urlCompleteHandler = function (event) {
 	        var _this = this;
 	        var imageLoader = event.target;
-	        this._image = ParserUtils_1.default.blobToImage(imageLoader.data);
+	        this._image = ParserUtils_1.ParserUtils.blobToImage(imageLoader.data);
 	        this._image.onload = function (event) { return _this.imageCompleteHandler(event); };
 	    };
 	    /**
@@ -86,20 +86,20 @@ webpackJsonp([10],[
 	     */
 	    CubePrimitive.prototype.imageCompleteHandler = function (event) {
 	        var _this = this;
-	        var matTx = new MethodMaterial_1.default(ParserUtils_1.default.imageToBitmapImage2D(this._image));
-	        matTx.style.sampler = new Sampler2D_1.default(true, true);
-	        matTx.blendMode = BlendMode_1.default.ADD;
+	        var matTx = new MethodMaterial_1.MethodMaterial(ParserUtils_1.ParserUtils.imageToBitmapImage2D(this._image));
+	        matTx.style.sampler = new Sampler2D_1.Sampler2D(true, true);
+	        matTx.blendMode = BlendMode_1.BlendMode.ADD;
 	        matTx.bothSides = true;
 	        matTx.lightPicker = this._lightPicker;
-	        this._cube = new PrimitiveCubePrefab_1.default(matTx, ElementsType_1.default.TRIANGLE, 20.0, 20.0, 20.0);
-	        this._torus = new PrimitiveTorusPrefab_1.default(matTx, ElementsType_1.default.TRIANGLE, 150, 80, 32, 16, true);
+	        this._cube = new PrimitiveCubePrefab_1.PrimitiveCubePrefab(matTx, ElementsType_1.ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
+	        this._torus = new PrimitiveTorusPrefab_1.PrimitiveTorusPrefab(matTx, ElementsType_1.ElementsType.TRIANGLE, 150, 80, 32, 16, true);
 	        this._sprite = this._torus.getNewObject();
 	        this._sprite2 = this._cube.getNewObject();
 	        this._sprite2.x = 130;
 	        this._sprite2.z = 40;
 	        this._view.scene.addChild(this._sprite);
 	        this._view.scene.addChild(this._sprite2);
-	        this._raf = new RequestAnimationFrame_1.default(this.render, this);
+	        this._raf = new RequestAnimationFrame_1.RequestAnimationFrame(this.render, this);
 	        this._raf.start();
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();

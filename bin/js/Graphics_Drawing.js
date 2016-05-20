@@ -76,22 +76,22 @@ webpackJsonp([11],[
 	     */
 	    Graphics_Drawing.prototype.initEngine = function () {
 	        //create the view
-	        this._renderer = new DefaultRenderer_1.default();
+	        this._renderer = new DefaultRenderer_1.DefaultRenderer();
 	        this._renderer.renderableSorter = null; //new RenderableSort2D();
-	        this._view = new View_1.default(this._renderer);
+	        this._view = new View_1.View(this._renderer);
 	        this._view.backgroundColor = 0x777777;
 	        this._stage_width = 550;
 	        this._stage_height = 400;
 	        this._isperspective = true;
-	        this._projection = new PerspectiveProjection_1.default();
-	        this._projection.coordinateSystem = CoordinateSystem_1.default.RIGHT_HANDED;
+	        this._projection = new PerspectiveProjection_1.PerspectiveProjection();
+	        this._projection.coordinateSystem = CoordinateSystem_1.CoordinateSystem.RIGHT_HANDED;
 	        this._projection.fieldOfView = 30;
 	        this._projection.originX = 0;
 	        this._projection.originY = 0;
-	        this._camera_perspective = new Camera_1.default();
+	        this._camera_perspective = new Camera_1.Camera();
 	        this._camera_perspective.projection = this._projection;
 	        //this._projection.far = 500000;
-	        this._hoverControl = new HoverController_1.default(this._camera_perspective, null, 180, 0, 1000);
+	        this._hoverControl = new HoverController_1.HoverController(this._camera_perspective, null, 180, 0, 1000);
 	        this._view.camera = this._camera_perspective;
 	    };
 	    /**
@@ -99,34 +99,34 @@ webpackJsonp([11],[
 	     */
 	    Graphics_Drawing.prototype.initObjects = function () {
 	        var _this = this;
-	        var root_timeline = new MovieClip_1.default();
-	        root_timeline.partition = new SceneGraphPartition_1.default();
-	        root_timeline.adapter = new AS2MovieClipAdapter_1.default(root_timeline, this._view);
+	        var root_timeline = new MovieClip_1.MovieClip();
+	        root_timeline.partition = new SceneGraphPartition_1.SceneGraphPartition();
+	        root_timeline.adapter = new AS2MovieClipAdapter_1.AS2MovieClipAdapter(root_timeline, this._view);
 	        // Graphics is not wired into any Displayobjects yet.
 	        // to have it produce geometry, for now we have to pass it a sprite when constructing it
-	        this.drawingMC = new Sprite_1.default(null);
+	        this.drawingMC = new Sprite_1.Sprite(null);
 	        this._activePoint = null;
 	        // for now i did not find a way to activate this other than doing it in js (not in ts)
 	        // so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
-	        GraphicsFactoryHelper_1.default._tess_obj = null; //new TESS();
+	        GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj = null; //new TESS();
 	        this._view.scene.addChild(this.drawingMC);
 	        this._points = new Array();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.newTess();
-	        var thisCircleGraphic = new Graphics_1.default();
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.newTess();
+	        var thisCircleGraphic = new Graphics_1.Graphics();
 	        thisCircleGraphic.beginFill(0xFF0000, 1);
 	        thisCircleGraphic.drawCircle(0, 0, 30);
 	        thisCircleGraphic.endFill();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.deleteTess();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.newTess();
-	        var thisCircleGraphicsmall = new Graphics_1.default();
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.deleteTess();
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.newTess();
+	        var thisCircleGraphicsmall = new Graphics_1.Graphics();
 	        thisCircleGraphicsmall.beginFill(0xFF0000, 1);
 	        thisCircleGraphicsmall.drawCircle(0, 0, 10);
 	        thisCircleGraphicsmall.endFill();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.deleteTess();
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.deleteTess();
 	        var batman_logo = [];
 	        var cnt = 0;
 	        batman_logo[cnt++] = ["l", 50, 50];
@@ -150,7 +150,7 @@ webpackJsonp([11],[
 	        batman_logo[cnt++] = ["c1", 200, 120];
 	        var i = 0;
 	        for (i = 0; i < batman_logo.length; i++) {
-	            this._points[i] = new Sprite_1.default();
+	            this._points[i] = new Sprite_1.Sprite();
 	            this._points[i].name = batman_logo[i][0];
 	            this._points[i].x = batman_logo[i][1];
 	            this._points[i].y = batman_logo[i][2];
@@ -164,9 +164,9 @@ webpackJsonp([11],[
 	            this._points[i].graphics.copyFrom(thisshape);
 	            this._points[i].visible = false;
 	            this._view.scene.addChild(this._points[i]);
-	            this._points[i].addEventListener(MouseEvent_1.default.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
+	            this._points[i].addEventListener(MouseEvent_1.MouseEvent.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
 	        }
-	        this._view.scene.addEventListener(MouseEvent_1.default.MOUSE_MOVE, function (event) { return _this.onMouseMove(event); });
+	        this._view.scene.addEventListener(MouseEvent_1.MouseEvent.MOUSE_MOVE, function (event) { return _this.onMouseMove(event); });
 	        document.onmouseup = function (event) { return _this.onMouseUp(event); };
 	        this.draw_shape();
 	    };
@@ -187,10 +187,10 @@ webpackJsonp([11],[
 	    };
 	    Graphics_Drawing.prototype.draw_shape = function () {
 	        this.drawingMC.graphics.clear();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.newTess();
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.newTess();
 	        this.drawingMC.graphics.beginFill(0xFF0000, 1);
-	        this.drawingMC.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle_1.default.ROUND, JointStyle_1.default.MITER, 1.8);
+	        this.drawingMC.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle_1.CapsStyle.ROUND, JointStyle_1.JointStyle.MITER, 1.8);
 	        this.drawingMC.graphics.moveTo(this._points[0].x, this._points[0].y);
 	        var i = 1;
 	        var tmpspite = null;
@@ -214,9 +214,9 @@ webpackJsonp([11],[
 	            this.drawingMC.graphics.lineTo(this._points[0].x, this._points[0].y);
 	        }
 	        this.drawingMC.graphics.endFill();
-	        if (GraphicsFactoryHelper_1.default._tess_obj)
-	            GraphicsFactoryHelper_1.default._tess_obj.deleteTess();
-	        var new_ct = this.drawingMC.transform.colorTransform || (this.drawingMC.transform.colorTransform = new ColorTransform_1.default());
+	        if (GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj)
+	            GraphicsFactoryHelper_1.GraphicsFactoryHelper._tess_obj.deleteTess();
+	        var new_ct = this.drawingMC.transform.colorTransform || (this.drawingMC.transform.colorTransform = new ColorTransform_1.ColorTransform());
 	        new_ct.redMultiplier = 1;
 	        new_ct.greenMultiplier = 1;
 	        new_ct.blueMultiplier = 0;
@@ -230,7 +230,7 @@ webpackJsonp([11],[
 	        var _this = this;
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    };
 	    /**

@@ -60,7 +60,7 @@ webpackJsonp([12],[
 	     */
 	    function Intermediate_AWDViewer() {
 	        this._time = 0;
-	        this._stateTransition = new CrossfadeTransition_1.default(0.5);
+	        this._stateTransition = new CrossfadeTransition_1.CrossfadeTransition(0.5);
 	        this.init();
 	    }
 	    /**
@@ -76,15 +76,15 @@ webpackJsonp([12],[
 	     */
 	    Intermediate_AWDViewer.prototype.initEngine = function () {
 	        //create the view
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        this._view.backgroundColor = 0x333338;
 	        //create custom lens
-	        this._view.camera.projection = new PerspectiveProjection_1.default(70);
+	        this._view.camera.projection = new PerspectiveProjection_1.PerspectiveProjection(70);
 	        this._view.camera.projection.far = 5000;
 	        this._view.camera.projection.near = 1;
 	        //setup controller to be used on the camera
-	        this._cameraController = new HoverController_1.default(this._view.camera, null, 0, 0, 150, 10, 90);
-	        this._cameraController.lookAtPosition = new Vector3D_1.default(0, 60, 0);
+	        this._cameraController = new HoverController_1.HoverController(this._view.camera, null, 0, 0, 150, 10, 90);
+	        this._cameraController.lookAtPosition = new Vector3D_1.Vector3D(0, 60, 0);
 	        this._cameraController.tiltAngle = 0;
 	        this._cameraController.panAngle = 0;
 	        this._cameraController.minTiltAngle = 5;
@@ -96,11 +96,11 @@ webpackJsonp([12],[
 	     */
 	    Intermediate_AWDViewer.prototype.initObjects = function () {
 	        var _this = this;
-	        AssetLibrary_1.default.enableParser(AWDParser_1.default);
+	        AssetLibrary_1.AssetLibrary.enableParser(AWDParser_1.AWDParser);
 	        //kickoff asset loading
-	        var loader = new LoaderContainer_1.default();
-	        loader.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        loader.load(new URLRequest_1.default("assets/shambler.awd"));
+	        var loader = new LoaderContainer_1.LoaderContainer();
+	        loader.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        loader.load(new URLRequest_1.URLRequest("assets/shambler.awd"));
 	        this._view.scene.addChild(loader);
 	    };
 	    /**
@@ -115,7 +115,7 @@ webpackJsonp([12],[
 	        document.onmousewheel = function (event) { return _this.onMouseWheel(event); };
 	        document.onkeydown = function (event) { return _this.onKeyDown(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
 	    };
 	    /**
@@ -123,18 +123,18 @@ webpackJsonp([12],[
 	     */
 	    Intermediate_AWDViewer.prototype.onAssetComplete = function (event) {
 	        var _this = this;
-	        if (event.asset.isAsset(AnimatorBase_1.default)) {
+	        if (event.asset.isAsset(AnimatorBase_1.AnimatorBase)) {
 	            this._animator = event.asset;
 	            this._animator.play(Intermediate_AWDViewer.IDLE_NAME);
 	        }
-	        else if (event.asset.isAsset(AnimationNodeBase_1.default)) {
+	        else if (event.asset.isAsset(AnimationNodeBase_1.AnimationNodeBase)) {
 	            var node = event.asset;
 	            if (node.name == Intermediate_AWDViewer.IDLE_NAME) {
 	                node.looping = true;
 	            }
 	            else {
 	                node.looping = false;
-	                node.addEventListener(AnimationStateEvent_1.default.PLAYBACK_COMPLETE, function (event) { return _this.onPlaybackComplete(event); });
+	                node.addEventListener(AnimationStateEvent_1.AnimationStateEvent.PLAYBACK_COMPLETE, function (event) { return _this.onPlaybackComplete(event); });
 	            }
 	        }
 	    };
@@ -143,19 +143,19 @@ webpackJsonp([12],[
 	     */
 	    Intermediate_AWDViewer.prototype.onKeyDown = function (event) {
 	        switch (event.keyCode) {
-	            case Keyboard_1.default.NUMBER_1:
+	            case Keyboard_1.Keyboard.NUMBER_1:
 	                this.playAction("attack01");
 	                break;
-	            case Keyboard_1.default.NUMBER_2:
+	            case Keyboard_1.Keyboard.NUMBER_2:
 	                this.playAction("attack02");
 	                break;
-	            case Keyboard_1.default.NUMBER_3:
+	            case Keyboard_1.Keyboard.NUMBER_3:
 	                this.playAction("attack03");
 	                break;
-	            case Keyboard_1.default.NUMBER_4:
+	            case Keyboard_1.Keyboard.NUMBER_4:
 	                this.playAction("attack04");
 	                break;
-	            case Keyboard_1.default.NUMBER_5:
+	            case Keyboard_1.Keyboard.NUMBER_5:
 	                this.playAction("attack05");
 	        }
 	    };

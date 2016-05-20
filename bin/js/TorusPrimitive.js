@@ -1,4 +1,4 @@
-webpackJsonp([20],[
+webpackJsonp([21],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -21,7 +21,7 @@ webpackJsonp([20],[
 	    function TorusPrimitive() {
 	        var _this = this;
 	        this.initView();
-	        this._raf = new RequestAnimationFrame_1.default(this.render, this);
+	        this._raf = new RequestAnimationFrame_1.RequestAnimationFrame(this.render, this);
 	        this._raf.start();
 	        this.loadResources();
 	        window.onresize = function (event) { return _this.onResize(event); };
@@ -31,7 +31,7 @@ webpackJsonp([20],[
 	     *
 	     */
 	    TorusPrimitive.prototype.initView = function () {
-	        this._view = new View_1.default(new DefaultRenderer_1.default()); // Create the Away3D View
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer()); // Create the Away3D View
 	        this._view.backgroundColor = 0x000000; // Change the background color to black
 	    };
 	    /**
@@ -39,10 +39,10 @@ webpackJsonp([20],[
 	     */
 	    TorusPrimitive.prototype.loadResources = function () {
 	        var _this = this;
-	        var imgLoader = new URLLoader_1.default();
-	        imgLoader.dataFormat = URLLoaderDataFormat_1.default.BLOB;
-	        imgLoader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.urlCompleteHandler(event); });
-	        imgLoader.load(new URLRequest_1.default("assets/dots.png"));
+	        var imgLoader = new URLLoader_1.URLLoader();
+	        imgLoader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.BLOB;
+	        imgLoader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, function (event) { return _this.urlCompleteHandler(event); });
+	        imgLoader.load(new URLRequest_1.URLRequest("assets/dots.png"));
 	    };
 	    /**
 	     *
@@ -50,32 +50,32 @@ webpackJsonp([20],[
 	     */
 	    TorusPrimitive.prototype.urlCompleteHandler = function (event) {
 	        var _this = this;
-	        this._image = ParserUtils_1.default.blobToImage(event.target.data);
+	        this._image = ParserUtils_1.ParserUtils.blobToImage(event.target.data);
 	        this._image.onload = function (event) { return _this.imageCompleteHandler(event); };
 	    };
 	    /**
 	     *
 	     */
 	    TorusPrimitive.prototype.initLights = function () {
-	        this._light = new DirectionalLight_1.default();
+	        this._light = new DirectionalLight_1.DirectionalLight();
 	        this._light.diffuse = .7;
 	        this._light.specular = 1;
 	        this._view.scene.addChild(this._light);
-	        this._lightPicker = new StaticLightPicker_1.default([this._light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light]);
 	    };
 	    /**
 	     *
 	     */
 	    TorusPrimitive.prototype.initMaterial = function (image) {
-	        this._material = new MethodMaterial_1.default(ParserUtils_1.default.imageToBitmapImage2D(image));
-	        this._material.style.sampler = new Sampler2D_1.default(true, true, false);
+	        this._material = new MethodMaterial_1.MethodMaterial(ParserUtils_1.ParserUtils.imageToBitmapImage2D(image));
+	        this._material.style.sampler = new Sampler2D_1.Sampler2D(true, true, false);
 	        this._material.lightPicker = this._lightPicker;
 	    };
 	    /**
 	     *
 	     */
 	    TorusPrimitive.prototype.initTorus = function () {
-	        this._torus = new PrimitiveTorusPrefab_1.default(this._material, ElementsType_1.default.TRIANGLE, 220, 80, 32, 16, false);
+	        this._torus = new PrimitiveTorusPrefab_1.PrimitiveTorusPrefab(this._material, ElementsType_1.ElementsType.TRIANGLE, 220, 80, 32, 16, false);
 	        this._sprite = this._torus.getNewObject();
 	        this._view.scene.addChild(this._sprite);
 	    };

@@ -33,28 +33,28 @@
  THE SOFTWARE.
 
  */
-import AS2MovieClipAdapter			from "awayjs-player/lib/adapters/AS2MovieClipAdapter";
-import OrthographicProjection		from "awayjs-core/lib/projections/OrthographicProjection";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import Graphics						from "awayjs-display/lib/graphics/Graphics";
-import View							from "awayjs-display/lib/View";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import HoverController				from "awayjs-display/lib/controllers/HoverController";
+import {AS2MovieClipAdapter}			from "awayjs-player/lib/adapters/AS2MovieClipAdapter";
+import {OrthographicProjection}		from "awayjs-core/lib/projections/OrthographicProjection";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {Graphics}						from "awayjs-display/lib/graphics/Graphics";
+import {View}							from "awayjs-display/lib/View";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import SceneGraphPartition			from "awayjs-display/lib/partition/SceneGraphPartition";
-import MovieClip					from "awayjs-display/lib/display/MovieClip";
+import {SceneGraphPartition}			from "awayjs-display/lib/partition/SceneGraphPartition";
+import {MovieClip}					from "awayjs-display/lib/display/MovieClip";
 
-import CoordinateSystem				from "awayjs-core/lib/projections/CoordinateSystem";
-import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
-import Camera						from "awayjs-display/lib/display/Camera";
-import AwayMouseEvent				from "awayjs-display/lib/events/MouseEvent";
-import ColorTransform 				from "awayjs-core/lib/geom/ColorTransform";
+import {CoordinateSystem}				from "awayjs-core/lib/projections/CoordinateSystem";
+import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
+import {Camera}						from "awayjs-display/lib/display/Camera";
+import {MouseEvent}				from "awayjs-display/lib/events/MouseEvent";
+import {ColorTransform}				from "awayjs-core/lib/geom/ColorTransform";
 
-import GraphicsFactoryHelper		from "awayjs-display/lib/draw/GraphicsFactoryHelper";
-import CapsStyle  					from "awayjs-display/lib/draw/CapsStyle";
-import JointStyle  					from "awayjs-display/lib/draw/JointStyle";
+import {GraphicsFactoryHelper}		from "awayjs-display/lib/draw/GraphicsFactoryHelper";
+import {CapsStyle}					from "awayjs-display/lib/draw/CapsStyle";
+import {JointStyle}					from "awayjs-display/lib/draw/JointStyle";
 
 class Graphics_Drawing
 {
@@ -201,25 +201,25 @@ class Graphics_Drawing
 			this._points[i].graphics.copyFrom(thisshape);
 			this._points[i].visible=false;
 			this._view.scene.addChild(this._points[i]);
-			this._points[i].addEventListener(AwayMouseEvent.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
+			this._points[i].addEventListener(MouseEvent.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
 		}
 
-		this._view.scene.addEventListener(AwayMouseEvent.MOUSE_MOVE, (event:AwayMouseEvent) => this.onMouseMove(event));
-		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+		this._view.scene.addEventListener(MouseEvent.MOUSE_MOVE, (event:MouseEvent) => this.onMouseMove(event));
+		document.onmouseup = (event) => this.onMouseUp(event);
 		this.draw_shape();
 
 	}
 
-	private onPointDown(event:AwayMouseEvent): void{
+	private onPointDown(event:MouseEvent): void{
 		this._activePoint = (<Sprite> event.target);
 		this._activePoint.x=event.scenePosition.x;
 		this._activePoint.y=event.scenePosition.y;
 	}
-	private onMouseUp(event:MouseEvent): void{
+	private onMouseUp(event): void{
 		this._activePoint = null;
 		//this.draw_shape();
 	}
-	private onMouseMove(event:AwayMouseEvent): void{
+	private onMouseMove(event:MouseEvent): void{
 		if (this._activePoint){
 			this._activePoint.x=event.scenePosition.x;
 			this._activePoint.y=event.scenePosition.y;

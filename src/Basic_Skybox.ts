@@ -35,27 +35,27 @@ THE SOFTWARE.
 
 */
 
-import BitmapImageCube				from "awayjs-core/lib/image/BitmapImageCube";
-import SamplerCube					from "awayjs-core/lib/image/SamplerCube";
-import LoaderEvent					from "awayjs-core/lib/events/LoaderEvent";
-import Vector3D						from "awayjs-core/lib/geom/Vector3D";
-import AssetLibrary					from "awayjs-core/lib/library/AssetLibrary";
-import LoaderContext				from "awayjs-core/lib/library/LoaderContext";
-import URLRequest					from "awayjs-core/lib/net/URLRequest";
-import PerspectiveProjection		from "awayjs-core/lib/projections/PerspectiveProjection";
-import RequestAnimationFrame		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {BitmapImageCube}				from "awayjs-core/lib/image/BitmapImageCube";
+import {SamplerCube}					from "awayjs-core/lib/image/SamplerCube";
+import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
+import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
+import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
+import {LoaderContext}				from "awayjs-core/lib/library/LoaderContext";
+import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
+import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
+import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
 
-import View							from "awayjs-display/lib/View";
-import Sprite						from "awayjs-display/lib/display/Sprite";
-import Skybox						from "awayjs-display/lib/display/Skybox";
-import ElementsType					from "awayjs-display/lib/graphics/ElementsType";
-import PrimitiveTorusPrefab			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
-import SingleCubeTexture			from "awayjs-display/lib/textures/SingleCubeTexture";
+import {View}							from "awayjs-display/lib/View";
+import {Sprite}						from "awayjs-display/lib/display/Sprite";
+import {Skybox}						from "awayjs-display/lib/display/Skybox";
+import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
+import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
+import {SingleCubeTexture}			from "awayjs-display/lib/textures/SingleCubeTexture";
 
-import DefaultRenderer				from "awayjs-renderergl/lib/DefaultRenderer";
+import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
 
-import MethodMaterial				from "awayjs-methodmaterials/lib/MethodMaterial";
-import EffectEnvMapMethod			from "awayjs-methodmaterials/lib/methods/EffectEnvMapMethod";
+import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
+import {EffectEnvMapMethod}			from "awayjs-methodmaterials/lib/methods/EffectEnvMapMethod";
 
 class Basic_SkyBox
 {

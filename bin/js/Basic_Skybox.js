@@ -77,12 +77,12 @@ webpackJsonp([8],[
 	     */
 	    Basic_SkyBox.prototype.initEngine = function () {
 	        //setup the view
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        //setup the camera
 	        this._view.camera.z = -600;
 	        this._view.camera.y = 0;
-	        this._view.camera.lookAt(new Vector3D_1.default());
-	        this._view.camera.projection = new PerspectiveProjection_1.default(90);
+	        this._view.camera.lookAt(new Vector3D_1.Vector3D());
+	        this._view.camera.projection = new PerspectiveProjection_1.PerspectiveProjection(90);
 	        this._view.backgroundColor = 0xFFFF00;
 	        this._mouseX = window.innerWidth / 2;
 	    };
@@ -91,9 +91,9 @@ webpackJsonp([8],[
 	     */
 	    Basic_SkyBox.prototype.initMaterials = function () {
 	        //setup the torus material
-	        this._torusMaterial = new MethodMaterial_1.default(0xFFFFFF, 1);
+	        this._torusMaterial = new MethodMaterial_1.MethodMaterial(0xFFFFFF, 1);
 	        this._torusMaterial.style.color = 0x111199;
-	        this._torusMaterial.style.sampler = new SamplerCube_1.default(true, true);
+	        this._torusMaterial.style.sampler = new SamplerCube_1.SamplerCube(true, true);
 	        this._torusMaterial.specularMethod.strength = 0.5;
 	        this._torusMaterial.ambientMethod.strength = 1;
 	    };
@@ -101,7 +101,7 @@ webpackJsonp([8],[
 	     * Initialise the scene objects
 	     */
 	    Basic_SkyBox.prototype.initObjects = function () {
-	        this._torus = new PrimitiveTorusPrefab_1.default(this._torusMaterial, ElementsType_1.default.TRIANGLE, 150, 60, 40, 20).getNewObject();
+	        this._torus = new PrimitiveTorusPrefab_1.PrimitiveTorusPrefab(this._torusMaterial, ElementsType_1.ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 	        this._torus.debugVisible = true;
 	        this._view.scene.addChild(this._torus);
 	    };
@@ -113,14 +113,14 @@ webpackJsonp([8],[
 	        document.onmousemove = function (event) { return _this.onMouseMove(event); };
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onResourceComplete(event); });
 	        //setup the url map for textures in the cubemap file
-	        var loaderContext = new LoaderContext_1.default();
+	        var loaderContext = new LoaderContext_1.LoaderContext();
 	        loaderContext.dependencyBaseUrl = "assets/skybox/";
 	        //environment texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/skybox/snow_texture.cube"), loaderContext);
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/skybox/snow_texture.cube"), loaderContext);
 	    };
 	    /**
 	     * Navigation and render loop
@@ -139,10 +139,10 @@ webpackJsonp([8],[
 	    Basic_SkyBox.prototype.onResourceComplete = function (event) {
 	        switch (event.url) {
 	            case 'assets/skybox/snow_texture.cube':
-	                this._cubeTexture = new SingleCubeTexture_1.default(event.assets[0]);
-	                this._skyBox = new Skybox_1.default(event.assets[0]);
+	                this._cubeTexture = new SingleCubeTexture_1.SingleCubeTexture(event.assets[0]);
+	                this._skyBox = new Skybox_1.Skybox(event.assets[0]);
 	                this._view.scene.addChild(this._skyBox);
-	                this._torusMaterial.addEffectMethod(new EffectEnvMapMethod_1.default(this._cubeTexture, 1));
+	                this._torusMaterial.addEffectMethod(new EffectEnvMapMethod_1.EffectEnvMapMethod(this._cubeTexture, 1));
 	                break;
 	        }
 	    };

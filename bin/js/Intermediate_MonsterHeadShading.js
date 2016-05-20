@@ -110,13 +110,13 @@ webpackJsonp([15],[
 	     * Initialise the engine
 	     */
 	    Intermediate_MonsterHeadShading.prototype.initEngine = function () {
-	        this._scene = new Scene_1.default();
-	        this._camera = new Camera_1.default();
+	        this._scene = new Scene_1.Scene();
+	        this._camera = new Camera_1.Camera();
 	        this._camera.projection.near = 20;
 	        this._camera.projection.far = 1000;
-	        this._view = new View_1.default(new DefaultRenderer_1.default(), this._scene, this._camera);
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer(), this._scene, this._camera);
 	        //setup controller to be used on the camera
-	        this._cameraController = new HoverController_1.default(this._camera, null, 225, 10, 800);
+	        this._cameraController = new HoverController_1.HoverController(this._camera, null, 225, 10, 800);
 	        this._cameraController.yFactor = 1;
 	    };
 	    /**
@@ -129,7 +129,7 @@ webpackJsonp([15],[
 	        var y = -Math.cos(this._lightElevation);
 	        var z = Math.sin(this._lightElevation) * Math.sin(this._lightDirection);
 	        // main light casting the shadows
-	        this._directionalLight = new DirectionalLight_1.default(x, y, z);
+	        this._directionalLight = new DirectionalLight_1.DirectionalLight(x, y, z);
 	        this._directionalLight.color = 0xffeedd;
 	        this._directionalLight.ambient = 1;
 	        this._directionalLight.specular = .3;
@@ -138,20 +138,20 @@ webpackJsonp([15],[
 	        this._directionalLight.shadowMapper.lightOffset = 1000;
 	        this._scene.addChild(this._directionalLight);
 	        // blue point light coming from the right
-	        this._blueLight = new PointLight_1.default();
+	        this._blueLight = new PointLight_1.PointLight();
 	        this._blueLight.color = 0x4080ff;
 	        this._blueLight.x = 3000;
 	        this._blueLight.z = 700;
 	        this._blueLight.y = 20;
 	        this._scene.addChild(this._blueLight);
 	        // red light coming from the left
-	        this._redLight = new PointLight_1.default();
+	        this._redLight = new PointLight_1.PointLight();
 	        this._redLight.color = 0x802010;
 	        this._redLight.x = -2000;
 	        this._redLight.z = 800;
 	        this._redLight.y = -400;
 	        this._scene.addChild(this._redLight);
-	        this._lightPicker = new StaticLightPicker_1.default([this._directionalLight, this._blueLight, this._redLight]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._directionalLight, this._blueLight, this._redLight]);
 	    };
 	    /**
 	     * Initialise the listeners
@@ -169,14 +169,14 @@ webpackJsonp([15],[
 	        this.onBitmapCompleteDelegate = function (event) { return _this.onBitmapComplete(event); };
 	        this.onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
 	        this.onResourceCompleteDelegate = function (event) { return _this.onResourceComplete(event); };
-	        this.timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this.timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this.timer.start();
 	    };
 	    /**
 	     * Updates the direction of the directional lightsource
 	     */
 	    Intermediate_MonsterHeadShading.prototype.updateDirection = function () {
-	        this._directionalLight.direction = new Vector3D_1.default(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
+	        this._directionalLight.direction = new Vector3D_1.Vector3D(Math.sin(this._lightElevation) * Math.cos(this._lightDirection), -Math.cos(this._lightElevation), Math.sin(this._lightElevation) * Math.sin(this._lightDirection));
 	    };
 	    Intermediate_MonsterHeadShading.prototype.updateRange = function () {
 	        this._softShadowMethod.range = this._shadowRange;
@@ -185,24 +185,24 @@ webpackJsonp([15],[
 	     * Global binary file loader
 	     */
 	    Intermediate_MonsterHeadShading.prototype.load = function (url) {
-	        var loader = new URLLoader_1.default();
+	        var loader = new URLLoader_1.URLLoader();
 	        switch (url.substring(url.length - 3)) {
 	            case "AWD":
 	            case "awd":
-	                loader.dataFormat = URLLoaderDataFormat_1.default.ARRAY_BUFFER;
+	                loader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.ARRAY_BUFFER;
 	                this._loadingText = "Loading Model";
-	                loader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseAWDDelegate);
+	                loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 	                break;
 	            case "png":
 	            case "jpg":
-	                loader.dataFormat = URLLoaderDataFormat_1.default.BLOB;
+	                loader.dataFormat = URLLoaderDataFormat_1.URLLoaderDataFormat.BLOB;
 	                this._currentTexture++;
 	                this._loadingText = "Loading Textures";
-	                loader.addEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseBitmapDelegate);
+	                loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 	                break;
 	        }
-	        loader.addEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
-	        loader.load(new URLRequest_1.default(this._assetsRoot + url));
+	        loader.addEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+	        loader.load(new URLRequest_1.URLRequest(this._assetsRoot + url));
 	    };
 	    /**
 	     * Display current load
@@ -219,10 +219,10 @@ webpackJsonp([15],[
 	     */
 	    Intermediate_MonsterHeadShading.prototype.parseBitmap = function (event) {
 	        var urlLoader = event.target;
-	        var image = ParserUtils_1.default.blobToImage(urlLoader.data);
+	        var image = ParserUtils_1.ParserUtils.blobToImage(urlLoader.data);
 	        image.onload = this.onBitmapCompleteDelegate;
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseBitmapDelegate);
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 	        urlLoader = null;
 	    };
 	    /**
@@ -232,11 +232,11 @@ webpackJsonp([15],[
 	        console.log("Parsing Data");
 	        var urlLoader = event.target;
 	        //setup parser
-	        AssetLibrary_1.default.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, this.onResourceCompleteDelegate);
-	        AssetLibrary_1.default.loadData(urlLoader.data, new LoaderContext_1.default(false), null, new AWDParser_1.default());
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_PROGRESS, this.loadProgressDelegate);
-	        urlLoader.removeEventListener(URLLoaderEvent_1.default.LOAD_COMPLETE, this.parseAWDDelegate);
+	        AssetLibrary_1.AssetLibrary.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+	        AssetLibrary_1.AssetLibrary.loadData(urlLoader.data, new LoaderContext_1.LoaderContext(false), null, new AWDParser_1.AWDParser());
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+	        urlLoader.removeEventListener(URLLoaderEvent_1.URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 	        urlLoader = null;
 	    };
 	    /**
@@ -247,7 +247,7 @@ webpackJsonp([15],[
 	        image.onload = null;
 	        //create bitmap texture in dictionary
 	        if (!this._textureDictionary[this._textureStrings[this._n]])
-	            this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture_1.default((this._n == 1) ? new SpecularImage2D_1.default(ParserUtils_1.default.imageToBitmapImage2D(image)) : ParserUtils_1.default.imageToBitmapImage2D(image));
+	            this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture_1.Single2DTexture((this._n == 1) ? new SpecularImage2D_1.SpecularImage2D(ParserUtils_1.ParserUtils.imageToBitmapImage2D(image)) : ParserUtils_1.ParserUtils.imageToBitmapImage2D(image));
 	        this._n++;
 	        //switch to next teture set
 	        if (this._n < this._textureStrings.length) {
@@ -267,7 +267,7 @@ webpackJsonp([15],[
 	     * Listener for asset complete event on loader
 	     */
 	    Intermediate_MonsterHeadShading.prototype.onAssetComplete = function (event) {
-	        if (event.asset.isAsset(Sprite_1.default)) {
+	        if (event.asset.isAsset(Sprite_1.Sprite)) {
 	            this._headModel = event.asset;
 	            this._headModel.graphics.scale(4);
 	            this._headModel.y = -20;
@@ -279,10 +279,10 @@ webpackJsonp([15],[
 	     */
 	    Intermediate_MonsterHeadShading.prototype.onResourceComplete = function (e) {
 	        var _this = this;
-	        AssetLibrary_1.default.removeEventListener(AssetEvent_1.default.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-	        AssetLibrary_1.default.removeEventListener(LoaderEvent_1.default.LOAD_COMPLETE, this.onResourceCompleteDelegate);
-	        var material = new MethodMaterial_1.default(this._textureDictionary["monsterhead_diffuse.jpg"]);
-	        material.shadowMethod = new ShadowSoftMethod_1.default(this._directionalLight, 10, 5);
+	        AssetLibrary_1.AssetLibrary.removeEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
+	        AssetLibrary_1.AssetLibrary.removeEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+	        var material = new MethodMaterial_1.MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+	        material.shadowMethod = new ShadowSoftMethod_1.ShadowSoftMethod(this._directionalLight, 10, 5);
 	        material.shadowMethod.epsilon = 0.2;
 	        material.lightPicker = this._lightPicker;
 	        material.specularMethod.gloss = 30;
@@ -290,21 +290,21 @@ webpackJsonp([15],[
 	        material.style.color = 0x303040;
 	        material.ambientMethod.strength = 1;
 	        //setup custom multipass material
-	        this._headMaterial = new MethodMaterial_1.default();
+	        this._headMaterial = new MethodMaterial_1.MethodMaterial();
 	        this._headMaterial.ambientMethod.texture = this._textureDictionary["monsterhead_diffuse.jpg"];
-	        this._headMaterial.mode = MethodMaterialMode_1.default.MULTI_PASS;
-	        this._headMaterial.style.sampler = new Sampler2D_1.default(true, true);
+	        this._headMaterial.mode = MethodMaterialMode_1.MethodMaterialMode.MULTI_PASS;
+	        this._headMaterial.style.sampler = new Sampler2D_1.Sampler2D(true, true);
 	        this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
 	        this._headMaterial.lightPicker = this._lightPicker;
 	        this._headMaterial.style.color = 0x303040;
 	        this._headMaterial.diffuseMethod.multiply = false;
 	        // create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
-	        this._softShadowMethod = new ShadowSoftMethod_1.default(this._directionalLight, 20);
+	        this._softShadowMethod = new ShadowSoftMethod_1.ShadowSoftMethod(this._directionalLight, 20);
 	        this._softShadowMethod.range = this._shadowRange; // the sample radius defines the softness of the shadows
 	        this._softShadowMethod.epsilon = .1;
 	        this._headMaterial.shadowMethod = this._softShadowMethod;
 	        // create specular reflections that are stronger from the sides
-	        this._fresnelMethod = new SpecularFresnelMethod_1.default(true);
+	        this._fresnelMethod = new SpecularFresnelMethod_1.SpecularFresnelMethod(true);
 	        this._fresnelMethod.fresnelPower = 3;
 	        this._headMaterial.specularMethod = this._fresnelMethod;
 	        this._headMaterial.specularMethod.texture = this._textureDictionary["monsterhead_specular.jpg"];
@@ -314,9 +314,9 @@ webpackJsonp([15],[
 	        var len = this._headModel.graphics.count;
 	        for (var i = 0; i < len; i++)
 	            this._headModel.graphics.getGraphicAt(i).material = this._headMaterial;
-	        AssetLibrary_1.default.addEventListener(LoaderEvent_1.default.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
+	        AssetLibrary_1.AssetLibrary.addEventListener(LoaderEvent_1.LoaderEvent.LOAD_COMPLETE, function (event) { return _this.onExtraResourceComplete(event); });
 	        //diffuse gradient texture
-	        AssetLibrary_1.default.load(new URLRequest_1.default("assets/diffuseGradient.jpg"));
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest("assets/diffuseGradient.jpg"));
 	    };
 	    /**
 	     * Triggered once extra resources are loaded

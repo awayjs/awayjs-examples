@@ -74,7 +74,7 @@ webpackJsonp([6],[
 	     * Initialise the engine
 	     */
 	    Basic_LoadAWD.prototype.initEngine = function () {
-	        this._view = new View_1.default(new DefaultRenderer_1.default());
+	        this._view = new View_1.View(new DefaultRenderer_1.DefaultRenderer());
 	        //set the background of the view to something suitable
 	        this._view.backgroundColor = 0x1e2125;
 	        //position the camera
@@ -85,16 +85,16 @@ webpackJsonp([6],[
 	     */
 	    Basic_LoadAWD.prototype.initLights = function () {
 	        //create the light for the scene
-	        this._light = new DirectionalLight_1.default();
+	        this._light = new DirectionalLight_1.DirectionalLight();
 	        this._light.color = 0x683019;
-	        this._light.direction = new Vector3D_1.default(1, 0, 0);
+	        this._light.direction = new Vector3D_1.Vector3D(1, 0, 0);
 	        this._light.ambient = 0.5;
 	        this._light.ambientColor = 0x30353b;
 	        this._light.diffuse = 2.8;
 	        this._light.specular = 1.8;
 	        this._view.scene.addChild(this._light);
 	        //create the light picker for the material
-	        this._lightPicker = new StaticLightPicker_1.default([this._light]);
+	        this._lightPicker = new StaticLightPicker_1.StaticLightPicker([this._light]);
 	    };
 	    /**
 	     * Initialise the materials
@@ -113,11 +113,11 @@ webpackJsonp([6],[
 	        var _this = this;
 	        window.onresize = function (event) { return _this.onResize(event); };
 	        this.onResize();
-	        this._timer = new RequestAnimationFrame_1.default(this.onEnterFrame, this);
+	        this._timer = new RequestAnimationFrame_1.RequestAnimationFrame(this.onEnterFrame, this);
 	        this._timer.start();
-	        AssetLibrary_1.default.enableParser(AWDParser_1.default);
-	        AssetLibrary_1.default.addEventListener(AssetEvent_1.default.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
-	        AssetLibrary_1.default.load(new URLRequest_1.default('assets/suzanne.awd'));
+	        AssetLibrary_1.AssetLibrary.enableParser(AWDParser_1.AWDParser);
+	        AssetLibrary_1.AssetLibrary.addEventListener(AssetEvent_1.AssetEvent.ASSET_COMPLETE, function (event) { return _this.onAssetComplete(event); });
+	        AssetLibrary_1.AssetLibrary.load(new URLRequest_1.URLRequest('assets/suzanne.awd'));
 	    };
 	    /**
 	     * Navigation and render loop
@@ -134,14 +134,14 @@ webpackJsonp([6],[
 	    Basic_LoadAWD.prototype.onAssetComplete = function (event) {
 	        var asset = event.asset;
 	        switch (asset.assetType) {
-	            case Sprite_1.default.assetType:
+	            case Sprite_1.Sprite.assetType:
 	                var sprite = asset;
 	                sprite.y = -300;
 	                sprite.transform.scaleTo(900, 900, 900);
 	                this._suzanne = sprite;
 	                this._view.scene.addChild(sprite);
 	                break;
-	            case MethodMaterial_1.default.assetType:
+	            case MethodMaterial_1.MethodMaterial.assetType:
 	                var material = asset;
 	                material.lightPicker = this._lightPicker;
 	                break;
