@@ -63,44 +63,24 @@ import {TextField}							from "awayjs-display/lib/display/TextField";
 class AWD3ViewerMinimal
 {
     private _fps:number = 30;
-
-    //engine variables
     private _view: View;
     private _renderer: DefaultRenderer;
-
     private _rootTimeLine: MovieClip;
-
     private _timer: RequestAnimationFrame;
     private _time: number = 0;
-
-    //navigation
-    private _lastPanAngle: number;
-    private _lastTiltAngle: number;
-    private _lastMouseX: number;
-    private _lastMouseY: number;
-    private _move: boolean;
-    private _isperspective: boolean;
     private _projection: PerspectiveProjection;
-    private _ortho_projection: OrthographicProjection;
     private _hoverControl: HoverController;
-    private _camera_perspective: Camera;
-    private _camera_ortho: Camera;
     private _stage_width: number;
     private _stage_height: number;
 
     private counter: number;
 
 
-    private _replaced_gettext:boolean;
-    private _updated_property:boolean;
-
     /**
      * Constructor
      */
     constructor()
     {
-        this._replaced_gettext=false
-        this._updated_property=false;
         this.init();
     }
 
@@ -137,7 +117,6 @@ class AWD3ViewerMinimal
          this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
          this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
 */
-        this._isperspective=true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._projection.fieldOfView = 30;
@@ -165,25 +144,9 @@ class AWD3ViewerMinimal
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        loader.load(new URLRequest("assets/AWD3/_concat_streams.awd"), null, null, new AWDParser(this._view));
+        loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
 
-        //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
-        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
-        //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
-        //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Rectancle_blink_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow_multi.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
-        //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
-        //loader.load(new URLRequest("assets/AWD3/intro_icycle.awd"));
-
+        //loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));
     }
 
     /**
