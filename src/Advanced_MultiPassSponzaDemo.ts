@@ -118,14 +118,14 @@ class Advanced_MultiPassSponzaDemo
 	private _singleMaterialDictionary:Object = new Object();
 	
 	//private spriteDictionary:Dictionary = new Dictionary();
-	private vaseSpritees:Array<Sprite> = new Array<Sprite>();
-	private poleSpritees:Array<Sprite> = new Array<Sprite>();
-	private colSpritees:Array<Sprite> = new Array<Sprite>();
-	
+	private vaseSprites:Array<Sprite> = new Array<Sprite>();
+	private poleSprites:Array<Sprite> = new Array<Sprite>();
+	private colSprites:Array<Sprite> = new Array<Sprite>();
+
 	//engien variablesf
 	private _view:View;
 	private _cameraController:FirstPersonController;
-	
+
 	//gui variables
 	private _singlePassMaterial:boolean = false;
 	private _multiPassMaterial:boolean = true;
@@ -134,7 +134,7 @@ class Advanced_MultiPassSponzaDemo
 	private _depthMapSize:number /*uint*/ = 2048;
 	private _lightDirection:number = Math.PI/2;
 	private _lightElevation:number = Math.PI/18;
-	
+
 	//light variables
 	private _lightPicker:StaticLightPicker;
 	private _baseShadowMethod:ShadowSoftMethod;
@@ -143,7 +143,7 @@ class Advanced_MultiPassSponzaDemo
 	private _cascadeShadowMapper:DirectionalShadowMapper;
 	private _directionalLight:DirectionalLight;
 	private _lights:Array<any> = new Array<any>();
-	
+
 	//material variables
 	private _skyMap:BitmapImageCube;
 	private _flameMaterial:MethodMaterial;
@@ -152,18 +152,18 @@ class Advanced_MultiPassSponzaDemo
 	private _loadingTextureStrings:Array<string>;
 	private _n:number /*uint*/ = 0;
 	private _loadingText:string;
-	
+
 	//scene variables
 	private _sprites:Array<Sprite> = new Array<Sprite>();
 	private _flameGraphics:PrimitivePlanePrefab;
-			
+
 	//rotation variables
 	private _move:boolean = false;
 	private _lastPanAngle:number;
 	private _lastTiltAngle:number;
 	private _lastMouseX:number;
 	private _lastMouseY:number;
-	
+
 	//movement variables
 	private _drag:number = 0.5;
 	private _walkIncrement:number = 10;
@@ -189,7 +189,7 @@ class Advanced_MultiPassSponzaDemo
 	{
 		this.init();
 	}
-	
+
 	/**
 	 * Global initialise function
 	 */
@@ -198,19 +198,19 @@ class Advanced_MultiPassSponzaDemo
 		this.initEngine();
 		this.initLights();
 		this.initListeners();
-		
-		
+
+
 		//count textures
 		this._n = 0;
 		this._loadingTextureStrings = this._diffuseTextureStrings;
 		this.countNumTextures();
-		
+
 		//kickoff asset loading
 		this._n = 0;
 		this._loadingTextureStrings = this._diffuseTextureStrings;
 		this.load(this._loadingTextureStrings[this._n]);
 	}
-	
+
 	/**
 	 * Initialise the engine
 	 */
@@ -220,11 +220,11 @@ class Advanced_MultiPassSponzaDemo
 		this._view = new View(new DefaultRenderer());
 		this._view.camera.y = 150;
 		this._view.camera.z = 0;
-		
+
 		//setup controller to be used on the camera
-		this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);			
+		this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);
 	}
-	
+
 	/**
 	 * Initialise the lights
 	 */
@@ -232,7 +232,7 @@ class Advanced_MultiPassSponzaDemo
 	{
 		//create lights array
 		this._lights = new Array<any>();
-		
+
 		//create global directional light
 //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 //			this._cascadeShadowMapper.lightOffset = 20000;
@@ -245,7 +245,7 @@ class Advanced_MultiPassSponzaDemo
 		this._lights.push(this._directionalLight);
 
 		this.updateDirection();
-		
+
 		//create flame lights
 		var flameVO:FlameVO;
 		var len:number = this._flameData.length;
@@ -258,7 +258,7 @@ class Advanced_MultiPassSponzaDemo
 			light.y = 10;
 			this._lights.push(light);
 		}
-		
+
 		//create our global light picker
 		this._lightPicker = new StaticLightPicker(this._lights);
 		this._baseShadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
@@ -268,7 +268,7 @@ class Advanced_MultiPassSponzaDemo
 		this._fogMethod = new EffectFogMethod(0, 4000, 0x9090e7);
 //			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
 	}
-			
+
 	/**
 	 * Initialise the scene objects
 	 */
@@ -276,7 +276,7 @@ class Advanced_MultiPassSponzaDemo
 	{
 		//create skybox
 		this._view.scene.addChild(new Skybox(this._skyMap));
-		
+
 		//create flame sprites
 		this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
 		var flameVO:FlameVO;
@@ -293,7 +293,7 @@ class Advanced_MultiPassSponzaDemo
 			sprite.addChild(flameVO.light);
 		}
 	}
-		
+
 	/**
 	 * Initialise the listeners
 	 */
@@ -320,7 +320,7 @@ class Advanced_MultiPassSponzaDemo
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 	}
-	
+
 	/**
 	 * Updates the material mode between single pass and multi pass
 	 */
@@ -341,7 +341,7 @@ class Advanced_MultiPassSponzaDemo
 //				sprite.material = materialDictionary[name];
 //			}
 //		}
-	
+
 	/**
 	 * Updates the direction of the directional lightsource
 	 */
@@ -353,19 +353,19 @@ class Advanced_MultiPassSponzaDemo
 			Math.sin(this._lightElevation)*Math.sin(this._lightDirection)
 		);
 	}
-	
+
 	/**
 	 * Count the total number of textures to be loaded
 	 */
 	private countNumTextures()
 	{
 		this._numTextures++;
-		
+
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)
 			if (this._loadingTextureStrings[this._n])
 				break;
-		
+
 		//switch to next teture set
 		if (this._n < this._loadingTextureStrings.length) {
 			this.countNumTextures();
@@ -379,7 +379,7 @@ class Advanced_MultiPassSponzaDemo
 			this.countNumTextures();
 		}
 	}
-	
+
 	/**
 	 * Global binary file loader
 	 */
@@ -387,13 +387,13 @@ class Advanced_MultiPassSponzaDemo
 	{
 		var loader:URLLoader = new URLLoader();
 		switch (url.substring(url.length - 3)) {
-			case "AWD": 
+			case "AWD":
 			case "awd":
 				loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 				this._loadingText = "Loading Model";
 				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 				break;
-			case "png": 
+			case "png":
 			case "jpg":
 				loader.dataFormat = URLLoaderDataFormat.BLOB;
 				this._currentTexture++;
@@ -408,13 +408,13 @@ class Advanced_MultiPassSponzaDemo
 //					url = "sponza/atf/" + url;
 //                    break;
 		}
-		
+
 		loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		var urlReq:URLRequest = new URLRequest(this._assetsRoot+url);
 		loader.load(urlReq);
-		
+
 	}
-	
+
 	/**
 	 * Display current load
 	 */
@@ -426,7 +426,7 @@ class Advanced_MultiPassSponzaDemo
 			console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? Math.floor((e["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((e["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
 		}
 	}
-	
+
 	/**
 	 * Parses the ATF file
 	 */
@@ -465,8 +465,8 @@ class Advanced_MultiPassSponzaDemo
 //				this.load("sponza/sponza.awd");
 //            }
 //        }
-	
-	
+
+
 	/**
 	 * Parses the Bitmap file
 	 */
@@ -479,7 +479,7 @@ class Advanced_MultiPassSponzaDemo
 		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		urlLoader = null;
 	}
-	
+
 	/**
 	 * Listener for bitmap complete event on loader
 	 */
@@ -496,7 +496,7 @@ class Advanced_MultiPassSponzaDemo
 		while (this._n++ < this._loadingTextureStrings.length - 1)
 			if (this._loadingTextureStrings[this._n])
 				break;
-		
+
 		//switch to next teture set
 		if (this._n < this._loadingTextureStrings.length) {
 			this.load(this._loadingTextureStrings[this._n]);
@@ -512,7 +512,7 @@ class Advanced_MultiPassSponzaDemo
 			this.load("sponza/sponza.awd");
 		}
 	}
-	
+
 	/**
 	 * Parses the AWD file
 	 */
@@ -530,7 +530,7 @@ class Advanced_MultiPassSponzaDemo
 		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 		urlLoader = null;
 	}
-	
+
 	/**
 	 * Listener for asset complete event on loader
 	 */
@@ -541,7 +541,7 @@ class Advanced_MultiPassSponzaDemo
 			this._sprites.push(<Sprite> event.asset);
 		}
 	}
-	
+
 	/**
 	 * Triggered once all resources are loaded
 	 */
@@ -552,7 +552,7 @@ class Advanced_MultiPassSponzaDemo
 		var loader:LoaderContainer = event.target;
 		loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
 		loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
-		
+
 		//reassign materials
 		var sprite:Sprite;
 		var name:string;
@@ -573,45 +573,45 @@ class Advanced_MultiPassSponzaDemo
 			var colNum:number = (num - 125);
 			if (name == "column_b") {
 				if (colNum  >=0 && colNum < 132 && (colNum % 11) < 10) {
-					this.colSpritees.push(sprite);
+					this.colSprites.push(sprite);
 					continue;
 				} else {
-					this.colSpritees.push(sprite);
+					this.colSprites.push(sprite);
 					var colMerge:Merge = new Merge();
 					var colSprite:Sprite = new Sprite();
-					colMerge.applyToSpritees(colSprite, this.colSpritees);
+					colMerge.applyToSprites(colSprite, this.colSprites);
 					sprite = colSprite;
-					this.colSpritees = new Array<Sprite>();
+					this.colSprites = new Array<Sprite>();
 				}
 			}
 
 			var vaseNum:number = (num - 334);
 			if (name == "vase_hanging" && (vaseNum % 9) < 5) {
 				if (vaseNum  >=0 && vaseNum < 370 && (vaseNum % 9) < 4) {
-					this.vaseSpritees.push(sprite);
+					this.vaseSprites.push(sprite);
 					continue;
 				} else {
-					this.vaseSpritees.push(sprite);
+					this.vaseSprites.push(sprite);
 					var vaseMerge:Merge = new Merge();
 					var vaseSprite:Sprite = new Sprite();
-					vaseMerge.applyToSpritees(vaseSprite, this.vaseSpritees);
+					vaseMerge.applyToSprites(vaseSprite, this.vaseSprites);
 					sprite = vaseSprite;
-					this.vaseSpritees = new Array<Sprite>();
+					this.vaseSprites = new Array<Sprite>();
 				}
 			}
 
 			var poleNum:number = num - 290;
 			if (name == "flagpole") {
 				if (poleNum >=0 && poleNum < 320 && (poleNum % 3) < 2) {
-					this.poleSpritees.push(sprite);
+					this.poleSprites.push(sprite);
 					continue;
 				} else if (poleNum >=0) {
-					this.poleSpritees.push(sprite);
+					this.poleSprites.push(sprite);
 					var poleMerge:Merge = new Merge();
 					var poleSprite:Sprite = new Sprite();
-					poleMerge.applyToSpritees(poleSprite, this.poleSpritees);
+					poleMerge.applyToSprites(poleSprite, this.poleSprites);
 					sprite = poleSprite;
-					this.poleSpritees = new Array<Sprite>();
+					this.poleSprites = new Array<Sprite>();
 				}
 			}
 			
