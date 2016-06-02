@@ -27,7 +27,7 @@
     "server:prod": "http-server bin --cors",
     "start": "npm run server:dev",
     "start:hmr": "npm run server:dev:hmr",
-    "version": "npm run build",
+    "version": "npm run build:prod",
     "postversion": "git push && git push --tags"
   },
   "repository": {
