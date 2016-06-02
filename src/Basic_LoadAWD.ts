@@ -36,23 +36,15 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {IAsset}						from "awayjs-core/lib/library/IAsset";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {View}							from "awayjs-display/lib/View";
-import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
-
-import {AWDParser}					from "awayjs-parsers/lib/AWDParser";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {AssetEvent}															from "awayjs-full/lib/events";
+import {Vector3D}															from "awayjs-full/lib/geom";
+import {AssetLibrary, IAsset}												from "awayjs-full/lib/library";
+import {URLRequest}															from "awayjs-full/lib/net";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {Sprite, DirectionalLight}											from "awayjs-full/lib/display";
+import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
+import {AWDParser}															from "awayjs-full/lib/parsers";
 
 class Basic_LoadAWD
 {

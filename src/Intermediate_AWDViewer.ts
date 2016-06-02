@@ -34,28 +34,19 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {Keyboard}						from "awayjs-core/lib/ui/Keyboard";
-import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {AnimationNodeBase}			from "awayjs-display/lib/animators/nodes/AnimationNodeBase";
-import {LoaderContainer}				from "awayjs-display/lib/display/LoaderContainer";
-import {View}							from "awayjs-display/lib/View";
-import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
-
-import {AnimatorBase}					from "awayjs-renderergl/lib/animators/AnimatorBase";
-import {SkeletonAnimator}				from "awayjs-renderergl/lib/animators/SkeletonAnimator";
-import {SkeletonClipNode}				from "awayjs-renderergl/lib/animators/nodes/SkeletonClipNode";
-import {CrossfadeTransition}			from "awayjs-renderergl/lib/animators/transitions/CrossfadeTransition";
-import {AnimationStateEvent}			from "awayjs-renderergl/lib/events/AnimationStateEvent";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {AWDParser}					from "awayjs-parsers/lib/AWDParser";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {AnimatorBase, SkeletonAnimator, SkeletonClipNode}					from "awayjs-full/lib/animators";
+import {CrossfadeTransition, AnimationNodeBase}								from "awayjs-full/lib/animators";
+import {AssetEvent, AnimationStateEvent}									from "awayjs-full/lib/events";
+import {Vector3D}															from "awayjs-full/lib/geom";
+import {AssetLibrary}														from "awayjs-full/lib/library";
+import {URLRequest}															from "awayjs-full/lib/net";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {HoverController}													from "awayjs-full/lib/controllers";
+import {LoaderContainer}													from "awayjs-full/lib/display";
+import {PerspectiveProjection}												from "awayjs-full/lib/projections";
+import {AWDParser}															from "awayjs-full/lib/parsers";
+import {Keyboard}															from "awayjs-full/lib/ui";
 
 class Intermediate_AWDViewer
 {

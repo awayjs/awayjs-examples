@@ -1,21 +1,13 @@
-import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
-import {URLLoaderEvent}				from "awayjs-core/lib/events/URLLoaderEvent";
-import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
-import {URLLoaderDataFormat}			from "awayjs-core/lib/net/URLLoaderDataFormat";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {ParserUtils}					from "awayjs-core/lib/parsers/ParserUtils";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {View}							from "awayjs-display/lib/View";
-import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
-import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
+import {View, DefaultRenderer}							from "awayjs-full";
+import {Sprite, DirectionalLight}						from "awayjs-full/lib/display";
+import {URLLoaderEvent}									from "awayjs-full/lib/events";
+import {ElementsType}									from "awayjs-full/lib/graphics";
+import {Sampler2D}										from "awayjs-full/lib/image";
+import {MethodMaterial, StaticLightPicker}				from "awayjs-full/lib/materials";
+import {URLLoader, URLRequest, URLLoaderDataFormat}		from "awayjs-full/lib/net";
+import {ParserUtils}									from "awayjs-full/lib/parsers";
+import {PrimitiveTorusPrefab}							from "awayjs-full/lib/prefabs";
+import {RequestAnimationFrame}							from "awayjs-full/lib/utils";
 
 class TorusPrimitive
 {

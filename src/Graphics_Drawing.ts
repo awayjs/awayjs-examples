@@ -33,28 +33,18 @@
  THE SOFTWARE.
 
  */
-import {AS2MovieClipAdapter}			from "awayjs-player/lib/adapters/AS2MovieClipAdapter";
-import {OrthographicProjection}		from "awayjs-core/lib/projections/OrthographicProjection";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import {Graphics}						from "awayjs-display/lib/graphics/Graphics";
-import {View}							from "awayjs-display/lib/View";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
 
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {SceneGraphPartition}			from "awayjs-display/lib/partition/SceneGraphPartition";
-import {MovieClip}					from "awayjs-display/lib/display/MovieClip";
-
-import {CoordinateSystem}				from "awayjs-core/lib/projections/CoordinateSystem";
-import {PerspectiveProjection}		from "awayjs-core/lib/projections/PerspectiveProjection";
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {MouseEvent}				from "awayjs-display/lib/events/MouseEvent";
-import {ColorTransform}				from "awayjs-core/lib/geom/ColorTransform";
-
-import {GraphicsFactoryHelper}		from "awayjs-display/lib/draw/GraphicsFactoryHelper";
-import {CapsStyle}					from "awayjs-display/lib/draw/CapsStyle";
-import {JointStyle}					from "awayjs-display/lib/draw/JointStyle";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {AS2MovieClipAdapter}												from "awayjs-full/lib/adapters";
+import {GraphicsFactoryHelper, CapsStyle, JointStyle}						from "awayjs-full/lib/draw";
+import {MouseEvent}															from "awayjs-full/lib/events";
+import {ColorTransform}														from "awayjs-full/lib/geom";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {HoverController}													from "awayjs-full/lib/controllers";
+import {MovieClip, Sprite, Camera}											from "awayjs-full/lib/display";
+import {Graphics}															from "awayjs-full/lib/graphics";
+import {SceneGraphPartition}												from "awayjs-full/lib/partition";
+import {OrthographicProjection, PerspectiveProjection, CoordinateSystem}	from "awayjs-full/lib/projections";
 
 class Graphics_Drawing
 {

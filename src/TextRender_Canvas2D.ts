@@ -34,20 +34,14 @@
 
  */
 
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {LoaderEvent}				from "awayjs-core/lib/events/LoaderEvent";
-import {ParserEvent}				from "awayjs-core/lib/events/ParserEvent";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {LoaderContainer}						from "awayjs-display/lib/display/LoaderContainer";
-
-import {Parsers}					from "awayjs-parsers/lib/Parsers";
-
-import {TextFieldMultiRender}		from "awayjs-display/lib/display/TextFieldMultiRender";
-import {Font}						from "awayjs-display/lib/text/Font";
-import {TextFormat}					from "awayjs-display/lib/text/TextFormat";
-import {BitmapFontTable}			from "awayjs-display/lib/text/BitmapFontTable";
+import {View, DefaultRenderer}		        					from "awayjs-full";
+import {HoverController}										from "awayjs-full/lib/controllers";
+import {LoaderContainer, TextFieldMultiRender}                  from "awayjs-full/lib/display";
+import {AssetEvent, LoaderEvent, ParserEvent}					from "awayjs-full/lib/events";
+import {URLRequest}					                            from "awayjs-full/lib/net";
+import {Parsers}												from "awayjs-full/lib/parsers";
+import {Font, TextFormat, BitmapFontTable}						from "awayjs-full/lib/text";
+import {RequestAnimationFrame}		                            from "awayjs-full/lib/utils";
 
 class TextRender_Canvas2D
 {

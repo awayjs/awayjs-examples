@@ -39,39 +39,19 @@ THE SOFTWARE.
 
 */
 
-import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
-import {SpecularImage2D}				from "awayjs-core/lib/image/SpecularImage2D";
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {URLLoaderEvent}				from "awayjs-core/lib/events/URLLoaderEvent";
-import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {LoaderContext}				from "awayjs-core/lib/library/LoaderContext";
-import {URLLoader}					from "awayjs-core/lib/net/URLLoader";
-import {URLLoaderDataFormat}			from "awayjs-core/lib/net/URLLoaderDataFormat";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {ParserUtils}					from "awayjs-core/lib/parsers/ParserUtils";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {Scene}						from "awayjs-display/lib/display/Scene";
-import {View}							from "awayjs-display/lib/View";
-import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
-import {PointLight}					from "awayjs-display/lib/display/PointLight";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import {DirectionalShadowMapper}		from "awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper";
-import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
-import {MethodMaterialMode}			from "awayjs-methodmaterials/lib/MethodMaterialMode";
-import {SpecularFresnelMethod}		from "awayjs-methodmaterials/lib/methods/SpecularFresnelMethod";
-import {ShadowSoftMethod}				from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
-
-import {AWDParser}					from "awayjs-parsers/lib/AWDParser";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {SpecularImage2D, Sampler2D}											from "awayjs-full/lib/image";
+import {AssetEvent, LoaderEvent, URLLoaderEvent}							from "awayjs-full/lib/events";
+import {Vector3D}															from "awayjs-full/lib/geom";
+import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
+import {URLRequest, URLLoader, URLLoaderDataFormat}							from "awayjs-full/lib/net";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {HoverController}													from "awayjs-full/lib/controllers";
+import {PointLight, DirectionalLight, Sprite, Scene, Camera, LineSegment}	from "awayjs-full/lib/display";
+import {MethodMaterial, MethodMaterialMode, StaticLightPicker}				from "awayjs-full/lib/materials";
+import {SpecularFresnelMethod, ShadowSoftMethod, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
+import {AWDParser, ParserUtils}												from "awayjs-full/lib/parsers";
+import {Single2DTexture}													from "awayjs-full/lib/textures";
 
 class Intermediate_MonsterHeadShading
 {

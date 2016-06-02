@@ -34,34 +34,16 @@
 
  */
 
-import {AssetEvent}						    from "awayjs-core/lib/events/AssetEvent";
-import {URLRequest}							from "awayjs-core/lib/net/URLRequest";
-import {LoaderEvent}						from "awayjs-core/lib/events/LoaderEvent";
-import {BitmapImage2D}						from "awayjs-core/lib/image/BitmapImage2D";
-import {ParserEvent}						from "awayjs-core/lib/events/ParserEvent";
-import {OrthographicProjection}				from "awayjs-core/lib/projections/OrthographicProjection";
-import {RequestAnimationFrame}				from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {Keyboard}						    from "awayjs-core/lib/ui/Keyboard";
-
-import {View}								from "awayjs-display/lib/View";
-import {Sprite}								from "awayjs-display/lib/display/Sprite";
-import {Billboard}							from "awayjs-display/lib/display/Billboard";
-import {HoverController}					from "awayjs-display/lib/controllers/HoverController";
-import {LoaderContainer}								from "awayjs-display/lib/display/LoaderContainer";
-
-import {DefaultRenderer}					from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {BasicMaterial}				    	from "awayjs-display/lib/materials/BasicMaterial";
-import {Single2DTexture}					from "awayjs-display/lib/textures/Single2DTexture";
-
-import {AWDParser}							from "awayjs-parsers/lib/AWDParser";
-import {SceneGraphPartition}				from "awayjs-display/lib/partition/SceneGraphPartition";
-import {MovieClip}							from "awayjs-display/lib/display/MovieClip";
-
-import {CoordinateSystem}					from "awayjs-core/lib/projections/CoordinateSystem";
-import {PerspectiveProjection}				from "awayjs-core/lib/projections/PerspectiveProjection";
-import {Camera}								from "awayjs-display/lib/display/Camera";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {AssetEvent, LoaderEvent, ParserEvent}								from "awayjs-full/lib/events";
+import {HoverController}													from "awayjs-full/lib/controllers";
+import {URLRequest}															from "awayjs-full/lib/net";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {Camera, LoaderContainer, MovieClip}			      		        	from "awayjs-full/lib/display";
+import {CoordinateSystem, PerspectiveProjection}				    		from "awayjs-full/lib/projections";
+import {SceneGraphPartition}                    				    		from "awayjs-full/lib/partition";
+import {Keyboard}												    		from "awayjs-full/lib/ui";
+import {AWDParser}												    		from "awayjs-full/lib/parsers";
 
 
 class AWDBasicTests

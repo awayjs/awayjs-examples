@@ -1,36 +1,18 @@
-import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
-import {BitmapImageCube}				from "awayjs-core/lib/image/BitmapImageCube";
-import {Sampler2D}					from "awayjs-core/lib/image/Sampler2D";
-import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
-import {Matrix}				       	from "awayjs-core/lib/geom/Matrix";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {Loader}			        	from "awayjs-core/lib/library/Loader";
-import {IAsset}						from "awayjs-core/lib/library/IAsset";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {Debug}						from "awayjs-core/lib/utils/Debug";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-
-import {DisplayObjectContainer}		from "awayjs-display/lib/display/DisplayObjectContainer";
-import {View}							from "awayjs-display/lib/View";
-import {DirectionalLight}				from "awayjs-display/lib/display/DirectionalLight";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {Skybox}						from "awayjs-display/lib/display/Skybox";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import {PrimitivePlanePrefab}			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
-import {SingleCubeTexture}			from "awayjs-display/lib/textures/SingleCubeTexture";
-import {Single2DTexture}				from "awayjs-display/lib/textures/Single2DTexture";
-import {ElementsType}				from "awayjs-display/lib/graphics/ElementsType";
-import {Style}						from "awayjs-display/lib/base/Style";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
-import {EffectEnvMapMethod}			from "awayjs-methodmaterials/lib/methods/EffectEnvMapMethod";
-import {NormalSimpleWaterMethod}		from "awayjs-methodmaterials/lib/methods/NormalSimpleWaterMethod";
-import {SpecularFresnelMethod}		from "awayjs-methodmaterials/lib/methods/SpecularFresnelMethod";
-
-import {OBJParser}					from "awayjs-parsers/lib/OBJParser";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {Style}																from "awayjs-full/lib/base";
+import {BitmapImage2D, BitmapImageCube, Sampler2D}							from "awayjs-full/lib/image";
+import {LoaderEvent}														from "awayjs-full/lib/events";
+import {Matrix, Vector3D}													from "awayjs-full/lib/geom";
+import {ElementsType}														from "awayjs-full/lib/graphics";
+import {AssetLibrary, IAsset, Loader}										from "awayjs-full/lib/library";
+import {URLRequest}															from "awayjs-full/lib/net";
+import {Debug, RequestAnimationFrame}										from "awayjs-full/lib/utils";
+import {Sprite, Skybox, DirectionalLight, DisplayObjectContainer}			from "awayjs-full/lib/display";
+import {MethodMaterial, StaticLightPicker, EffectEnvMapMethod}				from "awayjs-full/lib/materials";
+import {NormalSimpleWaterMethod, SpecularFresnelMethod}						from "awayjs-full/lib/materials";
+import {OBJParser}															from "awayjs-full/lib/parsers";
+import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
+import {Single2DTexture, SingleCubeTexture}									from "awayjs-full/lib/textures";
 
 class AircraftDemo
 {

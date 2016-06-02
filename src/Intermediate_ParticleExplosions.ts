@@ -37,38 +37,25 @@ THE SOFTWARE.
 
 */
 
-import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
-import {LoaderEvent}					from "awayjs-core/lib/events/LoaderEvent";
-import {ColorTransform}				from "awayjs-core/lib/geom/ColorTransform";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {View, DefaultRenderer}		        				from "awayjs-full";
+import {BitmapImage2D}										from "awayjs-full/lib/image";
+import {LoaderEvent}										from "awayjs-full/lib/events";
+import {Vector3D, ColorTransform}							from "awayjs-full/lib/geom";
+import {AssetLibrary}										from "awayjs-full/lib/library";
+import {URLRequest}											from "awayjs-full/lib/net";
+import {RequestAnimationFrame}								from "awayjs-full/lib/utils";
 
-import {Graphics}						from "awayjs-display/lib/graphics/Graphics";
-import {Scene}						from "awayjs-display/lib/display/Scene";
-import {View}							from "awayjs-display/lib/View";
-import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {PointLight}					from "awayjs-display/lib/display/PointLight";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
-import {PrimitivePlanePrefab}			from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
+import {Graphics, ElementsType}								from "awayjs-full/lib/graphics";
+import {Scene, Camera, Sprite, PointLight}					from "awayjs-full/lib/display";
+import {HoverController}									from "awayjs-full/lib/controllers";
+import {MethodMaterial, StaticLightPicker}					from "awayjs-full/lib/materials";
+import {PrimitivePlanePrefab}								from "awayjs-full/lib/prefabs";
 
-import {ParticleAnimationSet}			from "awayjs-renderergl/lib/animators/ParticleAnimationSet";
-import {ParticleAnimator}				from "awayjs-renderergl/lib/animators/ParticleAnimator";
-import {ParticleProperties}			from "awayjs-renderergl/lib/animators/data/ParticleProperties";
-import {ParticlePropertiesMode}		from "awayjs-renderergl/lib/animators/data/ParticlePropertiesMode";
-import {ParticleBillboardNode}		from "awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode";
-import {ParticleBezierCurveNode}		from "awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode";
-import {ParticleInitialColorNode}		from "awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode";
-import {ParticlePositionNode}			from "awayjs-renderergl/lib/animators/nodes/ParticlePositionNode";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-import {ParticleGraphicsHelper}		from "awayjs-renderergl/lib/utils/ParticleGraphicsHelper";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
+import {ParticleAnimator, ParticleAnimationSet}				from "awayjs-full/lib/animators";
+import {ParticleProperties, ParticlePropertiesMode}			from "awayjs-full/lib/animators";
+import {ParticleBillboardNode, ParticleBezierCurveNode}		from "awayjs-full/lib/animators";
+import {ParticleInitialColorNode, ParticlePositionNode}		from "awayjs-full/lib/animators";
+import {ParticleGraphicsHelper}								from "awayjs-full/lib/utils";
 
 class Intermediate_ParticleExplosions
 {

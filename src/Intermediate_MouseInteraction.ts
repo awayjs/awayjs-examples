@@ -35,40 +35,23 @@ THE SOFTWARE.
 
 */
 
-import {BitmapImage2D}				from "awayjs-core/lib/image/BitmapImage2D";
-import {AssetEvent}					from "awayjs-core/lib/events/AssetEvent";
-import {Vector3D}						from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}					from "awayjs-core/lib/library/AssetLibrary";
-import {Loader}						from "awayjs-core/lib/library/Loader";
-import {URLRequest}					from "awayjs-core/lib/net/URLRequest";
-import {RequestAnimationFrame}		from "awayjs-core/lib/utils/RequestAnimationFrame";
-import {Keyboard}						from "awayjs-core/lib/ui/Keyboard";
-
-import {Scene}						from "awayjs-display/lib/display/Scene";
-import {View}							from "awayjs-display/lib/View";
-import {HoverController}				from "awayjs-display/lib/controllers/HoverController";
-import {BoundsType}					from "awayjs-display/lib/bounds/BoundsType";
-import {Camera}						from "awayjs-display/lib/display/Camera";
-import {LineSegment}					from "awayjs-display/lib/display/LineSegment";
-import {Sprite}						from "awayjs-display/lib/display/Sprite";
-import {PointLight}					from "awayjs-display/lib/display/PointLight";
-import {MouseEvent}				from "awayjs-display/lib/events/MouseEvent";
-import {ElementsType}					from "awayjs-display/lib/graphics/ElementsType";
-import {BasicMaterial}				from "awayjs-display/lib/materials/BasicMaterial";
-import {StaticLightPicker}			from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import {PickingCollision}				from "awayjs-display/lib/pick/PickingCollision";
-import {RaycastPicker}				from "awayjs-display/lib/pick/RaycastPicker";
-import {JSPickingCollider}			from "awayjs-display/lib/pick/JSPickingCollider";
-import {PrimitiveCubePrefab}			from "awayjs-display/lib/prefabs/PrimitiveCubePrefab";
-import {PrimitiveCylinderPrefab}		from "awayjs-display/lib/prefabs/PrimitiveCylinderPrefab";
-import {PrimitiveSpherePrefab}		from "awayjs-display/lib/prefabs/PrimitiveSpherePrefab";
-import {PrimitiveTorusPrefab}			from "awayjs-display/lib/prefabs/PrimitiveTorusPrefab";
-
-import {DefaultRenderer}				from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}				from "awayjs-methodmaterials/lib/MethodMaterial";
-
-import {OBJParser}					from "awayjs-parsers/lib/OBJParser";
+import {View, DefaultRenderer}		        							from "awayjs-full";
+import {BoundsType}														from "awayjs-full/lib/bounds";
+import {BitmapImage2D}													from "awayjs-full/lib/image";
+import {AssetEvent, MouseEvent}											from "awayjs-full/lib/events";
+import {Vector3D}														from "awayjs-full/lib/geom";
+import {AssetLibrary, Loader}											from "awayjs-full/lib/library";
+import {URLRequest}														from "awayjs-full/lib/net";
+import {Keyboard}														from "awayjs-full/lib/ui";
+import {RequestAnimationFrame}											from "awayjs-full/lib/utils";
+import {HoverController}												from "awayjs-full/lib/controllers";
+import {PointLight, Sprite, Scene, Camera, LineSegment}					from "awayjs-full/lib/display";
+import {ElementsType}													from "awayjs-full/lib/graphics";
+import {BasicMaterial, MethodMaterial, StaticLightPicker}				from "awayjs-full/lib/materials";
+import {RaycastPicker, JSPickingCollider, PickingCollision}				from "awayjs-full/lib/pick";
+import {PrimitiveCubePrefab, PrimitiveCylinderPrefab}					from "awayjs-full/lib/prefabs";
+import {PrimitiveSpherePrefab, PrimitiveTorusPrefab}					from "awayjs-full/lib/prefabs";
+import {OBJParser}														from "awayjs-full/lib/parsers";
 
 /**
  *

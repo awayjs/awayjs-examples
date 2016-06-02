@@ -48,13 +48,7 @@
   },
   "homepage": "https://github.com/awayjs/awayjs-examples#readme",
   "dependencies": {
-    "awayjs-core": "^0.6.0",
-    "awayjs-display": "^0.8.0",
-    "awayjs-stagegl": "^0.8.0",
-    "awayjs-renderergl": "^0.8.0",
-    "awayjs-methodmaterials": "^0.3.0",
-    "awayjs-player": "^0.5.0",
-    "awayjs-parsers": "^0.5.0"
+    "awayjs-full": "^0.2.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.17.0",

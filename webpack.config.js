@@ -15,10 +15,10 @@ for (var i = 0; i < examples.length; i++) {
     entry[String(name)] = './src/' + examples[i];
 }
 
-entry['awayjs'] = ['awayjs-core', 'awayjs-stagegl', 'awayjs-display', 'awayjs-renderergl', 'awayjs-methodmaterials', 'awayjs-player', 'awayjs-parsers'];
+entry['awayjs-full'] = ['awayjs-full'];
 
 var plugins = [
-    new webpack.optimize.CommonsChunkPlugin('awayjs', 'js/awayjs.bundle.js'),
+    new webpack.optimize.CommonsChunkPlugin('awayjs-full', 'js/awayjs-full.bundle.js'),
 
     new CopyWebPackPlugin([{
         from: 'src/assets',
@@ -37,7 +37,7 @@ for (var i = 0; i < examples.length; i++) {
         template: 'html-template/index.html',
         filename: name + '.html',
         inject: false,
-        commonChunk: 'awayjs'
+        commonChunk: 'awayjs-full'
     }));
 }
 

@@ -45,51 +45,27 @@ THE SOFTWARE.
 
 */
 
-import {BitmapImage2D}					from "awayjs-core/lib/image/BitmapImage2D";
-import {BitmapImageCube}					from "awayjs-core/lib/image/BitmapImageCube";
-import {Sampler2D}						from "awayjs-core/lib/image/Sampler2D";
-import {SpecularImage2D}					from "awayjs-core/lib/image/SpecularImage2D";
-import {BlendMode}						from "awayjs-core/lib/image/BlendMode";
-import {URLLoaderEvent}					from "awayjs-core/lib/events/URLLoaderEvent";
-import {AssetEvent}						from "awayjs-core/lib/events/AssetEvent";
-import {LoaderEvent}						from "awayjs-core/lib/events/LoaderEvent";
-import {Matrix}							from "awayjs-core/lib/geom/Matrix";
-import {Vector3D}							from "awayjs-core/lib/geom/Vector3D";
-import {AssetLibrary}						from "awayjs-core/lib/library/AssetLibrary";
-import {LoaderContext}					from "awayjs-core/lib/library/LoaderContext";
-import {URLLoader}						from "awayjs-core/lib/net/URLLoader";
-import {URLLoaderDataFormat}				from "awayjs-core/lib/net/URLLoaderDataFormat";
-import {URLRequest}						from "awayjs-core/lib/net/URLRequest";
-import {ParserUtils}						from "awayjs-core/lib/parsers/ParserUtils";
-import {Keyboard}							from "awayjs-core/lib/ui/Keyboard";
-import {RequestAnimationFrame}			from "awayjs-core/lib/utils/RequestAnimationFrame";
+import {View, DefaultRenderer}		        								from "awayjs-full";
+import {Style}																from "awayjs-full/lib/base";
+import {FirstPersonController}												from "awayjs-full/lib/controllers";
+import {Sampler2D, SpecularImage2D, BitmapImage2D, BitmapImageCube}			from "awayjs-full/lib/image";
+import {BlendMode}															from "awayjs-full/lib/image";
+import {URLLoaderEvent, AssetEvent, LoaderEvent}							from "awayjs-full/lib/events";
+import {Matrix, Vector3D}													from "awayjs-full/lib/geom";
+import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
+import {URLRequest, URLLoader, URLLoaderDataFormat}							from "awayjs-full/lib/net";
+import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
+import {Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer}		from "awayjs-full/lib/display";
+import {ElementsType, Graphic}												from "awayjs-full/lib/graphics";
+import {MethodMaterial, MethodMaterialMode, StaticLightPicker}				from "awayjs-full/lib/materials";
+import {ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}				from "awayjs-full/lib/materials";
+import {DirectionalShadowMapper}											from "awayjs-full/lib/materials";
+import {AWDParser, ParserUtils}												from "awayjs-full/lib/parsers";
+import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
+import {Merge}																from "awayjs-full/lib/tools";
+import {Single2DTexture}													from "awayjs-full/lib/textures";
+import {Keyboard}															from "awayjs-full/lib/ui";
 
-import {LoaderContainer}					from "awayjs-display/lib/display/LoaderContainer";
-import {View}								from "awayjs-display/lib/View";
-import {FirstPersonController}			from "awayjs-display/lib/controllers/FirstPersonController";
-import {Graphic}							from "awayjs-display/lib/graphics/Graphic";
-import {Sprite}							from "awayjs-display/lib/display/Sprite";
-import {Skybox}							from "awayjs-display/lib/display/Skybox";
-import {DirectionalLight}					from "awayjs-display/lib/display/DirectionalLight";
-import {PointLight}						from "awayjs-display/lib/display/PointLight";
-//	import {CascadeShadowMapper}				from "awayjs-display/lib/display/CascadeShadowMapper";
-import {DirectionalShadowMapper}			from "awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper";
-import {StaticLightPicker}				from "awayjs-display/lib/materials/lightpickers/StaticLightPicker";
-import {PrimitivePlanePrefab}				from "awayjs-display/lib/prefabs/PrimitivePlanePrefab";
-import {Single2DTexture}					from "awayjs-display/lib/textures/Single2DTexture";
-
-import {Merge}							from "awayjs-renderergl/lib/tools/commands/Merge";
-import {DefaultRenderer}					from "awayjs-renderergl/lib/DefaultRenderer";
-
-import {MethodMaterial}					from "awayjs-methodmaterials/lib/MethodMaterial";
-import {MethodMaterialMode}				from "awayjs-methodmaterials/lib/MethodMaterialMode";
-import {ShadowCascadeMethod}				from "awayjs-methodmaterials/lib/methods/ShadowCascadeMethod";
-import {ShadowSoftMethod}					from "awayjs-methodmaterials/lib/methods/ShadowSoftMethod";
-import {EffectFogMethod}					from "awayjs-methodmaterials/lib/methods/EffectFogMethod";
-
-import {AWDParser}						from "awayjs-parsers/lib/AWDParser";
-import {ElementsType}						from "awayjs-display/lib/graphics/ElementsType";
-import {Style}							from "awayjs-display/lib/base/Style";
 
 class Advanced_MultiPassSponzaDemo
 {
