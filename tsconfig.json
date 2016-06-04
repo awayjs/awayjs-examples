@@ -4,16 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "awayjs-core/*": ["./node_modules/awayjs-core/*"],
-      "awayjs-display/*": ["./node_modules/awayjs-display/*"],
-      "awayjs-stagegl/*": ["./node_modules/awayjs-stagegl/*"],
-      "awayjs-renderergl/*": ["./node_modules/awayjs-renderergl/*"],
-      "awayjs-methodmaterials/*": ["./node_modules/awayjs-methodmaterials/*"],
-      "awayjs-player/*": ["./node_modules/awayjs-player/*"],
-      "awayjs-parsers/*": ["./node_modules/awayjs-parsers/*"]
-    }
+    "baseUrl": "."
   },
   "files": [
   ]

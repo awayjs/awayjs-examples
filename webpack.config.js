@@ -18,7 +18,11 @@ for (var i = 0; i < examples.length; i++) {
 entry['awayjs-full'] = ['awayjs-full'];
 
 var plugins = [
-    new webpack.optimize.CommonsChunkPlugin('awayjs-full', 'js/awayjs-full.bundle.js'),
+    // new webpack.DllReferencePlugin({
+    //     context: path.join(__dirname, "src"),
+    //     manifest: require("./src/awayjs-full-manifest.json")
+    // }),
+    new webpack.optimize.CommonsChunkPlugin({name:'awayjs-full', filename:'js/awayjs-full.bundle.js'}),
 
     new CopyWebPackPlugin([{
         from: 'src/assets',
@@ -60,7 +64,9 @@ module.exports = {
     module: {
         loaders: [
             // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-            { test: /\.ts(x?)$/, loader: require.resolve('awesome-typescript-loader') }
+            { test: /\.ts(x?)$/, loader: require.resolve('awesome-typescript-loader')},
+
+            { test: /\.js(x?)$/, loader: require.resolve('source-map-loader') }
         ]
     },
     plugins: plugins
