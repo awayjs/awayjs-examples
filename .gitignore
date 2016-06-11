@@ -1,5 +1,6 @@
 # Build and Release Folders
 node_modules/
+libs/
 bin/
 
 # Dev files

@@ -28,6 +28,8 @@
 <script><% for (var varName in htmlWebpackPlugin.options.window) { %>
         window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;<% } %>
 </script>
+<% } for (var lib in htmlWebpackPlugin.options.libs) {  %>
+<script src="<%= htmlWebpackPlugin.options.libs[lib] %>"></script>
 <% } for (var chunk in htmlWebpackPlugin.files.chunks) { if (htmlWebpackPlugin.options.title == chunk || htmlWebpackPlugin.options.commonChunk == chunk) { %>
 <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
 <% } } if (htmlWebpackPlugin.options.devServer) { %>
