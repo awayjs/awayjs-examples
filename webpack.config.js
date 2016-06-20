@@ -67,17 +67,6 @@ module.exports = {
         filename: 'js/[name].js'
     },
     resolve: {
-        alias: {
-            "awayjs-full": "awayjs-full/dist",
-            //unecessary when combined d.ts files are possible
-            "awayjs-core": "awayjs-full/dist/node_modules/awayjs-core",
-            "awayjs-display": "awayjs-full/dist/node_modules/awayjs-display",
-            "awayjs-stagegl": "awayjs-full/dist/node_modules/awayjs-stagegl",
-            "awayjs-renderergl": "awayjs-full/dist/node_modules/awayjs-renderergl",
-            "awayjs-methodmaterials": "awayjs-full/dist/node_modules/awayjs-methodmaterials",
-            "awayjs-player": "awayjs-full/dist/node_modules/awayjs-player",
-            "awayjs-parsers": "awayjs-full/dist/node_modules/awayjs-parsers"
-        },
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
         fallback: [path.join(__dirname, 'node_modules')]
@@ -88,7 +77,7 @@ module.exports = {
     module: {
         loaders: [
             // all files with a `.ts` or `.tsx` extension will be handled by `awesome-typescript-loader`
-            { test: /\.ts(x?)$/, include: [path.resolve(__dirname, "src")], loader: require.resolve('awesome-typescript-loader')},
+            { test: /\.ts(x?)$/, loader: require.resolve('awesome-typescript-loader')},
 
             // all files with a `.js` or `.jsx` extension will be handled by `source-map-loader`
             { test: /\.js(x?)$/, loader: require.resolve('source-map-loader') }
