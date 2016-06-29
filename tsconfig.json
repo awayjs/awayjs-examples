@@ -7,17 +7,8 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "paths": {
-      "awayjs-full": ["./node_modules/awayjs-full/dist"],
-      "awayjs-full/*": ["./node_modules/awayjs-full/dist/*"],
-      //unecessary when combined d.ts files are possible
-      "awayjs-core/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-core/*"],
-      "awayjs-display/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-display/*"],
-      "awayjs-stagegl/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-stagegl/*"],
-      "awayjs-renderergl/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-renderergl/*"],
-      "awayjs-methodmaterials/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-methodmaterials/*"],
-      "awayjs-player/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-playe/*"],
-      "awayjs-parsers": ["./node_modules/awayjs-full/dist/node_modules/awayjs-parsers"],
-      "awayjs-parsers/*": ["./node_modules/awayjs-full/dist/node_modules/awayjs-parsers/*"]
+      //should be unnecessary but ats cannot handle linked libs with d.ts files
+      "@awayjs/*": ["./node_modules/awayjs-full/node_modules/@awayjs/*"]
     }
   },
   "files": [
