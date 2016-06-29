@@ -282,9 +282,9 @@ class AmmoClothSimulation
 		newMtx.appendRotation( 90, new Vector3D(0,0,1));
 		newMtx.appendRotation( 90, new Vector3D(1,0,0));
 		newMtx.appendTranslation( clothPos.x, clothPos.y + clothHeight * 0.5, clothPos.z - clothWidth * 0.5);
-		var thiselement=this.cloth.graphics.getGraphicAt(0);
+		var thiselement:TriangleElements=this.cloth.graphics.getGraphicAt(0);
 		thiselement.applyTransformation(newMtx);
-		this._clothElement=<TriangleElements>thiselement.elements;
+		this._clothElement = thiselement;
 		this._view.scene.addChild(this.cloth);
 
 		// Cloth physic object
