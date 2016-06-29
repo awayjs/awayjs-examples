@@ -40,7 +40,7 @@ import {View, DefaultRenderer}		        								from "awayjs-full";
 import {HoverController}													from "awayjs-full/lib/controllers";
 import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
 import {Sprite, DirectionalLight}											from "awayjs-full/lib/display";
-import {PrimitiveCubePrefab}												from "awayjs-full/lib/prefabs";
+import {PrimitiveCubePrefab, PrimitiveSpherePrefab}							from "awayjs-full/lib/prefabs";
 import {Vector3D, Quaternion}												from "awayjs-full/lib/geom";
 import {ElementsType, LineElements}											from "awayjs-full/lib/graphics";
 import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
