@@ -67,6 +67,9 @@ module.exports = {
         filename: 'js/[name].js'
     },
     resolve: {
+        alias: {
+            "awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist")
+        },
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
         fallback: [path.join(__dirname, 'node_modules')]
