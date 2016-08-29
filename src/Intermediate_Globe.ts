@@ -39,6 +39,7 @@ THE SOFTWARE.
 import {View, DefaultRenderer}		        								from "awayjs-full";
 import {OrientationMode, AlignmentMode}										from "awayjs-full/lib/base";
 import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode}		from "awayjs-full/lib/image";
+import {Sampler2D}															from "awayjs-full/lib/image";
 import {LoaderEvent}														from "awayjs-full/lib/events";
 import {ColorTransform, Vector3D, Point}									from "awayjs-full/lib/geom";
 import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
@@ -186,15 +187,18 @@ class Intermediate_Globe
 		specular.strength = 1;
 
 		this.sunMaterial = new MethodMaterial();
+		this.sunMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.sunMaterial.blendMode = BlendMode.ADD;
 
 		this.groundMaterial = new MethodMaterial();
+		this.groundMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.groundMaterial.specularMethod = specular;
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.ambientMethod.strength = 1;
 		this.groundMaterial.diffuseMethod.multiply = false;
 
 		this.cloudMaterial = new MethodMaterial();
+		this.cloudMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.cloudMaterial.alphaBlending = true;
 		this.cloudMaterial.lightPicker = this.lightPicker;
 		this.cloudMaterial.style.color = 0x1b2048;
@@ -271,7 +275,7 @@ class Intermediate_Globe
 		this.atmosphere.scaleX = -1;
 
 		this.tiltContainer = new DisplayObjectContainer();
-		this.tiltContainer.rotationX = -23;
+		this.tiltContainer.rotationX = 23;
 		this.tiltContainer.addChild(this.earth);
 		this.tiltContainer.addChild(this.clouds);
 		this.tiltContainer.addChild(this.atmosphere);
@@ -334,9 +338,9 @@ class Intermediate_Globe
 	{
 		this._time += dt;
 
-		this.earth.rotationY += 0.2;
-		this.clouds.rotationY += 0.21;
-		this.orbitContainer.rotationY += 0.02;
+		this.earth.rotationY -= 0.2;
+		this.clouds.rotationY -= 0.21;
+		this.orbitContainer.rotationY -= 0.02;
 
 		this.cameraController.update();
 
@@ -390,6 +394,7 @@ class Intermediate_Globe
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
 				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
+				this.skyBox.style.sampler = new Sampler2D(false, true);
 				this.scene.addChild(this.skyBox);
 				break;
 
@@ -584,6 +589,7 @@ class FlareObject
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
 		var billboardMaterial:MethodMaterial = new MethodMaterial(bd);
+		billboardMaterial.style.sampler = new Sampler2D(false, true);
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;
