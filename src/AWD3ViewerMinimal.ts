@@ -198,7 +198,7 @@ class AWD3ViewerMinimal
 	 */
 	private onRessourceComplete(event: LoaderEvent): void {
 		if (this._rootTimeLine) {
-			this._rootTimeLine.partition = new SceneGraphPartition();
+			this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
 			//console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 			this._view.scene.addChild(this._rootTimeLine);
 			//this._rootTimeLine.x=-this._stage_width/2;

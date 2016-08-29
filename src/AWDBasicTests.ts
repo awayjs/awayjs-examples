@@ -317,7 +317,7 @@ class AWDBasicTests
     private onRessourceComplete(event: LoaderEvent): void {
         this.thisDiv.innerHTML=this._awd_descriptions[this._currentAWDIdx];
         if (this._rootTimeLine) {
-            this._rootTimeLine.partition = new SceneGraphPartition();
+            this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 
             this._view.scene.addChild(this._rootTimeLine);
