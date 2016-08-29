@@ -382,7 +382,7 @@ class Intermediate_MouseInteraction
 		var pos:Vector3D = this._camera.transform.position;
 		this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
 
-		var collidingObject:PickingCollision = this._raycastPicker.getSceneCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view.scene);
+		var collidingObject:PickingCollision = this._raycastPicker.getCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view);
 		//var sprite:Sprite;
 
 		if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) { //equivalent to mouse out
