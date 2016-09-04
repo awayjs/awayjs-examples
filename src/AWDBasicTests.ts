@@ -96,8 +96,7 @@ class AWDBasicTests
         this._awd_descriptions[this._currentAWDIdx++]="You should see the away3d logo on a shape (bitmap-fill).<br>This should look exactly like the previous test.";
         this._awd_names[this._currentAWDIdx]="07_3logos.awd";
         this._awd_descriptions[this._currentAWDIdx++]="You should see 3 versions of the away3d logo.<br>\
-            left: billboard, center: linear gradients on shape, right: bitmapfill on shapes.<br>\
-            This test is currently not working for me.";
+            left: billboard, center: linear gradients on shape, right: bitmapfill on shapes.<br>";
         this._awd_names[this._currentAWDIdx]="08_EscherTimelineAnim.awd";
         this._awd_descriptions[this._currentAWDIdx++]="You should see a pattern of fish-shapes (red/yellow),<br>that is animated on scale, rotation and position";
         this._awd_names[this._currentAWDIdx]="09_NinjaShape.awd";
@@ -108,8 +107,7 @@ class AWDBasicTests
         this._awd_descriptions[this._currentAWDIdx++]="You should see a bunch of overlapping rectangles animated timeline.<br>This is to test depth sorting in exporter. Open the fla to compare the results";
         this._awd_names[this._currentAWDIdx]="12_HelloWorldScript.awd";
         this._awd_descriptions[this._currentAWDIdx++]="You should see a simple rectangle on stage<br>\
-            in the console you should get a 'Hello World' message.\
-            This test is not working right now, because of the usage of 'require' in framescripts, and the switch to webpack.";
+            in the console you should get a 'Hello World' message.";
         this._awd_names[this._currentAWDIdx]="13_alpha_shadesofgrey.awd";
         this._awd_descriptions[this._currentAWDIdx++]="You should see a rectangle on stage that is cloned 10 times.<br>\
             The rectangle is white with a alpha of 10%, and the clones keep overlapping, so you should see all shades of grey between 10% white and 100% white.<br>\
@@ -138,7 +136,7 @@ class AWDBasicTests
         this._awd_names[this._currentAWDIdx]="24_scarecrow_no_anim.awd";
         this._awd_descriptions[this._currentAWDIdx++]="The animation of the previous test, but here we have all shapes on same frame (spritesheet like)";
         this._awd_names[this._currentAWDIdx]="25_simple_sound.awd";
-        this._awd_descriptions[this._currentAWDIdx++]="You should here a 'ploing' sound that repeats 5 times. WebAudio is not activated yet!";
+        this._awd_descriptions[this._currentAWDIdx++]="You should here a phone ring.";
 
         var testSelector : HTMLDivElement   = <HTMLDivElement> document.createElement( 'div' );
         testSelector.style.cssFloat     = 'none';
