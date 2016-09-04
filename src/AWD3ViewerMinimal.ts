@@ -93,8 +93,8 @@ class AWD3ViewerMinimal
 		this._renderer.renderableSorter = null;//new RenderableSort2D();
 		this._view = new View(this._renderer);
 		this._view.backgroundColor = 0x000000;
-		this._stage_width = 200;
-		this._stage_height = 200;
+		this._stage_width = 550;
+		this._stage_height = 400;
 
 		//for plugin preview-runtime:
 /*
@@ -160,7 +160,7 @@ class AWD3ViewerMinimal
 		}
 		else if(event.asset.isAsset(Sprite)) {
 			var one_sprite:Sprite = <Sprite> event.asset;
-			one_sprite.debugVisible = true;
+			//one_sprite.debugVisible = true;
 			//one_sprite.material = new BasicMaterial(0xFF0000);
 			//one_sprite.material.alphaBlending = false;
 			//this._view.scene.addChild(one_sprite);
@@ -171,7 +171,19 @@ class AWD3ViewerMinimal
 			//this.loaded_display_objects.push(one_billboard);
 		}
 		else if(event.asset.isAsset(MovieClip)) {
-			this._rootTimeLine = <MovieClip> event.asset;
+			var movieClip:MovieClip=<MovieClip> event.asset;
+			if (movieClip.name == "border" || movieClip.name == "dream"
+				|| movieClip.name == "IAP Menu"
+				|| movieClip.name == "language flag"
+				|| movieClip.name == "shoptag_shapes"
+				|| movieClip.name == "shoptag_cliffedges"
+				|| movieClip.name ==  "languages baked"
+				|| movieClip.name == "Character"
+				|| movieClip.name == "free") {
+				movieClip.mouseEnabled = false;
+				movieClip.mouseChildren = false;
+			}
+			this._rootTimeLine = movieClip;
 		}
 	}
 
@@ -242,13 +254,15 @@ class AWD3ViewerMinimal
 		this._view.x         = 0;
 		this._view.width     = window.innerWidth;
 		this._view.height    = window.innerHeight;
-		this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*800/Math.PI;
-		this._projection.originX = (0.5 - 0.5*(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth));
+		var newHeight:number = this._stage_height;
+		this._projection.fieldOfView = Math.atan(newHeight/1000/2)*360/Math.PI;
+		this._projection.originX = (0.5 - 0.5*(window.innerHeight/newHeight)*(this._stage_width/window.innerWidth));
 	}
 
 }
 
 window.onload = function () {
+	(<HTMLElement>document.getElementsByTagName("BODY")[0]).style.overflow="hidden";
 	new AWD3ViewerMinimal();
 
 };
