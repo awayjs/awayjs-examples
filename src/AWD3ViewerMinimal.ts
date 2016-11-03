@@ -34,16 +34,13 @@
 
  */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AssetEvent, LoaderEvent, ParserEvent}								from "awayjs-full/lib/events";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip}	from "awayjs-full/lib/display";
-import {CoordinateSystem, PerspectiveProjection}				    		from "awayjs-full/lib/projections";
-import {SceneGraphPartition}                    				    		from "awayjs-full/lib/partition";
-import {AWDParser}												    		from "awayjs-full/lib/parsers";
-
+import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
+import {Graphics, Graphic} from "awayjs-full/lib/graphics";
+import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/display";
+import {MethodMaterial}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {DefaultRenderer} from  "awayjs-full/lib/renderer";
+import {View, SceneGraphPartition} from "awayjs-full/lib/view";
 
 class AWD3ViewerMinimal
 {
@@ -57,6 +54,8 @@ class AWD3ViewerMinimal
 	private _hoverControl: HoverController;
 	private _stage_width: number;
 	private _stage_height: number;
+	private _material:MethodMaterial;
+	private _graphics:Array<Graphic> = new Array<Graphic>();
 
 	private counter: number;
 
@@ -133,6 +132,8 @@ class AWD3ViewerMinimal
 		//loader.load(new URLRequest("assets/AWD3/TextConstructionTest.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));
+		this._material = new MethodMaterial(0x000001);
+		this._material.style.color = 0x000001;
 	}
 
 	/**
@@ -152,7 +153,13 @@ class AWD3ViewerMinimal
 	 */
 	private onAssetComplete(event: AssetEvent): void
 	{
-		if(event.asset.isAsset(TextField)){
+		console.log("graphic: " + event.asset.assetType)
+		if(event.asset.isAsset(Graphics)){
+			var one_graphics:Graphics = <Graphics> event.asset;
+			for (var i:number = 0; i < one_graphics.count; i++) {
+				this._graphics.push(one_graphics.getGraphicAt(i));
+			}
+		}else if(event.asset.isAsset(TextField)){
 			var one_textfield:TextField=<TextField> event.asset;
 			//this.loaded_display_objects.push(one_textfield);
 			//console.log("orginal textfield_text = "+one_textfield.text);
@@ -210,6 +217,10 @@ class AWD3ViewerMinimal
 	 */
 	private onRessourceComplete(event: LoaderEvent): void {
 		if (this._rootTimeLine) {
+			for (var i:number = 0; i < this._graphics.length; i++) {
+				//this._graphics[i].material = this._material;
+			}
+
 			this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
 			//console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 			this._view.scene.addChild(this._rootTimeLine);

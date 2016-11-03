@@ -35,19 +35,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {BitmapImageCube, SamplerCube}										from "awayjs-full/lib/image";
-import {LoaderEvent}														from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, Skybox}														from "awayjs-full/lib/display";
-import {PerspectiveProjection}												from "awayjs-full/lib/projections";
-import {PrimitiveTorusPrefab}												from "awayjs-full/lib/prefabs";
-import {MethodMaterial, EffectEnvMapMethod}									from "awayjs-full/lib/materials";
-import {Single2DTexture, SingleCubeTexture}									from "awayjs-full/lib/textures";
+import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "awayjs-full/lib/core";
+import {BitmapImageCube, SamplerCube, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
+import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/display";
+import {MethodMaterial, EffectEnvMapMethod} from "awayjs-full/lib/materials";
+
+import {View} from "awayjs-full/lib/view";
 
 class Basic_SkyBox
 {
@@ -93,7 +86,7 @@ class Basic_SkyBox
 	private initEngine():void
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera
 		this._view.camera.z = -600;

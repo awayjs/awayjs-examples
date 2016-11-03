@@ -1,15 +1,8 @@
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {Sampler2D, BlendMode}												from "awayjs-full/lib/image";
-import {URLLoaderEvent}														from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {URLLoader, URLRequest, URLLoaderDataFormat}							from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, DirectionalLight}											from "awayjs-full/lib/display";
-import {PrimitiveCubePrefab, PrimitiveTorusPrefab}							from "awayjs-full/lib/prefabs";
-import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
-import {PerspectiveProjection}												from "awayjs-full/lib/projections";
-import {ParserUtils}														from "awayjs-full/lib/parsers";
+import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "awayjs-full/lib/core";
+import {Sampler2D, BlendMode, ElementsType, ImageUtils} from "awayjs-full/lib/graphics";
+import {Sprite, DirectionalLight, PrimitiveCubePrefab, PrimitiveTorusPrefab, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class CubePrimitive
 {
@@ -37,7 +30,7 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.backgroundColor = 0x000000;
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;
@@ -102,7 +95,7 @@ class CubePrimitive
 	 */
 	private imageCompleteHandler(event:Event)
 	{
-		var matTx:MethodMaterial = new MethodMaterial(ParserUtils.imageToBitmapImage2D(this._image));
+		var matTx:MethodMaterial = new MethodMaterial(ImageUtils.imageToBitmapImage2D(this._image));
 		matTx.style.sampler = new Sampler2D(true, true);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;

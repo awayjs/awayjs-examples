@@ -34,19 +34,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AnimatorBase, SkeletonAnimator, SkeletonClipNode}					from "awayjs-full/lib/animators";
-import {CrossfadeTransition, AnimationNodeBase}								from "awayjs-full/lib/animators";
-import {AssetEvent, AnimationStateEvent}									from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {AssetLibrary}														from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {LoaderContainer}													from "awayjs-full/lib/display";
-import {PerspectiveProjection}												from "awayjs-full/lib/projections";
-import {AWDParser}															from "awayjs-full/lib/parsers";
-import {Keyboard}															from "awayjs-full/lib/ui";
+import {AssetEvent, Vector3D, AssetLibrary, URLRequest, RequestAnimationFrame, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
+import {AnimationNodeBase} from "awayjs-full/lib/graphics";
+import {HoverController, LoaderContainer} from "awayjs-full/lib/display";
+import {AnimatorBase, SkeletonAnimator, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_AWDViewer
 {
@@ -92,7 +85,7 @@ class Intermediate_AWDViewer
 	private initEngine():void
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.backgroundColor = 0x333338;
 		
 		//create custom lens

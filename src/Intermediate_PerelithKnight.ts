@@ -38,22 +38,13 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        							from "awayjs-full";
-import {BitmapImage2D, Sampler2D}										from "awayjs-full/lib/image";
-import {AssetEvent, LoaderEvent}										from "awayjs-full/lib/events";
-import {Vector3D}														from "awayjs-full/lib/geom";
-import {AssetLibrary, IAsset}											from "awayjs-full/lib/library";
-import {URLRequest}														from "awayjs-full/lib/net";
-import {Keyboard}														from "awayjs-full/lib/ui";
-import {RequestAnimationFrame}											from "awayjs-full/lib/utils";
-import {HoverController}												from "awayjs-full/lib/controllers";
-import {DirectionalLight, Sprite}										from "awayjs-full/lib/display";
-import {ElementsType}													from "awayjs-full/lib/graphics";
-import {MethodMaterial, StaticLightPicker, ShadowFilteredMethod}		from "awayjs-full/lib/materials";
-import {PrimitivePlanePrefab}											from "awayjs-full/lib/prefabs";
-import {Single2DTexture}												from "awayjs-full/lib/textures";
-import {AnimationSetBase, VertexAnimationSet, VertexAnimator}			from "awayjs-full/lib/animators";
-import {MD2Parser}														from "awayjs-full/lib/parsers";
+import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {HoverController, DirectionalLight, Sprite, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {AnimationSetBase, VertexAnimationSet, VertexAnimator} from "awayjs-full/lib/renderer";
+import {MethodMaterial, ShadowFilteredMethod} from "awayjs-full/lib/materials";
+import {MD2Parser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_PerelithKnight
 {
@@ -106,7 +97,7 @@ class Intermediate_PerelithKnight
 	constructor()
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera for optimal rendering
 		this._view.camera.projection.far = 5000;

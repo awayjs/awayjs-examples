@@ -1,13 +1,9 @@
-import {View, DefaultRenderer}		        							from "awayjs-full";
-import {BitmapImage2D, Sampler2D}										from "awayjs-full/lib/image";
-import {LoaderEvent}													from "awayjs-full/lib/events";
-import {Vector3D}														from "awayjs-full/lib/geom";
-import {AssetLibrary, Loader, IAsset}									from "awayjs-full/lib/library";
-import {URLRequest}														from "awayjs-full/lib/net";
-import {Sprite, DisplayObjectContainer, DirectionalLight}				from "awayjs-full/lib/display";
-import {MethodMaterial, StaticLightPicker}								from "awayjs-full/lib/materials";
-import {OBJParser}														from "awayjs-full/lib/parsers";
-import {Debug, RequestAnimationFrame}									from "awayjs-full/lib/utils";
+import {BitmapImage2D, Sampler2D} from "awayjs-full/lib/graphics";
+import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {Sprite, DisplayObjectContainer, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {OBJParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class ObjLoaderMasterChief
 {
@@ -28,7 +24,7 @@ class ObjLoaderMasterChief
 		Debug.LOG_PI_ERRORS = false;
 		Debug.THROW_ERRORS = false;
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.view.camera.z = -50;
 		this.view.camera.y = 20;
 		this.view.camera.projection.near = 0.1;

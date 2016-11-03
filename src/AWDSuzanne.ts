@@ -1,19 +1,11 @@
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {LoaderEvent, MouseEvent}											from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {AssetLibrary, IAsset, Loader}										from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {JSPickingCollider}													from "awayjs-full/lib/pick";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, DirectionalLight}											from "awayjs-full/lib/display";
-import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
-import {AWDParser}															from "awayjs-full/lib/parsers";
-
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {MouseEvent, Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View, JSPickingCollider} from "awayjs-full/lib/view";
 
 class AWDSuzanne
 {
-
-	private _renderer:DefaultRenderer;
 	private _view:View;
 	private _timer:RequestAnimationFrame;
 	private _suzane:Sprite;
@@ -40,8 +32,7 @@ class AWDSuzanne
 	 */
 	private initView():void
 	{
-		this._renderer = new DefaultRenderer();
-		this._view = new View(this._renderer);
+		this._view = new View();
 		this._view.camera.projection.far = 6000;
 		this._view.forceMouseMove = true;
 	}
@@ -145,11 +136,10 @@ class AWDSuzanne
 					}
 
 					sprite.transform.scaleTo(500, 500, 500);
-					sprite.pickingCollider = new JSPickingCollider();
-
 					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
 					this._view.scene.addChild(sprite);
+					this._view.setCollider(sprite, new JSPickingCollider());
 
 					break;
 			}

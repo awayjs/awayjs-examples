@@ -35,24 +35,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        							from "awayjs-full";
-import {BoundsType}														from "awayjs-full/lib/bounds";
-import {BitmapImage2D}													from "awayjs-full/lib/image";
-import {AssetEvent, MouseEvent}											from "awayjs-full/lib/events";
-import {Vector3D}														from "awayjs-full/lib/geom";
-import {AssetLibrary, Loader}											from "awayjs-full/lib/library";
-import {URLRequest}														from "awayjs-full/lib/net";
-import {Keyboard}														from "awayjs-full/lib/ui";
-import {RequestAnimationFrame}											from "awayjs-full/lib/utils";
-import {HoverController}												from "awayjs-full/lib/controllers";
-import {PointLight, Sprite, Scene, Camera, LineSegment}					from "awayjs-full/lib/display";
-import {ElementsType}													from "awayjs-full/lib/graphics";
-import {BasicMaterial, MethodMaterial, StaticLightPicker}				from "awayjs-full/lib/materials";
-import {RaycastPicker, JSPickingCollider, PickingCollision}				from "awayjs-full/lib/pick";
-import {PrimitiveCubePrefab, PrimitiveCylinderPrefab}					from "awayjs-full/lib/prefabs";
-import {PrimitiveSpherePrefab, PrimitiveTorusPrefab}					from "awayjs-full/lib/prefabs";
-import {OBJParser}														from "awayjs-full/lib/parsers";
-
+import {AssetEvent, Vector3D, AssetLibrary, Loader, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {ElementsType, BitmapImage2D, BasicMaterial, PickingCollision} from "awayjs-full/lib/graphics";
+import {HoverController, BoundsType, PointLight, Sprite, Scene, Camera, LineSegment, StaticLightPicker, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {OBJParser} from "awayjs-full/lib/parsers";
+import {View, RaycastPicker, JSPickingCollider} from "awayjs-full/lib/view";
 /**
  *
  */
@@ -61,7 +49,6 @@ class Intermediate_MouseInteraction
 	//engine variables
 	private _scene:Scene;
 	private _camera:Camera;
-	private _renderer:DefaultRenderer;
 	private _view:View;
 	private _session:Loader;
 	private _cameraController:HoverController;
@@ -134,8 +121,7 @@ class Intermediate_MouseInteraction
 	 */
 	private initEngine():void
 	{
-		this._renderer = new DefaultRenderer();
-		this._view = new View(this._renderer);
+		this._view = new View();
 		this._view.forceMouseMove = true;
 		this._scene = this._view.scene;
 		this._camera = this._view.camera;
@@ -242,13 +228,13 @@ class Intermediate_MouseInteraction
 		var textureMaterial:MethodMaterial = new MethodMaterial(bmd);
 		textureMaterial.lightPicker = this._lightPicker;
 		model.material = textureMaterial;
-		model.pickingCollider = new JSPickingCollider();
 
 		// Apply mouse interactivity.
 		model.mouseEnabled = model.mouseChildren = true;
 		this.enableSpriteMouseListeners(model);
 
 		this._view.scene.addChild(model);
+		this._view.setCollider(model, new JSPickingCollider());
 	}
 
 	private createABunchOfObjects():void
@@ -304,16 +290,6 @@ class Intermediate_MouseInteraction
 		if (boundsType)
 			sprite.boundsType = boundsType;
 
-		// Randomly decide if the sprite has a triangle collider.
-		var usesTriangleCollider:boolean = Math.random() > 0.5;
-		if( usesTriangleCollider ) {
-			// AS3 triangle pickers for sprites with low poly counts are faster than pixel bender ones.
-			//				sprite.pickingCollider = PickingColliderType.BOUNDS_ONLY; // this is the default value for all sprites
-			sprite.pickingCollider = new JSPickingCollider();
-			//				sprite.pickingCollider = PickingColliderType.AS3_BEST_HIT; // slower and more accurate, best for sprites with folds
-			//				sprite.pickingCollider = PickingColliderType.AUTO_FIRST_ENCOUNTERED; // automatically decides when to use pixel bender or actionscript
-		}
-
 		// Enable mouse interactivity?
 		var isMouseEnabled:boolean = Math.random() > 0.25;
 		sprite.mouseEnabled = sprite.mouseChildren = isMouseEnabled;
@@ -324,11 +300,17 @@ class Intermediate_MouseInteraction
 			this.enableSpriteMouseListeners(sprite);
 		}
 
-		// Apply material according to the random setup of the object.
-		this.choseSpriteMaterial(sprite);
-
 		// Add to scene and store.
 		this._view.scene.addChild(sprite);
+
+		// Randomly decide if the sprite has a triangle collider.
+		var usesTriangleCollider:boolean = Math.random() > 0.5;
+		if( usesTriangleCollider ) {
+			this._view.setCollider(sprite, new JSPickingCollider());
+		}
+
+		// Apply material according to the random setup of the object.
+		this.choseSpriteMaterial(sprite);
 
 		return sprite;
 	}
@@ -343,7 +325,7 @@ class Intermediate_MouseInteraction
 				sprite.material = this._grayMaterial;
 			}
 			else {
-				if( sprite.pickingCollider != null ) {
+				if( this._view.getCollider(sprite) != null ) {
 					sprite.material = this._redMaterial;
 				}
 				else {

@@ -37,23 +37,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {ParticleAnimationSet, ParticleAnimator, ParticleProperties}			from "awayjs-full/lib/animators";
-import {ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode}	from "awayjs-full/lib/animators";
-import {ParticleVelocityNode, ParticleColorNode}							from "awayjs-full/lib/animators";
-import {BitmapImage2D, Sampler2D, BlendMode}								from "awayjs-full/lib/image";
-import {LoaderEvent, TimerEvent}											from "awayjs-full/lib/events";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {Vector3D, ColorTransform}											from "awayjs-full/lib/geom";
-import {ElementsType, Graphics}												from "awayjs-full/lib/graphics";
-import {AssetLibrary, IAsset, LoaderContext}								from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame, Timer, ParticleGraphicsHelper}				from "awayjs-full/lib/utils";
-import {Sprite, Scene, Camera, PointLight, DirectionalLight}				from "awayjs-full/lib/display";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {MethodMaterial, StaticLightPicker, MethodMaterialMode}				from "awayjs-full/lib/materials";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
-
+import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera, PointLight, DirectionalLight, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial, MethodMaterialMode}	from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
+import {ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
 
 class Basic_Fire
 {
@@ -121,7 +110,7 @@ class Basic_Fire
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		//this.view.antiAlias = 4;
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;

@@ -39,19 +39,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {SpecularImage2D, Sampler2D}											from "awayjs-full/lib/image";
-import {AssetEvent, LoaderEvent, URLLoaderEvent}							from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
-import {URLRequest, URLLoader, URLLoaderDataFormat}							from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {PointLight, DirectionalLight, Sprite, Scene, Camera, LineSegment}	from "awayjs-full/lib/display";
-import {MethodMaterial, MethodMaterialMode, StaticLightPicker}				from "awayjs-full/lib/materials";
-import {SpecularFresnelMethod, ShadowSoftMethod, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
-import {AWDParser, ParserUtils}												from "awayjs-full/lib/parsers";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
+import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
+import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils} from "awayjs-full/lib/graphics";
+import {HoverController, PointLight, DirectionalLight, Sprite, Scene, Camera, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/display";
+import {MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_MonsterHeadShading
 {
@@ -143,7 +136,7 @@ class Intermediate_MonsterHeadShading
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
 
-		this._view = new View(new DefaultRenderer(), this._scene, this._camera);
+		this._view = new View(null, this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
@@ -310,7 +303,7 @@ class Intermediate_MonsterHeadShading
 		image.onload = null;
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._textureStrings[this._n]])
-			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		this._n++;
 

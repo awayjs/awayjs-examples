@@ -36,18 +36,10 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {BitmapImage2D}														from "awayjs-full/lib/image";
-import {LoaderEvent}														from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {AssetLibrary, IAsset}												from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite}																from "awayjs-full/lib/display";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {BasicMaterial}														from "awayjs-full/lib/materials";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, ElementsType, BasicMaterial, Single2DTexture} from "awayjs-full/lib/graphics";
+import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {View} from "awayjs-full/lib/View";
 
 class Basic_View
 {
@@ -69,7 +61,7 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera
 		this._view.camera.z = -600;
