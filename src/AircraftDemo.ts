@@ -1,18 +1,9 @@
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {Style}																from "awayjs-full/lib/base";
-import {BitmapImage2D, BitmapImageCube, Sampler2D}							from "awayjs-full/lib/image";
-import {LoaderEvent}														from "awayjs-full/lib/events";
-import {Matrix, Vector3D}													from "awayjs-full/lib/geom";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {AssetLibrary, IAsset, Loader}										from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {Debug, RequestAnimationFrame}										from "awayjs-full/lib/utils";
-import {Sprite, Skybox, DirectionalLight, DisplayObjectContainer}			from "awayjs-full/lib/display";
-import {MethodMaterial, StaticLightPicker, EffectEnvMapMethod}				from "awayjs-full/lib/materials";
-import {NormalSimpleWaterMethod, SpecularFresnelMethod}						from "awayjs-full/lib/materials";
-import {OBJParser}															from "awayjs-full/lib/parsers";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {Single2DTexture, SingleCubeTexture}									from "awayjs-full/lib/textures";
+import {LoaderEvent, Matrix, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, BitmapImageCube, Sampler2D, Style, Single2DTexture, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
+import {Sprite, Skybox, DirectionalLight, DisplayObjectContainer, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod}	from "awayjs-full/lib/materials";
+import {OBJParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class AircraftDemo
 {
@@ -88,7 +79,7 @@ class AircraftDemo
 
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.camera.z	= -500;
 		this._view.camera.y	= 250;
 		this._view.camera.rotationX	= 20;

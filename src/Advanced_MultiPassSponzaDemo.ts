@@ -45,26 +45,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {Style}																from "awayjs-full/lib/base";
-import {FirstPersonController}												from "awayjs-full/lib/controllers";
-import {Sampler2D, SpecularImage2D, BitmapImage2D, BitmapImageCube}			from "awayjs-full/lib/image";
-import {BlendMode}															from "awayjs-full/lib/image";
-import {URLLoaderEvent, AssetEvent, LoaderEvent}							from "awayjs-full/lib/events";
-import {Matrix, Vector3D}													from "awayjs-full/lib/geom";
-import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
-import {URLRequest, URLLoader, URLLoaderDataFormat}							from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer}		from "awayjs-full/lib/display";
-import {ElementsType, Graphic}												from "awayjs-full/lib/graphics";
-import {MethodMaterial, MethodMaterialMode, StaticLightPicker}				from "awayjs-full/lib/materials";
-import {ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}				from "awayjs-full/lib/materials";
-import {DirectionalShadowMapper}											from "awayjs-full/lib/materials";
-import {AWDParser, ParserUtils}												from "awayjs-full/lib/parsers";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {Merge}																from "awayjs-full/lib/tools";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
-import {Keyboard}															from "awayjs-full/lib/ui";
+import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
+import {Style, Graphic, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
+import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/display";
+import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 
 class Advanced_MultiPassSponzaDemo
@@ -193,7 +179,7 @@ class Advanced_MultiPassSponzaDemo
 	private initEngine()
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.camera.y = 150;
 		this._view.camera.z = 0;
 
@@ -466,7 +452,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)

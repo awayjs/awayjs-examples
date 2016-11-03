@@ -34,17 +34,12 @@
 
  */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AS2MovieClipAdapter}												from "awayjs-full/lib/adapters";
-import {GraphicsFactoryHelper, CapsStyle, JointStyle}						from "awayjs-full/lib/draw";
-import {MouseEvent}															from "awayjs-full/lib/events";
-import {ColorTransform}														from "awayjs-full/lib/geom";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {MovieClip, Sprite, Camera}											from "awayjs-full/lib/display";
-import {Graphics}															from "awayjs-full/lib/graphics";
-import {SceneGraphPartition}												from "awayjs-full/lib/partition";
-import {OrthographicProjection, PerspectiveProjection, CoordinateSystem}	from "awayjs-full/lib/projections";
+import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem} from "awayjs-full/lib/core";
+import {GraphicsFactoryHelper, CapsStyle, JointStyle, Graphics} from "awayjs-full/lib/graphics";
+import {MouseEvent, HoverController, MovieClip, Sprite, Camera} from "awayjs-full/lib/display";
+import {DefaultRenderer} from "awayjs-full/lib/renderer";
+import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {AS2MovieClipAdapter} from "awayjs-full/lib/player";
 
 class Graphics_Drawing
 {
@@ -125,7 +120,7 @@ class Graphics_Drawing
 	private initObjects(): void
 	{
 		var root_timeline:MovieClip=new MovieClip();
-		this._view.setPartition(root_timeline, new SceneGraphPartition(root_timeline));
+		this._view.setPartition(root_timeline, new SceneGraphPartition());
 		root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
 
 		// Graphics is not wired into any Displayobjects yet.

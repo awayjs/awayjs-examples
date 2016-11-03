@@ -37,25 +37,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        				from "awayjs-full";
-import {BitmapImage2D}										from "awayjs-full/lib/image";
-import {LoaderEvent}										from "awayjs-full/lib/events";
-import {Vector3D, ColorTransform}							from "awayjs-full/lib/geom";
-import {AssetLibrary}										from "awayjs-full/lib/library";
-import {URLRequest}											from "awayjs-full/lib/net";
-import {RequestAnimationFrame}								from "awayjs-full/lib/utils";
-
-import {Graphics, ElementsType}								from "awayjs-full/lib/graphics";
-import {Scene, Camera, Sprite, PointLight}					from "awayjs-full/lib/display";
-import {HoverController}									from "awayjs-full/lib/controllers";
-import {MethodMaterial, StaticLightPicker}					from "awayjs-full/lib/materials";
-import {PrimitivePlanePrefab}								from "awayjs-full/lib/prefabs";
-
-import {ParticleAnimator, ParticleAnimationSet}				from "awayjs-full/lib/animators";
-import {ParticleProperties, ParticlePropertiesMode}			from "awayjs-full/lib/animators";
-import {ParticleBillboardNode, ParticleBezierCurveNode}		from "awayjs-full/lib/animators";
-import {ParticleInitialColorNode, ParticlePositionNode}		from "awayjs-full/lib/animators";
-import {ParticleGraphicsHelper}								from "awayjs-full/lib/utils";
+import {LoaderEvent, Vector3D, ColorTransform, AssetLibrary, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Graphics, ElementsType} from "awayjs-full/lib/graphics";
+import {Scene, Camera, Sprite, PointLight, HoverController, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {ParticleAnimator, ParticleAnimationSet, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleBezierCurveNode, ParticleInitialColorNode, ParticlePositionNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_ParticleExplosions
 {
@@ -133,7 +120,7 @@ class Intermediate_ParticleExplosions
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(), this.scene, this.camera);
+		this.view = new View(null, this.scene, this.camera);
 		
 		//setup controller to be used on the camera
 		this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);

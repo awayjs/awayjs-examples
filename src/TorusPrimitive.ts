@@ -1,13 +1,8 @@
-import {View, DefaultRenderer}							from "awayjs-full";
-import {Sprite, DirectionalLight}						from "awayjs-full/lib/display";
-import {URLLoaderEvent}									from "awayjs-full/lib/events";
-import {ElementsType}									from "awayjs-full/lib/graphics";
-import {Sampler2D}										from "awayjs-full/lib/image";
-import {MethodMaterial, StaticLightPicker}				from "awayjs-full/lib/materials";
-import {URLLoader, URLRequest, URLLoaderDataFormat}		from "awayjs-full/lib/net";
-import {ParserUtils}									from "awayjs-full/lib/parsers";
-import {PrimitiveTorusPrefab}							from "awayjs-full/lib/prefabs";
-import {RequestAnimationFrame}							from "awayjs-full/lib/utils";
+import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {ElementsType, Sampler2D, ImageUtils} from "awayjs-full/lib/graphics";
+import {Sprite, DirectionalLight, StaticLightPicker, PrimitiveTorusPrefab} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class TorusPrimitive
 {
@@ -38,7 +33,7 @@ class TorusPrimitive
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer());// Create the Away3D View
+		this._view = new View();// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 	}
 
@@ -81,7 +76,7 @@ class TorusPrimitive
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._material = new MethodMaterial(ParserUtils.imageToBitmapImage2D(image));
+		this._material = new MethodMaterial(ImageUtils.imageToBitmapImage2D(image));
 		this._material.style.sampler = new Sampler2D(true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}

@@ -36,20 +36,13 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {BitmapImage2D, Sampler2D}											from "awayjs-full/lib/image";
-import {AssetEvent, LoaderEvent}											from "awayjs-full/lib/events";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {AssetLibrary, IAsset, LoaderContext}								from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, DirectionalLight, LoaderContainer}							from "awayjs-full/lib/display";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {MethodMaterial, StaticLightPicker, ShadowSoftMethod}				from "awayjs-full/lib/materials";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
-import {Max3DSParser}														from "awayjs-full/lib/parsers";
+import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, DirectionalLight, LoaderContainer, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {Max3DSParser} from "awayjs-full/lib/parsers";
+
+import {View} from "awayjs-full/lib/view";
 
 class Basic_Load3DS
 {
@@ -104,7 +97,7 @@ class Basic_Load3DS
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera for optimal shadow rendering
 		this._view.camera.projection.far = 2100;

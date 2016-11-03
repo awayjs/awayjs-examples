@@ -36,15 +36,11 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AssetEvent}															from "awayjs-full/lib/events";
-import {Vector3D}															from "awayjs-full/lib/geom";
-import {AssetLibrary, IAsset}												from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Sprite, DirectionalLight}											from "awayjs-full/lib/display";
-import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
-import {AWDParser}															from "awayjs-full/lib/parsers";
+import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/display";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Basic_LoadAWD
 {
@@ -87,7 +83,7 @@ class Basic_LoadAWD
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//set the background of the view to something suitable
 		this._view.backgroundColor = 0x1e2125;

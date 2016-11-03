@@ -36,26 +36,12 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {OrientationMode, AlignmentMode}										from "awayjs-full/lib/base";
-import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode}		from "awayjs-full/lib/image";
-import {Sampler2D}															from "awayjs-full/lib/image";
-import {LoaderEvent}														from "awayjs-full/lib/events";
-import {ColorTransform, Vector3D, Point}									from "awayjs-full/lib/geom";
-import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {PointLight, Sprite, Scene, Camera}									from "awayjs-full/lib/display";
-import {DisplayObjectContainer, Skybox, Billboard}							from "awayjs-full/lib/display";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {MethodMaterial, StaticLightPicker, SpecularPhongMethod}				from "awayjs-full/lib/materials";
-import {DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod}		from "awayjs-full/lib/materials";
-import {MethodVO, DiffuseCompositeMethod, SpecularCompositeMethod}			from "awayjs-full/lib/materials";
-import {PrimitiveSpherePrefab}												from "awayjs-full/lib/prefabs";
-import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData}		from "awayjs-full/lib/shaders";
-import {ShaderBase}															from "awayjs-full/lib/shaders";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
+import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {OrientationMode, AlignmentMode, HoverController, PointLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, PrimitiveSpherePrefab} from "awayjs-full/lib/display";
+import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, MethodVO, DiffuseCompositeMethod, SpecularCompositeMethod} from "awayjs-full/lib/materials";
+import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase}		from "awayjs-full/lib/renderer";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe
 {
@@ -132,7 +118,7 @@ class Intermediate_Globe
 		this.camera = new Camera();
 		this.camera.projection.far = 100000;
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
 

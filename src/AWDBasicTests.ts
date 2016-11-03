@@ -34,17 +34,11 @@
 
  */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AssetEvent, LoaderEvent, ParserEvent}								from "awayjs-full/lib/events";
-import {HoverController}													from "awayjs-full/lib/controllers";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {Camera, LoaderContainer, MovieClip}			      		        	from "awayjs-full/lib/display";
-import {CoordinateSystem, PerspectiveProjection}				    		from "awayjs-full/lib/projections";
-import {SceneGraphPartition}                    				    		from "awayjs-full/lib/partition";
-import {Keyboard}												    		from "awayjs-full/lib/ui";
-import {AWDParser}												    		from "awayjs-full/lib/parsers";
-
+import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
+import {HoverController, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/display";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {DefaultRenderer} from  "awayjs-full/lib/renderer";
+import {View, SceneGraphPartition} from "awayjs-full/lib/view";
 
 class AWDBasicTests
 {

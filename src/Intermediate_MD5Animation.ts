@@ -38,27 +38,13 @@ THE SOFTWARE.
 
 */
 
-import {View, DefaultRenderer}		        								from "awayjs-full";
-import {AnimationSetBase, SkeletonAnimationSet, SkeletonAnimator}			from "awayjs-full/lib/animators";
-import {Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationNodeBase}	from "awayjs-full/lib/animators";
-import {Style}																from "awayjs-full/lib/base";
-import {BitmapImage2D, BitmapImageCube, Sampler2D}							from "awayjs-full/lib/image";
-import {AssetEvent, LoaderEvent, AnimationStateEvent}						from "awayjs-full/lib/events";
-import {Matrix}																from "awayjs-full/lib/geom";
-import {AssetLibrary, LoaderContext}										from "awayjs-full/lib/library";
-import {URLRequest}															from "awayjs-full/lib/net";
-import {RequestAnimationFrame}												from "awayjs-full/lib/utils";
-import {LookAtController}													from "awayjs-full/lib/controllers";
-import {PointLight, DirectionalLight, Sprite, Scene, Camera}				from "awayjs-full/lib/display";
-import {DisplayObjectContainer, Skybox, Billboard}							from "awayjs-full/lib/display";
-import {ElementsType}														from "awayjs-full/lib/graphics";
-import {MethodMaterial, StaticLightPicker}									from "awayjs-full/lib/materials";
-import {EffectFogMethod, ShadowNearMethod, ShadowSoftMethod}				from "awayjs-full/lib/materials";
-import {NearDirectionalShadowMapper}										from "awayjs-full/lib/materials";
-import {PrimitivePlanePrefab}												from "awayjs-full/lib/prefabs";
-import {MD5AnimParser, MD5MeshParser}										from "awayjs-full/lib/parsers";
-import {Single2DTexture}													from "awayjs-full/lib/textures";
-import {Keyboard}															from "awayjs-full/lib/ui";
+import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard} from "awayjs-full/lib/core";
+import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {LookAtController, PointLight, DirectionalLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, NearDirectionalShadowMapper, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {AnimationSetBase, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
+import {MethodMaterial, EffectFogMethod, ShadowNearMethod, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_MD5Animation
 {
@@ -142,7 +128,7 @@ class Intermediate_MD5Animation
 	 */
 	private initEngine():void
 	{
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.scene = this.view.scene;
 		this.camera = this.view.camera;
 
