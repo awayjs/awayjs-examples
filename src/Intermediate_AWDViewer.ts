@@ -36,7 +36,7 @@ THE SOFTWARE.
 
 import {AssetEvent, Vector3D, AssetLibrary, URLRequest, RequestAnimationFrame, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
 import {AnimationNodeBase} from "awayjs-full/lib/graphics";
-import {HoverController, LoaderContainer} from "awayjs-full/lib/display";
+import {HoverController, LoaderContainer} from "awayjs-full/lib/scene";
 import {AnimatorBase, SkeletonAnimator, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";

@@ -41,7 +41,7 @@ THE SOFTWARE.
 
 import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
 import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils} from "awayjs-full/lib/graphics";
-import {HoverController, PointLight, DirectionalLight, Sprite, Scene, Camera, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/display";
+import {HoverController, PointLight, DirectionalLight, Sprite, Scene, Camera, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";

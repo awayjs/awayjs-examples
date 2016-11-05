@@ -1,6 +1,6 @@
 import {BitmapImage2D, Sampler2D} from "awayjs-full/lib/graphics";
 import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {Sprite, DisplayObjectContainer, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/display";
+import {Sprite, DisplayObjectContainer, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";

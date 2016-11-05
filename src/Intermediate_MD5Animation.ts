@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard} from "awayjs-full/lib/core";
 import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
-import {LookAtController, PointLight, DirectionalLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, NearDirectionalShadowMapper, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {LookAtController, PointLight, DirectionalLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, NearDirectionalShadowMapper, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {AnimationSetBase, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
 import {MethodMaterial, EffectFogMethod, ShadowNearMethod, ShadowSoftMethod} from "awayjs-full/lib/materials";
 import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";

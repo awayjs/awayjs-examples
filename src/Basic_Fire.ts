@@ -39,7 +39,7 @@ THE SOFTWARE.
 
 import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
 import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, PointLight, DirectionalLight, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/display";
+import {HoverController, Sprite, Scene, Camera, PointLight, DirectionalLight, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode}	from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 import {ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
