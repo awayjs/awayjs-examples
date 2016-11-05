@@ -38,7 +38,7 @@ THE SOFTWARE.
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, DirectionalLight, LoaderContainer, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/display";
+import {HoverController, Sprite, DirectionalLight, LoaderContainer, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
 import {MethodMaterial, ShadowSoftMethod} from "awayjs-full/lib/materials";
 import {Max3DSParser} from "awayjs-full/lib/parsers";
 

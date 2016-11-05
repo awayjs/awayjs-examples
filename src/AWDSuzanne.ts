@@ -1,5 +1,5 @@
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {MouseEvent, Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/display";
+import {MouseEvent, Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View, JSPickingCollider} from "awayjs-full/lib/view";

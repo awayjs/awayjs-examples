@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "awayjs-full/lib/core";
 import {BitmapImageCube, SamplerCube, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
-import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/display";
+import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, EffectEnvMapMethod} from "awayjs-full/lib/materials";
 
 import {View} from "awayjs-full/lib/view";

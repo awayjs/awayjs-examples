@@ -36,7 +36,7 @@
 
 import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
 import {Graphics, Graphic} from "awayjs-full/lib/graphics";
-import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/display";
+import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/scene";
 import {MethodMaterial}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {DefaultRenderer} from  "awayjs-full/lib/renderer";

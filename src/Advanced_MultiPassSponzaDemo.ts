@@ -47,7 +47,7 @@ THE SOFTWARE.
 
 import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
 import {Style, Graphic, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
-import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/display";
+import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";

@@ -1,6 +1,6 @@
 import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {ElementsType, Sampler2D, ImageUtils} from "awayjs-full/lib/graphics";
-import {Sprite, DirectionalLight, StaticLightPicker, PrimitiveTorusPrefab} from "awayjs-full/lib/display";
+import {Sprite, DirectionalLight, StaticLightPicker, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 

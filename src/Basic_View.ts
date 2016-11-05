@@ -38,7 +38,7 @@ THE SOFTWARE.
 
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {BitmapImage2D, ElementsType, BasicMaterial, Single2DTexture} from "awayjs-full/lib/graphics";
-import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/display";
+import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {View} from "awayjs-full/lib/View";
 
 class Basic_View

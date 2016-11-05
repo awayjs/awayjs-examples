@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 import {AssetEvent, Vector3D, AssetLibrary, Loader, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {ElementsType, BitmapImage2D, BasicMaterial, PickingCollision} from "awayjs-full/lib/graphics";
-import {HoverController, BoundsType, PointLight, Sprite, Scene, Camera, LineSegment, StaticLightPicker, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/display";
+import {HoverController, BoundsType, PointLight, Sprite, Scene, Camera, LineSegment, StaticLightPicker, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View, RaycastPicker, JSPickingCollider} from "awayjs-full/lib/view";
