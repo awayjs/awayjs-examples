@@ -46,7 +46,7 @@ THE SOFTWARE.
 */
 
 import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
-import {Style, Graphic, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
+import {Style, Shape, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
 import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
@@ -247,10 +247,10 @@ class Advanced_MultiPassSponzaDemo
 			flameVO = this._flameData[i];
 			var sprite:Sprite = flameVO.sprite = <Sprite> this._flameGraphics.getNewObject();
 			sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			var graphic:Graphic = sprite.graphics.getGraphicAt(0);
-			graphic.style = new Style();
-			graphic.style.uvMatrix = new Matrix();
-			graphic.style.uvMatrix.scale(1/16, 1);
+			var shape:Shape = sprite.graphics.getShapeAt(0);
+			shape.style = new Style();
+			shape.style.uvMatrix = new Matrix();
+			shape.style.uvMatrix.scale(1/16, 1);
 			this._view.scene.addChild(sprite);
 			sprite.addChild(flameVO.light);
 		}
@@ -761,9 +761,9 @@ class Advanced_MultiPassSponzaDemo
 			if (!sprite)
 				continue;
 			
-			var graphic:Graphic = sprite.graphics.getGraphicAt(0);
-			graphic.style.uvMatrix.tx += 1/16;
-			graphic.style.uvMatrix.tx %= 1;
+			var shape:Shape = sprite.graphics.getShapeAt(0);
+			shape.style.uvMatrix.tx += 1/16;
+			shape.style.uvMatrix.tx %= 1;
 			sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z)*180/Math.PI;
 		}
 

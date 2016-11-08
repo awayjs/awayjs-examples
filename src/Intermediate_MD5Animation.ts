@@ -370,11 +370,11 @@ class Intermediate_MD5Animation
 		} else if (event.asset.isAsset(Sprite)) {
 			//grab sprite object and assign our material object
 			this.sprite = <Sprite> event.asset;
-			this.sprite.graphics.getGraphicAt(0).material = this.bodyMaterial;
-			this.sprite.graphics.getGraphicAt(1).material = this.sprite.graphics.getGraphicAt(2).material = this.sprite.graphics.getGraphicAt(3).material = this.gobMaterial;
+			this.sprite.graphics.getShapeAt(0).material = this.bodyMaterial;
+			this.sprite.graphics.getShapeAt(1).material = this.sprite.graphics.getShapeAt(2).material = this.sprite.graphics.getShapeAt(3).material = this.gobMaterial;
 			this.sprite.castsShadows = true;
 			this.sprite.rotationY = 180;
-			this.gobStyle = this.sprite.graphics.getGraphicAt(1).style = this.sprite.graphics.getGraphicAt(2).style = this.sprite.graphics.getGraphicAt(3).style = new Style();
+			this.gobStyle = this.sprite.graphics.getShapeAt(1).style = this.sprite.graphics.getShapeAt(2).style = this.sprite.graphics.getShapeAt(3).style = new Style();
 			this.gobStyle.uvMatrix = new Matrix();
 			this.scene.addChild(this.sprite);
 

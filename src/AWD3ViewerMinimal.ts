@@ -35,7 +35,7 @@
  */
 
 import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
-import {Graphics, Graphic} from "awayjs-full/lib/graphics";
+import {Graphics, Shape} from "awayjs-full/lib/graphics";
 import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/scene";
 import {MethodMaterial}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
@@ -55,7 +55,7 @@ class AWD3ViewerMinimal
 	private _stage_width: number;
 	private _stage_height: number;
 	private _material:MethodMaterial;
-	private _graphics:Array<Graphic> = new Array<Graphic>();
+	private _shapes:Array<Shape> = new Array<Shape>();
 
 	private counter: number;
 
@@ -157,7 +157,7 @@ class AWD3ViewerMinimal
 		if(event.asset.isAsset(Graphics)){
 			var one_graphics:Graphics = <Graphics> event.asset;
 			for (var i:number = 0; i < one_graphics.count; i++) {
-				this._graphics.push(one_graphics.getGraphicAt(i));
+				this._shapes.push(one_graphics.getShapeAt(i));
 			}
 		}else if(event.asset.isAsset(TextField)){
 			var one_textfield:TextField=<TextField> event.asset;
@@ -217,8 +217,8 @@ class AWD3ViewerMinimal
 	 */
 	private onRessourceComplete(event: LoaderEvent): void {
 		if (this._rootTimeLine) {
-			for (var i:number = 0; i < this._graphics.length; i++) {
-				//this._graphics[i].material = this._material;
+			for (var i:number = 0; i < this._shapes.length; i++) {
+				//this._shapes[i].material = this._material;
 			}
 
 			this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
