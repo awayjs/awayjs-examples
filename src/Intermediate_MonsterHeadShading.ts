@@ -380,7 +380,7 @@ class Intermediate_MonsterHeadShading
 		//apply material to head model
 		var len:number = this._headModel.graphics.count;
 		for (var i:number = 0; i < len; i++)
-			this._headModel.graphics.getGraphicAt(i).material = this._headMaterial;
+			this._headModel.graphics.getShapeAt(i).material = this._headMaterial;
 
 		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
