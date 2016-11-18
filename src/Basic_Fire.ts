@@ -6,7 +6,7 @@ Demonstrates:
 
 How to setup a particle geometry and particle animationset in order to simulate fire.
 How to stagger particle animation instances with different animator objects running on different timers.
-How to apply fire lighting to a floor mesh using a multipass material.
+How to apply fire lighting to a floor sprite using a multipass material.
 
 Code by Rob Bateman & Liao Cheng
 rob@infiniteturtles.co.uk
@@ -37,48 +37,12 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import TimerEvent					= require("awayjs-core/lib/events/TimerEvent");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import Timer						= require("awayjs-core/lib/utils/Timer");
-
-import Geometry						= require("awayjs-display/lib/base/Geometry");
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
-
-import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-import ParticlePropertiesMode		= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
-import ParticleScaleNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleScaleNode");
-import ParticleVelocityNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleVelocityNode");
-import ParticleColorNode			= require("awayjs-renderergl/lib/animators/nodes/ParticleColorNode");
-import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
+import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera, PointLight, DirectionalLight, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial, MethodMaterialMode}	from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
+import {ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
 
 class Basic_Fire
 {
@@ -100,11 +64,11 @@ class Basic_Fire
 
 	//particle objects
 	private fireAnimationSet:ParticleAnimationSet;
-	private particleGeometry:ParticleGeometry;
+	private particleSprite:Sprite;
 	private fireTimer:Timer;
 
 	//scene objects
-	private plane:Mesh;
+	private plane:Sprite;
 	private fireObjects:Array<FireVO> = new Array<FireVO>();
 
 	//navigation variables
@@ -146,7 +110,7 @@ class Basic_Fire
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		//this.view.antiAlias = 4;
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
@@ -185,9 +149,8 @@ class Basic_Fire
 		this.planeMaterial = new MethodMaterial();
 		this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
 		this.planeMaterial.lightPicker = this.lightPicker;
-		this.planeMaterial.repeat = true;
-		this.planeMaterial.mipmap = false;
-		this.planeMaterial.specular = 10;
+		this.planeMaterial.style.sampler = new Sampler2D(true, true, false);
+		this.planeMaterial.specularMethod.strength = 10;
 
 		this.particleMaterial = new MethodMaterial();
 		this.particleMaterial.blendMode = BlendMode.ADD;
@@ -216,14 +179,15 @@ class Basic_Fire
 		this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
 		//create the original particle geometry
-		var particle:PrimitivePlanePrefab = new PrimitivePlanePrefab(10, 10, 1, 1, false);
+		var particle:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
 
 		//combine them into a list
-		var geometrySet:Array<Geometry> = new Array<Geometry>();
+		var graphicsSet:Array<Graphics> = new Array<Graphics>();
 		for (var i:number /*int*/ = 0; i < 500; i++)
-			geometrySet.push(particle.geometry);
+			graphicsSet.push(particle.graphics);
 
-		this.particleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
+		this.particleSprite = new Sprite(this.particleMaterial);
+		ParticleGraphicsHelper.generateGraphics(this.particleSprite.graphics, graphicsSet);
 	}
 
 	/**
@@ -231,28 +195,28 @@ class Basic_Fire
 	 */
 	private initObjects():void
 	{
-		this.plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
+		this.plane = <Sprite> new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
 		this.plane.material = this.planeMaterial;
-		this.plane.geometry.scaleUV(2, 2);
+		this.plane.graphics.scaleUV(2, 2);
 		this.plane.y = -20;
 
 		this.scene.addChild(this.plane);
 
-		//create fire object meshes from geomtry and material, and apply particle animators to each
+		//create fire object sprites from geomtry and material, and apply particle animators to each
 		for (var i:number /*int*/ = 0; i < Basic_Fire.NUM_FIRES; i++) {
-			var particleMesh:Mesh = new Mesh(this.particleGeometry, this.particleMaterial);
+			var particleSprite:Sprite = this.particleSprite.clone();
 			var animator:ParticleAnimator = new ParticleAnimator(this.fireAnimationSet);
-			particleMesh.animator = animator;
+			particleSprite.animator = animator;
 
-			//position the mesh
+			//position the sprite
 			var degree:number = i / Basic_Fire.NUM_FIRES * Math.PI * 2;
-			particleMesh.x = Math.sin(degree) * 400;
-			particleMesh.z = Math.cos(degree) * 400;
-			particleMesh.y = 5;
+			particleSprite.x = Math.sin(degree) * 400;
+			particleSprite.z = Math.cos(degree) * 400;
+			particleSprite.y = 5;
 
 			//create a fire object and add it to the fire object vector
-			this.fireObjects.push(new FireVO(particleMesh, animator));
-			this.view.scene.addChild(particleMesh);
+			this.fireObjects.push(new FireVO(particleSprite, animator));
+			this.view.scene.addChild(particleSprite);
 		}
 
 		//setup timer for triggering each particle aniamtor
@@ -277,7 +241,7 @@ class Basic_Fire
 		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this.timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//plane textures
 		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
@@ -336,7 +300,7 @@ class Basic_Fire
 		light.color = 0xFF3301;
 		light.diffuse = 0;
 		light.specular = 0;
-		light.transform.position = fireObject.mesh.transform.position;
+		light.transform.moveTo(fireObject.sprite.x, fireObject.sprite.y, fireObject.sprite.z);
 
 		//add the lightsource to the fire object
 		fireObject.light = light;
@@ -390,18 +354,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.particleMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}
@@ -452,14 +416,14 @@ class Basic_Fire
 */
 class FireVO
 {
-	public mesh:Mesh;
+	public sprite:Sprite;
 	public animator:ParticleAnimator;
 	public light:PointLight;
 	public strength:number = 0;
 
-	constructor(mesh:Mesh, animator:ParticleAnimator)
+	constructor(sprite:Sprite, animator:ParticleAnimator)
 	{
-		this.mesh = mesh;
+		this.sprite = sprite;
 		this.animator = animator;
 	}
 }

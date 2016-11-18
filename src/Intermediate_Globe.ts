@@ -35,51 +35,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import BitmapImageChannel			= require("awayjs-core/lib/data/BitmapImageChannel");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import Point						= require("awayjs-core/lib/geom/Point");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
 
-import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import OrientationMode				= require("awayjs-display/lib/base/OrientationMode");
-import AlignmentMode				= require("awayjs-display/lib/base/AlignmentMode");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Billboard					= require("awayjs-display/lib/entities/Billboard");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ShaderBase					= require("awayjs-renderergl/lib/shaders/ShaderBase");
-import ShaderRegisterElement		= require("awayjs-renderergl/lib/shaders/ShaderRegisterElement");
-import ShaderRegisterCache			= require("awayjs-renderergl/lib/shaders/ShaderRegisterCache");
-import ShaderRegisterData			= require("awayjs-renderergl/lib/shaders/ShaderRegisterData");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodVO						= require("awayjs-methodmaterials/lib/data/MethodVO");
-import DiffuseCompositeMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseCompositeMethod");
-import SpecularCompositeMethod		= require("awayjs-methodmaterials/lib/methods/SpecularCompositeMethod");
-import DiffuseBasicMethod			= require("awayjs-methodmaterials/lib/methods/DiffuseBasicMethod");
-import SpecularBasicMethod			= require("awayjs-methodmaterials/lib/methods/SpecularBasicMethod");
-import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
-import SpecularPhongMethod			= require("awayjs-methodmaterials/lib/methods/SpecularPhongMethod");
+import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {OrientationMode, AlignmentMode, HoverController, PointLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
+import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, MethodVO, DiffuseCompositeMethod, SpecularCompositeMethod} from "awayjs-full/lib/materials";
+import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase}		from "awayjs-full/lib/renderer";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe
 {
@@ -96,13 +58,12 @@ class Intermediate_Globe
 	private atmosphereMaterial:MethodMaterial;
 	private atmosphereDiffuseMethod:DiffuseBasicMethod;
 	private atmosphereSpecularMethod:SpecularBasicMethod;
-	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private sun:Billboard;
-	private earth:Mesh;
-	private clouds:Mesh;
-	private atmosphere:Mesh;
+	private earth:Sprite;
+	private clouds:Sprite;
+	private atmosphere:Sprite;
 	private tiltContainer:DisplayObjectContainer;
 	private orbitContainer:DisplayObjectContainer;
 	private skyBox:Skybox;
@@ -157,7 +118,7 @@ class Intermediate_Globe
 		this.camera = new Camera();
 		this.camera.projection.far = 100000;
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.view.scene = this.scene;
 		this.view.camera = this.camera;
 
@@ -201,8 +162,6 @@ class Intermediate_Globe
 	 */
 	private initMaterials():void
 	{
-		//this.cubeTexture = new BitmapCubeTexture(Cast.bitmapData(PosX), Cast.bitmapData(NegX), Cast.bitmapData(PosY), Cast.bitmapData(NegY), Cast.bitmapData(PosZ), Cast.bitmapData(NegZ));
-
 		//adjust specular map
 		//var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
 		//specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
@@ -210,24 +169,28 @@ class Intermediate_Globe
 		var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, new SpecularPhongMethod());
 		specular.fresnelPower = 1;
 		specular.normalReflectance = 0.1;
+		specular.gloss = 5;
+		specular.strength = 1;
 
 		this.sunMaterial = new MethodMaterial();
+		this.sunMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.sunMaterial.blendMode = BlendMode.ADD;
 
 		this.groundMaterial = new MethodMaterial();
+		this.groundMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.groundMaterial.specularMethod = specular;
 		this.groundMaterial.lightPicker = this.lightPicker;
-		this.groundMaterial.gloss = 5;
-		this.groundMaterial.specular = 1;
-		this.groundMaterial.ambient = 1;
+		this.groundMaterial.ambientMethod.strength = 1;
 		this.groundMaterial.diffuseMethod.multiply = false;
 
 		this.cloudMaterial = new MethodMaterial();
+		this.cloudMaterial.style.sampler = new Sampler2D(false, true, true);
 		this.cloudMaterial.alphaBlending = true;
 		this.cloudMaterial.lightPicker = this.lightPicker;
-		this.cloudMaterial.ambientColor = 0x1b2048;
-		this.cloudMaterial.specular = 0;
-		this.cloudMaterial.ambient = 1;
+		this.cloudMaterial.style.color = 0x1b2048;
+		this.cloudMaterial.specularMethod.strength = 0;
+		this.cloudMaterial.ambientMethod.strength = 1;
+		this.cloudMaterial.diffuseMethod.multiply = false;
 
 		this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
 		this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
@@ -237,11 +200,12 @@ class Intermediate_Globe
 		this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
 		this.atmosphereMaterial.blendMode = BlendMode.ADD;
 		this.atmosphereMaterial.lightPicker = this.lightPicker;
-		this.atmosphereMaterial.specular = 0.5;
-		this.atmosphereMaterial.gloss = 5;
-		this.atmosphereMaterial.ambientColor = 0;
-		this.atmosphereMaterial.diffuseColor = 0x1671cc;
-		this.atmosphereMaterial.ambient = 1;
+		this.atmosphereMaterial.specularMethod.strength = 0.5;
+		this.atmosphereMaterial.specularMethod.gloss = 5;
+		this.atmosphereMaterial.style.color = 0;
+		this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
+		this.atmosphereMaterial.ambientMethod.strength = 1;
+		this.atmosphereMaterial.diffuseMethod.multiply = false;
 	}
 
 	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
@@ -289,18 +253,15 @@ class Intermediate_Globe
 		this.sun.x = 10000;
 		this.orbitContainer.addChild(this.sun);
 
-		this.earth = <Mesh> new PrimitiveSpherePrefab(200, 200, 100).getNewObject();
-		this.earth.material = this.groundMaterial;
+		this.earth = <Sprite> new PrimitiveSpherePrefab(this.groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
 
-		this.clouds = <Mesh> new PrimitiveSpherePrefab(202, 200, 100).getNewObject();
-		this.clouds.material = this.cloudMaterial;
+		this.clouds = <Sprite> new PrimitiveSpherePrefab(this.cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
 
-		this.atmosphere = <Mesh> new PrimitiveSpherePrefab(210, 200, 100).getNewObject();
-		this.atmosphere.material = this.atmosphereMaterial;
+		this.atmosphere = <Sprite> new PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
 		this.atmosphere.scaleX = -1;
 
 		this.tiltContainer = new DisplayObjectContainer();
-		this.tiltContainer.rotationX = -23;
+		this.tiltContainer.rotationX = 23;
 		this.tiltContainer.addChild(this.earth);
 		this.tiltContainer.addChild(this.clouds);
 		this.tiltContainer.addChild(this.atmosphere);
@@ -320,7 +281,7 @@ class Intermediate_Globe
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-		document.onmousewheel= (event:MouseWheelEvent) => this.onMouseWheel(event);
+		document.onmousewheel= (event:WheelEvent) => this.onMouseWheel(event);
 
 
 		this.onResize();
@@ -328,7 +289,7 @@ class Intermediate_Globe
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();
@@ -363,9 +324,9 @@ class Intermediate_Globe
 	{
 		this._time += dt;
 
-		this.earth.rotationY += 0.2;
-		this.clouds.rotationY += 0.21;
-		this.orbitContainer.rotationY += 0.02;
+		this.earth.rotationY -= 0.2;
+		this.clouds.rotationY -= 0.21;
+		this.orbitContainer.rotationY -= 0.02;
 
 		this.cameraController.update();
 
@@ -402,8 +363,10 @@ class Intermediate_Globe
 			var flareDirection:Point = new Point(xOffset, yOffset);
 			for (var i:number = 0; i < this.flares.length; i++) {
 				flareObject = this.flares[i];
-				if (flareObject)
-					flareObject.billboard.transform.position = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+				if (flareObject) {
+					var position:Vector3D = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+					flareObject.billboard.transform.moveTo(position.x, position.y, position.z);
+				}
 			}
 		}
 	}
@@ -416,9 +379,8 @@ class Intermediate_Globe
 		switch(event.url) {
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
-				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
-
-				this.skyBox = new Skybox(this.cubeTexture);
+				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
+				this.skyBox.style.sampler = new Sampler2D(false, true);
 				this.scene.addChild(this.skyBox);
 				break;
 
@@ -427,21 +389,21 @@ class Intermediate_Globe
 				var cloudBitmapImage2D:BitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
 				cloudBitmapImage2D.copyChannel(<BitmapImage2D> event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-				this.cloudMaterial.texture = new Single2DTexture(cloudBitmapImage2D);
+				this.cloudMaterial.ambientMethod.texture = new Single2DTexture(cloudBitmapImage2D);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
 				var specBitmapImage2D:BitmapImage2D = <BitmapImage2D> event.assets[0];
 				specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMap = new Single2DTexture(specBitmapImage2D);
+				this.groundMaterial.specularMethod.texture = new Single2DTexture(specBitmapImage2D);
 				break;
 			case "assets/globe/EarthNormal.png" :
-				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_lights_16384.jpg" :
-				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_ocean_ice_2048_match.jpg" :
-				this.groundMaterial.diffuseTexture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.diffuseMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//flare textures
@@ -467,7 +429,7 @@ class Intermediate_Globe
 				this.flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this.scene);
 				break;
 			case "assets/lensflare/flare10.jpg" :
-				this.sunMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.sunMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				this.flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this.scene);
 				break;
 			case "assets/lensflare/flare11.jpg" :
@@ -548,7 +510,7 @@ class Intermediate_Globe
 	/**
 	 * Mouse wheel listener for navigation
 	 */
-	private onMouseWheel(event:MouseWheelEvent)
+	private onMouseWheel(event:WheelEvent)
 	{
 		this.cameraController.distance -= event.wheelDelta;
 
@@ -612,7 +574,8 @@ class FlareObject
 		var bd:BitmapImage2D = new BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-		var billboardMaterial:MethodMaterial = new MethodMaterial(new Single2DTexture(bd));
+		var billboardMaterial:MethodMaterial = new MethodMaterial(bd);
+		billboardMaterial.style.sampler = new Sampler2D(false, true);
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;

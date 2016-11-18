@@ -1,12 +1,16 @@
-bin-debug/
-bin-release/
-out/
+# Build and Release Folders
+node_modules/
+libs/
+bin/
+
+# Dev files
+npm-debug.log
+
+# Project property files
 .actionScriptProperties
-.flexProperties
+.flexLibProperties
 .settings/
 .idea/
 .project
 .DS_Store
 *.iml
-output.txt
-node_modules

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "awayjs-full": ["./node_modules/awayjs-full/dist"],
+      "awayjs-full/*": ["./node_modules/awayjs-full/dist/*"]
+    }
+  },
+  "files": [
+  ]
+}

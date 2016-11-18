@@ -1,31 +1,15 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderSession					= require("awayjs-core/lib/library/LoaderSession");
-import IAsset   					= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Debug						= require("awayjs-core/lib/utils/Debug");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import View							= require("awayjs-display/lib/containers/View");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-
-import OBJParser					= require("awayjs-parsers/lib/OBJParser");
+import {BitmapImage2D, Sampler2D} from "awayjs-full/lib/graphics";
+import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {Sprite, DisplayObjectContainer, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {OBJParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class ObjLoaderMasterChief
 {
 	private view:View;
 	private raf:RequestAnimationFrame;
-	private meshes:Array<Mesh> = new Array<Mesh>();
+	private sprites:Array<Sprite> = new Array<Sprite>();
 	private mat:MethodMaterial;
 
 	private terrainMaterial:MethodMaterial;
@@ -33,14 +17,14 @@ class ObjLoaderMasterChief
 	private light:DirectionalLight;
 
 	private spartan:DisplayObjectContainer = new DisplayObjectContainer();
-	private terrain:Mesh;
+	private terrain:Sprite;
 
 	constructor()
 	{
 		Debug.LOG_PI_ERRORS = false;
 		Debug.THROW_ERRORS = false;
 
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.view.camera.z = -50;
 		this.view.camera.y = 20;
 		this.view.camera.projection.near = 0.1;
@@ -57,28 +41,28 @@ class ObjLoaderMasterChief
 		this.light.specular = 1.8;
 		this.view.scene.addChild(this.light);
 
-		this.spartan.transform.scale = new Vector3D(.25, .25, .25);
+		this.spartan.transform.scaleTo(.25, .25, .25);
 		this.spartan.y = 0;
 		this.view.scene.addChild(this.spartan);
 
 		AssetLibrary.enableParser(OBJParser);
 
-		var session:LoaderSession;
+		var session:Loader;
 		
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/Halo_3_SPARTAN4.obj'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/terrain.obj'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/masterchief_base.png'));
 
-		session = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/stone_tx.jpg'));
 
 		window.onresize = (event:UIEvent) => this.onResize();
@@ -99,14 +83,14 @@ class ObjLoaderMasterChief
 
 	public onResourceComplete (event:LoaderEvent)
 	{
-		var loader:LoaderSession = <LoaderSession> event.target;
+		var loader:Loader = <Loader> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		console.log( '------------------------------------------------------------------------------');
-		console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , event , l , loader );
+		console.log( 'away.events.LoaderEvent.LOAD_COMPLETE' , event , l , loader );
 		console.log( '------------------------------------------------------------------------------');
 
-		var loader:LoaderSession = <LoaderSession> event.target;
+		var loader:Loader = <Loader> event.target;
 		var l:number = loader.baseDependency.assets.length;
 
 		for (var c:number = 0; c < l; c++) {
@@ -116,27 +100,29 @@ class ObjLoaderMasterChief
 			console.log( d.name , event.url);
 
 			switch (d.assetType) {
-				case  Mesh.assetType:
+				case  Sprite.assetType:
 					if (event.url =='assets/Halo_3_SPARTAN4.obj') {
-						var mesh:Mesh = <Mesh> d;
+						var sprite:Sprite = <Sprite> d;
 
-						this.spartan.addChild(mesh);
+						this.spartan.addChild(sprite);
 						this.spartanFlag = true;
-						this.meshes.push(mesh);
+						this.sprites.push(sprite);
 					} else if (event.url =='assets/terrain.obj') {
-						this.terrain = <Mesh> d;
+						this.terrain = <Sprite> d;
 						this.terrain.y = 98;
-						this.terrain.geometry.scaleUV(20, 20);
+						this.terrain.graphics.scaleUV(20, 20);
 						this.view.scene.addChild(this.terrain);
 					}
 
 					break;
 				case BitmapImage2D.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
-						this.mat = new MethodMaterial( new Single2DTexture(<BitmapImage2D> d), true, true, false );
+						this.mat = new MethodMaterial(<BitmapImage2D> d);
+						this.mat.style.sampler = new Sampler2D(true, true, false);
 						this.mat.lightPicker = new StaticLightPicker([this.light]);
 					} else if (event.url == 'assets/stone_tx.jpg') {
-						this.terrainMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> d), true, true, false);
+						this.terrainMaterial = new MethodMaterial(<BitmapImage2D> d);
+						this.terrainMaterial.style.sampler = new Sampler2D(true, true, false);
 						this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 					}
 
@@ -148,8 +134,8 @@ class ObjLoaderMasterChief
 			this.terrain.material = this.terrainMaterial;
 
 		if (this.mat && this.spartanFlag)
-			for (var c:number = 0; c < this.meshes.length; c++)
-				this.meshes[c].material = this.mat;
+			for (var c:number = 0; c < this.sprites.length; c++)
+				this.sprites[c].material = this.mat;
 
 		this.onResize();
 	}

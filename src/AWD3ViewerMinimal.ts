@@ -34,294 +34,246 @@
 
  */
 
-import AssetLibrary							= require("awayjs-core/lib/library/AssetLibrary");
-import AssetEvent							= require("awayjs-core/lib/events/AssetEvent");
-import URLRequest							= require("awayjs-core/lib/net/URLRequest");
-import LoaderEvent							= require("awayjs-core/lib/events/LoaderEvent");
-import ParserEvent							= require("awayjs-core/lib/events/ParserEvent");
-import Vector3D								= require("awayjs-core/lib/geom/Vector3D");
-import OrthographicOffCenterProjection		= require("awayjs-core/lib/projections/OrthographicOffCenterProjection");
-import OrthographicProjection				= require("awayjs-core/lib/projections/OrthographicProjection");
-import Keyboard								= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame				= require("awayjs-core/lib/utils/RequestAnimationFrame");
-import IOErrorEvent				= require("awayjs-core/lib/events/IOErrorEvent");
-
-import View									= require("awayjs-display/lib/containers/View");
-import Mesh									= require("awayjs-display/lib/entities/Mesh");
-import Billboard							= require("awayjs-display/lib/entities/Billboard");
-import Container							= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import HoverController						= require("awayjs-display/lib/controllers/HoverController");
-import Loader								= require("awayjs-display/lib/containers/Loader");
-import ColorMaterial						= require("awayjs-display/lib/materials/BasicMaterial");
-import PrimitiveCubePrefab					= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-import DisplayObject						= require("awayjs-display/lib/base/DisplayObject");
-
-import DefaultRenderer					    = require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial						= require("awayjs-methodmaterials/lib/MethodMaterial");
-
-import AWDParser							= require("awayjs-parsers/lib/AWDParser");
-import SceneGraphPartition							= require("awayjs-display/lib/partition/SceneGraphPartition");
-import MovieClip							= require("awayjs-display/lib/entities/MovieClip");
-
-import CoordinateSystem						= require("awayjs-core/lib/projections/CoordinateSystem");
-import PerspectiveProjection				= require("awayjs-core/lib/projections/PerspectiveProjection");
-import Camera								= require("awayjs-display/lib/entities/Camera");
-
-import TextField							= require("awayjs-display/lib/entities/TextField");
-import TextFormat							= require("awayjs-display/lib/text/TextFormat");
+import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
+import {Graphics, Shape} from "awayjs-full/lib/graphics";
+import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/scene";
+import {MethodMaterial}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {DefaultRenderer} from  "awayjs-full/lib/renderer";
+import {View, SceneGraphPartition} from "awayjs-full/lib/view";
 
 class AWD3ViewerMinimal
 {
-    private _fps:number = 30;
+	private _fps:number = 30;
+	private _view: View;
+	private _renderer: DefaultRenderer;
+	private _rootTimeLine: MovieClip;
+	private _timer: RequestAnimationFrame;
+	private _time: number = 0;
+	private _projection: PerspectiveProjection;
+	private _hoverControl: HoverController;
+	private _stage_width: number;
+	private _stage_height: number;
+	private _material:MethodMaterial;
+	private _shapes:Array<Shape> = new Array<Shape>();
 
-    //engine variables
-    private _view: View;
-    private _renderer: DefaultRenderer;
-
-    private _rootTimeLine: MovieClip;
-
-    private _timer: RequestAnimationFrame;
-    private _time: number = 0;
-
-    //navigation
-    private _lastPanAngle: number;
-    private _lastTiltAngle: number;
-    private _lastMouseX: number;
-    private _lastMouseY: number;
-    private _move: boolean;
-    private _isperspective: boolean;
-    private _projection: PerspectiveProjection;
-    private _ortho_projection: OrthographicProjection;
-    private _hoverControl: HoverController;
-    private _camera_perspective: Camera;
-    private _camera_ortho: Camera;
-    private _stage_width: number;
-    private _stage_height: number;
-
-    private counter: number;
+	private counter: number;
 
 
-    private _replaced_gettext:boolean;
-    private _updated_property:boolean;
+	/**
+	 * Constructor
+	 */
+	constructor()
+	{
+		this.init();
+	}
 
-    /**
-     * Constructor
-     */
-    constructor()
-    {
-        this._replaced_gettext=false
-        this._updated_property=false;
-        this.init();
-    }
+	/**
+	 * Global initialise function
+	 */
+	private init(): void
+	{
 
-    /**
-     * Global initialise function
-     */
-    private init(): void
-    {
-
-        this.initEngine();
-        this.initObjects();
-        this.initListeners();
+		this.initEngine();
+		this.initObjects();
+		this.initListeners();
 
 
-    }
+	}
 
 
-    /**
-     * Initialise the engine
-     */
-    private initEngine(): void
-    {
-        //create the view
-        this._renderer = new DefaultRenderer();
-        this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view = new View(this._renderer);
-        this._view.backgroundColor = 0x000000;
-        this._stage_width = 550;
-        this._stage_height = 400;
+	/**
+	 * Initialise the engine
+	 */
+	private initEngine(): void
+	{
+		//create the view
+		this._renderer = new DefaultRenderer();
+		this._renderer.renderableSorter = null;//new RenderableSort2D();
+		this._view = new View(this._renderer);
+		this._view.backgroundColor = 0x000000;
+		this._stage_width = 550;
+		this._stage_height = 400;
 
-        //for plugin preview-runtime:
+		//for plugin preview-runtime:
 /*
-         this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
-         this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
-         this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
+		 this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
+		 this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
+		 this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
 */
-        this._isperspective=true;
-        this._projection = new PerspectiveProjection();
-        this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-        this._projection.fieldOfView = 30;
-        this._projection.originX = 0;
-        this._projection.originY = 0;
-        this._camera_perspective = new Camera();
-        this._camera_perspective.projection = this._projection;
-        //this._projection.far = 500000;
-        this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
-        this._view.camera = this._camera_perspective;
-    }
+		this._projection = new PerspectiveProjection();
+		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+		this._projection.fieldOfView = 30;
+		this._projection.originX = 0;
+		this._projection.originY = 0;
+		var camera:Camera = new Camera();
+		camera.projection = this._projection;
 
-    /**
-     * Initialise the scene objects
-     */
-    private initObjects(): void
-    {
-        //kickoff asset loading
-        var loader:Loader = new Loader();
-        loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
-        loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
-        loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
-        loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
+		this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
+		this._view.camera = camera;
+	}
 
-        //for plugin preview-runtime:
-        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
+	/**
+	 * Initialise the scene objects
+	 */
+	private initObjects(): void
+	{
+		//kickoff asset loading
+		var loader:LoaderContainer = new LoaderContainer();
+		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
+		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
+		loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
+		//loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 
-        loader.load(new URLRequest("assets/AWD3/Main.awd"), null, null, new AWDParser(this._view));
+		//for plugin preview-runtime:
+		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-        //loader.load(new URLRequest("assets/AWD3/Icycle2_Intro_2.awd"));
-        //loader.load(new URLRequest("assets/AWD3/AwayJEscher.awd"));
-        //loader.load(new URLRequest("assets/AWD3/SimpleSoundTest.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Simple_text_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/AwayJS_Ninja.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ComplexShape.awd"));
-        //loader.load(new URLRequest("assets/AWD3/NestedTween.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Rectancle_blink_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow_multi.awd"));
-        //loader.load(new URLRequest("assets/AWD3/ScareCrow_shape_debug.awd"));
-        //loader.load(new URLRequest("assets/AWD3/simple_bitmap_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/Simple_mask_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/mask_test.awd"));
-        //loader.load(new URLRequest("assets/AWD3/text_test_2.awd"));
-        //loader.load(new URLRequest("assets/AWD3/intro_icycle.awd"));
+		loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(this._view));
+		//loader.load(new URLRequest("assets/AWD3/TextConstructionTest.awd"), null, null, new AWDParser(this._view));
+		//loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
+		//loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));
+		this._material = new MethodMaterial(0x000001);
+		this._material.style.color = 0x000001;
+	}
 
-    }
+	/**
+	 * Initialise the listeners
+	 */
+	private initListeners(): void
+	{
+		window.onresize  = (event) => this.onResize(event);
+		this.onResize();
 
-    /**
-     * Initialise the listeners
-     */
-    private initListeners(): void
-    {
-        window.onresize  = (event) => this.onResize(event);
-        this.onResize();
+		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+		this._timer.start();
+	}
 
-        this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
-        this._timer.start();
-    }
-
-    /**
-     * loader listener for asset complete events
-     */
-    private onAssetComplete(event: AssetEvent): void
-    {
-
-        if(event.asset.isAsset(TextField)){
-            var one_textfield:TextField=<TextField> event.asset;
-            if (one_textfield.name == "language_btn_tf" || one_textfield.name == "flag") {
-                console.log("NAME:", one_textfield.name)
-                one_textfield.mouseEnabled = false;
-                one_textfield.mouseChildren = false;
-            }
-            //this.loaded_display_objects.push(one_textfield);
-            //console.log("orginal textfield_text = "+one_textfield.text);
-            //one_textfield.text="new text";
-        }
-        else if(event.asset.isAsset(Mesh)) {
-            var one_mesh:Mesh = <Mesh> event.asset;
-            //one_mesh.debugVisible = true;
-            //this.loaded_display_objects.push(one_mesh);
-        }
-        else if(event.asset.isAsset(Billboard)) {
-            var one_billboard:Billboard = <Billboard> event.asset;
-            //this.loaded_display_objects.push(one_billboard);
-        }
-        else if(event.asset.isAsset(MovieClip)) {
-            var one_mc:MovieClip = <MovieClip> event.asset;
-            if (one_mc.name == "border" || one_mc.name == "dream"
-                || one_mc.name == "IAP Menu"
-                || one_mc.name == "language flag"
-                || one_mc.name == "shoptag_shapes"
-                || one_mc.name == "shoptag_cliffedges") {
-                console.log("NAME:", one_mc.name)
-                one_mc.mouseEnabled = false;
-                one_mc.mouseChildren = false;
-            }
-            this._rootTimeLine = one_mc;
-        }
-    }
+	/**
+	 * loader listener for asset complete events
+	 */
+	private onAssetComplete(event: AssetEvent): void
+	{
+		console.log("graphic: " + event.asset.assetType)
+		if(event.asset.isAsset(Graphics)){
+			var one_graphics:Graphics = <Graphics> event.asset;
+			for (var i:number = 0; i < one_graphics.count; i++) {
+				this._shapes.push(one_graphics.getShapeAt(i));
+			}
+		}else if(event.asset.isAsset(TextField)){
+			var one_textfield:TextField=<TextField> event.asset;
+			//this.loaded_display_objects.push(one_textfield);
+			//console.log("orginal textfield_text = "+one_textfield.text);
+			//one_textfield.text="new text";
+		}
+		else if(event.asset.isAsset(Sprite)) {
+			var one_sprite:Sprite = <Sprite> event.asset;
+			//one_sprite.debugVisible = true;
+			//one_sprite.material = new BasicMaterial(0xFF0000);
+			//one_sprite.material.alphaBlending = false;
+			//this._view.scene.addChild(one_sprite);
+			//this.loaded_display_objects.push(one_sprite);
+		}
+		else if(event.asset.isAsset(Billboard)) {
+			var one_billboard:Billboard = <Billboard> event.asset;
+			//this.loaded_display_objects.push(one_billboard);
+		}
+		else if(event.asset.isAsset(MovieClip)) {
+			var movieClip:MovieClip=<MovieClip> event.asset;
+			if (movieClip.name == "border" || movieClip.name == "dream"
+				|| movieClip.name == "IAP Menu"
+				|| movieClip.name == "language flag"
+				|| movieClip.name == "shoptag_shapes"
+				|| movieClip.name == "shoptag_cliffedges"
+				|| movieClip.name ==  "languages baked"
+				|| movieClip.name == "Character"
+				|| movieClip.name == "free") {
+				movieClip.mouseEnabled = false;
+				movieClip.mouseChildren = false;
+			}
+			this._rootTimeLine = movieClip;
+		}
+	}
 
 
-    /**
-     * loader listener for asset complete events
-     */
-    private onLoadError(event: IOErrorEvent):void
-    {
-        console.log("LoadError");
-    }
+	/**
+	 * loader listener for asset complete events
+	 */
+	/*
+	private onLoadError(event: IOErrorEvent):void
+	{
+		console.log("LoadError");
+	}
+	*/
 
-    /**
-     * loader listener for asset complete events
-     */
-    private onParseError(event: ParserEvent): void {
-        console.log(event.message);
-    }
+	/**
+	 * loader listener for asset complete events
+	 */
+	private onParseError(event: ParserEvent): void {
+		console.log(event.message);
+	}
 
-    /**
-     * loader listener for asset complete events
-     */
-    private onRessourceComplete(event: LoaderEvent): void {
-        if (this._rootTimeLine) {
-            this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
-            //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
-            this._view.scene.addChild(this._rootTimeLine);
-            //this._rootTimeLine.x=-this._stage_width/2;
-            //this._rootTimeLine.y=-this._stage_height/2;
-            // autoplay like in Flash
-            //this._rootTimeLine.play();
-        }
-    }
+	/**
+	 * loader listener for asset complete events
+	 */
+	private onRessourceComplete(event: LoaderEvent): void {
+		if (this._rootTimeLine) {
+			for (var i:number = 0; i < this._shapes.length; i++) {
+				//this._shapes[i].material = this._material;
+			}
 
-    private getText(input_string: string): string {
-        return "test getText";
-    }
-    /**
-     * Render loop
-     */
-    private onEnterFrame(dt: number): void
-    {
-        var frameMarker:number = Math.floor(1000/this._fps);
+			this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
+			//console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
+			this._view.scene.addChild(this._rootTimeLine);
+			//this._rootTimeLine.x=-this._stage_width/2;
+			//this._rootTimeLine.y=-this._stage_height/2;
+			// autoplay like in Flash
+			//this._rootTimeLine.play();
+		}
+	}
 
-        this._time += Math.min(dt, frameMarker);
+	private getText(input_string: string): string {
+		return "test getText";
+	}
+	/**
+	 * Render loop
+	 */
+	private onEnterFrame(dt: number): void
+	{
+		var frameMarker:number = Math.floor(1000/this._fps);
 
-        //if (this._rootTimeLine)
-        //	this._rootTimeLine.logHierarchy();
-        //update camera controler
-        // this._cameraController.update();
+		this._time += Math.min(dt, frameMarker);
+
+		//if (this._rootTimeLine)
+		//	this._rootTimeLine.logHierarchy();
+		//update camera controler
+		// this._cameraController.update();
 
 
-        if (this._time >= frameMarker) {
-            this._time -= frameMarker;
+		if (this._time >= frameMarker) {
+			this._time -= frameMarker;
 
-            if (this._rootTimeLine != undefined)
-                this._rootTimeLine.update();
+			if (this._rootTimeLine != undefined)
+				this._rootTimeLine.update();
 
-            this._view.render();
-        }
-    }
+			this._view.render();
+		}
+	}
 
-    private onResize(event = null): void
-    {
-        this._view.y         = 0;
-        this._view.x         = 0;
-        this._view.width     = window.innerWidth;
-        this._view.height    = window.innerHeight;
-        this._projection.fieldOfView = Math.atan(0.464/2)*360/Math.PI;
-        this._projection.originX = (0.5 - 0.5*(window.innerHeight/464)*(700/window.innerWidth));
-    }
+	private onResize(event = null): void
+	{
+		this._view.y         = 0;
+		this._view.x         = 0;
+		this._view.width     = window.innerWidth;
+		this._view.height    = window.innerHeight;
+		var newHeight:number = this._stage_height;
+		this._projection.fieldOfView = Math.atan(newHeight/1000/2)*360/Math.PI;
+		this._projection.originX = (0.5 - 0.5*(window.innerHeight/newHeight)*(this._stage_width/window.innerWidth));
+	}
 
 }
 
 window.onload = function () {
-    new AWD3ViewerMinimal();
+	(<HTMLElement>document.getElementsByTagName("BODY")[0]).style.overflow="hidden";
+	new AWD3ViewerMinimal();
 
 };

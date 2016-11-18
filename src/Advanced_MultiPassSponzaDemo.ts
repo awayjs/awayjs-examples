@@ -45,52 +45,13 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D					= require("awayjs-core/lib/data/BitmapImage2D");
-import BitmapImageCube					= require("awayjs-core/lib/data/BitmapImageCube");
-import SpecularImage2D					= require("awayjs-core/lib/data/SpecularImage2D");
-import BlendMode						= require("awayjs-core/lib/data/BlendMode");
-import Event							= require("awayjs-core/lib/events/Event");
-import AssetEvent						= require("awayjs-core/lib/events/AssetEvent");
-import ProgressEvent					= require("awayjs-core/lib/events/ProgressEvent");
-import LoaderEvent						= require("awayjs-core/lib/events/LoaderEvent");
-import UVTransform						= require("awayjs-core/lib/geom/UVTransform");
-import Vector3D							= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary						= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext					= require("awayjs-core/lib/library/LoaderContext");
-import URLLoader						= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat				= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest						= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils						= require("awayjs-core/lib/parsers/ParserUtils");
-import Keyboard							= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame			= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
+import {Style, Shape, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
+import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
+import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
-import Loader							= require("awayjs-display/lib/containers/Loader");
-import View								= require("awayjs-display/lib/containers/View");
-import FirstPersonController			= require("awayjs-display/lib/controllers/FirstPersonController");
-import ISubMesh							= require("awayjs-display/lib/base/ISubMesh");
-import Geometry							= require("awayjs-display/lib/base/Geometry");
-import Mesh								= require("awayjs-display/lib/entities/Mesh");
-import Skybox							= require("awayjs-display/lib/entities/Skybox");
-import DirectionalLight					= require("awayjs-display/lib/entities/DirectionalLight");
-import PointLight						= require("awayjs-display/lib/entities/PointLight");
-//	import CascadeShadowMapper				= require("awayjs-display/lib/entities/CascadeShadowMapper");
-import DirectionalShadowMapper			= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-import StaticLightPicker				= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab				= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Cast								= require("awayjs-display/lib/utils/Cast");
-import SingleCubeTexture				= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
-
-import Merge							= require("awayjs-renderergl/lib/tools/commands/Merge");
-import DefaultRenderer					= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial					= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode				= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import ShadowCascadeMethod				= require("awayjs-methodmaterials/lib/methods/ShadowCascadeMethod");
-import ShadowSoftMethod					= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-import EffectFogMethod					= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
-
-import AWDParser						= require("awayjs-parsers/lib/AWDParser");
 
 class Advanced_MultiPassSponzaDemo
 {
@@ -108,7 +69,7 @@ class Advanced_MultiPassSponzaDemo
 	private _normalTextureStrings:Array<string> = Array<string>("arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null,                "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.jpg", null,       "thorn_ddn.jpg", "vase_ddn.jpg",  null,               null,             "vase_round_ddn.jpg");
 	private _specularTextureStrings:Array<string> = Array<string>("arch_spec.jpg", null,            "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null,                "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg",      "curtain_spec.jpg", "curtain_spec.jpg",       "details_spec.jpg", "fabric_spec.jpg",      "fabric_spec.jpg", "fabric_spec.jpg",       "flagpole_spec.jpg", "floor_a_spec.jpg", null,          null,       null,            "thorn_spec.jpg", null,           null,               "vase_plant_spec.jpg", "vase_round_spec.jpg");
 	private _numTexStrings:Array<number /*uint*/> = Array<number /*uint*/>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	private _meshReference:Mesh[] = new Array<Mesh>(25);
+	private _spriteReference:Sprite[] = new Array<Sprite>(25);
 	
 	//flame data objects
 	private _flameData:Array<FlameVO> = Array<FlameVO>(new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44));
@@ -118,15 +79,15 @@ class Advanced_MultiPassSponzaDemo
 	private _multiMaterialDictionary:Object = new Object();
 	private _singleMaterialDictionary:Object = new Object();
 	
-	//private meshDictionary:Dictionary = new Dictionary();
-	private vaseMeshes:Array<Mesh> = new Array<Mesh>();
-	private poleMeshes:Array<Mesh> = new Array<Mesh>();
-	private colMeshes:Array<Mesh> = new Array<Mesh>();
-	
+	//private spriteDictionary:Dictionary = new Dictionary();
+	private vaseSprites:Array<Sprite> = new Array<Sprite>();
+	private poleSprites:Array<Sprite> = new Array<Sprite>();
+	private colSprites:Array<Sprite> = new Array<Sprite>();
+
 	//engien variablesf
 	private _view:View;
 	private _cameraController:FirstPersonController;
-	
+
 	//gui variables
 	private _singlePassMaterial:boolean = false;
 	private _multiPassMaterial:boolean = true;
@@ -135,7 +96,7 @@ class Advanced_MultiPassSponzaDemo
 	private _depthMapSize:number /*uint*/ = 2048;
 	private _lightDirection:number = Math.PI/2;
 	private _lightElevation:number = Math.PI/18;
-	
+
 	//light variables
 	private _lightPicker:StaticLightPicker;
 	private _baseShadowMethod:ShadowSoftMethod;
@@ -144,27 +105,27 @@ class Advanced_MultiPassSponzaDemo
 	private _cascadeShadowMapper:DirectionalShadowMapper;
 	private _directionalLight:DirectionalLight;
 	private _lights:Array<any> = new Array<any>();
-	
+
 	//material variables
-	private _skyMap:SingleCubeTexture;
+	private _skyMap:BitmapImageCube;
 	private _flameMaterial:MethodMaterial;
 	private _numTextures:number /*uint*/ = 0;
 	private _currentTexture:number /*uint*/ = 0;
 	private _loadingTextureStrings:Array<string>;
 	private _n:number /*uint*/ = 0;
 	private _loadingText:string;
-	
+
 	//scene variables
-	private _meshes:Array<Mesh> = new Array<Mesh>();
-	private _flameGeometry:PrimitivePlanePrefab;
-			
+	private _sprites:Array<Sprite> = new Array<Sprite>();
+	private _flameGraphics:PrimitivePlanePrefab;
+
 	//rotation variables
 	private _move:boolean = false;
 	private _lastPanAngle:number;
 	private _lastTiltAngle:number;
 	private _lastMouseX:number;
 	private _lastMouseY:number;
-	
+
 	//movement variables
 	private _drag:number = 0.5;
 	private _walkIncrement:number = 10;
@@ -176,9 +137,9 @@ class Advanced_MultiPassSponzaDemo
 
 	private _timer:RequestAnimationFrame;
 	private _time:number = 0;
-	private parseAWDDelegate:(event:Event) => void;
-	private parseBitmapDelegate:(event:Event) => void;
-	private loadProgressDelegate:(event:ProgressEvent) => void;
+	private parseAWDDelegate:(event:URLLoaderEvent) => void;
+	private parseBitmapDelegate:(event:URLLoaderEvent) => void;
+	private loadProgressDelegate:(event:URLLoaderEvent) => void;
 	private onBitmapCompleteDelegate:(event) => void;
 	private onAssetCompleteDelegate:(event:AssetEvent) => void;
 	private onResourceCompleteDelegate:(event:LoaderEvent) => void;
@@ -190,7 +151,7 @@ class Advanced_MultiPassSponzaDemo
 	{
 		this.init();
 	}
-	
+
 	/**
 	 * Global initialise function
 	 */
@@ -199,33 +160,33 @@ class Advanced_MultiPassSponzaDemo
 		this.initEngine();
 		this.initLights();
 		this.initListeners();
-		
-		
+
+
 		//count textures
 		this._n = 0;
 		this._loadingTextureStrings = this._diffuseTextureStrings;
 		this.countNumTextures();
-		
+
 		//kickoff asset loading
 		this._n = 0;
 		this._loadingTextureStrings = this._diffuseTextureStrings;
 		this.load(this._loadingTextureStrings[this._n]);
 	}
-	
+
 	/**
 	 * Initialise the engine
 	 */
 	private initEngine()
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.camera.y = 150;
 		this._view.camera.z = 0;
-		
+
 		//setup controller to be used on the camera
-		this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);			
+		this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);
 	}
-	
+
 	/**
 	 * Initialise the lights
 	 */
@@ -233,7 +194,7 @@ class Advanced_MultiPassSponzaDemo
 	{
 		//create lights array
 		this._lights = new Array<any>();
-		
+
 		//create global directional light
 //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 //			this._cascadeShadowMapper.lightOffset = 20000;
@@ -246,7 +207,7 @@ class Advanced_MultiPassSponzaDemo
 		this._lights.push(this._directionalLight);
 
 		this.updateDirection();
-		
+
 		//create flame lights
 		var flameVO:FlameVO;
 		var len:number = this._flameData.length;
@@ -259,17 +220,17 @@ class Advanced_MultiPassSponzaDemo
 			light.y = 10;
 			this._lights.push(light);
 		}
-		
+
 		//create our global light picker
 		this._lightPicker = new StaticLightPicker(this._lights);
 		this._baseShadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
 //			this._baseShadowMethod = new ShadowFilteredMethod(this._directionalLight);
-		
+
 		//create our global fog method
 		this._fogMethod = new EffectFogMethod(0, 4000, 0x9090e7);
 //			this._cascadeMethod = new ShadowCascadeMethod(this._baseShadowMethod);
 	}
-			
+
 	/**
 	 * Initialise the scene objects
 	 */
@@ -277,23 +238,24 @@ class Advanced_MultiPassSponzaDemo
 	{
 		//create skybox
 		this._view.scene.addChild(new Skybox(this._skyMap));
-		
-		//create flame meshes
-		this._flameGeometry = new PrimitivePlanePrefab(40, 80, 1, 1, false, true);
+
+		//create flame sprites
+		this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
 		var flameVO:FlameVO;
 		var len:number = this._flameData.length;
 		for (var i:number = 0; i < len; i++) {
 			flameVO = this._flameData[i];
-			var mesh:Mesh = flameVO.mesh = <Mesh> this._flameGeometry.getNewObject();
-			mesh.material = this._flameMaterial;
-			mesh.transform.position = flameVO.position;
-			mesh.subMeshes[0].uvTransform = new UVTransform();
-			mesh.subMeshes[0].uvTransform.scaleU = 1/16;
-			this._view.scene.addChild(mesh);
-			mesh.addChild(flameVO.light);
+			var sprite:Sprite = flameVO.sprite = <Sprite> this._flameGraphics.getNewObject();
+			sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
+			var shape:Shape = sprite.graphics.getShapeAt(0);
+			shape.style = new Style();
+			shape.style.uvMatrix = new Matrix();
+			shape.style.uvMatrix.scale(1/16, 1);
+			this._view.scene.addChild(sprite);
+			sprite.addChild(flameVO.light);
 		}
 	}
-		
+
 	/**
 	 * Initialise the listeners
 	 */
@@ -310,9 +272,9 @@ class Advanced_MultiPassSponzaDemo
 
 		this.onResize();
 
-		this.parseAWDDelegate = (event:Event) => this.parseAWD(event);
-		this.parseBitmapDelegate = (event) => this.parseBitmap(event);
-		this.loadProgressDelegate = (event:ProgressEvent) => this.loadProgress(event);
+		this.parseAWDDelegate = (event:URLLoaderEvent) => this.parseAWD(event);
+		this.parseBitmapDelegate = (event:URLLoaderEvent) => this.parseBitmap(event);
+		this.loadProgressDelegate = (event:URLLoaderEvent) => this.loadProgress(event);
 		this.onBitmapCompleteDelegate = (event) => this.onBitmapComplete(event);
 		this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
 		this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
@@ -320,28 +282,28 @@ class Advanced_MultiPassSponzaDemo
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 	}
-	
+
 	/**
 	 * Updates the material mode between single pass and multi pass
 	 */
 //		private updateMaterialPass(materialDictionary:Dictionary)
 //		{
-//			var mesh:Mesh;
+//			var sprite:Sprite;
 //			var name:string;
-//			var len:number = this._meshes.length;
+//			var len:number = this._sprites.length;
 //			for (var i:number = 0; i < len; i++) {
-//				mesh = this._meshes[i];
-//				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+//				sprite = this._sprites[i];
+//				if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
 //					continue;
-//				name = mesh.material.name;
+//				name = sprite.material.name;
 //				var textureIndex:number = this._materialNameStrings.indexOf(name);
 //				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
 //					continue;
 //
-//				mesh.material = materialDictionary[name];
+//				sprite.material = materialDictionary[name];
 //			}
 //		}
-	
+
 	/**
 	 * Updates the direction of the directional lightsource
 	 */
@@ -353,19 +315,19 @@ class Advanced_MultiPassSponzaDemo
 			Math.sin(this._lightElevation)*Math.sin(this._lightDirection)
 		);
 	}
-	
+
 	/**
 	 * Count the total number of textures to be loaded
 	 */
 	private countNumTextures()
 	{
 		this._numTextures++;
-		
+
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)
 			if (this._loadingTextureStrings[this._n])
 				break;
-		
+
 		//switch to next teture set
 		if (this._n < this._loadingTextureStrings.length) {
 			this.countNumTextures();
@@ -379,7 +341,7 @@ class Advanced_MultiPassSponzaDemo
 			this.countNumTextures();
 		}
 	}
-	
+
 	/**
 	 * Global binary file loader
 	 */
@@ -387,18 +349,18 @@ class Advanced_MultiPassSponzaDemo
 	{
 		var loader:URLLoader = new URLLoader();
 		switch (url.substring(url.length - 3)) {
-			case "AWD": 
+			case "AWD":
 			case "awd":
 				loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 				this._loadingText = "Loading Model";
-				loader.addEventListener(Event.COMPLETE, this.parseAWDDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 				break;
-			case "png": 
+			case "png":
 			case "jpg":
 				loader.dataFormat = URLLoaderDataFormat.BLOB;
 				this._currentTexture++;
 				this._loadingText = "Loading Textures";
-				loader.addEventListener(Event.COMPLETE, this.parseBitmapDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 				url = "sponza/" + url;
 				break;
 //				case "atf":
@@ -408,17 +370,17 @@ class Advanced_MultiPassSponzaDemo
 //					url = "sponza/atf/" + url;
 //                    break;
 		}
-		
-		loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+
+		loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		var urlReq:URLRequest = new URLRequest(this._assetsRoot+url);
 		loader.load(urlReq);
-		
+
 	}
-	
+
 	/**
 	 * Display current load
 	 */
-	private loadProgress(e:ProgressEvent)
+	private loadProgress(e:URLLoaderEvent)
 	{
 		//TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
 		var P:number = Math.floor(e["bytesLoaded"] / e["bytesTotal"] * 100);
@@ -426,7 +388,7 @@ class Advanced_MultiPassSponzaDemo
 			console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? Math.floor((e["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((e["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
 		}
 	}
-	
+
 	/**
 	 * Parses the ATF file
 	 */
@@ -465,8 +427,8 @@ class Advanced_MultiPassSponzaDemo
 //				this.load("sponza/sponza.awd");
 //            }
 //        }
-	
-	
+
+
 	/**
 	 * Parses the Bitmap file
 	 */
@@ -475,28 +437,28 @@ class Advanced_MultiPassSponzaDemo
 		var urlLoader:URLLoader = <URLLoader> e.target;
 		var image:HTMLImageElement = ParserUtils.blobToImage(urlLoader.data);
 		image.onload = this.onBitmapCompleteDelegate;
-		urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmapDelegate);
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		urlLoader = null;
 	}
-	
+
 	/**
 	 * Listener for bitmap complete event on loader
 	 */
-	private onBitmapComplete(e:Event)
+	private onBitmapComplete(event:Event)
 	{
-		var image:HTMLImageElement = <HTMLImageElement> e.target;
+		var image:HTMLImageElement = <HTMLImageElement> event.target;
 		image.onload = null;
 
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)
 			if (this._loadingTextureStrings[this._n])
 				break;
-		
+
 		//switch to next teture set
 		if (this._n < this._loadingTextureStrings.length) {
 			this.load(this._loadingTextureStrings[this._n]);
@@ -512,60 +474,60 @@ class Advanced_MultiPassSponzaDemo
 			this.load("sponza/sponza.awd");
 		}
 	}
-	
+
 	/**
 	 * Parses the AWD file
 	 */
-	private parseAWD(e)
+	private parseAWD(event:URLLoaderEvent)
 	{
 		console.log("Parsing Data");
-		var urlLoader:URLLoader = <URLLoader> e.target;
-		var loader:Loader = new Loader(false);
+		var urlLoader:URLLoader = event.target;
+		var loader:LoaderContainer = new LoaderContainer(false);
 
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		loader.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
-		urlLoader.removeEventListener(Event.COMPLETE, this.parseAWDDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 		urlLoader = null;
 	}
-	
+
 	/**
 	 * Listener for asset complete event on loader
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.isAsset(Mesh)) {
-			//store meshes
-			this._meshes.push(<Mesh> event.asset);
+		if (event.asset.isAsset(Sprite)) {
+			//store sprites
+			this._sprites.push(<Sprite> event.asset);
 		}
 	}
-	
+
 	/**
 	 * Triggered once all resources are loaded
 	 */
-	private onResourceComplete(e:LoaderEvent)
+	private onResourceComplete(event:LoaderEvent)
 	{
 		var merge:Merge = new Merge(false, false, true);
 
-		var loader:Loader = <Loader> e.target;
+		var loader:LoaderContainer = event.target;
 		loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
-		
+		loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+
 		//reassign materials
-		var mesh:Mesh;
+		var sprite:Sprite;
 		var name:string;
 
-		var len:number = this._meshes.length;
+		var len:number = this._sprites.length;
 		for (var i:number = 0; i < len; i++) {
-			mesh = this._meshes[i];
-			if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+			sprite = this._sprites[i];
+			if (sprite.name == "sponza_04" || sprite.name == "sponza_379")
 				continue;
 
-			var num:number = Number(mesh.name.substring(7));
+			var num:number = Number(sprite.name.substring(7));
 
-			name = mesh.material.name;
+			name = sprite.material.name;
 
 			if (name == "column_c" && (num < 22 || num > 33))
 				continue;
@@ -573,45 +535,45 @@ class Advanced_MultiPassSponzaDemo
 			var colNum:number = (num - 125);
 			if (name == "column_b") {
 				if (colNum  >=0 && colNum < 132 && (colNum % 11) < 10) {
-					this.colMeshes.push(mesh);
+					this.colSprites.push(sprite);
 					continue;
 				} else {
-					this.colMeshes.push(mesh);
+					this.colSprites.push(sprite);
 					var colMerge:Merge = new Merge();
-					var colMesh:Mesh = new Mesh(new Geometry());
-					colMerge.applyToMeshes(colMesh, this.colMeshes);
-					mesh = colMesh;
-					this.colMeshes = new Array<Mesh>();
+					var colSprite:Sprite = new Sprite();
+					colMerge.applyToSprites(colSprite, this.colSprites);
+					sprite = colSprite;
+					this.colSprites = new Array<Sprite>();
 				}
 			}
 
 			var vaseNum:number = (num - 334);
 			if (name == "vase_hanging" && (vaseNum % 9) < 5) {
 				if (vaseNum  >=0 && vaseNum < 370 && (vaseNum % 9) < 4) {
-					this.vaseMeshes.push(mesh);
+					this.vaseSprites.push(sprite);
 					continue;
 				} else {
-					this.vaseMeshes.push(mesh);
+					this.vaseSprites.push(sprite);
 					var vaseMerge:Merge = new Merge();
-					var vaseMesh:Mesh = new Mesh(new Geometry());
-					vaseMerge.applyToMeshes(vaseMesh, this.vaseMeshes);
-					mesh = vaseMesh;
-					this.vaseMeshes = new Array<Mesh>();
+					var vaseSprite:Sprite = new Sprite();
+					vaseMerge.applyToSprites(vaseSprite, this.vaseSprites);
+					sprite = vaseSprite;
+					this.vaseSprites = new Array<Sprite>();
 				}
 			}
 
 			var poleNum:number = num - 290;
 			if (name == "flagpole") {
 				if (poleNum >=0 && poleNum < 320 && (poleNum % 3) < 2) {
-					this.poleMeshes.push(mesh);
+					this.poleSprites.push(sprite);
 					continue;
 				} else if (poleNum >=0) {
-					this.poleMeshes.push(mesh);
+					this.poleSprites.push(sprite);
 					var poleMerge:Merge = new Merge();
-					var poleMesh:Mesh = new Mesh(new Geometry());
-					poleMerge.applyToMeshes(poleMesh, this.poleMeshes);
-					mesh = poleMesh;
-					this.poleMeshes = new Array<Mesh>();
+					var poleSprite:Sprite = new Sprite();
+					poleMerge.applyToSprites(poleSprite, this.poleSprites);
+					sprite = poleSprite;
+					this.poleSprites = new Array<Sprite>();
 				}
 			}
 			
@@ -667,16 +629,17 @@ class Advanced_MultiPassSponzaDemo
 			if (!multiMaterial) {
 				
 				//create multipass material
-				multiMaterial = new MethodMaterial(this._textureDictionary[textureName]);
+				multiMaterial = new MethodMaterial();
+				multiMaterial.ambientMethod.texture = this._textureDictionary[textureName];
 				multiMaterial.mode = MethodMaterialMode.MULTI_PASS;
 				multiMaterial.name = name;
 				multiMaterial.lightPicker = this._lightPicker;
 //					multiMaterial.shadowMethod = this._cascadeMethod;
 				multiMaterial.shadowMethod = this._baseShadowMethod;
 				multiMaterial.addEffectMethod(this._fogMethod);
-				multiMaterial.repeat = true;
-				multiMaterial.mipmap = true;
-				multiMaterial.specular = 2;
+				multiMaterial.style.sampler = new Sampler2D(true, true, true);
+				multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.depthMap);
+				multiMaterial.specularMethod.strength = 2;
 				
 				
 				//use alpha transparancy if texture is png
@@ -686,30 +649,30 @@ class Advanced_MultiPassSponzaDemo
 				//add normal map if it exists
 				normalTextureName = this._normalTextureStrings[textureIndex];
 				if (normalTextureName)
-					multiMaterial.normalMap = this._textureDictionary[normalTextureName];
+					multiMaterial.normalMethod.texture = this._textureDictionary[normalTextureName];
 
 				//add specular map if it exists
 				specularTextureName = this._specularTextureStrings[textureIndex];
 				if (specularTextureName)
-					multiMaterial.specularMap = this._textureDictionary[specularTextureName];
+					multiMaterial.specularMethod.texture = this._textureDictionary[specularTextureName];
 
 				//add to material dictionary
 				this._multiMaterialDictionary[name] = multiMaterial;
 			}
 			/*
-			if (_meshReference[textureIndex]) {
-				var m:Mesh = mesh.clone() as Mesh;
+			if (_spriteReference[textureIndex]) {
+				var m:Sprite = sprite.clone() as Sprite;
 				m.material = multiMaterial;
 				_view.scene.addChild(m);
 				continue;
 			}
 			*/
 			//default to multipass material
-			mesh.material = multiMaterial;
+			sprite.material = multiMaterial;
 
-			this._view.scene.addChild(mesh);
+			this._view.scene.addChild(sprite);
 
-			this._meshReference[textureIndex] = mesh;
+			this._spriteReference[textureIndex] = sprite;
 		}
 		
 		var z:number /*uint*/ = 0;
@@ -722,7 +685,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//load skybox and flame texture
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();
@@ -744,10 +707,10 @@ class Advanced_MultiPassSponzaDemo
 		{
 			case 'assets/skybox/hourglass_texture.cube':
 				//create skybox texture map
-				this._skyMap = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
+				this._skyMap = <BitmapImageCube> event.assets[0];
 				break;
 			case "assets/fire.png" :
-				this._flameMaterial = new MethodMaterial(new Single2DTexture(<BitmapImage2D> event.assets[0]));
+				this._flameMaterial = new MethodMaterial(<BitmapImage2D> event.assets[0]);
 				this._flameMaterial.blendMode = BlendMode.ADD;
 				this._flameMaterial.animateUVs = true;
 				break;
@@ -792,16 +755,16 @@ class Advanced_MultiPassSponzaDemo
 			light.radius = 200+Math.random()*30;
 			light.diffuse = .9+Math.random()*.1;
 			
-			//update flame mesh
-			var mesh : Mesh = flameVO.mesh;
+			//update flame sprite
+			var sprite : Sprite = flameVO.sprite;
 			
-			if (!mesh)
+			if (!sprite)
 				continue;
 			
-			var subMesh:ISubMesh = mesh.subMeshes[0];
-			subMesh.uvTransform.offsetU += 1/16;
-			subMesh.uvTransform.offsetU %= 1;
-			mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;
+			var shape:Shape = sprite.graphics.getShapeAt(0);
+			shape.style.uvMatrix.tx += 1/16;
+			shape.style.uvMatrix.tx %= 1;
+			sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z)*180/Math.PI;
 		}
 
 		this._view.render();
@@ -907,7 +870,7 @@ class FlameVO
 {
 	public position:Vector3D;
 	public color:number /*uint*/;
-	public mesh:Mesh;
+	public sprite:Sprite;
 	public light:PointLight;
 
 	constructor(position:Vector3D, color:number /*uint*/)

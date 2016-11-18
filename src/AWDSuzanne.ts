@@ -1,37 +1,17 @@
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderSession				= require("awayjs-core/lib/library/LoaderSession");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import JSPickingCollider			= require("awayjs-display/lib/pick/JSPickingCollider");
-import MouseEvent					= require("awayjs-display/lib/events/MouseEvent");
-import MaterialBase					= require("awayjs-display/lib/materials/MaterialBase");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {MouseEvent, Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View, JSPickingCollider} from "awayjs-full/lib/view";
 
 class AWDSuzanne
 {
-
-	private _renderer:DefaultRenderer;
 	private _view:View;
 	private _timer:RequestAnimationFrame;
-	private _suzane:Mesh;
+	private _suzane:Sprite;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
-	private _lookAtPosition:Vector3D = new Vector3D ();
+	private _lookAtPosition:Vector3D = new Vector3D();
 	private _cameraIncrement:number = 0;
 	private _mouseOverMaterial:MethodMaterial = new MethodMaterial(0xFF0000);
 	private _mouseOutMaterial:MethodMaterial;
@@ -52,8 +32,7 @@ class AWDSuzanne
 	 */
 	private initView():void
 	{
-		this._renderer = new DefaultRenderer();
-		this._view = new View(this._renderer);
+		this._view = new View();
 		this._view.camera.projection.far = 6000;
 		this._view.forceMouseMove = true;
 	}
@@ -68,8 +47,8 @@ class AWDSuzanne
 
 		AssetLibrary.enableParser(AWDParser);
 
-		var session:LoaderSession = AssetLibrary.getLoaderSession();
-		session.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		var session:Loader = AssetLibrary.getLoader();
+		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/suzanne.awd'));
 	}
 
@@ -126,42 +105,41 @@ class AWDSuzanne
 	 */
 	public onResourceComplete(e:LoaderEvent)
 	{
-		var loader:LoaderSession = <LoaderSession> e.target;
+		var loader:Loader = e.target;
 		var numAssets:number = loader.baseDependency.assets.length;
 
 		for (var i:number = 0; i < numAssets; ++i) {
 			var asset:IAsset = loader.baseDependency.assets[ i ];
 
 			switch(asset.assetType) {
-				case Mesh.assetType:
+				case Sprite.assetType:
 
-					var mesh:Mesh = <Mesh> asset;
+					var sprite:Sprite = <Sprite> asset;
 
-					this._suzane = mesh;
+					this._suzane = sprite;
 					(<MethodMaterial> this._suzane.material).lightPicker = this._lightPicker;
 					this._suzane.y = -100;
 					this._mouseOutMaterial = <MethodMaterial> this._suzane.material;
 
 					for (var c:number = 0; c < 80; c++) {
 
-						var clone:Mesh = <Mesh> mesh.clone();
+						var clone:Sprite = <Sprite> sprite.clone();
 						var scale:number = this.getRandom(50, 200);
 						clone.x = this.getRandom(-2000, 2000);
 						clone.y = this.getRandom(-2000, 2000);
 						clone.z = this.getRandom(-2000, 2000);
-						clone.transform.scale = new Vector3D(scale, scale, scale);
+						clone.transform.scaleTo(scale, scale, scale);
 						clone.rotationY = this.getRandom (0, 360);
 						clone.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 						clone.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
 						this._view.scene.addChild(clone);
 					}
 
-					mesh.transform.scale = new Vector3D(500, 500, 500);
-					mesh.pickingCollider = new JSPickingCollider();
-
-					mesh.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
-					mesh.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
-					this._view.scene.addChild(mesh);
+					sprite.transform.scaleTo(500, 500, 500);
+					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
+					sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
+					this._view.scene.addChild(sprite);
+					this._view.setCollider(sprite, new JSPickingCollider());
 
 					break;
 			}
@@ -170,14 +148,14 @@ class AWDSuzanne
 
 	private onMouseOver(event:MouseEvent)
 	{
-		(<Mesh> event.object).material = this._mouseOverMaterial;
+		(<Sprite> event.entity).material = this._mouseOverMaterial;
 
 		console.log("mouseover");
 	}
 
 	private onMouseOut(event:MouseEvent)
 	{
-		(<Mesh> event.object).material = this._mouseOutMaterial;
+		(<Sprite> event.entity).material = this._mouseOutMaterial;
 
 		console.log("mouseout");
 	}

@@ -1,34 +1,16 @@
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import BlendMode					= require("awayjs-core/lib/data/BlendMode");
-import AwayEvent					= require("awayjs-core/lib/events/Event");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import View							= require("awayjs-display/lib/containers/View");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import Single2DTexture					= require("awayjs-display/lib/textures/Single2DTexture");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "awayjs-full/lib/core";
+import {Sampler2D, BlendMode, ElementsType, ImageUtils} from "awayjs-full/lib/graphics";
+import {Sprite, DirectionalLight, PrimitiveCubePrefab, PrimitiveTorusPrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class CubePrimitive
 {
 	private _view:View;
 	private _cube:PrimitiveCubePrefab;
 	private _torus:PrimitiveTorusPrefab;
-	private _mesh:Mesh;
-	private _mesh2:Mesh;
+	private _sprite:Sprite;
+	private _sprite2:Sprite;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
 	private _cameraAxis:Vector3D;
@@ -40,7 +22,6 @@ class CubePrimitive
 		this.initView();
 		this.initCamera();
 		this.initLights();
-		this.initGeometry();
 		this.loadResources();
 	}
 
@@ -49,25 +30,11 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.backgroundColor = 0x000000;
 		this._view.camera.x = 130;
 		this._view.camera.y = 0;
 		this._view.camera.z = 0;
-	}
-
-	/**
-	 *
-	 */
-	private initGeometry():void
-	{
-		this._cube = new PrimitiveCubePrefab(20.0, 20.0, 20.0);
-		this._torus = new PrimitiveTorusPrefab(150, 80, 32, 16, true);
-
-		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh2 = <Mesh> this._cube.getNewObject();
-		this._mesh2.x = 130;
-		this._mesh2.z = 40;
 	}
 
 	/**
@@ -101,17 +68,11 @@ class CubePrimitive
 	 */
 	private loadResources()
 	{
-		window.onresize = (event:UIEvent) => this.onResize(event);
-		this.onResize();
-
-		this._raf = new RequestAnimationFrame(this.render, this);
-		this._raf.start();
-
 		var urlRequest:URLRequest = new URLRequest("assets/spacy_texture.png");
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
 
-		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
+		imgLoader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, (event:URLLoaderEvent) => this.urlCompleteHandler(event));
 		imgLoader.load(urlRequest);
 	}
 
@@ -119,9 +80,9 @@ class CubePrimitive
 	 *
 	 * @param event
 	 */
-	private urlCompleteHandler(event:AwayEvent)
+	private urlCompleteHandler(event:URLLoaderEvent)
 	{
-		var imageLoader:URLLoader = <URLLoader> event.target;
+		var imageLoader:URLLoader = event.target;
 
 		this._image = ParserUtils.blobToImage(imageLoader.data);
 
@@ -134,17 +95,28 @@ class CubePrimitive
 	 */
 	private imageCompleteHandler(event:Event)
 	{
-		var ts:Single2DTexture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(this._image));
-		var matTx:MethodMaterial = new MethodMaterial(ts, true, true, false);
+		var matTx:MethodMaterial = new MethodMaterial(ImageUtils.imageToBitmapImage2D(this._image));
+		matTx.style.sampler = new Sampler2D(true, true);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
 		matTx.lightPicker = this._lightPicker;
 
-		this._mesh.material = matTx;
-		this._mesh2.material = matTx;
+		this._cube = new PrimitiveCubePrefab(matTx, ElementsType.TRIANGLE, 20.0, 20.0, 20.0);
+		this._torus = new PrimitiveTorusPrefab(matTx, ElementsType.TRIANGLE, 150, 80, 32, 16, true);
 
-		this._view.scene.addChild(this._mesh);
-		this._view.scene.addChild(this._mesh2);
+		this._sprite = <Sprite> this._torus.getNewObject();
+		this._sprite2 = <Sprite> this._cube.getNewObject();
+		this._sprite2.x = 130;
+		this._sprite2.z = 40;
+
+		this._view.scene.addChild(this._sprite);
+		this._view.scene.addChild(this._sprite2);
+
+		this._raf = new RequestAnimationFrame(this.render, this);
+		this._raf.start();
+
+		window.onresize = (event:UIEvent) => this.onResize(event);
+		this.onResize();
     }
 
 	/**
@@ -153,10 +125,10 @@ class CubePrimitive
 	 */
 	public render(dt:number = null):void
 	{
-		this._view.camera.rotate(this._cameraAxis, 1);
-		this._mesh.rotationY += 1;
-		this._mesh2.rotationX += 0.4;
-		this._mesh2.rotationY += 0.4;
+		this._view.camera.transform.rotate(this._cameraAxis, 1);
+		this._sprite.rotationY += 1;
+		this._sprite2.rotationX += 0.4;
+		this._sprite2.rotationY += 0.4;
 		this._view.render();
 	}
 

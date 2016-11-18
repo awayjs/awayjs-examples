@@ -39,42 +39,12 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import AwayEvent					= require("awayjs-core/lib/events/Event");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ProgressEvent				= require("awayjs-core/lib/events/ProgressEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
-import DiffuseGradientMethod		= require("awayjs-methodmaterials/lib/methods/DiffuseGradientMethod");
-import SpecularFresnelMethod		= require("awayjs-methodmaterials/lib/methods/SpecularFresnelMethod");
-import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
+import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils} from "awayjs-full/lib/graphics";
+import {HoverController, PointLight, DirectionalLight, Sprite, Scene, Camera, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/scene";
+import {MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod}	from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_MonsterHeadShading
 {
@@ -100,7 +70,7 @@ class Intermediate_MonsterHeadShading
 	private _redLight:PointLight;
 	private _directionalLight:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
-	private _headModel:Mesh;
+	private _headModel:Sprite;
 	private _advancedMethod:Boolean = true;
 
 	//loading variables
@@ -121,9 +91,9 @@ class Intermediate_MonsterHeadShading
 	private timer:RequestAnimationFrame;
 	private time:number = 0;
 
-	private parseAWDDelegate:(event:AwayEvent) => void;
-	private parseBitmapDelegate:(event:AwayEvent) => void;
-	private loadProgressDelegate:(event:ProgressEvent) => void;
+	private parseAWDDelegate:(event:URLLoaderEvent) => void;
+	private parseBitmapDelegate:(event:URLLoaderEvent) => void;
+	private loadProgressDelegate:(event:URLLoaderEvent) => void;
 	private onBitmapCompleteDelegate:(event:Event) => void;
 	private onAssetCompleteDelegate:(event:AssetEvent) => void;
 	private onResourceCompleteDelegate:(event:LoaderEvent) => void;
@@ -166,7 +136,7 @@ class Intermediate_MonsterHeadShading
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
 
-		this._view = new View(new DefaultRenderer(), this._scene, this._camera);
+		this._view = new View(null, this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
@@ -190,7 +160,7 @@ class Intermediate_MonsterHeadShading
 		this._directionalLight.ambient = 1;
 		this._directionalLight.specular = .3;
 		this._directionalLight.ambientColor = 0x101025;
-		this._directionalLight.castsShadows = true;
+		this._directionalLight.shadowsEnabled = true;
 		(<DirectionalShadowMapper> this._directionalLight.shadowMapper).lightOffset = 1000;
 		this._scene.addChild(this._directionalLight);
 
@@ -227,9 +197,9 @@ class Intermediate_MonsterHeadShading
 
 		this.onResize();
 
-		this.parseAWDDelegate = (event:AwayEvent) => this.parseAWD(event);
-		this.parseBitmapDelegate = (event:AwayEvent) => this.parseBitmap(event);
-		this.loadProgressDelegate = (event:ProgressEvent) => this.loadProgress(event);
+		this.parseAWDDelegate = (event:URLLoaderEvent) => this.parseAWD(event);
+		this.parseBitmapDelegate = (event:URLLoaderEvent) => this.parseBitmap(event);
+		this.loadProgressDelegate = (event:URLLoaderEvent) => this.loadProgress(event);
 		this.onBitmapCompleteDelegate = (event:Event) => this.onBitmapComplete(event);
 		this.onAssetCompleteDelegate = (event:AssetEvent) => this.onAssetComplete(event);
 		this.onResourceCompleteDelegate = (event:LoaderEvent) => this.onResourceComplete(event);
@@ -266,27 +236,27 @@ class Intermediate_MonsterHeadShading
 			case "awd":
 				loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 				this._loadingText = "Loading Model";
-				loader.addEventListener(AwayEvent.COMPLETE, this.parseAWDDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 				break;
 			case "png":
 			case "jpg":
 				loader.dataFormat = URLLoaderDataFormat.BLOB;
 				this._currentTexture++;
 				this._loadingText = "Loading Textures";
-				loader.addEventListener(AwayEvent.COMPLETE, this.parseBitmapDelegate);
+				loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
 				break;
 		}
 
-		loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		loader.load(new URLRequest(this._assetsRoot+url));
 	}
 
 	/**
 	 * Display current load
 	 */
-	private loadProgress(event:ProgressEvent)
+	private loadProgress(event:URLLoaderEvent)
 	{
-		//TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
+		//TODO work out why the casting on URLLoaderEvent fails for bytesLoaded and bytesTotal properties
 		var P:number = Math.floor(event["bytesLoaded"] / event["bytesTotal"] * 100);
 		if (P != 100) {
 			console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? Math.floor((event["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((event["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
@@ -296,31 +266,31 @@ class Intermediate_MonsterHeadShading
 	/**
 	 * Parses the Bitmap file
 	 */
-	private parseBitmap(event:AwayEvent)
+	private parseBitmap(event:URLLoaderEvent)
 	{
 		var urlLoader:URLLoader = <URLLoader> event.target;
 		var image:HTMLImageElement = ParserUtils.blobToImage(urlLoader.data);
 		image.onload = this.onBitmapCompleteDelegate;
-		urlLoader.removeEventListener(AwayEvent.COMPLETE, this.parseBitmapDelegate);
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseBitmapDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
 		urlLoader = null;
 	}
 
 	/**
 	 * Parses the AWD file
 	 */
-	private parseAWD(event:AwayEvent)
+	private parseAWD(event:URLLoaderEvent)
 	{
 		console.log("Parsing Data");
 		var urlLoader:URLLoader = <URLLoader> event.target;
 
 		//setup parser
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
 		AssetLibrary.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
-		urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgressDelegate);
-		urlLoader.removeEventListener(AwayEvent.COMPLETE, this.parseAWDDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
+		urlLoader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this.parseAWDDelegate);
 		urlLoader = null;
 	}
 
@@ -333,7 +303,7 @@ class Intermediate_MonsterHeadShading
 		image.onload = null;
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._textureStrings[this._n]])
-			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ParserUtils.imageToBitmapImage2D(image)) : ParserUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		this._n++;
 
@@ -358,9 +328,9 @@ class Intermediate_MonsterHeadShading
 	 */
 	private onAssetComplete(event:AssetEvent)
 	{
-		if (event.asset.isAsset(Mesh)) {
-			this._headModel = <Mesh> event.asset;
-			this._headModel.geometry.scale(4);
+		if (event.asset.isAsset(Sprite)) {
+			this._headModel = <Sprite> event.asset;
+			this._headModel.graphics.scale(4);
 			this._headModel.y = -20;
 			this._scene.addChild(this._headModel);
 		}
@@ -372,15 +342,26 @@ class Intermediate_MonsterHeadShading
 	private onResourceComplete(e:LoaderEvent)
 	{
 		AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+
+		var material:MethodMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+		material.shadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
+		material.shadowMethod.epsilon = 0.2;
+		material.lightPicker = this._lightPicker;
+		material.specularMethod.gloss = 30;
+		material.specularMethod.strength = 1;
+		material.style.color = 0x303040;
+		material.ambientMethod.strength = 1;
 
 		//setup custom multipass material
-		this._headMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
+		this._headMaterial = new MethodMaterial();
+		this._headMaterial.ambientMethod.texture = this._textureDictionary["monsterhead_diffuse.jpg"];
 		this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
-		this._headMaterial.mipmap = false;
-		this._headMaterial.normalMap = this._textureDictionary["monsterhead_normals.jpg"];
+		this._headMaterial.style.sampler = new Sampler2D(true, true);
+		this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
 		this._headMaterial.lightPicker = this._lightPicker;
-		this._headMaterial.ambientColor = 0x303040;
+		this._headMaterial.style.color = 0x303040;
+		this._headMaterial.diffuseMethod.multiply = false;
 
 		// create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
 		this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
@@ -392,16 +373,16 @@ class Intermediate_MonsterHeadShading
 		this._fresnelMethod = new SpecularFresnelMethod(true);
 		this._fresnelMethod.fresnelPower = 3;
 		this._headMaterial.specularMethod = this._fresnelMethod;
-		this._headMaterial.specularMap = this._textureDictionary["monsterhead_specular.jpg"];
-		this._headMaterial.specular = 3;
-		this._headMaterial.gloss = 10;
+		this._headMaterial.specularMethod.texture = this._textureDictionary["monsterhead_specular.jpg"];
+		this._headMaterial.specularMethod.strength = 3;
+		this._headMaterial.specularMethod.gloss = 10;
 
 		//apply material to head model
-		var len:number = this._headModel.subMeshes.length;
+		var len:number = this._headModel.graphics.count;
 		for (var i:number = 0; i < len; i++)
-			this._headModel.subMeshes[i].material = this._headMaterial;
+			this._headModel.graphics.getShapeAt(i).material = this._headMaterial;
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//diffuse gradient texture
 		AssetLibrary.load(new URLRequest("assets/diffuseGradient.jpg"));

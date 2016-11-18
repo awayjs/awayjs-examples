@@ -5,7 +5,7 @@ Particle explosions in Away3D using the Adobe AIR and Adobe Flash Player logos
 Demonstrates:
 
 How to split images into particles.
-How to share particle geometries and animation sets between meshes and animators.
+How to share particle geometries and animation sets between sprites and animators.
 How to manually update the playhead of a particle animator using the update() function.
 
 Code by Rob Bateman & Liao Cheng
@@ -37,44 +37,12 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import SpecularImage2D				= require("awayjs-core/lib/data/SpecularImage2D");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import ColorTransform				= require("awayjs-core/lib/geom/ColorTransform");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import Geometry						= require("awayjs-display/lib/base/Geometry");
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import DirectionalShadowMapper		= require("awayjs-display/lib/materials/shadowmappers/DirectionalShadowMapper");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-import Cast							= require("awayjs-display/lib/utils/Cast");
-
-import ParticleGeometry				= require("awayjs-renderergl/lib/base/ParticleGeometry");
-import ParticleAnimationSet			= require("awayjs-renderergl/lib/animators/ParticleAnimationSet");
-import ParticleAnimator				= require("awayjs-renderergl/lib/animators/ParticleAnimator");
-import ParticleProperties			= require("awayjs-renderergl/lib/animators/data/ParticleProperties");
-import ParticlePropertiesMode		= require("awayjs-renderergl/lib/animators/data/ParticlePropertiesMode");
-import ParticleBillboardNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBillboardNode");
-import ParticleBezierCurveNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleBezierCurveNode");
-import ParticleInitialColorNode		= require("awayjs-renderergl/lib/animators/nodes/ParticleInitialColorNode");
-import ParticlePositionNode			= require("awayjs-renderergl/lib/animators/nodes/ParticlePositionNode");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-import ParticleGeometryHelper		= require("awayjs-renderergl/lib/utils/ParticleGeometryHelper");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import MethodMaterialMode			= require("awayjs-methodmaterials/lib/MethodMaterialMode");
+import {LoaderEvent, Vector3D, ColorTransform, AssetLibrary, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Graphics, ElementsType} from "awayjs-full/lib/graphics";
+import {Scene, Camera, Sprite, PointLight, HoverController, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {ParticleAnimator, ParticleAnimationSet, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleBezierCurveNode, ParticleInitialColorNode, ParticlePositionNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_ParticleExplosions
 {
@@ -107,11 +75,11 @@ class Intermediate_ParticleExplosions
 	private colorMaterial:MethodMaterial;
 	
 	//particle objects
-	private colorGeometry:ParticleGeometry;
+	private colorGraphics:Graphics;
 	private colorAnimationSet:ParticleAnimationSet;
 	
 	//scene objects
-	private colorParticleMesh:Mesh;
+	private colorParticleSprite:Sprite;
 	private colorAnimators:Array<ParticleAnimator>;
 	
 	//navigation variables
@@ -152,7 +120,7 @@ class Intermediate_ParticleExplosions
 
 		this.camera = new Camera();
 
-		this.view = new View(new DefaultRenderer(), this.scene, this.camera);
+		this.view = new View(null, this.scene, this.camera);
 		
 		//setup controller to be used on the camera
 		this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);
@@ -262,19 +230,6 @@ class Intermediate_ParticleExplosions
 			}
 		}
 
-		var num:number /*uint*/ = this.colorPoints.length;
-		
-		//setup the base geometry for one particle
-		var plane:PrimitivePlanePrefab = new PrimitivePlanePrefab(Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false);
-		
-		//combine them into a list
-		var colorGeometrySet:Array<Geometry> = new Array<Geometry>();
-		for (i = 0; i < num; i++)
-			colorGeometrySet.push(plane.geometry);
-		
-		//generate the particle geometries
-		this.colorGeometry = ParticleGeometryHelper.generateGeometry(colorGeometrySet);
-
 		//define the particle animations and init function
 		this.colorAnimationSet = new ParticleAnimationSet();
 		this.colorAnimationSet.addAnimation(new ParticleBillboardNode());
@@ -290,23 +245,35 @@ class Intermediate_ParticleExplosions
 	 */
 	private initObjects():void
 	{
+		//setup the base graphics for one particle
+		var plane:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, Intermediate_ParticleExplosions.PARTICLE_SIZE, Intermediate_ParticleExplosions.PARTICLE_SIZE,1,1,false)).getNewObject();
+
+		//combine them into a list
+		var colorGraphicsSet:Array<Graphics> = new Array<Graphics>();
+		var len:number /*uint*/ = this.colorPoints.length;
+		for (i = 0; i < len; i++)
+			colorGraphicsSet.push(plane.graphics);
+
+		//create the particle sprite
+		this.colorParticleSprite = new Sprite(this.colorMaterial);
+
+		//generate the particle geometries
+		ParticleGraphicsHelper.generateGraphics(this.colorParticleSprite.graphics, colorGraphicsSet);
+		
 		//initialise animators vectors
 		this.colorAnimators = new Array<ParticleAnimator>(Intermediate_ParticleExplosions.NUM_ANIMATORS);
 		
-		//create the particle mesh
-		this.colorParticleMesh = new Mesh(this.colorGeometry, this.colorMaterial);
-		
 		var i:number /*uint*/ = 0;
 		for (i=0; i<Intermediate_ParticleExplosions.NUM_ANIMATORS; i++) {
-			//clone the particle mesh
-			this.colorParticleMesh = <Mesh> this.colorParticleMesh.clone();
-			this.colorParticleMesh.rotationY = 45*(i-1);
-			this.scene.addChild(this.colorParticleMesh);
+			//clone the particle sprite
+			this.colorParticleSprite = <Sprite> this.colorParticleSprite.clone();
+			this.colorParticleSprite.rotationY = 45*(i-1);
+			this.scene.addChild(this.colorParticleSprite);
 
 			//create and start the particle animator
 			this.colorAnimators[i] = new ParticleAnimator(this.colorAnimationSet);
-			this.colorParticleMesh.animator = this.colorAnimators[i];
-			this.scene.addChild(this.colorParticleMesh);
+			this.colorParticleSprite.animator = this.colorAnimators[i];
+			this.scene.addChild(this.colorParticleSprite);
 		}
 	}
 	
@@ -328,7 +295,7 @@ class Intermediate_ParticleExplosions
 		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this.timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//image textures
 		AssetLibrary.load(new URLRequest("assets/firefox.png"));

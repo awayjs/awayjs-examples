@@ -4,7 +4,7 @@ AWD file loading example in Away3d
 
 Demonstrates:
 
-How to use the Loader object to load an embedded internal awd model.
+How to use the LoaderContainer object to load an embedded internal awd model.
 
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -34,28 +34,12 @@ THE SOFTWARE.
 
 */
 
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-
-import AnimatorBase					= require("awayjs-renderergl/lib/animators/AnimatorBase");
-import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
-import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
-import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
-import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import {AssetEvent, Vector3D, AssetLibrary, URLRequest, RequestAnimationFrame, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
+import {AnimationNodeBase} from "awayjs-full/lib/graphics";
+import {HoverController, LoaderContainer} from "awayjs-full/lib/scene";
+import {AnimatorBase, SkeletonAnimator, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_AWDViewer
 {
@@ -101,7 +85,7 @@ class Intermediate_AWDViewer
 	private initEngine():void
 	{
 		//create the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.backgroundColor = 0x333338;
 		
 		//create custom lens
@@ -127,7 +111,7 @@ class Intermediate_AWDViewer
 		AssetLibrary.enableParser(AWDParser);
 
 		//kickoff asset loading
-		var loader:Loader = new Loader();
+		var loader:LoaderContainer = new LoaderContainer();
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 
 		loader.load(new URLRequest("assets/shambler.awd"));
@@ -160,12 +144,10 @@ class Intermediate_AWDViewer
 	 */		
 	private onAssetComplete(event:AssetEvent):void
 	{
-		console.log("...........", event.asset.assetType)
 		if (event.asset.isAsset(AnimatorBase)) {
 			this._animator = <SkeletonAnimator> event.asset;
 			this._animator.play(Intermediate_AWDViewer.IDLE_NAME);
 		} else if (event.asset.isAsset(AnimationNodeBase)) {
-			console.log(event.asset.name);
 			var node:SkeletonClipNode = <SkeletonClipNode> event.asset;
 			
 			if (node.name == Intermediate_AWDViewer.IDLE_NAME) {

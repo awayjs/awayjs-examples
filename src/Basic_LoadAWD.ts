@@ -36,25 +36,11 @@ THE SOFTWARE.
 
 */
 
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-
-import AWDParser					= require("awayjs-parsers/lib/AWDParser");
+import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {AWDParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Basic_LoadAWD
 {
@@ -66,7 +52,7 @@ class Basic_LoadAWD
 	private _lightPicker:StaticLightPicker;
 
 	//scene objects
-	private _suzanne:Mesh;
+	private _suzanne:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -97,7 +83,7 @@ class Basic_LoadAWD
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//set the background of the view to something suitable
 		this._view.backgroundColor = 0x1e2125;
@@ -179,13 +165,13 @@ class Basic_LoadAWD
 
 		switch (asset.assetType)
 		{
-			case Mesh.assetType :
-				var mesh:Mesh = <Mesh> asset;
-				mesh.y = -300;
-				mesh.transform.scale = new Vector3D(900, 900, 900);
+			case Sprite.assetType :
+				var sprite:Sprite = <Sprite> asset;
+				sprite.y = -300;
+				sprite.transform.scaleTo(900, 900, 900);
 
-				this._suzanne = mesh;
-				this._view.scene.addChild(mesh);
+				this._suzanne = sprite;
+				this._view.scene.addChild(sprite);
 				break;
 			case MethodMaterial.assetType:
 				var material:MethodMaterial = <MethodMaterial> asset;

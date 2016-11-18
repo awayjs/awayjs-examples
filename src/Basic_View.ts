@@ -36,27 +36,10 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-
-import ContextGLProfile				= require("awayjs-stagegl/lib/base/ContextGLProfile");
-import ContextMode					= require("awayjs-stagegl/lib/base/ContextMode");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, ElementsType, BasicMaterial, Single2DTexture} from "awayjs-full/lib/graphics";
+import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {View} from "awayjs-full/lib/View";
 
 class Basic_View
 {
@@ -64,10 +47,10 @@ class Basic_View
 	private _view:View;
 
 	//material objects
-	private _planeMaterial:MethodMaterial;
+	private _planeMaterial:BasicMaterial;
 
 	//scene objects
-	private _plane:Mesh;
+	private _plane:Sprite;
 
 	//tick for frame update
 	private _timer:RequestAnimationFrame;
@@ -78,7 +61,7 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera
 		this._view.camera.z = -600;
@@ -86,11 +69,10 @@ class Basic_View
 		this._view.camera.lookAt(new Vector3D());
 
 		//setup the materials
-		this._planeMaterial = new MethodMaterial();
+		this._planeMaterial = new BasicMaterial();
 
 		//setup the scene
-		this._plane = <Mesh> new PrimitivePlanePrefab(700, 700).getNewObject();
-		this._plane.material = this._planeMaterial;
+		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
 		this._view.scene.addChild(this._plane);
 
 		//setup the render loop
@@ -101,7 +83,7 @@ class Basic_View
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//plane textures
 		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));

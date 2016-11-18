@@ -4,7 +4,7 @@ MD5 animation loading and interaction example in Away3d
 
 Demonstrates:
 
-How to load MD5 mesh and anim files with bones animation from embedded resources.
+How to load MD5 sprite and anim files with bones animation from embedded resources.
 How to map animation data after loading in order to playback an animation sequence.
 How to control the movement of a game character using keys.
 
@@ -38,53 +38,13 @@ THE SOFTWARE.
 
 */
 
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import UVTransform					= require("awayjs-core/lib/geom/UVTransform");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import Keyboard						= require("awayjs-core/lib/ui/Keyboard");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import AnimationNodeBase			= require("awayjs-display/lib/animators/nodes/AnimationNodeBase");
-import DisplayObjectContainer		= require("awayjs-display/lib/containers/DisplayObjectContainer");
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import LookAtController				= require("awayjs-display/lib/controllers/LookAtController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Billboard					= require("awayjs-display/lib/entities/Billboard");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import PointLight					= require("awayjs-display/lib/entities/PointLight");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import NearDirectionalShadowMapper	= require("awayjs-display/lib/materials/shadowmappers/NearDirectionalShadowMapper");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-
-import AnimationSetBase				= require("awayjs-renderergl/lib/animators/AnimationSetBase");
-import SkeletonAnimationSet			= require("awayjs-renderergl/lib/animators/SkeletonAnimationSet");
-import SkeletonAnimator				= require("awayjs-renderergl/lib/animators/SkeletonAnimator");
-import Skeleton						= require("awayjs-renderergl/lib/animators/data/Skeleton");
-import SkeletonClipNode				= require("awayjs-renderergl/lib/animators/nodes/SkeletonClipNode");
-import CrossfadeTransition			= require("awayjs-renderergl/lib/animators/transitions/CrossfadeTransition");
-import AnimationStateEvent			= require("awayjs-renderergl/lib/events/AnimationStateEvent");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import EffectFogMethod				= require("awayjs-methodmaterials/lib/methods/EffectFogMethod");
-import ShadowNearMethod				= require("awayjs-methodmaterials/lib/methods/ShadowNearMethod");
-import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-
-import MD5AnimParser				= require("awayjs-parsers/lib/MD5AnimParser");
-import MD5MeshParser				= require("awayjs-parsers/lib/MD5MeshParser");
+import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard} from "awayjs-full/lib/core";
+import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {LookAtController, PointLight, DirectionalLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, NearDirectionalShadowMapper, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {AnimationSetBase, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
+import {MethodMaterial, EffectFogMethod, ShadowNearMethod, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";
+import {View} from "awayjs-full/lib/view";
 
 class Intermediate_MD5Animation
 {
@@ -131,12 +91,12 @@ class Intermediate_MD5Animation
 	private groundMaterial:MethodMaterial;
 	private bodyMaterial:MethodMaterial;
 	private gobMaterial:MethodMaterial;
-	private cubeTexture:SingleCubeTexture;
 
 	//scene objects
 	private placeHolder:DisplayObjectContainer;
-	private mesh:Mesh;
-	private ground:Mesh;
+	private sprite:Sprite;
+	private gobStyle:Style;
+	private ground:Sprite;
 	private skyBox:Skybox;
 
 	private _timer:RequestAnimationFrame;
@@ -168,7 +128,7 @@ class Intermediate_MD5Animation
 	 */
 	private initEngine():void
 	{
-		this.view = new View(new DefaultRenderer());
+		this.view = new View();
 		this.scene = this.view.scene;
 		this.camera = this.view.camera;
 
@@ -257,16 +217,15 @@ class Intermediate_MD5Animation
 
 		//ground material
 		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.smooth = true;
-		this.groundMaterial.repeat = true;
+		this.groundMaterial.style.sampler = new Sampler2D(true, true);
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.shadowMethod = this.shadowMapMethod;
 		this.groundMaterial.addEffectMethod(this.fogMethod);
 
 		//body material
 		this.bodyMaterial = new MethodMaterial();
-		this.bodyMaterial.gloss = 20;
-		this.bodyMaterial.specular = 1.5;
+		this.bodyMaterial.specularMethod.gloss = 20;
+		this.bodyMaterial.specularMethod.strength = 1.5;
 		this.bodyMaterial.addEffectMethod(this.fogMethod);
 		this.bodyMaterial.lightPicker = this.lightPicker;
 		this.bodyMaterial.shadowMethod = this.shadowMapMethod;
@@ -274,8 +233,7 @@ class Intermediate_MD5Animation
 		//gob material
 		this.gobMaterial = new MethodMaterial();
 		this.gobMaterial.alphaBlending = true;
-		this.gobMaterial.smooth = true;
-		this.gobMaterial.repeat = true;
+		this.gobMaterial.style.sampler = new Sampler2D(true, true);
 		this.gobMaterial.animateUVs = true;
 		this.gobMaterial.addEffectMethod(this.fogMethod);
 		this.gobMaterial.lightPicker = this.lightPicker;
@@ -303,9 +261,8 @@ class Intermediate_MD5Animation
 		AssetLibrary.enableParser(MD5AnimParser);
 
 		//create a rocky ground plane
-		this.ground = <Mesh> new PrimitivePlanePrefab(50000, 50000, 1, 1).getNewObject();
-		this.ground.material = this.groundMaterial;
-		this.ground.geometry.scaleUV(200, 200);
+		this.ground = <Sprite> new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+		this.ground.graphics.scaleUV(200, 200);
 		this.ground.castsShadows = false;
 		this.scene.addChild(this.ground);
 	}
@@ -328,9 +285,9 @@ class Intermediate_MD5Animation
 		var loaderContext:LoaderContext = new LoaderContext();
 		loaderContext.dependencyBaseUrl = "assets/skybox/";
 
-		//load hellknight mesh
+		//load hellknight sprite
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
 
 		//load environment texture
@@ -362,9 +319,9 @@ class Intermediate_MD5Animation
 		this.cameraController.update();
 
 		//update character animation
-		if (this.mesh) {
-			this.mesh.subMeshes[1].uvTransform.offsetV = this.mesh.subMeshes[2].uvTransform.offsetV = this.mesh.subMeshes[3].uvTransform.offsetV = (-this._time/2000 % 1);
-			this.mesh.rotationY += this.currentRotationInc;
+		if (this.sprite) {
+			this.gobStyle.uvMatrix.ty = (-this._time/2000 % 1);
+			this.sprite.rotationY += this.currentRotationInc;
 		}
 
 		this.count += 0.01;
@@ -407,21 +364,22 @@ class Intermediate_MD5Animation
 			for (var i:number /*uint*/ = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
 				AssetLibrary.load(new URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser());
 
-			this.mesh.animator = this.animator;
+			this.sprite.animator = this.animator;
 		} else if (event.asset.isAsset(Skeleton)) {
 			this.skeleton = <Skeleton> event.asset;
-		} else if (event.asset.isAsset(Mesh)) {
-			//grab mesh object and assign our material object
-			this.mesh = <Mesh> event.asset;
-			this.mesh.subMeshes[0].material = this.bodyMaterial;
-			this.mesh.subMeshes[1].material = this.mesh.subMeshes[2].material = this.mesh.subMeshes[3].material = this.gobMaterial;
-			this.mesh.castsShadows = true;
-			this.mesh.rotationY = 180;
-			this.mesh.subMeshes[1].uvTransform = this.mesh.subMeshes[2].uvTransform = this.mesh.subMeshes[3].uvTransform = new UVTransform();
-			this.scene.addChild(this.mesh);
+		} else if (event.asset.isAsset(Sprite)) {
+			//grab sprite object and assign our material object
+			this.sprite = <Sprite> event.asset;
+			this.sprite.graphics.getShapeAt(0).material = this.bodyMaterial;
+			this.sprite.graphics.getShapeAt(1).material = this.sprite.graphics.getShapeAt(2).material = this.sprite.graphics.getShapeAt(3).material = this.gobMaterial;
+			this.sprite.castsShadows = true;
+			this.sprite.rotationY = 180;
+			this.gobStyle = this.sprite.graphics.getShapeAt(1).style = this.sprite.graphics.getShapeAt(2).style = this.sprite.graphics.getShapeAt(3).style = new Style();
+			this.gobStyle.uvMatrix = new Matrix();
+			this.scene.addChild(this.sprite);
 
-			//add our lookat object to the mesh
-			this.mesh.addChild(this.placeHolder);
+			//add our lookat object to the sprite
+			this.sprite.addChild(this.placeHolder);
 		}
 	}
 
@@ -434,43 +392,41 @@ class Intermediate_MD5Animation
 		{
 			//environment texture
 			case 'assets/skybox/grimnight_texture.cube':
-				this.cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
-
-				this.skyBox = new Skybox(this.cubeTexture);
+				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this.scene.addChild(this.skyBox);
 				break;
 
 			//entities textures
 			case "assets/redlight.png" :
-				this.redLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.redLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/bluelight.png" :
-				this.blueLightMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.blueLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//floor textures
 			case "assets/rockbase_diffuse.jpg" :
-				this.groundMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_normals.png" :
-				this.groundMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_specular.png" :
-				this.groundMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//hellknight textures
 			case "assets/hellknight/hellknight_diffuse.jpg" :
-				this.bodyMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_normals.png" :
-				this.bodyMaterial.normalMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_specular.png" :
-				this.bodyMaterial.specularMap = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.bodyMaterial.specularMap = this.gobMaterial.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}

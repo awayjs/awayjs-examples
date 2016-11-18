@@ -1,30 +1,67 @@
 {
   "name": "awayjs-examples",
-  "version": "0.7.8",
-  "description": "AwayJS examples",
-  "url": "http://www.away3d.com",
+  "version": "1.0.5",
+  "description": "A collection of simple code examples implementing the awayjs engine",
+  "scripts": {
+    "rimraf": "rimraf",
+    "webpack": "webpack",
+    "clean": "npm cache clean && npm run rimraf -- node_modules bin",
+    "clean:bin": "npm run rimraf -- bin",
+    "clean:libs": "npm run rimraf -- libs",
+    "preclean:install": "npm run clean",
+    "clean:install": "npm set progress=false && npm install",
+    "preclean:start": "npm run clean",
+    "clean:start": "npm start",
+    "watch": "npm run watch:dev",
+    "watch:dev": "npm run build:dev -- --watch",
+    "watch:dev:hmr": "npm run watch:dev -- --hot",
+    "watch:test": "npm run test -- --auto-watch --no-single-run",
+    "watch:prod": "npm run build:prod -- --watch",
+    "build": "npm run build:dev",
+    "prebuild:libs": "npm run clean:libs",
+    "build:libs": "webpack --config webpack.libs.js --progress --profile --colors --display-error-details --display-cached",
+    "prebuild:dev": "npm run clean:bin",
+    "build:dev": "webpack --config webpack.config.js --progress --profile --colors --display-error-details --display-cached",
+    "prebuild:prod": "npm run clean:bin",
+    "build:prod": "webpack --config webpack.config.js  --progress --profile --colors --display-error-details --display-cached --bail",
+    "server": "npm run server:dev",
+    "server:dev": "webpack-dev-server --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base bin",
+    "server:dev:hmr": "npm run server:dev -- --hot",
+    "server:prod": "http-server bin --cors",
+    "start": "npm run server:dev",
+    "start:hmr": "npm run server:dev:hmr",
+    "version": "npm run build:prod",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awayjs/awayjs-examples.git"
+  },
+  "keywords": [
+    "AwayJS",
+    "3D",
+    "2D",
+    "graphics",
+    "WebGL"
+  ],
+  "author": "Rob Bateman",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/awayjs/awayjs-examples/issues"
+  },
+  "homepage": "https://github.com/awayjs/awayjs-examples#readme",
   "dependencies": {
-    "awayjs-core": "^0.5.0",
-    "awayjs-display": "^0.7.4",
-    "awayjs-stagegl": "^0.7.2",
-    "awayjs-renderergl": "^0.7.8",
-    "awayjs-methodmaterials": "^0.2.7",
-    "awayjs-player": "^0.4.0",
-    "awayjs-parsers": "^0.4.6"
+    "awayjs-full": "^0.2.0"
   },
   "devDependencies": {
-    "browserify": "^8.1.3",
-    "exorcist": "^0.1.6",
-    "glob": "^4.4.0",
-    "gulp": "^3.8.11",
-    "gulp-concat": "^2.5.2",
-    "gulp-livereload": "^3.7.0",
-    "gulp-sourcemaps": "^1.5.0",
-    "gulp-uglify": "^1.1.0",
-    "tsify": "git://github.com/rob-bateman/tsify.git",
-    "vinyl-source-stream": "^1.0.0",
-    "vinyl-transform": "^1.0.0",
-    "watchify": "^2.3.0",
-    "yargs": "^3.5.4"
+    "awesome-typescript-loader": "^0.17.0",
+    "compression-webpack-plugin": "^0.3.1",
+    "copy-webpack-plugin": "^1.1.1",
+    "html-webpack-plugin": "^2.15.0",
+    "rimraf": "^2.5.2",
+    "source-map-loader": "^0.1.5",
+    "typescript": "^1.9.0-dev.20160627-1.0",
+    "webpack": "^1.12.15",
+    "webpack-dev-server": "^1.14.1"
   }
 }

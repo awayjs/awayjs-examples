@@ -36,31 +36,13 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, DirectionalLight, LoaderContainer, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {Max3DSParser} from "awayjs-full/lib/parsers";
 
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import ShadowSoftMethod				= require("awayjs-methodmaterials/lib/methods/ShadowSoftMethod");
-
-import Max3DSParser					= require("awayjs-parsers/lib/Max3DSParser");
+import {View} from "awayjs-full/lib/view";
 
 class Basic_Load3DS
 {
@@ -77,9 +59,9 @@ class Basic_Load3DS
 	private _direction:Vector3D;
 
 	//scene objects
-	private _loader:Loader;
+	private _loader:LoaderContainer;
 	private _plane:PrimitivePlanePrefab;
-	private _ground:Mesh;
+	private _ground:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -115,7 +97,7 @@ class Basic_Load3DS
 	 */
 	private initEngine():void
 	{
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera for optimal shadow rendering
 		this._view.camera.projection.far = 2100;
@@ -130,6 +112,7 @@ class Basic_Load3DS
 	private initLights():void
 	{
 		this._light = new DirectionalLight(-1, -1, 1);
+		this._light.castsShadows = true;
 		this._direction = new Vector3D(-1, -1, 1);
 		this._lightPicker = new StaticLightPicker([this._light]);
 		this._view.scene.addChild(this._light);
@@ -141,10 +124,13 @@ class Basic_Load3DS
 	private initMaterials():void
 	{
 		this._groundMaterial = new MethodMaterial();
+		this._groundMaterial.ambientMethod.texture = new Single2DTexture();
 		this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
+		this._groundMaterial.style.sampler = new Sampler2D(true, true, true);
+		this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.depthMap);
 		this._groundMaterial.shadowMethod.epsilon = 0.2;
 		this._groundMaterial.lightPicker = this._lightPicker;
-		this._groundMaterial.specular = 0;
+		this._groundMaterial.specularMethod.strength = 0;
 		//this._groundMaterial.mipmap = false;
 	}
 
@@ -153,14 +139,13 @@ class Basic_Load3DS
 	 */
 	private initObjects():void
 	{
-		this._loader = new Loader();
-		this._loader.transform.scale = new Vector3D(300, 300, 300);
+		this._loader = new LoaderContainer();
+		this._loader.transform.scaleTo(300, 300, 300);
 		this._loader.z = -200;
 		this._view.scene.addChild(this._loader);
 
-		this._plane = new PrimitivePlanePrefab(1000, 1000)
-		this._ground = <Mesh> this._plane.getNewObject();
-		this._ground.material = this._groundMaterial;
+		this._plane = new PrimitivePlanePrefab(this._groundMaterial, ElementsType.TRIANGLE, 1000, 1000);
+		this._ground = <Sprite> this._plane.getNewObject();
 		this._ground.castsShadows = false;
 		this._view.scene.addChild(this._ground);
 	}
@@ -188,7 +173,7 @@ class Basic_Load3DS
 		this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
 		this._loader.load(new URLRequest("assets/soldier_ant.3ds"), loaderContext, null, new Max3DSParser(false));
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		AssetLibrary.load(new URLRequest("assets/CoarseRedSand.jpg"));
 	}
 
@@ -215,20 +200,20 @@ class Basic_Load3DS
 
 		switch (asset.assetType)
 		{
-			case Mesh.assetType :
-				var mesh:Mesh = <Mesh> event.asset;
-				mesh.castsShadows = true;
+			case Sprite.assetType :
+				var sprite:Sprite = <Sprite> event.asset;
+				sprite.castsShadows = true;
 				break;
 			case MethodMaterial.assetType :
 				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 				material.shadowMethod.epsilon = 0.2;
-				//material.mipmap = false;
 				material.lightPicker = this._lightPicker;
-				material.gloss = 30;
-				material.specular = 1;
-				material.color = 0x303040;
-				material.ambient = 1;
+				material.specularMethod.gloss = 30;
+				material.specularMethod.strength = 1;
+				material.style.color = 0x303040;
+				material.diffuseMethod.multiply = false;
+				material.ambientMethod.strength = 1;
 
 				break;
 		}
@@ -250,7 +235,7 @@ class Basic_Load3DS
 			switch (event.url) {
 				//plane textures
 				case "assets/CoarseRedSand.jpg" :
-					this._groundMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._groundMaterial.style.image = <BitmapImage2D> asset;
 					break;
 			}
 		}

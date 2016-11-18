@@ -35,25 +35,12 @@ THE SOFTWARE.
 
 */
 
-import BitmapImageCube				= require("awayjs-core/lib/data/BitmapImageCube");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import LoaderContext				= require("awayjs-core/lib/library/LoaderContext");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
+import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "awayjs-full/lib/core";
+import {BitmapImageCube, SamplerCube, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
+import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
+import {MethodMaterial, EffectEnvMapMethod} from "awayjs-full/lib/materials";
 
-import View							= require("awayjs-display/lib/containers/View");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import SingleCubeTexture			= require("awayjs-display/lib/textures/SingleCubeTexture");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-import EffectEnvMapMethod			= require("awayjs-methodmaterials/lib/methods/EffectEnvMapMethod");
+import {View} from "awayjs-full/lib/view";
 
 class Basic_SkyBox
 {
@@ -66,7 +53,7 @@ class Basic_SkyBox
 
 	//scene objects
 	private _skyBox:Skybox;
-	private _torus:Mesh;
+	private _torus:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -99,7 +86,7 @@ class Basic_SkyBox
 	private initEngine():void
 	{
 		//setup the view
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 
 		//setup the camera
 		this._view.camera.z = -600;
@@ -117,10 +104,10 @@ class Basic_SkyBox
 	{
 		//setup the torus material
 		this._torusMaterial = new MethodMaterial(0xFFFFFF, 1);
-		this._torusMaterial.specular = 0.5;
-		this._torusMaterial.ambient = 0.25;
-		this._torusMaterial.color = 0x111199;
-		this._torusMaterial.ambient = 1;
+		this._torusMaterial.style.color = 0x111199;
+		this._torusMaterial.style.sampler = new SamplerCube(true, true);
+		this._torusMaterial.specularMethod.strength = 0.5;
+		this._torusMaterial.ambientMethod.strength = 1;
 	}
 
 	/**
@@ -128,8 +115,7 @@ class Basic_SkyBox
 	 */
 	private initObjects():void
 	{
-		this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
-		this._torus.material = this._torusMaterial;
+		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.debugVisible = true;
 		this._view.scene.addChild(this._torus);
 	}
@@ -148,7 +134,7 @@ class Basic_SkyBox
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();
@@ -167,7 +153,7 @@ class Basic_SkyBox
 		this._torus.rotationX += 2;
 		this._torus.rotationY += 1;
 
-		this._view.camera.transform.position = new Vector3D();
+		this._view.camera.transform.moveTo(0, 0, 0);
 		this._view.camera.rotationY += 0.5*(this._mouseX - window.innerWidth/2)/800;
 		this._view.camera.transform.moveBackward(600);
 		this._view.render();
@@ -183,7 +169,7 @@ class Basic_SkyBox
 			case 'assets/skybox/snow_texture.cube':
 				this._cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
 
-				this._skyBox = new Skybox(this._cubeTexture);
+				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this._view.scene.addChild(this._skyBox);
 
 				this._torusMaterial.addEffectMethod(new EffectEnvMapMethod(this._cubeTexture, 1));

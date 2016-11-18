@@ -1,34 +1,16 @@
-import AwayEvent					= require("awayjs-core/lib/events/Event");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import URLLoader					= require("awayjs-core/lib/net/URLLoader");
-import URLLoaderDataFormat			= require("awayjs-core/lib/net/URLLoaderDataFormat");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import ParserUtils					= require("awayjs-core/lib/parsers/ParserUtils");
-import PerspectiveProjection		= require("awayjs-core/lib/projections/PerspectiveProjection");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import View							= require("awayjs-display/lib/containers/View");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import Skybox						= require("awayjs-display/lib/entities/Skybox");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
+import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {ElementsType, Sampler2D, ImageUtils} from "awayjs-full/lib/graphics";
+import {Sprite, DirectionalLight, StaticLightPicker, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 
 class TorusPrimitive
 {
 	private _view:View;
 	private _torus:PrimitiveTorusPrefab;
-	private _mesh:Mesh;
+	private _sprite:Sprite;
 	private _raf:RequestAnimationFrame;
 	private _image:HTMLImageElement;
-	private _texture:Single2DTexture;
 	private _material:MethodMaterial;
 	private _light:DirectionalLight;
 	private _lightPicker:StaticLightPicker;
@@ -51,7 +33,7 @@ class TorusPrimitive
 	 */
 	private initView()
 	{
-		this._view = new View(new DefaultRenderer());// Create the Away3D View
+		this._view = new View();// Create the Away3D View
 		this._view.backgroundColor = 0x000000;// Change the background color to black
 	}
 
@@ -62,7 +44,7 @@ class TorusPrimitive
 	{
 		var imgLoader:URLLoader = new URLLoader();
 		imgLoader.dataFormat = URLLoaderDataFormat.BLOB;
-		imgLoader.addEventListener(AwayEvent.COMPLETE, (event:AwayEvent) => this.urlCompleteHandler(event));
+		imgLoader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, (event:URLLoaderEvent) => this.urlCompleteHandler(event));
 		imgLoader.load(new URLRequest("assets/dots.png"));
 	}
 
@@ -70,7 +52,7 @@ class TorusPrimitive
 	 *
 	 * @param event
 	 */
-	private urlCompleteHandler (event:AwayEvent)
+	private urlCompleteHandler (event:URLLoaderEvent)
 	{
 		this._image = ParserUtils.blobToImage((<URLLoader> event.target).data);
 		this._image.onload = (event:Event) => this.imageCompleteHandler(event);
@@ -94,9 +76,8 @@ class TorusPrimitive
 	 */
 	private initMaterial(image:HTMLImageElement)
 	{
-		this._texture = new Single2DTexture(ParserUtils.imageToBitmapImage2D(image));
-
-		this._material = new MethodMaterial(this._texture, true, true, false);
+		this._material = new MethodMaterial(ImageUtils.imageToBitmapImage2D(image));
+		this._material.style.sampler = new Sampler2D(true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}
 
@@ -105,12 +86,11 @@ class TorusPrimitive
 	 */
 	private initTorus()
 	{
-		this._torus = new PrimitiveTorusPrefab(220, 80, 32, 16, false);
+		this._torus = new PrimitiveTorusPrefab(this._material, ElementsType.TRIANGLE, 220, 80, 32, 16, false);
 
-		this._mesh = <Mesh> this._torus.getNewObject();
-		this._mesh.material = this._material;
+		this._sprite = <Sprite> this._torus.getNewObject();
 
-		this._view.scene.addChild(this._mesh);
+		this._view.scene.addChild(this._sprite);
 	}
 
 	/**
@@ -128,8 +108,8 @@ class TorusPrimitive
 	 */
 	public render(dt:number = null)
 	{
-		if (this._mesh)
-			this._mesh.rotationY += 1;
+		if (this._sprite)
+			this._sprite.rotationY += 1;
 
 		this._view.render();
 	}

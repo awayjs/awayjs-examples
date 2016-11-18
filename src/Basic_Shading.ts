@@ -35,34 +35,11 @@ THE SOFTWARE.
 
 */
 
-import BitmapImage2D				= require("awayjs-core/lib/data/BitmapImage2D");
-import AssetEvent					= require("awayjs-core/lib/events/AssetEvent");
-import LoaderEvent					= require("awayjs-core/lib/events/LoaderEvent");
-import Vector3D						= require("awayjs-core/lib/geom/Vector3D");
-import AssetLibrary					= require("awayjs-core/lib/library/AssetLibrary");
-import IAsset						= require("awayjs-core/lib/library/IAsset");
-import URLRequest					= require("awayjs-core/lib/net/URLRequest");
-import RequestAnimationFrame		= require("awayjs-core/lib/utils/RequestAnimationFrame");
-
-import Scene						= require("awayjs-display/lib/containers/Scene");
-import Loader						= require("awayjs-display/lib/containers/Loader");
-import View							= require("awayjs-display/lib/containers/View");
-import HoverController				= require("awayjs-display/lib/controllers/HoverController");
-import Camera						= require("awayjs-display/lib/entities/Camera");
-import DirectionalLight				= require("awayjs-display/lib/entities/DirectionalLight");
-import Mesh							= require("awayjs-display/lib/entities/Mesh");
-import DefaultMaterialManager		= require("awayjs-display/lib/managers/DefaultMaterialManager");
-import StaticLightPicker			= require("awayjs-display/lib/materials/lightpickers/StaticLightPicker");
-import PrimitiveCubePrefab			= require("awayjs-display/lib/prefabs/PrimitiveCubePrefab");
-import PrimitivePlanePrefab			= require("awayjs-display/lib/prefabs/PrimitivePlanePrefab");
-import PrimitiveSpherePrefab		= require("awayjs-display/lib/prefabs/PrimitiveSpherePrefab");
-import PrimitiveTorusPrefab			= require("awayjs-display/lib/prefabs/PrimitiveTorusPrefab");
-import Single2DTexture				= require("awayjs-display/lib/textures/Single2DTexture");
-
-import DefaultRenderer				= require("awayjs-renderergl/lib/DefaultRenderer");
-
-import MethodMaterial				= require("awayjs-methodmaterials/lib/MethodMaterial");
-
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {BitmapImage2D, Sampler2D, ElementsType, DefaultMaterialManager, Single2DTexture} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera, DirectionalLight, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {MethodMaterial} from "awayjs-full/lib/materials";
+import {View} from "awayjs-full/lib/view";
 /**
  *
  */
@@ -86,10 +63,10 @@ class Basic_Shading
 	private _lightPicker:StaticLightPicker;
 
 	//scene objects
-	private _plane:Mesh;
-	private _sphere:Mesh;
-	private _cube:Mesh;
-	private _torus:Mesh;
+	private _plane:Sprite;
+	private _sphere:Sprite;
+	private _cube:Sprite;
+	private _torus:Sprite;
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
@@ -129,7 +106,7 @@ class Basic_Shading
 
 		this._camera = new Camera();
 
-		this._view = new View(new DefaultRenderer());
+		this._view = new View();
 		this._view.scene = this._scene;
 		this._view.camera = this._camera;
 
@@ -170,20 +147,20 @@ class Basic_Shading
 	 */
 	private initMaterials():void
 	{
-		this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._planeMaterial.lightPicker = this._lightPicker;
-		this._planeMaterial.repeat = true;
+		this._planeMaterial.style.sampler = new Sampler2D(true, true, true);
 
-		this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._sphereMaterial.lightPicker = this._lightPicker;
 
-		this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._cubeMaterial.lightPicker = this._lightPicker;
-		this._cubeMaterial.mipmap = false;
+		this._cubeMaterial.style.sampler = new Sampler2D(true, true);
 
-		this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultTexture());
+		this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
 		this._torusMaterial.lightPicker = this._lightPicker;
-		this._torusMaterial.repeat = true;
+		this._torusMaterial.style.sampler = new Sampler2D(true, true, true);
 	}
 
 	/**
@@ -191,32 +168,28 @@ class Basic_Shading
 	 */
 	private initObjects():void
 	{
-		this._plane = <Mesh> new PrimitivePlanePrefab(1000, 1000).getNewObject();
-		this._plane.material = this._planeMaterial;
-		this._plane.geometry.scaleUV(2, 2);
+		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+		this._plane.graphics.scaleUV(2, 2);
 		this._plane.y = -20;
 
 		this._scene.addChild(this._plane);
 
-		this._sphere = <Mesh> new PrimitiveSpherePrefab(150, 40, 20).getNewObject();
-		this._sphere.material = this._sphereMaterial;
+		this._sphere = <Sprite> new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
 		this._sphere.x = 300;
 		this._sphere.y = 160;
 		this._sphere.z = 300;
 
 		this._scene.addChild(this._sphere);
 
-		this._cube = <Mesh> new PrimitiveCubePrefab(200, 200, 200, 1, 1, 1, false).getNewObject();
-		this._cube.material = this._cubeMaterial;
+		this._cube = <Sprite> new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
 		this._cube.x = 300;
 		this._cube.y = 160;
 		this._cube.z = -250;
 
 		this._scene.addChild(this._cube);
 
-		this._torus = <Mesh> new PrimitiveTorusPrefab(150, 60, 40, 20).getNewObject();
-		this._torus.material = this._torusMaterial;
-		this._torus.geometry.scaleUV(10, 5);
+		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
+		this._torus.graphics.scaleUV(10, 5);
 		this._torus.x = -250;
 		this._torus.y = 160;
 		this._torus.z = -250;
@@ -234,14 +207,14 @@ class Basic_Shading
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-		document.onmousewheel= (event:MouseWheelEvent) => this.onMouseWheel(event);
+		document.onmousewheel= (event:WheelEvent) => this.onMouseWheel(event);
 
 		this.onResize();
 
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
 
 		//plane textures
 		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));
@@ -277,7 +250,7 @@ class Basic_Shading
 	/**
 	 * Listener function for resource complete event on asset library
 	 */
-	private onResourceComplete(event:LoaderEvent)
+	private onLoadComplete(event:LoaderEvent)
 	{
 		var assets:Array<IAsset> = event.assets;
 		var length:number = assets.length;
@@ -291,40 +264,40 @@ class Basic_Shading
 			{
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/floor_normal.jpg" :
-					this._planeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this._planeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//sphere textures
 				case "assets/beachball_diffuse.jpg" :
-					this._sphereMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._sphereMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/beachball_specular.jpg" :
-					this._sphereMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._sphereMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//cube textures
 				case "assets/trinket_diffuse.jpg" :
-					this._cubeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/trinket_normal.jpg" :
-					this._cubeMaterial.normalMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 				case "assets/trinket_specular.jpg" :
-					this._cubeMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 
 				//torus textures
 				case "assets/weave_diffuse.jpg" :
-					this._torusMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._torusMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/weave_normal.jpg" :
-					this._torusMaterial.normalMap = this._torusMaterial.specularMap = new Single2DTexture(<BitmapImage2D> asset);
+					this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
 					break;
 			}
 		}
@@ -364,7 +337,7 @@ class Basic_Shading
 	/**
 	 * Mouse wheel listener for navigation
 	 */
-	private onMouseWheel(event:MouseWheelEvent)
+	private onMouseWheel(event:WheelEvent)
 	{
 		this._cameraController.distance -= event.wheelDelta;
 
