@@ -120,7 +120,7 @@ class Graphics_Drawing
 	private initObjects(): void
 	{
 		var root_timeline:MovieClip=new MovieClip();
-		this._view.setPartition(root_timeline, new SceneGraphPartition());
+		this._view.setPartition(root_timeline, new SceneGraphPartition(root_timeline));
 		root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
 
 		// Graphics is not wired into any Displayobjects yet.

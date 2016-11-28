@@ -17,17 +17,8 @@ for (var i = 0; i < examples.length; i++) {
     entry[String(name)] = path.join(__dirname, "src", examples[i]);
 }
 
-var awayjsfull = fs.readdirSync(path.join(__dirname, "node_modules", "awayjs-full", "lib")).filter(function (file) {
-    return (file.slice(-3) == ".ts");
-});
-
 //add awayjs modules to entry object
 entry['awayjs-full'] = ['awayjs-full'];
-
-for (var i = 0; i < awayjsfull.length; i++) {
-    var name = awayjsfull[i].split('.')[0];
-    entry['awayjs-full'].push('awayjs-full/lib/' + name);
-}
 
 var plugins = [
     // new webpack.DllReferencePlugin({
@@ -62,25 +53,31 @@ module.exports = {
 
     entry: entry,
     devtool: 'source-map',
+    //devtool: 'cheap-module-eval-source-map',//use this option for recompiling libs
     output: {
         path: path.join(__dirname, "bin"),
         filename: 'js/[name].js'
     },
     resolve: {
-        alias: {
-            "awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist")
-        },
+        //uncomment aliases for recompiling libs
+        // alias: {
+        //     "@awayjs/core": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/core", "dist"),
+        //     "@awayjs/graphics": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/graphics", "dist"),
+        //     "@awayjs/scene": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/scene", "dist"),
+        //     "@awayjs/stage": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/stage", "dist"),
+        //     "@awayjs/renderer": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/renderer", "dist"),
+        //     "@awayjs/view": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/view", "dist"),
+        //     "@awayjs/materials": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/materials", "dist"),
+        //     "@awayjs/player": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/player", "dist"),
+        //     "@awayjs/parsers": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/parsers", "dist")
+        // },
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
-        fallback: [path.join(__dirname, 'node_modules')]
-    },
-    resolveLoader: {
-        fallback: [path.join(__dirname, 'node_modules')]
+        extensions: ['.webpack.js', '.web.js', '.js']
     },
     module: {
-        loaders: [
+        rules: [
             // all files with a `.ts` or `.tsx` extension will be handled by `awesome-typescript-loader`
-            { test: /\.ts(x?)$/, loader: require.resolve('awesome-typescript-loader')},
+            { test: /\.ts(x?)$/, exclude: /node_modules/, loader: require.resolve('awesome-typescript-loader'), query: {useBabel: true, useCache:true}},
 
             // all files with a `.js` or `.jsx` extension will be handled by `source-map-loader`
             { test: /\.js(x?)$/, loader: require.resolve('source-map-loader') }
