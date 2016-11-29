@@ -25,7 +25,7 @@
     "prebuild:prod": "npm run clean:bin",
     "build:prod": "webpack --config webpack.config.js  --progress --profile --colors --display-error-details --display-cached --bail",
     "server": "npm run server:dev",
-    "server:dev": "webpack-dev-server --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base bin",
+    "server:dev": "webpack-dev-server --config webpack.config.js --inline --progress --profile --watch --content-base bin",
     "server:dev:hmr": "npm run server:dev -- --hot",
     "server:prod": "http-server bin --cors",
     "start": "npm run server:dev",
@@ -54,14 +54,15 @@
     "awayjs-full": "^0.2.0"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^0.17.0",
+    "awesome-typescript-loader": "^3.0.0-beta.3",
+    "babel-core": "^6.18.2",
     "compression-webpack-plugin": "^0.3.1",
     "copy-webpack-plugin": "^1.1.1",
     "html-webpack-plugin": "^2.15.0",
     "rimraf": "^2.5.2",
     "source-map-loader": "^0.1.5",
-    "typescript": "^1.9.0-dev.20160627-1.0",
-    "webpack": "^1.12.15",
-    "webpack-dev-server": "^1.14.1"
+    "typescript": "^2.0.10",
+    "webpack": "^2.1.0-beta.27",
+    "webpack-dev-server": "^2.1.0-beta.11"
   }
 }
