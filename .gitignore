@@ -2,6 +2,7 @@
 node_modules/
 libs/
 bin/
+.awcache/
 
 # Dev files
 npm-debug.log
