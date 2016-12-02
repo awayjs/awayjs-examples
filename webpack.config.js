@@ -59,18 +59,19 @@ module.exports = {
         filename: 'js/[name].js'
     },
     resolve: {
-        //uncomment aliases for recompiling libs
-        // alias: {
-        //     "@awayjs/core": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/core", "dist"),
-        //     "@awayjs/graphics": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/graphics", "dist"),
-        //     "@awayjs/scene": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/scene", "dist"),
-        //     "@awayjs/stage": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/stage", "dist"),
-        //     "@awayjs/renderer": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/renderer", "dist"),
-        //     "@awayjs/view": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/view", "dist"),
-        //     "@awayjs/materials": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/materials", "dist"),
-        //     "@awayjs/player": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/player", "dist"),
-        //     "@awayjs/parsers": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/parsers", "dist")
-        // },
+		alias: {
+			"awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist"),
+			//uncomment aliases for recompiling libs
+			// "@awayjs/core": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/core", "dist"),
+			// "@awayjs/graphics": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/graphics", "dist"),
+			// "@awayjs/scene": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/scene", "dist"),
+			// "@awayjs/stage": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/stage", "dist"),
+			// "@awayjs/renderer": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/renderer", "dist"),
+			// "@awayjs/view": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/view", "dist"),
+			// "@awayjs/materials": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/materials", "dist"),
+			// "@awayjs/player": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/player", "dist"),
+			// "@awayjs/parsers": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/parsers", "dist")
+		},
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.webpack.js', '.web.js', '.js']
     },
