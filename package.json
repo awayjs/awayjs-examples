@@ -54,14 +54,15 @@
     "awayjs-full": "^0.2.0"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^3.0.0-beta.3",
+    "awesome-typescript-loader": "3.0.0-beta.10",
     "babel-core": "^6.18.2",
     "compression-webpack-plugin": "^0.3.1",
     "copy-webpack-plugin": "^1.1.1",
     "html-webpack-plugin": "^2.15.0",
     "rimraf": "^2.5.2",
     "source-map-loader": "^0.1.5",
-    "typescript": "^2.0.10",
+    "tslib": "^1.2.0",
+    "typescript": "^2.1.4",
     "webpack": "^2.1.0-beta.27",
     "webpack-dev-server": "^2.1.0-beta.11"
   }
