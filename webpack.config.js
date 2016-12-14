@@ -62,6 +62,7 @@ module.exports = {
 		alias: {
 			"awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist"),
 			//uncomment aliases for recompiling libs
+			// "tslib": path.join(__dirname, "node_modules", "tslib", "tslib.es6.js"),
 			// "@awayjs/core": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/core", "dist"),
 			// "@awayjs/graphics": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/graphics", "dist"),
 			// "@awayjs/scene": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/scene", "dist"),
