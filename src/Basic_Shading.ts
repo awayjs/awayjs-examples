@@ -133,7 +133,7 @@ class Basic_Shading
 
 		this._light2 = new DirectionalLight();
 		this._light2.direction = new Vector3D(0, -1, 0);
-		this._light2.color = 0x00FFFF;
+		this._light2.color = 0xFF0000;
 		this._light2.ambient = 0.1;
 		this._light2.diffuse = 0.7;
 
