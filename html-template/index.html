@@ -12,40 +12,96 @@
     <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet"><% } if (htmlWebpackPlugin.options.baseHref) { %>
     <base href="<%= htmlWebpackPlugin.options.baseHref %>" /><% } %>
 </head>
-<body><% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
-<style>.unsupported-browser { display: none; }</style>
-<div class="unsupported-browser">
-    Sorry, your browser is not supported.  Please upgrade to
-    the latest version or switch your browser to use this site.
-    See <a href="http://outdatedbrowser.com/">outdatedbrowser.com</a>
-    for options.
-</div>
-<% } if (htmlWebpackPlugin.options.appMountId) { %>
-<div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
-<% } if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { for (var index in htmlWebpackPlugin.options.appMountIds) { %>
-<div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
-<% } } if (htmlWebpackPlugin.options.window) { %>
+<body>
+<style>
+
+    html {
+        height: 100% ;
+    }
+
+    body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #666;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+
+    #examples {
+        padding: 0px 20px 20px 20px;
+    }
+
+    a {
+        color: #999;
+        text-decoration: none;
+    }
+
+    a:hover,
+    a:active,
+    a:focus {
+        text-decoration: none;
+        outline: none;
+        color: #d1382f;
+    }
+
+</style>
+
+<% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
+    <style>.unsupported-browser { display: none; }</style>
+    <div class="unsupported-browser">
+        Sorry, your browser is not supported.  Please upgrade to
+        the latest version or switch your browser to use this site.
+        See <a href="http://outdatedbrowser.com/">outdatedbrowser.com</a>
+        for options.
+    </div>
+<% } %>
+
+<% if (htmlWebpackPlugin.options.appMountId) { %>
+    <div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
+<% } %>
+
+<% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
+    <% for (var index in htmlWebpackPlugin.options.appMountIds) { %>
+        <div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
+    <% } %>
+<% } %>
+
+<% if (htmlWebpackPlugin.options.window) { %>
 <script><% for (var varName in htmlWebpackPlugin.options.window) { %>
     window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;<% } %>
 </script>
-<% } for (var example in htmlWebpackPlugin.options.examples) {  %>
-<a href="/<%= htmlWebpackPlugin.options.baseHref %><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
-<% } for (var chunk in htmlWebpackPlugin.files.chunks) { if (htmlWebpackPlugin.options.title == chunk || htmlWebpackPlugin.options.commonChunk == chunk) { %>
-<script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
-<% } } if (htmlWebpackPlugin.options.devServer) { %>
+<% } %>
+
+<!-- EXAMPLES -->
+<div id="examples">
+    <h1>awayjs-examples</h1>
+    <% for (var example in htmlWebpackPlugin.options.examples) {  %>
+        <a href="/<%= htmlWebpackPlugin.options.baseHref %><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
+    <% } %>
+</div>
+
+<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+    <% if (htmlWebpackPlugin.options.title == chunk || htmlWebpackPlugin.options.commonChunk == chunk) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
+<% } %>
+
+<% if (htmlWebpackPlugin.options.devServer) { %>
 <script src="<%= htmlWebpackPlugin.options.devServer%>/webpack-dev-server.js"></script>
-<% } if (htmlWebpackPlugin.options.googleAnalytics) { %>
+<% } %>
+
+<% if (htmlWebpackPlugin.options.googleAnalytics) { %>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-
     <% if (htmlWebpackPlugin.options.googleAnalytics.trackingId) { %>
         ga('create', '<%= htmlWebpackPlugin.options.googleAnalytics.trackingId%>', 'auto');
     <% } else { throw new Error("html-webpack-template requires googleAnalytics.trackingId config"); }%>
-
     <% if (htmlWebpackPlugin.options.googleAnalytics.pageViewOnLoad) { %>
         ga('send', 'pageview');
     <% } %>
