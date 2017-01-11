@@ -12,7 +12,7 @@
     <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet"><% } if (htmlWebpackPlugin.options.baseHref) { %>
     <base href="<%= htmlWebpackPlugin.options.baseHref %>" /><% } %>
 </head>
-<body><%= htmlWebpackPlugin.options.baseHref %>" />
+<body><%= htmlWebpackPlugin.options.baseHref %>
 <% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
 <style>.unsupported-browser { display: none; }</style>
 <div class="unsupported-browser">
@@ -30,7 +30,7 @@
     window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;<% } %>
 </script>
 <% } for (var example in htmlWebpackPlugin.options.examples) {  %>
-<a href="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
+<a href="/<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
 <% } for (var chunk in htmlWebpackPlugin.files.chunks) { if (htmlWebpackPlugin.options.title == chunk || htmlWebpackPlugin.options.commonChunk == chunk) { %>
 <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
 <% } } if (htmlWebpackPlugin.options.devServer) { %>
