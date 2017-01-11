@@ -20,9 +20,7 @@
     the latest version or switch your browser to use this site.
     See <a href="http://outdatedbrowser.com/">outdatedbrowser.com</a>
     for options.
-</div>
-<% } if (htmlWebpackPlugin.options.appMountId) { %>
-<div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
+</div><div id="<%= htmlWebpackPlugin.options.appMountId%>"></div>
 <% } if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { for (var index in htmlWebpackPlugin.options.appMountIds) { %>
 <div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
 <% } } if (htmlWebpackPlugin.options.window) { %>
@@ -30,7 +28,7 @@
     window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;<% } %>
 </script>
 <% } for (var example in htmlWebpackPlugin.options.examples) {  %>
-<a href="/<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
+<a href="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html" class="" title="<%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html"><%= htmlWebpackPlugin.options.examples[example].split('.')[0] %>.html</br></a>
 <% } for (var chunk in htmlWebpackPlugin.files.chunks) { if (htmlWebpackPlugin.options.title == chunk || htmlWebpackPlugin.options.commonChunk == chunk) { %>
 <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
 <% } } if (htmlWebpackPlugin.options.devServer) { %>
