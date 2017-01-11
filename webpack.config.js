@@ -56,7 +56,7 @@ plugins.push(new HtmlWebPackPlugin({
     template: 'html-template/index.html',
     filename: 'index.html',
     examples: examples,
-    relativeURL: process.env.relativeURL || '',
+    baseHref: process.env.baseHref || '',
     inject: false
 }));
 
