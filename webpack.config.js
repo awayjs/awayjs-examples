@@ -37,17 +37,28 @@ var plugins = [
     // })
 ];
 
+// Generate individual html files for each example.
 for (var i = 0; i < examples.length; i++) {
     var name = examples[i].split('.')[0];
     plugins.push(new HtmlWebPackPlugin({
         title: name,
-        template: 'html-template/index.html',
+        template: 'html-template/example.html',
         filename: name + '.html',
         inject: false,
         commonChunk: 'awayjs-full'
         // libs: ['libs/awayjs-full.js']
     }));
 }
+
+// Generate a listing html that links to all examples.
+plugins.push(new HtmlWebPackPlugin({
+    title: 'awayjs-examples',
+    template: 'html-template/index.html',
+    filename: 'index.html',
+    examples: examples,
+    relativeURL: process.env.relativeURL || '',
+    inject: false
+}));
 
 module.exports = {
 
