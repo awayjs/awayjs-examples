@@ -247,9 +247,8 @@ class Intermediate_Globe
 		this.sun = new Billboard(this.sunMaterial);
 		this.sun.width = 3000;
 		this.sun.height = 3000;
-		this.sun.pivot = new Vector3D(1500,1500,0);
+		this.sun.registrationPoint = new Vector3D(1500,1500,0);
 		this.sun.orientationMode = OrientationMode.CAMERA_PLANE;
-		this.sun.alignmentMode = AlignmentMode.PIVOT_POINT;
 		this.sun.x = 10000;
 		this.orbitContainer.addChild(this.sun);
 
@@ -583,9 +582,8 @@ class FlareObject
 		this.billboard = new Billboard(billboardMaterial);
 		this.billboard.width = size*this.flareSize;
 		this.billboard.height = size*this.flareSize;
-		this.billboard.pivot = new Vector3D(size*this.flareSize/2, size*this.flareSize/2, 0);
+		this.billboard.registrationPoint = new Vector3D(size*this.flareSize/2, size*this.flareSize/2, 0);
 		this.billboard.orientationMode = OrientationMode.CAMERA_PLANE;
-		this.billboard.alignmentMode = AlignmentMode.PIVOT_POINT;
 		this.billboard.visible = false;
 		this.size = size;
 		this.position = position;
