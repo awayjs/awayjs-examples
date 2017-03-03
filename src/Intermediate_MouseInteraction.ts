@@ -377,13 +377,13 @@ class Intermediate_MouseInteraction
 			this._scenePositionTracer.visible = this._sceneNormalTracer.visible = true;
 
 			// Update position tracer.
-			pos = collidingObject.entity.sceneTransform.transformVector(collidingObject.position);
+			pos = collidingObject.entity.transform.concatenatedMatrix3D.transformVector(collidingObject.position);
 			this._scenePositionTracer.transform.moveTo(pos.x, pos.y, pos.z);
 
 			// Update normal tracer.
 			pos = this._scenePositionTracer.transform.position;
 			this._sceneNormalTracer.transform.moveTo(pos.x, pos.y, pos.z);
-			var normal:Vector3D = collidingObject.entity.sceneTransform.deltaTransformVector(collidingObject.normal);
+			var normal:Vector3D = collidingObject.entity.transform.concatenatedMatrix3D.deltaTransformVector(collidingObject.normal);
 			normal.normalize();
 			normal.scaleBy( 25 );
 			this._sceneNormalTracer.endPosition = normal.clone();
