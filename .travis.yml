@@ -5,3 +5,6 @@ script: bash ./deploy.sh
 env:
   global:
   - ENCRYPTION_LABEL: 37e57945767a
+notifications:
+  slack:
+    secure: gSMeuCyqnvXx6XheMlamPNMLqbr7XyrZnjaiR+YrixgKnuh23tJUy6j9qmz2BKkBSe+Yr4GvR5RP5SlgpcmZKzaSraDlrGdNssBJp6j6kbWRbusBG7Xye+QgtDicI+YvkJnKJn4XHnHJsuYwqwxedJitKQ4zxOPtEZ6xLtkSBak=
