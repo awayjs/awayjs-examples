@@ -1,7 +1,8 @@
 language: node_js
 node_js:
 - stable
-script: bash ./deploy.sh
+script: 
+  - bash scripts/deploy.sh
 env:
   global:
   - ENCRYPTION_LABEL: 37e57945767a
