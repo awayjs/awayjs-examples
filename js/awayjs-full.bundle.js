@@ -302,13 +302,8 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
@@ -3682,7 +3677,7 @@ var Matrix3D = (function () {
         if (orientationStyle === void 0) { orientationStyle = "eulerAngles"; }
         var q;
         if (this._components == null)
-            this._components = [null, new Vector3D(), new Vector3D(), new Vector3D()];
+            this._components = [new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()];
         var colX = new Vector3D(this._rawData[0], this._rawData[1], this._rawData[2]);
         var colY = new Vector3D(this._rawData[4], this._rawData[5], this._rawData[6]);
         var colZ = new Vector3D(this._rawData[8], this._rawData[9], this._rawData[10]);
@@ -3765,7 +3760,7 @@ var Matrix3D = (function () {
                 }
                 break;
         }
-        this._components[0] = this.position;
+        this._components[0].copyFrom(this.position);
         return this._components;
     };
     /**
@@ -4315,7 +4310,7 @@ var Transform = (function (_super) {
         //create the view for colorTransform
         _this._colorTransform = new ColorTransform(new Float32Array(_this._rawData.buffer, 64, 8));
         //create the concatenatedMatrix3D if required
-        _this._concatenatedMatrix3D = concatenatedMatrix3D || new Matrix3D();
+        _this._concatenatedMatrix3D = concatenatedMatrix3D || _this._matrix3D;
         if (rawData == null) {
             _this._matrix3D.identity();
             _this._colorTransform.clear();
@@ -4480,6 +4475,7 @@ var Transform = (function (_super) {
             targetData[14] = sourceData[14];
             targetData[15] = sourceData[15];
             this.invalidateComponents();
+            this.invalidateConcatenatedMatrix3D();
         },
         enumerable: true,
         configurable: true
@@ -10536,7 +10532,6 @@ var ProjectionBase = (function (_super) {
         _this._stageRect = new Rectangle();
         _this._near = 20;
         _this._far = 3000;
-        _this._aspectRatio = 1;
         _this._frustumCorners = [];
         _this._originX = 0.5;
         _this._originY = 0.5;
@@ -10561,19 +10556,6 @@ var ProjectionBase = (function (_super) {
             if (this._transform)
                 this._transform.addEventListener(TransformEvent.INVALIDATE_CONCATENATED_MATRIX3D, this._onInvalidateConcatenatedMatrix3DDelegate);
             this._invalidateViewMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ProjectionBase.prototype, "aspectRatio", {
-        get: function () {
-            return this._aspectRatio;
-        },
-        set: function (value) {
-            if (this._aspectRatio == value)
-                return;
-            this._aspectRatio = value;
-            this._invalidateFrustumMatrix3D();
         },
         enumerable: true,
         configurable: true
@@ -10615,6 +10597,11 @@ var ProjectionBase = (function (_super) {
                 this._updateFrustumMatrix3D();
             return this._frustumMatrix3D;
         },
+        set: function (value) {
+            this._frustumMatrix3D = value;
+            this._invalidateViewMatrix3D();
+            this._invalidateProperties();
+        },
         enumerable: true,
         configurable: true
     });
@@ -10624,6 +10611,8 @@ var ProjectionBase = (function (_super) {
          * @returns {number}
          */
         get: function () {
+            if (this._propertiesDirty)
+                this._updateProperties();
             return this._near;
         },
         set: function (value) {
@@ -10641,6 +10630,8 @@ var ProjectionBase = (function (_super) {
          * @returns {number}
          */
         get: function () {
+            if (this._propertiesDirty)
+                this._updateProperties();
             return this._originX;
         },
         set: function (value) {
@@ -10658,6 +10649,8 @@ var ProjectionBase = (function (_super) {
          * @returns {number}
          */
         get: function () {
+            if (this._propertiesDirty)
+                this._updateProperties();
             return this._originY;
         },
         set: function (value) {
@@ -10675,6 +10668,8 @@ var ProjectionBase = (function (_super) {
          * @returns {number}
          */
         get: function () {
+            if (this._propertiesDirty)
+                this._updateProperties();
             return this._far;
         },
         set: function (value) {
@@ -10733,6 +10728,9 @@ var ProjectionBase = (function (_super) {
     ProjectionBase.prototype.clone = function () {
         throw new AbstractMethodError();
     };
+    ProjectionBase.prototype._invalidateProperties = function () {
+        this._propertiesDirty = true;
+    };
     ProjectionBase.prototype._invalidateViewMatrix3D = function () {
         this._viewMatrix3DDirty = true;
         this._inverseViewMatrix3DDirty = true;
@@ -10740,6 +10738,8 @@ var ProjectionBase = (function (_super) {
         this.dispatchEvent(new ProjectionEvent(ProjectionEvent.MATRIX_CHANGED, this));
     };
     ProjectionBase.prototype._invalidateFrustumMatrix3D = function () {
+        if (this._propertiesDirty)
+            this._updateProperties();
         this._frustumMatrix3DDirty = true;
         this._invalidateViewMatrix3D();
     };
@@ -10759,6 +10759,9 @@ var ProjectionBase = (function (_super) {
     };
     ProjectionBase.prototype._updateFrustumMatrix3D = function () {
         this._frustumMatrix3DDirty = false;
+    };
+    ProjectionBase.prototype._updateProperties = function () {
+        this._propertiesDirty = false;
     };
     Object.defineProperty(ProjectionBase.prototype, "frustumPlanes", {
         get: function () {
@@ -10867,6 +10870,278 @@ var ProjectionBase = (function (_super) {
     };
     return ProjectionBase;
 }(EventDispatcher));
+
+var ObliqueNearPlaneProjection = (function (_super) {
+    __extends(ObliqueNearPlaneProjection, _super);
+    function ObliqueNearPlaneProjection(baseProjection, plane) {
+        var _this = _super.call(this) || this;
+        _this.baseProjection = baseProjection;
+        _this.plane = plane;
+        _this._onProjectionMatrixChangedDelegate = function (event) { return _this.onProjectionMatrixChanged(event); };
+        return _this;
+    }
+    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "frustumCorners", {
+        //@override
+        get: function () {
+            return this._baseProjection.frustumCorners;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "near", {
+        //@override
+        get: function () {
+            return this._baseProjection.near;
+        },
+        //@override
+        set: function (value) {
+            this._baseProjection.near = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "far", {
+        //@override
+        get: function () {
+            return this._baseProjection.far;
+        },
+        //@override
+        set: function (value) {
+            this._baseProjection.far = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "plane", {
+        get: function () {
+            return this._plane;
+        },
+        set: function (value) {
+            this._plane = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "baseProjection", {
+        set: function (value) {
+            if (this._baseProjection)
+                this._baseProjection.removeEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+            this._baseProjection = value;
+            if (this._baseProjection)
+                this._baseProjection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ObliqueNearPlaneProjection.prototype.onProjectionMatrixChanged = function (event) {
+        this._invalidateFrustumMatrix3D();
+    };
+    //@override
+    ObliqueNearPlaneProjection.prototype._updateFrustumMatrix3D = function () {
+        _super.prototype._updateFrustumMatrix3D.call(this);
+        this._frustumMatrix3D.copyFrom(this._baseProjection.frustumMatrix3D);
+        var cx = this._plane.a;
+        var cy = this._plane.b;
+        var cz = this._plane.c;
+        var cw = -this._plane.d + .05;
+        var signX = cx >= 0 ? 1 : -1;
+        var signY = cy >= 0 ? 1 : -1;
+        var p = new Vector3D(signX, signY, 1, 1);
+        var inverse = this._frustumMatrix3D.clone();
+        inverse.invert();
+        var q = inverse.transformVector(p);
+        this._frustumMatrix3D.copyRowTo(3, p);
+        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+        this._frustumMatrix3D.copyRowFrom(2, new Vector3D(cx * a, cy * a, cz * a, cw * a));
+    };
+    return ObliqueNearPlaneProjection;
+}(ProjectionBase));
+
+var OrthographicOffCenterProjection = (function (_super) {
+    __extends(OrthographicOffCenterProjection, _super);
+    function OrthographicOffCenterProjection(minX, maxX, minY, maxY) {
+        var _this = _super.call(this) || this;
+        _this._minX = minX;
+        _this._maxX = maxX;
+        _this._minY = minY;
+        _this._maxY = maxY;
+        return _this;
+    }
+    Object.defineProperty(OrthographicOffCenterProjection.prototype, "minX", {
+        get: function () {
+            return this._minX;
+        },
+        set: function (value) {
+            this._minX = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxX", {
+        get: function () {
+            return this._maxX;
+        },
+        set: function (value) {
+            this._maxX = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(OrthographicOffCenterProjection.prototype, "minY", {
+        get: function () {
+            return this._minY;
+        },
+        set: function (value) {
+            this._minY = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxY", {
+        get: function () {
+            return this._maxY;
+        },
+        set: function (value) {
+            this._maxY = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //@override
+    OrthographicOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
+        var v = new Vector3D(nX, -nY, sZ, 1.0);
+        v = this.inverseViewMatrix3D.transformVector(v);
+        //z is unaffected by transform
+        v.z = sZ;
+        return v;
+    };
+    //@override
+    OrthographicOffCenterProjection.prototype.clone = function () {
+        var clone = new OrthographicOffCenterProjection(this._minX, this._maxX, this._minY, this._maxY);
+        clone._near = this._near;
+        clone._far = this._far;
+        return clone;
+    };
+    //@override
+    OrthographicOffCenterProjection.prototype._updateFrustumMatrix3D = function () {
+        _super.prototype._updateFrustumMatrix3D.call(this);
+        var raw = Matrix3D.CALCULATION_MATRIX._rawData;
+        var w = 1 / (this._maxX - this._minX);
+        var h = 1 / (this._maxY - this._minY);
+        var d = 1 / (this._far - this._near);
+        raw[0] = 2 * w;
+        raw[5] = 2 * h;
+        raw[10] = d;
+        raw[12] = -(this._maxX + this._minX) * w;
+        raw[13] = -(this._maxY + this._minY) * h;
+        raw[14] = -this._near * d;
+        raw[15] = 1;
+        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+        this._frustumMatrix3D.copyRawDataFrom(raw);
+        this._frustumCorners[0] = this._frustumCorners[9] = this._frustumCorners[12] = this._frustumCorners[21] = this._minX;
+        this._frustumCorners[3] = this._frustumCorners[6] = this._frustumCorners[15] = this._frustumCorners[18] = this._maxX;
+        this._frustumCorners[1] = this._frustumCorners[4] = this._frustumCorners[13] = this._frustumCorners[16] = this._minY;
+        this._frustumCorners[7] = this._frustumCorners[10] = this._frustumCorners[19] = this._frustumCorners[22] = this._maxY;
+        this._frustumCorners[2] = this._frustumCorners[5] = this._frustumCorners[8] = this._frustumCorners[11] = this._near;
+        this._frustumCorners[14] = this._frustumCorners[17] = this._frustumCorners[20] = this._frustumCorners[23] = this._far;
+    };
+    return OrthographicOffCenterProjection;
+}(ProjectionBase));
+
+var OrthographicProjection = (function (_super) {
+    __extends(OrthographicProjection, _super);
+    function OrthographicProjection(projectionHeight) {
+        if (projectionHeight === void 0) { projectionHeight = 500; }
+        var _this = _super.call(this) || this;
+        _this._projectionHeight = projectionHeight;
+        return _this;
+    }
+    Object.defineProperty(OrthographicProjection.prototype, "projectionHeight", {
+        get: function () {
+            return this._projectionHeight;
+        },
+        set: function (value) {
+            if (value == this._projectionHeight)
+                return;
+            this._projectionHeight = value;
+            this._invalidateFrustumMatrix3D();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //@override
+    OrthographicProjection.prototype.unproject = function (nX, nY, sZ) {
+        var v = new Vector3D(nX + this.viewMatrix3D._rawData[12], -nY + this.viewMatrix3D._rawData[13], sZ, 1.0);
+        v = this.inverseViewMatrix3D.transformVector(v);
+        //z is unaffected by transform
+        v.z = sZ;
+        return v;
+    };
+    //@override
+    OrthographicProjection.prototype.clone = function () {
+        var clone = new OrthographicProjection();
+        clone._near = this._near;
+        clone._far = this._far;
+        clone.projectionHeight = this._projectionHeight;
+        return clone;
+    };
+    //@override
+    OrthographicProjection.prototype._updateFrustumMatrix3D = function () {
+        _super.prototype._updateFrustumMatrix3D.call(this);
+        var raw = Matrix3D.CALCULATION_MATRIX._rawData;
+        this._yMax = this._projectionHeight * .5;
+        this._xMax = this._yMax * this._viewRect.width / this._viewRect.height;
+        var left;
+        var right;
+        var top;
+        var bottom;
+        if (this._viewRect.x == 0 && this._viewRect.y == 0 && this._viewRect.width == this._stageRect.width && this._viewRect.height == this._stageRect.height) {
+            // assume symmetric frustum
+            left = -this._xMax;
+            right = this._xMax;
+            top = -this._yMax;
+            bottom = this._yMax;
+            raw[0] = 2 / (this._projectionHeight * this._viewRect.width / this._viewRect.height);
+            raw[5] = 2 / this._projectionHeight;
+            raw[10] = 1 / (this._far - this._near);
+            raw[14] = this._near / (this._near - this._far);
+            raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = raw[12] = raw[13] = 0;
+            raw[15] = 1;
+        }
+        else {
+            var xWidth = this._xMax * (this._stageRect.width / this._viewRect.width);
+            var yHgt = this._yMax * (this._stageRect.height / this._viewRect.height);
+            var center = this._xMax * (this._viewRect.x * 2 - this._stageRect.width) / this._viewRect.width + this._xMax;
+            var middle = -this._yMax * (this._viewRect.y * 2 - this._stageRect.height) / this._viewRect.height - this._yMax;
+            left = center - xWidth;
+            right = center + xWidth;
+            top = middle - yHgt;
+            bottom = middle + yHgt;
+            raw[0] = 2 * 1 / (right - left);
+            raw[5] = -2 * 1 / (top - bottom);
+            raw[10] = 1 / (this._far - this._near);
+            raw[12] = (right + left) / (right - left);
+            raw[13] = (bottom + top) / (bottom - top);
+            raw[14] = this._near / (this.near - this.far);
+            raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+            raw[15] = 1;
+        }
+        this._frustumCorners[0] = this._frustumCorners[9] = this._frustumCorners[12] = this._frustumCorners[21] = left;
+        this._frustumCorners[3] = this._frustumCorners[6] = this._frustumCorners[15] = this._frustumCorners[18] = right;
+        this._frustumCorners[1] = this._frustumCorners[4] = this._frustumCorners[13] = this._frustumCorners[16] = top;
+        this._frustumCorners[7] = this._frustumCorners[10] = this._frustumCorners[19] = this._frustumCorners[22] = bottom;
+        this._frustumCorners[2] = this._frustumCorners[5] = this._frustumCorners[8] = this._frustumCorners[11] = this._near;
+        this._frustumCorners[14] = this._frustumCorners[17] = this._frustumCorners[20] = this._frustumCorners[23] = this._far;
+        this._frustumMatrix3D.copyRawDataFrom(raw);
+    };
+    return OrthographicProjection;
+}(ProjectionBase));
 
 var PerspectiveProjection = (function (_super) {
     __extends(PerspectiveProjection, _super);
@@ -11007,7 +11282,6 @@ var PerspectiveProjection = (function (_super) {
         clone._preserveFocalLength = this._preserveFocalLength;
         clone._near = this._near;
         clone._far = this._far;
-        clone._aspectRatio = this._aspectRatio;
         clone._coordinateSystem = this._coordinateSystem;
         return clone;
     };
@@ -11058,327 +11332,17 @@ var PerspectiveProjection = (function (_super) {
         this._frustumCorners[2] = this._frustumCorners[5] = this._frustumCorners[8] = this._frustumCorners[11] = this._near;
         this._frustumCorners[14] = this._frustumCorners[17] = this._frustumCorners[20] = this._frustumCorners[23] = this._far;
     };
+    PerspectiveProjection.prototype._updateProperties = function () {
+        _super.prototype._updateProperties.call(this);
+        var rawData = this._frustumMatrix3D._rawData;
+        this._near = rawData[14] / (-1 - rawData[10]);
+        this._far = rawData[14] / (1 - rawData[10]);
+        //rawData[8] = 2*(this._viewRect.x + this._originX*this._viewRect.width)/this._stageRect.width - 1;
+        this._originX = ((rawData[8] + 1) * this._stageRect.width / 2 - this._viewRect.x) / this._viewRect.width;
+        //rawData[9] = 1 - 2*(this._viewRect.y + this._originY*this._viewRect.height)/this._stageRect.height;
+        this._originY = ((1 - rawData[9]) * this._stageRect.height / 2 - this._viewRect.y) / this._viewRect.height;
+    };
     return PerspectiveProjection;
-}(ProjectionBase));
-
-var FreeMatrixProjection = (function (_super) {
-    __extends(FreeMatrixProjection, _super);
-    function FreeMatrixProjection() {
-        var _this = _super.call(this) || this;
-        _this._frustumMatrix3D.copyFrom(new PerspectiveProjection().frustumMatrix3D);
-        return _this;
-    }
-    Object.defineProperty(FreeMatrixProjection.prototype, "frustumMatrix3D", {
-        /**
-         *
-         * @returns {Matrix3D}
-         */
-        get: function () {
-            if (this._frustumMatrix3DDirty)
-                this._updateFrustumMatrix3D();
-            return this._frustumMatrix3D;
-        },
-        set: function (value) {
-            this._frustumMatrix3D = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    FreeMatrixProjection.prototype.clone = function () {
-        var clone = new FreeMatrixProjection();
-        clone.transform = this._transform.clone();
-        clone.frustumMatrix3D.copyFrom(this._frustumMatrix3D);
-        return clone;
-    };
-    return FreeMatrixProjection;
-}(ProjectionBase));
-
-var ObliqueNearPlaneProjection = (function (_super) {
-    __extends(ObliqueNearPlaneProjection, _super);
-    function ObliqueNearPlaneProjection(baseProjection, plane) {
-        var _this = _super.call(this) || this;
-        _this.baseProjection = baseProjection;
-        _this.plane = plane;
-        _this._onProjectionMatrixChangedDelegate = function (event) { return _this.onProjectionMatrixChanged(event); };
-        return _this;
-    }
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "frustumCorners", {
-        //@override
-        get: function () {
-            return this._baseProjection.frustumCorners;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "near", {
-        //@override
-        get: function () {
-            return this._baseProjection.near;
-        },
-        //@override
-        set: function (value) {
-            this._baseProjection.near = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "far", {
-        //@override
-        get: function () {
-            return this._baseProjection.far;
-        },
-        //@override
-        set: function (value) {
-            this._baseProjection.far = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "aspectRatio", {
-        //@override
-        get: function () {
-            return this._baseProjection.aspectRatio;
-        },
-        //@override
-        set: function (value) {
-            this._baseProjection.aspectRatio = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "plane", {
-        get: function () {
-            return this._plane;
-        },
-        set: function (value) {
-            this._plane = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ObliqueNearPlaneProjection.prototype, "baseProjection", {
-        set: function (value) {
-            if (this._baseProjection)
-                this._baseProjection.removeEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-            this._baseProjection = value;
-            if (this._baseProjection)
-                this._baseProjection.addEventListener(ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ObliqueNearPlaneProjection.prototype.onProjectionMatrixChanged = function (event) {
-        this._invalidateFrustumMatrix3D();
-    };
-    //@override
-    ObliqueNearPlaneProjection.prototype._updateFrustumMatrix3D = function () {
-        _super.prototype._updateFrustumMatrix3D.call(this);
-        this._frustumMatrix3D.copyFrom(this._baseProjection.frustumMatrix3D);
-        var cx = this._plane.a;
-        var cy = this._plane.b;
-        var cz = this._plane.c;
-        var cw = -this._plane.d + .05;
-        var signX = cx >= 0 ? 1 : -1;
-        var signY = cy >= 0 ? 1 : -1;
-        var p = new Vector3D(signX, signY, 1, 1);
-        var inverse = this._frustumMatrix3D.clone();
-        inverse.invert();
-        var q = inverse.transformVector(p);
-        this._frustumMatrix3D.copyRowTo(3, p);
-        var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
-        this._frustumMatrix3D.copyRowFrom(2, new Vector3D(cx * a, cy * a, cz * a, cw * a));
-    };
-    return ObliqueNearPlaneProjection;
-}(ProjectionBase));
-
-var OrthographicOffCenterProjection = (function (_super) {
-    __extends(OrthographicOffCenterProjection, _super);
-    function OrthographicOffCenterProjection(minX, maxX, minY, maxY) {
-        var _this = _super.call(this) || this;
-        _this._minX = minX;
-        _this._maxX = maxX;
-        _this._minY = minY;
-        _this._maxY = maxY;
-        return _this;
-    }
-    Object.defineProperty(OrthographicOffCenterProjection.prototype, "minX", {
-        get: function () {
-            return this._minX;
-        },
-        set: function (value) {
-            this._minX = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxX", {
-        get: function () {
-            return this._maxX;
-        },
-        set: function (value) {
-            this._maxX = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(OrthographicOffCenterProjection.prototype, "minY", {
-        get: function () {
-            return this._minY;
-        },
-        set: function (value) {
-            this._minY = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxY", {
-        get: function () {
-            return this._maxY;
-        },
-        set: function (value) {
-            this._maxY = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    OrthographicOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
-        var v = new Vector3D(nX, -nY, sZ, 1.0);
-        v = this.inverseViewMatrix3D.transformVector(v);
-        //z is unaffected by transform
-        v.z = sZ;
-        return v;
-    };
-    //@override
-    OrthographicOffCenterProjection.prototype.clone = function () {
-        var clone = new OrthographicOffCenterProjection(this._minX, this._maxX, this._minY, this._maxY);
-        clone._near = this._near;
-        clone._far = this._far;
-        clone._aspectRatio = this._aspectRatio;
-        return clone;
-    };
-    //@override
-    OrthographicOffCenterProjection.prototype._updateFrustumMatrix3D = function () {
-        _super.prototype._updateFrustumMatrix3D.call(this);
-        var raw = Matrix3D.CALCULATION_MATRIX._rawData;
-        var w = 1 / (this._maxX - this._minX);
-        var h = 1 / (this._maxY - this._minY);
-        var d = 1 / (this._far - this._near);
-        raw[0] = 2 * w;
-        raw[5] = 2 * h;
-        raw[10] = d;
-        raw[12] = -(this._maxX + this._minX) * w;
-        raw[13] = -(this._maxY + this._minY) * h;
-        raw[14] = -this._near * d;
-        raw[15] = 1;
-        raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
-        this._frustumMatrix3D.copyRawDataFrom(raw);
-        this._frustumCorners[0] = this._frustumCorners[9] = this._frustumCorners[12] = this._frustumCorners[21] = this._minX;
-        this._frustumCorners[3] = this._frustumCorners[6] = this._frustumCorners[15] = this._frustumCorners[18] = this._maxX;
-        this._frustumCorners[1] = this._frustumCorners[4] = this._frustumCorners[13] = this._frustumCorners[16] = this._minY;
-        this._frustumCorners[7] = this._frustumCorners[10] = this._frustumCorners[19] = this._frustumCorners[22] = this._maxY;
-        this._frustumCorners[2] = this._frustumCorners[5] = this._frustumCorners[8] = this._frustumCorners[11] = this._near;
-        this._frustumCorners[14] = this._frustumCorners[17] = this._frustumCorners[20] = this._frustumCorners[23] = this._far;
-    };
-    return OrthographicOffCenterProjection;
-}(ProjectionBase));
-
-var OrthographicProjection = (function (_super) {
-    __extends(OrthographicProjection, _super);
-    function OrthographicProjection(projectionHeight) {
-        if (projectionHeight === void 0) { projectionHeight = 500; }
-        var _this = _super.call(this) || this;
-        _this._projectionHeight = projectionHeight;
-        return _this;
-    }
-    Object.defineProperty(OrthographicProjection.prototype, "projectionHeight", {
-        get: function () {
-            return this._projectionHeight;
-        },
-        set: function (value) {
-            if (value == this._projectionHeight)
-                return;
-            this._projectionHeight = value;
-            this._invalidateFrustumMatrix3D();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    //@override
-    OrthographicProjection.prototype.unproject = function (nX, nY, sZ) {
-        var v = new Vector3D(nX + this.viewMatrix3D._rawData[12], -nY + this.viewMatrix3D._rawData[13], sZ, 1.0);
-        v = this.inverseViewMatrix3D.transformVector(v);
-        //z is unaffected by transform
-        v.z = sZ;
-        return v;
-    };
-    //@override
-    OrthographicProjection.prototype.clone = function () {
-        var clone = new OrthographicProjection();
-        clone._near = this._near;
-        clone._far = this._far;
-        clone._aspectRatio = this._aspectRatio;
-        clone.projectionHeight = this._projectionHeight;
-        return clone;
-    };
-    //@override
-    OrthographicProjection.prototype._updateFrustumMatrix3D = function () {
-        _super.prototype._updateFrustumMatrix3D.call(this);
-        var raw = Matrix3D.CALCULATION_MATRIX._rawData;
-        this._yMax = this._projectionHeight * .5;
-        this._xMax = this._yMax * this._aspectRatio;
-        var left;
-        var right;
-        var top;
-        var bottom;
-        if (this._viewRect.x == 0 && this._viewRect.y == 0 && this._viewRect.width == this._stageRect.width && this._viewRect.height == this._stageRect.height) {
-            // assume symmetric frustum
-            left = -this._xMax;
-            right = this._xMax;
-            top = -this._yMax;
-            bottom = this._yMax;
-            raw[0] = 2 / (this._projectionHeight * this._aspectRatio);
-            raw[5] = 2 / this._projectionHeight;
-            raw[10] = 1 / (this._far - this._near);
-            raw[14] = this._near / (this._near - this._far);
-            raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = raw[12] = raw[13] = 0;
-            raw[15] = 1;
-        }
-        else {
-            var xWidth = this._xMax * (this._stageRect.width / this._viewRect.width);
-            var yHgt = this._yMax * (this._stageRect.height / this._viewRect.height);
-            var center = this._xMax * (this._viewRect.x * 2 - this._stageRect.width) / this._viewRect.width + this._xMax;
-            var middle = -this._yMax * (this._viewRect.y * 2 - this._stageRect.height) / this._viewRect.height - this._yMax;
-            left = center - xWidth;
-            right = center + xWidth;
-            top = middle - yHgt;
-            bottom = middle + yHgt;
-            raw[0] = 2 * 1 / (right - left);
-            raw[5] = -2 * 1 / (top - bottom);
-            raw[10] = 1 / (this._far - this._near);
-            raw[12] = (right + left) / (right - left);
-            raw[13] = (bottom + top) / (bottom - top);
-            raw[14] = this._near / (this.near - this.far);
-            raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
-            raw[15] = 1;
-        }
-        this._frustumCorners[0] = this._frustumCorners[9] = this._frustumCorners[12] = this._frustumCorners[21] = left;
-        this._frustumCorners[3] = this._frustumCorners[6] = this._frustumCorners[15] = this._frustumCorners[18] = right;
-        this._frustumCorners[1] = this._frustumCorners[4] = this._frustumCorners[13] = this._frustumCorners[16] = top;
-        this._frustumCorners[7] = this._frustumCorners[10] = this._frustumCorners[19] = this._frustumCorners[22] = bottom;
-        this._frustumCorners[2] = this._frustumCorners[5] = this._frustumCorners[8] = this._frustumCorners[11] = this._near;
-        this._frustumCorners[14] = this._frustumCorners[17] = this._frustumCorners[20] = this._frustumCorners[23] = this._far;
-        this._frustumMatrix3D.copyRawDataFrom(raw);
-    };
-    return OrthographicProjection;
 }(ProjectionBase));
 
 var Keyboard = (function () {
@@ -12823,7 +12787,6 @@ exports.ParserDataFormat = ParserDataFormat;
 exports.ParserUtils = ParserUtils;
 exports.ResourceDependency = ResourceDependency;
 exports.WaveAudioParser = WaveAudioParser;
-exports.FreeMatrixProjection = FreeMatrixProjection;
 exports.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection;
 exports.OrthographicOffCenterProjection = OrthographicOffCenterProjection;
 exports.OrthographicProjection = OrthographicProjection;
@@ -27866,7 +27829,7 @@ var ShadowMapperBase = (function (_super) {
     __extends(ShadowMapperBase, _super);
     function ShadowMapperBase() {
         var _this = _super.apply(this, arguments) || this;
-        _this._pDepthMapSize = 2048;
+        _this._depthMapSize = 2048;
         _this._autoUpdateShadows = true;
         return _this;
     }
@@ -27890,10 +27853,10 @@ var ShadowMapperBase = (function (_super) {
     };
     Object.defineProperty(ShadowMapperBase.prototype, "light", {
         get: function () {
-            return this._pLight;
+            return this._light;
         },
         set: function (value) {
-            this._pLight = value;
+            this._light = value;
         },
         enumerable: true,
         configurable: true
@@ -27901,7 +27864,7 @@ var ShadowMapperBase = (function (_super) {
     Object.defineProperty(ShadowMapperBase.prototype, "depthMap", {
         get: function () {
             if (!this._depthMap)
-                this._depthMap = this.pCreateDepthTexture();
+                this._depthMap = this._createDepthTexture();
             return this._depthMap;
         },
         enumerable: true,
@@ -27909,12 +27872,12 @@ var ShadowMapperBase = (function (_super) {
     });
     Object.defineProperty(ShadowMapperBase.prototype, "depthMapSize", {
         get: function () {
-            return this._pDepthMapSize;
+            return this._depthMapSize;
         },
         set: function (value) {
-            if (value == this._pDepthMapSize)
+            if (value == this._depthMapSize)
                 return;
-            this._pSetDepthMapSize(value);
+            this._setDepthMapSize(value);
         },
         enumerable: true,
         configurable: true
@@ -27924,24 +27887,24 @@ var ShadowMapperBase = (function (_super) {
             this._depthMap.dispose();
         this._depthMap = null;
     };
-    ShadowMapperBase.prototype.pCreateDepthTexture = function () {
+    ShadowMapperBase.prototype._createDepthTexture = function () {
         throw new _awayjs_core.AbstractMethodError();
     };
     ShadowMapperBase.prototype.iRenderDepthMap = function (view, renderer) {
         this._iShadowsInvalid = false;
-        this.pUpdateDepthProjection(view.camera);
+        this._updateDepthProjection(view.camera.projection);
         if (!this._depthMap)
-            this._depthMap = this.pCreateDepthTexture();
-        this.pDrawDepthMap(view, this._depthMap, renderer);
+            this._depthMap = this._createDepthTexture();
+        this._drawDepthMap(view, this._depthMap, renderer);
     };
-    ShadowMapperBase.prototype.pUpdateDepthProjection = function (camera) {
+    ShadowMapperBase.prototype._updateDepthProjection = function (projection) {
         throw new _awayjs_core.AbstractMethodError();
     };
-    ShadowMapperBase.prototype.pDrawDepthMap = function (view, target, renderer) {
+    ShadowMapperBase.prototype._drawDepthMap = function (view, target, renderer) {
         throw new _awayjs_core.AbstractMethodError();
     };
-    ShadowMapperBase.prototype._pSetDepthMapSize = function (value) {
-        this._pDepthMapSize = value;
+    ShadowMapperBase.prototype._setDepthMapSize = function (value) {
+        this._depthMapSize = value;
         if (this._explicitDepthMap) {
             throw Error("Cannot set depth map size for the current renderer.");
         }
@@ -27957,31 +27920,31 @@ var DirectionalShadowMapper = (function (_super) {
     __extends(DirectionalShadowMapper, _super);
     function DirectionalShadowMapper() {
         var _this = _super.call(this) || this;
-        _this._pLightOffset = 10000;
-        _this._pSnap = 64;
-        _this._pCullPlanes = [];
-        _this._pOverallDepthProjection = new _awayjs_core.FreeMatrixProjection();
-        _this._pOverallDepthCamera = new Camera(_this._pOverallDepthProjection);
-        _this._pLocalFrustum = [];
-        _this._pMatrix = new _awayjs_core.Matrix3D();
+        _this._lightOffset = 10000;
+        _this._snap = 64;
+        _this._cullPlanes = [];
+        _this._overallDepthProjection = new _awayjs_core.PerspectiveProjection();
+        _this._overallDepthProjection.transform = new _awayjs_core.Transform();
+        _this._localFrustum = [];
+        _this._matrix = new _awayjs_core.Matrix3D();
         return _this;
     }
     Object.defineProperty(DirectionalShadowMapper.prototype, "snap", {
         get: function () {
-            return this._pSnap;
+            return this._snap;
         },
         set: function (value) {
-            this._pSnap = value;
+            this._snap = value;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(DirectionalShadowMapper.prototype, "lightOffset", {
         get: function () {
-            return this._pLightOffset;
+            return this._lightOffset;
         },
         set: function (value) {
-            this._pLightOffset = value;
+            this._lightOffset = value;
         },
         enumerable: true,
         configurable: true
@@ -27989,7 +27952,7 @@ var DirectionalShadowMapper = (function (_super) {
     Object.defineProperty(DirectionalShadowMapper.prototype, "iDepthProjection", {
         //@arcane
         get: function () {
-            return this._pOverallDepthProjection.viewMatrix3D;
+            return this._overallDepthProjection.viewMatrix3D;
         },
         enumerable: true,
         configurable: true
@@ -27997,7 +27960,7 @@ var DirectionalShadowMapper = (function (_super) {
     Object.defineProperty(DirectionalShadowMapper.prototype, "depth", {
         //@arcane
         get: function () {
-            return this._pMaxZ - this._pMinZ;
+            return this._maxZ - this._minZ;
         },
         enumerable: true,
         configurable: true
@@ -28008,30 +27971,34 @@ var DirectionalShadowMapper = (function (_super) {
         _super.prototype.iSetDepthMap.call(this, depthMap);
         if (this._depthMap) {
             this._explicitDepthMap = true;
-            this._pDepthMapSize = depthMap.image2D.rect.width;
+            this._depthMapSize = depthMap.image2D.rect.width;
         }
         else {
             this._explicitDepthMap = false;
         }
     };
-    DirectionalShadowMapper.prototype.pCreateDepthTexture = function () {
-        return new _awayjs_graphics.Single2DTexture(new _awayjs_graphics.Image2D(this._pDepthMapSize, this._pDepthMapSize));
+    DirectionalShadowMapper.prototype._createDepthTexture = function () {
+        return new _awayjs_graphics.Single2DTexture(new _awayjs_graphics.Image2D(this._depthMapSize, this._depthMapSize));
     };
     //@override
-    DirectionalShadowMapper.prototype.pDrawDepthMap = function (view, target, renderer) {
-        renderer.cullPlanes = this._pCullPlanes;
-        renderer._iRender(this._pOverallDepthCamera, view, target.image2D);
+    DirectionalShadowMapper.prototype._drawDepthMap = function (view, target, renderer) {
+        renderer.cullPlanes = this._cullPlanes;
+        renderer._iRender(this._overallDepthProjection, view, target.image2D);
     };
-    //@protected
-    DirectionalShadowMapper.prototype.pUpdateCullPlanes = function (camera) {
-        var lightFrustumPlanes = this._pOverallDepthProjection.frustumPlanes;
-        var viewFrustumPlanes = camera.projection.frustumPlanes;
-        this._pCullPlanes.length = 4;
-        this._pCullPlanes[0] = lightFrustumPlanes[0];
-        this._pCullPlanes[1] = lightFrustumPlanes[1];
-        this._pCullPlanes[2] = lightFrustumPlanes[2];
-        this._pCullPlanes[3] = lightFrustumPlanes[3];
-        var light = this._pLight;
+    /**
+     *
+     * @param projection
+     * @private
+     */
+    DirectionalShadowMapper.prototype._updateCullPlanes = function (projection) {
+        var lightFrustumPlanes = this._overallDepthProjection.frustumPlanes;
+        var viewFrustumPlanes = projection.frustumPlanes;
+        this._cullPlanes.length = 4;
+        this._cullPlanes[0] = lightFrustumPlanes[0];
+        this._cullPlanes[1] = lightFrustumPlanes[1];
+        this._cullPlanes[2] = lightFrustumPlanes[2];
+        this._cullPlanes[3] = lightFrustumPlanes[3];
+        var light = this._light;
         var dir = light.sceneDirection;
         var dirX = dir.x;
         var dirY = dir.y;
@@ -28040,41 +28007,50 @@ var DirectionalShadowMapper = (function (_super) {
         for (var i = 0; i < 6; ++i) {
             var plane = viewFrustumPlanes[i];
             if (plane.a * dirX + plane.b * dirY + plane.c * dirZ < 0)
-                this._pCullPlanes[j++] = plane;
+                this._cullPlanes[j++] = plane;
         }
     };
-    //@override
-    DirectionalShadowMapper.prototype.pUpdateDepthProjection = function (camera) {
-        this.pUpdateProjectionFromFrustumCorners(camera, camera.projection.frustumCorners, this._pMatrix);
-        this._pOverallDepthProjection.frustumMatrix3D = this._pMatrix;
-        this.pUpdateCullPlanes(camera);
+    /**
+     *
+     * @param projection
+     * @private
+     */
+    DirectionalShadowMapper.prototype._updateDepthProjection = function (projection) {
+        this._updateProjectionFromFrustumCorners(projection, projection.frustumCorners, this._matrix);
+        this._overallDepthProjection.frustumMatrix3D = this._matrix;
+        this._updateCullPlanes(projection);
     };
-    DirectionalShadowMapper.prototype.pUpdateProjectionFromFrustumCorners = function (camera, corners, matrix) {
+    /**
+     *
+     * @param projection
+     * @param matrix
+     * @private
+     */
+    DirectionalShadowMapper.prototype._updateProjectionFromFrustumCorners = function (projection, corners, matrix) {
         var dir;
         var x, y, z;
         var minX, minY;
         var maxX, maxY;
         var i;
-        var light = this._pLight;
+        var position = projection.transform.concatenatedMatrix3D.position;
+        var light = this._light;
         dir = light.sceneDirection;
-        this._pOverallDepthCamera.transform.matrix3D = this._pLight.transform.concatenatedMatrix3D;
-        x = Math.floor((camera.x - dir.x * this._pLightOffset) / this._pSnap) * this._pSnap;
-        y = Math.floor((camera.y - dir.y * this._pLightOffset) / this._pSnap) * this._pSnap;
-        z = Math.floor((camera.z - dir.z * this._pLightOffset) / this._pSnap) * this._pSnap;
-        this._pOverallDepthCamera.x = x;
-        this._pOverallDepthCamera.y = y;
-        this._pOverallDepthCamera.z = z;
-        this._pMatrix.copyFrom(this._pOverallDepthCamera.transform.inverseConcatenatedMatrix3D);
-        this._pMatrix.prepend(camera.transform.concatenatedMatrix3D);
-        this._pMatrix.transformVectors(corners, this._pLocalFrustum);
-        minX = maxX = this._pLocalFrustum[0];
-        minY = maxY = this._pLocalFrustum[1];
-        this._pMaxZ = this._pLocalFrustum[2];
+        this._overallDepthProjection.transform.matrix3D = this._light.transform.concatenatedMatrix3D;
+        x = Math.floor((position.x - dir.x * this._lightOffset) / this._snap) * this._snap;
+        y = Math.floor((position.y - dir.y * this._lightOffset) / this._snap) * this._snap;
+        z = Math.floor((position.z - dir.z * this._lightOffset) / this._snap) * this._snap;
+        this._overallDepthProjection.transform.moveTo(x, y, z);
+        this._matrix.copyFrom(this._overallDepthProjection.transform.inverseConcatenatedMatrix3D);
+        this._matrix.prepend(projection.transform.concatenatedMatrix3D);
+        this._matrix.transformVectors(corners, this._localFrustum);
+        minX = maxX = this._localFrustum[0];
+        minY = maxY = this._localFrustum[1];
+        this._maxZ = this._localFrustum[2];
         i = 3;
         while (i < 24) {
-            x = this._pLocalFrustum[i];
-            y = this._pLocalFrustum[i + 1];
-            z = this._pLocalFrustum[i + 2];
+            x = this._localFrustum[i];
+            y = this._localFrustum[i + 1];
+            z = this._localFrustum[i + 2];
             if (x < minX)
                 minX = x;
             if (x > maxX)
@@ -28083,21 +28059,21 @@ var DirectionalShadowMapper = (function (_super) {
                 minY = y;
             if (y > maxY)
                 maxY = y;
-            if (z > this._pMaxZ)
-                this._pMaxZ = z;
+            if (z > this._maxZ)
+                this._maxZ = z;
             i += 3;
         }
-        this._pMinZ = 1;
+        this._minZ = 1;
         var w = maxX - minX;
         var h = maxY - minY;
-        var d = 1 / (this._pMaxZ - this._pMinZ);
+        var d = 1 / (this._maxZ - this._minZ);
         if (minX < 0)
-            minX -= this._pSnap; // because int() rounds up for < 0
+            minX -= this._snap; // because int() rounds up for < 0
         if (minY < 0)
-            minY -= this._pSnap;
-        minX = Math.floor(minX / this._pSnap) * this._pSnap;
-        minY = Math.floor(minY / this._pSnap) * this._pSnap;
-        var snap2 = 2 * this._pSnap;
+            minY -= this._snap;
+        minX = Math.floor(minX / this._snap) * this._snap;
+        minY = Math.floor(minY / this._snap) * this._snap;
+        var snap2 = 2 * this._snap;
         w = Math.floor(w / snap2 + 2) * snap2;
         h = Math.floor(h / snap2 + 2) * snap2;
         maxX = minX + w;
@@ -28110,7 +28086,7 @@ var DirectionalShadowMapper = (function (_super) {
         raw[10] = d;
         raw[12] = -(maxX + minX) * w;
         raw[13] = -(maxY + minY) * h;
-        raw[14] = -this._pMinZ * d;
+        raw[14] = -this._minZ * d;
         raw[15] = 1;
         raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
         matrix.invalidatePosition();
@@ -31514,55 +31490,63 @@ var CubeMapShadowMapper = (function (_super) {
     __extends(CubeMapShadowMapper, _super);
     function CubeMapShadowMapper() {
         var _this = _super.call(this) || this;
-        _this._pDepthMapSize = 512;
+        _this._depthMapSize = 512;
         _this._needsRender = new Array();
         _this.initCameras();
         return _this;
     }
     CubeMapShadowMapper.prototype.initCameras = function () {
-        this._depthCameras = new Array();
-        this._projections = new Array();
+        this._depthProjections = new Array();
         // posX, negX, posY, negY, posZ, negZ
-        this.addCamera(0, 90, 0);
-        this.addCamera(0, -90, 0);
-        this.addCamera(-90, 0, 0);
-        this.addCamera(90, 0, 0);
-        this.addCamera(0, 0, 0);
-        this.addCamera(0, 180, 0);
+        this.addProjection(0, 90, 0);
+        this.addProjection(0, -90, 0);
+        this.addProjection(-90, 0, 0);
+        this.addProjection(90, 0, 0);
+        this.addProjection(0, 0, 0);
+        this.addProjection(0, 180, 0);
     };
-    CubeMapShadowMapper.prototype.addCamera = function (rotationX, rotationY, rotationZ) {
-        var cam = new Camera();
-        cam.rotationX = rotationX;
-        cam.rotationY = rotationY;
-        cam.rotationZ = rotationZ;
-        cam.projection.near = .01;
-        var projection = cam.projection;
+    CubeMapShadowMapper.prototype.addProjection = function (rotationX, rotationY, rotationZ) {
+        var projection = new _awayjs_core.PerspectiveProjection();
+        projection.transform.rotateTo(rotationX, rotationY, rotationZ);
+        projection.near = .01;
         projection.fieldOfView = 90;
-        this._projections.push(projection);
-        cam.projection.aspectRatio = 1;
-        this._depthCameras.push(cam);
+        this._depthProjections.push(projection);
     };
-    //@overrides
-    CubeMapShadowMapper.prototype.pCreateDepthTexture = function () {
-        return new _awayjs_graphics.SingleCubeTexture(new _awayjs_graphics.ImageCube(this._pDepthMapSize));
+    /**
+     *
+     * @returns {SingleCubeTexture}
+     * @private
+     */
+    CubeMapShadowMapper.prototype._createDepthTexture = function () {
+        return new _awayjs_graphics.SingleCubeTexture(new _awayjs_graphics.ImageCube(this._depthMapSize));
     };
-    //@override
-    CubeMapShadowMapper.prototype.pUpdateDepthProjection = function (camera) {
-        var light = (this._pLight);
+    /**
+     *
+     * @param projection
+     * @private
+     */
+    CubeMapShadowMapper.prototype._updateDepthProjection = function (projection) {
+        var light = (this._light);
         var maxDistance = light._pFallOff;
-        var pos = this._pLight.scenePosition;
+        var pos = this._light.scenePosition;
         // todo: faces outside frustum which are pointing away from camera need not be rendered!
         for (var i = 0; i < 6; ++i) {
-            this._projections[i].far = maxDistance;
-            this._depthCameras[i].transform.moveTo(pos.x, pos.y, pos.z);
+            this._depthProjections[i].far = maxDistance;
+            this._depthProjections[i].transform.moveTo(pos.x, pos.y, pos.z);
             this._needsRender[i] = true;
         }
     };
-    //@override
-    CubeMapShadowMapper.prototype.pDrawDepthMap = function (view, target, renderer) {
+    /**
+     *
+     * @param view
+     * @param target
+     * @param renderer
+     * @private
+     */
+    CubeMapShadowMapper.prototype._drawDepthMap = function (view, target, renderer) {
         for (var i = 0; i < 6; ++i)
             if (this._needsRender[i])
-                renderer._iRender(this._depthCameras[i], view, target.imageCube, null, i);
+                renderer._iRender(this._depthProjections[i], view, target.imageCube, null, i);
     };
     return CubeMapShadowMapper;
 }(ShadowMapperBase));
@@ -31948,7 +31932,6 @@ var TextureProjector = (function (_super) {
         _this._texture = texture;
         var width = texture.getImageAt(0).width;
         var height = texture.getImageAt(0).height;
-        _this._projection.aspectRatio = width / height;
         _this._projection.setViewRect(0, 0, width, height);
         _this._projection.setStageRect(0, 0, width, height);
         return _this;
@@ -31995,7 +31978,6 @@ var TextureProjector = (function (_super) {
             this._texture = value;
             var width = value.getImageAt(0).width;
             var height = value.getImageAt(0).height;
-            this._projection.aspectRatio = width / height;
             this._projection.setViewRect(0, 0, width, height);
             this._projection.setStageRect(0, 0, width, height);
             this.dispatchEvent(new TextureProjectorEvent(TextureProjectorEvent.TEXTURE_CHANGE));
@@ -32530,7 +32512,7 @@ var CascadeShadowMapper = (function (_super) {
     function CascadeShadowMapper(numCascades) {
         if (numCascades === void 0) { numCascades = 3; }
         var _this = _super.call(this) || this;
-        _this._pScissorRectsInvalid = true;
+        _this._scissorRectsInvalid = true;
         if (numCascades < 1 || numCascades > 4)
             throw new Error("numCascades must be an integer between 1 and 4");
         _this._numCascades = numCascades;
@@ -32550,7 +32532,7 @@ var CascadeShadowMapper = (function (_super) {
         this._splitRatios[index] = value;
     };
     CascadeShadowMapper.prototype.getDepthProjections = function (partition /*uint*/) {
-        return this._depthLenses[partition].viewMatrix3D;
+        return this._depthProjections[partition].viewMatrix3D;
     };
     CascadeShadowMapper.prototype.init = function () {
         this._splitRatios = new Array(this._numCascades);
@@ -32563,19 +32545,16 @@ var CascadeShadowMapper = (function (_super) {
         this._texOffsetsX = Array(-1, 1, -1, 1);
         this._texOffsetsY = Array(1, 1, -1, -1);
         this._pScissorRects = new Array(4);
-        this._depthLenses = new Array();
-        this._depthCameras = new Array();
-        for (i = 0; i < this._numCascades; ++i) {
-            this._depthLenses[i] = new _awayjs_core.FreeMatrixProjection();
-            this._depthCameras[i] = new Camera(this._depthLenses[i]);
-        }
+        this._depthProjections = new Array();
+        for (i = 0; i < this._numCascades; ++i)
+            this._depthProjections[i] = new _awayjs_core.PerspectiveProjection();
     };
-    CascadeShadowMapper.prototype._pSetDepthMapSize = function (value /*uint*/) {
-        _super.prototype._pSetDepthMapSize.call(this, value);
+    CascadeShadowMapper.prototype._setDepthMapSize = function (value /*uint*/) {
+        _super.prototype._setDepthMapSize.call(this, value);
         this.invalidateScissorRects();
     };
     CascadeShadowMapper.prototype.invalidateScissorRects = function () {
-        this._pScissorRectsInvalid = true;
+        this._scissorRectsInvalid = true;
     };
     Object.defineProperty(CascadeShadowMapper.prototype, "numCascades", {
         get: function () {
@@ -32594,35 +32573,34 @@ var CascadeShadowMapper = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    CascadeShadowMapper.prototype.pDrawDepthMap = function (view, target, renderer) {
-        if (this._pScissorRectsInvalid)
+    CascadeShadowMapper.prototype._drawDepthMap = function (view, target, renderer) {
+        if (this._scissorRectsInvalid)
             this.updateScissorRects();
-        renderer.cullPlanes = this._pCullPlanes;
-        renderer._iRenderCascades(this._pOverallDepthCamera, view, target.image2D, this._numCascades, this._pScissorRects, this._depthCameras);
+        renderer.cullPlanes = this._cullPlanes;
+        renderer._iRenderCascades(this._overallDepthProjection, view, target.image2D, this._numCascades, this._pScissorRects, this._depthProjections);
     };
     CascadeShadowMapper.prototype.updateScissorRects = function () {
-        var half = this._pDepthMapSize * .5;
+        var half = this._depthMapSize * .5;
         this._pScissorRects[0] = new _awayjs_core.Rectangle(0, 0, half, half);
         this._pScissorRects[1] = new _awayjs_core.Rectangle(half, 0, half, half);
         this._pScissorRects[2] = new _awayjs_core.Rectangle(0, half, half, half);
         this._pScissorRects[3] = new _awayjs_core.Rectangle(half, half, half, half);
-        this._pScissorRectsInvalid = false;
+        this._scissorRectsInvalid = false;
     };
-    CascadeShadowMapper.prototype.pUpdateDepthProjection = function (camera) {
+    CascadeShadowMapper.prototype._updateDepthProjection = function (projection) {
         var matrix;
-        var projection = camera.projection;
         var projectionNear = projection.near;
         var projectionRange = projection.far - projectionNear;
-        this.pUpdateProjectionFromFrustumCorners(camera, camera.projection.frustumCorners, this._pMatrix);
-        this._pMatrix.appendScale(.96, .96, 1);
-        this._pOverallDepthProjection.frustumMatrix3D = this._pMatrix;
-        this.pUpdateCullPlanes(camera);
+        this._updateProjectionFromFrustumCorners(projection, projection.frustumCorners, this._matrix);
+        this._matrix.appendScale(.96, .96, 1);
+        this._overallDepthProjection.frustumMatrix3D = this._matrix;
+        this._updateCullPlanes(projection);
         for (var i = 0; i < this._numCascades; ++i) {
-            matrix = this._depthLenses[i].frustumMatrix3D;
+            matrix = this._depthProjections[i].frustumMatrix3D;
             this._nearPlaneDistances[i] = projectionNear + this._splitRatios[i] * projectionRange;
-            this._depthCameras[i].transform.matrix3D = this._pOverallDepthCamera.transform.matrix3D;
+            this._depthProjections[i].transform.matrix3D = this._overallDepthProjection.transform.matrix3D;
             this.updateProjectionPartition(matrix, this._splitRatios[i], this._texOffsetsX[i], this._texOffsetsY[i]);
-            this._depthLenses[i].frustumMatrix3D = matrix;
+            this._depthProjections[i].frustumMatrix3D = matrix;
         }
     };
     CascadeShadowMapper.prototype.updateProjectionPartition = function (matrix, splitRatio, texOffsetX, texOffsetY) {
@@ -32632,12 +32610,12 @@ var CascadeShadowMapper = (function (_super) {
         var maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY, maxZ = Number.NEGATIVE_INFINITY;
         var i = 0;
         while (i < 12) {
-            xN = this._pLocalFrustum[i];
-            yN = this._pLocalFrustum[i + 1];
-            zN = this._pLocalFrustum[i + 2];
-            xF = xN + (this._pLocalFrustum[i + 12] - xN) * splitRatio;
-            yF = yN + (this._pLocalFrustum[i + 13] - yN) * splitRatio;
-            zF = zN + (this._pLocalFrustum[i + 14] - zN) * splitRatio;
+            xN = this._localFrustum[i];
+            yN = this._localFrustum[i + 1];
+            zN = this._localFrustum[i + 2];
+            xF = xN + (this._localFrustum[i + 12] - xN) * splitRatio;
+            yF = yN + (this._localFrustum[i + 13] - yN) * splitRatio;
+            zF = zN + (this._localFrustum[i + 14] - zN) * splitRatio;
             if (xN < minX)
                 minX = xN;
             if (xN > maxX)
@@ -32665,12 +32643,12 @@ var CascadeShadowMapper = (function (_super) {
         var h = (maxY - minY);
         var d = 1 / (maxZ - minZ);
         if (minX < 0)
-            minX -= this._pSnap; // because int() rounds up for < 0
+            minX -= this._snap; // because int() rounds up for < 0
         if (minY < 0)
-            minY -= this._pSnap;
-        minX = Math.floor(minX / this._pSnap) * this._pSnap;
-        minY = Math.floor(minY / this._pSnap) * this._pSnap;
-        var snap2 = 2 * this._pSnap;
+            minY -= this._snap;
+        minX = Math.floor(minX / this._snap) * this._snap;
+        minY = Math.floor(minY / this._snap) * this._snap;
+        var snap2 = 2 * this._snap;
         w = Math.floor(w / snap2 + 1) * snap2;
         h = Math.floor(h / snap2 + 1) * snap2;
         maxX = minX + w;
@@ -32725,15 +32703,15 @@ var NearDirectionalShadowMapper = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    NearDirectionalShadowMapper.prototype.pUpdateDepthProjection = function (camera) {
-        var corners = camera.projection.frustumCorners;
+    NearDirectionalShadowMapper.prototype._updateDepthProjection = function (projection) {
+        var corners = projection.frustumCorners;
         for (var i = 0; i < 12; ++i) {
             var v = corners[i];
-            this._pLocalFrustum[i] = v;
-            this._pLocalFrustum[i + 12] = v + (corners[i + 12] - v) * this._coverageRatio;
+            this._localFrustum[i] = v;
+            this._localFrustum[i + 12] = v + (corners[i + 12] - v) * this._coverageRatio;
         }
-        this.pUpdateProjectionFromFrustumCorners(camera, this._pLocalFrustum, this._pMatrix);
-        this._pOverallDepthProjection.frustumMatrix3D = this._pMatrix;
+        this._updateProjectionFromFrustumCorners(projection, this._localFrustum, this._matrix);
+        this._overallDepthProjection.frustumMatrix3D = this._matrix;
     };
     return NearDirectionalShadowMapper;
 }(DirectionalShadowMapper));
@@ -36041,7 +36019,7 @@ var ParticleStateBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleStateBase.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleStateBase.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
     };
     ParticleStateBase.prototype._pUpdateDynamicProperties = function (animationElements) {
         this._pDynamicPropertiesDirty[animationElements._iUniqueId] = true;
@@ -36122,7 +36100,7 @@ var ParticleAccelerationState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAccelerationState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleAccelerationState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleAccelerationState.ACCELERATION_INDEX);
         if (this._particleAccelerationNode.mode == ParticlePropertiesMode.LOCAL_STATIC)
             animationElements.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stage, _awayjs_stage.ContextGLVertexBufferFormat.FLOAT_3);
@@ -36357,7 +36335,7 @@ var ParticleBezierCurveState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleBezierCurveState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleBezierCurveState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var controlIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_CONTROL_INDEX);
         var endIndex = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveState.BEZIER_END_INDEX);
         if (this._particleBezierCurveNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
@@ -36483,11 +36461,11 @@ var ParticleBillboardState = (function (_super) {
         _this._billboardAxis = particleNode._iBillboardAxis;
         return _this;
     }
-    ParticleBillboardState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleBillboardState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var comps;
         if (this._billboardAxis) {
             var pos = renderable.sourceEntity.transform.concatenatedMatrix3D.position;
-            var look = camera.transform.concatenatedMatrix3D.position.subtract(pos);
+            var look = projection.transform.concatenatedMatrix3D.position.subtract(pos);
             var right = look.crossProduct(this._billboardAxis);
             right.normalize();
             look = this.billboardAxis.crossProduct(right);
@@ -36504,7 +36482,7 @@ var ParticleBillboardState = (function (_super) {
         else {
             //create a quick inverse projection matrix
             this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-            this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
+            this._matrix.append(projection.transform.inverseConcatenatedMatrix3D);
             //decompose using axis angle rotations
             comps = this._matrix.decompose(_awayjs_core.Orientation3D.AXIS_ANGLE);
             //recreate the matrix with just the rotation data
@@ -36660,7 +36638,7 @@ var ParticleColorState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (shader.usesFragmentAnimation) {
             var dataOffset = this._particleColorNode._iDataOffset;
             var index;
@@ -36743,7 +36721,7 @@ var ParticleTimeState = (function (_super) {
         _this._particleTimeNode = particleTimeNode;
         return _this;
     }
-    ParticleTimeState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleTimeState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         animationElements.activateVertexBuffer(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stage, _awayjs_stage.ContextGLVertexBufferFormat.FLOAT_4);
         var particleTime = this._pTime / 1000;
         shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleTimeState.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
@@ -37486,7 +37464,7 @@ var ParticleFollowState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleFollowState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleFollowState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (this._followTarget) {
             if (this._particleFollowNode._iUsesPosition) {
                 this._targetPos.x = this._followTarget.transform.position.x / renderable.sourceEntity.transform.scale.x;
@@ -37802,7 +37780,7 @@ var ParticleInitialColorState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleInitialColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleInitialColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (shader.usesFragmentAnimation) {
             var index;
             if (this._particleInitialColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
@@ -37986,7 +37964,7 @@ var ParticleOrbitState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleOrbitState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleOrbitState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOrbitState.ORBIT_INDEX);
         if (this._particleOrbitNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
             if (this._usesPhase)
@@ -38172,7 +38150,7 @@ var ParticleOscillatorState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleOscillatorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleOscillatorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleOscillatorState.OSCILLATOR_INDEX);
         if (this._particleOscillatorNode.mode == ParticlePropertiesMode.LOCAL_STATIC)
             animationElements.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stage, _awayjs_stage.ContextGLVertexBufferFormat.FLOAT_4);
@@ -38307,7 +38285,7 @@ var ParticlePositionState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticlePositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticlePositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (this._particlePositionNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticlePositionState.POSITION_INDEX);
@@ -38382,10 +38360,10 @@ var ParticleRotateToHeadingState = (function (_super) {
         _this._matrix = new _awayjs_core.Matrix3D();
         return _this;
     }
-    ParticleRotateToHeadingState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleRotateToHeadingState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (this._pParticleAnimator.animationSet.hasBillboard) {
             this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-            this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
+            this._matrix.append(projection.transform.inverseConcatenatedMatrix3D);
             shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingState.MATRIX_INDEX), this._matrix);
         }
     };
@@ -38571,11 +38549,11 @@ var ParticleRotateToPositionState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleRotateToPositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleRotateToPositionState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.POSITION_INDEX);
         if (this._pParticleAnimator.animationSet.hasBillboard) {
             this._matrix.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-            this._matrix.append(camera.transform.inverseConcatenatedMatrix3D);
+            this._matrix.append(projection.transform.inverseConcatenatedMatrix3D);
             shader.setVertexConstFromMatrix(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionState.MATRIX_INDEX), this._matrix);
         }
         if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode.GLOBAL) {
@@ -38801,7 +38779,7 @@ var ParticleRotationalVelocityState = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleRotationalVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleRotationalVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (this._particleRotationalVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleRotationalVelocityState.ROTATIONALVELOCITY_INDEX);
@@ -39016,7 +38994,7 @@ var ParticleScaleState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleScaleState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleScaleState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleScaleState.SCALE_INDEX);
         if (this._particleScaleNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
             if (this._usesCycle) {
@@ -39214,7 +39192,7 @@ var ParticleSegmentedColorState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleSegmentedColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleSegmentedColorState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (shader.usesFragmentAnimation) {
             if (this._numSegmentPoint > 0)
                 shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSegmentedColorState.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
@@ -39507,7 +39485,7 @@ var ParticleSpriteSheetState = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ParticleSpriteSheetState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleSpriteSheetState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (!shader.usesUVTransform) {
             shader.setVertexConst(animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetState.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
             if (this._usesCycle) {
@@ -39710,7 +39688,7 @@ var ParticleUVState = (function (_super) {
         _this._particleUVNode = particleUVNode;
         return _this;
     }
-    ParticleUVState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleUVState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (!shader.usesUVTransform) {
             var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleUVState.UV_INDEX);
             var data = this._particleUVNode._iUvData;
@@ -39867,7 +39845,7 @@ var ParticleVelocityState = (function (_super) {
         this._pDynamicProperties = value;
         this._pDynamicPropertiesDirty = new Object();
     };
-    ParticleVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, camera, stage) {
+    ParticleVelocityState.prototype.setRenderState = function (shader, renderable, animationElements, animationRegisterData, projection, stage) {
         if (this._particleVelocityNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationElements._iUniqueId])
             this._pUpdateDynamicProperties(animationElements);
         var index = animationRegisterData.getRegisterIndex(this._pAnimationNode, ParticleVelocityState.VELOCITY_INDEX);
@@ -41431,7 +41409,7 @@ var AnimatorBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, camera) {
+    AnimatorBase.prototype.setRenderState = function (shader, renderable, stage, projection) {
         throw new _awayjs_core.AbstractMethodError();
     };
     /**
@@ -41633,7 +41611,7 @@ var ParticleAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
+    ParticleAnimator.prototype.setRenderState = function (shader, renderable, stage, projection) {
         var animationRegisterData = this._particleAnimationSet._iAnimationRegisterData;
         var graphics = renderable.sourceEntity.graphics;
         var shape = renderable.shape;
@@ -41643,11 +41621,11 @@ var ParticleAnimator = (function (_super) {
         var animationElements = this._particleAnimationSet.getAnimationElements(graphics, shape);
         var i;
         for (i = 0; i < this._animationParticleStates.length; i++)
-            this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, camera, stage);
+            this._animationParticleStates[i].setRenderState(shader, renderable, animationElements, animationRegisterData, projection, stage);
         //process animator subgeometries
         var animatorElements = this.getAnimatorElements(graphics, shape);
         for (i = 0; i < this._animatorParticleStates.length; i++)
-            this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, camera, stage);
+            this._animatorParticleStates[i].setRenderState(shader, renderable, animatorElements, animationRegisterData, projection, stage);
     };
     /**
      * @inheritDoc
@@ -41947,7 +41925,7 @@ var SkeletonAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
+    SkeletonAnimator.prototype.setRenderState = function (shader, renderable, stage, projection) {
         // do on request of globalProperties
         if (this._globalPropertiesDirty)
             this.updateGlobalProperties();
@@ -42556,7 +42534,7 @@ var VertexAnimator = (function (_super) {
     /**
      * @inheritDoc
      */
-    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, camera) {
+    VertexAnimator.prototype.setRenderState = function (shader, renderable, stage, projection) {
         // todo: add code for when running on cpu
         // this type of animation can only be Shape
         var shape = renderable.shape;
@@ -43903,10 +43881,10 @@ var ShaderBase = (function () {
     /**
      * @inheritDoc
      */
-    ShaderBase.prototype._iActivate = function (camera) {
-        this._stage.context.setCulling(this.useBothSides ? _awayjs_stage.ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
+    ShaderBase.prototype._iActivate = function (projection) {
+        this._stage.context.setCulling(this.useBothSides ? _awayjs_stage.ContextGLTriangleFace.NONE : this._defaultCulling, projection.coordinateSystem);
         if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
-            var pos = camera.scenePosition;
+            var pos = projection.transform.concatenatedMatrix3D.position;
             this.vertexConstantData[this.cameraPositionIndex] = pos.x;
             this.vertexConstantData[this.cameraPositionIndex + 1] = pos.y;
             this.vertexConstantData[this.cameraPositionIndex + 2] = pos.z;
@@ -43931,9 +43909,9 @@ var ShaderBase = (function () {
      * @param stage
      * @param camera
      */
-    ShaderBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
+    ShaderBase.prototype._setRenderState = function (renderable, projection) {
         if (renderable.sourceEntity.animator)
-            renderable.sourceEntity.animator.setRenderState(this, renderable, this._stage, camera);
+            renderable.sourceEntity.animator.setRenderState(this, renderable, this._stage, projection);
         var rawData;
         if (this.usesUVTransform) {
             var uvMatrix = renderable.uvMatrix;
@@ -43986,7 +43964,7 @@ var ShaderBase = (function () {
         }
         if (this.usesTangentSpace && this.cameraPositionIndex >= 0) {
             renderable.sourceEntity.transform.inverseConcatenatedMatrix3D.copyRawDataTo(this._pInverseSceneMatrix);
-            var pos = camera.scenePosition;
+            var pos = projection.transform.concatenatedMatrix3D.position;
             var x = pos.x;
             var y = pos.y;
             var z = pos.z;
@@ -44419,8 +44397,8 @@ var GL_MaterialPassBase = (function (_super) {
      *
      * @internal
      */
-    GL_MaterialPassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        this._shader._setRenderState(renderable, camera, viewProjection);
+    GL_MaterialPassBase.prototype._setRenderState = function (renderable, projection) {
+        this._shader._setRenderState(renderable, projection);
     };
     /**
      * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
@@ -44429,8 +44407,8 @@ var GL_MaterialPassBase = (function (_super) {
      * @param camera The camera from which the scene is viewed.
      * @private
      */
-    GL_MaterialPassBase.prototype._iActivate = function (camera) {
-        this._shader._iActivate(camera);
+    GL_MaterialPassBase.prototype._iActivate = function (projection) {
+        this._shader._iActivate(projection);
     };
     /**
      * Clears the render state for the pass. This needs to be called before activating another pass.
@@ -44540,8 +44518,8 @@ var GL_DepthMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DepthMaterial.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
+    GL_DepthMaterial.prototype._iActivate = function (projection) {
+        _super.prototype._iActivate.call(this, projection);
         if (this._textureVO && this._shader.alphaThreshold > 0) {
             this._textureVO.activate(this);
             this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
@@ -44831,7 +44809,6 @@ var RendererBase = (function (_super) {
         _this._backgroundAlpha = 1;
         _this.textureRatioX = 1;
         _this.textureRatioY = 1;
-        _this._pRttViewProjectionMatrix = new _awayjs_core.Matrix3D();
         _this._localPos = new _awayjs_core.Point();
         _this._globalPos = new _awayjs_core.Point();
         _this._pScissorRect = new _awayjs_core.Rectangle();
@@ -45016,7 +44993,7 @@ var RendererBase = (function (_super) {
     RendererBase.prototype.getMaterialPool = function (elements) {
         return this._materialPools[elements.elementsType] || (this._materialPools[elements.elementsType] = new MaterialPool(elements.elementsClass, this._pStage, this._materialClassGL));
     };
-    RendererBase.prototype.activatePass = function (pass, camera) {
+    RendererBase.prototype.activatePass = function (pass, projection) {
         //clear unused vertex streams
         var i;
         for (i = pass.shader.numUsedStreams; i < this._numUsedStreams; i++)
@@ -45035,7 +45012,7 @@ var RendererBase = (function (_super) {
         //set program data
         this._pContext.setProgram(programData.program);
         //activate shader object through pass
-        pass._iActivate(camera);
+        pass._iActivate(projection);
     };
     RendererBase.prototype.deactivatePass = function (pass) {
         //deactivate shader object through pass
@@ -45140,7 +45117,7 @@ var RendererBase = (function (_super) {
      * @param surfaceSelector The index of a CubeTexture's face to render to.
      * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
      */
-    RendererBase.prototype._iRender = function (camera, view, target, scissorRect, surfaceSelector) {
+    RendererBase.prototype._iRender = function (projection, view, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
@@ -45151,10 +45128,9 @@ var RendererBase = (function (_super) {
         this._pBlendedRenderableHead = null;
         this._pOpaqueRenderableHead = null;
         this._pNumElements = 0;
-        this._cameraPosition = camera.scenePosition;
-        this._cameraTransform = camera.transform.concatenatedMatrix3D;
-        this._cameraForward = camera.transform.forwardVector;
-        this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : camera.projection.frustumPlanes;
+        this._cameraTransform = projection.transform.concatenatedMatrix3D;
+        this._cameraForward = projection.transform.forwardVector;
+        this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : projection.frustumPlanes;
         this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
         RendererBase._iCollectionMark++;
         view.traversePartitions(this);
@@ -45163,9 +45139,9 @@ var RendererBase = (function (_super) {
             this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
             this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
         }
-        this._pRttViewProjectionMatrix.copyFrom(camera.projection.viewMatrix3D);
-        this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
-        this.pExecuteRender(camera, view, target, scissorRect, surfaceSelector);
+        // this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
+        // this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
+        this.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
         // invalidate target (if target exists) to regenerate mipmaps (if required)
         if (target)
             target.invalidate();
@@ -45175,7 +45151,7 @@ var RendererBase = (function (_super) {
             this._pContext.setTextureAt(i, null);
         }
     };
-    RendererBase.prototype._iRenderCascades = function (camera, view, target, numCascades, scissorRects, cameras) {
+    RendererBase.prototype._iRenderCascades = function (projection, view, target, numCascades, scissorRects, projections) {
         this._pStage.setRenderTarget(target, true, 0);
         this._pContext.clear(1, 1, 1, 1, 1, 0);
         this._pContext.setBlendFactors(_awayjs_stage.ContextGLBlendFactor.ONE, _awayjs_stage.ContextGLBlendFactor.ZERO);
@@ -45199,7 +45175,7 @@ var RendererBase = (function (_super) {
      * @param surfaceSelector The index of a CubeTexture's face to render to.
      * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
      */
-    RendererBase.prototype.pExecuteRender = function (camera, view, target, scissorRect, surfaceSelector) {
+    RendererBase.prototype.pExecuteRender = function (projection, view, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
@@ -45212,7 +45188,7 @@ var RendererBase = (function (_super) {
          _backgroundImageRenderer.render();
          */
         this._pContext.setBlendFactors(_awayjs_stage.ContextGLBlendFactor.ONE, _awayjs_stage.ContextGLBlendFactor.ZERO);
-        this.pDraw(camera);
+        this.pDraw(projection);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
         //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
         if (!this.shareContext) {
@@ -45233,13 +45209,13 @@ var RendererBase = (function (_super) {
     /**
      * Performs the actual drawing of geometry to the target.
      */
-    RendererBase.prototype.pDraw = function (camera) {
+    RendererBase.prototype.pDraw = function (projection) {
         this._pContext.setDepthTest(true, _awayjs_stage.ContextGLCompareMode.LESS_EQUAL);
         if (this._disableColor)
             this._pContext.setColorMask(false, false, false, false);
-        this.drawRenderables(camera, this._pOpaqueRenderableHead);
+        this.drawRenderables(projection, this._pOpaqueRenderableHead);
         if (this._renderBlended)
-            this.drawRenderables(camera, this._pBlendedRenderableHead);
+            this.drawRenderables(projection, this._pBlendedRenderableHead);
         if (this._disableColor)
             this._pContext.setColorMask(true, true, true, true);
     };
@@ -45279,7 +45255,7 @@ var RendererBase = (function (_super) {
      *
      * @param renderables The renderables to draw.
      */
-    RendererBase.prototype.drawRenderables = function (camera, renderableGL) {
+    RendererBase.prototype.drawRenderables = function (projection, renderableGL) {
         var i;
         var len;
         var renderableGL2;
@@ -45319,7 +45295,7 @@ var RendererBase = (function (_super) {
                         this._pContext.setStencilReferenceValue(0);
                     }
                     else {
-                        this._renderMasks(camera, renderableGL.sourceEntity._iAssignedMasks());
+                        this._renderMasks(projection, renderableGL.sourceEntity._iAssignedMasks());
                     }
                     this._activeMasksDirty = false;
                 }
@@ -45328,14 +45304,14 @@ var RendererBase = (function (_super) {
                 for (i = 0; i < len; i++) {
                     renderableGL2 = renderableGL;
                     pass = passes[i];
-                    this.activatePass(pass, camera);
+                    this.activatePass(pass, projection);
                     do {
                         if (renderableGL2.maskId !== -1) {
                             if (i == 0)
                                 this._registerMask(renderableGL2);
                         }
                         else {
-                            renderableGL2._iRender(pass, camera, this._pRttViewProjectionMatrix);
+                            renderableGL2._iRender(pass, projection);
                         }
                         renderableGL2 = renderableGL2.next;
                     } while (renderableGL2 && renderableGL2.materialGL == materialGL && !(this._activeMasksDirty = this._checkMasksConfig(renderableGL2.masksConfig)));
@@ -45463,7 +45439,7 @@ var RendererBase = (function (_super) {
         this._sourceEntity = entity;
         this._renderablePool = this.getAbstraction(entity);
         // project onto camera's z-axis
-        this._zIndex = entity.zOffset + this._cameraPosition.subtract(entity.scenePosition).dotProduct(this._cameraForward);
+        this._zIndex = entity.zOffset + this._cameraTransform.position.subtract(entity.scenePosition).dotProduct(this._cameraForward);
         //save sceneTransform
         this._renderSceneTransform = entity.getRenderSceneTransform(this._cameraTransform);
         //collect renderables
@@ -45516,7 +45492,7 @@ var RendererBase = (function (_super) {
         //console.log("registerMask");
         this._registeredMasks.push(obj);
     };
-    RendererBase.prototype._renderMasks = function (camera, masks) {
+    RendererBase.prototype._renderMasks = function (projection, masks) {
         //var gl = this._pContext["_gl"];
         //f (!gl)
         //	return;
@@ -45556,7 +45532,7 @@ var RendererBase = (function (_super) {
                     //console.log("testing for " + mask["hierarchicalMaskID"] + ", " + mask.name);
                     if (renderableGL.maskId == mask.id) {
                         //console.log("Rendering hierarchicalMaskID " + mask["hierarchicalMaskID"]);
-                        this._drawMask(camera, renderableGL);
+                        this._drawMask(projection, renderableGL);
                     }
                 }
             }
@@ -45569,15 +45545,15 @@ var RendererBase = (function (_super) {
         this._pContext.setDepthTest(true, _awayjs_stage.ContextGLCompareMode.LESS_EQUAL);
         //this._stage.setRenderTarget(oldRenderTarget);
     };
-    RendererBase.prototype._drawMask = function (camera, renderableGL) {
+    RendererBase.prototype._drawMask = function (projection, renderableGL) {
         var materialGL = renderableGL.materialGL;
         var passes = materialGL.passes;
         var len = passes.length;
         var pass = passes[len - 1];
-        this.activatePass(pass, camera);
+        this.activatePass(pass, projection);
         this._pContext.setDepthTest(false, _awayjs_stage.ContextGLCompareMode.LESS_EQUAL); //TODO: setup so as not to override activate
         // only render last pass for now
-        renderableGL._iRender(pass, camera, this._pRttViewProjectionMatrix);
+        renderableGL._iRender(pass, projection);
         this.deactivatePass(pass);
     };
     RendererBase.prototype._checkMasksConfig = function (masksConfig) {
@@ -45714,9 +45690,9 @@ var GL_DistanceMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DistanceMaterial.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
-        var f = camera.projection.far;
+    GL_DistanceMaterial.prototype._iActivate = function (projection) {
+        _super.prototype._iActivate.call(this, projection);
+        var f = projection.far;
         f = 1 / (2 * f * f);
         // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
         var index = this._fragmentConstantsIndex;
@@ -46063,28 +46039,28 @@ var DefaultRenderer = (function (_super) {
         this._pointLights.length = 0;
         this._lightProbes.length = 0;
         if (this._pFilter3DRenderer && this._pContext) {
-            this._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
+            this._iRender(view.camera.projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pFilter3DRenderer.renderToTextureRect);
             this._pFilter3DRenderer.render(this._pStage, view.camera, this._pDepthRender);
         }
         else {
             if (this.shareContext)
-                this._iRender(view.camera, view, null, this._pScissorRect);
+                this._iRender(view.camera.projection, view, null, this._pScissorRect);
             else
-                this._iRender(view.camera, view);
+                this._iRender(view.camera.projection, view);
         }
         if (!this.shareContext && this._pContext)
             this._pContext.present();
         // register that a view has been rendered
         this._pStage.bufferClear = false;
     };
-    DefaultRenderer.prototype.pExecuteRender = function (camera, view, target, scissorRect, surfaceSelector) {
+    DefaultRenderer.prototype.pExecuteRender = function (projection, view, target, scissorRect, surfaceSelector) {
         if (target === void 0) { target = null; }
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
-        this.updateLights(camera, view);
-        _super.prototype.pExecuteRender.call(this, camera, view, target, scissorRect, surfaceSelector);
+        this.updateLights(projection, view);
+        _super.prototype.pExecuteRender.call(this, projection, view, target, scissorRect, surfaceSelector);
     };
-    DefaultRenderer.prototype.updateLights = function (camera, view) {
+    DefaultRenderer.prototype.updateLights = function (projection, view) {
         var len, i;
         var light;
         var shadowMapper;
@@ -46144,12 +46120,12 @@ var DefaultRenderer = (function (_super) {
         if (this._pFilter3DRenderer) {
             this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
             this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-            this._depthRenderer._iRender(view.camera, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
+            this._depthRenderer._iRender(view.camera.projection, view, this._pFilter3DRenderer.getMainInputTexture(this._pStage), this._pRttBufferManager.renderToTextureRect);
         }
         else {
             this._depthRenderer.textureRatioX = 1;
             this._depthRenderer.textureRatioY = 1;
-            this._depthRenderer._iRender(view.camera, view);
+            this._depthRenderer._iRender(view.camera.projection, view);
         }
         this._depthRenderer.disableColor = false;
     };
@@ -46161,7 +46137,7 @@ var DefaultRenderer = (function (_super) {
             this.initDepthTexture(this._pStage.context);
         this._depthRenderer.textureRatioX = this._pRttBufferManager.textureRatioX;
         this._depthRenderer.textureRatioY = this._pRttBufferManager.textureRatioY;
-        this._depthRenderer._iRender(view.camera, view, this._pDepthRender);
+        this._depthRenderer._iRender(view.camera.projection, view, this._pDepthRender);
     };
     /**
      * Updates the backbuffer dimensions.
@@ -46306,7 +46282,7 @@ var GL_ElementsBase = (function (_super) {
             this._overflow = null;
         }
     };
-    GL_ElementsBase.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
+    GL_ElementsBase.prototype._setRenderState = function (renderable, shader, projection) {
         if (!this._verticesUpdated)
             this._updateIndices();
         //TODO replace overflow system with something sensible
@@ -46315,7 +46291,7 @@ var GL_ElementsBase = (function (_super) {
         // if (this._overflow)
         // 	this._overflow._iRender(renderable, camera, viewProjection);
     };
-    GL_ElementsBase.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+    GL_ElementsBase.prototype.draw = function (renderable, shader, projection, count, offset) {
         throw new _awayjs_core.AbstractMethodError();
     };
     /**
@@ -46543,8 +46519,8 @@ var GL_LineElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._lineElements = null;
     };
-    GL_LineElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
+    GL_LineElements.prototype._setRenderState = function (renderable, shader, projection) {
+        _super.prototype._setRenderState.call(this, renderable, shader, projection);
         if (shader.colorBufferIndex >= 0)
             this.activateVertexBufferVO(shader.colorBufferIndex, this._lineElements.colors);
         this.activateVertexBufferVO(0, this._lineElements.positions, 3);
@@ -46557,16 +46533,16 @@ var GL_LineElements = (function (_super) {
         shader.vertexConstantData[10 + 16] = -1;
         shader.vertexConstantData[12 + 16] = this._thickness / ((this._stage.scissorRect) ? Math.min(this._stage.scissorRect.width, this._stage.scissorRect.height) : Math.min(this._stage.width, this._stage.height));
         shader.vertexConstantData[13 + 16] = 1 / 255;
-        shader.vertexConstantData[14 + 16] = camera.projection.near;
+        shader.vertexConstantData[14 + 16] = projection.near;
         var context = this._stage.context;
     };
-    GL_LineElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+    GL_LineElements.prototype.draw = function (renderable, shader, projection, count, offset) {
         var context = this._stage.context;
         // projection matrix
-        shader.viewMatrix.copyFrom(camera.projection.frustumMatrix3D, true);
+        shader.viewMatrix.copyFrom(projection.frustumMatrix3D, true);
         var matrix3D = _awayjs_core.Matrix3D.CALCULATION_MATRIX;
         matrix3D.copyFrom(renderable.sourceEntity.transform.concatenatedMatrix3D);
-        matrix3D.append(camera.transform.inverseConcatenatedMatrix3D);
+        matrix3D.append(projection.transform.inverseConcatenatedMatrix3D);
         shader.sceneMatrix.copyFrom(matrix3D, true);
         context.setProgramConstantsFromArray(_awayjs_stage.ContextGLProgramType.VERTEX, shader.vertexConstantData);
         if (this._indices)
@@ -46647,8 +46623,8 @@ var GL_TriangleElements = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._triangleElements = null;
     };
-    GL_TriangleElements.prototype._setRenderState = function (renderable, shader, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, shader, camera, viewProjection);
+    GL_TriangleElements.prototype._setRenderState = function (renderable, shader, projection) {
+        _super.prototype._setRenderState.call(this, renderable, shader, projection);
         //set buffers
         //TODO: find a better way to update a concatenated buffer when autoderiving
         if (shader.normalIndex >= 0 && this._triangleElements.autoDeriveNormals)
@@ -46671,16 +46647,16 @@ var GL_TriangleElements = (function (_super) {
             this.activateVertexBufferVO(shader.jointIndexIndex, this._triangleElements.jointWeights);
         this.activateVertexBufferVO(0, this._triangleElements.positions);
     };
-    GL_TriangleElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+    GL_TriangleElements.prototype.draw = function (renderable, shader, projection, count, offset) {
         //set constants
         if (shader.sceneMatrixIndex >= 0) {
             shader.sceneMatrix.copyFrom(renderable.renderSceneTransform, true);
-            shader.viewMatrix.copyFrom(viewProjection, true);
+            shader.viewMatrix.copyFrom(projection.viewMatrix3D, true);
         }
         else {
             var matrix3D = _awayjs_core.Matrix3D.CALCULATION_MATRIX;
             matrix3D.copyFrom(renderable.renderSceneTransform);
-            matrix3D.append(viewProjection);
+            matrix3D.append(projection.viewMatrix3D);
             shader.viewMatrix.copyFrom(matrix3D, true);
         }
         var context = this._stage.context;
@@ -46768,19 +46744,18 @@ var GL_SkyboxElements = (function (_super) {
     GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
-    GL_SkyboxElements.prototype.draw = function (renderable, shader, camera, viewProjection, count, offset) {
+    GL_SkyboxElements.prototype.draw = function (renderable, shader, projection, count, offset) {
         var index = shader.scenePositionIndex;
-        var pos = camera.scenePosition;
-        shader.vertexConstantData[index++] = 2 * pos.x;
-        shader.vertexConstantData[index++] = 2 * pos.y;
-        shader.vertexConstantData[index++] = 2 * pos.z;
+        var camPos = projection.transform.concatenatedMatrix3D.position;
+        shader.vertexConstantData[index++] = 2 * camPos.x;
+        shader.vertexConstantData[index++] = 2 * camPos.y;
+        shader.vertexConstantData[index++] = 2 * camPos.z;
         shader.vertexConstantData[index++] = 1;
-        shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = camera.projection.far / Math.sqrt(3);
+        shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = shader.vertexConstantData[index++] = projection.far / Math.sqrt(3);
         shader.vertexConstantData[index] = 1;
         var near = new _awayjs_core.Vector3D();
-        this._skyboxProjection.copyFrom(viewProjection);
+        this._skyboxProjection.copyFrom(projection.viewMatrix3D);
         this._skyboxProjection.copyRowTo(2, near);
-        var camPos = camera.scenePosition;
         var cx = near.x;
         var cy = near.y;
         var cz = near.z;
@@ -47743,17 +47718,17 @@ var GL_RenderableBase = (function (_super) {
      *
      * @private
      */
-    GL_RenderableBase.prototype._iRender = function (pass, camera, viewProjection) {
-        this._setRenderState(pass, camera, viewProjection);
-        this._elementsGL.draw(this, pass.shader, camera, viewProjection, this._count, this._offset);
+    GL_RenderableBase.prototype._iRender = function (pass, projection) {
+        this._setRenderState(pass, projection);
+        this._elementsGL.draw(this, pass.shader, projection, this._count, this._offset);
     };
-    GL_RenderableBase.prototype._setRenderState = function (pass, camera, viewProjection) {
+    GL_RenderableBase.prototype._setRenderState = function (pass, projection) {
         if (this._elementsDirty)
             this._updateElements();
-        pass._setRenderState(this, camera, viewProjection);
+        pass._setRenderState(this, projection);
         if (pass.shader.activeElements != this._elementsGL) {
             pass.shader.activeElements = this._elementsGL;
-            this._elementsGL._setRenderState(this, pass.shader, camera, viewProjection);
+            this._elementsGL._setRenderState(this, pass.shader, projection);
         }
     };
     /**
@@ -48283,8 +48258,8 @@ var LightingShader = (function (_super) {
      * @param stage
      * @param camera
      */
-    LightingShader.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
+    LightingShader.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
         if (this._lightingPass.lightPicker)
             this._lightingPass.lightPicker.collectLights(renderable.sourceEntity);
         if (this.usesLights)
@@ -48575,8 +48550,8 @@ var PassBase = (function (_super) {
      *
      * @internal
      */
-    PassBase.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        this._shader._setRenderState(renderable, camera, viewProjection);
+    PassBase.prototype._setRenderState = function (renderable, projection) {
+        this._shader._setRenderState(renderable, projection);
     };
     /**
      * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
@@ -48585,8 +48560,8 @@ var PassBase = (function (_super) {
      * @param camera The camera from which the scene is viewed.
      * @private
      */
-    PassBase.prototype._iActivate = function (camera) {
-        this._shader._iActivate(camera);
+    PassBase.prototype._iActivate = function (projection) {
+        this._shader._iActivate(projection);
     };
     /**
      * Clears the render state for the pass. This needs to be called before activating another pass.
@@ -48691,16 +48666,16 @@ var BasicMaterialPass = (function (_super) {
         }
         return code;
     };
-    BasicMaterialPass.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
+    BasicMaterialPass.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
         if (this._textureVO != null)
             this._textureVO._setRenderState(renderable);
     };
     /**
      * @inheritDoc
      */
-    BasicMaterialPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
+    BasicMaterialPass.prototype._iActivate = function (projection) {
+        _super.prototype._iActivate.call(this, projection);
         if (this._textureVO != null) {
             this._textureVO.activate(this._render);
             if (this._shader.alphaThreshold > 0)
@@ -48785,15 +48760,15 @@ var GL_SkyboxMaterial = (function (_super) {
     GL_SkyboxMaterial.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
     };
-    GL_SkyboxMaterial.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
+    GL_SkyboxMaterial.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
         this._texture._setRenderState(renderable);
     };
     /**
      * @inheritDoc
      */
-    GL_SkyboxMaterial.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
+    GL_SkyboxMaterial.prototype._iActivate = function (projection) {
+        _super.prototype._iActivate.call(this, projection);
         this._stage.context.setDepthTest(false, _awayjs_stage.ContextGLCompareMode.LESS);
         this._texture.activate(this);
     };
@@ -55935,7 +55910,7 @@ var ShadingMethodBase = (function (_super) {
      *
      * @internal
      */
-    ShadingMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    ShadingMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
     };
     /**
      * Clears the render state for this method.
@@ -56101,7 +56076,7 @@ var AmbientBasicMethod = (function (_super) {
             data[index + 3] = this._alpha;
         }
     };
-    AmbientBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    AmbientBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         if (methodVO.textureGL)
             methodVO.textureGL._setRenderState(renderable);
     };
@@ -56452,7 +56427,7 @@ var DiffuseBasicMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    DiffuseBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    DiffuseBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         if (this._texture)
             methodVO.textureGL._setRenderState(renderable);
         //TODO move this to Activate (ambientR/G/B currently calc'd in render state)
@@ -56546,7 +56521,7 @@ var NormalBasicMethod = (function (_super) {
         if (this._texture)
             methodVO.textureGL.activate(methodVO.pass._render);
     };
-    NormalBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    NormalBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         if (this._texture)
             methodVO.textureGL._setRenderState(renderable);
     };
@@ -56814,7 +56789,7 @@ var SpecularBasicMethod = (function (_super) {
         data[index + 2] = this._iSpecularB;
         data[index + 3] = this._gloss;
     };
-    SpecularBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    SpecularBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         if (this._texture)
             methodVO.textureGL._setRenderState(renderable);
     };
@@ -57198,167 +57173,6 @@ var AmbientEnvMapMethod = (function (_super) {
 }(AmbientBasicMethod));
 
 /**
- * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
- */
-var CurveBasicMethod = (function (_super) {
-    __extends(CurveBasicMethod, _super);
-    /**
-     * Creates a new AmbientBasicMethod object.
-     */
-    function CurveBasicMethod() {
-        var _this = _super.call(this) || this;
-        _this._color = 0xffffff;
-        _this._alpha = 1;
-        _this._colorR = 1;
-        _this._colorG = 1;
-        _this._colorB = 1;
-        _this._ambient = 1;
-        return _this;
-    }
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iInitVO = function (shader, methodVO) {
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-        else if (methodVO.textureGL) {
-            methodVO.textureGL.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._texture));
-            methodVO.textureGL = null;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
-        if (!methodVO.textureGL) {
-            this._color = methodVO.pass._material.style.color;
-            this.updateColor();
-        }
-    };
-    Object.defineProperty(CurveBasicMethod.prototype, "ambient", {
-        /**
-         * The strength of the ambient reflection of the surface.
-         */
-        get: function () {
-            return this._ambient;
-        },
-        set: function (value) {
-            if (this._ambient == value)
-                return;
-            this._ambient = value;
-            this.updateColor();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveBasicMethod.prototype, "alpha", {
-        /**
-         * The alpha component of the surface.
-         */
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            if (this._alpha == value)
-                return;
-            this._alpha = value;
-            this.updateColor();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CurveBasicMethod.prototype, "texture", {
-        /**
-         * The texture to use to define the diffuse reflection color per texel.
-         */
-        get: function () {
-            return this._texture;
-        },
-        set: function (value) {
-            if (this._texture == value)
-                return;
-            if (this._texture)
-                this.iRemoveTexture(this._texture);
-            this._texture = value;
-            if (this._texture)
-                this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.copyFrom = function (method) {
-        var m = method;
-        var b = m;
-    };
-    /**
-     * @inheritDoc
-     */
-    /*
-    public iGeVertexCode(shader:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, registerCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string {
-        var code:string = "";
-        code = "mov " + sharedRegisters.uvVarying + " " + registerCache.uv +  " \n";
-    }*/
-    CurveBasicMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var ambientInputRegister;
-        if (methodVO.textureGL) {
-            code += methodVO.textureGL._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-            if (shader.alphaThreshold > 0) {
-                var cutOffReg = registerCache.getFreeFragmentConstant();
-                methodVO.fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" +
-                    "kil " + targetReg + ".w\n" +
-                    "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else {
-            ambientInputRegister = registerCache.getFreeFragmentConstant();
-            methodVO.fragmentConstantsIndex = ambientInputRegister.index * 4;
-            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
-        }
-        code = "mov " + targetReg + ", " + sharedRegisters.uvVarying + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    CurveBasicMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        if (methodVO.textureGL) {
-            methodVO.textureGL.activate(methodVO.pass._render);
-            if (shader.alphaThreshold > 0)
-                shader.fragmentConstantData[methodVO.fragmentConstantsIndex] = shader.alphaThreshold;
-        }
-        else {
-            var index = methodVO.fragmentConstantsIndex;
-            var data = shader.fragmentConstantData;
-            data[index] = this._colorR;
-            data[index + 1] = this._colorG;
-            data[index + 2] = this._colorB;
-            data[index + 3] = this._alpha;
-        }
-    };
-    CurveBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        if (methodVO.textureGL)
-            methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * Updates the ambient color data used by the render state.
-     */
-    CurveBasicMethod.prototype.updateColor = function () {
-        this._colorR = ((this._color >> 16) & 0xff) / 0xff * this._ambient;
-        this._colorG = ((this._color >> 8) & 0xff) / 0xff * this._ambient;
-        this._colorB = (this._color & 0xff) / 0xff * this._ambient;
-    };
-    return CurveBasicMethod;
-}(ShadingMethodBase));
-
-/**
  * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
  * calculated diffuse reflection strength.
  */
@@ -57503,8 +57317,8 @@ var DiffuseCompositeMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    DiffuseCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        this.pBaseMethod.iSetRenderState(shader, methodVO, renderable, stage, camera);
+    DiffuseCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        this.pBaseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
     };
     /**
      * @inheritDoc
@@ -57825,8 +57639,8 @@ var DiffuseGradientMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    DiffuseGradientMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, camera);
+    DiffuseGradientMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
         if (shader.numLights > 0)
             methodVO.secondaryTextureGL._setRenderState(renderable);
     };
@@ -57955,8 +57769,8 @@ var DiffuseLightMapMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    DiffuseLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, camera);
+    DiffuseLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
         methodVO.secondaryTextureGL._setRenderState(renderable);
     };
     return DiffuseLightMapMethod;
@@ -58150,7 +57964,7 @@ var DiffuseSubSurfaceMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    DiffuseSubSurfaceMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    DiffuseSubSurfaceMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.secondaryTextureGL = shader.getAbstraction(this._depthPass._iGetDepthMap(renderable));
         methodVO.secondaryTextureGL._setRenderState(renderable);
         methodVO.vertexMatrices[0].copyFrom(this._depthPass._iGetProjection(renderable), true);
@@ -58398,7 +58212,7 @@ var EffectAlphaMaskMethod = (function (_super) {
         _super.prototype.iActivate.call(this, shader, methodVO, stage);
         methodVO.textureGL.activate(methodVO.pass._render);
     };
-    EffectAlphaMaskMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectAlphaMaskMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.textureGL._setRenderState(renderable);
     };
     return EffectAlphaMaskMethod;
@@ -58641,7 +58455,7 @@ var EffectEnvMapMethod = (function (_super) {
         if (this._mask)
             methodVO.secondaryTextureGL.activate(methodVO.pass._render);
     };
-    EffectEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.textureGL._setRenderState(renderable);
         if (this._mask)
             methodVO.secondaryTextureGL._setRenderState(renderable);
@@ -58925,7 +58739,7 @@ var EffectFresnelEnvMapMethod = (function (_super) {
         if (this._mask)
             methodVO.secondaryTextureGL.activate(methodVO.pass._render);
     };
-    EffectFresnelEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectFresnelEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.textureGL._setRenderState(renderable);
         if (this._mask)
             methodVO.secondaryTextureGL._setRenderState(renderable);
@@ -59092,7 +58906,7 @@ var EffectLightMapMethod = (function (_super) {
     EffectLightMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
         methodVO.textureGL.activate(methodVO.pass._render);
     };
-    EffectLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.textureGL._setRenderState(renderable);
     };
     return EffectLightMapMethod;
@@ -59254,7 +59068,7 @@ var EffectProjectiveTextureMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    EffectProjectiveTextureMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectProjectiveTextureMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         var matrix3D = _awayjs_core.Matrix3D.CALCULATION_MATRIX;
         matrix3D.copyFrom(this._projector.projection.viewMatrix3D);
         matrix3D.prepend(renderable.renderSceneTransform);
@@ -59450,7 +59264,7 @@ var EffectRefractionEnvMapMethod = (function (_super) {
         data[index + 3] = this._alpha;
         methodVO.textureGL.activate(methodVO.pass._render);
     };
-    EffectRefractionEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    EffectRefractionEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         methodVO.textureGL._setRenderState(renderable);
     };
     /**
@@ -59904,8 +59718,8 @@ var NormalSimpleWaterMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    NormalSimpleWaterMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, camera);
+    NormalSimpleWaterMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
         if (this._secondaryNormalMap)
             methodVO.secondaryTextureGL._setRenderState(renderable);
     };
@@ -60177,7 +59991,7 @@ var ShadowCascadeMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    ShadowCascadeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    ShadowCascadeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
     };
     /**
      * Called when the shadow mappers cascade configuration changes.
@@ -60338,7 +60152,7 @@ var ShadowMethodBase = (function (_super) {
     /**
      * @inheritDoc
      */
-    ShadowMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    ShadowMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         if (!this._pUsePoint)
             methodVO.vertexMatrices[0].copyFrom(this._pShadowMapper.iDepthProjection, true);
         methodVO.textureGL._setRenderState(renderable);
@@ -60518,8 +60332,8 @@ var ShadowDitheredMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    ShadowDitheredMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, camera);
+    ShadowDitheredMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
         methodVO.secondaryTextureGL._setRenderState(renderable);
     };
     /**
@@ -60967,10 +60781,10 @@ var ShadowNearMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    ShadowNearMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
+    ShadowNearMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
         // todo: move this to activate (needs camera)
-        var near = camera.projection.near;
-        var d = camera.projection.far - near;
+        var near = projection.near;
+        var d = projection.far - near;
         var maxDistance = this._nearShadowMapper.coverageRatio;
         var minDistance = maxDistance * (1 - this._fadeRatio);
         maxDistance = near + maxDistance * d;
@@ -60979,7 +60793,7 @@ var ShadowNearMethod = (function (_super) {
         var index = methodVO.secondaryFragmentConstantsIndex;
         fragmentData[index] = minDistance;
         fragmentData[index + 1] = 1 / (maxDistance - minDistance);
-        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, camera);
+        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
     };
     /**
      * @inheritDoc
@@ -61376,8 +61190,8 @@ var SpecularCompositeMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    SpecularCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, camera) {
-        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, camera);
+    SpecularCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
+        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
     };
     /**
      * @inheritDoc
@@ -62146,8 +61960,8 @@ var MethodPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iActivate = function (camera) {
-        _super.prototype._iActivate.call(this, camera);
+    MethodPass.prototype._iActivate = function (projection) {
+        _super.prototype._iActivate.call(this, projection);
         var methodVO;
         var len = this._iMethodVOs.length;
         for (var i = 0; i < len; ++i) {
@@ -62163,14 +61977,14 @@ var MethodPass = (function (_super) {
      * @param stage
      * @param camera
      */
-    MethodPass.prototype._setRenderState = function (renderable, camera, viewProjection) {
-        _super.prototype._setRenderState.call(this, renderable, camera, viewProjection);
+    MethodPass.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
         var methodVO;
         var len = this._iMethodVOs.length;
         for (var i = 0; i < len; ++i) {
             methodVO = this._iMethodVOs[i];
             if (methodVO.useMethod)
-                methodVO.method.iSetRenderState(this._shader, methodVO, renderable, this._stage, camera);
+                methodVO.method.iSetRenderState(this._shader, methodVO, renderable, this._stage, projection);
         }
     };
     /**
@@ -62574,7 +62388,7 @@ var SingleObjectDepthPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    SingleObjectDepthPass.prototype._iRender = function (renderableGL, camera, viewProjection) {
+    SingleObjectDepthPass.prototype._iRender = function (renderableGL, projection) {
         var matrix;
         var context = this._stage.context;
         var len;
@@ -62588,7 +62402,7 @@ var SingleObjectDepthPass = (function (_super) {
         len = lights.length;
         // local position = enough
         light = lights[0];
-        matrix = light.iGetObjectProjectionMatrix(renderableGL.sourceEntity, camera.transform.concatenatedMatrix3D, this._projections[rId]);
+        matrix = light.iGetObjectProjectionMatrix(renderableGL.sourceEntity, projection.transform.concatenatedMatrix3D, this._projections[rId]);
         this._stage.setRenderTarget(this._textures[rId], true);
         context.clear(1.0, 1.0, 1.0);
         //context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
@@ -62601,11 +62415,11 @@ var SingleObjectDepthPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    SingleObjectDepthPass.prototype._iActivate = function (camera) {
+    SingleObjectDepthPass.prototype._iActivate = function (projection) {
         if (this._projectionTexturesInvalid)
             this.updateProjectionTextures();
         // never scale
-        _super.prototype._iActivate.call(this, camera);
+        _super.prototype._iActivate.call(this, projection);
         //this._stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
     };
     return SingleObjectDepthPass;
@@ -62854,7 +62668,6 @@ exports.MethodMaterial = MethodMaterial;
 exports.MethodMaterialMode = MethodMaterialMode;
 exports.AmbientBasicMethod = AmbientBasicMethod;
 exports.AmbientEnvMapMethod = AmbientEnvMapMethod;
-exports.CurveBasicMethod = CurveBasicMethod;
 exports.DiffuseBasicMethod = DiffuseBasicMethod;
 exports.DiffuseCelMethod = DiffuseCelMethod;
 exports.DiffuseCompositeMethod = DiffuseCompositeMethod;
@@ -65810,6 +65623,7 @@ var View = (function () {
         if (scene === void 0) { scene = null; }
         if (camera === void 0) { camera = null; }
         var _this = this;
+        // Private
         this._width = 0;
         this._height = 0;
         this._time = 0;
@@ -66077,8 +65891,6 @@ var View = (function () {
             if (this._width == value)
                 return;
             this._width = value;
-            this._aspectRatio = this._width / this._height;
-            this._pCamera.projection.aspectRatio = this._aspectRatio;
             this._pRenderer.width = value;
             if (this._htmlElement) {
                 this._htmlElement.style.width = value + "px";
@@ -66098,8 +65910,6 @@ var View = (function () {
             if (this._height == value)
                 return;
             this._height = value;
-            this._aspectRatio = this._width / this._height;
-            this._pCamera.projection.aspectRatio = this._aspectRatio;
             this._pRenderer.height = value;
             if (this._htmlElement) {
                 this._htmlElement.style.height = value + "px";
@@ -66196,7 +66006,6 @@ var View = (function () {
     View.prototype.render = function () {
         this.pUpdateTime();
         //update view and size data
-        this._pCamera.projection.aspectRatio = this._aspectRatio;
         if (this._scissorDirty) {
             this._scissorDirty = false;
             this._pCamera.projection.setViewRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
