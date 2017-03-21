@@ -62,7 +62,7 @@
     "rimraf": "^2.5.2",
     "source-map-loader": "^0.1.5",
     "tslib": "^1.2.0",
-    "typescript": "^2.1.4",
+    "typescript": "2.2.0-dev.20161123",
     "webpack": "2.1.0-beta.27",
     "webpack-dev-server": "2.1.0-beta.11"
   }
