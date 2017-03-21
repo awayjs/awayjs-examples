@@ -38,9 +38,9 @@ THE SOFTWARE.
 
 import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
 import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase} from "awayjs-full/lib/stage";
 import {OrientationMode, AlignmentMode, HoverController, PointLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, MethodVO, DiffuseCompositeMethod, SpecularCompositeMethod} from "awayjs-full/lib/materials";
-import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase}		from "awayjs-full/lib/renderer";
 import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe

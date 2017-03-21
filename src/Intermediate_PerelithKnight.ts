@@ -40,8 +40,9 @@ THE SOFTWARE.
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {AnimationSetBase} from "awayjs-full/lib/stage";
 import {HoverController, DirectionalLight, Sprite, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {AnimationSetBase, VertexAnimationSet, VertexAnimator} from "awayjs-full/lib/renderer";
+import {VertexAnimationSet, VertexAnimator} from "awayjs-full/lib/renderer";
 import {MethodMaterial, ShadowFilteredMethod} from "awayjs-full/lib/materials";
 import {MD2Parser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
