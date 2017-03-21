@@ -6,11 +6,12 @@ webpackJsonp([2],{
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_materials__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_parsers__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_view__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_stage__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_renderer__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_materials__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_parsers__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_awayjs_full_lib_view__ = __webpack_require__(2);
 /*
 
 Vertex animation example in Away3d using the MD2 format
@@ -57,6 +58,7 @@ THE SOFTWARE.
 
 
 
+
 var Intermediate_PerelithKnight = function () {
     /**
      * Constructor
@@ -73,11 +75,11 @@ var Intermediate_PerelithKnight = function () {
         this._move = false;
         this._lookAtPosition = new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["Vector3D"]();
         //setup the view
-        this._view = new __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_view__["View"]();
+        this._view = new __WEBPACK_IMPORTED_MODULE_7_awayjs_full_lib_view__["View"]();
         //setup the camera for optimal rendering
         this._view.camera.projection.far = 5000;
         //setup controller to be used on the camera
-        this._cameraController = new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["HoverController"](this._view.camera, null, 45, 20, 2000, 5);
+        this._cameraController = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__["HoverController"](this._view.camera, null, 45, 20, 2000, 5);
         //setup the help text
         /*
         var text:TextField = new TextField();
@@ -96,9 +98,9 @@ var Intermediate_PerelithKnight = function () {
           addChild(text);
         */
         //setup the lights for the scene
-        this._light = new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["DirectionalLight"](-0.5, -1, -1);
+        this._light = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__["DirectionalLight"](-0.5, -1, -1);
         this._light.ambient = 0.4;
-        this._lightPicker = new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["StaticLightPicker"]([this._light]);
+        this._lightPicker = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__["StaticLightPicker"]([this._light]);
         this._view.scene.addChild(this._light);
         //setup listeners on AssetLibrary
         __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].addEventListener(__WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetEvent"].ASSET_COMPLETE, function (event) {
@@ -115,12 +117,12 @@ var Intermediate_PerelithKnight = function () {
         //load floor texture
         __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/floor_diffuse.jpg"));
         //load perelith knight data
-        __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/pknight.md2"), null, null, new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_parsers__["MD2Parser"]());
+        __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/pknight.md2"), null, null, new __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_parsers__["MD2Parser"]());
         //create a global shadow map method
-        this._shadowMapMethod = new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_materials__["ShadowFilteredMethod"](this._light);
+        this._shadowMapMethod = new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_materials__["ShadowFilteredMethod"](this._light);
         this._shadowMapMethod.epsilon = 0.2;
         //setup floor material
-        this._floorMaterial = new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_materials__["MethodMaterial"]();
+        this._floorMaterial = new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_materials__["MethodMaterial"]();
         this._floorMaterial.lightPicker = this._lightPicker;
         this._floorMaterial.specularMethod.strength = 0;
         this._floorMaterial.ambientMethod.strength = 1;
@@ -128,7 +130,7 @@ var Intermediate_PerelithKnight = function () {
         this._floorMaterial.style.sampler = new __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__["Sampler2D"](true);
         //setup knight materials
         for (var i = 0; i < this._pKnightTextures.length; i++) {
-            var knightMaterial = new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_materials__["MethodMaterial"]();
+            var knightMaterial = new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_materials__["MethodMaterial"]();
             //knightMaterial.normalMap = Cast.bitmapTexture(BitmapFilterEffects.normalMap(bitmapData));
             //knightMaterial.specularMap = Cast.bitmapTexture(BitmapFilterEffects.outline(bitmapData));
             knightMaterial.lightPicker = this._lightPicker;
@@ -139,7 +141,7 @@ var Intermediate_PerelithKnight = function () {
             this._pKnightMaterials.push(knightMaterial);
         }
         //setup the floor
-        this._floor = new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["PrimitivePlanePrefab"](this._floorMaterial, __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__["ElementsType"].TRIANGLE, 5000, 5000).getNewObject();
+        this._floor = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__["PrimitivePlanePrefab"](this._floorMaterial, __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__["ElementsType"].TRIANGLE, 5000, 5000).getNewObject();
         this._floor.graphics.scaleUV(5, 5);
         //setup the scene
         this._view.scene.addChild(this._floor);
@@ -189,14 +191,14 @@ var Intermediate_PerelithKnight = function () {
     Intermediate_PerelithKnight.prototype.onAssetComplete = function (event) {
         var asset = event.asset;
         switch (asset.assetType) {
-            case __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["Sprite"].assetType:
+            case __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_scene__["Sprite"].assetType:
                 this._sprite = event.asset;
                 //adjust the sprite
                 this._sprite.y = 120;
                 this._sprite.transform.scaleTo(5, 5, 5);
                 this._spriteInitialised = true;
                 break;
-            case __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__["AnimationSetBase"].assetType:
+            case __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_stage__["AnimationSetBase"].assetType:
                 this._animationSet = event.asset;
                 this._animationSetInitialised = true;
                 break;
@@ -217,7 +219,7 @@ var Intermediate_PerelithKnight = function () {
                     clone.material = this._pKnightMaterials[Math.floor(Math.random() * this._pKnightMaterials.length)];
                     this._view.scene.addChild(clone);
                     //create animator
-                    var vertexAnimator = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__["VertexAnimator"](this._animationSet);
+                    var vertexAnimator = new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_renderer__["VertexAnimator"](this._animationSet);
                     //play specified state
                     vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random() * this._animationSet.animationNames.length)], null, Math.random() * 1000);
                     clone.animator = vertexAnimator;

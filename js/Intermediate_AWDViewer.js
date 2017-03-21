@@ -7,9 +7,10 @@ webpackJsonp([8],{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_parsers__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_view__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_stage__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_renderer__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_parsers__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_view__ = __webpack_require__(2);
 /*
 
 AWD file loading example in Away3d
@@ -51,13 +52,14 @@ THE SOFTWARE.
 
 
 
+
 var Intermediate_AWDViewer = function () {
     /**
      * Constructor
      */
     function Intermediate_AWDViewer() {
         this._time = 0;
-        this._stateTransition = new __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__["CrossfadeTransition"](0.5);
+        this._stateTransition = new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_renderer__["CrossfadeTransition"](0.5);
         this.init();
     }
     /**
@@ -73,7 +75,7 @@ var Intermediate_AWDViewer = function () {
      */
     Intermediate_AWDViewer.prototype.initEngine = function () {
         //create the view
-        this._view = new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_view__["View"]();
+        this._view = new __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_view__["View"]();
         this._view.backgroundColor = 0x333338;
         //create custom lens
         this._view.camera.projection = new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["PerspectiveProjection"](70);
@@ -93,7 +95,7 @@ var Intermediate_AWDViewer = function () {
      */
     Intermediate_AWDViewer.prototype.initObjects = function () {
         var _this = this;
-        __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].enableParser(__WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_parsers__["AWDParser"]);
+        __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetLibrary"].enableParser(__WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_parsers__["AWDParser"]);
         //kickoff asset loading
         var loader = new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["LoaderContainer"]();
         loader.addEventListener(__WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["AssetEvent"].ASSET_COMPLETE, function (event) {
@@ -134,7 +136,7 @@ var Intermediate_AWDViewer = function () {
      */
     Intermediate_AWDViewer.prototype.onAssetComplete = function (event) {
         var _this = this;
-        if (event.asset.isAsset(__WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__["AnimatorBase"])) {
+        if (event.asset.isAsset(__WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_stage__["AnimatorBase"])) {
             this._animator = event.asset;
             this._animator.play(Intermediate_AWDViewer.IDLE_NAME);
         } else if (event.asset.isAsset(__WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__["AnimationNodeBase"])) {
@@ -143,7 +145,7 @@ var Intermediate_AWDViewer = function () {
                 node.looping = true;
             } else {
                 node.looping = false;
-                node.addEventListener(__WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__["AnimationStateEvent"].PLAYBACK_COMPLETE, function (event) {
+                node.addEventListener(__WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_renderer__["AnimationStateEvent"].PLAYBACK_COMPLETE, function (event) {
                     return _this.onPlaybackComplete(event);
                 });
             }
