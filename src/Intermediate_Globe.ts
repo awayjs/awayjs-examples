@@ -39,8 +39,9 @@ THE SOFTWARE.
 import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
 import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase} from "awayjs-full/lib/stage";
+import {LightingShader} from "awayjs-full/lib/renderer";
 import {OrientationMode, AlignmentMode, HoverController, PointLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, MethodVO, DiffuseCompositeMethod, SpecularCompositeMethod} from "awayjs-full/lib/materials";
+import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, LightingCompositeChunk, ILightingChunk} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe
@@ -56,8 +57,8 @@ class Intermediate_Globe
 	private groundMaterial:MethodMaterial;
 	private cloudMaterial:MethodMaterial;
 	private atmosphereMaterial:MethodMaterial;
-	private atmosphereDiffuseMethod:DiffuseBasicMethod;
-	private atmosphereSpecularMethod:SpecularBasicMethod;
+	private atmosphereDiffuseMethod:SpecularGlobeMethod;
+	private atmosphereSpecularMethod:SpecularGlobeMethod;
 
 	//scene objects
 	private sun:Billboard;
@@ -166,9 +167,7 @@ class Intermediate_Globe
 		//var specBitmap:BitmapImage2D = Cast.bitmapData(EarthSpecular);
 		//specBitmap.colorTransform(specBitmap.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
 
-		var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, new SpecularPhongMethod());
-		specular.fresnelPower = 1;
-		specular.normalReflectance = 0.1;
+		var specular:SpecularFresnelMethod = new SpecularFresnelMethod(true, 1, 0.1, new SpecularPhongMethod());
 		specular.gloss = 5;
 		specular.strength = 1;
 
@@ -192,12 +191,9 @@ class Intermediate_Globe
 		this.cloudMaterial.ambientMethod.strength = 1;
 		this.cloudMaterial.diffuseMethod.multiply = false;
 
-		this.atmosphereDiffuseMethod = new DiffuseCompositeMethod(this.modulateDiffuseMethod);
-		this.atmosphereSpecularMethod = new SpecularCompositeMethod(this.modulateSpecularMethod, new SpecularPhongMethod());
-
 		this.atmosphereMaterial = new MethodMaterial();
-		this.atmosphereMaterial.diffuseMethod = this.atmosphereDiffuseMethod;
-		this.atmosphereMaterial.specularMethod = this.atmosphereSpecularMethod;
+		this.atmosphereMaterial.diffuseMethod = new DiffuseGlobeMethod();
+		this.atmosphereMaterial.specularMethod = new SpecularGlobeMethod(new SpecularPhongMethod());
 		this.atmosphereMaterial.blendMode = BlendMode.ADD;
 		this.atmosphereMaterial.lightPicker = this.lightPicker;
 		this.atmosphereMaterial.specularMethod.strength = 0.5;
@@ -206,33 +202,6 @@ class Intermediate_Globe
 		this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
 		this.atmosphereMaterial.ambientMethod.strength = 1;
 		this.atmosphereMaterial.diffuseMethod.multiply = false;
-	}
-
-	private modulateDiffuseMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
-		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
-
-		var code:string = "dp3 " + targetReg + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
-			"mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".w\n";
-
-		return code;
-	}
-
-	private modulateSpecularMethod(shaderObject:ShaderBase, methodVO:MethodVO, targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
-	{
-		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
-		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
-		var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
-		regCache.addFragmentTempUsages(temp, 1);
-
-		var code:string = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
-			"neg " + temp + ", " + temp + "\n" +
-			"mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n";
-
-		regCache.removeFragmentTempUsage(temp);
-
-		return code;
 	}
 
 	/**
@@ -592,6 +561,94 @@ class FlareObject
 		scene.addChild(this.billboard)
 	}
 }
+
+class DiffuseGlobeMethod extends DiffuseCompositeMethod
+{
+	public static assetType:string = "[asset DiffuseGlobeMethod]";
+
+	/**
+	 * @inheritDoc
+	 */
+	public get assetType():string
+	{
+		return DiffuseGlobeMethod.assetType;
+	}
+}
+
+class DiffuseGlobeChunk extends LightingCompositeChunk
+{
+	/**
+	 * Creates a new DiffuseCelChunk object.
+	 * @param levels The amount of shadow gradations.
+	 * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
+	 */
+	constructor(method: DiffuseGlobeMethod, shader: LightingShader)
+	{
+		super(method, shader);
+
+		(<ILightingChunk> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateDiffuseMethod(targetReg, registerCache, sharedRegisters);
+	}
+
+	private modulateDiffuseMethod(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
+
+		var code:string = "dp3 " + targetReg + ".w, " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
+			"mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".w\n";
+
+		return code;
+	}
+}
+
+
+class SpecularGlobeMethod extends SpecularCompositeMethod
+{
+	public static assetType:string = "[asset SpecularGlobeMethod]";
+
+	/**
+	 * @inheritDoc
+	 */
+	public get assetType():string
+	{
+		return SpecularGlobeMethod.assetType;
+	}
+}
+
+class SpecularGlobeChunk extends LightingCompositeChunk
+{
+	/**
+	 * Creates a new DiffuseCelChunk object.
+	 * @param levels The amount of shadow gradations.
+	 * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
+	 */
+	constructor(method: SpecularGlobeMethod, shader: LightingShader)
+	{
+		super(method, shader);
+
+		(<ILightingChunk> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateSpecularMethod(targetReg, registerCache, sharedRegisters);
+	}
+
+
+	private modulateSpecularMethod(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
+	{
+		var viewDirFragmentReg:ShaderRegisterElement = sharedRegisters.viewDirFragment;
+		var normalFragmentReg:ShaderRegisterElement = sharedRegisters.normalFragment;
+		var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
+		regCache.addFragmentTempUsages(temp, 1);
+
+		var code:string = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
+			"neg " + temp + ", " + temp + "\n" +
+			"mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n";
+
+		regCache.removeFragmentTempUsage(temp);
+
+		return code;
+	}
+}
+
+ShaderBase.registerAbstraction(DiffuseGlobeChunk, DiffuseGlobeMethod);
+ShaderBase.registerAbstraction(SpecularGlobeChunk, SpecularGlobeMethod);
 
 window.onload = function ()
 {
