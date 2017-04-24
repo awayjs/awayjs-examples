@@ -317,20 +317,16 @@ class Intermediate_MouseInteraction
 
 	private choseSpriteMaterial(sprite:Sprite):void
 	{
-		if( !sprite.mouseEnabled ) {
+		if (!sprite.mouseEnabled) {
 			sprite.material = this._blackMaterial;
-		}
-		else {
-			if( !sprite.hasEventListener( MouseEvent.MOUSE_MOVE ) ) {
+		} else {
+			if (!sprite.hasEventListener(MouseEvent.MOUSE_MOVE)) {
 				sprite.material = this._grayMaterial;
-			}
-			else {
-				if( this._view.getCollider(sprite) != null ) {
+			} else {
+				if (this._view.getCollider(sprite) != null)
 					sprite.material = this._redMaterial;
-				}
-				else {
+				else
 					sprite.material = this._blueMaterial;
-				}
 			}
 		}
 	}
@@ -362,7 +358,7 @@ class Intermediate_MouseInteraction
 	{
 		// Move light with camera.
 		var pos:Vector3D = this._camera.transform.position;
-		this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
+		this._pointLight.transform.moveTo(pos.x, pos.y, pos.z);
 
 		var collidingObject:PickingCollision = this._raycastPicker.getCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view);
 		//var sprite:Sprite;
