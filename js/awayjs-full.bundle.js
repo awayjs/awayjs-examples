@@ -42241,14 +42241,14 @@ var GL_DepthMaterial = (function (_super) {
         _super.prototype.invalidate.call(this);
         this._textureVO = this._material.getTextureAt(0) ? this._shader.getAbstraction(this._material.getTextureAt(0)) : null;
     };
-    GL_DepthMaterial.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
+    GL_DepthMaterial.prototype._includeDependencies = function (shader) {
+        _super.prototype._includeDependencies.call(this, shader);
         shader.projectionDependencies++;
         if (shader.alphaThreshold > 0)
             shader.uvDependencies++;
     };
-    GL_DepthMaterial.prototype._iInitConstantData = function (shader) {
-        _super.prototype._iInitConstantData.call(this, shader);
+    GL_DepthMaterial.prototype._initConstantData = function (shader) {
+        _super.prototype._initConstantData.call(this, shader);
         var index = this._fragmentConstantsIndex;
         var data = shader.fragmentConstantData;
         data[index] = 1.0;
@@ -42263,7 +42263,7 @@ var GL_DepthMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DepthMaterial.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_DepthMaterial.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
         var code = "";
         var targetReg = sharedRegisters.shadedTarget;
         var dataReg1 = registerCache.getFreeFragmentConstant();
@@ -42279,9 +42279,9 @@ var GL_DepthMaterial = (function (_super) {
             "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
         //codeF += "mov ft1.w, fc1.w	\n" +
         //    "mov ft0.w, fc0.x	\n";
-        if (this._textureVO && shader.alphaThreshold > 0) {
+        if (this._textureVO && this._shader.alphaThreshold > 0) {
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            code += this._textureVO._getFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
                 "kil " + albedo + ".w\n";
@@ -42294,8 +42294,8 @@ var GL_DepthMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DepthMaterial.prototype._iActivate = function (projection) {
-        _super.prototype._iActivate.call(this, projection);
+    GL_DepthMaterial.prototype._activate = function (projection) {
+        _super.prototype._activate.call(this, projection);
         if (this._textureVO && this._shader.alphaThreshold > 0) {
             this._textureVO.activate();
             this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
@@ -42328,8 +42328,8 @@ var GL_DistanceMaterial = (function (_super) {
     /**
      * Initializes the unchanging constant data for this material.
      */
-    GL_DistanceMaterial.prototype._iInitConstantData = function (shader) {
-        _super.prototype._iInitConstantData.call(this, shader);
+    GL_DistanceMaterial.prototype._initConstantData = function (shader) {
+        _super.prototype._initConstantData.call(this, shader);
         var index = this._fragmentConstantsIndex;
         var data = shader.fragmentConstantData;
         data[index + 4] = 1.0 / 255.0;
@@ -42337,8 +42337,8 @@ var GL_DistanceMaterial = (function (_super) {
         data[index + 6] = 1.0 / 255.0;
         data[index + 7] = 0.0;
     };
-    GL_DistanceMaterial.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
+    GL_DistanceMaterial.prototype._includeDependencies = function (shader) {
+        _super.prototype._includeDependencies.call(this, shader);
         shader.projectionDependencies++;
         shader.viewDirDependencies++;
         if (shader.alphaThreshold > 0)
@@ -42349,7 +42349,7 @@ var GL_DistanceMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DistanceMaterial.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_DistanceMaterial.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
         var code;
         var targetReg = sharedRegisters.shadedTarget;
         var dataReg1 = registerCache.getFreeFragmentConstant();
@@ -42364,9 +42364,9 @@ var GL_DistanceMaterial = (function (_super) {
             "mul " + temp1 + ", " + dataReg1 + ", " + temp1 + ".z\n" +
             "frc " + temp1 + ", " + temp1 + "\n" +
             "mul " + temp2 + ", " + temp1 + ".yzww, " + dataReg2 + "\n";
-        if (this._textureVO && shader.alphaThreshold > 0) {
+        if (this._textureVO && this._shader.alphaThreshold > 0) {
             var albedo = registerCache.getFreeFragmentVectorTemp();
-            code += this._textureVO._iGetFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            code += this._textureVO._getFragmentCode(albedo, registerCache, sharedRegisters, sharedRegisters.uvVarying);
             var cutOffReg = registerCache.getFreeFragmentConstant();
             code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
                 "kil " + albedo + ".w\n";
@@ -42377,8 +42377,8 @@ var GL_DistanceMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_DistanceMaterial.prototype._iActivate = function (projection) {
-        _super.prototype._iActivate.call(this, projection);
+    GL_DistanceMaterial.prototype._activate = function (projection) {
+        _super.prototype._activate.call(this, projection);
         var f = projection.far;
         f = 1 / (2 * f * f);
         // sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.
@@ -42761,11 +42761,11 @@ var RendererBase = (function (_super) {
         //set program data
         this._pContext.setProgram(programData.program);
         //activate shader object through pass
-        pass._iActivate(projection);
+        pass._activate(projection);
     };
     RendererBase.prototype.deactivatePass = function (pass) {
         //deactivate shader object through pass
-        pass._iDeactivate();
+        pass._deactivate();
         this._numUsedStreams = pass.shader.numUsedStreams;
         this._numUsedTextures = pass.shader.numUsedTextures;
     };
@@ -43874,10 +43874,10 @@ var GL_LineElements = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    GL_LineElements._iIncludeDependencies = function (shader) {
+    GL_LineElements._includeDependencies = function (shader) {
         shader.colorDependencies++;
     };
-    GL_LineElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_LineElements._getVertexCode = function (shader, registerCache, sharedRegisters) {
         //get the projection coordinates
         var position0 = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
         var position1 = registerCache.getFreeVertexAttribute();
@@ -43952,7 +43952,7 @@ var GL_LineElements = (function (_super) {
             "add " + q0 + ".xyz, " + q0 + ".xyz, " + qclipped + ".xyz	\n" +
             "m44 op, " + q0 + ", " + viewMatrixReg + "			\n"; // transform Q0 to clip space
     };
-    GL_LineElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_LineElements._getFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     GL_LineElements.prototype.onClear = function (event) {
@@ -44032,12 +44032,12 @@ var GL_SkyboxElements = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    GL_SkyboxElements._iIncludeDependencies = function (shader) {
+    GL_SkyboxElements._includeDependencies = function (shader) {
     };
     /**
      * @inheritDoc
      */
-    GL_SkyboxElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_SkyboxElements._getVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         //get the projection coordinates
         var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
@@ -44064,7 +44064,7 @@ var GL_SkyboxElements = (function (_super) {
         }
         return code;
     };
-    GL_SkyboxElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_SkyboxElements._getFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     GL_SkyboxElements.prototype.draw = function (renderable, shader, projection, count, offset) {
@@ -45104,7 +45104,7 @@ var GL_SkyboxRenderable = (function (_super) {
     GL_SkyboxRenderable.prototype._getMaterial = function () {
         return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
     };
-    GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
+    GL_SkyboxRenderable._includeDependencies = function (shader) {
     };
     return GL_SkyboxRenderable;
 }(_awayjs_stage.GL_RenderableBase));
@@ -45124,7 +45124,6 @@ var LightingCompiler = (function (_super) {
     function LightingCompiler(elementsClass, lightingPass, shaderLightingObject) {
         var _this = _super.call(this, elementsClass, lightingPass, shaderLightingObject) || this;
         _this._shaderLightingObject = shaderLightingObject;
-        _this._lightingPass = lightingPass;
         return _this;
     }
     /**
@@ -45132,6 +45131,9 @@ var LightingCompiler = (function (_super) {
      */
     LightingCompiler.prototype.pCompileDependencies = function () {
         _super.prototype.pCompileDependencies.call(this);
+        //collect code from pass
+        this._vertexCode += this._renderPass._getPreLightingVertexCode(this._registerCache, this._sharedRegisters);
+        this._postAnimationFragmentCode += this._renderPass._getPreLightingFragmentCode(this._registerCache, this._sharedRegisters);
         //compile the lighting code
         if (this._shaderLightingObject.usesShadows)
             this.pCompileShadowCode();
@@ -45141,19 +45143,17 @@ var LightingCompiler = (function (_super) {
         }
         if (this._shaderLightingObject.usesProbes)
             this.compileLightProbeCode();
-        this._pVertexCode += this._lightingPass._iGetPostLightingVertexCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._lightingPass._iGetPostLightingFragmentCode(this._shaderLightingObject, this._pRegisterCache, this._pSharedRegisters);
     };
     /**
      * Provides the code to provide shadow mapping.
      */
     LightingCompiler.prototype.pCompileShadowCode = function () {
         if (this._shaderLightingObject.normalDependencies > 0) {
-            this._pSharedRegisters.shadowTarget = this._pSharedRegisters.normalFragment;
+            this._sharedRegisters.shadowTarget = this._sharedRegisters.normalFragment;
         }
         else {
-            this._pSharedRegisters.shadowTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
-            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadowTarget, 1);
+            this._sharedRegisters.shadowTarget = this._registerCache.getFreeFragmentVectorTemp();
+            this._registerCache.addFragmentTempUsages(this._sharedRegisters.shadowTarget, 1);
         }
     };
     /**
@@ -45165,7 +45165,7 @@ var LightingCompiler = (function (_super) {
         if (this._dirLightVertexConstants) {
             len = this._dirLightVertexConstants.length;
             for (i = 0; i < len; ++i) {
-                this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+                this._dirLightVertexConstants[i] = this._registerCache.getFreeVertexConstant();
                 if (this._shaderLightingObject.lightVertexConstantIndex == -1)
                     this._shaderLightingObject.lightVertexConstantIndex = this._dirLightVertexConstants[i].index * 4;
             }
@@ -45173,20 +45173,20 @@ var LightingCompiler = (function (_super) {
         if (this._pointLightVertexConstants) {
             len = this._pointLightVertexConstants.length;
             for (i = 0; i < len; ++i) {
-                this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+                this._pointLightVertexConstants[i] = this._registerCache.getFreeVertexConstant();
                 if (this._shaderLightingObject.lightVertexConstantIndex == -1)
                     this._shaderLightingObject.lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
             }
         }
         len = this._dirLightFragmentConstants.length;
         for (i = 0; i < len; ++i) {
-            this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+            this._dirLightFragmentConstants[i] = this._registerCache.getFreeFragmentConstant();
             if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
                 this._shaderLightingObject.lightFragmentConstantIndex = this._dirLightFragmentConstants[i].index * 4;
         }
         len = this._pointLightFragmentConstants.length;
         for (i = 0; i < len; ++i) {
-            this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+            this._pointLightFragmentConstants[i] = this._registerCache.getFreeFragmentConstant();
             if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
                 this._shaderLightingObject.lightFragmentConstantIndex = this._pointLightFragmentConstants[i].index * 4;
         }
@@ -45207,12 +45207,12 @@ var LightingCompiler = (function (_super) {
         for (var i = 0; i < this._shaderLightingObject.numDirectionalLights; ++i) {
             if (this._shaderLightingObject.usesTangentSpace) {
                 lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
-                var lightVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" +
+                var lightVarying = this._registerCache.getFreeVarying();
+                this._vertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._sharedRegisters.animatedTangent + "\n" +
                     "mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
-                lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addVertexTempUsages(lightDirReg, 1);
-                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
+                lightDirReg = this._registerCache.getFreeFragmentVectorTemp();
+                this._registerCache.addVertexTempUsages(lightDirReg, 1);
+                this._postAnimationFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
                     "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
             }
             else {
@@ -45221,11 +45221,11 @@ var LightingCompiler = (function (_super) {
             diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
             specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
             if (addDiff)
-                this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._postAnimationFragmentCode += this._renderPass._getPerLightDiffuseFragmentCode(lightDirReg, diffuseColorReg, this._registerCache, this._sharedRegisters);
             if (addSpec)
-                this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._postAnimationFragmentCode += this._renderPass._getPerLightSpecularFragmentCode(lightDirReg, specularColorReg, this._registerCache, this._sharedRegisters);
             if (this._shaderLightingObject.usesTangentSpace)
-                this._pRegisterCache.removeVertexTempUsage(lightDirReg);
+                this._registerCache.removeVertexTempUsage(lightDirReg);
         }
         vertexRegIndex = 0;
         fragmentRegIndex = 0;
@@ -45237,45 +45237,45 @@ var LightingCompiler = (function (_super) {
                 lightPosReg = this._pointLightFragmentConstants[fragmentRegIndex++];
             diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
             specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
-            lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
-            this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
+            lightDirReg = this._registerCache.getFreeFragmentVectorTemp();
+            this._registerCache.addFragmentTempUsages(lightDirReg, 1);
             var lightVarying;
             if (this._shaderLightingObject.usesTangentSpace) {
-                lightVarying = this._pRegisterCache.getFreeVarying();
-                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.animatedPosition + "\n" +
-                    "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-                    "mov " + lightVarying + ".w, " + this._pSharedRegisters.animatedPosition + ".w\n";
+                lightVarying = this._registerCache.getFreeVarying();
+                var temp = this._registerCache.getFreeVertexVectorTemp();
+                this._vertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._sharedRegisters.animatedPosition + "\n" +
+                    "m33 " + lightVarying + ".xyz, " + temp + ", " + this._sharedRegisters.animatedTangent + "\n" +
+                    "mov " + lightVarying + ".w, " + this._sharedRegisters.animatedPosition + ".w\n";
             }
             else if (!this._shaderLightingObject.usesGlobalPosFragment) {
-                lightVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+                lightVarying = this._registerCache.getFreeVarying();
+                this._vertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._sharedRegisters.globalPositionVertex + "\n";
             }
             else {
                 lightVarying = lightDirReg;
-                this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n";
+                this._postAnimationFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._sharedRegisters.globalPositionVarying + "\n";
             }
             if (this._shaderLightingObject.usesLightFallOff) {
                 // calculate attenuation
-                this._pFragmentCode +=
+                this._postAnimationFragmentCode +=
                     "dp3 " + lightDirReg + ".w, " + lightVarying + ", " + lightVarying + "\n" +
                         "sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" +
                         "mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" +
                         "sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" +
-                        "sub " + lightDirReg + ".w, " + this._pSharedRegisters.commons + ".w, " + lightDirReg + ".w\n" +
+                        "sub " + lightDirReg + ".w, " + this._sharedRegisters.commons + ".w, " + lightDirReg + ".w\n" +
                         "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
             }
             else {
-                this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
+                this._postAnimationFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" +
                     "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
             }
             if (this._shaderLightingObject.lightFragmentConstantIndex == -1)
                 this._shaderLightingObject.lightFragmentConstantIndex = lightPosReg.index * 4;
             if (addDiff)
-                this._pFragmentCode += this._lightingPass._iGetPerLightDiffuseFragmentCode(this._shaderLightingObject, lightDirReg, diffuseColorReg, this._pRegisterCache, this._pSharedRegisters);
+                this._postAnimationFragmentCode += this._renderPass._getPerLightDiffuseFragmentCode(lightDirReg, diffuseColorReg, this._registerCache, this._sharedRegisters);
             if (addSpec)
-                this._pFragmentCode += this._lightingPass._iGetPerLightSpecularFragmentCode(this._shaderLightingObject, lightDirReg, specularColorReg, this._pRegisterCache, this._pSharedRegisters);
-            this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
+                this._postAnimationFragmentCode += this._renderPass._getPerLightSpecularFragmentCode(lightDirReg, specularColorReg, this._registerCache, this._sharedRegisters);
+            this._registerCache.removeFragmentTempUsage(lightDirReg);
         }
     };
     /**
@@ -45294,21 +45294,21 @@ var LightingCompiler = (function (_super) {
         if (addSpec)
             this._shaderLightingObject.lightProbeSpecularIndices = new Array();
         for (i = 0; i < this._pNumProbeRegisters; ++i) {
-            weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
+            weightRegisters[i] = this._registerCache.getFreeFragmentConstant();
             if (i == 0)
                 this._shaderLightingObject.probeWeightsIndex = weightRegisters[i].index * 4;
         }
         for (i = 0; i < this._shaderLightingObject.numLightProbes; ++i) {
             weightReg = weightRegisters[Math.floor(i / 4)].toString() + weightComponents[i % 4];
             if (addDiff) {
-                texReg = this._pRegisterCache.getFreeTextureReg();
+                texReg = this._registerCache.getFreeTextureReg();
                 this._shaderLightingObject.lightProbeDiffuseIndices[i] = texReg.index;
-                this._pFragmentCode += this._lightingPass._iGetPerProbeDiffuseFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+                this._postAnimationFragmentCode += this._renderPass._getPerProbeDiffuseFragmentCode(texReg, weightReg, this._registerCache, this._sharedRegisters);
             }
             if (addSpec) {
-                texReg = this._pRegisterCache.getFreeTextureReg();
+                texReg = this._registerCache.getFreeTextureReg();
                 this._shaderLightingObject.lightProbeSpecularIndices[i] = texReg.index;
-                this._pFragmentCode += this._lightingPass._iGetPerProbeSpecularFragmentCode(this._shaderLightingObject, texReg, weightReg, this._pRegisterCache, this._pSharedRegisters);
+                this._postAnimationFragmentCode += this._renderPass._getPerProbeSpecularFragmentCode(texReg, weightReg, this._registerCache, this._sharedRegisters);
             }
         }
     };
@@ -45359,7 +45359,7 @@ var LightingShader = (function (_super) {
         _this._lightingPass = lightingPass;
         return _this;
     }
-    LightingShader.prototype._iIncludeDependencies = function () {
+    LightingShader.prototype._includeDependencies = function () {
         this.numPointLights = this._lightingPass.numPointLights;
         this.numDirectionalLights = this._lightingPass.numDirectionalLights;
         this.numLightProbes = this._lightingPass.numLightProbes;
@@ -45379,7 +45379,7 @@ var LightingShader = (function (_super) {
         this.usesProbesForDiffuse = numLightProbes > 0 && (diffuseLightSources & _awayjs_scene.LightSources.PROBES) != 0;
         this.usesShadows = this._lightingPass._iUsesShadows(this);
         //IMPORTANT this must occur after shader lighting initialisation above
-        _super.prototype._iIncludeDependencies.call(this);
+        _super.prototype._includeDependencies.call(this);
     };
     /**
      * Factory method to create a concrete compiler object for this object
@@ -45614,15 +45614,15 @@ var GL_SkyboxMaterial = (function (_super) {
         this._pRequiresBlending = (this._material.blendMode != _awayjs_graphics.BlendMode.NORMAL);
         this.shader.setBlendMode((this._material.blendMode == _awayjs_graphics.BlendMode.NORMAL && this._pRequiresBlending) ? _awayjs_graphics.BlendMode.LAYER : this._material.blendMode);
     };
-    GL_SkyboxMaterial.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
+    GL_SkyboxMaterial.prototype._includeDependencies = function (shader) {
+        _super.prototype._includeDependencies.call(this, shader);
         shader.usesPositionFragment = true;
     };
     /**
      * @inheritDoc
      */
-    GL_SkyboxMaterial.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        return this._texture._iGetFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
+    GL_SkyboxMaterial.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
+        return this._texture._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters, sharedRegisters.positionVarying);
     };
     GL_SkyboxMaterial.prototype._setRenderState = function (renderable, projection) {
         _super.prototype._setRenderState.call(this, renderable, projection);
@@ -45631,8 +45631,8 @@ var GL_SkyboxMaterial = (function (_super) {
     /**
      * @inheritDoc
      */
-    GL_SkyboxMaterial.prototype._iActivate = function (projection) {
-        _super.prototype._iActivate.call(this, projection);
+    GL_SkyboxMaterial.prototype._activate = function (projection) {
+        _super.prototype._activate.call(this, projection);
         this._stage.context.setDepthTest(false, _awayjs_stage.ContextGLCompareMode.LESS);
         this._texture.activate();
     };
@@ -48126,9 +48126,9 @@ var GL_TriangleElements = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    GL_TriangleElements._iIncludeDependencies = function (shader) {
+    GL_TriangleElements._includeDependencies = function (shader) {
     };
-    GL_TriangleElements._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_TriangleElements._getVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         //get the projection coordinates
         var position = (shader.globalPosDependencies > 0) ? sharedRegisters.globalPositionVertex : sharedRegisters.animatedPosition;
@@ -48150,7 +48150,7 @@ var GL_TriangleElements = (function (_super) {
         }
         return code;
     };
-    GL_TriangleElements._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_TriangleElements._getFragmentCode = function (shader, registerCache, sharedRegisters) {
         return "";
     };
     GL_TriangleElements.prototype.onClear = function (event) {
@@ -53659,29 +53659,30 @@ var CompilerBase = (function () {
      * @param profile The compatibility profile of the renderer.
      */
     function CompilerBase(elementsClass, pass, shader) {
-        this._pVertexCode = ''; // Changed to emtpy string- AwayTS
-        this._pFragmentCode = ''; // Changed to emtpy string - AwayTS
-        this._pPostAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
-        this._pElementsClass = elementsClass;
-        this._pRenderPass = pass;
-        this._pShader = shader;
-        this._pSharedRegisters = new ShaderRegisterData();
-        this._pRegisterCache = new ShaderRegisterCache(shader.profile);
+        this._vertexCode = ''; // Changed to emtpy string- AwayTS
+        this._fragmentCode = ''; // Changed to emtpy string - AwayTS
+        this._postAnimationFragmentCode = ''; // Changed to emtpy string - AwayTS
+        this._elementsClass = elementsClass;
+        this._renderPass = pass;
+        this._shader = shader;
+        this._sharedRegisters = new ShaderRegisterData();
+        this._registerCache = new ShaderRegisterCache(shader.profile);
     }
     /**
      * Compiles the code after all setup on the compiler has finished.
      */
     CompilerBase.prototype.compile = function () {
-        this._pShader.reset();
-        this._pShader._iIncludeDependencies();
+        this._shader.reset();
+        this._shader._includeDependencies();
         this.pInitRegisterIndices();
         this.pCompileDependencies();
         //compile custom vertex & fragment codes
-        this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._vertexCode += this._renderPass._getVertexCode(this._registerCache, this._sharedRegisters);
+        this._fragmentCode += this._renderPass._getFragmentCode(this._registerCache, this._sharedRegisters);
+        this._postAnimationFragmentCode += this._renderPass._getPostAnimationFragmentCode(this._registerCache, this._sharedRegisters);
         //assign the final output color to the output register
-        this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
-        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
+        this._postAnimationFragmentCode += "mov " + this._registerCache.fragmentOutputRegister + ", " + this._sharedRegisters.shadedTarget + "\n";
+        this._registerCache.removeFragmentTempUsage(this._sharedRegisters.shadedTarget);
     };
     /**
      * Calculate the transformed colours
@@ -53689,292 +53690,289 @@ var CompilerBase = (function () {
     CompilerBase.prototype.compileColorTransformCode = function () {
         // rm, gm, bm, am - multiplier
         // ro, go, bo, ao - offset
-        var ct1 = this._pRegisterCache.getFreeFragmentConstant();
-        var ct2 = this._pRegisterCache.getFreeFragmentConstant();
-        this._pShader.colorTransformIndex = ct1.index * 4;
-        this._pPostAnimationFragmentCode += "mul " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct1 + "\n";
-        this._pPostAnimationFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ", " + ct2 + "\n";
+        var ct1 = this._registerCache.getFreeFragmentConstant();
+        var ct2 = this._registerCache.getFreeFragmentConstant();
+        this._shader.colorTransformIndex = ct1.index * 4;
+        this._postAnimationFragmentCode += "mul " + this._sharedRegisters.shadedTarget + ", " + this._sharedRegisters.shadedTarget + ", " + ct1 + "\n";
+        this._postAnimationFragmentCode += "add " + this._sharedRegisters.shadedTarget + ", " + this._sharedRegisters.shadedTarget + ", " + ct2 + "\n";
     };
     /**
      * Compile the code for the methods.
      */
     CompilerBase.prototype.pCompileDependencies = function () {
-        this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
+        this._sharedRegisters.shadedTarget = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(this._sharedRegisters.shadedTarget, 1);
         //compile the world-space position if required
-        if (this._pShader.globalPosDependencies > 0)
+        if (this._shader.globalPosDependencies > 0)
             this.compileGlobalPositionCode();
         //compile the local-space position if required
-        if (this._pShader.usesPositionFragment)
+        if (this._shader.usesPositionFragment)
             this.compilePositionCode();
-        if (this._pShader.usesCurves)
+        if (this._shader.usesCurves)
             this.compileCurvesCode();
-        if (this._pShader.usesColorTransform)
+        if (this._shader.usesColorTransform)
             this.compileColorTransformCode();
         //Calculate the (possibly animated) UV coordinates.
-        if (this._pShader.uvDependencies > 0)
+        if (this._shader.uvDependencies > 0)
             this.compileUVCode();
-        if (this._pShader.secondaryUVDependencies > 0)
+        if (this._shader.secondaryUVDependencies > 0)
             this.compileSecondaryUVCode();
-        if (this._pShader.normalDependencies > 0)
+        if (this._shader.normalDependencies > 0)
             this.compileNormalCode();
-        if (this._pShader.viewDirDependencies > 0)
+        if (this._shader.viewDirDependencies > 0)
             this.compileViewDirCode();
         //collect code from material
-        this._pVertexCode += this._pElementsClass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pElementsClass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        //collect code from pass
-        this._pVertexCode += this._pRenderPass._iGetPreLightingVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        this._pFragmentCode += this._pRenderPass._iGetPreLightingFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._vertexCode += this._elementsClass._getVertexCode(this._shader, this._registerCache, this._sharedRegisters);
+        this._fragmentCode += this._elementsClass._getFragmentCode(this._shader, this._registerCache, this._sharedRegisters);
     };
     CompilerBase.prototype.compileGlobalPositionCode = function () {
-        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp(), this._pShader.globalPosDependencies);
-        var sceneMatrixReg = this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pRegisterCache.getFreeVertexConstant();
-        this._pShader.sceneMatrixIndex = sceneMatrixReg.index * 4;
-        this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.animatedPosition + ", " + sceneMatrixReg + "\n";
-        if (this._pShader.usesGlobalPosFragment) {
-            this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+        this._registerCache.addVertexTempUsages(this._sharedRegisters.globalPositionVertex = this._registerCache.getFreeVertexVectorTemp(), this._shader.globalPosDependencies);
+        var sceneMatrixReg = this._registerCache.getFreeVertexConstant();
+        this._registerCache.getFreeVertexConstant();
+        this._registerCache.getFreeVertexConstant();
+        this._registerCache.getFreeVertexConstant();
+        this._shader.sceneMatrixIndex = sceneMatrixReg.index * 4;
+        this._vertexCode += "m44 " + this._sharedRegisters.globalPositionVertex + ", " + this._sharedRegisters.animatedPosition + ", " + sceneMatrixReg + "\n";
+        if (this._shader.usesGlobalPosFragment) {
+            this._sharedRegisters.globalPositionVarying = this._registerCache.getFreeVarying();
+            this._vertexCode += "mov " + this._sharedRegisters.globalPositionVarying + ", " + this._sharedRegisters.globalPositionVertex + "\n";
         }
     };
     CompilerBase.prototype.compilePositionCode = function () {
-        this._pSharedRegisters.positionVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.positionVarying + ", " + this._pSharedRegisters.animatedPosition + "\n";
+        this._sharedRegisters.positionVarying = this._registerCache.getFreeVarying();
+        this._vertexCode += "mov " + this._sharedRegisters.positionVarying + ", " + this._sharedRegisters.animatedPosition + "\n";
     };
     CompilerBase.prototype.compileCurvesCode = function () {
-        this._pSharedRegisters.curvesInput = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShader.curvesIndex = this._pSharedRegisters.curvesInput.index;
-        this._pSharedRegisters.curvesVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.curvesVarying + ", " + this._pSharedRegisters.curvesInput + "\n";
-        var temp = this._pRegisterCache.getFreeFragmentSingleTemp();
-        this._pFragmentCode += "mul " + temp + ", " + this._pSharedRegisters.curvesVarying + ".y, " + this._pSharedRegisters.curvesVarying + ".y\n" +
-            "sub " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".z\n" +
-            "mul " + temp + ", " + temp + ", " + this._pSharedRegisters.curvesVarying + ".x\n" +
+        this._sharedRegisters.curvesInput = this._registerCache.getFreeVertexAttribute();
+        this._shader.curvesIndex = this._sharedRegisters.curvesInput.index;
+        this._sharedRegisters.curvesVarying = this._registerCache.getFreeVarying();
+        this._vertexCode += "mov " + this._sharedRegisters.curvesVarying + ", " + this._sharedRegisters.curvesInput + "\n";
+        var temp = this._registerCache.getFreeFragmentSingleTemp();
+        this._fragmentCode += "mul " + temp + ", " + this._sharedRegisters.curvesVarying + ".y, " + this._sharedRegisters.curvesVarying + ".y\n" +
+            "sub " + temp + ", " + temp + ", " + this._sharedRegisters.curvesVarying + ".z\n" +
+            "mul " + temp + ", " + temp + ", " + this._sharedRegisters.curvesVarying + ".x\n" +
             "kil " + temp + "\n";
-        // var temp:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentVectorTemp();
+        // var temp:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
         //
-        // this._pPostAnimationFragmentCode += "mul " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".y, " + this._pSharedRegisters.curvesVarying + ".y\n" +
-        // 					"sub " + temp + ".x, " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".z\n" +
-        // 					"mul " + temp + ".x, " + temp + ".x, " + this._pSharedRegisters.curvesVarying + ".x\n" +
+        // this._postAnimationFragmentCode += "mul " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".y, " + this._sharedRegisters.curvesVarying + ".y\n" +
+        // 					"sub " + temp + ".x, " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".z\n" +
+        // 					"mul " + temp + ".x, " + temp + ".x, " + this._sharedRegisters.curvesVarying + ".x\n" +
         // 					"ddx " + temp + ".y," + temp + ".x\n" +
         // 					"ddy " + temp + ".z," + temp + ".x\n" +
         // 					"mul " + temp + ".y, " + temp + ".y, " + temp + ".y\n" +
         // 					"mul " + temp + ".z, " + temp + ".z, " + temp + ".z\n" +
-        // 					"add " + this._pSharedRegisters.shadedTarget + ".w, " + temp + ".y, " + temp + ".z\n" +
-        // 					"sqt " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w\n" +
-        // 					"div " + this._pSharedRegisters.shadedTarget + ".w, " + temp + ".x, " + this._pSharedRegisters.shadedTarget + ".w\n" +
-        // 					"max " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".y\n" +
-        // 					"min " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".w\n";
+        // 					"add " + this._sharedRegisters.shadedTarget + ".w, " + temp + ".y, " + temp + ".z\n" +
+        // 					"sqt " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w\n" +
+        // 					"div " + this._sharedRegisters.shadedTarget + ".w, " + temp + ".x, " + this._sharedRegisters.shadedTarget + ".w\n" +
+        // 					"max " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".y\n" +
+        // 					"min " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".w\n";
     };
     /**
      * Calculate the (possibly animated) UV coordinates.
      */
     CompilerBase.prototype.compileUVCode = function () {
-        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShader.uvIndex = uvAttributeReg.index;
-        var varying = this._pSharedRegisters.uvVarying = this._pRegisterCache.getFreeVarying();
-        if (this._pShader.usesUVTransform) {
+        var uvAttributeReg = this._registerCache.getFreeVertexAttribute();
+        this._shader.uvIndex = uvAttributeReg.index;
+        var varying = this._sharedRegisters.uvVarying = this._registerCache.getFreeVarying();
+        if (this._shader.usesUVTransform) {
             // a, b, 0, tx
             // c, d, 0, ty
-            var uvTransform1 = this._pRegisterCache.getFreeVertexConstant();
-            var uvTransform2 = this._pRegisterCache.getFreeVertexConstant();
-            this._pShader.uvMatrixIndex = uvTransform1.index * 4;
-            this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
+            var uvTransform1 = this._registerCache.getFreeVertexConstant();
+            var uvTransform2 = this._registerCache.getFreeVertexConstant();
+            this._shader.uvMatrixIndex = uvTransform1.index * 4;
+            this._vertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
                 "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" +
                 "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
         }
         else {
-            this._pShader.uvMatrixIndex = -1;
-            this._pSharedRegisters.uvTarget = varying;
-            this._pSharedRegisters.uvSource = uvAttributeReg;
+            this._shader.uvMatrixIndex = -1;
+            this._sharedRegisters.uvTarget = varying;
+            this._sharedRegisters.uvSource = uvAttributeReg;
         }
     };
     /**
      * Provide the secondary UV coordinates.
      */
     CompilerBase.prototype.compileSecondaryUVCode = function () {
-        var uvAttributeReg = this._pRegisterCache.getFreeVertexAttribute();
-        this._pShader.secondaryUVIndex = uvAttributeReg.index;
-        this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
-        this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
+        var uvAttributeReg = this._registerCache.getFreeVertexAttribute();
+        this._shader.secondaryUVIndex = uvAttributeReg.index;
+        this._sharedRegisters.secondaryUVVarying = this._registerCache.getFreeVarying();
+        this._vertexCode += "mov " + this._sharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
     };
     /**
      * Calculate the view direction.
      */
     CompilerBase.prototype.compileViewDirCode = function () {
-        var cameraPositionReg = this._pRegisterCache.getFreeVertexConstant();
-        this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
-        this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.viewDirFragment, this._pShader.viewDirDependencies);
-        this._pShader.cameraPositionIndex = cameraPositionReg.index * 4;
-        if (this._pShader.usesTangentSpace) {
-            var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.animatedPosition + "\n" +
-                "m33 " + this._pSharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-                "mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.animatedPosition + ".w\n";
+        var cameraPositionReg = this._registerCache.getFreeVertexConstant();
+        this._sharedRegisters.viewDirVarying = this._registerCache.getFreeVarying();
+        this._sharedRegisters.viewDirFragment = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(this._sharedRegisters.viewDirFragment, this._shader.viewDirDependencies);
+        this._shader.cameraPositionIndex = cameraPositionReg.index * 4;
+        if (this._shader.usesTangentSpace) {
+            var temp = this._registerCache.getFreeVertexVectorTemp();
+            this._vertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._sharedRegisters.animatedPosition + "\n" +
+                "m33 " + this._sharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._sharedRegisters.animatedTangent + "\n" +
+                "mov " + this._sharedRegisters.viewDirVarying + ".w, " + this._sharedRegisters.animatedPosition + ".w\n";
         }
         else {
-            this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
-            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
+            this._vertexCode += "sub " + this._sharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._sharedRegisters.globalPositionVertex + "\n";
+            this._registerCache.removeVertexTempUsage(this._sharedRegisters.globalPositionVertex);
         }
         //TODO is this required in all cases? (re: distancemappass)
-        this._pFragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" +
-            "mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w\n";
+        this._fragmentCode += "nrm " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.viewDirVarying + "\n" +
+            "mov " + this._sharedRegisters.viewDirFragment + ".w,   " + this._sharedRegisters.viewDirVarying + ".w\n";
     };
     /**
      * Calculate the normal.
      */
     CompilerBase.prototype.compileNormalCode = function () {
-        this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
-        this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pShader.normalDependencies);
+        this._sharedRegisters.normalFragment = this._registerCache.getFreeFragmentVectorTemp();
+        this._registerCache.addFragmentTempUsages(this._sharedRegisters.normalFragment, this._shader.normalDependencies);
         //simple normal aquisition if no tangent space is being used
-        if (this._pShader.outputsNormals && !this._pShader.outputsTangentNormals) {
-            this._pVertexCode += this._pRenderPass._iGetNormalVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-            this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        if (this._shader.outputsNormals && !this._shader.outputsTangentNormals) {
+            this._vertexCode += this._renderPass._getNormalVertexCode(this._registerCache, this._sharedRegisters);
+            this._fragmentCode += this._renderPass._getNormalFragmentCode(this._registerCache, this._sharedRegisters);
             return;
         }
         var normalMatrix;
-        if (!this._pShader.outputsNormals || !this._pShader.usesTangentSpace) {
+        if (!this._shader.outputsNormals || !this._shader.usesTangentSpace) {
             normalMatrix = new Array(3);
-            normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
-            normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
-            normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
-            this._pRegisterCache.getFreeVertexConstant();
-            this._pShader.sceneNormalMatrixIndex = normalMatrix[0].index * 4;
-            this._pSharedRegisters.normalVarying = this._pRegisterCache.getFreeVarying();
+            normalMatrix[0] = this._registerCache.getFreeVertexConstant();
+            normalMatrix[1] = this._registerCache.getFreeVertexConstant();
+            normalMatrix[2] = this._registerCache.getFreeVertexConstant();
+            this._registerCache.getFreeVertexConstant();
+            this._shader.sceneNormalMatrixIndex = normalMatrix[0].index * 4;
+            this._sharedRegisters.normalVarying = this._registerCache.getFreeVarying();
         }
-        if (this._pShader.outputsNormals) {
-            if (this._pShader.usesTangentSpace) {
+        if (this._shader.outputsNormals) {
+            if (this._shader.usesTangentSpace) {
                 // normalize normal + tangent vector and generate (approximated) bitangent used in m33 operation for view
-                this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" +
-                    "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n" +
-                    "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
-                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+                this._vertexCode += "nrm " + this._sharedRegisters.animatedNormal + ".xyz, " + this._sharedRegisters.animatedNormal + "\n" +
+                    "nrm " + this._sharedRegisters.animatedTangent + ".xyz, " + this._sharedRegisters.animatedTangent + "\n" +
+                    "crs " + this._sharedRegisters.bitangent + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + this._sharedRegisters.animatedTangent + "\n";
+                this._fragmentCode += this._renderPass._getNormalFragmentCode(this._registerCache, this._sharedRegisters);
             }
             else {
                 //Compiles the vertex shader code for tangent-space normal maps.
-                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
-                this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
-                var temp = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pVertexCode += "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
-                    "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + temp + "\n" +
-                    "m33 " + temp + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" +
-                    "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + temp + "\n" +
-                    "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" +
-                    "mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" +
-                    "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
-                    "mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" +
-                    "mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" +
-                    "mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
-                    "mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" +
-                    "mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" +
-                    "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
-                    "crs " + temp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" +
-                    "mov " + this._pSharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" +
-                    "mov " + this._pSharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" +
-                    "mov " + this._pSharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
-                this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedTangent);
+                this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
+                this._sharedRegisters.bitangentVarying = this._registerCache.getFreeVarying();
+                var temp = this._registerCache.getFreeVertexVectorTemp();
+                this._vertexCode += "m33 " + temp + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
+                    "nrm " + this._sharedRegisters.animatedNormal + ".xyz, " + temp + "\n" +
+                    "m33 " + temp + ".xyz, " + this._sharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" +
+                    "nrm " + this._sharedRegisters.animatedTangent + ".xyz, " + temp + "\n" +
+                    "mov " + this._sharedRegisters.tangentVarying + ".x, " + this._sharedRegisters.animatedTangent + ".x  \n" +
+                    "mov " + this._sharedRegisters.tangentVarying + ".z, " + this._sharedRegisters.animatedNormal + ".x  \n" +
+                    "mov " + this._sharedRegisters.tangentVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
+                    "mov " + this._sharedRegisters.bitangentVarying + ".x, " + this._sharedRegisters.animatedTangent + ".y  \n" +
+                    "mov " + this._sharedRegisters.bitangentVarying + ".z, " + this._sharedRegisters.animatedNormal + ".y  \n" +
+                    "mov " + this._sharedRegisters.bitangentVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
+                    "mov " + this._sharedRegisters.normalVarying + ".x, " + this._sharedRegisters.animatedTangent + ".z  \n" +
+                    "mov " + this._sharedRegisters.normalVarying + ".z, " + this._sharedRegisters.animatedNormal + ".z  \n" +
+                    "mov " + this._sharedRegisters.normalVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
+                    "crs " + temp + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + this._sharedRegisters.animatedTangent + "\n" +
+                    "mov " + this._sharedRegisters.tangentVarying + ".y, " + temp + ".x    \n" +
+                    "mov " + this._sharedRegisters.bitangentVarying + ".y, " + temp + ".y  \n" +
+                    "mov " + this._sharedRegisters.normalVarying + ".y, " + temp + ".z    \n";
+                this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedTangent);
                 //Compiles the fragment shader code for tangent-space normal maps.
                 var t;
                 var b;
                 var n;
-                t = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(t, 1);
-                b = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(b, 1);
-                n = this._pRegisterCache.getFreeFragmentVectorTemp();
-                this._pRegisterCache.addFragmentTempUsages(n, 1);
-                this._pFragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" +
-                    "mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" +
-                    "nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" +
-                    "nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
+                t = this._registerCache.getFreeFragmentVectorTemp();
+                this._registerCache.addFragmentTempUsages(t, 1);
+                b = this._registerCache.getFreeFragmentVectorTemp();
+                this._registerCache.addFragmentTempUsages(b, 1);
+                n = this._registerCache.getFreeFragmentVectorTemp();
+                this._registerCache.addFragmentTempUsages(n, 1);
+                this._fragmentCode += "nrm " + t + ".xyz, " + this._sharedRegisters.tangentVarying + "\n" +
+                    "mov " + t + ".w, " + this._sharedRegisters.tangentVarying + ".w	\n" +
+                    "nrm " + b + ".xyz, " + this._sharedRegisters.bitangentVarying + "\n" +
+                    "nrm " + n + ".xyz, " + this._sharedRegisters.normalVarying + "\n";
                 //compile custom fragment code for normal calcs
-                this._pFragmentCode += this._pRenderPass._iGetNormalFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters) +
-                    "m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalFragment + ", " + t + "\n" +
-                    "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
-                this._pRegisterCache.removeFragmentTempUsage(b);
-                this._pRegisterCache.removeFragmentTempUsage(t);
-                this._pRegisterCache.removeFragmentTempUsage(n);
+                this._fragmentCode += this._renderPass._getNormalFragmentCode(this._registerCache, this._sharedRegisters) +
+                    "m33 " + this._sharedRegisters.normalFragment + ".xyz, " + this._sharedRegisters.normalFragment + ", " + t + "\n" +
+                    "mov " + this._sharedRegisters.normalFragment + ".w, " + this._sharedRegisters.normalVarying + ".w\n";
+                this._registerCache.removeFragmentTempUsage(b);
+                this._registerCache.removeFragmentTempUsage(t);
+                this._registerCache.removeFragmentTempUsage(n);
             }
         }
         else {
             // no output, world space is enough
-            this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
-                "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w\n";
-            this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" +
-                "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w\n";
-            if (this._pShader.tangentDependencies > 0) {
-                this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "m33 " + this._pSharedRegisters.tangentVarying + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" +
-                    "mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.animatedTangent + ".w\n";
+            this._vertexCode += "m33 " + this._sharedRegisters.normalVarying + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
+                "mov " + this._sharedRegisters.normalVarying + ".w, " + this._sharedRegisters.animatedNormal + ".w\n";
+            this._fragmentCode += "nrm " + this._sharedRegisters.normalFragment + ".xyz, " + this._sharedRegisters.normalVarying + "\n" +
+                "mov " + this._sharedRegisters.normalFragment + ".w, " + this._sharedRegisters.normalVarying + ".w\n";
+            if (this._shader.tangentDependencies > 0) {
+                this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
+                this._vertexCode += "m33 " + this._sharedRegisters.tangentVarying + ".xyz, " + this._sharedRegisters.animatedTangent + ", " + normalMatrix[0] + "\n" +
+                    "mov " + this._sharedRegisters.tangentVarying + ".w, " + this._sharedRegisters.animatedTangent + ".w\n";
             }
         }
-        if (!this._pShader.usesTangentSpace)
-            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
+        if (!this._shader.usesTangentSpace)
+            this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedNormal);
     };
     /**
      * Reset all the indices to "unused".
      */
     CompilerBase.prototype.pInitRegisterIndices = function () {
-        this._pShader.pInitRegisterIndices();
-        this._pSharedRegisters.animatedPosition = this._pRegisterCache.getFreeVertexVectorTemp();
-        this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedPosition, 1);
-        this._pSharedRegisters.animatableAttributes.push(this._pRegisterCache.getFreeVertexAttribute());
-        this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedPosition);
-        this._pVertexCode = "";
-        this._pFragmentCode = "";
-        this._pPostAnimationFragmentCode = "";
+        this._shader.pInitRegisterIndices();
+        this._sharedRegisters.animatedPosition = this._registerCache.getFreeVertexVectorTemp();
+        this._registerCache.addVertexTempUsages(this._sharedRegisters.animatedPosition, 1);
+        this._sharedRegisters.animatableAttributes.push(this._registerCache.getFreeVertexAttribute());
+        this._sharedRegisters.animationTargetRegisters.push(this._sharedRegisters.animatedPosition);
+        this._vertexCode = "";
+        this._fragmentCode = "";
+        this._postAnimationFragmentCode = "";
         //create commonly shared constant registers
-        if (this._pShader.usesCommonData || this._pShader.normalDependencies > 0) {
-            this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
-            this._pShader.commonsDataIndex = this._pSharedRegisters.commons.index * 4;
+        if (this._shader.usesCommonData || this._shader.normalDependencies > 0) {
+            this._sharedRegisters.commons = this._registerCache.getFreeFragmentConstant();
+            this._shader.commonsDataIndex = this._sharedRegisters.commons.index * 4;
         }
         //Creates the registers to contain the tangent data.
         //Needs to be created FIRST and in this order (for when using tangent space)
-        if (this._pShader.tangentDependencies > 0 || this._pShader.outputsNormals) {
-            this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShader.tangentIndex = this._pSharedRegisters.tangentInput.index;
-            this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
-            if (this._pShader.usesTangentSpace) {
-                this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
-                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
+        if (this._shader.tangentDependencies > 0 || this._shader.outputsNormals) {
+            this._sharedRegisters.tangentInput = this._registerCache.getFreeVertexAttribute();
+            this._shader.tangentIndex = this._sharedRegisters.tangentInput.index;
+            this._sharedRegisters.animatedTangent = this._registerCache.getFreeVertexVectorTemp();
+            this._registerCache.addVertexTempUsages(this._sharedRegisters.animatedTangent, 1);
+            if (this._shader.usesTangentSpace) {
+                this._sharedRegisters.bitangent = this._registerCache.getFreeVertexVectorTemp();
+                this._registerCache.addVertexTempUsages(this._sharedRegisters.bitangent, 1);
             }
-            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.tangentInput);
-            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedTangent);
+            this._sharedRegisters.animatableAttributes.push(this._sharedRegisters.tangentInput);
+            this._sharedRegisters.animationTargetRegisters.push(this._sharedRegisters.animatedTangent);
         }
-        if (this._pShader.normalDependencies > 0) {
-            this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShader.normalIndex = this._pSharedRegisters.normalInput.index;
-            this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
-            this._pSharedRegisters.animatableAttributes.push(this._pSharedRegisters.normalInput);
-            this._pSharedRegisters.animationTargetRegisters.push(this._pSharedRegisters.animatedNormal);
+        if (this._shader.normalDependencies > 0) {
+            this._sharedRegisters.normalInput = this._registerCache.getFreeVertexAttribute();
+            this._shader.normalIndex = this._sharedRegisters.normalInput.index;
+            this._sharedRegisters.animatedNormal = this._registerCache.getFreeVertexVectorTemp();
+            this._registerCache.addVertexTempUsages(this._sharedRegisters.animatedNormal, 1);
+            this._sharedRegisters.animatableAttributes.push(this._sharedRegisters.normalInput);
+            this._sharedRegisters.animationTargetRegisters.push(this._sharedRegisters.animatedNormal);
         }
-        if (this._pShader.colorDependencies > 0) {
-            this._pSharedRegisters.colorInput = this._pRegisterCache.getFreeVertexAttribute();
-            this._pShader.colorBufferIndex = this._pSharedRegisters.colorInput.index;
-            this._pSharedRegisters.colorVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.colorVarying + ", " + this._pSharedRegisters.colorInput + "\n";
+        if (this._shader.colorDependencies > 0) {
+            this._sharedRegisters.colorInput = this._registerCache.getFreeVertexAttribute();
+            this._shader.colorBufferIndex = this._sharedRegisters.colorInput.index;
+            this._sharedRegisters.colorVarying = this._registerCache.getFreeVarying();
+            this._vertexCode += "mov " + this._sharedRegisters.colorVarying + ", " + this._sharedRegisters.colorInput + "\n";
         }
     };
     /**
      * Disposes all resources used by the compiler.
      */
     CompilerBase.prototype.dispose = function () {
-        this._pRegisterCache.dispose();
-        this._pRegisterCache = null;
-        this._pSharedRegisters = null;
+        this._registerCache.dispose();
+        this._registerCache = null;
+        this._sharedRegisters = null;
     };
     Object.defineProperty(CompilerBase.prototype, "vertexCode", {
         /**
          * The generated vertex code.
          */
         get: function () {
-            return this._pVertexCode;
+            return this._vertexCode;
         },
         enumerable: true,
         configurable: true
@@ -53984,7 +53982,7 @@ var CompilerBase = (function () {
          * The generated fragment code.
          */
         get: function () {
-            return this._pFragmentCode;
+            return this._fragmentCode;
         },
         enumerable: true,
         configurable: true
@@ -53994,17 +53992,27 @@ var CompilerBase = (function () {
          * The generated fragment code.
          */
         get: function () {
-            return this._pPostAnimationFragmentCode;
+            return this._postAnimationFragmentCode;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CompilerBase.prototype, "shadedTarget", {
+    Object.defineProperty(CompilerBase.prototype, "sharedRegisters", {
         /**
-         * The register containing the final shaded colour.
+         * The shared registers.
          */
         get: function () {
-            return this._pSharedRegisters.shadedTarget;
+            return this._sharedRegisters;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompilerBase.prototype, "registerCache", {
+        /**
+         * The shared registers.
+         */
+        get: function () {
+            return this._registerCache;
         },
         enumerable: true,
         configurable: true
@@ -54159,8 +54167,8 @@ var ShaderBase = (function () {
         if (index === void 0) { index = 0; }
         return this._pass.getImageIndex(texture, index);
     };
-    ShaderBase.prototype._iIncludeDependencies = function () {
-        this._pass._iIncludeDependencies(this);
+    ShaderBase.prototype._includeDependencies = function () {
+        this._pass._includeDependencies(this);
         //this.usesCommonData = this.usesCurves || this.usesCommonData;
     };
     /**
@@ -54274,7 +54282,7 @@ var ShaderBase = (function () {
         if (this.cameraPositionIndex >= 0)
             this.vertexConstantData[this.cameraPositionIndex + 3] = 1;
         // init constant data in pass
-        this._pass._iInitConstantData(this);
+        this._pass._initConstantData(this);
         //init constant data in animation
         if (this.usesAnimation)
             this._pass.animationSet.doneAGALCode(this);
@@ -54323,7 +54331,7 @@ var ShaderBase = (function () {
     /**
      * @inheritDoc
      */
-    ShaderBase.prototype._iActivate = function (projection) {
+    ShaderBase.prototype._activate = function (projection) {
         this._stage.context.setCulling(this.useBothSides ? exports.ContextGLTriangleFace.NONE : this._defaultCulling, projection.coordinateSystem);
         if (!this.usesTangentSpace && this.cameraPositionIndex >= 0) {
             var pos = projection.transform.concatenatedMatrix3D.position;
@@ -54339,7 +54347,7 @@ var ShaderBase = (function () {
     /**
      * @inheritDoc
      */
-    ShaderBase.prototype._iDeactivate = function () {
+    ShaderBase.prototype._deactivate = function () {
         //For the love of god don't remove this if you want your multi-material shadows to not flicker like shit
         this._stage.context.setDepthTest(true, exports.ContextGLCompareMode.LESS_EQUAL);
         this.activeElements = null;
@@ -54426,9 +54434,9 @@ var ShaderBase = (function () {
         this._invalidProgram = false;
         var compiler = this.createCompiler(this._elementsClass, this._pass);
         compiler.compile();
-        this._calcAnimationCode(compiler._pRegisterCache, compiler.shadedTarget, compiler._pSharedRegisters);
+        this._calcAnimationCode(compiler.registerCache, compiler.sharedRegisters.shadedTarget, compiler.sharedRegisters);
         //initialise the required shader constants
-        this.initConstantData(compiler._pRegisterCache);
+        this.initConstantData(compiler.registerCache);
         var programData = this._stage.getProgramData(this._animationVertexCode + compiler.vertexCode, compiler.fragmentCode + this._animationFragmentCode + compiler.postAnimationFragmentCode);
         //check program data hasn't changed, keep count of program usages
         if (this._programData != programData) {
@@ -54644,8 +54652,8 @@ var PassBase = (function (_super) {
      * @param camera The camera from which the scene is viewed.
      * @private
      */
-    PassBase.prototype._iActivate = function (projection) {
-        this._shader._iActivate(projection);
+    PassBase.prototype._activate = function (projection) {
+        this._shader._activate(projection);
     };
     /**
      * Clears the render state for the pass. This needs to be called before activating another pass.
@@ -54653,32 +54661,29 @@ var PassBase = (function (_super) {
      *
      * @private
      */
-    PassBase.prototype._iDeactivate = function () {
-        this._shader._iDeactivate();
+    PassBase.prototype._deactivate = function () {
+        this._shader._deactivate();
     };
-    PassBase.prototype._iIncludeDependencies = function (shader) {
-        this._material._iIncludeDependencies(shader);
+    PassBase.prototype._includeDependencies = function (shader) {
+        this._material._includeDependencies(shader);
         if (this._forceSeparateMVP)
-            shader.globalPosDependencies++;
+            this._shader.globalPosDependencies++;
     };
-    PassBase.prototype._iInitConstantData = function (shader) {
+    PassBase.prototype._initConstantData = function (shader) {
     };
-    PassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+    PassBase.prototype._getVertexCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    PassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+    PassBase.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    PassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    PassBase.prototype._getPostAnimationFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    PassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    PassBase.prototype._getNormalVertexCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    PassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    PassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+    PassBase.prototype._getNormalFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
     return PassBase;
@@ -54700,8 +54705,8 @@ var BasicMaterialPass = (function (_super) {
         _this.invalidate();
         return _this;
     }
-    BasicMaterialPass.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
+    BasicMaterialPass.prototype._includeDependencies = function (shader) {
+        _super.prototype._includeDependencies.call(this, shader);
         if (this._textureVO != null)
             shader.uvDependencies++;
     };
@@ -54719,7 +54724,7 @@ var BasicMaterialPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    BasicMaterialPass.prototype._iGetFragmentCode = function (shader, regCache, sharedReg) {
+    BasicMaterialPass.prototype._getFragmentCode = function (regCache, sharedReg) {
         var code = "";
         var alphaReg;
         if (this.preserveAlpha) {
@@ -54729,14 +54734,14 @@ var BasicMaterialPass = (function (_super) {
         }
         var targetReg = sharedReg.shadedTarget;
         if (this._textureVO != null) {
-            code += this._textureVO._iGetFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
-            if (shader.alphaThreshold > 0) {
+            code += this._textureVO._getFragmentCode(targetReg, regCache, sharedReg, sharedReg.uvVarying);
+            if (this._shader.alphaThreshold > 0) {
                 var cutOffReg = regCache.getFreeFragmentConstant();
                 this._fragmentConstantsIndex = cutOffReg.index * 4;
                 code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" + "kil " + targetReg + ".w\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
             }
         }
-        else if (shader.colorBufferIndex != -1) {
+        else if (this._shader.colorBufferIndex != -1) {
             code += "mov " + targetReg + ", " + sharedReg.colorVarying + "\n";
         }
         else {
@@ -54758,8 +54763,8 @@ var BasicMaterialPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    BasicMaterialPass.prototype._iActivate = function (projection) {
-        _super.prototype._iActivate.call(this, projection);
+    BasicMaterialPass.prototype._activate = function (projection) {
+        _super.prototype._activate.call(this, projection);
         if (this._textureVO != null) {
             this._textureVO.activate();
             if (this._shader.alphaThreshold > 0)
@@ -54858,8 +54863,8 @@ var GL_MaterialBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    GL_MaterialBase.prototype._iIncludeDependencies = function (shader) {
-        this._elementsClass._iIncludeDependencies(shader);
+    GL_MaterialBase.prototype._includeDependencies = function (shader) {
+        this._elementsClass._includeDependencies(shader);
         shader.alphaThreshold = this._material.alphaThreshold;
         shader.useImageRect = this._material.imageRect;
         shader.usesCurves = this._material.curves;
@@ -55120,8 +55125,8 @@ var GL_MaterialPassBase = (function (_super) {
      * @param camera The camera from which the scene is viewed.
      * @private
      */
-    GL_MaterialPassBase.prototype._iActivate = function (projection) {
-        this._shader._iActivate(projection);
+    GL_MaterialPassBase.prototype._activate = function (projection) {
+        this._shader._activate(projection);
     };
     /**
      * Clears the render state for the pass. This needs to be called before activating another pass.
@@ -55129,27 +55134,24 @@ var GL_MaterialPassBase = (function (_super) {
      *
      * @private
      */
-    GL_MaterialPassBase.prototype._iDeactivate = function () {
-        this._shader._iDeactivate();
+    GL_MaterialPassBase.prototype._deactivate = function () {
+        this._shader._deactivate();
     };
-    GL_MaterialPassBase.prototype._iInitConstantData = function (shader) {
+    GL_MaterialPassBase.prototype._initConstantData = function (shader) {
     };
-    GL_MaterialPassBase.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_MaterialPassBase.prototype._getVertexCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    GL_MaterialPassBase.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_MaterialPassBase.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    GL_MaterialPassBase.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    GL_MaterialPassBase.prototype._getPostAnimationFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    GL_MaterialPassBase.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_MaterialPassBase.prototype._getNormalVertexCode = function (registerCache, sharedRegisters) {
         return "";
     };
-    GL_MaterialPassBase.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
-        return "";
-    };
-    GL_MaterialPassBase.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+    GL_MaterialPassBase.prototype._getNormalFragmentCode = function (registerCache, sharedRegisters) {
         return "";
     };
     return GL_MaterialPassBase;
@@ -55526,7 +55528,7 @@ var GL_TextureBase = (function (_super) {
         this._shader = null;
         this._stage = null;
     };
-    GL_TextureBase.prototype._iGetFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
+    GL_TextureBase.prototype._getFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
         if (inputReg === void 0) { inputReg = null; }
         throw new _awayjs_core.AbstractMethodError();
     };
@@ -55573,7 +55575,7 @@ var GL_Single2DTexture = (function (_super) {
      * @returns {string}
      * @private
      */
-    GL_Single2DTexture.prototype._iGetFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
+    GL_Single2DTexture.prototype._getFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
         var code = "";
         var wrap = "wrap";
         var format = ""; //this.getFormatString(this._single2DTexture.image2D);
@@ -55667,7 +55669,7 @@ var GL_SingleCubeTexture = (function (_super) {
         _super.prototype.onClear.call(this, event);
         this._singleCubeTexture = null;
     };
-    GL_SingleCubeTexture.prototype._iIncludeDependencies = function (includeInput) {
+    GL_SingleCubeTexture.prototype._includeDependencies = function (includeInput) {
         if (includeInput === void 0) { includeInput = true; }
         if (includeInput)
             this._shader.usesPositionFragment = true;
@@ -55681,7 +55683,7 @@ var GL_SingleCubeTexture = (function (_super) {
      * @returns {string}
      * @private
      */
-    GL_SingleCubeTexture.prototype._iGetFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
+    GL_SingleCubeTexture.prototype._getFragmentCode = function (targetReg, regCache, sharedReg, inputReg) {
         var format = ""; //this.getFormatString(this._singleCubeTexture.imageCube);
         var filter = "linear,miplinear";
         this._imageIndex = this._shader.getImageIndex(this._singleCubeTexture, 0);
@@ -59073,7 +59075,7 @@ var AmbientBasicChunk = (function (_super) {
     AmbientBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
         var code = "";
         if (this._texture) {
-            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
+            code += this._texture._getFragmentCode(targetReg, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
             if (this._shader.alphaThreshold > 0) {
                 var cutOffReg = registerCache.getFreeFragmentConstant();
                 this._colorIndex = cutOffReg.index * 4;
@@ -59144,7 +59146,7 @@ var AmbientDepthChunk = (function (_super) {
         var decReg;
         var decReg = registerCache.getFreeFragmentConstant();
         this._decRegIndex = decReg.index * 4;
-        code += this._shadowTexture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+        code += this._shadowTexture._getFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
             "dp4 " + targetReg + ".x, " + targetReg + ", " + decReg + "\n" +
             "mov " + targetReg + ".yz, " + targetReg + ".xx			\n" +
             "mov " + targetReg + ".w, " + decReg + ".x\n" +
@@ -59290,7 +59292,7 @@ var DiffuseBasicChunk = (function (_super) {
         var ambientColorRegister = registerCache.getFreeFragmentConstant();
         this._ambientColorRegister = ambientColorRegister.index * 4;
         if (this._texture) {
-            code += this._texture._iGetFragmentCode(diffuseColor, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
+            code += this._texture._getFragmentCode(diffuseColor, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
         }
         else {
             var diffuseColorRegister = registerCache.getFreeFragmentConstant();
@@ -59512,7 +59514,7 @@ var DiffuseGradientChunk = (function (_super) {
             "mul " + t + ".xyz, " + t + ".w, " + lightDirReg + ".w\n";
         if (this._modulateFunction != null)
             code += this._modulateFunction(t, registerCache, sharedRegisters);
-        code += this._gradient._iGetFragmentCode(t, registerCache, sharedRegisters, t) +
+        code += this._gradient._getFragmentCode(t, registerCache, sharedRegisters, t) +
             //					"mul " + t + ".xyz, " + t + ".xyz, " + t + ".w\n" +
             "mul " + t + ".xyz, " + t + ".xyz, " + lightColReg + ".xyz\n";
         if (!this._pIsFirstLight) {
@@ -59571,7 +59573,7 @@ var DiffuseLightMapChunk = (function (_super) {
     DiffuseLightMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
         var code;
         var temp = registerCache.getFreeFragmentVectorTemp();
-        code = this._lightMap._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
+        code = this._lightMap._getFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
         switch (this._method.blendMode) {
             case DiffuseLightMapMethod.MULTIPLY:
                 code += "mul " + this._totalLightColorReg + ", " + this._totalLightColorReg + ", " + temp + "\n";
@@ -59704,7 +59706,7 @@ var EffectAlphaMaskChunk = (function (_super) {
      */
     EffectAlphaMaskChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
         var temp = registerCache.getFreeFragmentVectorTemp();
-        return this._alphaMask._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying) +
+        return this._alphaMask._getFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying) +
             "mul " + targetReg + ", " + targetReg + ", " + temp + ".x\n";
     };
     /**
@@ -59907,12 +59909,12 @@ var EffectEnvMapChunk = (function (_super) {
             "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
             "mul " + temp + ".xyz, " + sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
             "sub " + temp + ".xyz, " + temp + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n" +
-            this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            this._envMap._getFragmentCode(temp, registerCache, sharedRegisters, temp) +
             "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
             "kil " + temp2 + ".w\n" +
             "sub " + temp + ", " + temp + ", " + targetReg + "\n";
         if (this._maskMap) {
-            code += this._maskMap._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+            code += this._maskMap._getFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
                 "mul " + temp + ", " + temp2 + ", " + temp + "\n";
         }
         code += "mul " + temp + ", " + temp + ", " + alphaRegister + ".x\n" +
@@ -60015,7 +60017,7 @@ var EffectFresnelEnvMapChunk = (function (_super) {
             "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
             "mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w\n" +
             "sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz\n" +
-            this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            this._envMap._getFragmentCode(temp, registerCache, sharedRegisters, temp) +
             "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
             "kil " + temp2 + ".w\n" +
             "sub " + temp + ", " + temp + ", " + targetReg + "\n";
@@ -60029,7 +60031,7 @@ var EffectFresnelEnvMapChunk = (function (_super) {
             // total alpha
             "mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
         if (this._maskMap) {
-            code += this._maskMap._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+            code += this._maskMap._getFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
                 "mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
         }
         // blend
@@ -60081,7 +60083,7 @@ var EffectLightMapChunk = (function (_super) {
     EffectLightMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
         var code;
         var temp = registerCache.getFreeFragmentVectorTemp();
-        code = this._lightMap._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
+        code = this._lightMap._getFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
         switch (this._method.blendMode) {
             case EffectLightMapMethod.MULTIPLY:
                 code += "mul " + targetReg + ", " + targetReg + ", " + temp + "\n";
@@ -60171,7 +60173,7 @@ var EffectProjectiveTextureChunk = (function (_super) {
         this._exposureIndex = exposure.index * 4;
         // code += "mul " + col + ".xy, " + this._uvVarying + ".xy, " + toTexReg + ".xy	\n" +
         // 	"add " + col + ".xy, " + col + ".xy, " + toTexReg + ".xx	\n";
-        code += this._texture._iGetFragmentCode(col, registerCache, sharedRegisters, this._uvVarying);
+        code += this._texture._getFragmentCode(col, registerCache, sharedRegisters, this._uvVarying);
         code += "mul " + col + ", " + col + ", " + exposure + ".xxx\n" +
             "add " + col + ", " + col + ", " + exposure + ".xxx\n";
         if (this._method.mode == EffectProjectiveTextureMethod.MULTIPLY)
@@ -60268,7 +60270,7 @@ var EffectRefractionEnvMapChunk = (function (_super) {
             "mul " + refractionDir + ", " + data + ".x, " + viewDirReg + "\n" +
             "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
             "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-            this._envMap._iGetFragmentCode(refractionColor, registerCache, sharedRegisters, refractionDir) +
+            this._envMap._getFragmentCode(refractionColor, registerCache, sharedRegisters, refractionDir) +
             "sub " + refractionColor + ".w, " + refractionColor + ".w, fc0.x	\n" +
             "kil " + refractionColor + ".w\n";
         if (this._useDispersion) {
@@ -60286,7 +60288,7 @@ var EffectRefractionEnvMapChunk = (function (_super) {
                 "mul " + refractionDir + ", " + data + ".y, " + viewDirReg + "\n" +
                 "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
                 "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-                this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
+                this._envMap._getFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
                 "mov " + refractionColor + ".y, " + temp + ".y\n";
             // BLUE
             code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
@@ -60302,7 +60304,7 @@ var EffectRefractionEnvMapChunk = (function (_super) {
                 "mul " + refractionDir + ", " + data + ".z, " + viewDirReg + "\n" +
                 "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
                 "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-                this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
+                this._envMap._getFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
                 "mov " + refractionColor + ".z, " + temp + ".z\n";
         }
         code += "sub " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + targetReg + ".xyz\n" +
@@ -60452,7 +60454,7 @@ var NormalBasicChunk = (function (_super) {
     NormalBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
         var code = "";
         if (this._texture)
-            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            code += this._texture._getFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
         code += "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx\n" +
             "nrm " + targetReg + ".xyz, " + targetReg + "\n";
         return code;
@@ -60504,12 +60506,12 @@ var NormalHeightMapChunk = (function (_super) {
         var dataReg = registerCache.getFreeFragmentConstant();
         var dataReg2 = registerCache.getFreeFragmentConstant();
         this._fragmentConstantsIndex = dataReg.index * 4;
-        code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+        code += this._texture._getFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
             "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
-            this._texture._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            this._texture._getFragmentCode(temp, registerCache, sharedRegisters, temp) +
             "sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" +
             "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
-            this._texture._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            this._texture._getFragmentCode(temp, registerCache, sharedRegisters, temp) +
             "sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" +
             "mov " + targetReg + ".y, " + dataReg + ".w\n" +
             "mul " + targetReg + ".xz, " + targetReg + ".xz, " + dataReg2 + ".xy\n" +
@@ -60595,10 +60597,10 @@ var NormalSimpleWaterChunk = (function (_super) {
         this._fragmentConstantsIndex = dataReg.index * 4;
         code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n";
         if (this._texture)
-            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, temp);
+            code += this._texture._getFragmentCode(targetReg, registerCache, sharedRegisters, temp);
         code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n";
         if (this._secondaryNormalMap)
-            code += this._secondaryNormalMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp);
+            code += this._secondaryNormalMap._getFragmentCode(temp, registerCache, sharedRegisters, temp);
         code += "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
             "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
             "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx	\n" +
@@ -61009,7 +61011,7 @@ var ShadowDitheredChunk = (function (_super) {
      */
     ShadowDitheredChunk.prototype._addSample = function (uvReg, decReg, targetReg, regCache, sharedRegisters) {
         var temp = regCache.getFreeFragmentVectorTemp();
-        return this._depthMap._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
+        return this._depthMap._getFragmentCode(temp, regCache, sharedRegisters, uvReg) +
             "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
             "slt " + temp + ".z, " + this._depthMapCoordReg + ".z, " + temp + ".z\n" +
             "add " + targetReg + ".w, " + targetReg + ".w, " + temp + ".z\n";
@@ -61065,11 +61067,11 @@ var ShadowDitheredChunk = (function (_super) {
         var index = numSamples;
         while (index > 0) {
             if (index == numSamples) {
-                code += this._grainMap._iGetFragmentCode(uvReg, regCache, sharedRegisters, uvReg);
+                code += this._grainMap._getFragmentCode(uvReg, regCache, sharedRegisters, uvReg);
             }
             else {
                 code += "mov " + temp + ", " + uvReg + ".zwxy \n" +
-                    this._grainMap._iGetFragmentCode(uvReg, regCache, sharedRegisters, temp);
+                    this._grainMap._getFragmentCode(uvReg, regCache, sharedRegisters, temp);
             }
             // keep grain in uvReg.zw
             code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" +
@@ -61077,7 +61079,7 @@ var ShadowDitheredChunk = (function (_super) {
             if (index == numSamples) {
                 // first sample
                 code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._depthMapCoordReg + ".xy\n" +
-                    this._depthMap._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
+                    this._depthMap._getFragmentCode(temp, regCache, sharedRegisters, uvReg) +
                     "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
                     "slt " + targetReg + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
             }
@@ -61148,11 +61150,11 @@ var ShadowFilteredChunk = (function (_super) {
         var uvReg = regCache.getFreeFragmentVectorTemp();
         regCache.addFragmentTempUsages(uvReg, 1);
         code += "mov " + uvReg + ", " + this._depthMapCoordReg + "\n" +
-            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
+            this._depthMap._getFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
             "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
             "slt " + uvReg + ".z, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
             "add " + uvReg + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".z\n" +
-            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            this._depthMap._getFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
             "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
             "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
             "mul " + depthCol + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".y\n" +
@@ -61162,11 +61164,11 @@ var ShadowFilteredChunk = (function (_super) {
             "add " + targetReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" +
             "mov " + uvReg + ".x, " + this._depthMapCoordReg + ".x\n" +
             "add " + uvReg + ".y, " + this._depthMapCoordReg + ".y, " + customDataReg + ".z\n" +
-            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            this._depthMap._getFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
             "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
             "slt " + uvReg + ".z, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
             "add " + uvReg + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".z\n" +
-            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            this._depthMap._getFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
             "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
             "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
             // recalculate fraction, since we ran out of registers :(
@@ -61204,19 +61206,19 @@ var ShadowFilteredChunk = (function (_super) {
         registerCache.addFragmentTempUsages(temp, 1);
         var predicate = registerCache.getFreeFragmentVectorTemp();
         registerCache.addFragmentTempUsages(predicate, 1);
-        code = this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+        code = this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" +
             "add " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
-            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + predicate + ".z, " + depthProjection + ".z, " + temp + ".z\n" +
             "add " + depthProjection + ".y, " + depthProjection + ".y, " + dataReg + ".y\n" +
-            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + predicate + ".w, " + depthProjection + ".z, " + temp + ".z\n" +
             "sub " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
-            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + predicate + ".y, " + depthProjection + ".z, " + temp + ".z\n" +
             "mul " + temp + ".xy, " + depthProjection + ".xy, " + dataReg + ".x\n" +
@@ -61255,7 +61257,7 @@ var ShadowHardChunk = (function (_super) {
         regCache.getFreeFragmentConstant();
         var depthCol = regCache.getFreeFragmentVectorTemp();
         this._fragmentConstantsIndex = decReg.index * 4;
-        code += this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
+        code += this._depthMap._getFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
             "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
             "slt " + targetReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n"; // 0 if in shadow
         return code;
@@ -61277,7 +61279,7 @@ var ShadowHardChunk = (function (_super) {
             "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
             "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" +
             "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
-            this._depthMap._iGetFragmentCode(depthSampleCol, regCache, sharedRegisters, lightDir) +
+            this._depthMap._getFragmentCode(depthSampleCol, regCache, sharedRegisters, lightDir) +
             "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" +
             "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" +
             "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n"; // 0 if in shadow
@@ -61290,7 +61292,7 @@ var ShadowHardChunk = (function (_super) {
      */
     ShadowHardChunk.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
         var temp = registerCache.getFreeFragmentVectorTemp();
-        return this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+        return this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + targetRegister + ".w, " + depthProjection + ".z, " + temp + ".z\n"; // 0 if in shadow
     };
@@ -61428,7 +61430,7 @@ var ShadowSoftChunk = (function (_super) {
      */
     ShadowSoftChunk.prototype.addSample = function (decodeRegister, targetRegister, registerCache, sharedRegisters, uvReg) {
         var temp = registerCache.getFreeFragmentVectorTemp();
-        return this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
+        return this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
             "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
             "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n" +
             "add " + targetRegister + ".w, " + targetRegister + ".w, " + uvReg + ".w\n";
@@ -61484,7 +61486,7 @@ var ShadowSoftChunk = (function (_super) {
             if (i == 0) {
                 var temp = registerCache.getFreeFragmentVectorTemp();
                 code = "add " + uvReg + ", " + this._depthMapCoordReg + ", " + dataReg + ".zwyy\n" +
-                    this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
+                    this._depthMap._getFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
                     "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
                     "slt " + targetRegister + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
             }
@@ -61554,7 +61556,7 @@ var SpecularBasicChunk = (function (_super) {
         if (this._texture) {
             this._specularTexData = registerCache.getFreeFragmentVectorTemp();
             registerCache.addFragmentTempUsages(this._specularTexData, 1);
-            code += this._texture._iGetFragmentCode(this._specularTexData, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+            code += this._texture._getFragmentCode(this._specularTexData, registerCache, sharedRegisters, sharedRegisters.uvVarying);
         }
         this._totalLightColorReg = registerCache.getFreeFragmentVectorTemp();
         registerCache.addFragmentTempUsages(this._totalLightColorReg, 1);
@@ -62124,8 +62126,8 @@ var MethodPass = (function (_super) {
     /**
      * Initializes the unchanging constant data for this material.
      */
-    MethodPass.prototype._iInitConstantData = function (shader) {
-        _super.prototype._iInitConstantData.call(this, shader);
+    MethodPass.prototype._initConstantData = function (shader) {
+        _super.prototype._initConstantData.call(this, shader);
         //Updates method constants if they have changed.
         var len = this._chunks.length;
         for (var i = 0; i < len; ++i)
@@ -62404,8 +62406,8 @@ var MethodPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iActivate = function (projection) {
-        _super.prototype._iActivate.call(this, projection);
+    MethodPass.prototype._activate = function (projection) {
+        _super.prototype._activate.call(this, projection);
         var chunk;
         var len = this._chunks.length;
         for (var i = 0; i < len; ++i) {
@@ -62434,8 +62436,8 @@ var MethodPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iDeactivate = function () {
-        _super.prototype._iDeactivate.call(this);
+    MethodPass.prototype._deactivate = function () {
+        _super.prototype._deactivate.call(this);
         var chunk;
         var len = this._chunks.length;
         for (var i = 0; i < len; ++i) {
@@ -62444,8 +62446,8 @@ var MethodPass = (function (_super) {
                 chunk._deactivate();
         }
     };
-    MethodPass.prototype._iIncludeDependencies = function (shader) {
-        _super.prototype._iIncludeDependencies.call(this, shader);
+    MethodPass.prototype._includeDependencies = function (shader) {
+        _super.prototype._includeDependencies.call(this, shader);
         //TODO: fragment animtion should be compatible with lighting pass
         shader.usesFragmentAnimation = Boolean(this._mode == MethodPassMode.SUPER_SHADER);
         if (shader.useAlphaPremultiplied && shader.usesBlending)
@@ -62498,11 +62500,11 @@ var MethodPass = (function (_super) {
         if (chunkVO.needsView)
             shader.viewDirDependencies++;
     };
-    MethodPass.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPreLightingVertexCode = function (registerCache, sharedRegisters) {
         var code = "";
         return code;
     };
-    MethodPass.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPreLightingFragmentCode = function (registerCache, sharedRegisters) {
         var code = "";
         if (this._diffuseChunk && this._diffuseChunk.chunkVO.useChunk)
             code += this._diffuseChunk._getFragmentPreLightingCode(registerCache, sharedRegisters);
@@ -62510,30 +62512,22 @@ var MethodPass = (function (_super) {
             code += this._specularChunk._getFragmentPreLightingCode(registerCache, sharedRegisters);
         return code;
     };
-    MethodPass.prototype._iGetPerLightDiffuseFragmentCode = function (shader, lightDirReg, diffuseColorReg, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPerLightDiffuseFragmentCode = function (lightDirReg, diffuseColorReg, registerCache, sharedRegisters) {
         return this._diffuseChunk._getFragmentCodePerLight(lightDirReg, diffuseColorReg, registerCache, sharedRegisters);
     };
-    MethodPass.prototype._iGetPerLightSpecularFragmentCode = function (shader, lightDirReg, specularColorReg, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPerLightSpecularFragmentCode = function (lightDirReg, specularColorReg, registerCache, sharedRegisters) {
         return this._specularChunk._getFragmentCodePerLight(lightDirReg, specularColorReg, registerCache, sharedRegisters);
     };
-    MethodPass.prototype._iGetPerProbeDiffuseFragmentCode = function (shader, texReg, weightReg, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPerProbeDiffuseFragmentCode = function (texReg, weightReg, registerCache, sharedRegisters) {
         return this._diffuseChunk._getFragmentCodePerProbe(texReg, weightReg, registerCache, sharedRegisters);
     };
-    MethodPass.prototype._iGetPerProbeSpecularFragmentCode = function (shader, texReg, weightReg, registerCache, sharedRegisters) {
+    MethodPass.prototype._getPerProbeSpecularFragmentCode = function (texReg, weightReg, registerCache, sharedRegisters) {
         return this._specularChunk._getFragmentCodePerProbe(texReg, weightReg, registerCache, sharedRegisters);
     };
-    MethodPass.prototype._iGetPostLightingVertexCode = function (shader, registerCache, sharedRegisters) {
-        var code = "";
-        return code;
-    };
-    MethodPass.prototype._iGetPostLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
-        var code = "";
-        return code;
-    };
-    MethodPass.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getNormalVertexCode = function (registerCache, sharedRegisters) {
         return this._normalChunk._getVertexCode(registerCache, sharedRegisters);
     };
-    MethodPass.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getNormalFragmentCode = function (registerCache, sharedRegisters) {
         var code = this._normalChunk._getFragmentCode(sharedRegisters.normalFragment, registerCache, sharedRegisters);
         if (this._normalChunk.chunkVO.needsView)
             registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
@@ -62544,7 +62538,7 @@ var MethodPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getVertexCode = function (registerCache, sharedRegisters) {
         var code = "";
         if (this._ambientChunk && this._ambientChunk.chunkVO.useChunk)
             code += this._ambientChunk._getVertexCode(registerCache, sharedRegisters);
@@ -62571,9 +62565,8 @@ var MethodPass = (function (_super) {
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
+    MethodPass.prototype._getFragmentCode = function (registerCache, sharedRegisters) {
         var code = "";
-        var alphaReg;
         if (this._ambientChunk && this._ambientChunk.chunkVO.useChunk) {
             code += this._ambientChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
             if (this._ambientChunk.chunkVO.needsNormals)
@@ -62581,12 +62574,18 @@ var MethodPass = (function (_super) {
             if (this._ambientChunk.chunkVO.needsView)
                 registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
         }
-        if (shader.useAlphaPremultiplied && shader.usesBlending) {
+        return code;
+    };
+    MethodPass.prototype._getPostAnimationFragmentCode = function (registerCache, sharedRegisters) {
+        var code = "";
+        //if blending with premultiplied alpha, make sure ambient color is correctly multiplied
+        if (this._shader.useAlphaPremultiplied && this._shader.usesBlending) {
             code += "add " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
                 "div " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + ", " + sharedRegisters.shadedTarget + ".w\n" +
                 "sub " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
                 "sat " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + "\n";
         }
+        ///////////////begin lighting shading
         if (this._shadowChunk)
             code += this._shadowChunk._getFragmentCode(sharedRegisters.shadowTarget, registerCache, sharedRegisters);
         if (this._diffuseChunk && this._diffuseChunk.chunkVO.useChunk) {
@@ -62606,11 +62605,15 @@ var MethodPass = (function (_super) {
         }
         if (this._shadowChunk)
             registerCache.removeFragmentTempUsage(sharedRegisters.shadowTarget);
+        ///////////////end lighting shading
+        var alphaReg;
+        //check if alpha is preserved while performing effects shading and store value
         if (this.preserveAlpha && this._numEffectDependencies > 0) {
             alphaReg = registerCache.getFreeFragmentSingleTemp();
             registerCache.addFragmentTempUsages(alphaReg, 1);
             code += "mov " + alphaReg + ", " + sharedRegisters.shadedTarget + ".w\n";
         }
+        //perform effects shading
         var chunk;
         var len = this._chunks.length;
         for (var i = len - this._numEffectDependencies; i < len; i++) {
@@ -62623,10 +62626,12 @@ var MethodPass = (function (_super) {
                     registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
             }
         }
+        //check if alpha is preserved while performing effects shading and restore value
         if (this.preserveAlpha && this._numEffectDependencies > 0) {
             code += "mov " + sharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
             registerCache.removeFragmentTempUsage(alphaReg);
         }
+        //peform final colortransform chunk if it exists
         if (this._colorTransformChunk && this._colorTransformChunk.chunkVO.useChunk)
             code += this._colorTransformChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
         return code;
