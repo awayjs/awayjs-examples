@@ -53678,7 +53678,7 @@ var CompilerBase = (function () {
         this.pCompileDependencies();
         //compile custom vertex & fragment codes
         this._pVertexCode += this._pRenderPass._iGetVertexCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
-        this._pPostAnimationFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
+        this._pFragmentCode += this._pRenderPass._iGetFragmentCode(this._pShader, this._pRegisterCache, this._pSharedRegisters);
         //assign the final output color to the output register
         this._pPostAnimationFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
         this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
@@ -54067,6 +54067,13 @@ var ShaderBase = (function () {
         this._stage = stage;
         this.profile = this._stage.profile;
     }
+    Object.defineProperty(ShaderBase.prototype, "pass", {
+        get: function () {
+            return this._pass;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ShaderBase.prototype, "programData", {
         get: function () {
             if (this._invalidProgram)
@@ -54131,8 +54138,8 @@ var ShaderBase = (function () {
         enumerable: true,
         configurable: true
     });
-    ShaderBase.prototype.getAbstraction = function (texture) {
-        return (this._abstractionPool[texture.id] || (this._abstractionPool[texture.id] = new ShaderBase._abstractionClassPool[texture.assetType](texture, this)));
+    ShaderBase.prototype.getAbstraction = function (asset) {
+        return (this._abstractionPool[asset.id] || (this._abstractionPool[asset.id] = new ShaderBase._abstractionClassPool[asset.assetType](asset, this)));
     };
     /**
      *
@@ -54514,11 +54521,10 @@ var PassBase = (function (_super) {
     /**
      * Creates a new PassBase object.
      */
-    function PassBase(render, material, materialPool) {
+    function PassBase(material, materialPool) {
         var _this = _super.call(this) || this;
         _this._preserveAlpha = true;
         _this._forceSeparateMVP = false;
-        _this._render = render;
         _this._material = material;
         _this._elementsClass = materialPool.elementsClass;
         _this._stage = materialPool.materialGroup.stage;
@@ -54531,9 +54537,30 @@ var PassBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(PassBase.prototype, "samplers", {
+        get: function () {
+            return this._material.samplers;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "images", {
+        get: function () {
+            return this._material.images;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PassBase.prototype, "style", {
+        get: function () {
+            return this._material.material.style;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(PassBase.prototype, "animationSet", {
         get: function () {
-            return this._material.animationSet;
+            return this._material.material.animationSet;
         },
         enumerable: true,
         configurable: true
@@ -54574,7 +54601,7 @@ var PassBase = (function (_super) {
     });
     PassBase.prototype.getImageIndex = function (texture, index) {
         if (index === void 0) { index = 0; }
-        return this._render.getImageIndex(texture, index);
+        return this._material.getImageIndex(texture, index);
     };
     /**
      * Marks the shader program as invalid, so it will be recompiled before the next render.
@@ -54588,7 +54615,6 @@ var PassBase = (function (_super) {
      * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
      */
     PassBase.prototype.dispose = function () {
-        this._render = null;
         this._material = null;
         this._elementsClass = null;
         this._stage = null;
@@ -54631,7 +54657,7 @@ var PassBase = (function (_super) {
         this._shader._iDeactivate();
     };
     PassBase.prototype._iIncludeDependencies = function (shader) {
-        this._render._iIncludeDependencies(shader);
+        this._material._iIncludeDependencies(shader);
         if (this._forceSeparateMVP)
             shader.globalPosDependencies++;
     };
@@ -54664,8 +54690,8 @@ var PassBase = (function (_super) {
  */
 var BasicMaterialPass = (function (_super) {
     __extends(BasicMaterialPass, _super);
-    function BasicMaterialPass(render, material, materialPool) {
-        var _this = _super.call(this, render, material, materialPool) || this;
+    function BasicMaterialPass(material, materialPool) {
+        var _this = _super.call(this, material, materialPool) || this;
         _this._diffuseR = 1;
         _this._diffuseG = 1;
         _this._diffuseB = 1;
@@ -54681,11 +54707,11 @@ var BasicMaterialPass = (function (_super) {
     };
     BasicMaterialPass.prototype.invalidate = function () {
         _super.prototype.invalidate.call(this);
-        this._textureVO = this._material.getTextureAt(0) ? this._shader.getAbstraction(this._material.getTextureAt(0)) : null;
+        this._textureVO = this._material.material.getTextureAt(0) ? this._shader.getAbstraction(this._material.material.getTextureAt(0)) : null;
     };
     BasicMaterialPass.prototype.dispose = function () {
         if (this._textureVO) {
-            this._textureVO.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._material.getTextureAt(0)));
+            this._textureVO.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._material.material.getTextureAt(0)));
             this._textureVO = null;
         }
         _super.prototype.dispose.call(this);
@@ -54735,7 +54761,7 @@ var BasicMaterialPass = (function (_super) {
     BasicMaterialPass.prototype._iActivate = function (projection) {
         _super.prototype._iActivate.call(this, projection);
         if (this._textureVO != null) {
-            this._textureVO.activate(this._render);
+            this._textureVO.activate();
             if (this._shader.alphaThreshold > 0)
                 this._shader.fragmentConstantData[this._fragmentConstantsIndex] = this._shader.alphaThreshold;
         }
@@ -54781,6 +54807,13 @@ var GL_MaterialBase = (function (_super) {
         _this._onPassInvalidateDelegate = function (event) { return _this.onPassInvalidate(event); };
         return _this;
     }
+    Object.defineProperty(GL_MaterialBase.prototype, "style", {
+        get: function () {
+            return this._material.style;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(GL_MaterialBase.prototype, "requiresBlending", {
         /**
          * Indicates whether or not the renderable requires alpha blending during rendering.
@@ -55010,7 +55043,7 @@ var GL_BasicMaterial = (function (_super) {
     function GL_BasicMaterial(material, materialPool) {
         var _this = _super.call(this, material, materialPool) || this;
         _this._basicMaterial = material;
-        _this._pAddPass(_this._pass = new BasicMaterialPass(_this, material, materialPool));
+        _this._pAddPass(_this._pass = new BasicMaterialPass(_this, materialPool));
         return _this;
     }
     GL_BasicMaterial.prototype.onClear = function (event) {
@@ -55137,6 +55170,10 @@ var RenderablePool = (function () {
         this._materialGroup = materialGroup;
     }
     Object.defineProperty(RenderablePool.prototype, "entity", {
+        /**
+         *
+         * @returns {IEntity}
+         */
         get: function () {
             return this._entity;
         },
@@ -55144,6 +55181,10 @@ var RenderablePool = (function () {
         configurable: true
     });
     Object.defineProperty(RenderablePool.prototype, "materialGroup", {
+        /**
+         *
+         * @returns {MaterialGroupBase}
+         */
         get: function () {
             return this._materialGroup;
         },
@@ -55283,7 +55324,13 @@ var GL_RenderableBase = (function (_super) {
         _this._offset = 0;
         _this._elementsDirty = true;
         _this._materialDirty = true;
+        /**
+         *
+         */
         _this.images = new Array();
+        /**
+         *
+         */
         _this.samplers = new Array();
         _this._onInvalidateMaterialDelegate = function (event) { return _this._onInvalidateMaterial(event); };
         _this._onInvalidateElementsDelegate = function (event) { return _this.onInvalidateElements(event); };
@@ -55297,6 +55344,10 @@ var GL_RenderableBase = (function (_super) {
         return _this;
     }
     Object.defineProperty(GL_RenderableBase.prototype, "elementsGL", {
+        /**
+         *
+         * @returns {GL_ElementsBase}
+         */
         get: function () {
             if (this._elementsDirty)
                 this._updateElements();
@@ -55306,6 +55357,10 @@ var GL_RenderableBase = (function (_super) {
         configurable: true
     });
     Object.defineProperty(GL_RenderableBase.prototype, "materialGL", {
+        /**
+         *
+         * @returns {GL_MaterialBase}
+         */
         get: function () {
             if (this._materialDirty)
                 this._updateMaterial();
@@ -55337,10 +55392,10 @@ var GL_RenderableBase = (function (_super) {
     GL_RenderableBase.prototype._onInvalidateMaterial = function (event) {
         this._materialDirty = true;
     };
-    GL_RenderableBase.prototype._pGetElements = function () {
+    GL_RenderableBase.prototype._getElements = function () {
         throw new _awayjs_core.AbstractMethodError();
     };
-    GL_RenderableBase.prototype._pGetMaterial = function () {
+    GL_RenderableBase.prototype._getMaterial = function () {
         throw new _awayjs_core.AbstractMethodError();
     };
     /**
@@ -55367,11 +55422,11 @@ var GL_RenderableBase = (function (_super) {
      * @private
      */
     GL_RenderableBase.prototype._updateElements = function () {
-        this._elementsGL = this._pGetElements();
+        this._elementsGL = this._getElements();
         this._elementsDirty = false;
     };
     GL_RenderableBase.prototype._updateMaterial = function () {
-        var materialGL = this._pGetMaterial();
+        var materialGL = this._getMaterial();
         if (this._materialGL != materialGL) {
             if (this._materialGL) {
                 this._materialGL.usages--;
@@ -55438,12 +55493,12 @@ var GL_ShapeRenderable = (function (_super) {
      * @returns {ElementsBase}
      * @protected
      */
-    GL_ShapeRenderable.prototype._pGetElements = function () {
+    GL_ShapeRenderable.prototype._getElements = function () {
         this._offset = this.shape.offset;
         this._count = this.shape.count;
         return this._stage.getAbstraction((this.sourceEntity.animator) ? this.sourceEntity.animator.getRenderableElements(this, this.shape.elements) : this.shape.elements);
     };
-    GL_ShapeRenderable.prototype._pGetMaterial = function () {
+    GL_ShapeRenderable.prototype._getMaterial = function () {
         return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this.shape.material || this.sourceEntity.material || _awayjs_graphics.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
     return GL_ShapeRenderable;
@@ -55478,7 +55533,7 @@ var GL_TextureBase = (function (_super) {
     GL_TextureBase.prototype._setRenderState = function (renderable) {
         //overidden for state logic
     };
-    GL_TextureBase.prototype.activate = function (render) {
+    GL_TextureBase.prototype.activate = function () {
         //overridden for activation logic
     };
     GL_TextureBase.prototype.getTextureReg = function (imageIndex, regCache, sharedReg) {
@@ -55525,9 +55580,8 @@ var GL_Single2DTexture = (function (_super) {
         var filter = "linear,miplinear";
         var temp;
         //modify depending on mapping mode
-        if (this._single2DTexture.mappingMode == _awayjs_graphics.MappingMode.RADIAL_GRADIENT) {
+        if (this._single2DTexture.mappingMode == _awayjs_graphics.MappingMode.RADIAL) {
             temp = regCache.getFreeFragmentVectorTemp();
-            code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
             code += "mul " + temp + ".xy, " + inputReg + ", " + inputReg + "\n";
             code += "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n";
             code += "sub " + temp + ".y, " + temp + ".y, " + temp + ".y\n";
@@ -55549,10 +55603,10 @@ var GL_Single2DTexture = (function (_super) {
         code += "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <2d," + filter + "," + format + wrap + ">\n";
         return code;
     };
-    GL_Single2DTexture.prototype.activate = function (render) {
-        var sampler = render.samplers[this._imageIndex];
+    GL_Single2DTexture.prototype.activate = function () {
+        var sampler = this._shader.pass.samplers[this._imageIndex];
         sampler.activate(this._textureIndex);
-        var image = render.images[this._imageIndex];
+        var image = this._shader.pass.images[this._imageIndex];
         image.activate(this._textureIndex, sampler._sampler.mipmap);
         if (this._shader.useImageRect) {
             var index = this._samplerIndex;
@@ -55635,12 +55689,12 @@ var GL_SingleCubeTexture = (function (_super) {
         this._textureIndex = textureReg.index;
         return "tex " + targetReg + ", " + inputReg + ", " + textureReg + " <cube," + format + filter + ">\n";
     };
-    GL_SingleCubeTexture.prototype.activate = function (render) {
-        var sampler = render.samplers[this._imageIndex];
+    GL_SingleCubeTexture.prototype.activate = function () {
+        var sampler = this._shader.pass.samplers[this._imageIndex];
         if (sampler)
             sampler.activate(this._textureIndex);
-        if (render.images[this._imageIndex])
-            render.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
+        if (this._shader.pass.images[this._imageIndex])
+            this._shader.pass.images[this._imageIndex].activate(this._textureIndex, sampler._sampler.mipmap);
     };
     GL_SingleCubeTexture.prototype._setRenderState = function (renderable) {
         var sampler = renderable.samplers[this._imageIndex];
