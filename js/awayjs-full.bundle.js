@@ -154,7 +154,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_scene__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_scene__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_scene___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_scene__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_scene__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_scene__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -167,11 +167,11 @@
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_core__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_core___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_core__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__awayjs_graphics__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__awayjs_graphics__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__awayjs_graphics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__awayjs_graphics__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__awayjs_stage__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__awayjs_stage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__awayjs_stage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__awayjs_scene___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__awayjs_scene__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__);
@@ -238,7 +238,7 @@ __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_graphics__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_graphics__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_graphics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_graphics__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_graphics__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_graphics__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -12815,6 +12815,17 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_stage__);
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
 (function (global, factory) {
      true ? factory(exports, __webpack_require__(7)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core'], factory) :
@@ -22140,11 +22151,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(8)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics'], factory) :
     (factory((global.AwayjsScene = global.AwayjsScene || {}),global.AwayjsCore,global.AwayjsGraphics));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics) { 'use strict';
@@ -35258,22 +35269,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_stage__);
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-
-
-
-/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(8), __webpack_require__(12), __webpack_require__(9)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(12), __webpack_require__(10)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/stage', '@awayjs/scene'], factory) :
     (factory((global.AwayjsRenderer = global.AwayjsRenderer || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsStage,global.AwayjsScene));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_stage,_awayjs_scene) { 'use strict';
@@ -45983,7 +45983,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(8)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics'], factory) :
     (factory((global.AwayjsStage = global.AwayjsStage || {}),global.AwayjsCore,global.AwayjsGraphics));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics) { 'use strict';
@@ -55810,43 +55810,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(8), __webpack_require__(12), __webpack_require__(11), __webpack_require__(9)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(12), __webpack_require__(11), __webpack_require__(10)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/stage', '@awayjs/renderer', '@awayjs/scene'], factory) :
     (factory((global.AwayjsMaterials = global.AwayjsMaterials || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsStage,global.AwayjsRenderer,global.AwayjsScene));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_stage,_awayjs_renderer,_awayjs_scene) { 'use strict';
-
-/**
- * MethodVO contains data for a given shader object for the use within a single material.
- * This allows shader methods to be shared across materials while their non-public state differs.
- */
-var MethodVO = (function () {
-    /**
-     * Creates a new MethodVO object.
-     */
-    function MethodVO(method, pass) {
-        this.useMethod = true;
-        this.method = method;
-        this.pass = pass;
-    }
-    /**
-     * Resets the values of the value object to their "unused" state.
-     */
-    MethodVO.prototype.reset = function () {
-        this.method.iReset();
-        this.vertexConstantsIndex = -1;
-        this.secondaryVertexConstantsIndex = -1;
-        this.fragmentConstantsIndex = -1;
-        this.secondaryFragmentConstantsIndex = -1;
-        this.needsProjection = false;
-        this.needsView = false;
-        this.needsNormals = false;
-        this.needsTangents = false;
-        this.needsGlobalVertexPos = false;
-        this.needsGlobalFragmentPos = false;
-        this.vertexMatrices = new Array();
-    };
-    return MethodVO;
-}());
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -55885,43 +55852,6 @@ var ShadingMethodBase = (function (_super) {
         _this._counts = new Array();
         return _this;
     }
-    Object.defineProperty(ShadingMethodBase.prototype, "assetType", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return ShadingMethodBase.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ShadingMethodBase.prototype.iIsUsed = function (shader) {
-        return true;
-    };
-    /**
-     * Initializes the properties for a MethodVO, including register and texture indices.
-     *
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iInitVO = function (shader, methodVO) {
-    };
-    /**
-     * Initializes unchanging shader constants using the data from a MethodVO.
-     *
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iInitConstants = function (shader, methodVO) {
-    };
-    /**
-     * Indicates whether or not this method expects normals in tangent space. Override for object-space normals.
-     */
-    ShadingMethodBase.prototype.iUsesTangentSpace = function () {
-        return true;
-    };
     /**
      * Cleans up any resources used by the current object.
      */
@@ -55975,73 +55905,12 @@ var ShadingMethodBase = (function (_super) {
             this._owners[i].removeTexture(texture);
     };
     /**
-     * Resets the compilation state of the method.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iReset = function () {
-        this.iCleanCompilationData();
-    };
-    /**
-     * Resets the method's state for compilation.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iCleanCompilationData = function () {
-    };
-    /**
-     * Get the vertex shader code for this method.
-     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadingMethodBase.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return null;
-    };
-    /**
-     * Sets the render state for this method.
-     *
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param stage The Stage object currently used for rendering.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iActivate = function (shader, methodVO, stage) {
-    };
-    /**
-     * Sets the render state for a single renderable.
-     *
-     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-     * @param renderable The renderable currently being rendered.
-     * @param stage The Stage object currently used for rendering.
-     * @param camera The camera from which the scene is currently rendered.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-    };
-    /**
-     * Clears the render state for this method.
-     * @param vo The MethodVO object linking this method with the pass currently being compiled.
-     * @param stage The Stage object currently used for rendering.
-     *
-     * @internal
-     */
-    ShadingMethodBase.prototype.iDeactivate = function (shader, methodVO, stage) {
-    };
-    /**
      * Marks the shader program as invalid, so it will be recompiled before the next render.
      *
      * @internal
      */
-    ShadingMethodBase.prototype.iInvalidateShaderProgram = function () {
+    ShadingMethodBase.prototype.invalidateShaderProgram = function () {
+        this.invalidate();
         this.dispatchEvent(new _awayjs_renderer.ShadingMethodEvent(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED));
     };
     /**
@@ -56051,7 +55920,6 @@ var ShadingMethodBase = (function (_super) {
     };
     return ShadingMethodBase;
 }(_awayjs_core.AssetBase));
-ShadingMethodBase.assetType = "[asset ShadingMethod]";
 
 /**
  * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
@@ -56064,34 +55932,19 @@ var AmbientBasicMethod = (function (_super) {
     function AmbientBasicMethod() {
         var _this = _super.call(this) || this;
         _this._alpha = 1;
-        _this._colorR = 1;
-        _this._colorG = 1;
-        _this._colorB = 1;
         _this._strength = 1;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    AmbientBasicMethod.prototype.iInitVO = function (shader, methodVO) {
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-        else if (methodVO.textureGL) {
-            methodVO.textureGL.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._texture));
-            methodVO.textureGL = null;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    AmbientBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
-        if (!methodVO.textureGL) {
-            this._color = shader.numLights ? 0xFFFFFF : methodVO.pass._material.style.color;
-            this.updateColor();
-        }
-    };
+    Object.defineProperty(AmbientBasicMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return AmbientBasicMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(AmbientBasicMethod.prototype, "strength", {
         /**
          * The strength of the ambient reflection of the surface.
@@ -56103,7 +55956,7 @@ var AmbientBasicMethod = (function (_super) {
             if (this._strength == value)
                 return;
             this._strength = value;
-            this.updateColor();
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56119,7 +55972,7 @@ var AmbientBasicMethod = (function (_super) {
             if (this._alpha == value)
                 return;
             this._alpha = value;
-            this.updateColor();
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56139,7 +55992,7 @@ var AmbientBasicMethod = (function (_super) {
             this._texture = value;
             if (this._texture)
                 this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -56151,117 +56004,9 @@ var AmbientBasicMethod = (function (_super) {
         var m = method;
         var b = m;
     };
-    /**
-     * @inheritDoc
-     */
-    AmbientBasicMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        if (methodVO.textureGL) {
-            code += methodVO.textureGL._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-            if (shader.alphaThreshold > 0) {
-                var cutOffReg = registerCache.getFreeFragmentConstant();
-                methodVO.fragmentConstantsIndex = cutOffReg.index * 4;
-                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" +
-                    "kil " + targetReg + ".w\n" +
-                    "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
-            }
-        }
-        else {
-            var ambientInputRegister = registerCache.getFreeFragmentConstant();
-            methodVO.fragmentConstantsIndex = ambientInputRegister.index * 4;
-            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
-        }
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    AmbientBasicMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        if (methodVO.textureGL) {
-            methodVO.textureGL.activate(methodVO.pass._render);
-            if (shader.alphaThreshold > 0)
-                shader.fragmentConstantData[methodVO.fragmentConstantsIndex] = shader.alphaThreshold;
-        }
-        else {
-            var index = methodVO.fragmentConstantsIndex;
-            var data = shader.fragmentConstantData;
-            data[index] = this._colorR;
-            data[index + 1] = this._colorG;
-            data[index + 2] = this._colorB;
-            data[index + 3] = this._alpha;
-        }
-    };
-    AmbientBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        if (methodVO.textureGL)
-            methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * Updates the ambient color data used by the render state.
-     */
-    AmbientBasicMethod.prototype.updateColor = function () {
-        this._colorR = ((this._color >> 16) & 0xff) / 0xff * this._strength;
-        this._colorG = ((this._color >> 8) & 0xff) / 0xff * this._strength;
-        this._colorB = (this._color & 0xff) / 0xff * this._strength;
-    };
     return AmbientBasicMethod;
 }(ShadingMethodBase));
-
-/**
- * LightingMethodBase provides an abstract base method for shading methods that uses lights.
- * Used for diffuse and specular shaders only.
- */
-var LightingMethodBase = (function (_super) {
-    __extends(LightingMethodBase, _super);
-    /**
-     * Creates a new LightingMethodBase.
-     */
-    function LightingMethodBase() {
-        return _super.call(this) || this;
-    }
-    /**
-     * Get the fragment shader code that will be needed before any per-light code is added.
-     * @param methodVO The MethodVO object containing the method data for the currently compiled material pass.
-     * @param regCache The register cache used during the compilation.
-     * @private
-     */
-    LightingMethodBase.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * Get the fragment shader code that will generate the code relevant to a single light.
-     *
-     * @param methodVO The MethodVO object containing the method data for the currently compiled material pass.
-     * @param lightDirReg The register containing the light direction vector.
-     * @param lightColReg The register containing the light colour.
-     * @param regCache The register cache used during the compilation.
-     */
-    LightingMethodBase.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * Get the fragment shader code that will generate the code relevant to a single light probe object.
-     *
-     * @param methodVO The MethodVO object containing the method data for the currently compiled material pass.
-     * @param cubeMapReg The register containing the cube map for the current probe
-     * @param weightRegister A string representation of the register + component containing the current weight
-     * @param regCache The register cache providing any necessary registers to the shader
-     */
-    LightingMethodBase.prototype.iGetFragmentCodePerProbe = function (shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters) {
-        return "";
-    };
-    /**
-     * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
-     *
-     * @param methodVO The MethodVO object containing the method data for the currently compiled material pass.
-     * @param regCache The register cache used during the compilation.
-     * @param targetReg The register containing the final shading output.
-     * @private
-     */
-    LightingMethodBase.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return "";
-    };
-    return LightingMethodBase;
-}(ShadingMethodBase));
+AmbientBasicMethod.assetType = "[asset AmbientBasicMethod]";
 
 /**
  * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
@@ -56283,11 +56028,16 @@ var DiffuseBasicMethod = (function (_super) {
         _this._colorB = 1;
         return _this;
     }
-    DiffuseBasicMethod.prototype.iIsUsed = function (shader) {
-        if (!shader.numLights)
-            return false;
-        return true;
-    };
+    Object.defineProperty(DiffuseBasicMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return DiffuseBasicMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DiffuseBasicMethod.prototype, "multiply", {
         /**
          * Set internally if diffuse color component multiplies or replaces the ambient color
@@ -56299,37 +56049,11 @@ var DiffuseBasicMethod = (function (_super) {
             if (this._multiply == value)
                 return;
             this._multiply = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    DiffuseBasicMethod.prototype.iInitVO = function (shader, methodVO) {
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-        else if (methodVO.textureGL) {
-            methodVO.textureGL.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, null));
-            methodVO.textureGL = null;
-        }
-        if (shader.numLights > 0) {
-            shader.usesCommonData = true;
-            methodVO.needsNormals = true;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iInitConstants = function (shader, methodVO) {
-        if (shader.numLights > 0) {
-            this._ambientColor = methodVO.pass._material.style.color;
-            this.updateAmbientColor();
-        }
-        else {
-            this._ambientColor = null;
-        }
-    };
     Object.defineProperty(DiffuseBasicMethod.prototype, "color", {
         /**
          * The color of the diffuse reflection when not using a texture.
@@ -56341,7 +56065,7 @@ var DiffuseBasicMethod = (function (_super) {
             if (this._color == value)
                 return;
             this._color = value;
-            this.updateColor();
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56361,7 +56085,7 @@ var DiffuseBasicMethod = (function (_super) {
             this._texture = value;
             if (this._texture)
                 this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -56381,180 +56105,9 @@ var DiffuseBasicMethod = (function (_super) {
         this.multiply = diff.multiply;
         this.color = diff.color;
     };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._pTotalLightColorReg = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = "";
-        this._pIsFirstLight = true;
-        registerCache.addFragmentTempUsages(this._pTotalLightColorReg = registerCache.getFreeFragmentVectorTemp(), 1);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        // write in temporary if not first light, so we can add to total diffuse colour
-        if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
-        }
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        code += "dp3 " + t + ".x, " + lightDirReg + ", " + sharedRegisters.normalFragment + "\n" +
-            "max " + t + ".w, " + t + ".x, " + sharedRegisters.commons + ".y\n";
-        if (shader.usesLightFallOff)
-            code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        code += "mul " + t + ", " + t + ".w, " + lightColReg + "\n";
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iGetFragmentCodePerProbe = function (shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        // write in temporary if not first light, so we can add to total diffuse colour
-        if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
-        }
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        code += "tex " + t + ", " + sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" +
-            "mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var diffuseColor;
-        var cutOffReg;
-        // incorporate input from ambient
-        if (sharedRegisters.shadowTarget)
-            code += this.pApplyShadow(shader, methodVO, registerCache, sharedRegisters);
-        registerCache.addFragmentTempUsages(diffuseColor = registerCache.getFreeFragmentVectorTemp(), 1);
-        var ambientColorRegister = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = ambientColorRegister.index * 4;
-        if (this._texture) {
-            code += methodVO.textureGL._iGetFragmentCode(diffuseColor, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-        }
-        else {
-            var diffuseInputRegister = registerCache.getFreeFragmentConstant();
-            code += "mov " + diffuseColor + ", " + diffuseInputRegister + "\n";
-        }
-        code += "sat " + this._pTotalLightColorReg + ", " + this._pTotalLightColorReg + "\n" +
-            "mul " + diffuseColor + ".xyz, " + diffuseColor + ", " + this._pTotalLightColorReg + "\n";
-        if (this._multiply) {
-            code += "add " + diffuseColor + ".xyz, " + diffuseColor + ", " + ambientColorRegister + "\n" +
-                "mul " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n";
-        }
-        else if (this._texture) {
-            code += "mul " + targetReg + ".xyz, " + targetReg + ", " + ambientColorRegister + "\n" +
-                "mul " + this._pTotalLightColorReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" +
-                "sub " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n" +
-                "add " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n"; //add diffuse color and ambient color
-        }
-        else {
-            code += "mul " + this._pTotalLightColorReg + ".xyz, " + ambientColorRegister + ", " + this._pTotalLightColorReg + "\n" +
-                "sub " + this._pTotalLightColorReg + ".xyz, " + ambientColorRegister + ", " + this._pTotalLightColorReg + "\n" +
-                "add " + diffuseColor + ".xyz, " + diffuseColor + ", " + this._pTotalLightColorReg + "\n" +
-                "mul " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n"; // multiply by target which could be texture or white
-        }
-        registerCache.removeFragmentTempUsage(this._pTotalLightColorReg);
-        registerCache.removeFragmentTempUsage(diffuseColor);
-        return code;
-    };
-    /**
-     * Generate the code that applies the calculated shadow to the diffuse light
-     * @param methodVO The MethodVO object for which the compilation is currently happening.
-     * @param regCache The register cache the compiler is currently using for the register management.
-     */
-    DiffuseBasicMethod.prototype.pApplyShadow = function (shader, methodVO, regCache, sharedRegisters) {
-        return "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + sharedRegisters.shadowTarget + ".w\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        if (this._texture) {
-            methodVO.textureGL.activate(methodVO.pass._render);
-        }
-        else {
-            var index = methodVO.fragmentConstantsIndex;
-            var data = shader.fragmentConstantData;
-            if (this._multiply) {
-                data[index + 4] = this._colorR * this._ambientColorR;
-                data[index + 5] = this._colorG * this._ambientColorG;
-                data[index + 6] = this._colorB * this._ambientColorB;
-            }
-            else {
-                data[index + 4] = this._colorR;
-                data[index + 5] = this._colorG;
-                data[index + 6] = this._colorB;
-            }
-            data[index + 7] = 1;
-        }
-    };
-    /**
-     * Updates the diffuse color data used by the render state.
-     */
-    DiffuseBasicMethod.prototype.updateColor = function () {
-        this._colorR = ((this._color >> 16) & 0xff) / 0xff;
-        this._colorG = ((this._color >> 8) & 0xff) / 0xff;
-        this._colorB = (this._color & 0xff) / 0xff;
-    };
-    /**
-     * Updates the ambient color data used by the render state.
-     */
-    DiffuseBasicMethod.prototype.updateAmbientColor = function () {
-        this._ambientColorR = ((this._ambientColor >> 16) & 0xff) / 0xff;
-        this._ambientColorG = ((this._ambientColor >> 8) & 0xff) / 0xff;
-        this._ambientColorB = (this._ambientColor & 0xff) / 0xff;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        if (this._texture)
-            methodVO.textureGL._setRenderState(renderable);
-        //TODO move this to Activate (ambientR/G/B currently calc'd in render state)
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = shader.ambientR * this._ambientColorR;
-        data[index + 1] = shader.ambientG * this._ambientColorG;
-        data[index + 2] = shader.ambientB * this._ambientColorB;
-        data[index + 3] = 1;
-    };
     return DiffuseBasicMethod;
-}(LightingMethodBase));
+}(ShadingMethodBase));
+DiffuseBasicMethod.assetType = "[asset DiffuseBasicMethod]";
 
 /**
  * NormalBasicMethod is the default method for standard tangent-space normal mapping.
@@ -56572,35 +56125,16 @@ var NormalBasicMethod = (function (_super) {
             _this.iAddTexture(_this._texture);
         return _this;
     }
-    NormalBasicMethod.prototype.iIsUsed = function (shader) {
-        if (this._texture && shader.normalDependencies)
-            return true;
-        return false;
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalBasicMethod.prototype.iInitVO = function (shader, methodVO) {
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-    };
-    /**
-     * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
-     */
-    NormalBasicMethod.prototype.iOutputsTangentNormals = function () {
-        return true;
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalBasicMethod.prototype.copyFrom = function (method) {
-        var s = method;
-        var bnm = method;
-        if (bnm.texture != null)
-            this.texture = bnm.texture;
-    };
+    Object.defineProperty(NormalBasicMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return NormalBasicMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(NormalBasicMethod.prototype, "texture", {
         /**
          * A texture to modulate the direction of the surface for each texel (normal map). The default normal method expects
@@ -56617,7 +56151,7 @@ var NormalBasicMethod = (function (_super) {
             this._texture = value;
             if (this._texture)
                 this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -56625,34 +56159,22 @@ var NormalBasicMethod = (function (_super) {
     /**
      * @inheritDoc
      */
+    NormalBasicMethod.prototype.copyFrom = function (method) {
+        var s = method;
+        var bnm = method;
+        if (bnm.texture != null)
+            this.texture = bnm.texture;
+    };
+    /**
+     * @inheritDoc
+     */
     NormalBasicMethod.prototype.dispose = function () {
         if (this._texture)
             this._texture = null;
     };
-    /**
-     * @inheritDoc
-     */
-    NormalBasicMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        if (this._texture)
-            methodVO.textureGL.activate(methodVO.pass._render);
-    };
-    NormalBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        if (this._texture)
-            methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalBasicMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        if (this._texture)
-            code += methodVO.textureGL._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-        code += "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx\n" +
-            "nrm " + targetReg + ".xyz, " + targetReg + "\n";
-        return code;
-    };
     return NormalBasicMethod;
 }(ShadingMethodBase));
+NormalBasicMethod.assetType = "[asset NormalBasicMethod]";
 
 /**
  * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
@@ -56668,31 +56190,18 @@ var SpecularBasicMethod = (function (_super) {
         _this._gloss = 50;
         _this._strength = 1;
         _this._color = 0xffffff;
-        _this._iSpecularR = 1;
-        _this._iSpecularG = 1;
-        _this._iSpecularB = 1;
         return _this;
     }
-    SpecularBasicMethod.prototype.iIsUsed = function (shader) {
-        if (!shader.numLights)
-            return false;
-        return true;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = shader.numLights > 0;
-        methodVO.needsView = shader.numLights > 0;
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-        else if (methodVO.textureGL) {
-            methodVO.textureGL.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, null));
-            methodVO.textureGL = null;
-        }
-    };
+    Object.defineProperty(SpecularBasicMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return SpecularBasicMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SpecularBasicMethod.prototype, "gloss", {
         /**
          * The glossiness of the material (sharpness of the specular highlight).
@@ -56701,7 +56210,10 @@ var SpecularBasicMethod = (function (_super) {
             return this._gloss;
         },
         set: function (value) {
+            if (this._gloss == value)
+                return;
             this._gloss = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56714,10 +56226,10 @@ var SpecularBasicMethod = (function (_super) {
             return this._strength;
         },
         set: function (value) {
-            if (value == this._strength)
+            if (this._strength == value)
                 return;
             this._strength = value;
-            this.updateSpecular();
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56732,11 +56244,12 @@ var SpecularBasicMethod = (function (_super) {
         set: function (value) {
             if (this._color == value)
                 return;
+            this._color = value;
             // specular is now either enabled or disabled
             if (this._color == 0 || value == 0)
-                this.iInvalidateShaderProgram();
-            this._color = value;
-            this.updateSpecular();
+                this.invalidateShaderProgram();
+            else
+                this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -56758,11 +56271,17 @@ var SpecularBasicMethod = (function (_super) {
             this._texture = value;
             if (this._texture)
                 this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicMethod.prototype.dispose = function () {
+        this._texture = null;
+    };
     /**
      * @inheritDoc
      */
@@ -56775,149 +56294,9 @@ var SpecularBasicMethod = (function (_super) {
         this.color = spec.color;
         this.gloss = spec.gloss;
     };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._pTotalLightColorReg = null;
-        this._pSpecularTexData = null;
-        this._pSpecularDataRegister = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = "";
-        this._pIsFirstLight = true;
-        this._pSpecularDataRegister = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = this._pSpecularDataRegister.index * 4;
-        if (this._texture) {
-            this._pSpecularTexData = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(this._pSpecularTexData, 1);
-            code += methodVO.textureGL._iGetFragmentCode(this._pSpecularTexData, registerCache, sharedRegisters, sharedRegisters.uvVarying);
-        }
-        this._pTotalLightColorReg = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(this._pTotalLightColorReg, 1);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
-        }
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        var viewDirReg = sharedRegisters.viewDirFragment;
-        var normalReg = sharedRegisters.normalFragment;
-        // blinn-phong half vector model
-        code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" +
-            "nrm " + t + ".xyz, " + t + "\n" +
-            "dp3 " + t + ".w, " + normalReg + ", " + t + "\n" +
-            "sat " + t + ".w, " + t + ".w\n";
-        if (this._texture) {
-            // apply gloss modulation from texture
-            code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" +
-                "pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
-        }
-        else {
-            code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
-        }
-        // attenuate
-        if (shader.usesLightFallOff)
-            code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        code += "mul " + t + ".xyz, " + lightColReg + ", " + t + ".w\n";
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iGetFragmentCodePerProbe = function (shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        // write in temporary if not first light, so we can add to total diffuse colour
-        if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
-        }
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        var normalReg = sharedRegisters.normalFragment;
-        var viewDirReg = sharedRegisters.viewDirFragment;
-        code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" +
-            "add " + t + ".w, " + t + ".w, " + t + ".w\n" +
-            "mul " + t + ", " + t + ".w, " + normalReg + "\n" +
-            "sub " + t + ", " + t + ", " + viewDirReg + "\n" +
-            "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + "linear" + ",miplinear>\n" +
-            "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        if (sharedRegisters.shadowTarget)
-            code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + sharedRegisters.shadowTarget + ".w\n";
-        if (this._texture) {
-            // apply strength modulation from texture
-            code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularTexData + ".x\n";
-            registerCache.removeFragmentTempUsage(this._pSpecularTexData);
-        }
-        // apply material's specular reflection
-        code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularDataRegister + "\n" +
-            "add " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n";
-        registerCache.removeFragmentTempUsage(this._pTotalLightColorReg);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularBasicMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        if (this._texture)
-            methodVO.textureGL.activate(methodVO.pass._render);
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._iSpecularR;
-        data[index + 1] = this._iSpecularG;
-        data[index + 2] = this._iSpecularB;
-        data[index + 3] = this._gloss;
-    };
-    SpecularBasicMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        if (this._texture)
-            methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * Updates the specular color data used by the render state.
-     */
-    SpecularBasicMethod.prototype.updateSpecular = function () {
-        this._iSpecularR = ((this._color >> 16) & 0xff) / 0xff * this._strength;
-        this._iSpecularG = ((this._color >> 8) & 0xff) / 0xff * this._strength;
-        this._iSpecularB = (this._color & 0xff) / 0xff * this._strength;
-    };
     return SpecularBasicMethod;
-}(LightingMethodBase));
+}(ShadingMethodBase));
+SpecularBasicMethod.assetType = "[asset SpecularBasicMethod]";
 
 var MethodMaterialMode = (function () {
     function MethodMaterialMode() {
@@ -57083,19 +56462,6 @@ var MethodMaterial = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MethodMaterial.prototype, "diffuseTexture", {
-        /**
-         * The texture object to use for the ambient colour.
-         */
-        get: function () {
-            return this._diffuseMethod.texture;
-        },
-        set: function (value) {
-            this._diffuseMethod.texture = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(MethodMaterial.prototype, "ambientMethod", {
         /**
          * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
@@ -57251,41 +56617,236 @@ var MethodMaterial = (function (_super) {
 MethodMaterial.assetType = "[materials MethodMaterial]";
 
 /**
- * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
- * approximate global lighting rather than lights.
+ * MethodVO contains data for a given shader object for the use within a single material.
+ * This allows shader methods to be shared across materials while their non-public state differs.
  */
-var AmbientEnvMapMethod = (function (_super) {
-    __extends(AmbientEnvMapMethod, _super);
+var ChunkVO = (function () {
+    function ChunkVO() {
+    }
+    return ChunkVO;
+}());
+
+/**
+ * CompositeChunkBase provides a base class for diffuse methods that wrap a diffuse method to alter the
+ * calculated diffuse reflection strength.
+ */
+var CompositeChunkBase = (function (_super) {
+    __extends(CompositeChunkBase, _super);
     /**
-     * Creates a new <code>AmbientEnvMapMethod</code> object.
+     * Creates a new <code>CompositeChunkBase</code> object.
      *
-     * @param envMap The cube environment map to use for the ambient lighting.
+     * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
+     * @param baseMethod The base diffuse method on which this method's shading is based.
      */
-    function AmbientEnvMapMethod() {
-        return _super.call(this) || this;
+    function CompositeChunkBase(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this.chunkVO = new ChunkVO();
+        _this._baseChunk = shader.getAbstraction(method.baseMethod);
+        return _this;
+    }
+    CompositeChunkBase.prototype._isUsed = function () {
+        return true;
+    };
+    CompositeChunkBase.prototype._usesTangentSpace = function () {
+        return this._baseChunk._usesTangentSpace();
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._initVO = function (chunkVO) {
+        this._baseChunk._initVO(chunkVO);
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._initConstants = function () {
+        this._baseChunk._initConstants();
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._activate = function () {
+        this._baseChunk._activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._setRenderState = function (renderable, projection) {
+        this._baseChunk._setRenderState(renderable, projection);
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._deactivate = function () {
+        this._baseChunk._deactivate();
+        this._invalid = false;
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._getVertexCode = function (registerCache, sharedRegisters) {
+        return this._baseChunk._getVertexCode(registerCache, sharedRegisters);
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        return this._baseChunk._getFragmentCode(targetReg, registerCache, sharedRegisters);
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._reset = function (chunkVO) {
+        this._baseChunk._reset(chunkVO);
+        this._invalid = true;
+        this._cleanCompilationData();
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeChunkBase.prototype._cleanCompilationData = function () {
+        this._baseChunk._cleanCompilationData();
+    };
+    return CompositeChunkBase;
+}(_awayjs_core.AbstractionBase));
+
+/**
+ * LightingCompositeBase provides a base class for diffuse methods that wrap a diffuse method to alter the
+ * calculated diffuse reflection strength.
+ */
+var LightingCompositeChunk = (function (_super) {
+    __extends(LightingCompositeChunk, _super);
+    function LightingCompositeChunk() {
+        return _super.apply(this, arguments) || this;
     }
     /**
      * @inheritDoc
      */
-    AmbientEnvMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = true;
-        if (this._texture) {
-            methodVO.textureGL = shader.getAbstraction(this._texture);
-            shader.uvDependencies++;
-        }
-        else if (methodVO.textureGL) {
-            methodVO.textureGL.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._texture));
-            methodVO.textureGL = null;
-        }
+    LightingCompositeChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        return this._baseChunk._getFragmentPreLightingCode(registerCache, sharedRegisters);
     };
     /**
      * @inheritDoc
      */
-    AmbientEnvMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        return (this._texture) ? methodVO.textureGL._iGetFragmentCode(targetReg, regCache, sharedRegisters, sharedRegisters.normalFragment) : "";
+    LightingCompositeChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = this._baseChunk._getFragmentCodePerLight(lightDirReg, lightColReg, registerCache, sharedRegisters);
+        this._totalLightColorReg = this._baseChunk._totalLightColorReg;
+        return code;
     };
-    return AmbientEnvMapMethod;
+    /**
+     * @inheritDoc
+     */
+    LightingCompositeChunk.prototype._getFragmentCodePerProbe = function (cubeMapReg, weightRegister, registerCache, sharedRegisters) {
+        var code = this._baseChunk._getFragmentCodePerProbe(cubeMapReg, weightRegister, registerCache, sharedRegisters);
+        this._totalLightColorReg = this._baseChunk._totalLightColorReg;
+        return code;
+    };
+    return LightingCompositeChunk;
+}(CompositeChunkBase));
+
+/**
+ * AmbientDepthMethod provides a debug method to visualise depth maps
+ */
+var AmbientDepthMethod = (function (_super) {
+    __extends(AmbientDepthMethod, _super);
+    /**
+     * Creates a new AmbientDepthMethod object.
+     */
+    function AmbientDepthMethod(castingLight) {
+        var _this = _super.call(this) || this;
+        _this._castingLight = castingLight;
+        castingLight.shadowsEnabled = true;
+        _this._shadowMapper = castingLight.shadowMapper;
+        _this.iAddTexture(castingLight.shadowMapper.depthMap);
+        return _this;
+    }
+    Object.defineProperty(AmbientDepthMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return AmbientDepthMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AmbientDepthMethod.prototype, "castingLight", {
+        /**
+         * The light casting the shadows.
+         */
+        get: function () {
+            return this._castingLight;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return AmbientDepthMethod;
 }(AmbientBasicMethod));
+AmbientDepthMethod.assetType = "[asset AmbientDepthMethod]";
+
+/**
+ * CompositeMethodBase provides a base class for diffuse methods that wrap a diffuse method to alter the
+ * calculated diffuse reflection strength.
+ */
+var CompositeMethodBase = (function (_super) {
+    __extends(CompositeMethodBase, _super);
+    /**
+     * Creates a new <code>CompositeMethodBase</code> object.
+     *
+     * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
+     * @param baseMethod The base diffuse method on which this method's shading is based.
+     */
+    function CompositeMethodBase(baseMethod) {
+        if (baseMethod === void 0) { baseMethod = null; }
+        var _this = _super.call(this) || this;
+        _this._onShaderInvalidatedDelegate = function (event) { return _this.onShaderInvalidated(event); };
+        _this._baseMethod = baseMethod || _this.createBaseMethod();
+        _this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, _this._onShaderInvalidatedDelegate);
+        return _this;
+    }
+    Object.defineProperty(CompositeMethodBase.prototype, "baseMethod", {
+        /**
+         * The base diffuse method on which this method's shading is based.
+         */
+        get: function () {
+            return this._baseMethod;
+        },
+        set: function (value) {
+            if (this._baseMethod == value)
+                return;
+            this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+            this._baseMethod = value;
+            this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+            this.invalidateShaderProgram();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CompositeMethodBase.prototype.createBaseMethod = function () {
+        throw new _awayjs_core.AbstractMethodError();
+    };
+    CompositeMethodBase.prototype.iAddOwner = function (owner) {
+        _super.prototype.iAddOwner.call(this, owner);
+        this._baseMethod.iAddOwner(owner);
+    };
+    CompositeMethodBase.prototype.iRemoveOwner = function (owner) {
+        _super.prototype.iRemoveOwner.call(this, owner);
+        this._baseMethod.iRemoveOwner(owner);
+    };
+    /**
+     * @inheritDoc
+     */
+    CompositeMethodBase.prototype.dispose = function () {
+        this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
+    };
+    /**
+     * Called when the base method's shader code is invalidated.
+     */
+    CompositeMethodBase.prototype.onShaderInvalidated = function (event) {
+        this.invalidateShaderProgram();
+    };
+    return CompositeMethodBase;
+}(ShadingMethodBase));
 
 /**
  * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
@@ -57299,72 +56860,22 @@ var DiffuseCompositeMethod = (function (_super) {
      * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
      * @param baseMethod The base diffuse method on which this method's shading is based.
      */
-    function DiffuseCompositeMethod(modulateMethod, baseMethod) {
+    function DiffuseCompositeMethod(baseMethod) {
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this) || this;
-        _this._onShaderInvalidatedDelegate = function (event) { return _this.onShaderInvalidated(event); };
-        _this.pBaseMethod = baseMethod || new DiffuseBasicMethod();
-        _this.pBaseMethod._iModulateMethod = modulateMethod;
-        _this.pBaseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, _this._onShaderInvalidatedDelegate);
-        return _this;
+        return _super.call(this, baseMethod) || this;
     }
-    Object.defineProperty(DiffuseCompositeMethod.prototype, "baseMethod", {
-        /**
-         * The base diffuse method on which this method's shading is based.
-         */
-        get: function () {
-            return this.pBaseMethod;
-        },
-        set: function (value) {
-            if (this.pBaseMethod == value)
-                return;
-            this.pBaseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this.pBaseMethod = value;
-            this.pBaseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this.iInvalidateShaderProgram();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iInitVO = function (shader, methodVO) {
-        this.pBaseMethod.iInitVO(shader, methodVO);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iInitConstants = function (shader, methodVO) {
-        this.pBaseMethod.iInitConstants(shader, methodVO);
-    };
-    DiffuseCompositeMethod.prototype.iAddOwner = function (owner) {
-        _super.prototype.iAddOwner.call(this, owner);
-        this.pBaseMethod.iAddOwner(owner);
-    };
-    DiffuseCompositeMethod.prototype.iRemoveOwner = function (owner) {
-        _super.prototype.iRemoveOwner.call(this, owner);
-        this.pBaseMethod.iRemoveOwner(owner);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.dispose = function () {
-        this.pBaseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-        this.pBaseMethod.dispose();
+    DiffuseCompositeMethod.prototype.createBaseMethod = function () {
+        return new DiffuseBasicMethod();
     };
     Object.defineProperty(DiffuseCompositeMethod.prototype, "texture", {
         /**
          * @inheritDoc
          */
         get: function () {
-            return this.pBaseMethod.texture;
+            return this._baseMethod.texture;
         },
-        /**
-         * @inheritDoc
-         */
         set: function (value) {
-            this.pBaseMethod.texture = value;
+            this._baseMethod.texture = value;
         },
         enumerable: true,
         configurable: true
@@ -57374,13 +56885,10 @@ var DiffuseCompositeMethod = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return this.pBaseMethod.color;
+            return this._baseMethod.color;
         },
-        /**
-         * @inheritDoc
-         */
         set: function (value) {
-            this.pBaseMethod.color = value;
+            this._baseMethod.color = value;
         },
         enumerable: true,
         configurable: true
@@ -57390,90 +56898,16 @@ var DiffuseCompositeMethod = (function (_super) {
          * @inheritDoc
          */
         get: function () {
-            return this.pBaseMethod.multiply;
+            return this._baseMethod.multiply;
         },
-        /**
-         * @inheritDoc
-         */
         set: function (value) {
-            this.pBaseMethod.multiply = value;
+            this._baseMethod.multiply = value;
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return this.pBaseMethod.iGetFragmentPreLightingCode(shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = this.pBaseMethod.iGetFragmentCodePerLight(shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters);
-        this._pTotalLightColorReg = this.pBaseMethod._pTotalLightColorReg;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iGetFragmentCodePerProbe = function (shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters) {
-        var code = this.pBaseMethod.iGetFragmentCodePerProbe(shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters);
-        this._pTotalLightColorReg = this.pBaseMethod._pTotalLightColorReg;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        this.pBaseMethod.iActivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        this.pBaseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iDeactivate = function (shader, methodVO, stage) {
-        this.pBaseMethod.iDeactivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return this.pBaseMethod.iGetVertexCode(shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return this.pBaseMethod.iGetFragmentPostLightingCode(shader, methodVO, targetReg, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iReset = function () {
-        this.pBaseMethod.iReset();
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCompositeMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this.pBaseMethod.iCleanCompilationData();
-    };
-    /**
-     * Called when the base method's shader code is invalidated.
-     */
-    DiffuseCompositeMethod.prototype.onShaderInvalidated = function (event) {
-        this.iInvalidateShaderProgram();
-    };
     return DiffuseCompositeMethod;
-}(DiffuseBasicMethod));
+}(CompositeMethodBase));
 
 /**
  * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
@@ -57485,25 +56919,25 @@ var DiffuseCelMethod = (function (_super) {
      * @param levels The amount of shadow gradations.
      * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
      */
-    function DiffuseCelMethod(levels, baseMethod) {
+    function DiffuseCelMethod(levels, smoothness, baseMethod) {
         if (levels === void 0) { levels = 3; }
+        if (smoothness === void 0) { smoothness = 0.1; }
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this, null, baseMethod) || this;
-        _this._smoothness = .1;
-        _this.baseMethod._iModulateMethod = function (shader, methodVO, targetReg, registerCache, sharedRegisters) { return _this.clampDiffuse(shader, methodVO, targetReg, registerCache, sharedRegisters); };
+        var _this = _super.call(this, baseMethod) || this;
         _this._levels = levels;
+        _this._smoothness = smoothness;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    DiffuseCelMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        data[index + 1] = 1;
-        data[index + 2] = 0;
-    };
+    Object.defineProperty(DiffuseCelMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return DiffuseCelMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DiffuseCelMethod.prototype, "levels", {
         /**
          * The amount of shadow gradations.
@@ -57511,7 +56945,7 @@ var DiffuseCelMethod = (function (_super) {
         get: function () {
             return this._levels;
         },
-        set: function (value /*uint*/) {
+        set: function (value) {
             this._levels = value;
         },
         enumerable: true,
@@ -57530,122 +56964,9 @@ var DiffuseCelMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    DiffuseCelMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._dataReg = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCelMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        this._dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = this._dataReg.index * 4;
-        return _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseCelMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var data = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        data[index] = this._levels;
-        data[index + 3] = this._smoothness;
-    };
-    /**
-     * Snaps the diffuse shading of the wrapped method to one of the levels.
-     * @param vo The MethodVO used to compile the current shader.
-     * @param t The register containing the diffuse strength in the "w" component.
-     * @param regCache The register cache used for the shader compilation.
-     * @param sharedRegisters The shared register data for this shader.
-     * @return The AGAL fragment code for the method.
-     */
-    DiffuseCelMethod.prototype.clampDiffuse = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return "mul " + targetReg + ".w, " + targetReg + ".w, " + this._dataReg + ".x\n" +
-            "frc " + targetReg + ".z, " + targetReg + ".w\n" +
-            "sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".z\n" +
-            "mov " + targetReg + ".x, " + this._dataReg + ".x\n" +
-            "sub " + targetReg + ".x, " + targetReg + ".x, " + this._dataReg + ".y\n" +
-            "rcp " + targetReg + ".x," + targetReg + ".x\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".y, " + targetReg + ".x\n" +
-            // previous clamped strength
-            "sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".x\n" +
-            // fract/epsilon (so 0 - epsilon will become 0 - 1)
-            "div " + targetReg + ".z, " + targetReg + ".z, " + this._dataReg + ".w\n" +
-            "sat " + targetReg + ".z, " + targetReg + ".z\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".z\n" +
-            // 1-z
-            "sub " + targetReg + ".z, " + this._dataReg + ".y, " + targetReg + ".z\n" +
-            "mul " + targetReg + ".y, " + targetReg + ".y, " + targetReg + ".z\n" +
-            "add " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n" +
-            "sat " + targetReg + ".w, " + targetReg + ".w\n";
-    };
     return DiffuseCelMethod;
 }(DiffuseCompositeMethod));
-
-/**
- * DiffuseDepthMethod provides a debug method to visualise depth maps
- */
-var DiffuseDepthMethod = (function (_super) {
-    __extends(DiffuseDepthMethod, _super);
-    /**
-     * Creates a new DiffuseBasicMethod object.
-     */
-    function DiffuseDepthMethod() {
-        return _super.call(this) || this;
-    }
-    /**
-     * @inheritDoc
-     */
-    DiffuseDepthMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index] = 1.0;
-        data[index + 1] = 1 / 255.0;
-        data[index + 2] = 1 / 65025.0;
-        data[index + 3] = 1 / 16581375.0;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseDepthMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var temp;
-        var decReg;
-        if (!this._texture)
-            throw new Error("DiffuseDepthMethod requires texture!");
-        // incorporate input from ambient
-        if (shader.numLights > 0) {
-            if (sharedRegisters.shadowTarget)
-                code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + sharedRegisters.shadowTarget + ".w\n";
-            code += "add " + targetReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + targetReg + ".xyz\n" +
-                "sat " + targetReg + ".xyz, " + targetReg + ".xyz\n";
-            registerCache.removeFragmentTempUsage(this._pTotalLightColorReg);
-            registerCache.addFragmentTempUsages(temp = registerCache.getFreeFragmentVectorTemp(), 1);
-        }
-        else {
-            temp = targetReg;
-        }
-        decReg = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        code += methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
-            "dp4 " + temp + ".x, " + temp + ", " + decReg + "\n" +
-            "mov " + temp + ".yz, " + temp + ".xx			\n" +
-            "mov " + temp + ".w, " + decReg + ".x\n" +
-            "sub " + temp + ".xyz, " + decReg + ".xxx, " + temp + ".xyz\n";
-        if (shader.numLights == 0)
-            return code;
-        code += "mul " + targetReg + ".xyz, " + temp + ".xyz, " + targetReg + ".xyz\n" +
-            "mov " + targetReg + ".w, " + temp + ".w\n";
-        if (shader.numLights > 0)
-            registerCache.removeFragmentTempUsage(temp);
-        return code;
-    };
-    return DiffuseDepthMethod;
-}(DiffuseBasicMethod));
+DiffuseCelMethod.assetType = "[asset DiffuseCelMethod]";
 
 /**
  * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
@@ -57663,14 +56984,19 @@ var DiffuseGradientMethod = (function (_super) {
     function DiffuseGradientMethod(gradient) {
         var _this = _super.call(this) || this;
         _this._gradient = gradient;
-        if (_this._gradient)
-            _this.iAddTexture(_this._gradient);
+        _this.iAddTexture(_this._gradient);
         return _this;
     }
-    DiffuseGradientMethod.prototype.iInitVO = function (shader, methodVO) {
-        _super.prototype.iInitVO.call(this, shader, methodVO);
-        methodVO.secondaryTextureGL = shader.getAbstraction(this._gradient);
-    };
+    Object.defineProperty(DiffuseGradientMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return DiffuseGradientMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DiffuseGradientMethod.prototype, "gradient", {
         /**
          * A texture that contains the light colour based on the angle. This can be used to change the light colour
@@ -57687,80 +57013,14 @@ var DiffuseGradientMethod = (function (_super) {
             this._gradient = value;
             if (this._gradient)
                 this.iAddTexture(this._gradient);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-        this._pIsFirstLight = true;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        // write in temporary if not first light, so we can add to total diffuse colour
-        if (this._pIsFirstLight)
-            t = this._pTotalLightColorReg;
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        code += "dp3 " + t + ".w, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
-            "mul " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
-            "add " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
-            "mul " + t + ".xyz, " + t + ".w, " + lightDirReg + ".w\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        code += methodVO.secondaryTextureGL._iGetFragmentCode(t, registerCache, sharedRegisters, t) +
-            //					"mul " + t + ".xyz, " + t + ".xyz, " + t + ".w\n" +
-            "mul " + t + ".xyz, " + t + ".xyz, " + lightColReg + ".xyz\n";
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.pApplyShadow = function (shader, methodVO, regCache, sharedRegisters) {
-        var t = regCache.getFreeFragmentVectorTemp();
-        return "mov " + t + ", " + sharedRegisters.shadowTarget + ".wwww\n" +
-            methodVO.secondaryTextureGL._iGetFragmentCode(t, regCache, sharedRegisters, sharedRegisters.uvVarying) +
-            "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseGradientMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
-        if (shader.numLights > 0)
-            methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
     return DiffuseGradientMethod;
 }(DiffuseBasicMethod));
+DiffuseGradientMethod.assetType = "[asset DiffuseGradientMethod]";
 
 /**
  * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
@@ -57781,24 +57041,24 @@ var DiffuseLightMapMethod = (function (_super) {
         if (blendMode === void 0) { blendMode = "multiply"; }
         if (useSecondaryUV === void 0) { useSecondaryUV = false; }
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this, null, baseMethod) || this;
-        _this._useSecondaryUV = useSecondaryUV;
+        var _this = _super.call(this, baseMethod) || this;
         _this._lightMap = lightMap;
         _this.blendMode = blendMode;
+        _this._useSecondaryUV = useSecondaryUV;
         if (_this._lightMap)
             _this.iAddTexture(_this._lightMap);
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    DiffuseLightMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.secondaryTextureGL = shader.getAbstraction(this._lightMap);
-        if (this._useSecondaryUV)
-            shader.secondaryUVDependencies++;
-        else
-            shader.uvDependencies++;
-    };
+    Object.defineProperty(DiffuseLightMapMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return DiffuseLightMapMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DiffuseLightMapMethod.prototype, "blendMode", {
         /**
          * The blend mode with which the light map should be applied to the lighting result.
@@ -57815,7 +57075,7 @@ var DiffuseLightMapMethod = (function (_super) {
             if (this._blendMode == value)
                 return;
             this._blendMode = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -57835,7 +57095,7 @@ var DiffuseLightMapMethod = (function (_super) {
             this._lightMap = value;
             if (this._lightMap)
                 this.iAddTexture(this._lightMap);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -57851,43 +57111,11 @@ var DiffuseLightMapMethod = (function (_super) {
             if (this._useSecondaryUV == value)
                 return;
             this._useSecondaryUV = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    DiffuseLightMapMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        code = methodVO.secondaryTextureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, this._useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
-        switch (this._blendMode) {
-            case DiffuseLightMapMethod.MULTIPLY:
-                code += "mul " + this._pTotalLightColorReg + ", " + this._pTotalLightColorReg + ", " + temp + "\n";
-                break;
-            case DiffuseLightMapMethod.ADD:
-                code += "add " + this._pTotalLightColorReg + ", " + this._pTotalLightColorReg + ", " + temp + "\n";
-                break;
-        }
-        code += _super.prototype.iGetFragmentPostLightingCode.call(this, shader, methodVO, targetReg, registerCache, sharedRegisters);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseLightMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
-        methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
     return DiffuseLightMapMethod;
 }(DiffuseCompositeMethod));
 /**
@@ -57900,225 +57128,7 @@ DiffuseLightMapMethod.MULTIPLY = "multiply";
  * This can be used to add pre-calculated lighting or global illumination.
  */
 DiffuseLightMapMethod.ADD = "add";
-
-/**
- * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
- * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
- * It can be used for candle wax, ice, skin, ...
- */
-var DiffuseSubSurfaceMethod = (function (_super) {
-    __extends(DiffuseSubSurfaceMethod, _super);
-    /**
-     * Creates a new <code>DiffuseSubSurfaceMethod</code> object.
-     *
-     * @param depthMapSize The size of the depth map used.
-     * @param depthMapOffset The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
-     * @param baseMethod The diffuse method used to calculate the regular diffuse-based lighting.
-     */
-    function DiffuseSubSurfaceMethod(depthMapSize, depthMapOffset, baseMethod) {
-        if (depthMapSize === void 0) { depthMapSize = 512; }
-        if (depthMapOffset === void 0) { depthMapOffset = 15; }
-        if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this, null, baseMethod) || this;
-        _this._translucency = 1;
-        _this._scatterColor = 0xffffff;
-        _this._scatterR = 1.0;
-        _this._scatterG = 1.0;
-        _this._scatterB = 1.0;
-        _this.pBaseMethod._iModulateMethod = function (shader, methodVO, targetReg, registerCache, sharedRegisters) { return _this.scatterLight(shader, methodVO, targetReg, registerCache, sharedRegisters); };
-        //this._passes = new Array<MaterialPassGLBase>();
-        //this._depthPass = new SingleObjectDepthPass();
-        //this._depthPass.textureSize = depthMapSize;
-        //this._depthPass.polyOffset = depthMapOffset;
-        //this._passes.push(this._depthPass);
-        _this._scattering = 0.2;
-        _this._translucency = 1;
-        return _this;
-    }
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iInitConstants = function (shader, methodVO) {
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        var data = shader.vertexConstantData;
-        var index = methodVO.secondaryVertexConstantsIndex;
-        data[index] = .5;
-        data[index + 1] = -.5;
-        data[index + 2] = 0;
-        data[index + 3] = 1;
-        data = shader.fragmentConstantData;
-        index = methodVO.secondaryFragmentConstantsIndex;
-        data[index + 3] = 1.0;
-        data[index + 4] = 1.0;
-        data[index + 5] = 1 / 255;
-        data[index + 6] = 1 / 65025;
-        data[index + 7] = 1 / 16581375;
-        data[index + 10] = .5;
-        data[index + 11] = -.1;
-        methodVO.vertexMatrices[0] = new _awayjs_core.Matrix3D(new Float32Array(shader.vertexConstantData.buffer, (methodVO.secondaryVertexConstantsIndex + 4) * 4, 16));
-    };
-    DiffuseSubSurfaceMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._lightProjVarying = null;
-        this._propReg = null;
-        this._lightColorReg = null;
-        this._colorReg = null;
-        this._decReg = null;
-        this._targetReg = null;
-    };
-    Object.defineProperty(DiffuseSubSurfaceMethod.prototype, "scattering", {
-        /**
-         * The amount by which the light scatters. It can be used to set the translucent surface's thickness. Use low
-         * values for skin.
-         */
-        get: function () {
-            return this._scattering;
-        },
-        set: function (value) {
-            this._scattering = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DiffuseSubSurfaceMethod.prototype, "translucency", {
-        /**
-         * The translucency of the object.
-         */
-        get: function () {
-            return this._translucency;
-        },
-        set: function (value) {
-            this._translucency = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DiffuseSubSurfaceMethod.prototype, "scatterColor", {
-        /**
-         * The colour of the "insides" of the object, ie: the colour the light becomes after leaving the object.
-         */
-        get: function () {
-            return this._scatterColor;
-        },
-        set: function (scatterColor /*uint*/) {
-            this._scatterColor = scatterColor;
-            this._scatterR = ((scatterColor >> 16) & 0xff) / 0xff;
-            this._scatterG = ((scatterColor >> 8) & 0xff) / 0xff;
-            this._scatterB = (scatterColor & 0xff) / 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = _super.prototype.iGetVertexCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-        var lightProjection;
-        var toTexRegister;
-        var temp = registerCache.getFreeVertexVectorTemp();
-        toTexRegister = registerCache.getFreeVertexConstant();
-        methodVO.secondaryVertexConstantsIndex = toTexRegister.index * 4;
-        this._lightProjVarying = registerCache.getFreeVarying();
-        lightProjection = registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        code += "m44 " + temp + ", vt0, " + lightProjection + "\n" +
-            "div " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w\n" +
-            "mul " + temp + ".xy, " + temp + ".xy, " + toTexRegister + ".xy\n" +
-            "add " + temp + ".xy, " + temp + ".xy, " + toTexRegister + ".xx\n" +
-            "mov " + this._lightProjVarying + ".xyz, " + temp + ".xyz\n" +
-            "mov " + this._lightProjVarying + ".w, va0.w\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        this._colorReg = registerCache.getFreeFragmentConstant();
-        this._decReg = registerCache.getFreeFragmentConstant();
-        this._propReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = this._colorReg.index * 4;
-        return _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        this._pIsFirstLight = true;
-        this._lightColorReg = lightColReg;
-        return _super.prototype.iGetFragmentCodePerLight.call(this, shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = _super.prototype.iGetFragmentPostLightingCode.call(this, shader, methodVO, targetReg, registerCache, sharedRegisters);
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        code += "mul " + temp + ".xyz, " + this._lightColorReg + ".xyz, " + this._targetReg + ".w\n" +
-            "mul " + temp + ".xyz, " + temp + ".xyz, " + this._colorReg + ".xyz\n" +
-            "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
-        if (this._targetReg != sharedRegisters.viewDirFragment)
-            registerCache.removeFragmentTempUsage(targetReg);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._scatterR;
-        data[index + 1] = this._scatterG;
-        data[index + 2] = this._scatterB;
-        data[index + 8] = this._scattering;
-        data[index + 9] = this._translucency;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseSubSurfaceMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.secondaryTextureGL = shader.getAbstraction(this._depthPass._iGetDepthMap(renderable));
-        methodVO.secondaryTextureGL._setRenderState(renderable);
-        methodVO.vertexMatrices[0].copyFrom(this._depthPass._iGetProjection(renderable), true);
-    };
-    /**
-     * Generates the code for this method
-     */
-    DiffuseSubSurfaceMethod.prototype.scatterLight = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        // only scatter first light
-        if (!this._pIsFirstLight)
-            return "";
-        this._pIsFirstLight = false;
-        var code = "";
-        if (sharedRegisters.viewDirFragment)
-            this._targetReg = sharedRegisters.viewDirFragment;
-        else
-            registerCache.addFragmentTempUsages(this._targetReg = registerCache.getFreeFragmentVectorTemp(), 1);
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        code += methodVO.secondaryTextureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, this._lightProjVarying) +
-            // reencode RGBA
-            "dp4 " + targetReg + ".z, " + temp + ", " + this._decReg + "\n";
-        // currentDistanceToLight - closestDistanceToLight
-        code += "sub " + targetReg + ".z, " + this._lightProjVarying + ".z, " + targetReg + ".z\n" +
-            "sub " + targetReg + ".z, " + this._propReg + ".x, " + targetReg + ".z\n" +
-            "mul " + targetReg + ".z, " + this._propReg + ".y, " + targetReg + ".z\n" +
-            "sat " + targetReg + ".z, " + targetReg + ".z\n" +
-            // targetReg.x contains dot(lightDir, normal)
-            // modulate according to incident light angle (scatter = scatter*(-.5*dot(light, normal) + .5)
-            "neg " + targetReg + ".y, " + targetReg + ".x\n" +
-            "mul " + targetReg + ".y, " + targetReg + ".y, " + this._propReg + ".z\n" +
-            "add " + targetReg + ".y, " + targetReg + ".y, " + this._propReg + ".z\n" +
-            "mul " + this._targetReg + ".w, " + targetReg + ".z, " + targetReg + ".y\n" +
-            // blend diffuse: d' = (1-s)*d + s*1
-            "sub " + targetReg + ".y, " + this._colorReg + ".w, " + this._targetReg + ".w\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
-        return code;
-    };
-    return DiffuseSubSurfaceMethod;
-}(DiffuseCompositeMethod));
+DiffuseLightMapMethod.assetType = "[asset DiffuseLightMapMethod]";
 
 /**
  * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
@@ -58136,13 +57146,16 @@ var DiffuseWrapMethod = (function (_super) {
         _this.wrapFactor = wrapFactor;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    DiffuseWrapMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._wrapDataRegister = null;
-    };
+    Object.defineProperty(DiffuseWrapMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return DiffuseWrapMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DiffuseWrapMethod.prototype, "wrapFactor", {
         /**
          * A factor to indicate the amount by which the light is allowed to wrap.
@@ -58153,94 +57166,14 @@ var DiffuseWrapMethod = (function (_super) {
         set: function (value) {
             this._wrapFactor = value;
             this._wrapFactor = 1 / (value + 1);
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    DiffuseWrapMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-        this._pIsFirstLight = true;
-        this._wrapDataRegister = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = this._wrapDataRegister.index * 4;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseWrapMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        // write in temporary if not first light, so we can add to total diffuse colour
-        if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
-        }
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        code += "dp3 " + t + ".x, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
-            "add " + t + ".y, " + t + ".x, " + this._wrapDataRegister + ".x\n" +
-            "mul " + t + ".y, " + t + ".y, " + this._wrapDataRegister + ".y\n" +
-            "sat " + t + ".w, " + t + ".y\n" +
-            "mul " + t + ".xz, " + t + ".w, " + lightDirReg + ".wz\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, lightDirReg, registerCache, sharedRegisters);
-        code += "mul " + t + ", " + t + ".x, " + lightColReg + "\n";
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    DiffuseWrapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._wrapFactor;
-        data[index + 1] = 1 / (this._wrapFactor + 1);
-    };
     return DiffuseWrapMethod;
 }(DiffuseBasicMethod));
-
-/**
- * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
- * and are in essence post-process effects on the materials.
- */
-var EffectMethodBase = (function (_super) {
-    __extends(EffectMethodBase, _super);
-    function EffectMethodBase() {
-        return _super.call(this) || this;
-    }
-    Object.defineProperty(EffectMethodBase.prototype, "assetType", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return EffectMethodBase.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
-     * @param methodVO The MethodVO object containing the method data for the currently compiled material pass.
-     * @param regCache The register cache used during the compilation.
-     * @param targetReg The register that will be containing the method's output.
-     * @private
-     */
-    EffectMethodBase.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        throw new _awayjs_core.AbstractMethodError();
-    };
-    return EffectMethodBase;
-}(ShadingMethodBase));
-EffectMethodBase.assetType = "[asset EffectMethod]";
+DiffuseWrapMethod.assetType = "[asset DiffuseWrapMethod]";
 
 /**
  * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
@@ -58264,30 +57197,12 @@ var EffectAlphaMaskMethod = (function (_super) {
             _this.iAddTexture(_this._texture);
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectAlphaMaskMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.textureGL = shader.getAbstraction(this._texture);
-        if (this._useSecondaryUV)
-            shader.secondaryUVDependencies++;
-        else
-            shader.uvDependencies++;
-    };
-    Object.defineProperty(EffectAlphaMaskMethod.prototype, "useSecondaryUV", {
+    Object.defineProperty(EffectAlphaMaskMethod.prototype, "assetType", {
         /**
-         * Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently, for
-         * instance to tile the main texture and normal map while providing untiled alpha, for example to define the
-         * transparency over a tiled water surface.
+         * @inheritDoc
          */
         get: function () {
-            return this._useSecondaryUV;
-        },
-        set: function (value) {
-            if (this._useSecondaryUV == value)
-                return;
-            this._useSecondaryUV = value;
-            this.iInvalidateShaderProgram();
+            return EffectAlphaMaskMethod.assetType;
         },
         enumerable: true,
         configurable: true
@@ -58307,31 +57222,32 @@ var EffectAlphaMaskMethod = (function (_super) {
             this._texture = value;
             if (this._texture)
                 this.iAddTexture(this._texture);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectAlphaMaskMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        return methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, this._useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying) +
-            "mul " + targetReg + ", " + targetReg + ", " + temp + ".x\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectAlphaMaskMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        methodVO.textureGL.activate(methodVO.pass._render);
-    };
-    EffectAlphaMaskMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.textureGL._setRenderState(renderable);
-    };
+    Object.defineProperty(EffectAlphaMaskMethod.prototype, "useSecondaryUV", {
+        /**
+         * Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently, for
+         * instance to tile the main texture and normal map while providing untiled alpha, for example to define the
+         * transparency over a tiled water surface.
+         */
+        get: function () {
+            return this._useSecondaryUV;
+        },
+        set: function (value) {
+            if (this._useSecondaryUV == value)
+                return;
+            this._useSecondaryUV = value;
+            this.invalidateShaderProgram();
+        },
+        enumerable: true,
+        configurable: true
+    });
     return EffectAlphaMaskMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
+EffectAlphaMaskMethod.assetType = "[asset EffectAlphaMaskMethod]";
 
 /**
  * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
@@ -58350,7 +57266,17 @@ var EffectColorMatrixMethod = (function (_super) {
         _this._matrix = matrix;
         return _this;
     }
-    Object.defineProperty(EffectColorMatrixMethod.prototype, "colorMatrix", {
+    Object.defineProperty(EffectColorMatrixMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectColorMatrixMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EffectColorMatrixMethod.prototype, "matrix", {
         /**
          * The 4 x 5 matrix to transform the color of the material.
          */
@@ -58358,62 +57284,17 @@ var EffectColorMatrixMethod = (function (_super) {
             return this._matrix;
         },
         set: function (value) {
+            if (value.length != 20)
+                throw new Error("Matrix length must be 20!");
             this._matrix = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectColorMatrixMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var colorMultReg = registerCache.getFreeFragmentConstant();
-        registerCache.getFreeFragmentConstant();
-        registerCache.getFreeFragmentConstant();
-        registerCache.getFreeFragmentConstant();
-        var colorOffsetReg = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = colorMultReg.index * 4;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        code += "m44 " + temp + ", " + targetReg + ", " + colorMultReg + "\n" +
-            "add " + targetReg + ", " + temp + ", " + colorOffsetReg + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectColorMatrixMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var matrix = this._matrix;
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        // r
-        data[index] = matrix[0];
-        data[index + 1] = matrix[1];
-        data[index + 2] = matrix[2];
-        data[index + 3] = matrix[3];
-        // g
-        data[index + 4] = matrix[5];
-        data[index + 5] = matrix[6];
-        data[index + 6] = matrix[7];
-        data[index + 7] = matrix[8];
-        // b
-        data[index + 8] = matrix[10];
-        data[index + 9] = matrix[11];
-        data[index + 10] = matrix[12];
-        data[index + 11] = matrix[13];
-        // a
-        data[index + 12] = matrix[15];
-        data[index + 13] = matrix[16];
-        data[index + 14] = matrix[17];
-        data[index + 15] = matrix[18];
-        // rgba offset
-        data[index + 16] = matrix[4];
-        data[index + 17] = matrix[9];
-        data[index + 18] = matrix[14];
-        data[index + 19] = matrix[19];
-    };
     return EffectColorMatrixMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
+EffectColorMatrixMethod.assetType = "[asset EffectColorMatrixMethod]";
 
 /**
  * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
@@ -58424,9 +57305,22 @@ var EffectColorTransformMethod = (function (_super) {
     /**
      * Creates a new EffectColorTransformMethod.
      */
-    function EffectColorTransformMethod() {
-        return _super.call(this) || this;
+    function EffectColorTransformMethod(colorTransform) {
+        if (colorTransform === void 0) { colorTransform = null; }
+        var _this = _super.call(this) || this;
+        _this._colorTransform = colorTransform;
+        return _this;
     }
+    Object.defineProperty(EffectColorTransformMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectColorTransformMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectColorTransformMethod.prototype, "colorTransform", {
         /**
          * The ColorTransform object to transform the colour of the material with.
@@ -58436,40 +57330,14 @@ var EffectColorTransformMethod = (function (_super) {
         },
         set: function (value) {
             this._colorTransform = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectColorTransformMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var colorMultReg = registerCache.getFreeFragmentConstant();
-        var colorOffsReg = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = colorMultReg.index * 4;
-        //TODO: AGAL <> GLSL
-        code += "mul " + targetReg + ", " + targetReg + ", " + colorMultReg + "\n" + "add " + targetReg + ", " + targetReg + ", " + colorOffsReg + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectColorTransformMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var inv = 1 / 0xff;
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._colorTransform.redMultiplier;
-        data[index + 1] = this._colorTransform.greenMultiplier;
-        data[index + 2] = this._colorTransform.blueMultiplier;
-        data[index + 3] = this._colorTransform.alphaMultiplier;
-        data[index + 4] = this._colorTransform.redOffset * inv;
-        data[index + 5] = this._colorTransform.greenOffset * inv;
-        data[index + 6] = this._colorTransform.blueOffset * inv;
-        data[index + 7] = this._colorTransform.alphaOffset * inv;
-    };
     return EffectColorTransformMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
+EffectColorTransformMethod.assetType = "[asset EffectColorTransformMethod]";
 
 /**
  * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
@@ -58486,43 +57354,19 @@ var EffectEnvMapMethod = (function (_super) {
         var _this = _super.call(this) || this;
         _this._envMap = envMap;
         _this._alpha = alpha;
-        if (_this._envMap)
-            _this.iAddTexture(_this._envMap);
+        _this.iAddTexture(_this._envMap);
         return _this;
     }
-    Object.defineProperty(EffectEnvMapMethod.prototype, "mask", {
+    Object.defineProperty(EffectEnvMapMethod.prototype, "assetType", {
         /**
-         * An optional texture to modulate the reflectivity of the surface.
+         * @inheritDoc
          */
         get: function () {
-            return this._mask;
-        },
-        set: function (value) {
-            if (value == this._mask)
-                return;
-            if (this._mask)
-                this.iRemoveTexture(this._mask);
-            this._mask = value;
-            if (this._mask)
-                this.iAddTexture(this._mask);
-            this.iInvalidateShaderProgram();
+            return EffectEnvMapMethod.assetType;
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectEnvMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = true;
-        methodVO.needsView = true;
-        if (this._envMap)
-            methodVO.textureGL = shader.getAbstraction(this._envMap);
-        if (this._mask) {
-            methodVO.secondaryTextureGL = shader.getAbstraction(this._mask);
-            shader.uvDependencies++;
-        }
-    };
     Object.defineProperty(EffectEnvMapMethod.prototype, "envMap", {
         /**
          * The cubic environment map containing the reflected scene.
@@ -58538,16 +57382,31 @@ var EffectEnvMapMethod = (function (_super) {
             this._envMap = value;
             if (this._envMap)
                 this.iAddTexture(this._envMap);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectEnvMapMethod.prototype.dispose = function () {
-    };
+    Object.defineProperty(EffectEnvMapMethod.prototype, "mask", {
+        /**
+         * An optional texture to modulate the reflectivity of the surface.
+         */
+        get: function () {
+            return this._mask;
+        },
+        set: function (value) {
+            if (value == this._mask)
+                return;
+            if (this._mask)
+                this.iRemoveTexture(this._mask);
+            this._mask = value;
+            if (this._mask)
+                this.iAddTexture(this._mask);
+            this.invalidateShaderProgram();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectEnvMapMethod.prototype, "alpha", {
         /**
          * The reflectivity of the surface.
@@ -58557,6 +57416,7 @@ var EffectEnvMapMethod = (function (_super) {
         },
         set: function (value) {
             this._alpha = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -58564,49 +57424,11 @@ var EffectEnvMapMethod = (function (_super) {
     /**
      * @inheritDoc
      */
-    EffectEnvMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        shader.fragmentConstantData[methodVO.fragmentConstantsIndex] = this._alpha;
-        methodVO.textureGL.activate(methodVO.pass._render);
-        if (this._mask)
-            methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    EffectEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.textureGL._setRenderState(renderable);
-        if (this._mask)
-            methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectEnvMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var dataRegister = registerCache.getFreeFragmentConstant();
-        var code = "";
-        methodVO.fragmentConstantsIndex = dataRegister.index * 4;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        // r = I - 2(I.N)*N
-        code += "dp3 " + temp + ".w, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
-            "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
-            "mul " + temp + ".xyz, " + sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
-            "sub " + temp + ".xyz, " + temp + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
-            "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
-            "kil " + temp2 + ".w\n" +
-            "sub " + temp + ", " + temp + ", " + targetReg + "\n";
-        if (this._mask) {
-            code += methodVO.secondaryTextureGL._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
-                "mul " + temp + ", " + temp2 + ", " + temp + "\n";
-        }
-        code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x\n" +
-            "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
-        registerCache.removeFragmentTempUsage(temp);
-        registerCache.removeFragmentTempUsage(temp2);
-        return code;
+    EffectEnvMapMethod.prototype.dispose = function () {
     };
     return EffectEnvMapMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
+EffectEnvMapMethod.assetType = "[asset EffectEnvMapMethod]";
 
 /**
  * EffectFogMethod provides a method to add distance-based fog to a material.
@@ -58620,31 +57442,25 @@ var EffectFogMethod = (function (_super) {
      * @param fogColor The colour of the fog.
      */
     function EffectFogMethod(minDistance, maxDistance, fogColor) {
+        if (minDistance === void 0) { minDistance = 0; }
+        if (maxDistance === void 0) { maxDistance = 1000; }
         if (fogColor === void 0) { fogColor = 0x808080; }
         var _this = _super.call(this) || this;
-        _this._minDistance = 0;
-        _this._maxDistance = 1000;
-        _this.minDistance = minDistance;
-        _this.maxDistance = maxDistance;
-        _this.fogColor = fogColor;
+        _this._minDistance = minDistance;
+        _this._maxDistance = maxDistance;
+        _this._fogColor = fogColor;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectFogMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsProjection = true;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectFogMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index + 3] = 1;
-        data[index + 6] = 0;
-        data[index + 7] = 0;
-    };
+    Object.defineProperty(EffectFogMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectFogMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectFogMethod.prototype, "minDistance", {
         /**
          * The distance from which the fog starts appearing.
@@ -58654,6 +57470,7 @@ var EffectFogMethod = (function (_super) {
         },
         set: function (value) {
             this._minDistance = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -58667,6 +57484,7 @@ var EffectFogMethod = (function (_super) {
         },
         set: function (value) {
             this._maxDistance = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -58678,49 +57496,16 @@ var EffectFogMethod = (function (_super) {
         get: function () {
             return this._fogColor;
         },
-        set: function (value /*uint*/) {
+        set: function (value) {
             this._fogColor = value;
-            this._fogR = ((value >> 16) & 0xff) / 0xff;
-            this._fogG = ((value >> 8) & 0xff) / 0xff;
-            this._fogB = (value & 0xff) / 0xff;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectFogMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index] = this._fogR;
-        data[index + 1] = this._fogG;
-        data[index + 2] = this._fogB;
-        data[index + 4] = this._minDistance;
-        data[index + 5] = 1 / (this._maxDistance - this._minDistance);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectFogMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var fogColor = registerCache.getFreeFragmentConstant();
-        var fogData = registerCache.getFreeFragmentConstant();
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        var code = "";
-        methodVO.fragmentConstantsIndex = fogColor.index * 4;
-        code += "sub " + temp2 + ".w, " + sharedRegisters.projectionFragment + ".z, " + fogData + ".x\n" +
-            "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y\n" +
-            "sat " + temp2 + ".w, " + temp2 + ".w\n" +
-            "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" +
-            "mul " + temp + ", " + temp + ", " + temp2 + ".w\n" +
-            "add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
-        registerCache.removeFragmentTempUsage(temp);
-        return code;
-    };
     return EffectFogMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
+EffectFogMethod.assetType = "[asset EffectFogMethod]";
 
 /**
  * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
@@ -58734,51 +57519,21 @@ var EffectFresnelEnvMapMethod = (function (_super) {
      * @param envMap The environment map containing the reflected scene.
      * @param alpha The reflectivity of the material.
      */
-    function EffectFresnelEnvMapMethod(envMap, alpha) {
+    function EffectFresnelEnvMapMethod(envMap, alpha, fresnelPower, normalReflectance) {
         if (alpha === void 0) { alpha = 1; }
-        var _this = _super.call(this) || this;
-        _this._fresnelPower = 5;
-        _this._normalReflectance = 0;
-        _this._envMap = envMap;
-        _this._alpha = alpha;
-        if (_this._envMap)
-            _this.iAddTexture(_this._envMap);
+        if (fresnelPower === void 0) { fresnelPower = 5; }
+        if (normalReflectance === void 0) { normalReflectance = 0; }
+        var _this = _super.call(this, envMap, alpha) || this;
+        _this._fresnelPower = fresnelPower;
+        _this._normalReflectance = normalReflectance;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectFresnelEnvMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = true;
-        methodVO.needsView = true;
-        methodVO.textureGL = shader.getAbstraction(this._envMap);
-        if (this._mask != null) {
-            methodVO.secondaryTextureGL = shader.getAbstraction(this._mask);
-            shader.uvDependencies++;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectFresnelEnvMapMethod.prototype.iInitConstants = function (shader, methodVO) {
-        shader.fragmentConstantData[methodVO.fragmentConstantsIndex + 3] = 1;
-    };
-    Object.defineProperty(EffectFresnelEnvMapMethod.prototype, "mask", {
+    Object.defineProperty(EffectFresnelEnvMapMethod.prototype, "assetType", {
         /**
-         * An optional texture to modulate the reflectivity of the surface.
+         * @inheritDoc
          */
         get: function () {
-            return this._mask;
-        },
-        set: function (value) {
-            if (this._mask == value)
-                return;
-            if (this._mask)
-                this.iRemoveTexture(this._mask);
-            this._mask = value;
-            if (this._mask)
-                this.iAddTexture(this._mask);
-            this.iInvalidateShaderProgram();
+            return EffectFresnelEnvMapMethod.assetType;
         },
         enumerable: true,
         configurable: true
@@ -58796,38 +57551,6 @@ var EffectFresnelEnvMapMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(EffectFresnelEnvMapMethod.prototype, "envMap", {
-        /**
-         * The cubic environment map containing the reflected scene.
-         */
-        get: function () {
-            return this._envMap;
-        },
-        set: function (value) {
-            if (this._envMap == value)
-                return;
-            if (this._envMap)
-                this.iRemoveTexture(this._envMap);
-            this._envMap = value;
-            if (this._envMap)
-                this.iAddTexture(this._envMap);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EffectFresnelEnvMapMethod.prototype, "alpha", {
-        /**
-         * The reflectivity of the surface.
-         */
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            this._alpha = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(EffectFresnelEnvMapMethod.prototype, "normalReflectance", {
         /**
          * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
@@ -58836,73 +57559,17 @@ var EffectFresnelEnvMapMethod = (function (_super) {
             return this._normalReflectance;
         },
         set: function (value) {
+            if (this._normalReflectance == value)
+                return;
             this._normalReflectance = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectFresnelEnvMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index] = this._alpha;
-        data[index + 1] = this._normalReflectance;
-        data[index + 2] = this._fresnelPower;
-        methodVO.textureGL.activate(methodVO.pass._render);
-        if (this._mask)
-            methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    EffectFresnelEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.textureGL._setRenderState(renderable);
-        if (this._mask)
-            methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectFresnelEnvMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var dataRegister = registerCache.getFreeFragmentConstant();
-        var code = "";
-        var viewDirReg = sharedRegisters.viewDirFragment;
-        var normalReg = sharedRegisters.normalFragment;
-        methodVO.fragmentConstantsIndex = dataRegister.index * 4;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var temp2 = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp2, 1);
-        // r = V - 2(V.N)*N
-        code += "dp3 " + temp + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
-            "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
-            "mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w\n" +
-            "sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
-            "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
-            "kil " + temp2 + ".w\n" +
-            "sub " + temp + ", " + temp + ", " + targetReg + "\n";
-        // calculate fresnel term
-        code += "dp3 " + viewDirReg + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
-            "sub " + viewDirReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +
-            "pow " + viewDirReg + ".w, " + viewDirReg + ".w, " + dataRegister + ".z\n" +
-            "sub " + normalReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +
-            "mul " + normalReg + ".w, " + dataRegister + ".y, " + normalReg + ".w\n" +
-            "add " + viewDirReg + ".w, " + viewDirReg + ".w, " + normalReg + ".w\n" +
-            // total alpha
-            "mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
-        if (this._mask) {
-            code += methodVO.secondaryTextureGL._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
-                "mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
-        }
-        // blend
-        code += "mul " + temp + ", " + temp + ", " + viewDirReg + ".w\n" +
-            "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
-        registerCache.removeFragmentTempUsage(temp);
-        registerCache.removeFragmentTempUsage(temp2);
-        return code;
-    };
     return EffectFresnelEnvMapMethod;
-}(EffectMethodBase));
+}(EffectEnvMapMethod));
+EffectFresnelEnvMapMethod.assetType = "[asset EffectFresnelEnvMapMethod]";
 
 /**
  * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
@@ -58931,16 +57598,16 @@ var EffectLightMapMethod = (function (_super) {
             _this.iAddTexture(_this._lightMap);
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectLightMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.textureGL = shader.getAbstraction(this._lightMap);
-        if (this._useSecondaryUV)
-            shader.secondaryUVDependencies++;
-        else
-            shader.uvDependencies++;
-    };
+    Object.defineProperty(EffectLightMapMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectLightMapMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectLightMapMethod.prototype, "blendMode", {
         /**
          * The blend mode with which the light map should be applied to the lighting result.
@@ -58957,7 +57624,7 @@ var EffectLightMapMethod = (function (_super) {
             if (value != EffectLightMapMethod.ADD && value != EffectLightMapMethod.MULTIPLY)
                 throw new Error("Unknown blendmode!");
             this._blendMode = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -58977,7 +57644,7 @@ var EffectLightMapMethod = (function (_super) {
             this._lightMap = value;
             if (this._lightMap)
                 this.iAddTexture(this._lightMap);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -58993,39 +57660,13 @@ var EffectLightMapMethod = (function (_super) {
             if (this._useSecondaryUV == value)
                 return;
             this._useSecondaryUV = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectLightMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        code = methodVO.secondaryTextureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, this._useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
-        switch (this._blendMode) {
-            case EffectLightMapMethod.MULTIPLY:
-                code += "mul " + targetReg + ", " + targetReg + ", " + temp + "\n";
-                break;
-            case EffectLightMapMethod.ADD:
-                code += "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
-                break;
-        }
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectLightMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        methodVO.textureGL.activate(methodVO.pass._render);
-    };
-    EffectLightMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.textureGL._setRenderState(renderable);
-    };
     return EffectLightMapMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
 /**
  * Indicates the light map should be multiplied with the calculated shading result.
  */
@@ -59034,6 +57675,7 @@ EffectLightMapMethod.MULTIPLY = "multiply";
  * Indicates the light map should be added into the calculated shading result.
  */
 EffectLightMapMethod.ADD = "add";
+EffectLightMapMethod.assetType = "[asset EffectLightMapMethod]";
 
 /**
  * ProjectiveTextureMethod is a material method used to project a texture unto the surface of an object.
@@ -59055,34 +57697,38 @@ var EffectProjectiveTextureMethod = (function (_super) {
         if (exposure === void 0) { exposure = 1; }
         var _this = _super.call(this) || this;
         _this._onTextureChangedDelegate = function (event) { return _this._onTextureChanged(event); };
-        _this.projector = projector;
+        _this._projector = projector;
         _this._exposure = exposure;
         _this._mode = mode;
+        _this._projector.addEventListener(_awayjs_scene.TextureProjectorEvent.TEXTURE_CHANGE, _this._onTextureChangedDelegate);
         return _this;
     }
-    EffectProjectiveTextureMethod.prototype.iInitVO = function (shader, methodVO) {
-        if (this._projector.texture)
-            methodVO.textureGL = shader.getAbstraction(this._projector.texture);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._exposure;
-        data[index + 1] = 0.5;
-        data[index + 2] = 4;
-        data[index + 3] = -1;
-        methodVO.vertexMatrices[0] = new _awayjs_core.Matrix3D(new Float32Array(shader.vertexConstantData.buffer, methodVO.vertexConstantsIndex * 4, 16));
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._uvVarying = null;
-    };
+    Object.defineProperty(EffectProjectiveTextureMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectProjectiveTextureMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EffectProjectiveTextureMethod.prototype, "exposure", {
+        /**
+         *
+         */
+        get: function () {
+            return this._exposure;
+        },
+        set: function (value) {
+            if (this._exposure == value)
+                return;
+            this._exposure = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectProjectiveTextureMethod.prototype, "mode", {
         /**
          * The blend mode with which the texture is blended unto the object.
@@ -59097,7 +57743,7 @@ var EffectProjectiveTextureMethod = (function (_super) {
             if (this._mode == value)
                 return;
             this._mode = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -59120,82 +57766,10 @@ var EffectProjectiveTextureMethod = (function (_super) {
             if (this._projector)
                 this._projector.addEventListener(_awayjs_scene.TextureProjectorEvent.TEXTURE_CHANGE, this._onTextureChangedDelegate);
             this.updateTexture();
-            this.iInvalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = "";
-        var projReg = registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        registerCache.getFreeVertexConstant();
-        methodVO.vertexConstantsIndex = projReg.index * 4;
-        this._uvVarying = registerCache.getFreeVarying();
-        code += "m44 " + this._uvVarying + ", " + sharedRegisters.animatedPosition + ", " + projReg + "\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var col = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(col, 1);
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        //var toTexReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
-        //methodVO.fragmentConstantsIndex = toTexReg.index*4;
-        var exposure = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = exposure.index * 4;
-        // code += "mul " + col + ".xy, " + this._uvVarying + ".xy, " + toTexReg + ".xy	\n" +
-        // 	"add " + col + ".xy, " + col + ".xy, " + toTexReg + ".xx	\n";
-        code += methodVO.textureGL._iGetFragmentCode(col, registerCache, sharedRegisters, this._uvVarying);
-        code += "mul " + col + ", " + col + ", " + exposure + ".xxx\n" +
-            "add " + col + ", " + col + ", " + exposure + ".xxx\n";
-        if (this._mode == EffectProjectiveTextureMethod.MULTIPLY)
-            code += "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
-        else if (this._mode == EffectProjectiveTextureMethod.ADD)
-            code += "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
-        else if (this._mode == EffectProjectiveTextureMethod.MIX) {
-            code += "sub " + col + ".xyz, " + col + ".xyz, " + targetReg + ".xyz				\n" +
-                "mul " + col + ".xyz, " + col + ".xyz, " + col + ".w						\n" +
-                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
-        }
-        else if (this._mode == EffectProjectiveTextureMethod.OVERLAY) {
-            code += "sge " + temp + ", " + targetReg + ", " + exposure + ".yyy\n"; // temp = (base >= 0.5)? 1 : 0
-            code += "sub " + targetReg + ", " + targetReg + ", " + temp + "\n"; // base = temp? (base - 1 : base)
-            code += "sub " + col + ", " + col + ", " + temp + "\n"; // blend = temp? (blend - 1 : blend)
-            code += "mul " + col + ", " + col + ", " + targetReg + "\n"; // blend = blend * base
-            code += "sub " + targetReg + ", " + exposure + ".yyy, " + temp + "\n"; // base = temp? -0.5 : 0.5
-            code += "mul " + targetReg + ", " + exposure + ".zzz, " + targetReg + "\n"; // base = temp? -2 : 2
-            code += "mul " + col + ", " + col + ", " + targetReg + "\n"; // blend = blend * ( -2 : 2)
-            code += "add " + targetReg + ", " + col + ", " + temp + "\n"; //blend = temp? (blend + 1 : blend)
-        }
-        else
-            throw new _awayjs_core.ErrorBase("Unknown mode \"" + this._mode + "\"");
-        registerCache.removeFragmentTempUsage(col);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        var matrix3D = _awayjs_core.Matrix3D.CALCULATION_MATRIX;
-        matrix3D.copyFrom(this._projector.projection.viewMatrix3D);
-        matrix3D.prepend(renderable.renderSceneTransform);
-        methodVO.vertexMatrices[0].copyFrom(matrix3D, true);
-        methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectProjectiveTextureMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        methodVO.textureGL.activate(methodVO.pass._render);
-    };
     EffectProjectiveTextureMethod.prototype._onTextureChanged = function (event) {
         this.updateTexture();
     };
@@ -59205,13 +57779,15 @@ var EffectProjectiveTextureMethod = (function (_super) {
         this._texture = (this._projector) ? this._projector.texture : null;
         if (this._texture)
             this.iAddTexture(this._texture);
+        this.invalidateShaderProgram();
     };
     return EffectProjectiveTextureMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
 EffectProjectiveTextureMethod.OVERLAY = "overlay";
 EffectProjectiveTextureMethod.MULTIPLY = "multiply";
 EffectProjectiveTextureMethod.ADD = "add";
 EffectProjectiveTextureMethod.MIX = "mix";
+EffectProjectiveTextureMethod.assetType = "[asset EffectProjectiveTextureMethod]";
 
 /**
  * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
@@ -59227,59 +57803,28 @@ var EffectRefractionEnvMapMethod = (function (_super) {
      * @param dispersionG The amount of chromatic dispersion of the green channel. Defaults to 0 (none).
      * @param dispersionB The amount of chromatic dispersion of the blue channel. Defaults to 0 (none).
      */
-    function EffectRefractionEnvMapMethod(envMap, refractionIndex, dispersionR, dispersionG, dispersionB) {
+    function EffectRefractionEnvMapMethod(envMap, alpha, refractionIndex, dispersionR, dispersionG, dispersionB) {
+        if (alpha === void 0) { alpha = 1; }
         if (refractionIndex === void 0) { refractionIndex = .1; }
         if (dispersionR === void 0) { dispersionR = 0; }
         if (dispersionG === void 0) { dispersionG = 0; }
         if (dispersionB === void 0) { dispersionB = 0; }
-        var _this = _super.call(this) || this;
+        var _this = _super.call(this, envMap, alpha) || this;
         _this._dispersionR = 0;
         _this._dispersionG = 0;
         _this._dispersionB = 0;
-        _this._alpha = 1;
-        _this._envMap = envMap;
+        _this._refractionIndex = refractionIndex;
         _this._dispersionR = dispersionR;
         _this._dispersionG = dispersionG;
         _this._dispersionB = dispersionB;
-        _this._useDispersion = !(_this._dispersionR == _this._dispersionB && _this._dispersionR == _this._dispersionG);
-        _this._refractionIndex = refractionIndex;
-        if (_this._envMap)
-            _this.iAddTexture(_this._envMap);
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectRefractionEnvMapMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index + 4] = 1;
-        data[index + 5] = 0;
-        data[index + 7] = 1;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectRefractionEnvMapMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = true;
-        methodVO.needsView = true;
-        methodVO.textureGL = shader.getAbstraction(this._envMap);
-    };
-    Object.defineProperty(EffectRefractionEnvMapMethod.prototype, "envMap", {
+    Object.defineProperty(EffectRefractionEnvMapMethod.prototype, "assetType", {
         /**
-         * The cube environment map to use for the refraction.
+         * @inheritDoc
          */
         get: function () {
-            return this._envMap;
-        },
-        set: function (value) {
-            if (this._envMap == value)
-                return;
-            if (this._envMap)
-                this.iRemoveTexture(this._envMap);
-            this._envMap = value;
-            if (this._envMap)
-                this.iAddTexture(this._envMap);
+            return EffectRefractionEnvMapMethod.assetType;
         },
         enumerable: true,
         configurable: true
@@ -59293,6 +57838,7 @@ var EffectRefractionEnvMapMethod = (function (_super) {
         },
         set: function (value) {
             this._refractionIndex = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -59305,12 +57851,10 @@ var EffectRefractionEnvMapMethod = (function (_super) {
             return this._dispersionR;
         },
         set: function (value) {
+            if (this._dispersionR == value)
+                return;
             this._dispersionR = value;
-            var useDispersion = !(this._dispersionR == this._dispersionB && this._dispersionR == this._dispersionG);
-            if (this._useDispersion != useDispersion) {
-                this.iInvalidateShaderProgram();
-                this._useDispersion = useDispersion;
-            }
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -59323,12 +57867,10 @@ var EffectRefractionEnvMapMethod = (function (_super) {
             return this._dispersionG;
         },
         set: function (value) {
+            if (this._dispersionG == value)
+                return;
             this._dispersionG = value;
-            var useDispersion = !(this._dispersionR == this._dispersionB && this._dispersionR == this._dispersionG);
-            if (this._useDispersion != useDispersion) {
-                this.iInvalidateShaderProgram();
-                this._useDispersion = useDispersion;
-            }
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -59341,130 +57883,17 @@ var EffectRefractionEnvMapMethod = (function (_super) {
             return this._dispersionB;
         },
         set: function (value) {
+            if (this._dispersionB == value)
+                return;
             this._dispersionB = value;
-            var useDispersion = !(this._dispersionR == this._dispersionB && this._dispersionR == this._dispersionG);
-            if (this._useDispersion != useDispersion) {
-                this.iInvalidateShaderProgram();
-                this._useDispersion = useDispersion;
-            }
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(EffectRefractionEnvMapMethod.prototype, "alpha", {
-        /**
-         * The amount of transparency of the object. Warning: the alpha applies to the refracted color, not the actual
-         * material. A value of 1 will make it appear fully transparent.
-         */
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            this._alpha = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    EffectRefractionEnvMapMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._dispersionR + this._refractionIndex;
-        if (this._useDispersion) {
-            data[index + 1] = this._dispersionG + this._refractionIndex;
-            data[index + 2] = this._dispersionB + this._refractionIndex;
-        }
-        data[index + 3] = this._alpha;
-        methodVO.textureGL.activate(methodVO.pass._render);
-    };
-    EffectRefractionEnvMapMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectRefractionEnvMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        // todo: data2.x could use common reg, so only 1 reg is used
-        var data = registerCache.getFreeFragmentConstant();
-        var data2 = registerCache.getFreeFragmentConstant();
-        var code = "";
-        var refractionDir;
-        var refractionColor;
-        var temp;
-        methodVO.fragmentConstantsIndex = data.index * 4;
-        refractionDir = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(refractionDir, 1);
-        refractionColor = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(refractionColor, 1);
-        temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var viewDirReg = sharedRegisters.viewDirFragment;
-        var normalReg = sharedRegisters.normalFragment;
-        code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";
-        code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
-            "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
-            "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-            "mul " + temp + ".w, " + data + ".x, " + temp + ".w\n" +
-            "mul " + temp + ".w, " + data + ".x, " + temp + ".w\n" +
-            "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-            "sqt " + temp + ".y, " + temp + ".w\n" +
-            "mul " + temp + ".x, " + data + ".x, " + temp + ".x\n" +
-            "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
-            "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
-            "mul " + refractionDir + ", " + data + ".x, " + viewDirReg + "\n" +
-            "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
-            "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-            methodVO.textureGL._iGetFragmentCode(refractionColor, registerCache, sharedRegisters, refractionDir) +
-            "sub " + refractionColor + ".w, " + refractionColor + ".w, fc0.x	\n" +
-            "kil " + refractionColor + ".w\n";
-        if (this._useDispersion) {
-            // GREEN
-            code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
-                "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
-                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-                "mul " + temp + ".w, " + data + ".y, " + temp + ".w\n" +
-                "mul " + temp + ".w, " + data + ".y, " + temp + ".w\n" +
-                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-                "sqt " + temp + ".y, " + temp + ".w\n" +
-                "mul " + temp + ".x, " + data + ".y, " + temp + ".x\n" +
-                "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
-                "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
-                "mul " + refractionDir + ", " + data + ".y, " + viewDirReg + "\n" +
-                "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
-                "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-                methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
-                "mov " + refractionColor + ".y, " + temp + ".y\n";
-            // BLUE
-            code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
-                "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
-                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-                "mul " + temp + ".w, " + data + ".z, " + temp + ".w\n" +
-                "mul " + temp + ".w, " + data + ".z, " + temp + ".w\n" +
-                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
-                "sqt " + temp + ".y, " + temp + ".w\n" +
-                "mul " + temp + ".x, " + data + ".z, " + temp + ".x\n" +
-                "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
-                "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
-                "mul " + refractionDir + ", " + data + ".z, " + viewDirReg + "\n" +
-                "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
-                "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
-                methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
-                "mov " + refractionColor + ".z, " + temp + ".z\n";
-        }
-        code += "sub " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + targetReg + ".xyz\n" +
-            "mul " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + data + ".w\n" +
-            "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + refractionColor + ".xyz\n";
-        registerCache.removeFragmentTempUsage(temp);
-        registerCache.removeFragmentTempUsage(refractionDir);
-        registerCache.removeFragmentTempUsage(refractionColor);
-        // restore
-        code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";
-        return code;
-    };
     return EffectRefractionEnvMapMethod;
-}(EffectMethodBase));
+}(EffectEnvMapMethod));
+EffectRefractionEnvMapMethod.assetType = "[asset EffectRefractionEnvMapMethod]";
 
 /**
  * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
@@ -59488,22 +57917,67 @@ var EffectRimLightMethod = (function (_super) {
         _this._blendMode = blend;
         _this._strength = strength;
         _this._power = power;
-        _this.color = color;
+        _this._color = color;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    EffectRimLightMethod.prototype.iInitConstants = function (shader, methodVO) {
-        shader.fragmentConstantData[methodVO.fragmentConstantsIndex + 3] = 1;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectRimLightMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsNormals = true;
-        methodVO.needsView = true;
-    };
+    Object.defineProperty(EffectRimLightMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return EffectRimLightMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EffectRimLightMethod.prototype, "color", {
+        /**
+         * The color of the rim light.
+         */
+        get: function () {
+            return this._color;
+        },
+        set: function (value /*uint*/) {
+            if (this._power == value)
+                return;
+            this._color = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EffectRimLightMethod.prototype, "strength", {
+        /**
+         * The strength of the rim light.
+         */
+        get: function () {
+            return this._strength;
+        },
+        set: function (value) {
+            if (this._strength == value)
+                return;
+            this._strength = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EffectRimLightMethod.prototype, "power", {
+        /**
+         * The power of the rim light. Higher values will result in a higher edge fall-off.
+         */
+        get: function () {
+            return this._power;
+        },
+        set: function (value) {
+            if (this._power == value)
+                return;
+            this._power = value;
+            this.invalidate();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(EffectRimLightMethod.prototype, "blendMode", {
         /**
          * The blend mode with which to add the light to the object.
@@ -59519,102 +57993,17 @@ var EffectRimLightMethod = (function (_super) {
             if (this._blendMode == value)
                 return;
             this._blendMode = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(EffectRimLightMethod.prototype, "color", {
-        /**
-         * The color of the rim light.
-         */
-        get: function () {
-            return this._color;
-        },
-        set: function (value /*uint*/) {
-            this._color = value;
-            this._colorR = ((value >> 16) & 0xff) / 0xff;
-            this._colorG = ((value >> 8) & 0xff) / 0xff;
-            this._colorB = (value & 0xff) / 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EffectRimLightMethod.prototype, "strength", {
-        /**
-         * The strength of the rim light.
-         */
-        get: function () {
-            return this._strength;
-        },
-        set: function (value) {
-            this._strength = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EffectRimLightMethod.prototype, "power", {
-        /**
-         * The power of the rim light. Higher values will result in a higher edge fall-off.
-         */
-        get: function () {
-            return this._power;
-        },
-        set: function (value) {
-            this._power = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    EffectRimLightMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._colorR;
-        data[index + 1] = this._colorG;
-        data[index + 2] = this._colorB;
-        data[index + 4] = this._strength;
-        data[index + 5] = this._power;
-    };
-    /**
-     * @inheritDoc
-     */
-    EffectRimLightMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var dataRegister = registerCache.getFreeFragmentConstant();
-        var dataRegister2 = registerCache.getFreeFragmentConstant();
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        var code = "";
-        methodVO.fragmentConstantsIndex = dataRegister.index * 4;
-        code += "dp3 " + temp + ".x, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
-            "sat " + temp + ".x, " + temp + ".x\n" +
-            "sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
-            "pow " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".y\n" +
-            "mul " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".x\n" +
-            "sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
-            "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".x\n" +
-            "sub " + temp + ".w, " + dataRegister + ".w, " + temp + ".x\n";
-        if (this._blendMode == EffectRimLightMethod.ADD) {
-            code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
-                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
-        }
-        else if (this._blendMode == EffectRimLightMethod.MULTIPLY) {
-            code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
-                "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
-        }
-        else {
-            code += "sub " + temp + ".xyz, " + dataRegister + ".xyz, " + targetReg + ".xyz\n" +
-                "mul " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w\n" +
-                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
-        }
-        return code;
-    };
     return EffectRimLightMethod;
-}(EffectMethodBase));
+}(ShadingMethodBase));
 EffectRimLightMethod.ADD = "add";
 EffectRimLightMethod.MULTIPLY = "multiply";
 EffectRimLightMethod.MIX = "mix";
+EffectRimLightMethod.assetType = "[asset EffectRimLightMethod]";
 
 /**
  * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
@@ -59636,25 +58025,26 @@ var NormalHeightMapMethod = (function (_super) {
         _this._worldXZRatio = worldDepth / worldHeight;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    NormalHeightMapMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = 1 / this.texture.image2D.width;
-        data[index + 1] = 1 / this.texture.image2D.height;
-        data[index + 2] = 0;
-        data[index + 3] = 1;
-        data[index + 4] = this._worldXYRatio;
-        data[index + 5] = this._worldXZRatio;
-    };
-    Object.defineProperty(NormalHeightMapMethod.prototype, "tangentSpace", {
+    Object.defineProperty(NormalHeightMapMethod.prototype, "assetType", {
         /**
          * @inheritDoc
          */
         get: function () {
-            return false;
+            return NormalHeightMapMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NormalHeightMapMethod.prototype, "worldXYRatio", {
+        get: function () {
+            return this._worldXYRatio;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NormalHeightMapMethod.prototype, "worldXZRatio", {
+        get: function () {
+            return this._worldXZRatio;
         },
         enumerable: true,
         configurable: true
@@ -59667,31 +58057,9 @@ var NormalHeightMapMethod = (function (_super) {
         this._worldXYRatio = method._worldXYRatio;
         this._worldXZRatio = method._worldXZRatio;
     };
-    /**
-     * @inheritDoc
-     */
-    NormalHeightMapMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var dataReg = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = dataReg.index * 4;
-        code += methodVO.textureGL._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
-            "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
-            "sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" +
-            "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
-            "sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" +
-            "mov " + targetReg + ".y, " + dataReg + ".w\n" +
-            "mul " + targetReg + ".xz, " + targetReg + ".xz, " + dataReg2 + ".xy\n" +
-            "nrm " + targetReg + ".xyz, " + targetReg + ".xyz\n";
-        registerCache.removeFragmentTempUsage(temp);
-        return code;
-    };
     return NormalHeightMapMethod;
 }(NormalBasicMethod));
+NormalHeightMapMethod.assetType = "[asset NormalHeightMapMethod]";
 
 /**
  * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
@@ -59716,27 +58084,16 @@ var NormalSimpleWaterMethod = (function (_super) {
             _this.iAddTexture(_this._secondaryNormalMap);
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    NormalSimpleWaterMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var index = methodVO.fragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = .5;
-        data[index + 1] = 0;
-        data[index + 2] = 0;
-        data[index + 3] = 1;
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalSimpleWaterMethod.prototype.iInitVO = function (shader, methodVO) {
-        _super.prototype.iInitVO.call(this, shader, methodVO);
-        if (this._secondaryNormalMap) {
-            methodVO.secondaryTextureGL = shader.getAbstraction(this._secondaryNormalMap);
-            shader.uvDependencies++;
-        }
-    };
+    Object.defineProperty(NormalSimpleWaterMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return NormalSimpleWaterMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(NormalSimpleWaterMethod.prototype, "water1OffsetX", {
         /**
          * The translation of the first wave layer along the X-axis.
@@ -59746,6 +58103,7 @@ var NormalSimpleWaterMethod = (function (_super) {
         },
         set: function (value) {
             this._water1OffsetX = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -59759,6 +58117,7 @@ var NormalSimpleWaterMethod = (function (_super) {
         },
         set: function (value) {
             this._water1OffsetY = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -59772,6 +58131,7 @@ var NormalSimpleWaterMethod = (function (_super) {
         },
         set: function (value) {
             this._water2OffsetX = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -59785,6 +58145,7 @@ var NormalSimpleWaterMethod = (function (_super) {
         },
         set: function (value) {
             this._water2OffsetY = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -59804,7 +58165,7 @@ var NormalSimpleWaterMethod = (function (_super) {
             this._secondaryNormalMap = value;
             if (this._secondaryNormalMap)
                 this.iAddTexture(this._secondaryNormalMap);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -59816,122 +58177,157 @@ var NormalSimpleWaterMethod = (function (_super) {
         _super.prototype.dispose.call(this);
         this._secondaryNormalMap = null;
     };
-    /**
-     * @inheritDoc
-     */
-    NormalSimpleWaterMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index + 4] = this._water1OffsetX;
-        data[index + 5] = this._water1OffsetY;
-        data[index + 6] = this._water2OffsetX;
-        data[index + 7] = this._water2OffsetY;
-        if (this._secondaryNormalMap)
-            methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalSimpleWaterMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
-        if (this._secondaryNormalMap)
-            methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    NormalSimpleWaterMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = "";
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var dataReg = registerCache.getFreeFragmentConstant();
-        var dataReg2 = registerCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = dataReg.index * 4;
-        code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n";
-        if (this.texture)
-            code += methodVO.textureGL._iGetFragmentCode(targetReg, registerCache, sharedRegisters, temp);
-        code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n";
-        if (this._secondaryNormalMap)
-            code += methodVO.secondaryTextureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, temp);
-        code += "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
-            "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
-            "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx	\n" +
-            "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
-        return code;
-    };
     return NormalSimpleWaterMethod;
 }(NormalBasicMethod));
+NormalSimpleWaterMethod.assetType = "[asset NormalSimpleWaterMethod]";
 
 /**
- * ShadowMapMethodBase provides an abstract base method for shadow map methods.
+ * ShadowMethodBase provides an abstract base method for shadow map methods.
  */
-var ShadowMapMethodBase = (function (_super) {
-    __extends(ShadowMapMethodBase, _super);
+var ShadowMethodBase = (function (_super) {
+    __extends(ShadowMethodBase, _super);
     /**
-     * Creates a new ShadowMapMethodBase object.
+     * Creates a new ShadowMethodBase object.
      * @param castingLight The light used to cast shadows.
      */
-    function ShadowMapMethodBase(castingLight) {
+    function ShadowMethodBase(castingLight) {
         var _this = _super.call(this) || this;
-        _this._pEpsilon = .02;
-        _this._pAlpha = 1;
-        _this._pCastingLight = castingLight;
+        _this._epsilon = .02;
+        _this._alpha = 1;
         castingLight.shadowsEnabled = true;
-        _this._pShadowMapper = castingLight.shadowMapper;
+        _this._castingLight = castingLight;
         _this.iAddTexture(castingLight.shadowMapper.depthMap);
         return _this;
     }
-    Object.defineProperty(ShadowMapMethodBase.prototype, "assetType", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return ShadowMapMethodBase.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShadowMapMethodBase.prototype, "alpha", {
+    Object.defineProperty(ShadowMethodBase.prototype, "alpha", {
         /**
          * The "transparency" of the shadows. This allows making shadows less strong.
          */
         get: function () {
-            return this._pAlpha;
+            return this._alpha;
         },
         set: function (value) {
-            this._pAlpha = value;
+            this._alpha = value;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ShadowMapMethodBase.prototype, "castingLight", {
+    Object.defineProperty(ShadowMethodBase.prototype, "castingLight", {
         /**
          * The light casting the shadows.
          */
         get: function () {
-            return this._pCastingLight;
+            return this._castingLight;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ShadowMapMethodBase.prototype, "epsilon", {
+    Object.defineProperty(ShadowMethodBase.prototype, "epsilon", {
         /**
          * A small value to counter floating point precision errors when comparing values in the shadow map with the
          * calculated depth value. Increase this if shadow banding occurs, decrease it if the shadow seems to be too detached.
          */
         get: function () {
-            return this._pEpsilon;
+            return this._epsilon;
         },
         set: function (value) {
-            this._pEpsilon = value;
+            this._epsilon = value;
         },
         enumerable: true,
         configurable: true
     });
-    return ShadowMapMethodBase;
+    return ShadowMethodBase;
 }(ShadingMethodBase));
-ShadowMapMethodBase.assetType = "[asset ShadowMapMethod]";
+
+/**
+ * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
+ */
+var ShadowHardMethod = (function (_super) {
+    __extends(ShadowHardMethod, _super);
+    function ShadowHardMethod() {
+        return _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(ShadowHardMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return ShadowHardMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ShadowHardMethod;
+}(ShadowMethodBase));
+ShadowHardMethod.assetType = "[asset ShadowHardMethod]";
+
+/**
+ * ShadowCompositeMethod is a shadow map method to apply cascade shadow mapping on materials.
+ * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
+ *
+ * @see away.lights.CascadeShadowMapper
+ */
+var ShadowCompositeMethod = (function (_super) {
+    __extends(ShadowCompositeMethod, _super);
+    /**
+     * Creates a new ShadowCompositeMethod object.
+     *
+     * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
+     */
+    function ShadowCompositeMethod(baseMethod) {
+        var _this = _super.call(this, baseMethod) || this;
+        if (!(baseMethod.castingLight instanceof _awayjs_scene.DirectionalLight))
+            throw new Error("ShadowCompositeMethod is only compatible with DirectionalLight");
+        baseMethod.castingLight.shadowMapper.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, function (event) { return _this.onShadowMapperInvalidate(event); });
+        return _this;
+    }
+    Object.defineProperty(ShadowCompositeMethod.prototype, "castingLight", {
+        /**
+         * The light casting the shadows.
+         */
+        get: function () {
+            return this._baseMethod.castingLight;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShadowCompositeMethod.prototype, "alpha", {
+        /**
+         *
+         */
+        get: function () {
+            return this._baseMethod.alpha;
+        },
+        set: function (value) {
+            this._baseMethod.alpha = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShadowCompositeMethod.prototype, "epsilon", {
+        /**
+         *
+         */
+        get: function () {
+            return this._baseMethod.epsilon;
+        },
+        set: function (value) {
+            this._baseMethod.epsilon = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ShadowCompositeMethod.prototype.createBaseMethod = function () {
+        return new ShadowHardMethod(new _awayjs_scene.DirectionalLight());
+    };
+    /**
+     * Called when the shadow mappers cascade configuration changes.
+     */
+    ShadowCompositeMethod.prototype.onShadowMapperInvalidate = function (event) {
+        this.invalidateShaderProgram();
+    };
+    return ShadowCompositeMethod;
+}(CompositeMethodBase));
 
 /**
  * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
@@ -59946,375 +58342,32 @@ var ShadowCascadeMethod = (function (_super) {
      *
      * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
      */
-    function ShadowCascadeMethod(shadowMethodBase) {
-        var _this = _super.call(this, shadowMethodBase.castingLight) || this;
-        _this._baseMethod = shadowMethodBase;
-        if (!(_this._pCastingLight instanceof _awayjs_scene.DirectionalLight))
-            throw new Error("ShadowCascadeMethod is only compatible with DirectionalLight");
-        _this._cascadeShadowMapper = _this._pCastingLight.shadowMapper;
-        if (!_this._cascadeShadowMapper)
+    function ShadowCascadeMethod(baseMethod) {
+        var _this = _super.call(this, baseMethod) || this;
+        if (!(baseMethod.castingLight.shadowMapper instanceof _awayjs_scene.CascadeShadowMapper))
             throw new Error("ShadowCascadeMethod requires a light that has a CascadeShadowMapper instance assigned to shadowMapper.");
-        _this._cascadeShadowMapper.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, function (event) { return _this.onCascadeChange(event); });
-        _this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, function (event) { return _this.onShaderInvalidated(event); });
         return _this;
     }
-    Object.defineProperty(ShadowCascadeMethod.prototype, "baseMethod", {
+    Object.defineProperty(ShadowCascadeMethod.prototype, "assetType", {
         /**
-         * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
-         * with a DirectionalShadowMapper.
-         *
-         * @see ShadowHardMethod
-         * @see ShadowSoftMethod
+         * @inheritDoc
          */
         get: function () {
-            return this._baseMethod;
-        },
-        set: function (value) {
-            var _this = this;
-            if (this._baseMethod == value)
-                return;
-            this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, function (event) { return _this.onShaderInvalidated(event); });
-            this._baseMethod = value;
-            this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, function (event) { return _this.onShaderInvalidated(event); });
-            this.iInvalidateShaderProgram();
+            return ShadowCascadeMethod.assetType;
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iInitVO = function (shader, methodVO) {
-        var tempVO = new MethodVO(this._baseMethod, methodVO.pass);
-        this._baseMethod.iInitVO(shader, tempVO);
-        methodVO.needsGlobalVertexPos = true;
-        methodVO.needsProjection = true;
-        methodVO.textureGL = shader.getAbstraction(this._pCastingLight.shadowMapper.depthMap);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var fragmentData = shader.fragmentConstantData;
-        var vertexData = shader.vertexConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        fragmentData[index] = 1.0;
-        fragmentData[index + 1] = 1 / 255.0;
-        fragmentData[index + 2] = 1 / 65025.0;
-        fragmentData[index + 3] = 1 / 16581375.0;
-        fragmentData[index + 6] = .5;
-        fragmentData[index + 7] = -.5;
-        index = methodVO.vertexConstantsIndex;
-        vertexData[index] = .5;
-        vertexData[index + 1] = -.5;
-        vertexData[index + 2] = 0;
-        var numCascades = this._cascadeShadowMapper.numCascades;
-        for (var k = 0; k < numCascades; ++k)
-            methodVO.vertexMatrices[k] = new _awayjs_core.Matrix3D(new Float32Array(shader.vertexConstantData.buffer, (methodVO.vertexConstantsIndex + 4 + k * 16) * 4, 16));
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._cascadeProjections = null;
-        this._depthMapCoordVaryings = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        var code = "";
-        var dataReg = registerCache.getFreeVertexConstant();
-        methodVO.vertexConstantsIndex = dataReg.index * 4;
-        this.initProjectionsRegs(registerCache);
-        var temp = registerCache.getFreeVertexVectorTemp();
-        for (var i = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
-            code += "m44 " + temp + ", " + sharedRegisters.globalPositionVertex + ", " + this._cascadeProjections[i] + "\n" +
-                "add " + this._depthMapCoordVaryings[i] + ", " + temp + ", " + dataReg + ".zzwz\n";
-        }
-        return code;
-    };
-    /**
-     * Creates the registers for the cascades' projection coordinates.
-     */
-    ShadowCascadeMethod.prototype.initProjectionsRegs = function (registerCache) {
-        this._cascadeProjections = new Array(this._cascadeShadowMapper.numCascades);
-        this._depthMapCoordVaryings = new Array(this._cascadeShadowMapper.numCascades);
-        for (var i = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
-            this._depthMapCoordVaryings[i] = registerCache.getFreeVarying();
-            this._cascadeProjections[i] = registerCache.getFreeVertexConstant();
-            registerCache.getFreeVertexConstant();
-            registerCache.getFreeVertexConstant();
-            registerCache.getFreeVertexConstant();
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var numCascades = this._cascadeShadowMapper.numCascades;
-        var decReg = registerCache.getFreeFragmentConstant();
-        var dataReg = registerCache.getFreeFragmentConstant();
-        var planeDistanceReg = registerCache.getFreeFragmentConstant();
-        var planeDistances = Array(planeDistanceReg + ".x", planeDistanceReg + ".y", planeDistanceReg + ".z", planeDistanceReg + ".w");
-        var code;
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        var inQuad = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(inQuad, 1);
-        var uvCoord = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(uvCoord, 1);
-        // assume lowest partition is selected, will be overwritten later otherwise
-        code = "mov " + uvCoord + ", " + this._depthMapCoordVaryings[numCascades - 1] + "\n";
-        for (var i = numCascades - 2; i >= 0; --i) {
-            var uvProjection = this._depthMapCoordVaryings[i];
-            // calculate if in texturemap (result == 0 or 1, only 1 for a single partition)
-            code += "slt " + inQuad + ".z, " + sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n"; // z = x > minX, w = y > minY
-            var temp = registerCache.getFreeFragmentVectorTemp();
-            // linearly interpolate between old and new uv coords using predicate value == conditional toggle to new value if predicate == 1 (true)
-            code += "sub " + temp + ", " + uvProjection + ", " + uvCoord + "\n" +
-                "mul " + temp + ", " + temp + ", " + inQuad + ".z\n" +
-                "add " + uvCoord + ", " + uvCoord + ", " + temp + "\n";
-        }
-        registerCache.removeFragmentTempUsage(inQuad);
-        code += "div " + uvCoord + ", " + uvCoord + ", " + uvCoord + ".w\n" +
-            "mul " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zw\n" +
-            "add " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zz\n";
-        code += this._baseMethod._iGetCascadeFragmentCode(shader, methodVO, decReg, uvCoord, targetReg, registerCache, sharedRegisters) +
-            "add " + targetReg + ".w, " + targetReg + ".w, " + dataReg + ".y\n";
-        registerCache.removeFragmentTempUsage(uvCoord);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        methodVO.textureGL.activate(methodVO.pass._render);
-        shader.vertexConstantData[methodVO.vertexConstantsIndex + 3] = -1 / (this._cascadeShadowMapper.depth * this._pEpsilon);
-        var numCascades = this._cascadeShadowMapper.numCascades;
-        for (var k = 0; k < numCascades; ++k)
-            methodVO.vertexMatrices[k].copyFrom(this._cascadeShadowMapper.getDepthProjections(k), true);
-        var fragmentData = shader.fragmentConstantData;
-        var fragmentIndex = methodVO.fragmentConstantsIndex;
-        fragmentData[fragmentIndex + 5] = 1 - this._pAlpha;
-        var nearPlaneDistances = this._cascadeShadowMapper._iNearPlaneDistances;
-        fragmentIndex += 8;
-        for (var i = 0; i < numCascades; ++i)
-            fragmentData[fragmentIndex + i] = nearPlaneDistances[i];
-        this._baseMethod.iActivateForCascade(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowCascadeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-    };
-    /**
-     * Called when the shadow mappers cascade configuration changes.
-     */
-    ShadowCascadeMethod.prototype.onCascadeChange = function (event) {
-        this.iInvalidateShaderProgram();
-    };
-    /**
-     * Called when the base method's shader code is invalidated.
-     */
-    ShadowCascadeMethod.prototype.onShaderInvalidated = function (event) {
-        this.iInvalidateShaderProgram();
-    };
+    Object.defineProperty(ShadowCascadeMethod.prototype, "cascadeShadowMapper", {
+        get: function () {
+            return this._baseMethod.castingLight.shadowMapper;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return ShadowCascadeMethod;
-}(ShadowMapMethodBase));
-
-/**
- * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
- */
-var ShadowMethodBase = (function (_super) {
-    __extends(ShadowMethodBase, _super);
-    /**
-     * Creates a new ShadowMethodBase object.
-     * @param castingLight The light used to cast shadows.
-     */
-    function ShadowMethodBase(castingLight) {
-        var _this = _super.call(this, castingLight) || this;
-        _this._pUsePoint = (castingLight instanceof _awayjs_scene.PointLight);
-        return _this;
-    }
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsView = true;
-        methodVO.needsGlobalVertexPos = true;
-        methodVO.needsGlobalFragmentPos = this._pUsePoint;
-        methodVO.needsNormals = shader.numLights > 0;
-        methodVO.textureGL = shader.getAbstraction(this._pCastingLight.shadowMapper.depthMap);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iInitConstants = function (shader, methodVO) {
-        var fragmentData = shader.fragmentConstantData;
-        var vertexData = shader.vertexConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        fragmentData[index] = 1.0;
-        fragmentData[index + 1] = 1 / 255.0;
-        fragmentData[index + 2] = 1 / 65025.0;
-        fragmentData[index + 3] = 1 / 16581375.0;
-        fragmentData[index + 6] = 0;
-        fragmentData[index + 7] = 1;
-        if (this._pUsePoint) {
-            fragmentData[index + 8] = 0;
-            fragmentData[index + 9] = 0;
-            fragmentData[index + 10] = 0;
-            fragmentData[index + 11] = 1;
-        }
-        index = methodVO.vertexConstantsIndex;
-        if (index != -1) {
-            vertexData[index] = .5;
-            vertexData[index + 1] = .5;
-            vertexData[index + 2] = 0.0;
-            vertexData[index + 3] = 1.0;
-        }
-        methodVO.vertexMatrices[0] = new _awayjs_core.Matrix3D(new Float32Array(shader.vertexConstantData.buffer, (methodVO.vertexConstantsIndex + 4) * 4, 16));
-    };
-    Object.defineProperty(ShadowMethodBase.prototype, "_iDepthMapCoordReg", {
-        /**
-         * Wrappers that override the vertex shader need to set this explicitly
-         */
-        get: function () {
-            return this._pDepthMapCoordReg;
-        },
-        set: function (value) {
-            this._pDepthMapCoordReg = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._pDepthMapCoordReg = null;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iGetVertexCode = function (shader, methodVO, regCache, sharedRegisters) {
-        return this._pUsePoint ? this._pGetPointVertexCode(methodVO, regCache, sharedRegisters) : this.pGetPlanarVertexCode(methodVO, regCache, sharedRegisters);
-    };
-    /**
-     * Gets the vertex code for shadow mapping with a point light.
-     *
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     */
-    ShadowMethodBase.prototype._pGetPointVertexCode = function (methodVO, regCache, sharedRegisters) {
-        methodVO.vertexConstantsIndex = -1;
-        return "";
-    };
-    /**
-     * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
-     *
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     */
-    ShadowMethodBase.prototype.pGetPlanarVertexCode = function (methodVO, regCache, sharedRegisters) {
-        var code = "";
-        var temp = regCache.getFreeVertexVectorTemp();
-        var dataReg = regCache.getFreeVertexConstant();
-        methodVO.vertexConstantsIndex = dataReg.index * 4;
-        var depthMapProj = regCache.getFreeVertexConstant();
-        regCache.getFreeVertexConstant();
-        regCache.getFreeVertexConstant();
-        regCache.getFreeVertexConstant();
-        this._pDepthMapCoordReg = regCache.getFreeVarying();
-        // todo: can epsilon be applied here instead of fragment shader?
-        code += "m44 " + temp + ", " + sharedRegisters.globalPositionVertex + ", " + depthMapProj + "\n" +
-            "div " + temp + ", " + temp + ", " + temp + ".w\n" +
-            "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" +
-            "add " + this._pDepthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
-        //"sub " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".w\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = this._pUsePoint ? this._pGetPointFragmentCode(shader, methodVO, targetReg, registerCache, sharedRegisters) : this._pGetPlanarFragmentCode(shader, methodVO, targetReg, registerCache, sharedRegisters);
-        code += "add " + targetReg + ".w, " + targetReg + ".w, fc" + (methodVO.fragmentConstantsIndex / 4 + 1) + ".y\n" +
-            "sat " + targetReg + ".w, " + targetReg + ".w\n";
-        return code;
-    };
-    /**
-     * Gets the fragment code for shadow mapping with a planar shadow map.
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     * @param targetReg The register to contain the shadow coverage
-     * @return
-     */
-    ShadowMethodBase.prototype._pGetPlanarFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        throw new _awayjs_core.AbstractMethodError();
-    };
-    /**
-     * Gets the fragment code for shadow mapping with a point light.
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     * @param targetReg The register to contain the shadow coverage
-     * @return
-     */
-    ShadowMethodBase.prototype._pGetPointFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        throw new _awayjs_core.AbstractMethodError();
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        if (!this._pUsePoint)
-            methodVO.vertexMatrices[0].copyFrom(this._pShadowMapper.iDepthProjection, true);
-        methodVO.textureGL._setRenderState(renderable);
-    };
-    /**
-     * Gets the fragment code for combining this method with a cascaded shadow map method.
-     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
-     * @param regCache The register cache used during the compilation.
-     * @param decodeRegister The register containing the data to decode the shadow map depth value.
-     * @param depthTexture The texture containing the shadow map.
-     * @param depthProjection The projection of the fragment relative to the light.
-     * @param targetRegister The register to contain the shadow coverage
-     * @return
-     */
-    ShadowMethodBase.prototype._iGetCascadeFragmentCode = function (shader, methodVO, decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
-        throw new Error("This shadow method is incompatible with cascade shadows");
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowMethodBase.prototype.iActivate = function (shader, methodVO, stage) {
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        if (this._pUsePoint)
-            fragmentData[index + 4] = -Math.pow(1 / (this._pCastingLight.fallOff * this._pEpsilon), 2);
-        else
-            shader.vertexConstantData[methodVO.vertexConstantsIndex + 3] = -1 / (this._pShadowMapper.depth * this._pEpsilon);
-        fragmentData[index + 5] = 1 - this._pAlpha;
-        if (this._pUsePoint) {
-            var pos = this._pCastingLight.scenePosition;
-            fragmentData[index + 8] = pos.x;
-            fragmentData[index + 9] = pos.y;
-            fragmentData[index + 10] = pos.z;
-            // used to decompress distance
-            var f = this._pCastingLight.fallOff;
-            fragmentData[index + 11] = 1 / (2 * f * f);
-        }
-        methodVO.textureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * Sets the method state for cascade shadow mapping.
-     */
-    ShadowMethodBase.prototype.iActivateForCascade = function (shader, methodVO, stage) {
-        throw new Error("This shadow method is incompatible with cascade shadows");
-    };
-    return ShadowMethodBase;
-}(ShadowMapMethodBase));
+}(ShadowCompositeMethod));
+ShadowCascadeMethod.assetType = "[asset ShadowCascadeMethod]";
 
 /**
  * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
@@ -60330,7 +58383,7 @@ var ShadowDitheredMethod = (function (_super) {
         if (numSamples === void 0) { numSamples = 4; }
         if (range === void 0) { range = 1; }
         var _this = _super.call(this, castingLight) || this;
-        _this._depthMapSize = _this._pCastingLight.shadowMapper.depthMapSize;
+        _this._depthMapSize = _this._castingLight.shadowMapper.depthMapSize;
         _this.numSamples = numSamples;
         _this.range = range;
         ++ShadowDitheredMethod._grainUsages;
@@ -60338,6 +58391,16 @@ var ShadowDitheredMethod = (function (_super) {
             _this.initGrainTexture();
         return _this;
     }
+    Object.defineProperty(ShadowDitheredMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return ShadowDitheredMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ShadowDitheredMethod.prototype, "numSamples", {
         /**
          * The amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the
@@ -60354,28 +58417,11 @@ var ShadowDitheredMethod = (function (_super) {
             if (this._numSamples == value)
                 return;
             this._numSamples = value;
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype.iInitVO = function (shader, methodVO) {
-        _super.prototype.iInitVO.call(this, shader, methodVO);
-        methodVO.needsProjection = true;
-        methodVO.secondaryTextureGL = shader.getAbstraction(ShadowDitheredMethod._grainTexture);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype.iInitConstants = function (shader, methodVO) {
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        fragmentData[index + 8] = 1 / this._numSamples;
-    };
     Object.defineProperty(ShadowDitheredMethod.prototype, "range", {
         /**
          * The range in the shadow map in which to distribute the samples.
@@ -60432,135 +58478,9 @@ var ShadowDitheredMethod = (function (_super) {
             ShadowDitheredMethod._grainTexture = null;
         }
     };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        data[index + 9] = (stage.width - 1) / 63;
-        data[index + 10] = (stage.height - 1) / 63;
-        data[index + 11] = 2 * this._range / this._depthMapSize;
-        methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        _super.prototype.iSetRenderState.call(this, shader, methodVO, renderable, stage, projection);
-        methodVO.secondaryTextureGL._setRenderState(renderable);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype._pGetPlanarFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        var decReg = regCache.getFreeFragmentConstant();
-        var dataReg = regCache.getFreeFragmentConstant();
-        var customDataReg = regCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        return this.getSampleCode(shader, methodVO, customDataReg, decReg, targetReg, regCache, sharedRegisters);
-    };
-    /**
-     * Get the actual shader code for shadow mapping
-     * @param regCache The register cache managing the registers.
-     * @param depthMapRegister The texture register containing the depth map.
-     * @param decReg The register containing the depth map decoding data.
-     * @param targetReg The target register to add the shadow coverage.
-     */
-    ShadowDitheredMethod.prototype.getSampleCode = function (shader, methodVO, customDataReg, decReg, targetReg, regCache, sharedRegisters) {
-        var code = "";
-        var numSamples = this._numSamples;
-        var uvReg = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(uvReg, 1);
-        var temp = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(temp, 1);
-        var projectionReg = sharedRegisters.projectionFragment;
-        code += "div " + uvReg + ", " + projectionReg + ", " + projectionReg + ".w\n" +
-            "mul " + uvReg + ".xy, " + uvReg + ".xy, " + customDataReg + ".yz\n";
-        while (numSamples > 0) {
-            if (numSamples == this._numSamples) {
-                code += methodVO.secondaryTextureGL._iGetFragmentCode(uvReg, regCache, sharedRegisters, uvReg);
-            }
-            else {
-                code += "mov " + temp + ", " + uvReg + ".zwxy \n" +
-                    methodVO.secondaryTextureGL._iGetFragmentCode(uvReg, regCache, sharedRegisters, temp);
-            }
-            // keep grain in uvReg.zw
-            code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" +
-                "mul " + uvReg + ".zw, " + uvReg + ".zw, " + customDataReg + ".w\n"; // (tex unpack scale and tex scale in one)
-            if (numSamples == this._numSamples) {
-                // first sample
-                code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._pDepthMapCoordReg + ".xy\n" +
-                    methodVO.textureGL._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
-                    "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
-                    "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
-            }
-            else {
-                code += this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            }
-            if (numSamples > 4)
-                code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            if (numSamples > 1)
-                code += "sub " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + uvReg + ".zw\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            if (numSamples > 5)
-                code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            if (numSamples > 2) {
-                code += "neg " + uvReg + ".w, " + uvReg + ".w\n"; // will be rotated 90 degrees when being accessed as wz
-                code += "add " + uvReg + ".xy, " + uvReg + ".wz, " + this._pDepthMapCoordReg + ".xy\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            }
-            if (numSamples > 6)
-                code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            if (numSamples > 3)
-                code += "sub " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + uvReg + ".wz\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            if (numSamples > 7)
-                code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this.addSample(shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters);
-            numSamples -= 8;
-        }
-        regCache.removeFragmentTempUsage(temp);
-        regCache.removeFragmentTempUsage(uvReg);
-        code += "mul " + targetReg + ".w, " + targetReg + ".w, " + customDataReg + ".x\n"; // average
-        return code;
-    };
-    /**
-     * Adds the code for another tap to the shader code.
-     * @param uvReg The uv register for the tap.
-     * @param depthMapRegister The texture register containing the depth map.
-     * @param decReg The register containing the depth map decoding data.
-     * @param targetReg The target register to add the tap comparison result.
-     * @param regCache The register cache managing the registers.
-     * @return
-     */
-    ShadowDitheredMethod.prototype.addSample = function (shader, methodVO, uvReg, decReg, targetReg, regCache, sharedRegisters) {
-        var temp = regCache.getFreeFragmentVectorTemp();
-        return methodVO.textureGL._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
-            "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
-            "slt " + temp + ".z, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" +
-            "add " + targetReg + ".w, " + targetReg + ".w, " + temp + ".z\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype.iActivateForCascade = function (shader, methodVO, stage) {
-        var data = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        data[index] = 1 / this._numSamples;
-        data[index + 1] = (stage.width - 1) / 63;
-        data[index + 2] = (stage.height - 1) / 63;
-        data[index + 3] = 2 * this._range / this._depthMapSize;
-        methodVO.secondaryTextureGL.activate(methodVO.pass._render);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowDitheredMethod.prototype._iGetCascadeFragmentCode = function (shader, methodVO, decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
-        this._pDepthMapCoordReg = depthProjection;
-        var dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = dataReg.index * 4;
-        return this.getSampleCode(shader, methodVO, dataReg, decodeRegister, targetRegister, registerCache, sharedRegisters);
-    };
     return ShadowDitheredMethod;
 }(ShadowMethodBase));
+ShadowDitheredMethod.assetType = "[asset ShadowDitheredMethod]";
 
 /**
  * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
@@ -60568,193 +58488,22 @@ var ShadowDitheredMethod = (function (_super) {
  */
 var ShadowFilteredMethod = (function (_super) {
     __extends(ShadowFilteredMethod, _super);
-    /**
-     * Creates a new DiffuseBasicMethod object.
-     *
-     * @param castingLight The light casting the shadow
-     */
-    function ShadowFilteredMethod(castingLight) {
-        return _super.call(this, castingLight) || this;
+    function ShadowFilteredMethod() {
+        return _super.apply(this, arguments) || this;
     }
-    /**
-     * @inheritDoc
-     */
-    ShadowFilteredMethod.prototype.iInitConstants = function (shader, methodVO) {
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex;
-        fragmentData[index + 8] = .5;
-        var size = this.castingLight.shadowMapper.depthMapSize;
-        fragmentData[index + 9] = size;
-        fragmentData[index + 10] = 1 / size;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowFilteredMethod.prototype._pGetPlanarFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        var code = "";
-        var decReg = regCache.getFreeFragmentConstant();
-        regCache.getFreeFragmentConstant();
-        var customDataReg = regCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        var depthCol = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(depthCol, 1);
-        var uvReg = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(uvReg, 1);
-        code += "mov " + uvReg + ", " + this._pDepthMapCoordReg + "\n" +
-            methodVO.textureGL._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._pDepthMapCoordReg) +
-            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
-            "slt " + uvReg + ".z, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" +
-            "add " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".z\n" +
-            methodVO.textureGL._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
-            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
-            "slt " + uvReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" +
-            "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".y\n" +
-            "frc " + depthCol + ".x, " + depthCol + ".x\n" +
-            "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" +
-            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
-            "add " + targetReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" +
-            "mov " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x\n" +
-            "add " + uvReg + ".y, " + this._pDepthMapCoordReg + ".y, " + customDataReg + ".z\n" +
-            methodVO.textureGL._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
-            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
-            "slt " + uvReg + ".z, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" +
-            "add " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".z\n" +
-            methodVO.textureGL._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
-            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
-            "slt " + uvReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" +
-            // recalculate fraction, since we ran out of registers :(
-            "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".y\n" +
-            "frc " + depthCol + ".x, " + depthCol + ".x\n" + "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" +
-            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
-            "add " + uvReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" +
-            "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".y, " + customDataReg + ".y\n" +
-            "frc " + depthCol + ".x, " + depthCol + ".x\n" +
-            "sub " + uvReg + ".w, " + uvReg + ".w, " + targetReg + ".w\n" +
-            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
-            "add " + targetReg + ".w, " + targetReg + ".w, " + uvReg + ".w\n";
-        regCache.removeFragmentTempUsage(depthCol);
-        regCache.removeFragmentTempUsage(uvReg);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowFilteredMethod.prototype.iActivateForCascade = function (shader, methodVO, stage) {
-        var size = this.castingLight.shadowMapper.depthMapSize;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = size;
-        data[index + 1] = 1 / size;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowFilteredMethod.prototype._iGetCascadeFragmentCode = function (shader, methodVO, decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
-        var code;
-        var dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = dataReg.index * 4;
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(temp, 1);
-        var predicate = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(predicate, 1);
-        code = methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" +
-            "add " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + predicate + ".z, " + depthProjection + ".z, " + temp + ".z\n" +
-            "add " + depthProjection + ".y, " + depthProjection + ".y, " + dataReg + ".y\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + predicate + ".w, " + depthProjection + ".z, " + temp + ".z\n" +
-            "sub " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
-            methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + predicate + ".y, " + depthProjection + ".z, " + temp + ".z\n" +
-            "mul " + temp + ".xy, " + depthProjection + ".xy, " + dataReg + ".x\n" +
-            "frc " + temp + ".xy, " + temp + ".xy\n" +
-            // some strange register juggling to prevent agal bugging out
-            "sub " + depthProjection + ", " + predicate + ".xyzw, " + predicate + ".zwxy\n" +
-            "mul " + depthProjection + ", " + depthProjection + ", " + temp + ".x\n" +
-            "add " + predicate + ".xy, " + predicate + ".xy, " + depthProjection + ".zw\n" +
-            "sub " + predicate + ".y, " + predicate + ".y, " + predicate + ".x\n" +
-            "mul " + predicate + ".y, " + predicate + ".y, " + temp + ".y\n" +
-            "add " + targetRegister + ".w, " + predicate + ".x, " + predicate + ".y\n";
-        registerCache.removeFragmentTempUsage(temp);
-        registerCache.removeFragmentTempUsage(predicate);
-        return code;
-    };
+    Object.defineProperty(ShadowFilteredMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return ShadowFilteredMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return ShadowFilteredMethod;
 }(ShadowMethodBase));
-
-/**
- * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
- */
-var ShadowHardMethod = (function (_super) {
-    __extends(ShadowHardMethod, _super);
-    /**
-     * Creates a new ShadowHardMethod object.
-     */
-    function ShadowHardMethod(castingLight) {
-        return _super.call(this, castingLight) || this;
-    }
-    /**
-     * @inheritDoc
-     */
-    ShadowHardMethod.prototype._pGetPlanarFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        var code = "";
-        var decReg = regCache.getFreeFragmentConstant();
-        regCache.getFreeFragmentConstant();
-        var depthCol = regCache.getFreeFragmentVectorTemp();
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        code += methodVO.textureGL._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._pDepthMapCoordReg) +
-            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
-            "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n"; // 0 if in shadow
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowHardMethod.prototype._pGetPointFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        var code = "";
-        var decReg = regCache.getFreeFragmentConstant();
-        var epsReg = regCache.getFreeFragmentConstant();
-        var posReg = regCache.getFreeFragmentConstant();
-        var depthSampleCol = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(depthSampleCol, 1);
-        var lightDir = regCache.getFreeFragmentVectorTemp();
-        regCache.addFragmentTempUsages(lightDir, 1);
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        code += "sub " + lightDir + ", " + sharedRegisters.globalPositionVarying + ", " + posReg + "\n" +
-            "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
-            "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" +
-            "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
-            methodVO.textureGL._iGetFragmentCode(depthSampleCol, regCache, sharedRegisters, lightDir) +
-            "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" +
-            "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" +
-            "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n"; // 0 if in shadow
-        regCache.removeFragmentTempUsage(lightDir);
-        regCache.removeFragmentTempUsage(depthSampleCol);
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowHardMethod.prototype._iGetCascadeFragmentCode = function (shader, methodVO, decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        return methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + targetRegister + ".w, " + depthProjection + ".z, " + temp + ".z\n"; // 0 if in shadow
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowHardMethod.prototype.iActivateForCascade = function (shader, methodVO, stage) {
-    };
-    return ShadowHardMethod;
-}(ShadowMethodBase));
+ShadowFilteredMethod.assetType = "[asset ShadowFilteredMethod]";
 
 // TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 /**
@@ -60771,81 +58520,20 @@ var ShadowNearMethod = (function (_super) {
      * @param fadeRatio The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
      */
     function ShadowNearMethod(baseMethod, fadeRatio) {
+        if (baseMethod === void 0) { baseMethod = null; }
         if (fadeRatio === void 0) { fadeRatio = .1; }
-        var _this = _super.call(this, baseMethod.castingLight) || this;
-        _this._onShaderInvalidatedDelegate = function (event) { return _this.onShaderInvalidated(event); };
-        _this._baseMethod = baseMethod;
+        var _this = _super.call(this, baseMethod) || this;
         _this._fadeRatio = fadeRatio;
-        _this._nearShadowMapper = _this._pCastingLight.shadowMapper;
-        if (!_this._nearShadowMapper)
+        if (!(baseMethod.castingLight.shadowMapper instanceof _awayjs_scene.NearDirectionalShadowMapper))
             throw new Error("ShadowNearMethod requires a light that has a NearDirectionalShadowMapper instance assigned to shadowMapper.");
-        _this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, _this._onShaderInvalidatedDelegate);
         return _this;
     }
-    Object.defineProperty(ShadowNearMethod.prototype, "baseMethod", {
-        /**
-         * The base shadow map method on which this method's shading is based.
-         */
-        get: function () {
-            return this._baseMethod;
-        },
-        set: function (value) {
-            if (this._baseMethod == value)
-                return;
-            this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this._baseMethod = value;
-            this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this.iInvalidateShaderProgram();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iInitConstants = function (shader, methodVO) {
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        this._baseMethod.iInitConstants(shader, methodVO);
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        fragmentData[index + 2] = 0;
-        fragmentData[index + 3] = 1;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iInitVO = function (shader, methodVO) {
-        this._baseMethod.iInitVO(shader, methodVO);
-        methodVO.needsProjection = true;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.dispose = function () {
-        this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-    };
-    Object.defineProperty(ShadowNearMethod.prototype, "alpha", {
+    Object.defineProperty(ShadowNearMethod.prototype, "assetType", {
         /**
          * @inheritDoc
          */
         get: function () {
-            return this._baseMethod.alpha;
-        },
-        set: function (value) {
-            this._baseMethod.alpha = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ShadowNearMethod.prototype, "epsilon", {
-        /**
-         * @inheritDoc
-         */
-        get: function () {
-            return this._baseMethod.epsilon;
-        },
-        set: function (value) {
-            this._baseMethod.epsilon = value;
+            return ShadowNearMethod.assetType;
         },
         enumerable: true,
         configurable: true
@@ -60863,80 +58551,9 @@ var ShadowNearMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iGetFragmentCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code = this._baseMethod.iGetFragmentCode(shader, methodVO, targetReg, registerCache, sharedRegisters);
-        var dataReg = registerCache.getFreeFragmentConstant();
-        var temp = registerCache.getFreeFragmentSingleTemp();
-        methodVO.secondaryFragmentConstantsIndex = dataReg.index * 4;
-        code += "abs " + temp + ", " + sharedRegisters.projectionFragment + ".w\n" +
-            "sub " + temp + ", " + temp + ", " + dataReg + ".x\n" +
-            "mul " + temp + ", " + temp + ", " + dataReg + ".y\n" +
-            "sat " + temp + ", " + temp + "\n" +
-            "sub " + temp + ", " + dataReg + ".w," + temp + "\n" +
-            "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n" +
-            "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        this._baseMethod.iActivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iDeactivate = function (shader, methodVO, stage) {
-        this._baseMethod.iDeactivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        // todo: move this to activate (needs camera)
-        var near = projection.near;
-        var d = projection.far - near;
-        var maxDistance = this._nearShadowMapper.coverageRatio;
-        var minDistance = maxDistance * (1 - this._fadeRatio);
-        maxDistance = near + maxDistance * d;
-        minDistance = near + minDistance * d;
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        fragmentData[index] = minDistance;
-        fragmentData[index + 1] = 1 / (maxDistance - minDistance);
-        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetVertexCode(shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iReset = function () {
-        this._baseMethod.iReset();
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowNearMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._baseMethod.iCleanCompilationData();
-    };
-    /**
-     * Called when the base method's shader code is invalidated.
-     */
-    ShadowNearMethod.prototype.onShaderInvalidated = function (event) {
-        this.iInvalidateShaderProgram();
-    };
     return ShadowNearMethod;
-}(ShadowMethodBase));
+}(ShadowCompositeMethod));
+ShadowNearMethod.assetType = "[asset ShadowNearMethod]";
 
 /**
  * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
@@ -60953,11 +58570,27 @@ var ShadowSoftMethod = (function (_super) {
         if (numSamples === void 0) { numSamples = 5; }
         if (range === void 0) { range = 1; }
         var _this = _super.call(this, castingLight) || this;
-        _this._range = 1;
         _this.numSamples = numSamples;
         _this.range = range;
         return _this;
     }
+    Object.defineProperty(ShadowSoftMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return ShadowSoftMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ShadowSoftMethod.prototype, "offsets", {
+        get: function () {
+            return this._offsets;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ShadowSoftMethod.prototype, "numSamples", {
         /**
          * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
@@ -60973,7 +58606,7 @@ var ShadowSoftMethod = (function (_super) {
             else if (this._numSamples > 32)
                 this._numSamples = 32;
             this._offsets = _awayjs_core.PoissonLookup.getDistribution(this._numSamples);
-            this.iInvalidateShaderProgram();
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -60991,119 +58624,9 @@ var ShadowSoftMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    ShadowSoftMethod.prototype.iInitConstants = function (shader, methodVO) {
-        _super.prototype.iInitConstants.call(this, shader, methodVO);
-        shader.fragmentConstantData[methodVO.fragmentConstantsIndex + 8] = 1 / this._numSamples;
-        shader.fragmentConstantData[methodVO.fragmentConstantsIndex + 9] = 0;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowSoftMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var texRange = .5 * this._range / this._pCastingLight.shadowMapper.depthMapSize;
-        var data = shader.fragmentConstantData;
-        var index = methodVO.fragmentConstantsIndex + 10;
-        var len = this._numSamples << 1;
-        for (var i = 0; i < len; ++i)
-            data[index + i] = this._offsets[i] * texRange;
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowSoftMethod.prototype._pGetPlanarFragmentCode = function (shader, methodVO, targetReg, regCache, sharedRegisters) {
-        // todo: move some things to super
-        var decReg = regCache.getFreeFragmentConstant();
-        regCache.getFreeFragmentConstant();
-        var dataReg = regCache.getFreeFragmentConstant();
-        methodVO.fragmentConstantsIndex = decReg.index * 4;
-        return this.getSampleCode(shader, methodVO, decReg, targetReg, regCache, sharedRegisters, dataReg);
-    };
-    /**
-     * Adds the code for another tap to the shader code.
-     * @param uv The uv register for the tap.
-     * @param texture The texture register containing the depth map.
-     * @param decode The register containing the depth map decoding data.
-     * @param target The target register to add the tap comparison result.
-     * @param regCache The register cache managing the registers.
-     * @return
-     */
-    ShadowSoftMethod.prototype.addSample = function (shader, methodVO, decodeRegister, targetRegister, registerCache, sharedRegisters, uvReg) {
-        var temp = registerCache.getFreeFragmentVectorTemp();
-        return methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
-            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-            "slt " + uvReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n" +
-            "add " + targetRegister + ".w, " + targetRegister + ".w, " + uvReg + ".w\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowSoftMethod.prototype.iActivateForCascade = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var texRange = this._range / this._pCastingLight.shadowMapper.depthMapSize;
-        var data = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        var len = this._numSamples << 1;
-        data[index] = 1 / this._numSamples;
-        data[index + 1] = 0;
-        index += 2;
-        for (var i = 0; i < len; ++i)
-            data[index + i] = this._offsets[i] * texRange;
-        if (len % 4 == 0) {
-            data[index + len] = 0;
-            data[index + len + 1] = 0;
-        }
-    };
-    /**
-     * @inheritDoc
-     */
-    ShadowSoftMethod.prototype._iGetCascadeFragmentCode = function (shader, methodVO, decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
-        this._pDepthMapCoordReg = depthProjection;
-        var dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = dataReg.index * 4;
-        return this.getSampleCode(shader, methodVO, decodeRegister, targetRegister, registerCache, sharedRegisters, dataReg);
-    };
-    /**
-     * Get the actual shader code for shadow mapping
-     * @param regCache The register cache managing the registers.
-     * @param depthTexture The texture register containing the depth map.
-     * @param decodeRegister The register containing the depth map decoding data.
-     * @param targetReg The target register to add the shadow coverage.
-     * @param dataReg The register containing additional data.
-     */
-    ShadowSoftMethod.prototype.getSampleCode = function (shader, methodVO, decodeRegister, targetRegister, registerCache, sharedRegisters, dataReg) {
-        var code;
-        var uvReg = registerCache.getFreeFragmentVectorTemp();
-        registerCache.addFragmentTempUsages(uvReg, 1);
-        var offsets = new Array(dataReg + ".zw");
-        var numRegs = this._numSamples >> 1;
-        for (var i = 0; i < numRegs; ++i) {
-            var reg = registerCache.getFreeFragmentConstant();
-            offsets.push(reg + ".xy");
-            offsets.push(reg + ".zw");
-        }
-        for (i = 0; i < this._numSamples; ++i) {
-            if (i == 0) {
-                var temp = registerCache.getFreeFragmentVectorTemp();
-                code = "add " + uvReg + ", " + this._pDepthMapCoordReg + ", " + dataReg + ".zwyy\n" +
-                    methodVO.textureGL._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
-                    "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
-                    "slt " + targetRegister + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
-            }
-            else {
-                code += "add " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + offsets[i] + "\n" +
-                    this.addSample(shader, methodVO, decodeRegister, targetRegister, registerCache, sharedRegisters, uvReg);
-            }
-        }
-        registerCache.removeFragmentTempUsage(uvReg);
-        code += "mul " + targetRegister + ".w, " + targetRegister + ".w, " + dataReg + ".x\n"; // average
-        return code;
-    };
     return ShadowSoftMethod;
 }(ShadowMethodBase));
+ShadowSoftMethod.assetType = "[asset ShadowSoftMethod]";
 
 /**
  * SpecularAnisotropicMethod provides a specular method resulting in anisotropic highlights. These are typical for
@@ -61118,62 +58641,19 @@ var SpecularAnisotropicMethod = (function (_super) {
     function SpecularAnisotropicMethod() {
         return _super.call(this) || this;
     }
-    /**
-     * @inheritDoc
-     */
-    SpecularAnisotropicMethod.prototype.iInitVO = function (shader, methodVO) {
-        methodVO.needsTangents = true;
-        methodVO.needsView = true;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularAnisotropicMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        var code = "";
-        var t;
-        if (this._pIsFirstLight)
-            t = this._pTotalLightColorReg;
-        else {
-            t = registerCache.getFreeFragmentVectorTemp();
-            registerCache.addFragmentTempUsages(t, 1);
-        }
-        // (sin(l,t) * sin(v,t) - cos(l,t)*cos(v,t)) ^ k
-        code += "nrm " + t + ".xyz, " + sharedRegisters.tangentVarying + ".xyz\n" +
-            "dp3 " + t + ".w, " + t + ".xyz, " + lightDirReg + ".xyz\n" +
-            "dp3 " + t + ".z, " + t + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n";
-        // (sin(t.w) * sin(t.z) - cos(t.w)*cos(t.z)) ^ k
-        code += "sin " + t + ".x, " + t + ".w\n" +
-            "sin " + t + ".y, " + t + ".z\n" +
-            // (t.x * t.y - cos(t.w)*cos(t.z)) ^ k
-            "mul " + t + ".x, " + t + ".x, " + t + ".y\n" +
-            // (t.x - cos(t.w)*cos(t.z)) ^ k
-            "cos " + t + ".z, " + t + ".z\n" +
-            "cos " + t + ".w, " + t + ".w\n" +
-            // (t.x - t.w*t.z) ^ k
-            "mul " + t + ".w, " + t + ".w, " + t + ".z\n" +
-            // (t.x - t.w) ^ k
-            "sub " + t + ".w, " + t + ".x, " + t + ".w\n";
-        if (this.texture) {
-            // apply gloss modulation from texture
-            code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" +
-                "pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
-        }
-        else
-            code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
-        // attenuate
-        code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
-        code += "mul " + t + ".xyz, " + lightColReg + ".xyz, " + t + ".w\n";
-        if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
-            registerCache.removeFragmentTempUsage(t);
-        }
-        this._pIsFirstLight = false;
-        return code;
-    };
+    Object.defineProperty(SpecularAnisotropicMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return SpecularAnisotropicMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return SpecularAnisotropicMethod;
 }(SpecularBasicMethod));
+SpecularAnisotropicMethod.assetType = "[asset SpecularAnisotropicMethod]";
 
 /**
  * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
@@ -61184,56 +58664,16 @@ var SpecularCompositeMethod = (function (_super) {
     /**
      * Creates a new <code>SpecularCompositeMethod</code> object.
      *
-     * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
+     * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
      * @param baseMethod The base specular method on which this method's shading is based.
      */
-    function SpecularCompositeMethod(modulateMethod, baseMethod) {
+    function SpecularCompositeMethod(baseMethod) {
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this) || this;
-        _this._onShaderInvalidatedDelegate = function (event) { return _this.onShaderInvalidated(event); };
-        _this._baseMethod = baseMethod || new SpecularBasicMethod();
-        _this._baseMethod._iModulateMethod = modulateMethod;
-        _this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, _this._onShaderInvalidatedDelegate);
-        return _this;
+        return _super.call(this, baseMethod) || this;
     }
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iInitVO = function (shader, methodVO) {
-        this._baseMethod.iInitVO(shader, methodVO);
+    SpecularCompositeMethod.prototype.createBaseMethod = function () {
+        return new SpecularBasicMethod();
     };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iInitConstants = function (shader, methodVO) {
-        this._baseMethod.iInitConstants(shader, methodVO);
-    };
-    SpecularCompositeMethod.prototype.iAddOwner = function (owner) {
-        _super.prototype.iAddOwner.call(this, owner);
-        this._baseMethod.iAddOwner(owner);
-    };
-    SpecularCompositeMethod.prototype.iRemoveOwner = function (owner) {
-        _super.prototype.iRemoveOwner.call(this, owner);
-        this._baseMethod.iRemoveOwner(owner);
-    };
-    Object.defineProperty(SpecularCompositeMethod.prototype, "baseMethod", {
-        /**
-         * The base specular method on which this method's shading is based.
-         */
-        get: function () {
-            return this._baseMethod;
-        },
-        set: function (value) {
-            if (this._baseMethod == value)
-                return;
-            this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this._baseMethod = value;
-            this._baseMethod.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-            this.iInvalidateShaderProgram();
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SpecularCompositeMethod.prototype, "gloss", {
         /**
          * @inheritDoc
@@ -61276,13 +58716,6 @@ var SpecularCompositeMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.dispose = function () {
-        this._baseMethod.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-        this._baseMethod.dispose();
-    };
     Object.defineProperty(SpecularCompositeMethod.prototype, "texture", {
         /**
          * @inheritDoc
@@ -61296,76 +58729,8 @@ var SpecularCompositeMethod = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        this._baseMethod.iActivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iSetRenderState = function (shader, methodVO, renderable, stage, projection) {
-        this._baseMethod.iSetRenderState(shader, methodVO, renderable, stage, projection);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iDeactivate = function (shader, methodVO, stage) {
-        this._baseMethod.iDeactivate(shader, methodVO, stage);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iGetVertexCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetVertexCode(shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetFragmentPreLightingCode(shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetFragmentCodePerLight(shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     * @return
-     */
-    SpecularCompositeMethod.prototype.iGetFragmentCodePerProbe = function (shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetFragmentCodePerProbe(shader, methodVO, cubeMapReg, weightRegister, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iGetFragmentPostLightingCode = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return this._baseMethod.iGetFragmentPostLightingCode(shader, methodVO, targetReg, registerCache, sharedRegisters);
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iReset = function () {
-        this._baseMethod.iReset();
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCompositeMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._baseMethod.iCleanCompilationData();
-    };
-    /**
-     * Called when the base method's shader code is invalidated.
-     */
-    SpecularCompositeMethod.prototype.onShaderInvalidated = function (event) {
-        this.iInvalidateShaderProgram();
-    };
     return SpecularCompositeMethod;
-}(SpecularBasicMethod));
+}(CompositeMethodBase));
 
 /**
  * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
@@ -61375,18 +58740,28 @@ var SpecularCelMethod = (function (_super) {
     /**
      * Creates a new SpecularCelMethod object.
      * @param specularCutOff The threshold at which the specular highlight should be shown.
+     * @param smoothness The smoothness of the highlight edge.
      * @param baseMethod An optional specular method on which the cartoon shading is based. If ommitted, SpecularBasicMethod is used.
      */
-    function SpecularCelMethod(specularCutOff, baseMethod) {
-        if (specularCutOff === void 0) { specularCutOff = .5; }
+    function SpecularCelMethod(specularCutOff, smoothness, baseMethod) {
+        if (specularCutOff === void 0) { specularCutOff = 0.5; }
+        if (smoothness === void 0) { smoothness = 0.1; }
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = _super.call(this, null, baseMethod) || this;
-        _this._smoothness = .1;
-        _this._specularCutOff = .1;
-        _this.baseMethod._iModulateMethod = function (shader, methodVO, targetReg, registerCache, sharedRegisters) { return _this.clampSpecular(shader, methodVO, targetReg, registerCache, sharedRegisters); };
+        var _this = _super.call(this, baseMethod) || this;
         _this._specularCutOff = specularCutOff;
+        _this._smoothness = smoothness;
         return _this;
     }
+    Object.defineProperty(SpecularCelMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return SpecularCelMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SpecularCelMethod.prototype, "smoothness", {
         /**
          * The smoothness of the highlight edge.
@@ -61395,7 +58770,10 @@ var SpecularCelMethod = (function (_super) {
             return this._smoothness;
         },
         set: function (value) {
+            if (this._smoothness == value)
+                return;
             this._smoothness = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
@@ -61408,53 +58786,17 @@ var SpecularCelMethod = (function (_super) {
             return this._specularCutOff;
         },
         set: function (value) {
+            if (this._specularCutOff == value)
+                return;
             this._specularCutOff = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    SpecularCelMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        var data = shader.fragmentConstantData;
-        data[index] = this._smoothness;
-        data[index + 1] = this._specularCutOff;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCelMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._dataReg = null;
-    };
-    /**
-     * Snaps the specular shading strength of the wrapped method to zero or one, depending on whether or not it exceeds the specularCutOff
-     * @param vo The MethodVO used to compile the current shader.
-     * @param t The register containing the specular strength in the "w" component, and either the half-vector or the reflection vector in "xyz".
-     * @param regCache The register cache used for the shader compilation.
-     * @param sharedRegisters The shared register data for this shader.
-     * @return The AGAL fragment code for the method.
-     */
-    SpecularCelMethod.prototype.clampSpecular = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        return "sub " + targetReg + ".y, " + targetReg + ".w, " + this._dataReg + ".y\n" +
-            "div " + targetReg + ".y, " + targetReg + ".y, " + this._dataReg + ".x\n" +
-            "sat " + targetReg + ".y, " + targetReg + ".y\n" +
-            "sge " + targetReg + ".w, " + targetReg + ".w, " + this._dataReg + ".y\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularCelMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        this._dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = this._dataReg.index * 4;
-        return _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-    };
     return SpecularCelMethod;
 }(SpecularCompositeMethod));
+SpecularCelMethod.assetType = "[asset SpecularCelMethod]";
 
 /**
  * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
@@ -61466,38 +58808,39 @@ var SpecularFresnelMethod = (function (_super) {
      * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
      * @param baseMethod The specular method to which the fresnel equation. Defaults to SpecularBasicMethod.
      */
-    function SpecularFresnelMethod(basedOnSurface, baseMethod) {
+    function SpecularFresnelMethod(basedOnSurface, fresnelPower, normalReflectance, baseMethod) {
         if (basedOnSurface === void 0) { basedOnSurface = true; }
+        if (fresnelPower === void 0) { fresnelPower = 5; }
+        if (normalReflectance === void 0) { normalReflectance = 0.028; }
         if (baseMethod === void 0) { baseMethod = null; }
-        var _this = 
-        // may want to offer diff speculars
-        _super.call(this, null, baseMethod) || this;
-        _this._fresnelPower = 5;
-        _this._normalReflectance = .028; // default value for skin
-        _this.baseMethod._iModulateMethod = function (shader, methodVO, targetReg, registerCache, sharedRegisters) { return _this.modulateSpecular(shader, methodVO, targetReg, registerCache, sharedRegisters); };
-        _this._incidentLight = !basedOnSurface;
+        var _this = _super.call(this, baseMethod) || this;
+        _this._basedOnSurface = basedOnSurface;
+        _this._fresnelPower = fresnelPower;
+        _this._normalReflectance = normalReflectance;
         return _this;
     }
-    /**
-     * @inheritDoc
-     */
-    SpecularFresnelMethod.prototype.iInitConstants = function (shader, methodVO) {
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        shader.fragmentConstantData[index + 2] = 1;
-        shader.fragmentConstantData[index + 3] = 0;
-    };
+    Object.defineProperty(SpecularFresnelMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return SpecularFresnelMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SpecularFresnelMethod.prototype, "basedOnSurface", {
         /**
          * Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
          */
         get: function () {
-            return !this._incidentLight;
+            return this._basedOnSurface;
         },
         set: function (value) {
-            if (this._incidentLight != value)
+            if (this._basedOnSurface == value)
                 return;
-            this._incidentLight = !value;
-            this.iInvalidateShaderProgram();
+            this._basedOnSurface = value;
+            this.invalidateShaderProgram();
         },
         enumerable: true,
         configurable: true
@@ -61510,18 +58853,14 @@ var SpecularFresnelMethod = (function (_super) {
             return this._fresnelPower;
         },
         set: function (value) {
+            if (this._fresnelPower == value)
+                return;
             this._fresnelPower = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    SpecularFresnelMethod.prototype.iCleanCompilationData = function () {
-        _super.prototype.iCleanCompilationData.call(this);
-        this._dataReg = null;
-    };
     Object.defineProperty(SpecularFresnelMethod.prototype, "normalReflectance", {
         /**
          * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
@@ -61530,51 +58869,17 @@ var SpecularFresnelMethod = (function (_super) {
             return this._normalReflectance;
         },
         set: function (value) {
+            if (this._normalReflectance == value)
+                return;
             this._normalReflectance = value;
+            this.invalidate();
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * @inheritDoc
-     */
-    SpecularFresnelMethod.prototype.iActivate = function (shader, methodVO, stage) {
-        _super.prototype.iActivate.call(this, shader, methodVO, stage);
-        var fragmentData = shader.fragmentConstantData;
-        var index = methodVO.secondaryFragmentConstantsIndex;
-        fragmentData[index] = this._normalReflectance;
-        fragmentData[index + 1] = this._fresnelPower;
-    };
-    /**
-     * @inheritDoc
-     */
-    SpecularFresnelMethod.prototype.iGetFragmentPreLightingCode = function (shader, methodVO, registerCache, sharedRegisters) {
-        this._dataReg = registerCache.getFreeFragmentConstant();
-        methodVO.secondaryFragmentConstantsIndex = this._dataReg.index * 4;
-        return _super.prototype.iGetFragmentPreLightingCode.call(this, shader, methodVO, registerCache, sharedRegisters);
-    };
-    /**
-     * Applies the fresnel effect to the specular strength.
-     *
-     * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-     * @param target The register containing the specular strength in the "w" component, and the half-vector/reflection vector in "xyz".
-     * @param regCache The register cache used for the shader compilation.
-     * @param sharedRegisters The shared registers created by the compiler.
-     * @return The AGAL fragment code for the method.
-     */
-    SpecularFresnelMethod.prototype.modulateSpecular = function (shader, methodVO, targetReg, registerCache, sharedRegisters) {
-        var code;
-        code = "dp3 " + targetReg + ".y, " + sharedRegisters.viewDirFragment + ".xyz, " + (this._incidentLight ? targetReg : sharedRegisters.normalFragment) + ".xyz\n" +
-            "sub " + targetReg + ".y, " + this._dataReg + ".z, " + targetReg + ".y\n" +
-            "pow " + targetReg + ".x, " + targetReg + ".y, " + this._dataReg + ".y\n" +
-            "sub " + targetReg + ".y, " + this._dataReg + ".z, " + targetReg + ".y\n" +
-            "mul " + targetReg + ".y, " + this._dataReg + ".x, " + targetReg + ".y\n" +
-            "add " + targetReg + ".y, " + targetReg + ".x, " + targetReg + ".y\n" +
-            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
-        return code;
-    };
     return SpecularFresnelMethod;
 }(SpecularCompositeMethod));
+SpecularFresnelMethod.assetType = "[asset SpecularFresnelMethod]";
 
 /**
  * SpecularPhongMethod provides a specular method that provides Phong highlights.
@@ -61587,14 +58892,3004 @@ var SpecularPhongMethod = (function (_super) {
     function SpecularPhongMethod() {
         return _super.call(this) || this;
     }
+    Object.defineProperty(SpecularPhongMethod.prototype, "assetType", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return SpecularPhongMethod.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return SpecularPhongMethod;
+}(SpecularBasicMethod));
+SpecularPhongMethod.assetType = "[asset SpecularPhongMethod]";
+
+/**
+ * ShaderChunkBase provides an abstract base method for shading methods, used by compiled passes to compile
+ * the final shading program.
+ */
+var ShaderChunkBase = (function (_super) {
+    __extends(ShaderChunkBase, _super);
+    /**
+     * Create a new ShaderChunkBase object.
+     */
+    function ShaderChunkBase(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this.chunkVO = new ChunkVO();
+        _this._stage = shader._stage;
+        return _this;
+    }
+    /**
+     *
+     */
+    ShaderChunkBase.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._stage = null;
+    };
+    ShaderChunkBase.prototype._isUsed = function () {
+        return true;
+    };
+    ShaderChunkBase.prototype._usesTangentSpace = function () {
+        return true;
+    };
+    /**
+     * Initializes the properties for a MethodVO, including register and texture indices.
+     *
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._initVO = function (chunkVO) {
+    };
+    /**
+     * Initializes unchanging shader constants using the data from a MethodVO.
+     *
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._initConstants = function () {
+    };
+    /**
+     * Resets the compilation state of the method.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._reset = function (chunkVO) {
+        this._invalid = true;
+        chunkVO.useChunk = false;
+        chunkVO.needsProjection = false;
+        chunkVO.needsView = false;
+        chunkVO.needsNormals = false;
+        chunkVO.needsTangents = false;
+        chunkVO.needsGlobalVertexPos = false;
+        chunkVO.needsGlobalFragmentPos = false;
+        this._cleanCompilationData();
+    };
+    /**
+     * Resets the method's state for compilation.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._cleanCompilationData = function () {
+    };
+    /**
+     * Get the vertex shader code for this method.
+     * @param vo The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._getVertexCode = function (registerCache, sharedRegisters) {
+        return "";
+    };
     /**
      * @inheritDoc
      */
-    SpecularPhongMethod.prototype.iGetFragmentCodePerLight = function (shader, methodVO, lightDirReg, lightColReg, registerCache, sharedRegisters) {
+    ShaderChunkBase.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        return "";
+    };
+    /**
+     * Sets the render state for this method.
+     *
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param stage The Stage object currently used for rendering.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._activate = function () {
+    };
+    /**
+     * Sets the render state for a single renderable.
+     *
+     * @param vo The MethodVO object linking this method with the pass currently being compiled.
+     * @param renderable The renderable currently being rendered.
+     * @param stage The Stage object currently used for rendering.
+     * @param camera The camera from which the scene is currently rendered.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._setRenderState = function (renderable, projection) {
+    };
+    /**
+     * Clears the render state for this method.
+     * @param vo The MethodVO object linking this method with the pass currently being compiled.
+     * @param stage The Stage object currently used for rendering.
+     *
+     * @internal
+     */
+    ShaderChunkBase.prototype._deactivate = function () {
+        this._invalid = false;
+    };
+    return ShaderChunkBase;
+}(_awayjs_core.AbstractionBase));
+
+/**
+ * AmbientBasicChunk provides the default shading method for uniform ambient lighting.
+ */
+var AmbientBasicChunk = (function (_super) {
+    __extends(AmbientBasicChunk, _super);
+    /**
+     * Creates a new AmbientBasicChunk object.
+     */
+    function AmbientBasicChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     *
+     */
+    AmbientBasicChunk.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._method = null;
+        this._shader = null;
+        if (this._texture) {
+            this._texture.onClear(new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.CLEAR, this._method.texture));
+            this._texture = null;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    AmbientBasicChunk.prototype._initVO = function (chunkVO) {
+        if (this._method.texture) {
+            this._texture = this._shader.getAbstraction(this._method.texture);
+            if (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE)
+                chunkVO.needsNormals = true;
+            else
+                this._shader.uvDependencies++;
+        }
+        else if (this._texture) {
+            this._texture = null;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    AmbientBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        if (this._texture) {
+            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
+            if (this._shader.alphaThreshold > 0) {
+                var cutOffReg = registerCache.getFreeFragmentConstant();
+                this._colorIndex = cutOffReg.index * 4;
+                code += "sub " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n" +
+                    "kil " + targetReg + ".w\n" +
+                    "add " + targetReg + ".w, " + targetReg + ".w, " + cutOffReg + ".x\n";
+            }
+        }
+        else {
+            var ambientInputRegister = registerCache.getFreeFragmentConstant();
+            this._colorIndex = ambientInputRegister.index * 4;
+            code += "mov " + targetReg + ", " + ambientInputRegister + "\n";
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    AmbientBasicChunk.prototype._activate = function () {
+        if (this._texture) {
+            this._texture.activate();
+            if (this._invalid && this._shader.alphaThreshold > 0)
+                this._shader.fragmentConstantData[this._colorIndex] = this._shader.alphaThreshold;
+        }
+        else if (this._invalid) {
+            var index = this._colorIndex;
+            var data = this._shader.fragmentConstantData;
+            var color = this._shader.numLights ? 0xFFFFFF : this._shader.pass.style.color;
+            data[index] = ((color >> 16) & 0xff) / 0xff * this._method.strength;
+            data[index + 1] = ((color >> 8) & 0xff) / 0xff * this._method.strength;
+            data[index + 2] = (color & 0xff) / 0xff * this._method.strength;
+            data[index + 3] = this._method.alpha;
+        }
+    };
+    AmbientBasicChunk.prototype._setRenderState = function (renderable, projection) {
+        if (this._texture)
+            this._texture._setRenderState(renderable);
+    };
+    return AmbientBasicChunk;
+}(ShaderChunkBase));
+
+/**
+ * AmbientDepthChunk provides a debug method to visualise depth maps
+ */
+var AmbientDepthChunk = (function (_super) {
+    __extends(AmbientDepthChunk, _super);
+    /**
+     * Creates a new AmbientBasicChunk object.
+     */
+    function AmbientDepthChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._shadowTexture = shader.getAbstraction(method.castingLight.shadowMapper.depthMap);
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    AmbientDepthChunk.prototype._initConstants = function () {
+        var data = this._shader.fragmentConstantData;
+        var index = this._decRegIndex;
+        data[index] = 1.0;
+        data[index + 1] = 1 / 255.0;
+        data[index + 2] = 1 / 65025.0;
+        data[index + 3] = 1 / 16581375.0;
+    };
+    AmbientDepthChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var decReg;
+        var decReg = registerCache.getFreeFragmentConstant();
+        this._decRegIndex = decReg.index * 4;
+        code += this._shadowTexture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+            "dp4 " + targetReg + ".x, " + targetReg + ", " + decReg + "\n" +
+            "mov " + targetReg + ".yz, " + targetReg + ".xx			\n" +
+            "mov " + targetReg + ".w, " + decReg + ".x\n" +
+            "sub " + targetReg + ".xyz, " + decReg + ".xxx, " + targetReg + ".xyz\n";
+        return code;
+    };
+    return AmbientDepthChunk;
+}(AmbientBasicChunk));
+
+/**
+ * DiffuseBasicChunk provides the default shading method for Lambert (dot3) diffuse lighting.
+ */
+var DiffuseBasicChunk = (function (_super) {
+    __extends(DiffuseBasicChunk, _super);
+    /**
+     * Creates a new DiffuseBasicChunk object.
+     */
+    function DiffuseBasicChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._ambientColorR = 1;
+        _this._ambientColorG = 1;
+        _this._ambientColorB = 1;
+        _this._color = 0xffffff;
+        _this._colorR = 1;
+        _this._colorG = 1;
+        _this._colorB = 1;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     *
+     */
+    DiffuseBasicChunk.prototype.onInvalidate = function (event) {
+        _super.prototype.onInvalidate.call(this, event);
+        this._updateProperties();
+    };
+    DiffuseBasicChunk.prototype._isUsed = function () {
+        return Boolean(this._shader.numLights);
+    };
+    DiffuseBasicChunk.prototype._initVO = function (chunkVO) {
+        if (this._method.texture) {
+            this._texture = this._shader.getAbstraction(this._method.texture);
+            if (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE)
+                chunkVO.needsNormals = true;
+            else
+                this._shader.uvDependencies++;
+        }
+        else if (this._texture) {
+            this._texture = null;
+        }
+        if (this._shader.numLights) {
+            this._shader.usesCommonData = true;
+            chunkVO.needsNormals = true;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._initConstants = function () {
+        this._updateProperties();
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._totalLightColorReg = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        var code = "";
+        this._pIsFirstLight = true;
+        registerCache.addFragmentTempUsages(this._totalLightColorReg = registerCache.getFreeFragmentVectorTemp(), 1);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        // write in temporary if not first light, so we can add to total diffuse colour
+        if (this._pIsFirstLight) {
+            t = this._totalLightColorReg;
+        }
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        code += "dp3 " + t + ".x, " + lightDirReg + ", " + sharedRegisters.normalFragment + "\n" +
+            "max " + t + ".w, " + t + ".x, " + sharedRegisters.commons + ".y\n";
+        if (this._shader.usesLightFallOff)
+            code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        code += "mul " + t + ", " + t + ".w, " + lightColReg + "\n";
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._getFragmentCodePerProbe = function (cubeMapReg, weightRegister, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        // write in temporary if not first light, so we can add to total diffuse colour
+        if (this._pIsFirstLight) {
+            t = this._totalLightColorReg;
+        }
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        code += "tex " + t + ", " + sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" +
+            "mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var diffuseColor;
+        var cutOffReg;
+        // incorporate input from ambient
+        if (sharedRegisters.shadowTarget)
+            code += this._applyShadow(registerCache, sharedRegisters);
+        registerCache.addFragmentTempUsages(diffuseColor = registerCache.getFreeFragmentVectorTemp(), 1);
+        var ambientColorRegister = registerCache.getFreeFragmentConstant();
+        this._ambientColorRegister = ambientColorRegister.index * 4;
+        if (this._texture) {
+            code += this._texture._iGetFragmentCode(diffuseColor, registerCache, sharedRegisters, (this._method.texture.mappingMode == _awayjs_graphics.MappingMode.CUBE) ? sharedRegisters.normalFragment : sharedRegisters.uvVarying);
+        }
+        else {
+            var diffuseColorRegister = registerCache.getFreeFragmentConstant();
+            this._diffuseColorRegister = diffuseColorRegister.index * 4;
+            code += "mov " + diffuseColor + ", " + diffuseColorRegister + "\n";
+        }
+        code += "sat " + this._totalLightColorReg + ", " + this._totalLightColorReg + "\n" +
+            "mul " + diffuseColor + ".xyz, " + diffuseColor + ", " + this._totalLightColorReg + "\n";
+        if (this._method.multiply) {
+            code += "add " + diffuseColor + ".xyz, " + diffuseColor + ", " + ambientColorRegister + "\n" +
+                "mul " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n";
+        }
+        else if (this._texture) {
+            code += "mul " + targetReg + ".xyz, " + targetReg + ", " + ambientColorRegister + "\n" +
+                "mul " + this._totalLightColorReg + ".xyz, " + targetReg + ", " + this._totalLightColorReg + "\n" +
+                "sub " + targetReg + ".xyz, " + targetReg + ", " + this._totalLightColorReg + "\n" +
+                "add " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n"; //add diffuse color and ambient color
+        }
+        else {
+            code += "mul " + this._totalLightColorReg + ".xyz, " + ambientColorRegister + ", " + this._totalLightColorReg + "\n" +
+                "sub " + this._totalLightColorReg + ".xyz, " + ambientColorRegister + ", " + this._totalLightColorReg + "\n" +
+                "add " + diffuseColor + ".xyz, " + diffuseColor + ", " + this._totalLightColorReg + "\n" +
+                "mul " + targetReg + ".xyz, " + targetReg + ", " + diffuseColor + "\n"; // multiply by target which could be texture or white
+        }
+        registerCache.removeFragmentTempUsage(this._totalLightColorReg);
+        registerCache.removeFragmentTempUsage(diffuseColor);
+        return code;
+    };
+    /**
+     * Generate the code that applies the calculated shadow to the diffuse light
+     * @param methodVO The MethodVO object for which the compilation is currently happening.
+     * @param regCache The register cache the compiler is currently using for the register management.
+     */
+    DiffuseBasicChunk.prototype._applyShadow = function (regCache, sharedRegisters) {
+        return "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + sharedRegisters.shadowTarget + ".w\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._activate = function () {
+        if (this._texture) {
+            this._texture.activate();
+        }
+        else {
+            var index = this._diffuseColorRegister;
+            var data = this._shader.fragmentConstantData;
+            if (this._method.multiply) {
+                data[index] = this._colorR * this._ambientColorR;
+                data[index + 1] = this._colorG * this._ambientColorG;
+                data[index + 2] = this._colorB * this._ambientColorB;
+            }
+            else {
+                data[index] = this._colorR;
+                data[index + 1] = this._colorG;
+                data[index + 2] = this._colorB;
+            }
+            data[index + 3] = 1;
+        }
+    };
+    /**
+     * Updates the diffuse and ambient color data used by the render state.
+     */
+    DiffuseBasicChunk.prototype._updateProperties = function () {
+        this._ambientColor = this._shader.pass.style.color;
+        this._ambientColorR = ((this._ambientColor >> 16) & 0xff) / 0xff;
+        this._ambientColorG = ((this._ambientColor >> 8) & 0xff) / 0xff;
+        this._ambientColorB = (this._ambientColor & 0xff) / 0xff;
+        this._color = this._method.color;
+        this._colorR = ((this._color >> 16) & 0xff) / 0xff;
+        this._colorG = ((this._color >> 8) & 0xff) / 0xff;
+        this._colorB = (this._color & 0xff) / 0xff;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseBasicChunk.prototype._setRenderState = function (renderable, projection) {
+        if (this._texture)
+            this._texture._setRenderState(renderable);
+        //TODO move this to Activate (ambientR/G/B currently calc'd in render state)
+        var index = this._ambientColorRegister;
+        var data = this._shader.fragmentConstantData;
+        data[index] = this._shader.ambientR * this._ambientColorR;
+        data[index + 1] = this._shader.ambientG * this._ambientColorG;
+        data[index + 2] = this._shader.ambientB * this._ambientColorB;
+        data[index + 3] = 1;
+    };
+    return DiffuseBasicChunk;
+}(ShaderChunkBase));
+
+/**
+ * DiffuseCelChunk provides a shading method to add diffuse cel (cartoon) shading.
+ */
+var DiffuseCelChunk = (function (_super) {
+    __extends(DiffuseCelChunk, _super);
+    /**
+     * Creates a new DiffuseCelChunk object.
+     * @param levels The amount of shadow gradations.
+     * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
+     */
+    function DiffuseCelChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        _this._baseChunk._modulateFunction = function (targetReg, registerCache, sharedRegisters) { return _this.clampDiffuse(targetReg, registerCache, sharedRegisters); };
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    DiffuseCelChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        var data = this._shader.fragmentConstantData;
+        var index = this._clampDataIndex;
+        data[index + 1] = 1;
+        data[index + 2] = 0;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseCelChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._clampDataRegister = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseCelChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        this._clampDataRegister = registerCache.getFreeFragmentConstant();
+        this._clampDataIndex = this._clampDataRegister.index * 4;
+        return _super.prototype._getFragmentPreLightingCode.call(this, registerCache, sharedRegisters);
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseCelChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        if (this._invalid) {
+            var data = this._shader.fragmentConstantData;
+            var index = this._clampDataIndex;
+            data[index] = this._method.levels;
+            data[index + 3] = this._method.smoothness;
+        }
+    };
+    /**
+     * Snaps the diffuse shading of the wrapped method to one of the levels.
+     * @param vo The MethodVO used to compile the current shader.
+     * @param t The register containing the diffuse strength in the "w" component.
+     * @param regCache The register cache used for the shader compilation.
+     * @param sharedRegisters The shared register data for this shader.
+     * @return The AGAL fragment code for the method.
+     */
+    DiffuseCelChunk.prototype.clampDiffuse = function (targetReg, registerCache, sharedRegisters) {
+        return "mul " + targetReg + ".w, " + targetReg + ".w, " + this._clampDataRegister + ".x\n" +
+            "frc " + targetReg + ".z, " + targetReg + ".w\n" +
+            "sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".z\n" +
+            "mov " + targetReg + ".x, " + this._clampDataRegister + ".x\n" +
+            "sub " + targetReg + ".x, " + targetReg + ".x, " + this._clampDataRegister + ".y\n" +
+            "rcp " + targetReg + ".x," + targetReg + ".x\n" +
+            "mul " + targetReg + ".w, " + targetReg + ".y, " + targetReg + ".x\n" +
+            // previous clamped strength
+            "sub " + targetReg + ".y, " + targetReg + ".w, " + targetReg + ".x\n" +
+            // fract/epsilon (so 0 - epsilon will become 0 - 1)
+            "div " + targetReg + ".z, " + targetReg + ".z, " + this._clampDataRegister + ".w\n" +
+            "sat " + targetReg + ".z, " + targetReg + ".z\n" +
+            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".z\n" +
+            // 1-z
+            "sub " + targetReg + ".z, " + this._clampDataRegister + ".y, " + targetReg + ".z\n" +
+            "mul " + targetReg + ".y, " + targetReg + ".y, " + targetReg + ".z\n" +
+            "add " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n" +
+            "sat " + targetReg + ".w, " + targetReg + ".w\n";
+    };
+    return DiffuseCelChunk;
+}(LightingCompositeChunk));
+
+/**
+ * DiffuseGradientChunk is an alternative to DiffuseBasicChunk in which the shading can be modulated with a gradient
+ * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
+ * approximation to subsurface scattering (for instance, the mid-range shading for skin can be tinted red to similate
+ * scattered light within the skin attributing to the final colour)
+ */
+var DiffuseGradientChunk = (function (_super) {
+    __extends(DiffuseGradientChunk, _super);
+    /**
+     * Creates a new DiffuseGradientChunk object.
+     * @param gradient A texture that contains the light colour based on the angle. This can be used to change
+     * the light colour due to subsurface scattering when the surface faces away from the light.
+     */
+    function DiffuseGradientChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    DiffuseGradientChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        this._gradient = this._shader.getAbstraction(this._method.gradient || _awayjs_graphics.DefaultMaterialManager.getDefaultTexture());
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseGradientChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        var code = _super.prototype._getFragmentPreLightingCode.call(this, registerCache, sharedRegisters);
+        this._pIsFirstLight = true;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseGradientChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        // write in temporary if not first light, so we can add to total diffuse colour
+        if (this._pIsFirstLight)
+            t = this._totalLightColorReg;
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        code += "dp3 " + t + ".w, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
+            "mul " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
+            "add " + t + ".w, " + t + ".w, " + sharedRegisters.commons + ".x\n" +
+            "mul " + t + ".xyz, " + t + ".w, " + lightDirReg + ".w\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        code += this._gradient._iGetFragmentCode(t, registerCache, sharedRegisters, t) +
+            //					"mul " + t + ".xyz, " + t + ".xyz, " + t + ".w\n" +
+            "mul " + t + ".xyz, " + t + ".xyz, " + lightColReg + ".xyz\n";
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ".xyz, " + t + ".xyz\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseGradientChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        this._gradient.activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseGradientChunk.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
+        this._gradient._setRenderState(renderable);
+    };
+    return DiffuseGradientChunk;
+}(DiffuseBasicChunk));
+
+/**
+ * DiffuseLightMapChunk provides a diffuse shading method that uses a light map to modulate the calculated diffuse
+ * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
+ * than only the diffuse lighting value.
+ */
+var DiffuseLightMapChunk = (function (_super) {
+    __extends(DiffuseLightMapChunk, _super);
+    /**
+     * Creates a new DiffuseLightMapChunk method.
+     */
+    function DiffuseLightMapChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    DiffuseLightMapChunk.prototype._initVO = function (chunkVO) {
+        this._lightMap = this._shader.getAbstraction(this._method.lightMap || _awayjs_graphics.DefaultMaterialManager.getDefaultTexture());
+        if (this._method.useSecondaryUV)
+            this._shader.secondaryUVDependencies++;
+        else
+            this._shader.uvDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseLightMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        code = this._lightMap._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
+        switch (this._method.blendMode) {
+            case DiffuseLightMapMethod.MULTIPLY:
+                code += "mul " + this._totalLightColorReg + ", " + this._totalLightColorReg + ", " + temp + "\n";
+                break;
+            case DiffuseLightMapMethod.ADD:
+                code += "add " + this._totalLightColorReg + ", " + this._totalLightColorReg + ", " + temp + "\n";
+                break;
+        }
+        code += _super.prototype._getFragmentCode.call(this, targetReg, registerCache, sharedRegisters);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseLightMapChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        this._lightMap.activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseLightMapChunk.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
+        this._lightMap._setRenderState(renderable);
+    };
+    return DiffuseLightMapChunk;
+}(LightingCompositeChunk));
+
+/**
+ * DiffuseWrapChunk is an alternative to DiffuseBasicChunk in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
+ * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
+ */
+var DiffuseWrapChunk = (function (_super) {
+    __extends(DiffuseWrapChunk, _super);
+    /**
+     * Creates a new DiffuseWrapChunk object.
+     */
+    function DiffuseWrapChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    DiffuseWrapChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._wrapDataRegister = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseWrapChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        var code = _super.prototype._getFragmentPreLightingCode.call(this, registerCache, sharedRegisters);
+        this._pIsFirstLight = true;
+        this._wrapDataRegister = registerCache.getFreeFragmentConstant();
+        this._wrapDataIndex = this._wrapDataRegister.index * 4;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseWrapChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        // write in temporary if not first light, so we can add to total diffuse colour
+        if (this._pIsFirstLight) {
+            t = this._totalLightColorReg;
+        }
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        code += "dp3 " + t + ".x, " + lightDirReg + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
+            "add " + t + ".y, " + t + ".x, " + this._wrapDataRegister + ".x\n" +
+            "mul " + t + ".y, " + t + ".y, " + this._wrapDataRegister + ".y\n" +
+            "sat " + t + ".w, " + t + ".y\n" +
+            "mul " + t + ".xz, " + t + ".w, " + lightDirReg + ".wz\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(lightDirReg, registerCache, sharedRegisters);
+        code += "mul " + t + ", " + t + ".x, " + lightColReg + "\n";
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ".xyz, " + t + ".xyz\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    DiffuseWrapChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        if (this._invalid) {
+            var index = this._wrapDataIndex;
+            var data = this._shader.fragmentConstantData;
+            data[index] = this._method.wrapFactor;
+            data[index + 1] = 1 / (this._method.wrapFactor + 1);
+        }
+    };
+    return DiffuseWrapChunk;
+}(DiffuseBasicChunk));
+
+/**
+ * EffectAlphaMaskChunk allows the use of an additional texture to specify the alpha value of the material. When used
+ * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
+ * etc).
+ */
+var EffectAlphaMaskChunk = (function (_super) {
+    __extends(EffectAlphaMaskChunk, _super);
+    /**
+     * Creates a new EffectAlphaMaskChunk object.
+     */
+    function EffectAlphaMaskChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectAlphaMaskChunk.prototype._initVO = function (chunkVO) {
+        this._alphaMask = this._shader.getAbstraction(this._method.texture || _awayjs_graphics.DefaultMaterialManager.getDefaultTexture());
+        if (this._method.useSecondaryUV)
+            this._shader.secondaryUVDependencies++;
+        else
+            this._shader.uvDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectAlphaMaskChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        return this._alphaMask._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying) +
+            "mul " + targetReg + ", " + targetReg + ", " + temp + ".x\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectAlphaMaskChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        this._alphaMask.activate();
+    };
+    EffectAlphaMaskChunk.prototype._setRenderState = function (renderable, projection) {
+        this._alphaMask._setRenderState(renderable);
+    };
+    return EffectAlphaMaskChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectColorMatrixChunk provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
+ */
+var EffectColorMatrixChunk = (function (_super) {
+    __extends(EffectColorMatrixChunk, _super);
+    /**
+     * Creates a new EffectColorMatrixChunk
+     *
+     * @param method
+     * @param shader
+     */
+    function EffectColorMatrixChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectColorMatrixChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var colorMultReg = registerCache.getFreeFragmentConstant();
+        registerCache.getFreeFragmentConstant();
+        registerCache.getFreeFragmentConstant();
+        registerCache.getFreeFragmentConstant();
+        var colorOffsetReg = registerCache.getFreeFragmentConstant();
+        this._colorMatrixIndex = colorMultReg.index * 4;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        code += "m44 " + temp + ", " + targetReg + ", " + colorMultReg + "\n" +
+            "add " + targetReg + ", " + temp + ", " + colorOffsetReg + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectColorMatrixChunk.prototype._activate = function () {
+        if (this._invalid) {
+            var matrix = this._method.matrix;
+            var index = this._colorMatrixIndex;
+            var data = this._shader.fragmentConstantData;
+            // r
+            data[index] = matrix[0];
+            data[index + 1] = matrix[1];
+            data[index + 2] = matrix[2];
+            data[index + 3] = matrix[3];
+            // g
+            data[index + 4] = matrix[5];
+            data[index + 5] = matrix[6];
+            data[index + 6] = matrix[7];
+            data[index + 7] = matrix[8];
+            // b
+            data[index + 8] = matrix[10];
+            data[index + 9] = matrix[11];
+            data[index + 10] = matrix[12];
+            data[index + 11] = matrix[13];
+            // a
+            data[index + 12] = matrix[15];
+            data[index + 13] = matrix[16];
+            data[index + 14] = matrix[17];
+            data[index + 15] = matrix[18];
+            // rgba offset
+            data[index + 16] = matrix[4];
+            data[index + 17] = matrix[9];
+            data[index + 18] = matrix[14];
+            data[index + 19] = matrix[19];
+        }
+    };
+    return EffectColorMatrixChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectColorTransformChumk provides a shading method that changes the colour of a material analogous to a
+ * ColorTransform object.
+ */
+var EffectColorTransformChunk = (function (_super) {
+    __extends(EffectColorTransformChunk, _super);
+    /**
+     * Creates a new EffectColorTransformChumk.
+     */
+    function EffectColorTransformChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectColorTransformChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var colorMultReg = registerCache.getFreeFragmentConstant();
+        var colorOffsReg = registerCache.getFreeFragmentConstant();
+        this._colorTransformIndex = colorMultReg.index * 4;
+        //TODO: AGAL <> GLSL
+        code += "mul " + targetReg + ", " + targetReg + ", " + colorMultReg + "\n" +
+            "add " + targetReg + ", " + targetReg + ", " + colorOffsReg + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectColorTransformChunk.prototype._activate = function () {
+        if (this._invalid) {
+            var index = this._colorTransformIndex;
+            var data = this._shader.fragmentConstantData;
+            var rawData = this._method.colorTransform._rawData;
+            data[index] = rawData[index];
+            data[index + 1] = rawData[index + 1];
+            data[index + 2] = rawData[index + 2];
+            data[index + 3] = rawData[index + 3];
+            data[index + 4] = rawData[index + 4];
+            data[index + 5] = rawData[index + 5];
+            data[index + 6] = rawData[index + 6];
+            data[index + 7] = rawData[index + 7];
+        }
+    };
+    return EffectColorTransformChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectEnvMapChunk provides a material method to perform reflection mapping using cube maps.
+ */
+var EffectEnvMapChunk = (function (_super) {
+    __extends(EffectEnvMapChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function EffectEnvMapChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectEnvMapChunk.prototype._initVO = function (chunkVO) {
+        chunkVO.needsNormals = true;
+        chunkVO.needsView = true;
+        this._envMap = this._shader.getAbstraction(this._method.envMap);
+        if (this._method.mask) {
+            this._maskMap = this._shader.getAbstraction(this._method.mask);
+            this._shader.uvDependencies++;
+        }
+        else if (this._maskMap) {
+            this._maskMap = null;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectEnvMapChunk.prototype.dispose = function () {
+        this._envMap = null;
+        this._maskMap = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectEnvMapChunk.prototype._activate = function () {
+        this._envMap.activate();
+        if (this._maskMap)
+            this._maskMap.activate();
+        if (this._invalid)
+            this._updateProperties();
+    };
+    EffectEnvMapChunk.prototype._setRenderState = function (renderable, projection) {
+        this._envMap._setRenderState(renderable);
+        if (this._maskMap)
+            this._maskMap._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectEnvMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var alphaRegister = registerCache.getFreeFragmentConstant();
+        var code = "";
+        this._fragmentIndex = alphaRegister.index * 4;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        // r = I - 2(I.N)*N
+        code += "dp3 " + temp + ".w, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
+            "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
+            "mul " + temp + ".xyz, " + sharedRegisters.normalFragment + ".xyz, " + temp + ".w\n" +
+            "sub " + temp + ".xyz, " + temp + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n" +
+            this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
+            "kil " + temp2 + ".w\n" +
+            "sub " + temp + ", " + temp + ", " + targetReg + "\n";
+        if (this._maskMap) {
+            code += this._maskMap._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+                "mul " + temp + ", " + temp2 + ", " + temp + "\n";
+        }
+        code += "mul " + temp + ", " + temp + ", " + alphaRegister + ".x\n" +
+            "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
+        registerCache.removeFragmentTempUsage(temp);
+        registerCache.removeFragmentTempUsage(temp2);
+        return code;
+    };
+    EffectEnvMapChunk.prototype._updateProperties = function () {
+        this._shader.fragmentConstantData[this._fragmentIndex] = this._method.alpha;
+    };
+    return EffectEnvMapChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectFogChunk provides a method to add distance-based fog to a material.
+ */
+var EffectFogChunk = (function (_super) {
+    __extends(EffectFogChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function EffectFogChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectFogChunk.prototype._initVO = function (chunkVO) {
+        chunkVO.needsProjection = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectFogChunk.prototype._activate = function () {
+        if (this._invalid) {
+            var data = this._shader.fragmentConstantData;
+            var index = this._fogColorIndex;
+            var color = this._method.fogColor;
+            data[index] = ((color >> 16) & 0xff) / 0xff;
+            data[index + 1] = ((color >> 8) & 0xff) / 0xff;
+            data[index + 2] = (color & 0xff) / 0xff;
+            data[index + 3] = 1;
+            data[index + 4] = this._method.minDistance;
+            data[index + 5] = 1 / (this._method.maxDistance - this._method.minDistance);
+            data[index + 6] = 0;
+            data[index + 7] = 0;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectFogChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var fogColor = registerCache.getFreeFragmentConstant();
+        var fogData = registerCache.getFreeFragmentConstant();
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        var code = "";
+        this._fogColorIndex = fogColor.index * 4;
+        code += "sub " + temp2 + ".w, " + sharedRegisters.projectionFragment + ".z, " + fogData + ".x\n" +
+            "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y\n" +
+            "sat " + temp2 + ".w, " + temp2 + ".w\n" +
+            "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" +
+            "mul " + temp + ", " + temp + ", " + temp2 + ".w\n" +
+            "add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
+        registerCache.removeFragmentTempUsage(temp);
+        return code;
+    };
+    return EffectFogChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectFresnelEnvMapChunk provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
+ * stronger as the viewing angle becomes more grazing.
+ */
+var EffectFresnelEnvMapChunk = (function (_super) {
+    __extends(EffectFresnelEnvMapChunk, _super);
+    function EffectFresnelEnvMapChunk() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectFresnelEnvMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var dataRegister = registerCache.getFreeFragmentConstant();
+        var code = "";
+        var viewDirReg = sharedRegisters.viewDirFragment;
+        var normalReg = sharedRegisters.normalFragment;
+        this._fragmentIndex = dataRegister.index * 4;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var temp2 = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp2, 1);
+        // r = V - 2(V.N)*N
+        code += "dp3 " + temp + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+            "add " + temp + ".w, " + temp + ".w, " + temp + ".w\n" +
+            "mul " + temp + ".xyz, " + normalReg + ".xyz, " + temp + ".w\n" +
+            "sub " + temp + ".xyz, " + temp + ".xyz, " + viewDirReg + ".xyz\n" +
+            this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            "sub " + temp2 + ".w, " + temp + ".w, fc0.x\n" +
+            "kil " + temp2 + ".w\n" +
+            "sub " + temp + ", " + temp + ", " + targetReg + "\n";
+        // calculate fresnel term
+        code += "dp3 " + viewDirReg + ".w, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+            "sub " + viewDirReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +
+            "pow " + viewDirReg + ".w, " + viewDirReg + ".w, " + dataRegister + ".z\n" +
+            "sub " + normalReg + ".w, " + dataRegister + ".w, " + viewDirReg + ".w\n" +
+            "mul " + normalReg + ".w, " + dataRegister + ".y, " + normalReg + ".w\n" +
+            "add " + viewDirReg + ".w, " + viewDirReg + ".w, " + normalReg + ".w\n" +
+            // total alpha
+            "mul " + viewDirReg + ".w, " + dataRegister + ".x, " + viewDirReg + ".w\n";
+        if (this._maskMap) {
+            code += this._maskMap._iGetFragmentCode(temp2, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+                "mul " + viewDirReg + ".w, " + temp2 + ".x, " + viewDirReg + ".w\n";
+        }
+        // blend
+        code += "mul " + temp + ", " + temp + ", " + viewDirReg + ".w\n" +
+            "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
+        registerCache.removeFragmentTempUsage(temp);
+        registerCache.removeFragmentTempUsage(temp2);
+        return code;
+    };
+    EffectFresnelEnvMapChunk.prototype._updateProperties = function () {
+        var index = this._fragmentIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = this._method.alpha;
+        data[index + 1] = this._method.normalReflectance;
+        data[index + 2] = this._method.fresnelPower;
+    };
+    return EffectFresnelEnvMapChunk;
+}(EffectEnvMapChunk));
+
+/**
+ * EffectLightMapChunk provides a method that allows applying a light map texture to the calculated pixel colour.
+ * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
+ * than the whole pixel colour.
+ */
+var EffectLightMapChunk = (function (_super) {
+    __extends(EffectLightMapChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function EffectLightMapChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectLightMapChunk.prototype._initVO = function (chunkVO) {
+        this._lightMap = this._shader.getAbstraction(this._method.lightMap);
+        if (this._method.useSecondaryUV)
+            this._shader.secondaryUVDependencies++;
+        else
+            this._shader.uvDependencies++;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectLightMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        code = this._lightMap._iGetFragmentCode(temp, registerCache, sharedRegisters, this._method.useSecondaryUV ? sharedRegisters.secondaryUVVarying : sharedRegisters.uvVarying);
+        switch (this._method.blendMode) {
+            case EffectLightMapMethod.MULTIPLY:
+                code += "mul " + targetReg + ", " + targetReg + ", " + temp + "\n";
+                break;
+            case EffectLightMapMethod.ADD:
+                code += "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
+                break;
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectLightMapChunk.prototype._activate = function () {
+        this._lightMap.activate();
+    };
+    EffectLightMapChunk.prototype._setRenderState = function (renderable, projection) {
+        this._lightMap._setRenderState(renderable);
+    };
+    return EffectLightMapChunk;
+}(ShaderChunkBase));
+
+/**
+ * ProjectiveTextureMethod is a material method used to project a texture unto the surface of an object.
+ * This can be used for various effects apart from acting like a normal projector, such as projecting fake shadows
+ * unto a surface, the impact of light coming through a stained glass window, ...
+ */
+var EffectProjectiveTextureChunk = (function (_super) {
+    __extends(EffectProjectiveTextureChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function EffectProjectiveTextureChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    EffectProjectiveTextureChunk.prototype._initVO = function (chunkVO) {
+        this._texture = this._shader.getAbstraction(this._method.projector.texture);
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._initConstants = function () {
+        var index = this._exposureIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = this._method.exposure;
+        data[index + 1] = 0.5;
+        data[index + 2] = 4;
+        data[index + 3] = -1;
+        this._projectionMatrix = new _awayjs_core.Matrix3D(new Float32Array(this._shader.vertexConstantData.buffer, this._projectionIndex * 4, 16));
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._uvVarying = null;
+        this._projectionMatrix = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._getVertexCode = function (registerCache, sharedRegisters) {
+        var code = "";
+        var projReg = registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        registerCache.getFreeVertexConstant();
+        this._projectionIndex = projReg.index * 4;
+        this._uvVarying = registerCache.getFreeVarying();
+        code += "m44 " + this._uvVarying + ", " + sharedRegisters.animatedPosition + ", " + projReg + "\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var col = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(col, 1);
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        //var toTexReg:ShaderRegisterElement = registerCache.getFreeFragmentConstant();
+        //methodVO.fragmentConstantsIndex = toTexReg.index*4;
+        var exposure = registerCache.getFreeFragmentConstant();
+        this._exposureIndex = exposure.index * 4;
+        // code += "mul " + col + ".xy, " + this._uvVarying + ".xy, " + toTexReg + ".xy	\n" +
+        // 	"add " + col + ".xy, " + col + ".xy, " + toTexReg + ".xx	\n";
+        code += this._texture._iGetFragmentCode(col, registerCache, sharedRegisters, this._uvVarying);
+        code += "mul " + col + ", " + col + ", " + exposure + ".xxx\n" +
+            "add " + col + ", " + col + ", " + exposure + ".xxx\n";
+        if (this._method.mode == EffectProjectiveTextureMethod.MULTIPLY)
+            code += "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
+        else if (this._method.mode == EffectProjectiveTextureMethod.ADD)
+            code += "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
+        else if (this._method.mode == EffectProjectiveTextureMethod.MIX) {
+            code += "sub " + col + ".xyz, " + col + ".xyz, " + targetReg + ".xyz				\n" +
+                "mul " + col + ".xyz, " + col + ".xyz, " + col + ".w						\n" +
+                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + col + ".xyz			\n";
+        }
+        else if (this._method.mode == EffectProjectiveTextureMethod.OVERLAY) {
+            code += "sge " + temp + ", " + targetReg + ", " + exposure + ".yyy\n"; // temp = (base >= 0.5)? 1 : 0
+            code += "sub " + targetReg + ", " + targetReg + ", " + temp + "\n"; // base = temp? (base - 1 : base)
+            code += "sub " + col + ", " + col + ", " + temp + "\n"; // blend = temp? (blend - 1 : blend)
+            code += "mul " + col + ", " + col + ", " + targetReg + "\n"; // blend = blend * base
+            code += "sub " + targetReg + ", " + exposure + ".yyy, " + temp + "\n"; // base = temp? -0.5 : 0.5
+            code += "mul " + targetReg + ", " + exposure + ".zzz, " + targetReg + "\n"; // base = temp? -2 : 2
+            code += "mul " + col + ", " + col + ", " + targetReg + "\n"; // blend = blend * ( -2 : 2)
+            code += "add " + targetReg + ", " + col + ", " + temp + "\n"; //blend = temp? (blend + 1 : blend)
+        }
+        else
+            throw new _awayjs_core.ErrorBase("Unknown mode \"" + this._method.mode + "\"");
+        registerCache.removeFragmentTempUsage(col);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._setRenderState = function (renderable, projection) {
+        var matrix3D = _awayjs_core.Matrix3D.CALCULATION_MATRIX;
+        matrix3D.copyFrom(this._method.projector.projection.viewMatrix3D);
+        matrix3D.prepend(renderable.renderSceneTransform);
+        this._projectionMatrix.copyFrom(matrix3D, true);
+        this._texture._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectProjectiveTextureChunk.prototype._activate = function () {
+        this._texture.activate();
+        if (this._invalid)
+            this._shader.fragmentConstantData[this._exposureIndex] = this._method.exposure;
+    };
+    return EffectProjectiveTextureChunk;
+}(ShaderChunkBase));
+
+/**
+ * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
+ */
+var EffectRefractionEnvMapChunk = (function (_super) {
+    __extends(EffectRefractionEnvMapChunk, _super);
+    function EffectRefractionEnvMapChunk() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectRefractionEnvMapChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        this._useDispersion = !(this._method.dispersionR == this._method.dispersionB && this._method.dispersionR == this._method.dispersionG);
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectRefractionEnvMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        // todo: data2.x could use common reg, so only 1 reg is used
+        var data = registerCache.getFreeFragmentConstant();
+        var data2 = registerCache.getFreeFragmentConstant();
+        var code = "";
+        var refractionDir;
+        var refractionColor;
+        var temp;
+        this._fragmentIndex = data.index * 4;
+        refractionDir = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(refractionDir, 1);
+        refractionColor = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(refractionColor, 1);
+        temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var viewDirReg = sharedRegisters.viewDirFragment;
+        var normalReg = sharedRegisters.normalFragment;
+        code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";
+        code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+            "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
+            "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+            "mul " + temp + ".w, " + data + ".x, " + temp + ".w\n" +
+            "mul " + temp + ".w, " + data + ".x, " + temp + ".w\n" +
+            "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+            "sqt " + temp + ".y, " + temp + ".w\n" +
+            "mul " + temp + ".x, " + data + ".x, " + temp + ".x\n" +
+            "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
+            "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
+            "mul " + refractionDir + ", " + data + ".x, " + viewDirReg + "\n" +
+            "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
+            "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
+            this._envMap._iGetFragmentCode(refractionColor, registerCache, sharedRegisters, refractionDir) +
+            "sub " + refractionColor + ".w, " + refractionColor + ".w, fc0.x	\n" +
+            "kil " + refractionColor + ".w\n";
+        if (this._useDispersion) {
+            // GREEN
+            code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+                "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
+                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+                "mul " + temp + ".w, " + data + ".y, " + temp + ".w\n" +
+                "mul " + temp + ".w, " + data + ".y, " + temp + ".w\n" +
+                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+                "sqt " + temp + ".y, " + temp + ".w\n" +
+                "mul " + temp + ".x, " + data + ".y, " + temp + ".x\n" +
+                "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
+                "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
+                "mul " + refractionDir + ", " + data + ".y, " + viewDirReg + "\n" +
+                "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
+                "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
+                this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
+                "mov " + refractionColor + ".y, " + temp + ".y\n";
+            // BLUE
+            code += "dp3 " + temp + ".x, " + viewDirReg + ".xyz, " + normalReg + ".xyz\n" +
+                "mul " + temp + ".w, " + temp + ".x, " + temp + ".x\n" +
+                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+                "mul " + temp + ".w, " + data + ".z, " + temp + ".w\n" +
+                "mul " + temp + ".w, " + data + ".z, " + temp + ".w\n" +
+                "sub " + temp + ".w, " + data2 + ".x, " + temp + ".w\n" +
+                "sqt " + temp + ".y, " + temp + ".w\n" +
+                "mul " + temp + ".x, " + data + ".z, " + temp + ".x\n" +
+                "add " + temp + ".x, " + temp + ".x, " + temp + ".y\n" +
+                "mul " + temp + ".xyz, " + temp + ".x, " + normalReg + ".xyz\n" +
+                "mul " + refractionDir + ", " + data + ".z, " + viewDirReg + "\n" +
+                "sub " + refractionDir + ".xyz, " + refractionDir + ".xyz, " + temp + ".xyz\n" +
+                "nrm " + refractionDir + ".xyz, " + refractionDir + ".xyz\n" +
+                this._envMap._iGetFragmentCode(temp, registerCache, sharedRegisters, refractionDir) +
+                "mov " + refractionColor + ".z, " + temp + ".z\n";
+        }
+        code += "sub " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + targetReg + ".xyz\n" +
+            "mul " + refractionColor + ".xyz, " + refractionColor + ".xyz, " + data + ".w\n" +
+            "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + refractionColor + ".xyz\n";
+        registerCache.removeFragmentTempUsage(temp);
+        registerCache.removeFragmentTempUsage(refractionDir);
+        registerCache.removeFragmentTempUsage(refractionColor);
+        // restore
+        code += "neg " + viewDirReg + ".xyz, " + viewDirReg + ".xyz\n";
+        return code;
+    };
+    EffectRefractionEnvMapChunk.prototype._updateProperties = function () {
+        var index = this._fragmentIndex;
+        var data = this._shader.fragmentConstantData;
+        var refractionIndex = this._method.refractionIndex;
+        data[index] = this._method.dispersionR + refractionIndex;
+        if (this._useDispersion) {
+            data[index + 1] = this._method.dispersionG + refractionIndex;
+            data[index + 2] = this._method.dispersionB + refractionIndex;
+        }
+        data[index + 3] = this._method.alpha;
+    };
+    return EffectRefractionEnvMapChunk;
+}(EffectEnvMapChunk));
+
+/**
+ * EffectRimLightChunk provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
+ */
+var EffectRimLightChunk = (function (_super) {
+    __extends(EffectRimLightChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function EffectRimLightChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    EffectRimLightChunk.prototype._initVO = function (chunkVO) {
+        chunkVO.needsNormals = true;
+        chunkVO.needsView = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectRimLightChunk.prototype._activate = function () {
+        if (this._invalid) {
+            var index = this._rimColorIndex;
+            var data = this._shader.fragmentConstantData;
+            var color = this._method.color;
+            data[index] = ((color >> 16) & 0xff) / 0xff;
+            data[index + 1] = ((color >> 8) & 0xff) / 0xff;
+            data[index + 2] = (color & 0xff) / 0xff;
+            data[index + 3] = 1;
+            data[index + 4] = this._method.strength;
+            data[index + 5] = this._method.power;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    EffectRimLightChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var dataRegister = registerCache.getFreeFragmentConstant();
+        var dataRegister2 = registerCache.getFreeFragmentConstant();
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        var code = "";
+        this._rimColorIndex = dataRegister.index * 4;
+        code += "dp3 " + temp + ".x, " + sharedRegisters.viewDirFragment + ".xyz, " + sharedRegisters.normalFragment + ".xyz\n" +
+            "sat " + temp + ".x, " + temp + ".x\n" +
+            "sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
+            "pow " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".y\n" +
+            "mul " + temp + ".x, " + temp + ".x, " + dataRegister2 + ".x\n" +
+            "sub " + temp + ".x, " + dataRegister + ".w, " + temp + ".x\n" +
+            "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".x\n" +
+            "sub " + temp + ".w, " + dataRegister + ".w, " + temp + ".x\n";
+        if (this._method.blendMode == EffectRimLightMethod.ADD) {
+            code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
+                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
+        }
+        else if (this._method.blendMode == EffectRimLightMethod.MULTIPLY) {
+            code += "mul " + temp + ".xyz, " + temp + ".w, " + dataRegister + ".xyz\n" +
+                "mul " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
+        }
+        else {
+            code += "sub " + temp + ".xyz, " + dataRegister + ".xyz, " + targetReg + ".xyz\n" +
+                "mul " + temp + ".xyz, " + temp + ".xyz, " + temp + ".w\n" +
+                "add " + targetReg + ".xyz, " + targetReg + ".xyz, " + temp + ".xyz\n";
+        }
+        return code;
+    };
+    return EffectRimLightChunk;
+}(ShaderChunkBase));
+
+/**
+ * NormalBasicChunk is the default method for standard tangent-space normal mapping.
+ */
+var NormalBasicChunk = (function (_super) {
+    __extends(NormalBasicChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function NormalBasicChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    NormalBasicChunk.prototype._isUsed = function () {
+        if (this._texture && this._shader.normalDependencies)
+            return true;
+        return false;
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalBasicChunk.prototype._initVO = function (chunkVO) {
+        if (this._method.texture) {
+            this._texture = this._shader.getAbstraction(this._method.texture);
+            this._shader.uvDependencies++;
+        }
+    };
+    /**
+     * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
+     */
+    NormalBasicChunk.prototype._outputsTangentNormals = function () {
+        return true;
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalBasicChunk.prototype._activate = function () {
+        if (this._texture)
+            this._texture.activate();
+    };
+    NormalBasicChunk.prototype._setRenderState = function (renderable, projection) {
+        if (this._texture)
+            this._texture._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        if (this._texture)
+            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+        code += "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx\n" +
+            "nrm " + targetReg + ".xyz, " + targetReg + "\n";
+        return code;
+    };
+    return NormalBasicChunk;
+}(ShaderChunkBase));
+
+/**
+ * NormalHeightMapChunk provides a normal map method that uses a height map to calculate the normals.
+ */
+var NormalHeightMapChunk = (function (_super) {
+    __extends(NormalHeightMapChunk, _super);
+    /**
+     * Creates a new NormalHeightMapChunk.
+     */
+    function NormalHeightMapChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    NormalHeightMapChunk.prototype._initConstants = function () {
+        var index = this._fragmentConstantsIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = 1 / this._method.texture.image2D.width;
+        data[index + 1] = 1 / this._method.texture.image2D.height;
+        data[index + 2] = 0;
+        data[index + 3] = 1;
+        data[index + 4] = this._method.worldXYRatio;
+        data[index + 5] = this._method.worldXZRatio;
+    };
+    Object.defineProperty(NormalHeightMapChunk.prototype, "tangentSpace", {
+        /**
+         * @inheritDoc
+         */
+        get: function () {
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    NormalHeightMapChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var dataReg = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg.index * 4;
+        code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, sharedRegisters.uvVarying) +
+            "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".xzzz\n" +
+            this._texture._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            "sub " + targetReg + ".x, " + targetReg + ".x, " + temp + ".x\n" +
+            "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg + ".zyzz\n" +
+            this._texture._iGetFragmentCode(temp, registerCache, sharedRegisters, temp) +
+            "sub " + targetReg + ".z, " + targetReg + ".z, " + temp + ".x\n" +
+            "mov " + targetReg + ".y, " + dataReg + ".w\n" +
+            "mul " + targetReg + ".xz, " + targetReg + ".xz, " + dataReg2 + ".xy\n" +
+            "nrm " + targetReg + ".xyz, " + targetReg + ".xyz\n";
+        registerCache.removeFragmentTempUsage(temp);
+        return code;
+    };
+    return NormalHeightMapChunk;
+}(NormalBasicChunk));
+
+/**
+ * NormalSimpleWaterChunk provides a basic normal map method to create water ripples by translating two wave normal maps.
+ */
+var NormalSimpleWaterChunk = (function (_super) {
+    __extends(NormalSimpleWaterChunk, _super);
+    /**
+     * Creates a new NormalHeightMapChunk.
+     */
+    function NormalSimpleWaterChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype._initConstants = function () {
+        var index = this._fragmentConstantsIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = .5;
+        data[index + 1] = 0;
+        data[index + 2] = 0;
+        data[index + 3] = 1;
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        if (this._method.secondaryNormalMap) {
+            this._secondaryNormalMap = this._shader.getAbstraction(this._method.secondaryNormalMap);
+            this._shader.uvDependencies++;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._secondaryNormalMap = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        if (this._invalid) {
+            var data = this._shader.fragmentConstantData;
+            var index = this._fragmentConstantsIndex;
+            data[index + 4] = this._method.water1OffsetX;
+            data[index + 5] = this._method.water1OffsetY;
+            data[index + 6] = this._method.water2OffsetX;
+            data[index + 7] = this._method.water2OffsetY;
+        }
+        if (this._secondaryNormalMap)
+            this._secondaryNormalMap.activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
+        if (this._secondaryNormalMap)
+            this._secondaryNormalMap._setRenderState(renderable);
+    };
+    /**
+     * @inheritDoc
+     */
+    NormalSimpleWaterChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var dataReg = registerCache.getFreeFragmentConstant();
+        var dataReg2 = registerCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = dataReg.index * 4;
+        code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n";
+        if (this._texture)
+            code += this._texture._iGetFragmentCode(targetReg, registerCache, sharedRegisters, temp);
+        code += "add " + temp + ", " + sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n";
+        if (this._secondaryNormalMap)
+            code += this._secondaryNormalMap._iGetFragmentCode(temp, registerCache, sharedRegisters, temp);
+        code += "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
+            "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
+            "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + sharedRegisters.commons + ".xxx	\n" +
+            "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
+        return code;
+    };
+    return NormalSimpleWaterChunk;
+}(NormalBasicChunk));
+
+/**
+ * ShadowCascadeChunk is a shadow map method to apply cascade shadow mapping on materials.
+ * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
+ *
+ * @see away.lights.CascadeShadowMapper
+ */
+var ShadowCascadeChunk = (function (_super) {
+    __extends(ShadowCascadeChunk, _super);
+    /**
+     * Creates a new ShadowCascadeChunk.
+     */
+    function ShadowCascadeChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        chunkVO.needsProjection = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        var fragmentData = this._shader.fragmentConstantData;
+        var vertexData = this._shader.vertexConstantData;
+        var index = this._fragmentConstantsIndex;
+        fragmentData[index] = 1.0;
+        fragmentData[index + 1] = 1 / 255.0;
+        fragmentData[index + 2] = 1 / 65025.0;
+        fragmentData[index + 3] = 1 / 16581375.0;
+        fragmentData[index + 6] = .5;
+        fragmentData[index + 7] = -.5;
+        index = this._vertexConstantsIndex;
+        vertexData[index] = .5;
+        vertexData[index + 1] = -.5;
+        vertexData[index + 2] = 0;
+        var numCascades = this._method.cascadeShadowMapper.numCascades;
+        this._projectionMatrices = new Array(numCascades);
+        for (var k = 0; k < numCascades; ++k)
+            this._projectionMatrices[k] = new _awayjs_core.Matrix3D(new Float32Array(this._shader.vertexConstantData.buffer, (this._vertexConstantsIndex + 4 + k * 16) * 4, 16));
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._cascadeProjections = null;
+        this._depthMapCoordVaryings = null;
+        this._projectionMatrices = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._getVertexCode = function (registerCache, sharedRegisters) {
+        var code = "";
+        var dataReg = registerCache.getFreeVertexConstant();
+        this._vertexConstantsIndex = dataReg.index * 4;
+        //Create the registers for the cascades' projection coordinates.
+        this._cascadeProjections = new Array(this._method.cascadeShadowMapper.numCascades);
+        this._depthMapCoordVaryings = new Array(this._method.cascadeShadowMapper.numCascades);
+        for (var i = 0; i < this._method.cascadeShadowMapper.numCascades; ++i) {
+            this._depthMapCoordVaryings[i] = registerCache.getFreeVarying();
+            this._cascadeProjections[i] = registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+            registerCache.getFreeVertexConstant();
+        }
+        var temp = registerCache.getFreeVertexVectorTemp();
+        for (var i = 0; i < this._method.cascadeShadowMapper.numCascades; ++i) {
+            code += "m44 " + temp + ", " + sharedRegisters.globalPositionVertex + ", " + this._cascadeProjections[i] + "\n" +
+                "add " + this._depthMapCoordVaryings[i] + ", " + temp + ", " + dataReg + ".zzwz\n";
+        }
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var numCascades = this._method.cascadeShadowMapper.numCascades;
+        var decReg = registerCache.getFreeFragmentConstant();
+        var dataReg = registerCache.getFreeFragmentConstant();
+        var planeDistanceReg = registerCache.getFreeFragmentConstant();
+        var planeDistances = Array(planeDistanceReg + ".x", planeDistanceReg + ".y", planeDistanceReg + ".z", planeDistanceReg + ".w");
+        var code;
+        this._fragmentConstantsIndex = decReg.index * 4;
+        var inQuad = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(inQuad, 1);
+        var uvCoord = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(uvCoord, 1);
+        // assume lowest partition is selected, will be overwritten later otherwise
+        code = "mov " + uvCoord + ", " + this._depthMapCoordVaryings[numCascades - 1] + "\n";
+        for (var i = numCascades - 2; i >= 0; --i) {
+            var uvProjection = this._depthMapCoordVaryings[i];
+            // calculate if in texturemap (result == 0 or 1, only 1 for a single partition)
+            code += "slt " + inQuad + ".z, " + sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n"; // z = x > minX, w = y > minY
+            var temp = registerCache.getFreeFragmentVectorTemp();
+            // linearly interpolate between old and new uv coords using predicate value == conditional toggle to new value if predicate == 1 (true)
+            code += "sub " + temp + ", " + uvProjection + ", " + uvCoord + "\n" +
+                "mul " + temp + ", " + temp + ", " + inQuad + ".z\n" +
+                "add " + uvCoord + ", " + uvCoord + ", " + temp + "\n";
+        }
+        registerCache.removeFragmentTempUsage(inQuad);
+        code += "div " + uvCoord + ", " + uvCoord + ", " + uvCoord + ".w\n" +
+            "mul " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zw\n" +
+            "add " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zz\n";
+        code += this._baseChunk._getCascadeFragmentCode(decReg, uvCoord, targetReg, registerCache, sharedRegisters) +
+            "add " + targetReg + ".w, " + targetReg + ".w, " + dataReg + ".y\n";
+        registerCache.removeFragmentTempUsage(uvCoord);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._activate = function () {
+        this._baseChunk.depthMap.activate();
+        this._shader.vertexConstantData[this._vertexConstantsIndex + 3] = -1 / (this._method.cascadeShadowMapper.depth * this._method.epsilon);
+        var numCascades = this._method.cascadeShadowMapper.numCascades;
+        for (var k = 0; k < numCascades; ++k)
+            this._projectionMatrices[k].copyFrom(this._method.cascadeShadowMapper.getDepthProjections(k), true);
+        var fragmentData = this._shader.fragmentConstantData;
+        var fragmentIndex = this._fragmentConstantsIndex;
+        fragmentData[fragmentIndex + 5] = 1 - this._method.alpha;
+        var nearPlaneDistances = this._method.cascadeShadowMapper._iNearPlaneDistances;
+        fragmentIndex += 8;
+        for (var i = 0; i < numCascades; ++i)
+            fragmentData[fragmentIndex + i] = nearPlaneDistances[i];
+        this._baseChunk._activateForCascade();
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowCascadeChunk.prototype._setRenderState = function (renderable, projection) {
+    };
+    return ShadowCascadeChunk;
+}(CompositeChunkBase));
+
+/**
+ * ShadowChunkBase provides an abstract method for simple (non-wrapping) shadow map methods.
+ */
+var ShadowChunkBase = (function (_super) {
+    __extends(ShadowChunkBase, _super);
+    /**
+     * Creates a new ShadowChunkBase object.
+     */
+    function ShadowChunkBase(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        _this._usePoint = (method.castingLight instanceof _awayjs_scene.PointLight);
+        return _this;
+    }
+    Object.defineProperty(ShadowChunkBase.prototype, "depthMap", {
+        get: function () {
+            return this._depthMap;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._initVO = function (chunkVO) {
+        chunkVO.needsView = true;
+        chunkVO.needsGlobalVertexPos = true;
+        chunkVO.needsGlobalFragmentPos = this._usePoint;
+        chunkVO.needsNormals = this._shader.numLights > 0;
+        this._depthMap = this._shader.getAbstraction(this._method.castingLight.shadowMapper.depthMap);
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._initConstants = function () {
+        var fragmentData = this._shader.fragmentConstantData;
+        var vertexData = this._shader.vertexConstantData;
+        var index = this._fragmentConstantsIndex;
+        fragmentData[index] = 1.0;
+        fragmentData[index + 1] = 1 / 255.0;
+        fragmentData[index + 2] = 1 / 65025.0;
+        fragmentData[index + 3] = 1 / 16581375.0;
+        fragmentData[index + 6] = 0;
+        fragmentData[index + 7] = 1;
+        if (this._usePoint) {
+            fragmentData[index + 8] = 0;
+            fragmentData[index + 9] = 0;
+            fragmentData[index + 10] = 0;
+            fragmentData[index + 11] = 1;
+        }
+        index = this._vertexConstantsIndex;
+        if (index != -1) {
+            vertexData[index] = .5;
+            vertexData[index + 1] = .5;
+            vertexData[index + 2] = 0.0;
+            vertexData[index + 3] = 1.0;
+        }
+        this._depthProjectionMatrix = new _awayjs_core.Matrix3D(new Float32Array(this._shader.vertexConstantData.buffer, (this._vertexConstantsIndex + 4) * 4, 16));
+    };
+    Object.defineProperty(ShadowChunkBase.prototype, "_iDepthMapCoordReg", {
+        /**
+         * Wrappers that override the vertex shader need to set this explicitly
+         */
+        get: function () {
+            return this._depthMapCoordReg;
+        },
+        set: function (value) {
+            this._depthMapCoordReg = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._depthMapCoordReg = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._getVertexCode = function (regCache, sharedRegisters) {
+        return this._usePoint ? this._getPointVertexCode(regCache, sharedRegisters) : this._getPlanarVertexCode(regCache, sharedRegisters);
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = this._usePoint ? this._getPointFragmentCode(targetReg, registerCache, sharedRegisters) : this._getPlanarFragmentCode(targetReg, registerCache, sharedRegisters);
+        code += "add " + targetReg + ".w, " + targetReg + ".w, fc" + (this._fragmentConstantsIndex / 4 + 1) + ".y\n" +
+            "sat " + targetReg + ".w, " + targetReg + ".w\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._setRenderState = function (renderable, projection) {
+        if (!this._usePoint)
+            this._depthProjectionMatrix.copyFrom(this._method.castingLight.shadowMapper.iDepthProjection, true);
+        this._depthMap._setRenderState(renderable);
+    };
+    /**
+     * Gets the fragment code for combining this method with a cascaded shadow map method.
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     * @param decodeRegister The register containing the data to decode the shadow map depth value.
+     * @param depthTexture The texture containing the shadow map.
+     * @param depthProjection The projection of the fragment relative to the light.
+     * @param targetRegister The register to contain the shadow coverage
+     * @return
+     */
+    ShadowChunkBase.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
+        throw new Error("This shadow method is incompatible with cascade shadows");
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowChunkBase.prototype._activate = function () {
+        var fragmentData = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        if (this._usePoint)
+            fragmentData[index + 4] = -Math.pow(1 / (this._method.castingLight.fallOff * this._method.epsilon), 2);
+        else
+            this._shader.vertexConstantData[this._vertexConstantsIndex + 3] = -1 / (this._method.castingLight.shadowMapper.depth * this._method.epsilon);
+        fragmentData[index + 5] = 1 - this._method.alpha;
+        if (this._usePoint) {
+            var pos = this._method.castingLight.scenePosition;
+            fragmentData[index + 8] = pos.x;
+            fragmentData[index + 9] = pos.y;
+            fragmentData[index + 10] = pos.z;
+            // used to decompress distance
+            var f = this._method.castingLight.fallOff;
+            fragmentData[index + 11] = 1 / (2 * f * f);
+        }
+        this._depthMap.activate();
+    };
+    /**
+     * Sets the method state for cascade shadow mapping.
+     */
+    ShadowChunkBase.prototype._activateForCascade = function () {
+        throw new Error("This shadow method is incompatible with cascade shadows");
+    };
+    /**
+     * Gets the vertex code for shadow mapping with a point light.
+     *
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     */
+    ShadowChunkBase.prototype._getPointVertexCode = function (regCache, sharedRegisters) {
+        this._vertexConstantsIndex = -1;
+        return "";
+    };
+    /**
+     * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
+     *
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     */
+    ShadowChunkBase.prototype._getPlanarVertexCode = function (regCache, sharedRegisters) {
+        var code = "";
+        var temp = regCache.getFreeVertexVectorTemp();
+        var dataReg = regCache.getFreeVertexConstant();
+        this._vertexConstantsIndex = dataReg.index * 4;
+        var depthMapProj = regCache.getFreeVertexConstant();
+        regCache.getFreeVertexConstant();
+        regCache.getFreeVertexConstant();
+        regCache.getFreeVertexConstant();
+        this._depthMapCoordReg = regCache.getFreeVarying();
+        // todo: can epsilon be applied here instead of fragment shader?
+        code += "m44 " + temp + ", " + sharedRegisters.globalPositionVertex + ", " + depthMapProj + "\n" +
+            "div " + temp + ", " + temp + ", " + temp + ".w\n" +
+            "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" +
+            "add " + this._depthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
+        //"sub " + this._depthMapCoordReg + ".z, " + this._depthMapCoordReg + ".z, " + this._depthMapCoordReg + ".w\n";
+        return code;
+    };
+    /**
+     * Gets the fragment code for shadow mapping with a planar shadow map.
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     * @param targetReg The register to contain the shadow coverage
+     * @return
+     */
+    ShadowChunkBase.prototype._getPlanarFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        throw new _awayjs_core.AbstractMethodError();
+    };
+    /**
+     * Gets the fragment code for shadow mapping with a point light.
+     * @param methodVO The MethodVO object linking this method with the pass currently being compiled.
+     * @param regCache The register cache used during the compilation.
+     * @param targetReg The register to contain the shadow coverage
+     * @return
+     */
+    ShadowChunkBase.prototype._getPointFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        throw new _awayjs_core.AbstractMethodError();
+    };
+    return ShadowChunkBase;
+}(ShaderChunkBase));
+
+/**
+ * ShadowDitheredChunk provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
+ */
+var ShadowDitheredChunk = (function (_super) {
+    __extends(ShadowDitheredChunk, _super);
+    /**
+     * Creates a new ShadowDitheredChunk.
+     */
+    function ShadowDitheredChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        chunkVO.needsProjection = true;
+        this._grainMap = this._shader.getAbstraction(ShadowDitheredMethod._grainTexture);
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        var data = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        data[index + 8] = 1 / this._method.numSamples;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        var data = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        data[index + 9] = (this._stage.width - 1) / 63;
+        data[index + 10] = (this._stage.height - 1) / 63;
+        data[index + 11] = 2 * this._method.range / this._method.castingLight.shadowMapper.depthMapSize;
+        this._grainMap.activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._setRenderState = function (renderable, projection) {
+        _super.prototype._setRenderState.call(this, renderable, projection);
+        this._grainMap._setRenderState(renderable);
+    };
+    /**
+     * Adds the code for another tap to the shader code.
+     * @param uvReg The uv register for the tap.
+     * @param depthMapRegister The texture register containing the depth map.
+     * @param decReg The register containing the depth map decoding data.
+     * @param targetReg The target register to add the tap comparison result.
+     * @param regCache The register cache managing the registers.
+     * @return
+     */
+    ShadowDitheredChunk.prototype._addSample = function (uvReg, decReg, targetReg, regCache, sharedRegisters) {
+        var temp = regCache.getFreeFragmentVectorTemp();
+        return this._depthMap._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
+            "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
+            "slt " + temp + ".z, " + this._depthMapCoordReg + ".z, " + temp + ".z\n" +
+            "add " + targetReg + ".w, " + targetReg + ".w, " + temp + ".z\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._activateForCascade = function () {
+        var data = this._shader.fragmentConstantData;
+        var index = this._cascadeFragmentConstantsIndex;
+        data[index] = 1 / this._method.numSamples;
+        data[index + 1] = (this._stage.width - 1) / 63;
+        data[index + 2] = (this._stage.height - 1) / 63;
+        data[index + 3] = 2 * this._method.range / this._method.castingLight.shadowMapper.depthMapSize;
+        this._grainMap.activate();
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
+        this._depthMapCoordReg = depthProjection;
+        var dataReg = registerCache.getFreeFragmentConstant();
+        this._cascadeFragmentConstantsIndex = dataReg.index * 4;
+        return this.getSampleCode(dataReg, decodeRegister, targetRegister, registerCache, sharedRegisters);
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowDitheredChunk.prototype._getPlanarFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        var decReg = regCache.getFreeFragmentConstant();
+        var dataReg = regCache.getFreeFragmentConstant();
+        var customDataReg = regCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = decReg.index * 4;
+        return this.getSampleCode(customDataReg, decReg, targetReg, regCache, sharedRegisters);
+    };
+    /**
+     * Get the actual shader code for shadow mapping
+     * @param regCache The register cache managing the registers.
+     * @param depthMapRegister The texture register containing the depth map.
+     * @param decReg The register containing the depth map decoding data.
+     * @param targetReg The target register to add the shadow coverage.
+     */
+    ShadowDitheredChunk.prototype.getSampleCode = function (customDataReg, decReg, targetReg, regCache, sharedRegisters) {
+        var code = "";
+        var numSamples = this._method.numSamples;
+        var uvReg = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(uvReg, 1);
+        var temp = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(temp, 1);
+        var projectionReg = sharedRegisters.projectionFragment;
+        code += "div " + uvReg + ", " + projectionReg + ", " + projectionReg + ".w\n" +
+            "mul " + uvReg + ".xy, " + uvReg + ".xy, " + customDataReg + ".yz\n";
+        var index = numSamples;
+        while (index > 0) {
+            if (index == numSamples) {
+                code += this._grainMap._iGetFragmentCode(uvReg, regCache, sharedRegisters, uvReg);
+            }
+            else {
+                code += "mov " + temp + ", " + uvReg + ".zwxy \n" +
+                    this._grainMap._iGetFragmentCode(uvReg, regCache, sharedRegisters, temp);
+            }
+            // keep grain in uvReg.zw
+            code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" +
+                "mul " + uvReg + ".zw, " + uvReg + ".zw, " + customDataReg + ".w\n"; // (tex unpack scale and tex scale in one)
+            if (index == numSamples) {
+                // first sample
+                code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._depthMapCoordReg + ".xy\n" +
+                    this._depthMap._iGetFragmentCode(temp, regCache, sharedRegisters, uvReg) +
+                    "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" +
+                    "slt " + targetReg + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
+            }
+            else {
+                code += this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            }
+            if (index > 4)
+                code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            if (index > 1)
+                code += "sub " + uvReg + ".xy, " + this._depthMapCoordReg + ".xy, " + uvReg + ".zw\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            if (index > 5)
+                code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".zw\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            if (index > 2) {
+                code += "neg " + uvReg + ".w, " + uvReg + ".w\n"; // will be rotated 90 degrees when being accessed as wz
+                code += "add " + uvReg + ".xy, " + uvReg + ".wz, " + this._depthMapCoordReg + ".xy\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            }
+            if (index > 6)
+                code += "add " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            if (index > 3)
+                code += "sub " + uvReg + ".xy, " + this._depthMapCoordReg + ".xy, " + uvReg + ".wz\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            if (index > 7)
+                code += "sub " + uvReg + ".xy, " + uvReg + ".xy, " + uvReg + ".wz\n" + this._addSample(uvReg, decReg, targetReg, regCache, sharedRegisters);
+            index -= 8;
+        }
+        regCache.removeFragmentTempUsage(temp);
+        regCache.removeFragmentTempUsage(uvReg);
+        code += "mul " + targetReg + ".w, " + targetReg + ".w, " + customDataReg + ".x\n"; // average
+        return code;
+    };
+    return ShadowDitheredChunk;
+}(ShadowChunkBase));
+
+/**
+ * ShadowFilteredChunk provides a softened shadowing technique by bilinearly interpolating shadow comparison
+ * results of neighbouring pixels.
+ */
+var ShadowFilteredChunk = (function (_super) {
+    __extends(ShadowFilteredChunk, _super);
+    /**
+     * Creates a new ShadowFilteredChunk.
+     */
+    function ShadowFilteredChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowFilteredChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        var fragmentData = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        fragmentData[index + 8] = .5;
+        var size = this._method.castingLight.shadowMapper.depthMapSize;
+        fragmentData[index + 9] = size;
+        fragmentData[index + 10] = 1 / size;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowFilteredChunk.prototype._getPlanarFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        var code = "";
+        var decReg = regCache.getFreeFragmentConstant();
+        regCache.getFreeFragmentConstant();
+        var customDataReg = regCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = decReg.index * 4;
+        var depthCol = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(depthCol, 1);
+        var uvReg = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(uvReg, 1);
+        code += "mov " + uvReg + ", " + this._depthMapCoordReg + "\n" +
+            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
+            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
+            "slt " + uvReg + ".z, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
+            "add " + uvReg + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".z\n" +
+            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
+            "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
+            "mul " + depthCol + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".y\n" +
+            "frc " + depthCol + ".x, " + depthCol + ".x\n" +
+            "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" +
+            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
+            "add " + targetReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" +
+            "mov " + uvReg + ".x, " + this._depthMapCoordReg + ".x\n" +
+            "add " + uvReg + ".y, " + this._depthMapCoordReg + ".y, " + customDataReg + ".z\n" +
+            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
+            "slt " + uvReg + ".z, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
+            "add " + uvReg + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".z\n" +
+            this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, uvReg) +
+            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
+            "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n" +
+            // recalculate fraction, since we ran out of registers :(
+            "mul " + depthCol + ".x, " + this._depthMapCoordReg + ".x, " + customDataReg + ".y\n" +
+            "frc " + depthCol + ".x, " + depthCol + ".x\n" + "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" +
+            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
+            "add " + uvReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" +
+            "mul " + depthCol + ".x, " + this._depthMapCoordReg + ".y, " + customDataReg + ".y\n" +
+            "frc " + depthCol + ".x, " + depthCol + ".x\n" +
+            "sub " + uvReg + ".w, " + uvReg + ".w, " + targetReg + ".w\n" +
+            "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" +
+            "add " + targetReg + ".w, " + targetReg + ".w, " + uvReg + ".w\n";
+        regCache.removeFragmentTempUsage(depthCol);
+        regCache.removeFragmentTempUsage(uvReg);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowFilteredChunk.prototype._activateForCascade = function () {
+        var size = this._method.castingLight.shadowMapper.depthMapSize;
+        var index = this._cascadeFragmentConstantsIndex;
+        var data = this._shader.fragmentConstantData;
+        data[index] = size;
+        data[index + 1] = 1 / size;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowFilteredChunk.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
+        var code;
+        var dataReg = registerCache.getFreeFragmentConstant();
+        this._cascadeFragmentConstantsIndex = dataReg.index * 4;
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(temp, 1);
+        var predicate = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(predicate, 1);
+        code = this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" +
+            "add " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
+            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + predicate + ".z, " + depthProjection + ".z, " + temp + ".z\n" +
+            "add " + depthProjection + ".y, " + depthProjection + ".y, " + dataReg + ".y\n" +
+            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + predicate + ".w, " + depthProjection + ".z, " + temp + ".z\n" +
+            "sub " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" +
+            this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + predicate + ".y, " + depthProjection + ".z, " + temp + ".z\n" +
+            "mul " + temp + ".xy, " + depthProjection + ".xy, " + dataReg + ".x\n" +
+            "frc " + temp + ".xy, " + temp + ".xy\n" +
+            // some strange register juggling to prevent agal bugging out
+            "sub " + depthProjection + ", " + predicate + ".xyzw, " + predicate + ".zwxy\n" +
+            "mul " + depthProjection + ", " + depthProjection + ", " + temp + ".x\n" +
+            "add " + predicate + ".xy, " + predicate + ".xy, " + depthProjection + ".zw\n" +
+            "sub " + predicate + ".y, " + predicate + ".y, " + predicate + ".x\n" +
+            "mul " + predicate + ".y, " + predicate + ".y, " + temp + ".y\n" +
+            "add " + targetRegister + ".w, " + predicate + ".x, " + predicate + ".y\n";
+        registerCache.removeFragmentTempUsage(temp);
+        registerCache.removeFragmentTempUsage(predicate);
+        return code;
+    };
+    return ShadowFilteredChunk;
+}(ShadowChunkBase));
+
+/**
+ * ShadowHardChunk provides the cheapest shadow map method by using a single tap without any filtering.
+ */
+var ShadowHardChunk = (function (_super) {
+    __extends(ShadowHardChunk, _super);
+    /**
+     * Creates a new ShadowHardChunk.
+     */
+    function ShadowHardChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowHardChunk.prototype._getPlanarFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        var code = "";
+        var decReg = regCache.getFreeFragmentConstant();
+        regCache.getFreeFragmentConstant();
+        var depthCol = regCache.getFreeFragmentVectorTemp();
+        this._fragmentConstantsIndex = decReg.index * 4;
+        code += this._depthMap._iGetFragmentCode(depthCol, regCache, sharedRegisters, this._depthMapCoordReg) +
+            "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" +
+            "slt " + targetReg + ".w, " + this._depthMapCoordReg + ".z, " + depthCol + ".z\n"; // 0 if in shadow
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowHardChunk.prototype._getPointFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        var code = "";
+        var decReg = regCache.getFreeFragmentConstant();
+        var epsReg = regCache.getFreeFragmentConstant();
+        var posReg = regCache.getFreeFragmentConstant();
+        var depthSampleCol = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(depthSampleCol, 1);
+        var lightDir = regCache.getFreeFragmentVectorTemp();
+        regCache.addFragmentTempUsages(lightDir, 1);
+        this._fragmentConstantsIndex = decReg.index * 4;
+        code += "sub " + lightDir + ", " + sharedRegisters.globalPositionVarying + ", " + posReg + "\n" +
+            "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
+            "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" +
+            "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" +
+            this._depthMap._iGetFragmentCode(depthSampleCol, regCache, sharedRegisters, lightDir) +
+            "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" +
+            "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" +
+            "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n"; // 0 if in shadow
+        regCache.removeFragmentTempUsage(lightDir);
+        regCache.removeFragmentTempUsage(depthSampleCol);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowHardChunk.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        return this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, depthProjection) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + targetRegister + ".w, " + depthProjection + ".z, " + temp + ".z\n"; // 0 if in shadow
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowHardChunk.prototype._activateForCascade = function () {
+    };
+    return ShadowHardChunk;
+}(ShadowChunkBase));
+
+// TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
+/**
+ * ShadowNearChunk provides a shadow map method that restricts the shadowed area near the camera to optimize
+ * shadow map usage. This method needs to be used in conjunction with a NearDirectionalShadowMapper.
+ *
+ * @see away.lights.NearDirectionalShadowMapper
+ */
+var ShadowNearChunk = (function (_super) {
+    __extends(ShadowNearChunk, _super);
+    /**
+     * Creates a new ShadowNearChunk.
+     */
+    function ShadowNearChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowNearChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        var fragmentData = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        fragmentData[index + 2] = 0;
+        fragmentData[index + 3] = 1;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowNearChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        chunkVO.needsProjection = true;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowNearChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = _super.prototype._getFragmentCode.call(this, targetReg, registerCache, sharedRegisters);
+        var dataReg = registerCache.getFreeFragmentConstant();
+        var temp = registerCache.getFreeFragmentSingleTemp();
+        this._fragmentConstantsIndex = dataReg.index * 4;
+        code += "abs " + temp + ", " + sharedRegisters.projectionFragment + ".w\n" +
+            "sub " + temp + ", " + temp + ", " + dataReg + ".x\n" +
+            "mul " + temp + ", " + temp + ", " + dataReg + ".y\n" +
+            "sat " + temp + ", " + temp + "\n" +
+            "sub " + temp + ", " + dataReg + ".w," + temp + "\n" +
+            "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n" +
+            "mul " + targetReg + ".w, " + targetReg + ".w, " + temp + "\n" +
+            "sub " + targetReg + ".w, " + dataReg + ".w," + targetReg + ".w\n";
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowNearChunk.prototype._setRenderState = function (renderable, projection) {
+        // todo: move this to activate (needs camera)
+        var near = projection.near;
+        var d = projection.far - near;
+        var maxDistance = this._method.castingLight.shadowMapper.coverageRatio;
+        var minDistance = maxDistance * (1 - this._fadeRatio);
+        maxDistance = near + maxDistance * d;
+        minDistance = near + minDistance * d;
+        var fragmentData = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex;
+        fragmentData[index] = minDistance;
+        fragmentData[index + 1] = 1 / (maxDistance - minDistance);
+        _super.prototype._setRenderState.call(this, renderable, projection);
+    };
+    return ShadowNearChunk;
+}(CompositeChunkBase));
+
+/**
+ * ShadowSoftChunk provides a soft shadowing technique by randomly distributing sample points.
+ */
+var ShadowSoftChunk = (function (_super) {
+    __extends(ShadowSoftChunk, _super);
+    /**
+     * Creates a new ShadowHardChunk.
+     */
+    function ShadowSoftChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    ShadowSoftChunk.prototype._initConstants = function () {
+        _super.prototype._initConstants.call(this);
+        this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = 1 / this._method.numSamples;
+        this._shader.fragmentConstantData[this._fragmentConstantsIndex + 9] = 0;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowSoftChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        var texRange = .5 * this._method.range / this._method.castingLight.shadowMapper.depthMapSize;
+        var data = this._shader.fragmentConstantData;
+        var index = this._fragmentConstantsIndex + 10;
+        var len = this._method.numSamples << 1;
+        for (var i = 0; i < len; ++i)
+            data[index + i] = this._method.offsets[i] * texRange;
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowSoftChunk.prototype._getPlanarFragmentCode = function (targetReg, regCache, sharedRegisters) {
+        // todo: move some things to super
+        var decReg = regCache.getFreeFragmentConstant();
+        regCache.getFreeFragmentConstant();
+        var dataReg = regCache.getFreeFragmentConstant();
+        this._fragmentConstantsIndex = decReg.index * 4;
+        return this.getSampleCode(decReg, targetReg, regCache, sharedRegisters, dataReg);
+    };
+    /**
+     * Adds the code for another tap to the shader code.
+     * @param uv The uv register for the tap.
+     * @param texture The texture register containing the depth map.
+     * @param decode The register containing the depth map decoding data.
+     * @param target The target register to add the tap comparison result.
+     * @param regCache The register cache managing the registers.
+     * @return
+     */
+    ShadowSoftChunk.prototype.addSample = function (decodeRegister, targetRegister, registerCache, sharedRegisters, uvReg) {
+        var temp = registerCache.getFreeFragmentVectorTemp();
+        return this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
+            "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+            "slt " + uvReg + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n" +
+            "add " + targetRegister + ".w, " + targetRegister + ".w, " + uvReg + ".w\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowSoftChunk.prototype._activateForCascade = function () {
+        _super.prototype._activate.call(this);
+        var texRange = this._method.range / this._method.castingLight.shadowMapper.depthMapSize;
+        var data = this._shader.fragmentConstantData;
+        var index = this._secondaryFragmentConstantsIndex;
+        var len = this._method.numSamples << 1;
+        data[index] = 1 / this._method.numSamples;
+        data[index + 1] = 0;
+        index += 2;
+        for (var i = 0; i < len; ++i)
+            data[index + i] = this._method.offsets[i] * texRange;
+        if (len % 4 == 0) {
+            data[index + len] = 0;
+            data[index + len + 1] = 0;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    ShadowSoftChunk.prototype._getCascadeFragmentCode = function (decodeRegister, depthProjection, targetRegister, registerCache, sharedRegisters) {
+        this._depthMapCoordReg = depthProjection;
+        var dataReg = registerCache.getFreeFragmentConstant();
+        this._secondaryFragmentConstantsIndex = dataReg.index * 4;
+        return this.getSampleCode(decodeRegister, targetRegister, registerCache, sharedRegisters, dataReg);
+    };
+    /**
+     * Get the actual shader code for shadow mapping
+     * @param regCache The register cache managing the registers.
+     * @param depthTexture The texture register containing the depth map.
+     * @param decodeRegister The register containing the depth map decoding data.
+     * @param targetReg The target register to add the shadow coverage.
+     * @param dataReg The register containing additional data.
+     */
+    ShadowSoftChunk.prototype.getSampleCode = function (decodeRegister, targetRegister, registerCache, sharedRegisters, dataReg) {
+        var code;
+        var uvReg = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(uvReg, 1);
+        var offsets = new Array(dataReg + ".zw");
+        var numRegs = this._method.numSamples >> 1;
+        for (var i = 0; i < numRegs; ++i) {
+            var reg = registerCache.getFreeFragmentConstant();
+            offsets.push(reg + ".xy");
+            offsets.push(reg + ".zw");
+        }
+        for (i = 0; i < this._method.numSamples; ++i) {
+            if (i == 0) {
+                var temp = registerCache.getFreeFragmentVectorTemp();
+                code = "add " + uvReg + ", " + this._depthMapCoordReg + ", " + dataReg + ".zwyy\n" +
+                    this._depthMap._iGetFragmentCode(temp, registerCache, sharedRegisters, uvReg) +
+                    "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" +
+                    "slt " + targetRegister + ".w, " + this._depthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
+            }
+            else {
+                code += "add " + uvReg + ".xy, " + this._depthMapCoordReg + ".xy, " + offsets[i] + "\n" +
+                    this.addSample(decodeRegister, targetRegister, registerCache, sharedRegisters, uvReg);
+            }
+        }
+        registerCache.removeFragmentTempUsage(uvReg);
+        code += "mul " + targetRegister + ".w, " + targetRegister + ".w, " + dataReg + ".x\n"; // average
+        return code;
+    };
+    return ShadowSoftChunk;
+}(ShadowChunkBase));
+
+/**
+ * SpecularBasicChunk provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
+ * version of Phong specularity).
+ */
+var SpecularBasicChunk = (function (_super) {
+    __extends(SpecularBasicChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function SpecularBasicChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        return _this;
+    }
+    SpecularBasicChunk.prototype._isUsed = function () {
+        if (!this._shader.numLights)
+            return false;
+        return true;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._initVO = function (chunkVO) {
+        chunkVO.needsNormals = this._shader.numLights > 0;
+        chunkVO.needsView = this._shader.numLights > 0;
+        if (this._method.texture) {
+            this._texture = this._shader.getAbstraction(this._method.texture);
+            this._shader.uvDependencies++;
+        }
+        else if (this._texture) {
+            this._texture = null;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._totalLightColorReg = null;
+        this._specularTexData = null;
+        this._specularDataRegister = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        var code = "";
+        this._pIsFirstLight = true;
+        this._specularDataRegister = registerCache.getFreeFragmentConstant();
+        this._specularDataIndex = this._specularDataRegister.index * 4;
+        if (this._texture) {
+            this._specularTexData = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(this._specularTexData, 1);
+            code += this._texture._iGetFragmentCode(this._specularTexData, registerCache, sharedRegisters, sharedRegisters.uvVarying);
+        }
+        this._totalLightColorReg = registerCache.getFreeFragmentVectorTemp();
+        registerCache.addFragmentTempUsages(this._totalLightColorReg, 1);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
         var code = "";
         var t;
         if (this._pIsFirstLight) {
-            t = this._pTotalLightColorReg;
+            t = this._totalLightColorReg;
+        }
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        var viewDirReg = sharedRegisters.viewDirFragment;
+        var normalReg = sharedRegisters.normalFragment;
+        // blinn-phong half vector model
+        code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" +
+            "nrm " + t + ".xyz, " + t + "\n" +
+            "dp3 " + t + ".w, " + normalReg + ", " + t + "\n" +
+            "sat " + t + ".w, " + t + ".w\n";
+        if (this._texture) {
+            // apply gloss modulation from texture
+            code += "mul " + this._specularTexData + ".w, " + this._specularTexData + ".y, " + this._specularDataRegister + ".w\n" +
+                "pow " + t + ".w, " + t + ".w, " + this._specularTexData + ".w\n";
+        }
+        else {
+            code += "pow " + t + ".w, " + t + ".w, " + this._specularDataRegister + ".w\n";
+        }
+        // attenuate
+        if (this._shader.usesLightFallOff)
+            code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        code += "mul " + t + ".xyz, " + lightColReg + ", " + t + ".w\n";
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._getFragmentCodePerProbe = function (cubeMapReg, weightRegister, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        // write in temporary if not first light, so we can add to total diffuse colour
+        if (this._pIsFirstLight) {
+            t = this._totalLightColorReg;
+        }
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        var normalReg = sharedRegisters.normalFragment;
+        var viewDirReg = sharedRegisters.viewDirFragment;
+        code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" +
+            "add " + t + ".w, " + t + ".w, " + t + ".w\n" +
+            "mul " + t + ", " + t + ".w, " + normalReg + "\n" +
+            "sub " + t + ", " + t + ", " + viewDirReg + "\n" +
+            "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + "linear" + ",miplinear>\n" +
+            "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._getFragmentCode = function (targetReg, registerCache, sharedRegisters) {
+        var code = "";
+        if (sharedRegisters.shadowTarget)
+            code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + sharedRegisters.shadowTarget + ".w\n";
+        if (this._texture) {
+            // apply strength modulation from texture
+            code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + this._specularTexData + ".x\n";
+            registerCache.removeFragmentTempUsage(this._specularTexData);
+        }
+        // apply material's specular reflection
+        code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + this._specularDataRegister + "\n" +
+            "add " + targetReg + ".xyz, " + targetReg + ", " + this._totalLightColorReg + "\n";
+        registerCache.removeFragmentTempUsage(this._totalLightColorReg);
+        return code;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularBasicChunk.prototype._activate = function () {
+        if (this._texture)
+            this._texture.activate();
+        if (this._invalid) {
+            var index = this._specularDataIndex;
+            var data = this._shader.fragmentConstantData;
+            data[index] = ((this._method.color >> 16) & 0xff) / 0xff * this._method.strength;
+            data[index + 1] = ((this._method.color >> 8) & 0xff) / 0xff * this._method.strength;
+            data[index + 2] = (this._method.color & 0xff) / 0xff * this._method.strength;
+            data[index + 3] = this._method.gloss;
+        }
+    };
+    SpecularBasicChunk.prototype.iSetRenderState = function (renderable, projection) {
+        if (this._texture)
+            this._texture._setRenderState(renderable);
+    };
+    return SpecularBasicChunk;
+}(ShaderChunkBase));
+
+/**
+ * SpecularAnisotropicChunk provides a specular method resulting in anisotropic highlights. These are typical for
+ * surfaces with microfacet details such as tiny grooves. In particular, this uses the Heidrich-Seidel distrubution.
+ * The tangent vectors are used as the surface groove directions.
+ */
+var SpecularAnisotropicChunk = (function (_super) {
+    __extends(SpecularAnisotropicChunk, _super);
+    /**
+     * Creates a new EffectEnvMapChunk.
+     */
+    function SpecularAnisotropicChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    SpecularAnisotropicChunk.prototype._initVO = function (chunkVO) {
+        _super.prototype._initVO.call(this, chunkVO);
+        chunkVO.needsTangents = this._shader.numLights > 0;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularAnisotropicChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        if (this._pIsFirstLight)
+            t = this._totalLightColorReg;
+        else {
+            t = registerCache.getFreeFragmentVectorTemp();
+            registerCache.addFragmentTempUsages(t, 1);
+        }
+        // (sin(l,t) * sin(v,t) - cos(l,t)*cos(v,t)) ^ k
+        code += "nrm " + t + ".xyz, " + sharedRegisters.tangentVarying + ".xyz\n" +
+            "dp3 " + t + ".w, " + t + ".xyz, " + lightDirReg + ".xyz\n" +
+            "dp3 " + t + ".z, " + t + ".xyz, " + sharedRegisters.viewDirFragment + ".xyz\n";
+        // (sin(t.w) * sin(t.z) - cos(t.w)*cos(t.z)) ^ k
+        code += "sin " + t + ".x, " + t + ".w\n" +
+            "sin " + t + ".y, " + t + ".z\n" +
+            // (t.x * t.y - cos(t.w)*cos(t.z)) ^ k
+            "mul " + t + ".x, " + t + ".x, " + t + ".y\n" +
+            // (t.x - cos(t.w)*cos(t.z)) ^ k
+            "cos " + t + ".z, " + t + ".z\n" +
+            "cos " + t + ".w, " + t + ".w\n" +
+            // (t.x - t.w*t.z) ^ k
+            "mul " + t + ".w, " + t + ".w, " + t + ".z\n" +
+            // (t.x - t.w) ^ k
+            "sub " + t + ".w, " + t + ".x, " + t + ".w\n";
+        if (this._texture) {
+            // apply gloss modulation from texture
+            code += "mul " + this._specularTexData + ".w, " + this._specularTexData + ".y, " + this._specularDataRegister + ".w\n" +
+                "pow " + t + ".w, " + t + ".w, " + this._specularTexData + ".w\n";
+        }
+        else
+            code += "pow " + t + ".w, " + t + ".w, " + this._specularDataRegister + ".w\n";
+        // attenuate
+        code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
+        code += "mul " + t + ".xyz, " + lightColReg + ".xyz, " + t + ".w\n";
+        if (!this._pIsFirstLight) {
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ".xyz, " + t + ".xyz\n";
+            registerCache.removeFragmentTempUsage(t);
+        }
+        this._pIsFirstLight = false;
+        return code;
+    };
+    return SpecularAnisotropicChunk;
+}(SpecularBasicChunk));
+
+/**
+ * SpecularCelChunk provides a shading method to add specular cel (cartoon) shading.
+ */
+var SpecularCelChunk = (function (_super) {
+    __extends(SpecularCelChunk, _super);
+    /**
+     * Creates a new DiffuseCelChunk object.
+     * @param levels The amount of shadow gradations.
+     * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
+     */
+    function SpecularCelChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        _this._baseChunk._modulateFunction = function (targetReg, registerCache, sharedRegisters) { return _this.clampSpecular(targetReg, registerCache, sharedRegisters); };
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    SpecularCelChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        if (this._invalid) {
+            var index = this._cutoffDataIndex;
+            var data = this._shader.fragmentConstantData;
+            data[index] = this._method.smoothness;
+            data[index + 1] = this._method.specularCutOff;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularCelChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._cutoffDataRegister = null;
+    };
+    /**
+     * Snaps the specular shading strength of the wrapped method to zero or one, depending on whether or not it exceeds the specularCutOff
+     * @param vo The MethodVO used to compile the current shader.
+     * @param t The register containing the specular strength in the "w" component, and either the half-vector or the reflection vector in "xyz".
+     * @param regCache The register cache used for the shader compilation.
+     * @param sharedRegisters The shared register data for this shader.
+     * @return The AGAL fragment code for the method.
+     */
+    SpecularCelChunk.prototype.clampSpecular = function (targetReg, registerCache, sharedRegisters) {
+        return "sub " + targetReg + ".y, " + targetReg + ".w, " + this._cutoffDataRegister + ".y\n" +
+            "div " + targetReg + ".y, " + targetReg + ".y, " + this._cutoffDataRegister + ".x\n" +
+            "sat " + targetReg + ".y, " + targetReg + ".y\n" +
+            "sge " + targetReg + ".w, " + targetReg + ".w, " + this._cutoffDataRegister + ".y\n" +
+            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularCelChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        this._cutoffDataRegister = registerCache.getFreeFragmentConstant();
+        this._cutoffDataIndex = this._cutoffDataRegister.index * 4;
+        return _super.prototype._getFragmentPreLightingCode.call(this, registerCache, sharedRegisters);
+    };
+    return SpecularCelChunk;
+}(LightingCompositeChunk));
+
+/**
+ * SpecularFresnelChunk provides a specular shading method that causes stronger highlights on grazing view angles.
+ */
+var SpecularFresnelChunk = (function (_super) {
+    __extends(SpecularFresnelChunk, _super);
+    /**
+     * Creates a new SpecularFresnelChunk object.
+     */
+    function SpecularFresnelChunk(method, shader) {
+        var _this = _super.call(this, method, shader) || this;
+        _this._method = method;
+        _this._shader = shader;
+        _this._baseChunk._modulateFunction = function (targetReg, registerCache, sharedRegisters) { return _this.modulateSpecular(targetReg, registerCache, sharedRegisters); };
+        return _this;
+    }
+    /**
+     * @inheritDoc
+     */
+    SpecularFresnelChunk.prototype._cleanCompilationData = function () {
+        _super.prototype._cleanCompilationData.call(this);
+        this._fresnelDataRegister = null;
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularFresnelChunk.prototype._activate = function () {
+        _super.prototype._activate.call(this);
+        if (this._invalid) {
+            var data = this._shader.fragmentConstantData;
+            var index = this._fresnelDataIndex;
+            data[index] = this._method.normalReflectance;
+            data[index + 1] = this._method.fresnelPower;
+            data[index + 2] = 1;
+            data[index + 3] = 0;
+        }
+    };
+    /**
+     * @inheritDoc
+     */
+    SpecularFresnelChunk.prototype._getFragmentPreLightingCode = function (registerCache, sharedRegisters) {
+        this._fresnelDataRegister = registerCache.getFreeFragmentConstant();
+        this._fresnelDataIndex = this._fresnelDataRegister.index * 4;
+        return _super.prototype._getFragmentPreLightingCode.call(this, registerCache, sharedRegisters);
+    };
+    /**
+     * Applies the fresnel effect to the specular strength.
+     *
+     * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+     * @param target The register containing the specular strength in the "w" component, and the half-vector/reflection vector in "xyz".
+     * @param regCache The register cache used for the shader compilation.
+     * @param sharedRegisters The shared registers created by the compiler.
+     * @return The AGAL fragment code for the method.
+     */
+    SpecularFresnelChunk.prototype.modulateSpecular = function (targetReg, registerCache, sharedRegisters) {
+        var code;
+        code = "dp3 " + targetReg + ".y, " + sharedRegisters.viewDirFragment + ".xyz, " + (this._method.basedOnSurface ? sharedRegisters.normalFragment : targetReg) + ".xyz\n" +
+            "sub " + targetReg + ".y, " + this._fresnelDataRegister + ".z, " + targetReg + ".y\n" +
+            "pow " + targetReg + ".x, " + targetReg + ".y, " + this._fresnelDataRegister + ".y\n" +
+            "sub " + targetReg + ".y, " + this._fresnelDataRegister + ".z, " + targetReg + ".y\n" +
+            "mul " + targetReg + ".y, " + this._fresnelDataRegister + ".x, " + targetReg + ".y\n" +
+            "add " + targetReg + ".y, " + targetReg + ".x, " + targetReg + ".y\n" +
+            "mul " + targetReg + ".w, " + targetReg + ".w, " + targetReg + ".y\n";
+        return code;
+    };
+    return SpecularFresnelChunk;
+}(LightingCompositeChunk));
+
+/**
+ * SpecularPhongChunk provides a specular method that provides Phong highlights.
+ */
+var SpecularPhongChunk = (function (_super) {
+    __extends(SpecularPhongChunk, _super);
+    /**
+     * Creates a new SpecularPhongChunk object.
+     */
+    function SpecularPhongChunk(method, shader) {
+        return _super.call(this, method, shader) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    SpecularPhongChunk.prototype._getFragmentCodePerLight = function (lightDirReg, lightColReg, registerCache, sharedRegisters) {
+        var code = "";
+        var t;
+        if (this._pIsFirstLight) {
+            t = this._totalLightColorReg;
         }
         else {
             t = registerCache.getFreeFragmentVectorTemp();
@@ -61615,28 +61910,28 @@ var SpecularPhongMethod = (function (_super) {
             //find the dot product between R and V
             "dp3 " + t + ".w, " + t + ", " + viewDirReg + "\n" +
             "sat " + t + ".w, " + t + ".w\n";
-        if (this.texture) {
+        if (this._texture) {
             // apply gloss modulation from texture
-            code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" +
-                "pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
+            code += "mul " + this._specularTexData + ".w, " + this._specularTexData + ".y, " + this._specularDataRegister + ".w\n" +
+                "pow " + t + ".w, " + t + ".w, " + this._specularTexData + ".w\n";
         }
         else
-            code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
+            code += "pow " + t + ".w, " + t + ".w, " + this._specularDataRegister + ".w\n";
         // attenuate
-        if (shader.usesLightFallOff)
+        if (this._shader.usesLightFallOff)
             code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
-        if (this._iModulateMethod != null)
-            code += this._iModulateMethod(shader, methodVO, t, registerCache, sharedRegisters);
+        if (this._modulateFunction != null)
+            code += this._modulateFunction(t, registerCache, sharedRegisters);
         code += "mul " + t + ".xyz, " + lightColReg + ".xyz, " + t + ".w\n";
         if (!this._pIsFirstLight) {
-            code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ".xyz, " + t + ".xyz\n";
+            code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ".xyz, " + t + ".xyz\n";
             registerCache.removeFragmentTempUsage(t);
         }
         this._pIsFirstLight = false;
         return code;
     };
-    return SpecularPhongMethod;
-}(SpecularBasicMethod));
+    return SpecularPhongChunk;
+}(SpecularBasicChunk));
 
 var MethodPassMode = (function () {
     function MethodPassMode() {
@@ -61656,6 +61951,37 @@ MethodPassMode.LIGHTING = 0x02;
  */
 MethodPassMode.SUPER_SHADER = 0x03;
 
+_awayjs_stage.ShaderBase.registerAbstraction(AmbientBasicChunk, AmbientBasicMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(AmbientDepthChunk, AmbientDepthMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(DiffuseBasicChunk, DiffuseBasicMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(DiffuseCelChunk, DiffuseCelMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(DiffuseGradientChunk, DiffuseGradientMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(DiffuseLightMapChunk, DiffuseLightMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(DiffuseWrapChunk, DiffuseWrapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectAlphaMaskChunk, EffectAlphaMaskMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectColorMatrixChunk, EffectColorMatrixMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectColorTransformChunk, EffectColorTransformMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectEnvMapChunk, EffectEnvMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectFogChunk, EffectFogMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectFresnelEnvMapChunk, EffectFresnelEnvMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectLightMapChunk, EffectLightMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectProjectiveTextureChunk, EffectProjectiveTextureMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectRefractionEnvMapChunk, EffectRefractionEnvMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(EffectRimLightChunk, EffectRimLightMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(NormalBasicChunk, NormalBasicMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(NormalHeightMapChunk, NormalHeightMapMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(NormalSimpleWaterChunk, NormalSimpleWaterMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowCascadeChunk, ShadowCascadeMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowDitheredChunk, ShadowDitheredMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowFilteredChunk, ShadowFilteredMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowHardChunk, ShadowHardMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowNearChunk, ShadowNearMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(ShadowSoftChunk, ShadowSoftMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(SpecularAnisotropicChunk, SpecularAnisotropicMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(SpecularBasicChunk, SpecularBasicMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(SpecularCelChunk, SpecularCelMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(SpecularFresnelChunk, SpecularFresnelMethod);
+_awayjs_stage.ShaderBase.registerAbstraction(SpecularPhongChunk, SpecularPhongMethod);
 /**
  * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
  * using material methods to define their appearance.
@@ -61667,12 +61993,13 @@ var MethodPass = (function (_super) {
      *
      * @param material The material to which this pass belongs.
      */
-    function MethodPass(mode, render, material, materialPool) {
-        var _this = _super.call(this, render, material, materialPool) || this;
+    function MethodPass(mode, material, materialPool) {
+        var _this = _super.call(this, material, materialPool) || this;
         _this._maxLights = 3;
         _this._mode = 0x03;
         _this._includeCasters = true;
-        _this._iMethodVOs = new Array();
+        _this._chunks = new Array();
+        _this._methods = new Array();
         _this._numEffectDependencies = 0;
         _this.numDirectionalLights = 0;
         _this.numPointLights = 0;
@@ -61681,7 +62008,6 @@ var MethodPass = (function (_super) {
         _this.directionalLightsOffset = 0;
         _this.lightProbesOffset = 0;
         _this._mode = mode;
-        _this._methodMaterial = material;
         _this._onLightsChangeDelegate = function (event) { return _this.onLightsChange(event); };
         _this._onMethodInvalidatedDelegate = function (event) { return _this.onMethodInvalidated(event); };
         _this.lightPicker = material.lightPicker;
@@ -61748,7 +62074,7 @@ var MethodPass = (function (_super) {
          * compatibility for constrained mode.
          */
         get: function () {
-            return this._methodMaterial.enableLightFallOff;
+            return this._material.enableLightFallOff;
         },
         enumerable: true,
         configurable: true
@@ -61761,7 +62087,7 @@ var MethodPass = (function (_super) {
          * @see away3d.materials.LightSources
          */
         get: function () {
-            return this._methodMaterial.diffuseLightSources;
+            return this._material.diffuseLightSources;
         },
         enumerable: true,
         configurable: true
@@ -61774,7 +62100,7 @@ var MethodPass = (function (_super) {
          * @see away3d.materials.LightSources
          */
         get: function () {
-            return this._methodMaterial.specularLightSources;
+            return this._material.specularLightSources;
         },
         enumerable: true,
         configurable: true
@@ -61801,9 +62127,9 @@ var MethodPass = (function (_super) {
     MethodPass.prototype._iInitConstantData = function (shader) {
         _super.prototype._iInitConstantData.call(this, shader);
         //Updates method constants if they have changed.
-        var len = this._iMethodVOs.length;
+        var len = this._chunks.length;
         for (var i = 0; i < len; ++i)
-            this._iMethodVOs[i].method.iInitConstants(shader, this._iMethodVOs[i]);
+            this._chunks[i]._initConstants();
     };
     Object.defineProperty(MethodPass.prototype, "colorTransform", {
         /**
@@ -61831,45 +62157,55 @@ var MethodPass = (function (_super) {
          * The EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.
          */
         get: function () {
-            return this._iColorTransformMethodVO ? this._iColorTransformMethodVO.method : null;
+            return this._colorTransformMethod;
         },
         set: function (value) {
-            if (this._iColorTransformMethodVO && this._iColorTransformMethodVO.method == value)
+            if (this._colorTransformMethod == value)
                 return;
-            if (this._iColorTransformMethodVO) {
-                this._removeDependency(this._iColorTransformMethodVO);
-                this._iColorTransformMethodVO = null;
+            if (this._colorTransformMethod) {
+                this._removeDependency(this._colorTransformMethod);
+                this._colorTransformChunk = null;
             }
+            this._colorTransformMethod = value;
             if (value) {
-                this._iColorTransformMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iColorTransformMethodVO);
+                this._colorTransformChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
         configurable: true
     });
-    MethodPass.prototype._removeDependency = function (methodVO, effectsDependency) {
+    MethodPass.prototype._removeDependency = function (method, effectsDependency) {
         if (effectsDependency === void 0) { effectsDependency = false; }
-        var index = this._iMethodVOs.indexOf(methodVO);
+        var index = this._methods.indexOf(method);
+        if (index == -1)
+            return;
         if (!effectsDependency)
             this._numEffectDependencies--;
-        methodVO.method.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onMethodInvalidatedDelegate);
-        this._iMethodVOs.splice(index, 1);
+        method.removeEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onMethodInvalidatedDelegate);
+        this._methods.splice(index, 1);
+        this._chunks.splice(index, 1);
         this.invalidate();
     };
-    MethodPass.prototype._addDependency = function (methodVO, effectsDependency, index) {
+    MethodPass.prototype._addDependency = function (method, effectsDependency, index) {
         if (effectsDependency === void 0) { effectsDependency = false; }
         if (index === void 0) { index = -1; }
-        methodVO.method.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onMethodInvalidatedDelegate);
+        method.addEventListener(_awayjs_renderer.ShadingMethodEvent.SHADER_INVALIDATED, this._onMethodInvalidatedDelegate);
+        var chunk = this._shader.getAbstraction(method);
         if (effectsDependency) {
-            if (index != -1)
-                this._iMethodVOs.splice(index + this._iMethodVOs.length - this._numEffectDependencies, 0, methodVO);
-            else
-                this._iMethodVOs.push(methodVO);
+            if (index != -1) {
+                this._methods.splice(index + this._methods.length - this._numEffectDependencies, 0, method);
+                this._chunks.splice(index + this._chunks.length - this._numEffectDependencies, 0, chunk);
+            }
+            else {
+                this._methods.push(method);
+                this._chunks.push(chunk);
+            }
             this._numEffectDependencies++;
         }
         else {
-            this._iMethodVOs.splice(this._iMethodVOs.length - this._numEffectDependencies, 0, methodVO);
+            this._methods.splice(this._methods.length - this._numEffectDependencies, 0, method);
+            this._chunks.splice(this._chunks.length - this._numEffectDependencies, 0, chunk);
         }
         this.invalidate();
     };
@@ -61879,7 +62215,7 @@ var MethodPass = (function (_super) {
      * methods added prior.
      */
     MethodPass.prototype.addEffectMethod = function (method) {
-        this._addDependency(new MethodVO(method, this), true);
+        this._addDependency(method, true);
     };
     Object.defineProperty(MethodPass.prototype, "numEffectMethods", {
         /**
@@ -61898,7 +62234,7 @@ var MethodPass = (function (_super) {
      * @return true if the method was added to the material, false otherwise.
      */
     MethodPass.prototype.hasEffectMethod = function (method) {
-        return this.getDependencyForMethod(method) != null;
+        return this._methods.indexOf(method) != -1;
     };
     /**
      * Returns the method added at the given index.
@@ -61908,7 +62244,7 @@ var MethodPass = (function (_super) {
     MethodPass.prototype.getEffectMethodAt = function (index) {
         if (index < 0 || index > this._numEffectDependencies - 1)
             return null;
-        return this._iMethodVOs[index + this._iMethodVOs.length - this._numEffectDependencies].method;
+        return this._methods[index + this._methods.length - this._numEffectDependencies];
     };
     /**
      * Adds an effect method at the specified index amongst the methods already added to the material. Effect
@@ -61916,51 +62252,41 @@ var MethodPass = (function (_super) {
      * etc. The method will be applied to the result of the methods with a lower index.
      */
     MethodPass.prototype.addEffectMethodAt = function (method, index) {
-        this._addDependency(new MethodVO(method, this), true, index);
+        this._addDependency(method, true, index);
     };
     /**
      * Removes an effect method from the material.
      * @param method The method to be removed.
      */
     MethodPass.prototype.removeEffectMethod = function (method) {
-        var methodVO = this.getDependencyForMethod(method);
-        if (methodVO != null)
-            this._removeDependency(methodVO, true);
+        this._removeDependency(method, true);
     };
     /**
      * remove an effect method at the specified index from the material.
      */
     MethodPass.prototype.removeEffectMethodAt = function (index) {
-        if (index < 0 || index > this._numEffectDependencies - 1)
-            return;
-        var methodVO = this._iMethodVOs[index + this._iMethodVOs.length - this._numEffectDependencies];
-        if (methodVO != null)
-            this._removeDependency(methodVO, true);
-    };
-    MethodPass.prototype.getDependencyForMethod = function (method) {
-        var len = this._iMethodVOs.length;
-        for (var i = 0; i < len; ++i)
-            if (this._iMethodVOs[i].method == method)
-                return this._iMethodVOs[i];
-        return null;
+        var method = this.getEffectMethodAt(index);
+        if (method != null)
+            this._removeDependency(method, true);
     };
     Object.defineProperty(MethodPass.prototype, "normalMethod", {
         /**
          * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
          */
         get: function () {
-            return this._iNormalMethodVO ? this._iNormalMethodVO.method : null;
+            return this._normalMethod;
         },
         set: function (value) {
-            if (this._iNormalMethodVO && this._iNormalMethodVO.method == value)
+            if (this._normalMethod == value)
                 return;
-            if (this._iNormalMethodVO) {
-                this._removeDependency(this._iNormalMethodVO);
-                this._iNormalMethodVO = null;
+            if (this._normalMethod) {
+                this._removeDependency(this._normalMethod);
+                this._normalChunk = null;
             }
+            this._normalMethod = value;
             if (value) {
-                this._iNormalMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iNormalMethodVO);
+                this._normalChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
@@ -61971,18 +62297,19 @@ var MethodPass = (function (_super) {
          * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
          */
         get: function () {
-            return this._iAmbientMethodVO ? this._iAmbientMethodVO.method : null;
+            return this._ambientMethod;
         },
         set: function (value) {
-            if (this._iAmbientMethodVO && this._iAmbientMethodVO.method == value)
+            if (this._ambientMethod == value)
                 return;
-            if (this._iAmbientMethodVO) {
-                this._removeDependency(this._iAmbientMethodVO);
-                this._iAmbientMethodVO = null;
+            if (this._ambientMethod) {
+                this._removeDependency(this._ambientMethod);
+                this._ambientChunk = null;
             }
+            this._ambientMethod = value;
             if (value) {
-                this._iAmbientMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iAmbientMethodVO);
+                this._ambientChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
@@ -61993,18 +62320,19 @@ var MethodPass = (function (_super) {
          * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
          */
         get: function () {
-            return this._iShadowMethodVO ? this._iShadowMethodVO.method : null;
+            return this._shadowMethod;
         },
         set: function (value) {
-            if (this._iShadowMethodVO && this._iShadowMethodVO.method == value)
+            if (this._shadowMethod == value)
                 return;
-            if (this._iShadowMethodVO) {
-                this._removeDependency(this._iShadowMethodVO);
-                this._iShadowMethodVO = null;
+            if (this._shadowMethod) {
+                this._removeDependency(this._shadowMethod);
+                this._shadowChunk = null;
             }
+            this._shadowMethod = value;
             if (value) {
-                this._iShadowMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iShadowMethodVO);
+                this._shadowChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
@@ -62015,18 +62343,18 @@ var MethodPass = (function (_super) {
          * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
          */
         get: function () {
-            return this._iDiffuseMethodVO ? this._iDiffuseMethodVO.method : null;
+            return this._diffuseMethod;
         },
         set: function (value) {
-            if (this._iDiffuseMethodVO && this._iDiffuseMethodVO.method == value)
+            if (this._diffuseMethod == value)
                 return;
-            if (this._iDiffuseMethodVO) {
-                this._removeDependency(this._iDiffuseMethodVO);
-                this._iDiffuseMethodVO = null;
+            if (this._diffuseMethod) {
+                this._removeDependency(this._diffuseMethod);
+                this._diffuseChunk = null;
             }
             if (value) {
-                this._iDiffuseMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iDiffuseMethodVO);
+                this._diffuseChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
@@ -62037,18 +62365,18 @@ var MethodPass = (function (_super) {
          * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
          */
         get: function () {
-            return this._iSpecularMethodVO ? this._iSpecularMethodVO.method : null;
+            return this._specularMethod;
         },
         set: function (value) {
-            if (this._iSpecularMethodVO && this._iSpecularMethodVO.method == value)
+            if (this._specularMethod == value)
                 return;
-            if (this._iSpecularMethodVO) {
-                this._removeDependency(this._iSpecularMethodVO);
-                this._iSpecularMethodVO = null;
+            if (this._specularMethod) {
+                this._removeDependency(this._specularMethod);
+                this._specularChunk = null;
             }
             if (value) {
-                this._iSpecularMethodVO = new MethodVO(value, this);
-                this._addDependency(this._iSpecularMethodVO);
+                this._specularChunk = this._shader.getAbstraction(value);
+                this._addDependency(value);
             }
         },
         enumerable: true,
@@ -62060,10 +62388,11 @@ var MethodPass = (function (_super) {
     MethodPass.prototype.dispose = function () {
         if (this._lightPicker)
             this._lightPicker.removeEventListener(_awayjs_core.AssetEvent.INVALIDATE, this._onLightsChangeDelegate);
-        while (this._iMethodVOs.length)
-            this._removeDependency(this._iMethodVOs[0]);
+        while (this._methods.length)
+            this._removeDependency(this._methods[0]);
         _super.prototype.dispose.call(this);
-        this._iMethodVOs = null;
+        this._chunks = null;
+        this._methods = null;
     };
     /**
      * Called when any method's shader code is invalidated.
@@ -62077,12 +62406,12 @@ var MethodPass = (function (_super) {
      */
     MethodPass.prototype._iActivate = function (projection) {
         _super.prototype._iActivate.call(this, projection);
-        var methodVO;
-        var len = this._iMethodVOs.length;
+        var chunk;
+        var len = this._chunks.length;
         for (var i = 0; i < len; ++i) {
-            methodVO = this._iMethodVOs[i];
-            if (methodVO.useMethod)
-                methodVO.method.iActivate(this._shader, methodVO, this._stage);
+            chunk = this._chunks[i];
+            if (chunk.chunkVO.useChunk)
+                chunk._activate();
         }
     };
     /**
@@ -62094,12 +62423,12 @@ var MethodPass = (function (_super) {
      */
     MethodPass.prototype._setRenderState = function (renderable, projection) {
         _super.prototype._setRenderState.call(this, renderable, projection);
-        var methodVO;
-        var len = this._iMethodVOs.length;
+        var chunk;
+        var len = this._chunks.length;
         for (var i = 0; i < len; ++i) {
-            methodVO = this._iMethodVOs[i];
-            if (methodVO.useMethod)
-                methodVO.method.iSetRenderState(this._shader, methodVO, renderable, this._stage, projection);
+            chunk = this._chunks[i];
+            if (chunk.chunkVO.useChunk)
+                chunk._setRenderState(renderable, projection);
         }
     };
     /**
@@ -62107,12 +62436,12 @@ var MethodPass = (function (_super) {
      */
     MethodPass.prototype._iDeactivate = function () {
         _super.prototype._iDeactivate.call(this);
-        var methodVO;
-        var len = this._iMethodVOs.length;
+        var chunk;
+        var len = this._chunks.length;
         for (var i = 0; i < len; ++i) {
-            methodVO = this._iMethodVOs[i];
-            if (methodVO.useMethod)
-                methodVO.method.iDeactivate(this._shader, methodVO, this._stage);
+            chunk = this._chunks[i];
+            if (chunk.chunkVO.useChunk)
+                chunk._deactivate();
         }
     };
     MethodPass.prototype._iIncludeDependencies = function (shader) {
@@ -62122,18 +62451,18 @@ var MethodPass = (function (_super) {
         if (shader.useAlphaPremultiplied && shader.usesBlending)
             shader.usesCommonData = true;
         var i;
-        var len = this._iMethodVOs.length;
+        var len = this._chunks.length;
         for (i = 0; i < len; ++i)
-            this.setupAndCountDependencies(shader, this._iMethodVOs[i]);
+            this.setupAndCountDependencies(shader, this._chunks[i]);
         var usesTangentSpace = true;
-        var methodVO;
+        var chunk;
         for (i = 0; i < len; ++i) {
-            methodVO = this._iMethodVOs[i];
-            if ((methodVO.useMethod = methodVO.method.iIsUsed(shader)) && !methodVO.method.iUsesTangentSpace())
+            chunk = this._chunks[i];
+            if ((chunk.chunkVO.useChunk = chunk._isUsed()) && !chunk._usesTangentSpace())
                 usesTangentSpace = false;
         }
-        shader.outputsNormals = this._iNormalMethodVO && this._iNormalMethodVO.useMethod;
-        shader.outputsTangentNormals = shader.outputsNormals && this._iNormalMethodVO.method.iOutputsTangentNormals();
+        shader.outputsNormals = this._normalChunk && this._normalChunk.chunkVO.useChunk;
+        shader.outputsTangentNormals = shader.outputsNormals && this._normalChunk._outputsTangentNormals();
         shader.usesTangentSpace = shader.outputsTangentNormals && !shader.usesProbes && usesTangentSpace;
         if (!shader.usesTangentSpace) {
             if (shader.viewDirDependencies > 0) {
@@ -62149,175 +62478,176 @@ var MethodPass = (function (_super) {
     /**
      * Counts the dependencies for a given method.
      * @param method The method to count the dependencies for.
-     * @param methodVO The method's data for this material.
+     * @param chunk The method's data for this material.
      */
-    MethodPass.prototype.setupAndCountDependencies = function (shader, methodVO) {
-        methodVO.reset();
-        methodVO.method.iInitVO(shader, methodVO);
-        if (methodVO.needsProjection)
+    MethodPass.prototype.setupAndCountDependencies = function (shader, chunk) {
+        var chunkVO = chunk.chunkVO;
+        chunk._reset(chunkVO);
+        chunk._initVO(chunkVO);
+        if (chunkVO.needsProjection)
             shader.projectionDependencies++;
-        if (methodVO.needsGlobalVertexPos || methodVO.needsGlobalFragmentPos) {
+        if (chunkVO.needsGlobalVertexPos || chunkVO.needsGlobalFragmentPos) {
             shader.globalPosDependencies++;
-            if (methodVO.needsGlobalFragmentPos)
+            if (chunkVO.needsGlobalFragmentPos)
                 shader.usesGlobalPosFragment = true;
         }
-        if (methodVO.needsNormals)
+        if (chunkVO.needsNormals)
             shader.normalDependencies++;
-        if (methodVO.needsTangents)
+        if (chunkVO.needsTangents)
             shader.tangentDependencies++;
-        if (methodVO.needsView)
+        if (chunkVO.needsView)
             shader.viewDirDependencies++;
     };
     MethodPass.prototype._iGetPreLightingVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        if (this._iAmbientMethodVO && this._iAmbientMethodVO.useMethod)
-            code += this._iAmbientMethodVO.method.iGetVertexCode(shader, this._iAmbientMethodVO, registerCache, sharedRegisters);
-        if (this._iDiffuseMethodVO && this._iDiffuseMethodVO.useMethod)
-            code += this._iDiffuseMethodVO.method.iGetVertexCode(shader, this._iDiffuseMethodVO, registerCache, sharedRegisters);
-        if (this._iSpecularMethodVO && this._iSpecularMethodVO.useMethod)
-            code += this._iSpecularMethodVO.method.iGetVertexCode(shader, this._iSpecularMethodVO, registerCache, sharedRegisters);
         return code;
     };
     MethodPass.prototype._iGetPreLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        if (this._iAmbientMethodVO && this._iAmbientMethodVO.useMethod) {
-            code += this._iAmbientMethodVO.method.iGetFragmentCode(shader, this._iAmbientMethodVO, sharedRegisters.shadedTarget, registerCache, sharedRegisters);
-            if (this._iAmbientMethodVO.needsNormals)
-                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
-            if (this._iAmbientMethodVO.needsView)
-                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
-        }
-        if (this._iDiffuseMethodVO && this._iDiffuseMethodVO.useMethod)
-            code += this._iDiffuseMethodVO.method.iGetFragmentPreLightingCode(shader, this._iDiffuseMethodVO, registerCache, sharedRegisters);
-        if (this._iSpecularMethodVO && this._iSpecularMethodVO.useMethod)
-            code += this._iSpecularMethodVO.method.iGetFragmentPreLightingCode(shader, this._iSpecularMethodVO, registerCache, sharedRegisters);
+        if (this._diffuseChunk && this._diffuseChunk.chunkVO.useChunk)
+            code += this._diffuseChunk._getFragmentPreLightingCode(registerCache, sharedRegisters);
+        if (this._specularChunk && this._specularChunk.chunkVO.useChunk)
+            code += this._specularChunk._getFragmentPreLightingCode(registerCache, sharedRegisters);
         return code;
     };
     MethodPass.prototype._iGetPerLightDiffuseFragmentCode = function (shader, lightDirReg, diffuseColorReg, registerCache, sharedRegisters) {
-        return this._iDiffuseMethodVO.method.iGetFragmentCodePerLight(shader, this._iDiffuseMethodVO, lightDirReg, diffuseColorReg, registerCache, sharedRegisters);
+        return this._diffuseChunk._getFragmentCodePerLight(lightDirReg, diffuseColorReg, registerCache, sharedRegisters);
     };
     MethodPass.prototype._iGetPerLightSpecularFragmentCode = function (shader, lightDirReg, specularColorReg, registerCache, sharedRegisters) {
-        return this._iSpecularMethodVO.method.iGetFragmentCodePerLight(shader, this._iSpecularMethodVO, lightDirReg, specularColorReg, registerCache, sharedRegisters);
+        return this._specularChunk._getFragmentCodePerLight(lightDirReg, specularColorReg, registerCache, sharedRegisters);
     };
     MethodPass.prototype._iGetPerProbeDiffuseFragmentCode = function (shader, texReg, weightReg, registerCache, sharedRegisters) {
-        return this._iDiffuseMethodVO.method.iGetFragmentCodePerProbe(shader, this._iDiffuseMethodVO, texReg, weightReg, registerCache, sharedRegisters);
+        return this._diffuseChunk._getFragmentCodePerProbe(texReg, weightReg, registerCache, sharedRegisters);
     };
     MethodPass.prototype._iGetPerProbeSpecularFragmentCode = function (shader, texReg, weightReg, registerCache, sharedRegisters) {
-        return this._iSpecularMethodVO.method.iGetFragmentCodePerProbe(shader, this._iSpecularMethodVO, texReg, weightReg, registerCache, sharedRegisters);
+        return this._specularChunk._getFragmentCodePerProbe(texReg, weightReg, registerCache, sharedRegisters);
     };
     MethodPass.prototype._iGetPostLightingVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        if (this._iShadowMethodVO)
-            code += this._iShadowMethodVO.method.iGetVertexCode(shader, this._iShadowMethodVO, registerCache, sharedRegisters);
         return code;
     };
     MethodPass.prototype._iGetPostLightingFragmentCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        if (shader.useAlphaPremultiplied && shader.usesBlending) {
-            code += "add " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
-                "div " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + ", " + sharedRegisters.shadedTarget + ".w\n" +
-                "sub " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
-                "sat " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + "\n";
-        }
-        if (this._iShadowMethodVO)
-            code += this._iShadowMethodVO.method.iGetFragmentCode(shader, this._iShadowMethodVO, sharedRegisters.shadowTarget, registerCache, sharedRegisters);
-        if (this._iDiffuseMethodVO && this._iDiffuseMethodVO.useMethod) {
-            code += this._iDiffuseMethodVO.method.iGetFragmentPostLightingCode(shader, this._iDiffuseMethodVO, sharedRegisters.shadedTarget, registerCache, sharedRegisters);
-            // resolve other dependencies as well?
-            if (this._iDiffuseMethodVO.needsNormals)
-                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
-            if (this._iDiffuseMethodVO.needsView)
-                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
-        }
-        if (this._iSpecularMethodVO && this._iSpecularMethodVO.useMethod) {
-            code += this._iSpecularMethodVO.method.iGetFragmentPostLightingCode(shader, this._iSpecularMethodVO, sharedRegisters.shadedTarget, registerCache, sharedRegisters);
-            if (this._iSpecularMethodVO.needsNormals)
-                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
-            if (this._iSpecularMethodVO.needsView)
-                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
-        }
-        if (this._iShadowMethodVO)
-            registerCache.removeFragmentTempUsage(sharedRegisters.shadowTarget);
         return code;
     };
     MethodPass.prototype._iGetNormalVertexCode = function (shader, registerCache, sharedRegisters) {
-        return this._iNormalMethodVO.method.iGetVertexCode(shader, this._iNormalMethodVO, registerCache, sharedRegisters);
+        return this._normalChunk._getVertexCode(registerCache, sharedRegisters);
     };
     MethodPass.prototype._iGetNormalFragmentCode = function (shader, registerCache, sharedRegisters) {
-        var code = this._iNormalMethodVO.method.iGetFragmentCode(shader, this._iNormalMethodVO, sharedRegisters.normalFragment, registerCache, sharedRegisters);
-        if (this._iNormalMethodVO.needsView)
+        var code = this._normalChunk._getFragmentCode(sharedRegisters.normalFragment, registerCache, sharedRegisters);
+        if (this._normalChunk.chunkVO.needsView)
             registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
-        if (this._iNormalMethodVO.needsGlobalFragmentPos || this._iNormalMethodVO.needsGlobalVertexPos)
+        if (this._normalChunk.chunkVO.needsGlobalFragmentPos || this._normalChunk.chunkVO.needsGlobalVertexPos)
             registerCache.removeVertexTempUsage(sharedRegisters.globalPositionVertex);
         return code;
     };
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iGetVertexCode = function (shader, regCache, sharedReg) {
+    MethodPass.prototype._iGetVertexCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
-        var methodVO;
-        var len = this._iMethodVOs.length;
+        if (this._ambientChunk && this._ambientChunk.chunkVO.useChunk)
+            code += this._ambientChunk._getVertexCode(registerCache, sharedRegisters);
+        if (this._shadowChunk)
+            code += this._shadowChunk._getVertexCode(registerCache, sharedRegisters);
+        if (this._diffuseChunk && this._diffuseChunk.chunkVO.useChunk)
+            code += this._diffuseChunk._getVertexCode(registerCache, sharedRegisters);
+        if (this._specularChunk && this._specularChunk.chunkVO.useChunk)
+            code += this._specularChunk._getVertexCode(registerCache, sharedRegisters);
+        var chunk;
+        var len = this._chunks.length;
         for (var i = len - this._numEffectDependencies; i < len; i++) {
-            methodVO = this._iMethodVOs[i];
-            if (methodVO.useMethod) {
-                code += methodVO.method.iGetVertexCode(shader, methodVO, regCache, sharedReg);
-                if (methodVO.needsGlobalVertexPos || methodVO.needsGlobalFragmentPos)
-                    regCache.removeVertexTempUsage(sharedReg.globalPositionVertex);
+            chunk = this._chunks[i];
+            if (chunk.chunkVO.useChunk) {
+                code += chunk._getVertexCode(registerCache, sharedRegisters);
+                if (chunk.chunkVO.needsGlobalVertexPos || chunk.chunkVO.needsGlobalFragmentPos)
+                    registerCache.removeVertexTempUsage(sharedRegisters.globalPositionVertex);
             }
         }
-        if (this._iColorTransformMethodVO && this._iColorTransformMethodVO.useMethod)
-            code += this._iColorTransformMethodVO.method.iGetVertexCode(shader, this._iColorTransformMethodVO, regCache, sharedReg);
+        if (this._colorTransformChunk && this._colorTransformChunk.chunkVO.useChunk)
+            code += this._colorTransformChunk._getVertexCode(registerCache, sharedRegisters);
         return code;
     };
     /**
      * @inheritDoc
      */
-    MethodPass.prototype._iGetFragmentCode = function (shader, regCache, sharedReg) {
+    MethodPass.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
         var code = "";
         var alphaReg;
-        if (this.preserveAlpha && this._numEffectDependencies > 0) {
-            alphaReg = regCache.getFreeFragmentSingleTemp();
-            regCache.addFragmentTempUsages(alphaReg, 1);
-            code += "mov " + alphaReg + ", " + sharedReg.shadedTarget + ".w\n";
+        if (this._ambientChunk && this._ambientChunk.chunkVO.useChunk) {
+            code += this._ambientChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
+            if (this._ambientChunk.chunkVO.needsNormals)
+                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
+            if (this._ambientChunk.chunkVO.needsView)
+                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
         }
-        var methodVO;
-        var len = this._iMethodVOs.length;
+        if (shader.useAlphaPremultiplied && shader.usesBlending) {
+            code += "add " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
+                "div " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + ", " + sharedRegisters.shadedTarget + ".w\n" +
+                "sub " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.shadedTarget + ".w, " + sharedRegisters.commons + ".z\n" +
+                "sat " + sharedRegisters.shadedTarget + ".xyz, " + sharedRegisters.shadedTarget + "\n";
+        }
+        if (this._shadowChunk)
+            code += this._shadowChunk._getFragmentCode(sharedRegisters.shadowTarget, registerCache, sharedRegisters);
+        if (this._diffuseChunk && this._diffuseChunk.chunkVO.useChunk) {
+            code += this._diffuseChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
+            // resolve other dependencies as well?
+            if (this._diffuseChunk.chunkVO.needsNormals)
+                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
+            if (this._diffuseChunk.chunkVO.needsView)
+                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
+        }
+        if (this._specularChunk && this._specularChunk.chunkVO.useChunk) {
+            code += this._specularChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
+            if (this._specularChunk.chunkVO.needsNormals)
+                registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
+            if (this._specularChunk.chunkVO.needsView)
+                registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
+        }
+        if (this._shadowChunk)
+            registerCache.removeFragmentTempUsage(sharedRegisters.shadowTarget);
+        if (this.preserveAlpha && this._numEffectDependencies > 0) {
+            alphaReg = registerCache.getFreeFragmentSingleTemp();
+            registerCache.addFragmentTempUsages(alphaReg, 1);
+            code += "mov " + alphaReg + ", " + sharedRegisters.shadedTarget + ".w\n";
+        }
+        var chunk;
+        var len = this._chunks.length;
         for (var i = len - this._numEffectDependencies; i < len; i++) {
-            methodVO = this._iMethodVOs[i];
-            if (methodVO.useMethod) {
-                code += methodVO.method.iGetFragmentCode(shader, methodVO, sharedReg.shadedTarget, regCache, sharedReg);
-                if (methodVO.needsNormals)
-                    regCache.removeFragmentTempUsage(sharedReg.normalFragment);
-                if (methodVO.needsView)
-                    regCache.removeFragmentTempUsage(sharedReg.viewDirFragment);
+            chunk = this._chunks[i];
+            if (chunk.chunkVO.useChunk) {
+                code += chunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
+                if (chunk.chunkVO.needsNormals)
+                    registerCache.removeFragmentTempUsage(sharedRegisters.normalFragment);
+                if (chunk.chunkVO.needsView)
+                    registerCache.removeFragmentTempUsage(sharedRegisters.viewDirFragment);
             }
         }
         if (this.preserveAlpha && this._numEffectDependencies > 0) {
-            code += "mov " + sharedReg.shadedTarget + ".w, " + alphaReg + "\n";
-            regCache.removeFragmentTempUsage(alphaReg);
+            code += "mov " + sharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
+            registerCache.removeFragmentTempUsage(alphaReg);
         }
-        if (this._iColorTransformMethodVO && this._iColorTransformMethodVO.useMethod)
-            code += this._iColorTransformMethodVO.method.iGetFragmentCode(shader, this._iColorTransformMethodVO, sharedReg.shadedTarget, regCache, sharedReg);
+        if (this._colorTransformChunk && this._colorTransformChunk.chunkVO.useChunk)
+            code += this._colorTransformChunk._getFragmentCode(sharedRegisters.shadedTarget, registerCache, sharedRegisters);
         return code;
     };
     /**
      * Indicates whether the shader uses any shadows.
      */
     MethodPass.prototype._iUsesShadows = function (shader) {
-        return Boolean(this._iShadowMethodVO && (this._lightPicker.castingDirectionalLights.length > 0 || this._lightPicker.castingPointLights.length > 0));
+        return Boolean(this._shadowChunk && (this._lightPicker.castingDirectionalLights.length > 0 || this._lightPicker.castingPointLights.length > 0));
     };
     /**
      * Indicates whether the shader uses any specular component.
      */
     MethodPass.prototype._iUsesSpecular = function (shader) {
-        return Boolean(this._iSpecularMethodVO);
+        return Boolean(this._specularChunk);
     };
     /**
      * Indicates whether the shader uses any specular component.
      */
     MethodPass.prototype._iUsesDiffuse = function (shader) {
-        return Boolean(this._iDiffuseMethodVO);
+        return Boolean(this._diffuseChunk);
     };
     MethodPass.prototype.onLightsChange = function (event) {
         this._updateLights();
@@ -62369,175 +62699,14 @@ var MethodPass = (function (_super) {
      */
     MethodPass.prototype.calculateNumProbes = function (numLightProbes) {
         var numChannels = 0;
-        if ((this.specularLightSources & _awayjs_scene.LightSources.PROBES) != 0)
+        if ((this._material.specularLightSources & _awayjs_scene.LightSources.PROBES) != 0)
             ++numChannels;
-        if ((this.diffuseLightSources & _awayjs_scene.LightSources.PROBES) != 0)
+        if ((this._material.diffuseLightSources & _awayjs_scene.LightSources.PROBES) != 0)
             ++numChannels;
         // 4 channels available
         return Math.min(numLightProbes - this.lightProbesOffset, (4 / numChannels) | 0);
     };
     return MethodPass;
-}(_awayjs_stage.PassBase));
-
-/**
- * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
- * of view from a light.
- */
-var SingleObjectDepthPass = (function (_super) {
-    __extends(SingleObjectDepthPass, _super);
-    /**
-     * Creates a new SingleObjectDepthPass object.
-     */
-    function SingleObjectDepthPass(render, material, materialPool) {
-        var _this = _super.call(this, render, material, materialPool) || this;
-        _this._textureSize = 512;
-        _this._polyOffset = new Float32Array([15, 0, 0, 0]);
-        _this._projectionTexturesInvalid = true;
-        _this._methodMaterial = material;
-        return _this;
-        //this._pNumUsedStreams = 2;
-        //this._pNumUsedVertexConstants = 7;
-        //this._enc = Array<number>(1.0, 255.0, 65025.0, 16581375.0, 1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0);
-        //
-        //this._pAnimatableAttributes = Array<string>("va0", "va1";
-        //this._pAnimationTargetRegisters = Array<string>("vt0", "vt1";
-    }
-    Object.defineProperty(SingleObjectDepthPass.prototype, "textureSize", {
-        /**
-         * The size of the depth map texture to render to.
-         */
-        get: function () {
-            return this._textureSize;
-        },
-        set: function (value) {
-            this._textureSize = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SingleObjectDepthPass.prototype, "polyOffset", {
-        /**
-         * The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
-         */
-        get: function () {
-            return this._polyOffset[0];
-        },
-        set: function (value) {
-            this._polyOffset[0] = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * @inheritDoc
-     */
-    SingleObjectDepthPass.prototype.dispose = function () {
-        if (this._textures) {
-            for (var key in this._textures) {
-                var texture = this._textures[key];
-                texture.dispose();
-            }
-            this._textures = null;
-        }
-    };
-    /**
-     * Updates the projection textures used to contain the depth renders.
-     */
-    SingleObjectDepthPass.prototype.updateProjectionTextures = function () {
-        if (this._textures) {
-            for (var key in this._textures) {
-                var texture = this._textures[key];
-                texture.dispose();
-            }
-        }
-        this._textures = new Object();
-        this._projections = new Object();
-        this._projectionTexturesInvalid = false;
-    };
-    /**
-     * @inheritDoc
-     */
-    SingleObjectDepthPass.prototype._iGetVertexCode = function () {
-        var code;
-        // offset
-        code = "mul vt7, vt1, vc4.x	\n" +
-            "add vt7, vt7, vt0\n" +
-            "mov vt7.w, vt0.w\n";
-        // project
-        code += "m44 vt2, vt7, vc0\n" +
-            "mov op, vt2\n";
-        // perspective divide
-        code += "div v0, vt2, vt2.w\n";
-        return code;
-    };
-    /**
-     * @inheritDoc
-     */
-    SingleObjectDepthPass.prototype._iGetFragmentCode = function (shader, registerCache, sharedRegisters) {
-        var code = "";
-        // encode float -> rgba
-        code += "mul ft0, fc0, v0.z\n" +
-            "frc ft0, ft0\n" +
-            "mul ft1, ft0.yzww, fc1\n" +
-            "sub ft0, ft0, ft1\n" +
-            "mov oc, ft0\n";
-        return code;
-    };
-    /**
-     * Gets the depth maps rendered for this object from all lights.
-     * @param renderableGL The renderableGL for which to retrieve the depth maps.
-     * @param stage3DProxy The Stage3DProxy object currently used for rendering.
-     * @return A list of depth map textures for all supported lights.
-     */
-    SingleObjectDepthPass.prototype._iGetDepthMap = function (renderableGL) {
-        return this._textures[renderableGL.renderable.id];
-    };
-    /**
-     * Retrieves the depth map projection maps for all lights.
-     * @param renderableGL The renderableGL for which to retrieve the projection maps.
-     * @return A list of projection maps for all supported lights.
-     */
-    SingleObjectDepthPass.prototype._iGetProjection = function (renderableGL) {
-        return this._projections[renderableGL.renderable.id];
-    };
-    /**
-     * @inheritDoc
-     */
-    SingleObjectDepthPass.prototype._iRender = function (renderableGL, projection) {
-        var matrix;
-        var context = this._stage.context;
-        var len;
-        var light;
-        var lights = this._methodMaterial.lightPicker.allPickedLights;
-        var rId = renderableGL.renderable.id;
-        if (!this._textures[rId])
-            this._textures[rId] = new _awayjs_graphics.Single2DTexture(new _awayjs_graphics.Image2D(this._textureSize, this._textureSize));
-        if (!this._projections[rId])
-            this._projections[rId] = new _awayjs_core.Matrix3D();
-        len = lights.length;
-        // local position = enough
-        light = lights[0];
-        matrix = light.iGetObjectProjectionMatrix(renderableGL.sourceEntity, projection.transform.concatenatedMatrix3D, this._projections[rId]);
-        this._stage.setRenderTarget(this._textures[rId], true);
-        context.clear(1.0, 1.0, 1.0);
-        //context.setProgramConstantsFromMatrix(ContextGLProgramType.VERTEX, 0, matrix, true);
-        //context.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, 0, this._enc, 2);
-        var elementsGL = renderableGL.elementsGL;
-        // elementsGL.activateVertexBufferVO(0, elements.positions);
-        // elementsGL.activateVertexBufferVO(1, elements.normals);
-        // elementsGL.getIndexBufferGL().draw(ContextGLDrawMode.TRIANGLES, 0, elements.numElements);
-    };
-    /**
-     * @inheritDoc
-     */
-    SingleObjectDepthPass.prototype._iActivate = function (projection) {
-        if (this._projectionTexturesInvalid)
-            this.updateProjectionTextures();
-        // never scale
-        _super.prototype._iActivate.call(this, projection);
-        //this._stage.context.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, 4, this._polyOffset, 1);
-    };
-    return SingleObjectDepthPass;
 }(_awayjs_stage.PassBase));
 
 /**
@@ -62573,6 +62742,50 @@ var GL_MethodMaterial = (function (_super) {
          */
         get: function () {
             return this._methodMaterial.lightPicker ? this._methodMaterial.lightPicker.numLightProbes + this._methodMaterial.lightPicker.numDirectionalLights + this._methodMaterial.lightPicker.numPointLights : 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_MethodMaterial.prototype, "lightPicker", {
+        get: function () {
+            return this._methodMaterial.lightPicker;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_MethodMaterial.prototype, "enableLightFallOff", {
+        /**
+         * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+         * compatibility for constrained mode.
+         */
+        get: function () {
+            return this._methodMaterial.enableLightFallOff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_MethodMaterial.prototype, "diffuseLightSources", {
+        /**
+         * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+         * and/or light probes for diffuse reflections.
+         *
+         * @see away3d.materials.LightSources
+         */
+        get: function () {
+            return this._methodMaterial.diffuseLightSources;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GL_MethodMaterial.prototype, "specularLightSources", {
+        /**
+         * Define which light source types to use for specular reflections. This allows choosing between regular lights
+         * and/or light probes for specular reflections.
+         *
+         * @see away3d.materials.LightSources
+         */
+        get: function () {
+            return this._methodMaterial.specularLightSources;
         },
         enumerable: true,
         configurable: true
@@ -62668,7 +62881,7 @@ var GL_MethodMaterial = (function (_super) {
     };
     GL_MethodMaterial.prototype.initCasterLightPass = function () {
         if (this._casterLightPass == null)
-            this._casterLightPass = new MethodPass(MethodPassMode.LIGHTING, this, this._methodMaterial, this._materialPool);
+            this._casterLightPass = new MethodPass(MethodPassMode.LIGHTING, this, this._materialPool);
         this._casterLightPass.lightPicker = new _awayjs_scene.StaticLightPicker([this._methodMaterial.shadowMethod.castingLight]);
         this._casterLightPass.shadowMethod = this._methodMaterial.shadowMethod;
         this._casterLightPass.diffuseMethod = this._methodMaterial.diffuseMethod;
@@ -62696,7 +62909,7 @@ var GL_MethodMaterial = (function (_super) {
         }
         this._nonCasterLightPasses = new Array();
         while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
-            pass = new MethodPass(MethodPassMode.LIGHTING, this, this._methodMaterial, this._materialPool);
+            pass = new MethodPass(MethodPassMode.LIGHTING, this, this._materialPool);
             pass.includeCasters = this._methodMaterial.shadowMethod == null;
             pass.directionalLightsOffset = dirLightOffset;
             pass.pointLightsOffset = pointLightOffset;
@@ -62733,7 +62946,7 @@ var GL_MethodMaterial = (function (_super) {
     };
     GL_MethodMaterial.prototype.initEffectPass = function () {
         if (this._pass == null)
-            this._pass = new MethodPass(MethodPassMode.SUPER_SHADER, this, this._methodMaterial, this._materialPool);
+            this._pass = new MethodPass(MethodPassMode.SUPER_SHADER, this, this._materialPool);
         if (this._methodMaterial.mode == MethodMaterialMode.SINGLE_PASS) {
             this._pass.ambientMethod = this._methodMaterial.ambientMethod;
             this._pass.diffuseMethod = this._methodMaterial.diffuseMethod;
@@ -62779,18 +62992,17 @@ var GL_MethodMaterial = (function (_super) {
     return GL_MethodMaterial;
 }(_awayjs_stage.GL_MaterialBase));
 
-exports.MethodVO = MethodVO;
 exports.MethodMaterial = MethodMaterial;
 exports.MethodMaterialMode = MethodMaterialMode;
+exports.LightingCompositeChunk = LightingCompositeChunk;
 exports.AmbientBasicMethod = AmbientBasicMethod;
-exports.AmbientEnvMapMethod = AmbientEnvMapMethod;
+exports.AmbientDepthMethod = AmbientDepthMethod;
+exports.CompositeMethodBase = CompositeMethodBase;
 exports.DiffuseBasicMethod = DiffuseBasicMethod;
 exports.DiffuseCelMethod = DiffuseCelMethod;
 exports.DiffuseCompositeMethod = DiffuseCompositeMethod;
-exports.DiffuseDepthMethod = DiffuseDepthMethod;
 exports.DiffuseGradientMethod = DiffuseGradientMethod;
 exports.DiffuseLightMapMethod = DiffuseLightMapMethod;
-exports.DiffuseSubSurfaceMethod = DiffuseSubSurfaceMethod;
 exports.DiffuseWrapMethod = DiffuseWrapMethod;
 exports.EffectAlphaMaskMethod = EffectAlphaMaskMethod;
 exports.EffectColorMatrixMethod = EffectColorMatrixMethod;
@@ -62799,20 +63011,18 @@ exports.EffectEnvMapMethod = EffectEnvMapMethod;
 exports.EffectFogMethod = EffectFogMethod;
 exports.EffectFresnelEnvMapMethod = EffectFresnelEnvMapMethod;
 exports.EffectLightMapMethod = EffectLightMapMethod;
-exports.EffectMethodBase = EffectMethodBase;
 exports.EffectProjectiveTextureMethod = EffectProjectiveTextureMethod;
 exports.EffectRefractionEnvMapMethod = EffectRefractionEnvMapMethod;
 exports.EffectRimLightMethod = EffectRimLightMethod;
-exports.LightingMethodBase = LightingMethodBase;
 exports.NormalBasicMethod = NormalBasicMethod;
 exports.NormalHeightMapMethod = NormalHeightMapMethod;
 exports.NormalSimpleWaterMethod = NormalSimpleWaterMethod;
 exports.ShadingMethodBase = ShadingMethodBase;
 exports.ShadowCascadeMethod = ShadowCascadeMethod;
+exports.ShadowCompositeMethod = ShadowCompositeMethod;
 exports.ShadowDitheredMethod = ShadowDitheredMethod;
 exports.ShadowFilteredMethod = ShadowFilteredMethod;
 exports.ShadowHardMethod = ShadowHardMethod;
-exports.ShadowMapMethodBase = ShadowMapMethodBase;
 exports.ShadowMethodBase = ShadowMethodBase;
 exports.ShadowNearMethod = ShadowNearMethod;
 exports.ShadowSoftMethod = ShadowSoftMethod;
@@ -62824,7 +63034,6 @@ exports.SpecularFresnelMethod = SpecularFresnelMethod;
 exports.SpecularPhongMethod = SpecularPhongMethod;
 exports.MethodPass = MethodPass;
 exports.MethodPassMode = MethodPassMode;
-exports.SingleObjectDepthPass = SingleObjectDepthPass;
 exports.GL_MethodMaterial = GL_MethodMaterial;
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -62848,7 +63057,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(12)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(12)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/stage'], factory) :
     (factory((global.AwayjsPlayer = global.AwayjsPlayer || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsStage));
 }(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_stage) { 'use strict';
@@ -63942,7 +64151,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(8), __webpack_require__(11)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(9), __webpack_require__(11)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/graphics', '@awayjs/renderer'], factory) :
     (factory((global.AwayjsView = global.AwayjsView || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsGraphics,global.AwayjsRenderer));
 }(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_graphics,_awayjs_renderer) { 'use strict';
@@ -66267,7 +66476,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lib_player__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_renderer__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__lib_scene__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__lib_stage__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__lib_stage__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__lib_view__ = __webpack_require__(2);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__lib_core__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__lib_core__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_1__lib_graphics__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_1__lib_graphics__[key]; }) }(__WEBPACK_IMPORT_KEY__));
@@ -66294,7 +66503,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(8), __webpack_require__(9), __webpack_require__(11), __webpack_require__(13), __webpack_require__(15)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(10), __webpack_require__(11), __webpack_require__(13), __webpack_require__(15)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/scene', '@awayjs/renderer', '@awayjs/materials', '@awayjs/player'], factory) :
     (factory((global.AwayjsParsers = global.AwayjsParsers || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsScene,global.AwayjsRenderer,global.AwayjsMaterials,global.AwayjsPlayer));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_scene,_awayjs_renderer,_awayjs_materials,_awayjs_player) { 'use strict';
@@ -68089,7 +68298,7 @@ var AWDParser = (function (_super) {
                 mat.alphaPremultiplied = props.get(8, false);
                 mat.blendMode = this.blendModeDic[props.get(9, 0)];
                 if (diffuseImage) {
-                    mat.diffuseTexture = new _awayjs_graphics.Single2DTexture(diffuseImage);
+                    mat.diffuseMethod.texture = new _awayjs_graphics.Single2DTexture(diffuseImage);
                     debugString += " | DiffuseTexture-Name = " + diffuseImage.name;
                 }
                 if (normalImage) {
@@ -68117,20 +68326,20 @@ var AWDParser = (function (_super) {
                             debugString += " | EffectMethod-Name = " + effectMethod.name;
                             break;
                         case 998:
-                            var shadowMapMethod = this._blocks[props.get(1, 0)].data;
-                            mat.shadowMethod = shadowMapMethod;
-                            debugString += " | ShadowMethod-Name = " + shadowMapMethod.name;
+                            var shadowMethod = this._blocks[props.get(1, 0)].data;
+                            mat.shadowMethod = shadowMethod;
+                            debugString += " | ShadowMethod-Name = " + shadowMethod.name;
                             break;
                         case 1:
                             var cubeTexture = new _awayjs_graphics.SingleCubeTexture(this._blocks[props.get(1, 0)].data);
-                            mat.ambientMethod = new _awayjs_materials.AmbientEnvMapMethod();
+                            //mat.ambientMethod.mappingMode = 
                             mat.ambientMethod.texture = cubeTexture;
                             debugString += " | AmbientEnvMapMethod | EnvMap-Name =" + cubeTexture.name;
                             break;
-                        case 51:
-                            mat.diffuseMethod = new _awayjs_materials.DiffuseDepthMethod();
-                            debugString += " | DiffuseDepthMethod";
-                            break;
+                        // case 51: //AmbientDepthMethod
+                        // 	mat.diffuseMethod = new AmbientDepthMethod();
+                        // 	debugString += " | AmbientDepthMethod";
+                        // 	break;
                         case 52:
                             var texture = new _awayjs_graphics.Single2DTexture(this._blocks[props.get(1, 0)].data);
                             mat.diffuseMethod = new _awayjs_materials.DiffuseGradientMethod(texture);
@@ -68146,8 +68355,7 @@ var AWDParser = (function (_super) {
                             debugString += " | DiffuseLightMapMethod | LightMapTexture-Name =" + texture.name;
                             break;
                         case 55:
-                            mat.diffuseMethod = new _awayjs_materials.DiffuseCelMethod(props.get(401, 3), mat.diffuseMethod);
-                            mat.diffuseMethod.smoothness = props.get(101, 0.1);
+                            mat.diffuseMethod = new _awayjs_materials.DiffuseCelMethod(props.get(401, 3), props.get(101, 0.1), mat.diffuseMethod);
                             debugString += " | DiffuseCelMethod";
                             break;
                         case 56:
@@ -68166,14 +68374,11 @@ var AWDParser = (function (_super) {
                             debugString += " | SpecularPhongMethod";
                             break;
                         case 103:
-                            mat.specularMethod = new _awayjs_materials.SpecularCelMethod(props.get(101, 0.5), mat.specularMethod);
-                            mat.specularMethod.smoothness = props.get(102, 0.1);
+                            mat.specularMethod = new _awayjs_materials.SpecularCelMethod(props.get(101, 0.5), props.get(102, 0.1), mat.specularMethod);
                             debugString += " | SpecularCelMethod";
                             break;
                         case 104:
-                            mat.specularMethod = new _awayjs_materials.SpecularFresnelMethod(props.get(701, true), mat.specularMethod);
-                            mat.specularMethod.fresnelPower = props.get(101, 5);
-                            mat.specularMethod.normalReflectance = props.get(102, 0.1);
+                            mat.specularMethod = new _awayjs_materials.SpecularFresnelMethod(props.get(701, true), props.get(101, 5), props.get(102, 0.1), mat.specularMethod);
                             debugString += " | SpecularFresnelMethod";
                             break;
                         case 151:
@@ -68194,10 +68399,10 @@ var AWDParser = (function (_super) {
             debugString += color;
             var diffuseTexture = new _awayjs_graphics.Single2DTexture(this._blocks[props.get(2, 0)].data);
             if (type == 5) {
-                diffuseTexture.mappingMode = _awayjs_graphics.MappingMode.LINEAR_GRADIENT;
+                diffuseTexture.mappingMode = _awayjs_graphics.MappingMode.LINEAR;
             }
             else if (type == 6) {
-                diffuseTexture.mappingMode = _awayjs_graphics.MappingMode.RADIAL_GRADIENT;
+                diffuseTexture.mappingMode = _awayjs_graphics.MappingMode.RADIAL;
             }
             var basic_mat = new _awayjs_materials.MethodMaterial();
             basic_mat.ambientMethod.texture = diffuseTexture;
@@ -68367,11 +68572,11 @@ var AWDParser = (function (_super) {
             case 1002:
                 shadowMethod = new _awayjs_materials.ShadowNearMethod(this._blocks[props.get(1, 0)].data);
                 break;
-            case 1101:
-                shadowMethod = new _awayjs_materials.ShadowFilteredMethod(light);
-                shadowMethod.alpha = props.get(101, 1);
-                shadowMethod.epsilon = props.get(102, 0.002);
-                break;
+            // case 1101: //ShadowFilteredMethod
+            // 	shadowMethod = new ShadowFilteredMethod(<DirectionalLight> light);
+            // 	(<ShadowFilteredMethod> shadowMethod).alpha = props.get(101, 1);
+            // 	(<ShadowFilteredMethod> shadowMethod).epsilon = props.get(102, 0.002);
+            // 	break;
             case 1102:
                 shadowMethod = new _awayjs_materials.ShadowDitheredMethod(light, props.get(201, 5));
                 shadowMethod.alpha = props.get(101, 1);

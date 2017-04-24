@@ -244,11 +244,7 @@ var Intermediate_MouseInteraction = function () {
             if (!sprite.hasEventListener(__WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__["MouseEvent"].MOUSE_MOVE)) {
                 sprite.material = this._grayMaterial;
             } else {
-                if (this._view.getCollider(sprite) != null) {
-                    sprite.material = this._redMaterial;
-                } else {
-                    sprite.material = this._blueMaterial;
-                }
+                if (this._view.getCollider(sprite) != null) sprite.material = this._redMaterial;else sprite.material = this._blueMaterial;
             }
         }
     };
@@ -288,7 +284,7 @@ var Intermediate_MouseInteraction = function () {
     Intermediate_MouseInteraction.prototype.onEnterFrame = function (dt) {
         // Move light with camera.
         var pos = this._camera.transform.position;
-        this._pointLight.transform.moveTo(pos.x, pos.y, pos.y);
+        this._pointLight.transform.moveTo(pos.x, pos.y, pos.z);
         var collidingObject = this._raycastPicker.getCollision(this._camera.transform.position, this._view.camera.transform.forwardVector, this._view);
         //var sprite:Sprite;
         if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) {
