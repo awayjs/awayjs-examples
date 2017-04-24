@@ -18224,26 +18224,25 @@ var MaterialBase = (function (_super) {
 }(_awayjs_core.AssetBase));
 
 /**
-
-
- */
-var MappingMode = (function () {
-    function MappingMode() {
-    }
-    return MappingMode;
-}());
-/**
  *
  */
-MappingMode.NORMAL = "normal";
 /**
  *
- */
-MappingMode.LINEAR_GRADIENT = "linearGradient";
-/**
- *
- */
-MappingMode.RADIAL_GRADIENT = "radialGradient";
+ */ 
+(function (MappingMode) {
+    /**
+     *
+     */
+    MappingMode[MappingMode["CUBE"] = 0] = "CUBE";
+    /**
+     *
+     */
+    MappingMode[MappingMode["LINEAR"] = 1] = "LINEAR";
+    /**
+     *
+     */
+    MappingMode[MappingMode["RADIAL"] = 2] = "RADIAL";
+})(exports.MappingMode || (exports.MappingMode = {}));
 
 /**
  *
@@ -18260,6 +18259,18 @@ var TextureBase = (function (_super) {
         _this._samplers = new Array();
         return _this;
     }
+    Object.defineProperty(TextureBase.prototype, "mappingMode", {
+        get: function () {
+            return this._mappingMode;
+        },
+        set: function (value) {
+            if (this._mappingMode == value)
+                return;
+            this._mappingMode = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     TextureBase.prototype.getNumImages = function () {
         return this._numImages;
     };
@@ -18293,9 +18304,9 @@ var Single2DTexture = (function (_super) {
     function Single2DTexture(image2D) {
         if (image2D === void 0) { image2D = null; }
         var _this = _super.call(this) || this;
+        _this._mappingMode = exports.MappingMode.LINEAR;
         _this.setNumImages(1);
         _this.image2D = image2D;
-        _this._mappingMode = MappingMode.NORMAL;
         return _this;
     }
     Object.defineProperty(Single2DTexture.prototype, "assetType", {
@@ -18305,18 +18316,6 @@ var Single2DTexture = (function (_super) {
          */
         get: function () {
             return Single2DTexture.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Single2DTexture.prototype, "mappingMode", {
-        get: function () {
-            return this._mappingMode;
-        },
-        set: function (value) {
-            if (this._mappingMode == value)
-                return;
-            this._mappingMode = value;
         },
         enumerable: true,
         configurable: true
@@ -18430,6 +18429,7 @@ var SingleCubeTexture = (function (_super) {
     function SingleCubeTexture(imageCube) {
         if (imageCube === void 0) { imageCube = null; }
         var _this = _super.call(this) || this;
+        _this._mappingMode = exports.MappingMode.CUBE;
         _this.setNumImages(1);
         _this.imageCube = imageCube;
         return _this;
@@ -22124,7 +22124,6 @@ exports.Image2DParser = Image2DParser;
 exports.ImageCubeParser = ImageCubeParser;
 exports.TextureAtlasParser = TextureAtlasParser;
 exports.PickingCollision = PickingCollision;
-exports.MappingMode = MappingMode;
 exports.Single2DTexture = Single2DTexture;
 exports.SingleCubeTexture = SingleCubeTexture;
 exports.TextureBase = TextureBase;
