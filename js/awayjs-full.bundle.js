@@ -42297,7 +42297,7 @@ var GL_DepthMaterial = (function (_super) {
     GL_DepthMaterial.prototype._iActivate = function (projection) {
         _super.prototype._iActivate.call(this, projection);
         if (this._textureVO && this._shader.alphaThreshold > 0) {
-            this._textureVO.activate(this);
+            this._textureVO.activate();
             this._shader.fragmentConstantData[this._fragmentConstantsIndex + 8] = this._shader.alphaThreshold;
         }
     };
@@ -42389,7 +42389,7 @@ var GL_DistanceMaterial = (function (_super) {
         data[index + 2] = 65025.0 * f;
         data[index + 3] = 16581375.0 * f;
         if (this._textureVO && this._shader.alphaThreshold > 0) {
-            this._textureVO.activate(this);
+            this._textureVO.activate();
             data[index + 8] = this._shader.alphaThreshold;
         }
     };
@@ -44115,7 +44115,7 @@ var ShadingMethodEvent = (function (_super) {
     }
     return ShadingMethodEvent;
 }(_awayjs_core.EventBase));
-ShadingMethodEvent.SHADER_INVALIDATED = "ShaderInvalidated";
+ShadingMethodEvent.SHADER_INVALIDATED = "shaderInvalidated";
 
 var Filter3DTaskBase = (function () {
     function Filter3DTaskBase(requireDepthRender) {
@@ -44983,7 +44983,7 @@ var GL_BillboardRenderable = (function (_super) {
      *
      * @returns {away.base.TriangleElements}
      */
-    GL_BillboardRenderable.prototype._pGetElements = function () {
+    GL_BillboardRenderable.prototype._getElements = function () {
         var texture = this._billboard.material.getTextureAt(0);
         var id = -1;
         if (texture)
@@ -45008,7 +45008,7 @@ var GL_BillboardRenderable = (function (_super) {
         }
         return this._stage.getAbstraction(elements);
     };
-    GL_BillboardRenderable.prototype._pGetMaterial = function () {
+    GL_BillboardRenderable.prototype._getMaterial = function () {
         return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._billboard.material || _awayjs_graphics.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
     return GL_BillboardRenderable;
@@ -45043,7 +45043,7 @@ var GL_LineSegmentRenderable = (function (_super) {
      * @returns {base.LineElements}
      * @protected
      */
-    GL_LineSegmentRenderable.prototype._pGetElements = function () {
+    GL_LineSegmentRenderable.prototype._getElements = function () {
         var elements = GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] || (GL_LineSegmentRenderable._lineGraphics[this._lineSegment.id] = new _awayjs_graphics.LineElements());
         var start = this._lineSegment.startPostion;
         var end = this._lineSegment.endPosition;
@@ -45060,7 +45060,7 @@ var GL_LineSegmentRenderable = (function (_super) {
         elements.setThickness(thickness);
         return this._stage.getAbstraction(elements);
     };
-    GL_LineSegmentRenderable.prototype._pGetMaterial = function () {
+    GL_LineSegmentRenderable.prototype._getMaterial = function () {
         return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._lineSegment.material || _awayjs_graphics.DefaultMaterialManager.getDefaultMaterial(this.renderable));
     };
     return GL_LineSegmentRenderable;
@@ -45089,7 +45089,7 @@ var GL_SkyboxRenderable = (function (_super) {
      * @returns {away.base.TriangleElements}
      * @private
      */
-    GL_SkyboxRenderable.prototype._pGetElements = function () {
+    GL_SkyboxRenderable.prototype._getElements = function () {
         var elementsGL = GL_SkyboxRenderable._elementsGL;
         if (!elementsGL) {
             var elements = new _awayjs_graphics.TriangleElements(new _awayjs_core.AttributesBuffer(11, 4));
@@ -45101,7 +45101,7 @@ var GL_SkyboxRenderable = (function (_super) {
         }
         return elementsGL;
     };
-    GL_SkyboxRenderable.prototype._pGetMaterial = function () {
+    GL_SkyboxRenderable.prototype._getMaterial = function () {
         return this._materialGroup.getMaterialPool(this.elementsGL).getAbstraction(this._skybox);
     };
     GL_SkyboxRenderable._iIncludeDependencies = function (shader) {
@@ -45634,7 +45634,7 @@ var GL_SkyboxMaterial = (function (_super) {
     GL_SkyboxMaterial.prototype._iActivate = function (projection) {
         _super.prototype._iActivate.call(this, projection);
         this._stage.context.setDepthTest(false, _awayjs_stage.ContextGLCompareMode.LESS);
-        this._texture.activate(this);
+        this._texture.activate();
     };
     return GL_SkyboxMaterial;
 }(_awayjs_stage.GL_MaterialPassBase));
