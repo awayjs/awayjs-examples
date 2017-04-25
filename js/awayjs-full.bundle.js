@@ -59829,14 +59829,14 @@ var EffectColorTransformChunk = (function (_super) {
             var index = this._colorTransformIndex;
             var data = this._shader.fragmentConstantData;
             var rawData = this._method.colorTransform._rawData;
-            data[index] = rawData[index];
-            data[index + 1] = rawData[index + 1];
-            data[index + 2] = rawData[index + 2];
-            data[index + 3] = rawData[index + 3];
-            data[index + 4] = rawData[index + 4];
-            data[index + 5] = rawData[index + 5];
-            data[index + 6] = rawData[index + 6];
-            data[index + 7] = rawData[index + 7];
+            data[index] = rawData[0];
+            data[index + 1] = rawData[1];
+            data[index + 2] = rawData[2];
+            data[index + 3] = rawData[3];
+            data[index + 4] = rawData[4];
+            data[index + 5] = rawData[5];
+            data[index + 6] = rawData[6];
+            data[index + 7] = rawData[7];
         }
     };
     return EffectColorTransformChunk;
