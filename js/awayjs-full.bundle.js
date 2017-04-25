@@ -6403,6 +6403,9 @@ var Rectangle = (function () {
         get: function () {
             return this.y + this.height;
         },
+        set: function (val) {
+            this.height = val - this.y;
+        },
         enumerable: true,
         configurable: true
     });
@@ -6435,6 +6438,10 @@ var Rectangle = (function () {
         get: function () {
             return this.x;
         },
+        set: function (val) {
+            this.width += this.x - val;
+            this.x = val;
+        },
         enumerable: true,
         configurable: true
     });
@@ -6444,6 +6451,9 @@ var Rectangle = (function () {
          */
         get: function () {
             return this.x + this.width;
+        },
+        set: function (val) {
+            this.width = val - this.x;
         },
         enumerable: true,
         configurable: true
@@ -6476,6 +6486,10 @@ var Rectangle = (function () {
          */
         get: function () {
             return this.y;
+        },
+        set: function (val) {
+            this.height += (this.y - val);
+            this.y = val;
         },
         enumerable: true,
         configurable: true
