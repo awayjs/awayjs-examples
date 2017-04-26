@@ -31369,6 +31369,7 @@ var MovieClip = (function (_super) {
         _this.constructedKeyFrameIndex = -1;
         _this._enterFrame = new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.ENTER_FRAME, _this);
         _this.inheritColorTransform = true;
+        // todo: allow to set cursor-types for movieclip
         _this._onMouseOver = function (event) {
             document.body.style.cursor = "pointer";
             _this.currentFrameIndex = 1;
@@ -31378,11 +31379,11 @@ var MovieClip = (function (_super) {
             _this.currentFrameIndex = 0;
         };
         _this._onMouseDown = function (event) {
-            document.body.style.cursor = "pointer";
+            document.body.style.cursor = "initial";
             _this.currentFrameIndex = 2;
         };
         _this._onMouseUp = function (event) {
-            document.body.style.cursor = "pointer";
+            document.body.style.cursor = "initial";
             _this.currentFrameIndex = _this.currentFrameIndex == 0 ? 0 : 1;
         };
         _this._timeline = timeline || new Timeline();
