@@ -63418,10 +63418,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 var AS2MCSoundProps = (function (_super) {
@@ -63781,11 +63842,14 @@ var AS2SoundAdapter = (function () {
         AS2SoundAdapter._globalSoundProps.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, this._onGlobalChangeDelegate);
     }
     AS2SoundAdapter.prototype.attachSound = function (id) {
-        this._name = id;
+        this._name = id.replace(".wav", "").replace(".mp3", "").replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
         // TODO: This will be AudioAsset or something
-        var asset = _awayjs_core.AssetLibrary.getAsset(id);
+        var asset = _awayjs_core.AssetLibrary.getAsset(this._name);
         if (asset)
             this._soundProps.audio = asset.clone();
+        else {
+            console.log("audio-asset not found " + this._name);
+        }
         this.updateVolume();
     };
     /*getBytesLoaded():number
@@ -63956,7 +64020,7 @@ var includeString = 'var Color			= this._includes.Color;\n' +
     'var SharedObject		= this._includes.SharedObject;\n' +
     'var int = function(value) {return Math.floor(value) | 0;}\n' +
     'var string = function(value) {return value.toString();}\n' +
-    'var getURL = function(value) {return value;}\n\n';
+    'var getURL = function(value) {window.open(value,"_blank");}\n\n';
 var AS2MovieClipAdapter = (function (_super) {
     __extends(AS2MovieClipAdapter, _super);
     function AS2MovieClipAdapter(adaptee, view) {
@@ -64218,6 +64282,16 @@ var AS2MovieClipAdapter = (function (_super) {
         },
         set: function (value) {
             this._onMouseUp = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_UP, this._onMouseUp, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseWheel", {
+        get: function () {
+            return this._onMouseWheel;
+        },
+        set: function (value) {
+            this._onMouseWheel = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, this._onMouseWheel, value);
         },
         enumerable: true,
         configurable: true
