@@ -302,10 +302,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 var ErrorBase = (function () {
@@ -10449,7 +10510,9 @@ ParserDataFormat.IMAGE = "image";
 var WaveAudioParser = (function (_super) {
     __extends(WaveAudioParser, _super);
     function WaveAudioParser() {
-        return _super.call(this, URLLoaderDataFormat.BLOB) || this;
+        var _this = _super.call(this, URLLoaderDataFormat.BLOB) || this;
+        _this._convertingBlobState = 0;
+        return _this;
     }
     WaveAudioParser.supportsType = function (extension) {
         extension = extension.toLowerCase();
@@ -10469,6 +10532,16 @@ var WaveAudioParser = (function (_super) {
         _super.prototype._pStartParsing.call(this, frameLimit);
     };
     WaveAudioParser.prototype._pProceedParsing = function () {
+        var _this = this;
+        if (this._convertingBlobState == 1) {
+            return ParserBase.MORE_TO_PARSE;
+        }
+        else if (this._convertingBlobState == 2) {
+            return ParserBase.PARSING_DONE;
+        }
+        else if (this._convertingBlobState == 3) {
+            return ParserBase.PARSING_DONE; //todo
+        }
         if (this.data instanceof ByteArray) {
             this._pContent = new WaveAudio(this.data.arraybytes);
             this._pFinalizeAsset(this._pContent, this._iFileName);
@@ -10477,7 +10550,19 @@ var WaveAudioParser = (function (_super) {
             this._pContent = new WaveAudio(this.data);
             this._pFinalizeAsset(this._pContent, this._iFileName);
         }
+        else if (this.data instanceof Blob) {
+            this._convertingBlobState = 1;
+            var fileReader = new FileReader();
+            fileReader.onload = function (event) { return _this.blobConverted(event); };
+            fileReader.readAsArrayBuffer(this.data);
+            return ParserBase.MORE_TO_PARSE;
+        }
         return ParserBase.PARSING_DONE;
+    };
+    WaveAudioParser.prototype.blobConverted = function (event) {
+        this._pContent = new WaveAudio(event.target.result);
+        this._pFinalizeAsset(this._pContent, WaveAudioParser.processFilename(this._iFileName));
+        this._convertingBlobState = 2;
     };
     WaveAudioParser.parseFileType = function (ba) {
         //old mp3 detections
@@ -10512,6 +10597,12 @@ var WaveAudioParser = (function (_super) {
     };
     return WaveAudioParser;
 }(ParserBase));
+/*
+    this static property can be set with a function that that will be called on each filename before adding it to the library
+*/
+WaveAudioParser.processFilename = function (filename) {
+    return filename;
+};
 
 /**
  * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
@@ -22261,10 +22352,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 /**
@@ -31217,10 +31369,22 @@ var MovieClip = (function (_super) {
         _this.constructedKeyFrameIndex = -1;
         _this._enterFrame = new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.ENTER_FRAME, _this);
         _this.inheritColorTransform = true;
-        _this._onMouseOver = function (event) { return _this.currentFrameIndex = 1; };
-        _this._onMouseOut = function (event) { return _this.currentFrameIndex = 0; };
-        _this._onMouseDown = function (event) { return _this.currentFrameIndex = 2; };
-        _this._onMouseUp = function (event) { return _this.currentFrameIndex = _this.currentFrameIndex == 0 ? 0 : 1; };
+        _this._onMouseOver = function (event) {
+            document.body.style.cursor = "pointer";
+            _this.currentFrameIndex = 1;
+        };
+        _this._onMouseOut = function (event) {
+            document.body.style.cursor = "initial";
+            _this.currentFrameIndex = 0;
+        };
+        _this._onMouseDown = function (event) {
+            document.body.style.cursor = "pointer";
+            _this.currentFrameIndex = 2;
+        };
+        _this._onMouseUp = function (event) {
+            document.body.style.cursor = "pointer";
+            _this.currentFrameIndex = _this.currentFrameIndex == 0 ? 0 : 1;
+        };
         _this._timeline = timeline || new Timeline();
         return _this;
     }
