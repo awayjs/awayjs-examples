@@ -64322,7 +64322,15 @@ var AS2MovieClipAdapter = (function (_super) {
             return this._onMouseWheel;
         },
         set: function (value) {
-            this._onMouseWheel = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, this._onMouseWheel, value);
+            var mc = this.adaptee;
+            if (this._onMouseWheel)
+                mc.removeEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, this._onMouseWheel);
+            if (value) {
+                var self = this;
+                var delegate = function (event) { return value.call(self, event); };
+                mc.addEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, delegate);
+                this._onMouseWheel = delegate;
+            }
         },
         enumerable: true,
         configurable: true
