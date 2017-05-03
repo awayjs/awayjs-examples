@@ -1406,6 +1406,13 @@ var StreamingAudioChannel = (function () {
         this._audio.ontimeupdate = function (event) { return _this._onTimeUpdate(event); };
         this._updateSource();
     }
+    StreamingAudioChannel.stopAllSounds = function () {
+        var len = StreamingAudioChannel._channels.length;
+        for (var j = 0; j < len; j++) {
+            StreamingAudioChannel._channels[j].stop();
+        }
+        StreamingAudioChannel._channels.length = 0;
+    };
     Object.defineProperty(StreamingAudioChannel.prototype, "duration", {
         get: function () {
             return this._duration;
@@ -1537,6 +1544,13 @@ var WebAudioChannel = (function () {
         this._gainNode.connect(this._audioCtx.destination);
         this._onEndedDelegate = function (event) { return _this._onEnded(event); };
     }
+    WebAudioChannel.stopAllSounds = function () {
+        var len = WebAudioChannel._channels.length;
+        for (var j = 0; j < len; j++) {
+            WebAudioChannel._channels[j].stop();
+        }
+        WebAudioChannel._channels.length = 0;
+    };
     Object.defineProperty(WebAudioChannel.prototype, "duration", {
         get: function () {
             return this._duration;
@@ -1663,6 +1677,12 @@ var AudioManager = (function () {
     };
     AudioManager.getExternalSoundInterface = function () {
         return AudioManager._externalSoundInterface;
+    };
+    AudioManager.stopAllSounds = function () {
+        WebAudioChannel.stopAllSounds();
+        StreamingAudioChannel.stopAllSounds();
+        //EventAudioChannel.stopAllSounds();
+        //AudioChannel.stopAllSounds();
     };
     AudioManager.getChannel = function (byteLength) {
         //choose best audio channel by bytelength
@@ -4460,6 +4480,9 @@ var Transform = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Transform.prototype.append = function (value) {
+        console.log("append not implemented yet in core/Transform");
+    };
     Object.defineProperty(Transform.prototype, "downVector", {
         /**
          *
@@ -9733,6 +9756,13 @@ var ByteArray = (function (_super) {
             this.arraybytes = newarraybuffer;
             this.maxlength = newmaxlength;
         }
+    };
+    ByteArray.prototype.writeObject = function (object) {
+        console.log("writeObject not implemented yet in core/ByteArray");
+    };
+    ByteArray.prototype.readObject = function () {
+        console.log("readObject not implemented yet in core/ByteArray");
+        return {};
     };
     ByteArray.prototype.writeByte = function (b) {
         this.ensureWriteableSpace(1);
