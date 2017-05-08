@@ -12988,10 +12988,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 /**
@@ -13615,54 +13676,98 @@ var GraphicsFactoryHelper = (function () {
     GraphicsFactoryHelper.getControlYForCurveY = function (a, c, b) {
         return c;
     };
-    GraphicsFactoryHelper.drawPoint = function (startX, startY, vertices) {
-        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX + 2, startY - 2, startX + 2, startY + 2, 0, vertices);
-        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX - 2, startY + 2, startX + 2, startY + 2, 0, vertices);
+    GraphicsFactoryHelper.drawPoint = function (startX, startY, vertices, curves) {
+        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX + 2, startY - 2, startX + 2, startY + 2, 0, vertices, curves);
+        GraphicsFactoryHelper.addTriangle(startX - 2, startY - 2, startX - 2, startY + 2, startX + 2, startY + 2, 0, vertices, curves);
     };
-    GraphicsFactoryHelper.addTriangle = function (startX, startY, controlX, controlY, endX, endY, tri_type, vertices) {
+    GraphicsFactoryHelper.drawElipse = function (x, y, width, height, vertices, startAngle, endAngle, stepAngle, curves) {
+        // todo: validate input / check edge cases
+        var degreeTotal = endAngle - startAngle;
+        var steps = degreeTotal / stepAngle;
+        var x_last = x + width * Math.cos(startAngle * (Math.PI / 180));
+        var y_last = y + height * Math.sin(startAngle * (Math.PI / 180));
+        for (var i = 1; i <= steps; i++) {
+            var x_tmp = x + width * Math.cos((startAngle + i * stepAngle) * (Math.PI / 180));
+            var y_tmp = y + height * Math.sin((startAngle + i * stepAngle) * (Math.PI / 180));
+            GraphicsFactoryHelper.addTriangle(x, y, x_tmp, y_tmp, x_last, y_last, 0, vertices, curves);
+            x_last = x_tmp;
+            y_last = y_tmp;
+        }
+    };
+    GraphicsFactoryHelper.drawElipseStrokes = function (x, y, width, height, vertices, startAngle, endAngle, stepAngle, thickness, curves) {
+        // todo: validate input / check edge cases
+        var degreeTotal = endAngle - startAngle;
+        var steps = degreeTotal / stepAngle;
+        var x_last = x + (width + thickness) * Math.cos(startAngle * (Math.PI / 180));
+        var y_last = y + (height + thickness) * Math.sin(startAngle * (Math.PI / 180));
+        var x_last2 = x + (width - thickness) * Math.cos(startAngle * (Math.PI / 180));
+        var y_last2 = y + (height - thickness) * Math.sin(startAngle * (Math.PI / 180));
+        for (var i = 1; i <= steps; i++) {
+            var x_tmp = x + (width + thickness) * Math.cos((startAngle + i * stepAngle) * (Math.PI / 180));
+            var y_tmp = y + (height + thickness) * Math.sin((startAngle + i * stepAngle) * (Math.PI / 180));
+            var x_tmp2 = x + (width - thickness) * Math.cos((startAngle + i * stepAngle) * (Math.PI / 180));
+            var y_tmp2 = y + (height - thickness) * Math.sin((startAngle + i * stepAngle) * (Math.PI / 180));
+            GraphicsFactoryHelper.addTriangle(x_tmp, y_tmp, x_tmp2, y_tmp2, x_last, y_last, 0, vertices, curves);
+            GraphicsFactoryHelper.addTriangle(x_last2, y_last2, x_tmp2, y_tmp2, x_last, y_last, 0, vertices, curves);
+            x_last = x_tmp;
+            y_last = y_tmp;
+            x_last2 = x_tmp2;
+            y_last2 = y_tmp2;
+        }
+    };
+    GraphicsFactoryHelper.addTriangle = function (startX, startY, controlX, controlY, endX, endY, tri_type, vertices, curves) {
         var final_vert_cnt = vertices.length;
         if (tri_type == 0) {
             vertices[final_vert_cnt++] = startX;
             vertices[final_vert_cnt++] = startY;
-            vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
             vertices[final_vert_cnt++] = controlX;
             vertices[final_vert_cnt++] = controlY;
-            vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
             vertices[final_vert_cnt++] = endX;
             vertices[final_vert_cnt++] = endY;
-            vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 4.5736980577097704e-41; // ((127<<24)+(127<<16)+0+0)
         }
         else if (tri_type < 0) {
             vertices[final_vert_cnt++] = startX;
             vertices[final_vert_cnt++] = startY;
-            vertices[final_vert_cnt++] = 1.1708844992641982e-38; // ((127<<24)+(127<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 1.1708844992641982e-38; // ((127<<24)+(127<<16)+0+0)
             vertices[final_vert_cnt++] = controlX;
             vertices[final_vert_cnt++] = controlY;
-            vertices[final_vert_cnt++] = 2.2778106537599901e-41; // ((127<<24)+(63<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 2.2778106537599901e-41; // ((127<<24)+(63<<16)+0+0)
             vertices[final_vert_cnt++] = endX;
             vertices[final_vert_cnt++] = endY;
-            vertices[final_vert_cnt++] = 1.7796490496925177e-43; // ((127<<24)+0+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 1.7796490496925177e-43; // ((127<<24)+0+0+0)
         }
         else if (tri_type > 0) {
             vertices[final_vert_cnt++] = startX;
             vertices[final_vert_cnt++] = startY;
-            vertices[final_vert_cnt++] = 1.1708846393940446e-38; // ((-128<<24)+(127<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 1.1708846393940446e-38; // ((-128<<24)+(127<<16)+0+0)
             vertices[final_vert_cnt++] = controlX;
             vertices[final_vert_cnt++] = controlY;
-            vertices[final_vert_cnt++] = 2.2779507836064226e-41; // ((-128<<24)+(63<<16)+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 2.2779507836064226e-41; // ((-128<<24)+(63<<16)+0+0)
             vertices[final_vert_cnt++] = endX;
             vertices[final_vert_cnt++] = endY;
-            vertices[final_vert_cnt++] = 1.793662034335766e-43; // ((-128<<24)+0+0+0)
+            if (curves)
+                vertices[final_vert_cnt++] = 1.793662034335766e-43; // ((-128<<24)+0+0+0)
         }
     };
-    GraphicsFactoryHelper.createCap = function (startX, startY, start_le, start_ri, dir_vec, capstyle, cap_position, thickness, vertices) {
+    GraphicsFactoryHelper.createCap = function (startX, startY, start_le, start_ri, dir_vec, capstyle, cap_position, thickness, vertices, curves) {
         if (capstyle == CapsStyle.ROUND) {
             //console.log("add round cap");
             var tmp1_x = startX + (cap_position * (dir_vec.x * thickness));
             var tmp1_y = startY + (cap_position * (dir_vec.y * thickness));
             tmp1_x = tmp1_x * 2 - start_le.x / 2 - start_ri.x / 2;
             tmp1_y = tmp1_y * 2 - start_le.y / 2 - start_ri.y / 2;
-            GraphicsFactoryHelper.addTriangle(start_le.x, start_le.y, tmp1_x, tmp1_y, start_ri.x, start_ri.y, -1, vertices);
+            GraphicsFactoryHelper.addTriangle(start_le.x, start_le.y, tmp1_x, tmp1_y, start_ri.x, start_ri.y, -1, vertices, curves);
         }
         else if (capstyle == CapsStyle.SQUARE) {
             //console.log("add square cap");
@@ -13670,8 +13775,8 @@ var GraphicsFactoryHelper = (function () {
             var tmp1_y = start_le.y + (cap_position * (dir_vec.y * thickness));
             var tmp2_x = start_ri.x + (cap_position * (dir_vec.x * thickness));
             var tmp2_y = start_ri.y + (cap_position * (dir_vec.y * thickness));
-            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, tmp1_x, tmp1_y, start_le.x, start_le.y, 0, vertices);
-            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, start_le.x, start_le.y, start_ri.x, start_ri.y, 0, vertices);
+            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, tmp1_x, tmp1_y, start_le.x, start_le.y, 0, vertices, curves);
+            GraphicsFactoryHelper.addTriangle(tmp2_x, tmp2_y, start_le.x, start_le.y, start_ri.x, start_ri.y, 0, vertices, curves);
         }
     };
     GraphicsFactoryHelper.getLineFormularData = function (a, b) {
@@ -15387,6 +15492,851 @@ GraphicsPathCommand.WIDE_MOVE_TO = 5;
  * to the x- and y-coordinates specified in the data vector, using 2 control points.
  */
 GraphicsPathCommand.CUBIC_CURVE = 6;
+
+/**
+ * The GraphicsPathWinding class provides values for the
+ * <code>flash.display.GraphicsPath.winding</code> property and the
+ * <code>flash.display.Graphics.drawPath()</code> method to determine the
+ * direction to draw a path. A clockwise path is positively wound, and a
+ * counter-clockwise path is negatively wound:
+ *
+ * <p> When paths intersect or overlap, the winding direction determines the
+ * rules for filling the areas created by the intersection or overlap:</p>
+ */
+var GraphicsPathWinding = (function () {
+    function GraphicsPathWinding() {
+    }
+    return GraphicsPathWinding;
+}());
+GraphicsPathWinding.EVEN_ODD = "evenOdd";
+GraphicsPathWinding.NON_ZERO = "nonZero";
+
+var GraphicsFillStyle = (function () {
+    function GraphicsFillStyle(color, alpha) {
+        if (color === void 0) { color = 0xffffff; }
+        if (alpha === void 0) { alpha = 1; }
+        this.color = color;
+        this._alpha = alpha;
+    }
+    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsFillStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return GraphicsFillStyle;
+}());
+GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
+
+/**
+ * The JointStyle class is an enumeration of constant values that specify the
+ * joint style to use in drawing lines. These constants are provided for use
+ * as values in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
+ * three types of joints: miter, round, and bevel, as the following example
+ * shows:
+ */
+var JointStyle = (function () {
+    function JointStyle() {
+    }
+    return JointStyle;
+}());
+/**
+ * Specifies beveled joints in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method.
+ */
+JointStyle.BEVEL = 2;
+/**
+ * Specifies mitered joints in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method.
+ */
+JointStyle.MITER = 0;
+/**
+ * Specifies round joints in the <code>joints</code> parameter of the
+ * <code>flash.display.Graphics.lineStyle()</code> method.
+ */
+JointStyle.ROUND = 1;
+
+var GraphicsStrokeStyle = (function () {
+    function GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miter_limit) {
+        if (color === void 0) { color = 0xffffff; }
+        if (alpha === void 0) { alpha = 1; }
+        if (thickness === void 0) { thickness = 10; }
+        if (jointstyle === void 0) { jointstyle = JointStyle.ROUND; }
+        if (capstyle === void 0) { capstyle = CapsStyle.SQUARE; }
+        if (miter_limit === void 0) { miter_limit = 10; }
+        this._color = color;
+        this._alpha = alpha;
+        this._thickness = thickness;
+        this._jointstyle = jointstyle;
+        this._capstyle = capstyle;
+        this._miter_limit = miter_limit;
+    }
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsStrokeStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "color", {
+        get: function () {
+            return this._color;
+        },
+        set: function (value) {
+            this._color = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "alpha", {
+        get: function () {
+            return this._alpha;
+        },
+        set: function (value) {
+            this._alpha = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "half_thickness", {
+        get: function () {
+            return this._thickness / 2;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "thickness", {
+        get: function () {
+            return this._thickness;
+        },
+        set: function (value) {
+            this._thickness = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "jointstyle", {
+        get: function () {
+            return this._jointstyle;
+        },
+        set: function (value) {
+            this._jointstyle = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "miter_limit", {
+        get: function () {
+            return this._miter_limit;
+        },
+        set: function (value) {
+            this._miter_limit = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsStrokeStyle.prototype, "capstyle", {
+        get: function () {
+            return this._capstyle;
+        },
+        set: function (value) {
+            this._capstyle = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return GraphicsStrokeStyle;
+}());
+GraphicsStrokeStyle.data_type = "[graphicsdata StrokeStyle]";
+
+/**
+
+ * Defines the values to use for specifying path-drawing commands.
+ * The values in this class are used by the Graphics.drawPath() method,
+ *or stored in the commands vector of a GraphicsPath object.
+ */
+var GraphicsPath = (function () {
+    function GraphicsPath(commands, data, winding_rule) {
+        if (commands === void 0) { commands = null; }
+        if (data === void 0) { data = null; }
+        if (winding_rule === void 0) { winding_rule = GraphicsPathWinding.EVEN_ODD; }
+        this._data = [];
+        this._commands = [];
+        this._style = null;
+        this.verts = [];
+        if (commands != null && data != null) {
+            this._data[0] = data;
+            this._commands[0] = commands;
+        }
+        else {
+            this._data[0] = [];
+            this._commands[0] = [];
+        }
+        this._startPoint = new _awayjs_core.Point();
+        this._cur_point = new _awayjs_core.Point();
+        this._winding_rule = winding_rule;
+        this._winding_directions = [];
+    }
+    Object.defineProperty(GraphicsPath.prototype, "data_type", {
+        get: function () {
+            return GraphicsPath.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsPath.prototype, "style", {
+        get: function () {
+            return this._style;
+        },
+        set: function (value) {
+            this._style = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GraphicsPath.prototype.fill = function () {
+        if (this._style == null)
+            return null;
+        if (this._style.data_type == GraphicsFillStyle.data_type)
+            return this._style;
+        return null;
+    };
+    GraphicsPath.prototype.stroke = function () {
+        if (this._style == null)
+            return null;
+        if (this._style.data_type == GraphicsStrokeStyle.data_type)
+            return this._style;
+        return null;
+    };
+    Object.defineProperty(GraphicsPath.prototype, "commands", {
+        get: function () {
+            return this._commands;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GraphicsPath.prototype, "data", {
+        get: function () {
+            return this._data;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GraphicsPath.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+        // if controlpoint and anchor are same, we add lineTo command
+        if ((controlX == anchorX) && (controlY == anchorY)) {
+            this.lineTo(controlX, controlY);
+            this.moveTo(anchorX, anchorY);
+            return;
+        }
+        // if anchor is current point, but controlpoint is different, we lineto controlpoint
+        if (((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) && ((this._cur_point.x != controlX) || (this._cur_point.y != controlY))) {
+            this.lineTo(controlX, controlY);
+            this.moveTo(anchorX, anchorY);
+            return;
+        }
+        // if controlpoint is current point, but anchor is different, we lineto anchor
+        if (((this._cur_point.x != anchorX) || (this._cur_point.y != anchorY)) && ((this._cur_point.x == controlX) && (this._cur_point.y == controlY))) {
+            this.lineTo(anchorX, anchorY);
+            return;
+        }
+        // if controlpoint and anchor are same as current point
+        if (((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) && ((this._cur_point.x == controlX) && (this._cur_point.y == controlY))) {
+            console.log("curveTo command not added because startpoint and endpoint are the same.");
+            this.lineTo(anchorX, anchorY);
+            return;
+        }
+        if (this._commands[this._commands.length - 1].length == 0) {
+            // every contour must start with a moveTo command, so we make sure we have correct startpoint
+            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
+            this._data[this._data.length - 1].push(this._cur_point.x);
+            this._data[this._data.length - 1].push(this._cur_point.y);
+        }
+        this._commands[this._commands.length - 1].push(GraphicsPathCommand.CURVE_TO);
+        this._data[this._data.length - 1].push(controlX);
+        this._data[this._data.length - 1].push(controlY);
+        this._data[this._data.length - 1].push(anchorX);
+        this._data[this._data.length - 1].push(anchorY);
+        this._cur_point.x = anchorX;
+        this._cur_point.y = anchorY;
+    };
+    GraphicsPath.prototype.cubicCurveTo = function (controlX, controlY, control2X, control2Y, anchorX, anchorY) {
+        console.log("cubicCurveTo not yet fully supported.");
+        if ((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) {
+            console.log("curveTo command not added because startpoint and endpoint are the same.");
+            return;
+        }
+        if (this._commands[this._commands.length - 1].length == 0) {
+            // every contour must start with a moveTo command, so we make sure we have correct startpoint
+            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
+            this._data[this._data.length - 1].push(this._cur_point.x);
+            this._data[this._data.length - 1].push(this._cur_point.y);
+        }
+        this._commands[this._commands.length - 1].push(GraphicsPathCommand.CURVE_TO);
+        this._data[this._data.length - 1].push(controlX);
+        this._data[this._data.length - 1].push(controlY);
+        this._data[this._data.length - 1].push(anchorX);
+        this._data[this._data.length - 1].push(anchorY);
+        this._cur_point.x = anchorX;
+        this._cur_point.y = anchorY;
+    };
+    GraphicsPath.prototype.lineTo = function (x, y) {
+        if ((this._cur_point.x == x) && (this._cur_point.y == y)) {
+            console.log("lineTo command not added because startpoint and endpoint are the same.");
+            return;
+        }
+        if (this._commands[this._commands.length - 1].length == 0) {
+            // every contour must start with a moveTo command, so we make sure we have correct startpoint
+            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
+            this._data[this._data.length - 1].push(this._cur_point.x);
+            this._data[this._data.length - 1].push(this._cur_point.y);
+        }
+        this._commands[this._commands.length - 1].push(GraphicsPathCommand.LINE_TO);
+        this._data[this._data.length - 1].push(x);
+        this._data[this._data.length - 1].push(y);
+        this._cur_point.x = x;
+        this._cur_point.y = y;
+    };
+    GraphicsPath.prototype.moveTo = function (x, y) {
+        if ((this._cur_point.x == x) && (this._cur_point.y == y)) {
+            console.log("moveTo command not added because startpoint and endpoint are the same.");
+            return;
+        }
+        // whenever a moveTo command apears, we start a new contour
+        if (this._commands[this._commands.length - 1].length > 0) {
+            this._commands.push([GraphicsPathCommand.MOVE_TO]);
+            this._data.push([x, y]);
+        }
+        this._startPoint.x = x;
+        this._startPoint.y = y;
+        this._cur_point.x = x;
+        this._cur_point.y = y;
+    };
+    GraphicsPath.prototype.wideLineTo = function (x, y) {
+        // not used
+        /*
+         this._commands.push(GraphicsPathCommand.WIDE_LINE_TO);
+         this._data.push(0);
+         this._data.push(0);
+         this._data.push(x);
+         this._data.push(y);
+         */
+    };
+    GraphicsPath.prototype.wideMoveTo = function (x, y) {
+        // not used
+        /*
+         this._commands.push(GraphicsPathCommand.WIDE_MOVE_TO);
+         this._data.push(0);
+         this._data.push(0);
+         this._data.push(x);
+         this._data.push(y);
+         */
+    };
+    return GraphicsPath;
+}());
+GraphicsPath.data_type = "[graphicsdata path]";
+
+/**
+ * The Graphics class contains a set of methods that you can use to create a
+ * vector shape. Display objects that support drawing include Sprite and Shape
+ * objects. Each of these classes includes a <code>graphics</code> property
+ * that is a Graphics object. The following are among those helper functions
+ * provided for ease of use: <code>drawRect()</code>,
+ * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+ * <code>drawEllipse()</code>.
+ *
+ * <p>You cannot create a Graphics object directly from ActionScript code. If
+ * you call <code>new Graphics()</code>, an exception is thrown.</p>
+ *
+ * <p>The Graphics class is final; it cannot be subclassed.</p>
+ */
+var GraphicsFactoryStrokes = (function () {
+    function GraphicsFactoryStrokes() {
+    }
+    GraphicsFactoryStrokes.draw_pathes = function (graphic_pathes, final_vert_list, curves) {
+        var len = graphic_pathes.length;
+        var contour_commands;
+        var contour_data;
+        var strokeStyle;
+        var one_path;
+        var commands;
+        var data;
+        var i = 0;
+        var k = 0;
+        var vert_cnt = 0;
+        var data_cnt = 0;
+        var final_vert_cnt = 0;
+        var lastPoint = new _awayjs_core.Point();
+        var start_point = new _awayjs_core.Point();
+        var end_point = new _awayjs_core.Point();
+        var start_left = new _awayjs_core.Point();
+        var start_right = new _awayjs_core.Point();
+        var ctr_left = new _awayjs_core.Point();
+        var ctr_right = new _awayjs_core.Point();
+        var ctr_left2 = new _awayjs_core.Point();
+        var ctr_right2 = new _awayjs_core.Point();
+        var end_left = new _awayjs_core.Point();
+        var end_right = new _awayjs_core.Point();
+        var tmp_point = new _awayjs_core.Point();
+        var tmp_point2 = new _awayjs_core.Point();
+        var tmp_point3 = new _awayjs_core.Point();
+        var closed = false;
+        var last_dir_vec = new _awayjs_core.Point();
+        var cp = 0;
+        for (cp = 0; cp < len; cp++) {
+            one_path = graphic_pathes[cp];
+            contour_commands = one_path.commands;
+            contour_data = one_path.data;
+            strokeStyle = one_path.stroke();
+            for (k = 0; k < contour_commands.length; k++) {
+                commands = contour_commands[k];
+                data = contour_data[k];
+                vert_cnt = 0;
+                data_cnt = 0;
+                var new_dir = 0;
+                var dir_delta = 0;
+                var last_direction = 0;
+                var tmp_dir_point = new _awayjs_core.Point();
+                closed = true;
+                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1]))
+                    closed = false;
+                else {
+                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+                    last_dir_vec.normalize();
+                    last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                }
+                data_cnt = 0;
+                lastPoint.x = data[data_cnt++];
+                lastPoint.y = data[data_cnt++];
+                var new_cmds = [];
+                var new_pnts = [];
+                var new_cmds_cnt = 0;
+                var new_pnts_cnt = 0;
+                var prev_normal = new _awayjs_core.Point();
+                var le_point = new _awayjs_core.Point();
+                var curve_end_point = new _awayjs_core.Point();
+                var ri_point = new _awayjs_core.Point();
+                var ctr_point = new _awayjs_core.Point();
+                prev_normal.x = -1 * last_dir_vec.y;
+                prev_normal.y = last_dir_vec.x;
+                for (i = 1; i < commands.length; i++) {
+                    if (commands[i] == GraphicsPathCommand.MOVE_TO) {
+                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                        continue;
+                    }
+                    //console.log("");
+                    //console.log("segment "+i+"lastPoint x = "+lastPoint.x+" y = "+lastPoint.y)
+                    end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                    //console.log("segment "+i+"end_point x = "+end_point.x+" y = "+end_point.y)
+                    if (commands[i] == GraphicsPathCommand.CURVE_TO) {
+                        curve_end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                    }
+                    //get the directional vector and the direction for this segment
+                    tmp_dir_point.x = end_point.x - lastPoint.x;
+                    tmp_dir_point.y = end_point.y - lastPoint.y;
+                    tmp_dir_point.normalize();
+                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                    // get the difference in angle to the last segment
+                    dir_delta = new_dir - last_direction;
+                    if (dir_delta > 180) {
+                        dir_delta -= 360;
+                    }
+                    if (dir_delta < -180) {
+                        dir_delta += 360;
+                    }
+                    //console.log("DIRECTION DELTA: "+dir_delta);
+                    last_direction = new_dir;
+                    //console.log("segment "+i+" direction: "+dir_delta);
+                    // rotate direction around 90 degree
+                    tmp_point.x = -1 * tmp_dir_point.y;
+                    tmp_point.y = tmp_dir_point.x;
+                    ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                    le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                    var add_segment = false;
+                    // check if this is the first segment, and the path is not closed
+                    // in this case, we can just set the points to the contour points
+                    if ((i == 1) && (!closed)) {
+                        //console.log("segment "+i+"Path is not closed, we can just add the first segment")
+                        add_segment = true;
+                    }
+                    else {
+                        // we need to figure out if we need to add a joint or not
+                        if ((dir_delta == 0) || (dir_delta == 180)) {
+                            // check if this and the prev segment was a line. if yes, than they can be merged
+                            if ((i != 1) && (commands[i] == GraphicsPathCommand.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand.LINE_TO)) {
+                                //console.log("straight line can be merged in prev straight line");
+                                add_segment = false;
+                            }
+                            else {
+                                add_segment = true;
+                            }
+                        }
+                        if (Math.abs(dir_delta) == 180) {
+                            add_segment = true;
+                        }
+                        else if (dir_delta != 0) {
+                            add_segment = true;
+                            var half_angle = (180 - (dir_delta));
+                            if (dir_delta < 0) {
+                                half_angle = (-180 - (dir_delta));
+                            }
+                            half_angle = half_angle * -0.5 * _awayjs_core.MathConsts.DEGREES_TO_RADIANS;
+                            var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+                            tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
+                            tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
+                            tmp_point2.normalize();
+                            var merged_pnt_ri = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
+                            var merged_pnt_le = new _awayjs_core.Point(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
+                            if (dir_delta > 0) {
+                                ri_point = merged_pnt_ri;
+                                var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                                var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * strokeStyle.half_thickness), lastPoint.y - (prev_normal.y * strokeStyle.half_thickness));
+                                le_point = contour_le;
+                            }
+                            else {
+                                le_point = merged_pnt_le;
+                                var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                                var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * strokeStyle.half_thickness), lastPoint.y + (prev_normal.y * strokeStyle.half_thickness));
+                                ri_point = contour_ri;
+                            }
+                            var addJoints = true;
+                            if (strokeStyle.jointstyle == JointStyle.MITER) {
+                                var distance_miter = (Math.sqrt((distance * distance) - (strokeStyle.half_thickness * strokeStyle.half_thickness)) / strokeStyle.half_thickness);
+                                if (distance_miter <= strokeStyle.miter_limit) {
+                                    addJoints = false;
+                                    ri_point = merged_pnt_ri;
+                                    le_point = merged_pnt_le;
+                                }
+                                else {
+                                    if (dir_delta > 0) {
+                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        tmp_point3.x = prev_normal.y * -1;
+                                        tmp_point3.y = prev_normal.x;
+                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                    }
+                                    else {
+                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        tmp_point3.x = prev_normal.y * -1;
+                                        tmp_point3.y = prev_normal.x;
+                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                    }
+                                }
+                            }
+                            if (addJoints) {
+                                new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle.ROUND) ? GraphicsPathCommand.BUILD_JOINT : GraphicsPathCommand.BUILD_ROUND_JOINT;
+                                if (dir_delta > 0) {
+                                    new_pnts[new_pnts_cnt++] = merged_pnt_ri;
+                                    new_pnts[new_pnts_cnt++] = contour_prev_le;
+                                    new_pnts[new_pnts_cnt++] = contour_le;
+                                }
+                                else {
+                                    new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                    new_pnts[new_pnts_cnt++] = merged_pnt_le;
+                                    new_pnts[new_pnts_cnt++] = contour_ri;
+                                }
+                                if (strokeStyle.jointstyle == JointStyle.ROUND) {
+                                    new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
+                                    if (dir_delta > 0) {
+                                        new_pnts[new_pnts_cnt++] = contour_prev_le;
+                                        new_pnts[new_pnts_cnt++] = contour_le;
+                                    }
+                                    else {
+                                        new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                        new_pnts[new_pnts_cnt++] = contour_ri;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    prev_normal.x = tmp_point.x;
+                    prev_normal.y = tmp_point.y;
+                    if (add_segment) {
+                        if (commands[i] == GraphicsPathCommand.LINE_TO) {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
+                            new_pnts[new_pnts_cnt++] = ri_point;
+                            new_pnts[new_pnts_cnt++] = le_point;
+                        }
+                        else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
+                            tmp_dir_point.x = curve_end_point.x - end_point.x;
+                            tmp_dir_point.y = curve_end_point.y - end_point.y;
+                            tmp_dir_point.normalize();
+                            new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                            dir_delta = new_dir - last_direction;
+                            last_direction = new_dir;
+                            tmp_point.x = -1 * tmp_dir_point.y;
+                            tmp_point.y = tmp_dir_point.x;
+                            if ((dir_delta != 0) && (dir_delta != 180)) {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.CURVE_TO;
+                                new_pnts[new_pnts_cnt++] = ri_point;
+                                new_pnts[new_pnts_cnt++] = le_point;
+                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x, lastPoint.y);
+                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(end_point.x, end_point.y);
+                                new_pnts[new_pnts_cnt++] = curve_end_point;
+                            }
+                            else {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
+                                new_pnts[new_pnts_cnt++] = ri_point;
+                                new_pnts[new_pnts_cnt++] = le_point;
+                            }
+                            prev_normal.x = tmp_point.x;
+                            prev_normal.y = tmp_point.y;
+                            lastPoint = curve_end_point;
+                        }
+                    }
+                    if (commands[i] == GraphicsPathCommand.LINE_TO) {
+                        lastPoint = end_point;
+                    }
+                    if (i == commands.length - 1) {
+                        if (!closed) {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
+                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
+                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                        }
+                        else {
+                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
+                            new_pnts[new_pnts_cnt++] = new_pnts[0];
+                            new_pnts[new_pnts_cnt++] = new_pnts[1];
+                        }
+                    }
+                }
+                // first we draw all the curves:
+                new_cmds_cnt = 0;
+                new_pnts_cnt = 0;
+                for (i = 0; i < new_cmds.length; i++) {
+                    if (new_cmds[i] == GraphicsPathCommand.LINE_TO) {
+                        new_pnts_cnt += 2;
+                    }
+                    else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        start_point = new_pnts[new_pnts_cnt++];
+                        ctr_point = new_pnts[new_pnts_cnt++];
+                        end_point = new_pnts[new_pnts_cnt++];
+                        end_right = new_pnts[new_pnts_cnt];
+                        end_left = new_pnts[new_pnts_cnt + 1];
+                        // get the directional vector for the first part of the curve
+                        tmp_dir_point.x = ctr_point.x - start_point.x;
+                        tmp_dir_point.y = ctr_point.y - start_point.y;
+                        tmp_point3.x = ctr_point.x - start_point.x;
+                        tmp_point3.y = ctr_point.y - start_point.y;
+                        var length1 = tmp_point3.length;
+                        tmp_dir_point.normalize();
+                        // get the directional vector for the second part of the curve
+                        tmp_point2.x = end_point.x - ctr_point.x;
+                        tmp_point2.y = end_point.y - ctr_point.y;
+                        var length2 = tmp_point2.length;
+                        tmp_point2.normalize();
+                        var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
+                        if (length1 > length2) {
+                            length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
+                        }
+                        // get angle to positive x-axis for both dir-vectors, than get the difference between those
+                        var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                        var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                        dir_delta = angle_2 - angle_1;
+                        if (dir_delta > 180)
+                            dir_delta -= 360;
+                        if (dir_delta < -180)
+                            dir_delta += 360;
+                        //var half_angle:number=dir_delta*0.5*MathConsts.DEGREES_TO_RADIANS;
+                        //var distance:number=strokeStyle.half_thickness / Math.sin(half_angle);
+                        //tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
+                        //tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
+                        //tmp_point3.normalize();
+                        //var merged_pnt_ri:Point = new Point(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
+                        //var merged_pnt_le:Point = new Point(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
+                        var curve_x = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
+                        var curve_y = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
+                        var curve_2x = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
+                        var curve_2y = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
+                        tmp_point3.x = -1 * (curve_y - curve_2y);
+                        tmp_point3.y = curve_x - curve_2x;
+                        tmp_point3.normalize();
+                        //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
+                        // move the point on the curve to use correct thickness
+                        ctr_right.x = curve_x - (tmp_point3.x * strokeStyle.half_thickness);
+                        ctr_right.y = curve_y - (tmp_point3.y * strokeStyle.half_thickness);
+                        ctr_left.x = curve_x + (tmp_point3.x * strokeStyle.half_thickness);
+                        ctr_left.y = curve_y + (tmp_point3.y * strokeStyle.half_thickness);
+                        //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+                        //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+                        // calculate the actual controlpoints
+                        ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
+                        ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
+                        ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
+                        ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
+                        //ctr_right=merged_pnt_ri;
+                        //ctr_left=merged_pnt_le;
+                        /*
+                         // controlpoints version2:
+                         tmp_dir_point.x = start_left.x-start_right.x;
+                         tmp_dir_point.y = start_left.y-start_right.y;
+                         tmp_point2.x = end_left.x-end_right.x;
+                         tmp_point2.y = end_left.y-end_right.y;
+
+                         ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
+                         ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
+                         var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
+
+                         ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
+                         ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
+                         var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
+
+                         */
+                        /*
+                         tmp_point2.x=ctr_point.x-start_point.x;
+                         tmp_point2.y=ctr_point.y-start_point.y;
+                         var m1:number=tmp_point2.y/tmp_point2.x;
+                         tmp_point2.x=end_point.x-ctr_point.x;
+                         tmp_point2.y=end_point.y-ctr_point.y;
+                         var m2:number=tmp_point2.y/tmp_point2.x;
+
+                         if(m1==m2){
+                         console.log("lines for curve are parallel - this should not be possible!")
+                         }
+                         if((!isFinite(m1))&&(!isFinite(m2))){
+                         console.log("both lines are vertical - this should not be possible!")
+                         }
+                         else if((isFinite(m1))&&(isFinite(m2))) {
+                         var b_r1:number = start_right.y - (m1 * start_right.x);
+                         var b_l1:number = start_left.y - (m1 * start_left.x);
+                         var b_r2:number = end_right.y - (m2 * end_right.x);
+                         var b_l2:number = end_left.y - (m2 * end_left.x);
+                         ctr_right.x = (b_r2 - b_r1) / (m1 - m2);
+                         ctr_right.y = m1 * ctr_right.x + b_r1;
+                         ctr_left.x = (b_l2 - b_l1) / (m1 - m2);
+                         ctr_left.y = m1 * ctr_left.x + b_l1;
+                         }
+                         else if((!isFinite(m1))&&(isFinite(m2))) {
+                         console.log("second part of curve is vertical line");
+                         var b_r2:number = end_right.y - (m2 * end_right.x);
+                         var b_l2:number = end_left.y - (m2 * end_left.x);
+                         ctr_right.x =  start_right.x;
+                         ctr_right.y = m2 * ctr_right.x + b_r2;
+                         ctr_left.x =  start_left.x;
+                         ctr_left.y = m2 * ctr_left.x + b_l2;
+                         }
+                         else if((isFinite(m1))&&(!isFinite(m2))) {
+                         console.log("first part of curve is vertical line");
+                         var b_r1:number = start_right.y - (m1 * start_right.x);
+                         var b_l1:number = start_left.y - (m1 * start_left.x);
+                         ctr_right.x =  end_right.x;
+                         ctr_right.y = m1 * ctr_right.x + b_r1;
+                         ctr_left.x =  end_left.x;
+                         ctr_left.y = m1 * ctr_left.x + b_l1;
+                         }
+                         */
+                        /*
+                         tmp_point2.x=ctr_right.x-ctr_left.x;
+                         tmp_point2.y=ctr_right.y-ctr_left.y;
+                         if(tmp_point2.length!=strokeStyle.thickness){
+
+                         tmp_point.x=ctr_left.x+tmp_point2.x*0.5;
+                         tmp_point.y=ctr_left.y+tmp_point2.y*0.5;
+                         tmp_point2.normalize();
+                         ctr_left.x=tmp_point.x-tmp_point2.x*strokeStyle.half_thickness;
+                         ctr_left.y=tmp_point.y-tmp_point2.y*strokeStyle.half_thickness;
+                         ctr_right.x=tmp_point.x+tmp_point2.x*strokeStyle.half_thickness;
+                         ctr_right.y=tmp_point.y+tmp_point2.y*strokeStyle.half_thickness;
+                         }
+                         */
+                        //ctr_right=ctr_point;
+                        //ctr_left=ctr_point;
+                        //console.log(start_point.x);
+                        //console.log(start_point.y);
+                        //console.log(ctr_point.x);
+                        //console.log(ctr_point.y);
+                        //console.log(end_point.x);
+                        //console.log(end_point.y);
+                        var subdivided = [];
+                        var subdivided2 = [];
+                        GraphicsFactoryHelper.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
+                        if (dir_delta > 0) {
+                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                // right curved
+                                // concave curves:
+                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -128, final_vert_list, curves);
+                                // fills
+                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
+                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
+                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list, curves);
+                                // convex curves:
+                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 127, final_vert_list, curves);
+                            }
+                        }
+                        else {
+                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                // left curved
+                                // convex curves:
+                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 127, final_vert_list, curves);
+                                // fills
+                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
+                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
+                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list, curves);
+                                // concave curves:
+                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -128, final_vert_list, curves);
+                            }
+                        }
+                    }
+                    else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
+                        new_pnts_cnt += 3;
+                        if (new_cmds[i] == GraphicsPathCommand.BUILD_ROUND_JOINT) {
+                            end_left = new_pnts[new_pnts_cnt++]; // concave curves:
+                            start_right = new_pnts[new_pnts_cnt++];
+                            start_left = new_pnts[new_pnts_cnt++];
+                            GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, end_left.x, end_left.y, start_left.x, start_left.y, -1, final_vert_list, curves);
+                        }
+                    }
+                }
+                // now we draw all the normal triangles.
+                // we do it in 2 steps, to prevent curves cut anything out of underlying normal tris
+                new_cmds_cnt = 0;
+                new_pnts_cnt = 0;
+                for (i = 0; i < new_cmds.length; i++) {
+                    if (new_cmds[i] == GraphicsPathCommand.LINE_TO) {
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        end_right = new_pnts[new_pnts_cnt];
+                        end_left = new_pnts[new_pnts_cnt + 1];
+                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
+                        GraphicsFactoryHelper.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
+                    }
+                    else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
+                        new_pnts_cnt += 5;
+                    }
+                    else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
+                        end_right = new_pnts[new_pnts_cnt++];
+                        start_right = new_pnts[new_pnts_cnt++];
+                        start_left = new_pnts[new_pnts_cnt++];
+                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
+                        if (new_cmds[i] == GraphicsPathCommand.BUILD_ROUND_JOINT) {
+                            new_pnts_cnt += 3;
+                        }
+                    }
+                }
+                if (!closed) {
+                    last_dir_vec.x = data[2] - data[0];
+                    last_dir_vec.y = data[3] - data[1];
+                    last_dir_vec.normalize();
+                    GraphicsFactoryHelper.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -128, strokeStyle.half_thickness, final_vert_list, curves);
+                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+                    last_dir_vec.normalize();
+                    GraphicsFactoryHelper.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 127, strokeStyle.half_thickness, final_vert_list, curves);
+                }
+            }
+        }
+        //targetGraphic.queued_stroke_pathes.length=0;
+    };
+    return GraphicsFactoryStrokes;
+}());
 
 /**
  * @class LineElements
@@ -18723,6 +19673,1363 @@ var DefaultMaterialManager = (function () {
 }());
 
 /**
+ *
+ * Graphics is a collection of Shapes, each of which contain the actual geometrical data such as vertices,
+ * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+ * A Graphics object is assigned to a Sprite, a scene graph occurence of the geometry, which in turn assigns
+ * the SubGeometries to its respective TriangleGraphic objects.
+ *
+ *
+ *
+ *
+ * @class Graphics
+ */
+var Graphics = (function (_super) {
+    __extends(Graphics, _super);
+    /**
+     * Creates a new Graphics object.
+     */
+    function Graphics(entity) {
+        if (entity === void 0) { entity = null; }
+        var _this = _super.call(this) || this;
+        _this._boxBoundsInvalid = true;
+        _this._sphereBoundsInvalid = true;
+        _this._shapes = [];
+        _this._current_position = new _awayjs_core.Point();
+        //store associated entity object, otherwise assign itself as entity
+        _this._entity = entity;
+        _this._current_position = new _awayjs_core.Point();
+        _this._queued_fill_pathes = [];
+        _this._queued_stroke_pathes = [];
+        _this._active_fill_path = null;
+        _this._active_stroke_path = null;
+        _this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
+        _this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
+        _this._onAddMaterialDelegate = function (event) { return _this._onAddMaterial(event); };
+        _this._onRemoveMaterialDelegate = function (event) { return _this._onRemoveMaterial(event); };
+        return _this;
+    }
+    Graphics.getGraphics = function (entity) {
+        if (Graphics._pool.length) {
+            var graphics = Graphics._pool.pop();
+            graphics._entity = entity;
+            return graphics;
+        }
+        return new Graphics(entity);
+    };
+    Graphics.storeGraphics = function (graphics) {
+        graphics.clear();
+        Graphics._pool.push(graphics);
+    };
+    Object.defineProperty(Graphics.prototype, "assetType", {
+        get: function () {
+            return Graphics.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "count", {
+        get: function () {
+            return this._shapes.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "animator", {
+        /**
+         * Defines the animator of the graphics object.  Default value is <code>null</code>.
+         */
+        get: function () {
+            return this._animator;
+        },
+        set: function (value) {
+            if (this._animator)
+                this._animator.removeOwner(this._entity);
+            this._animator = value;
+            if (this._animator)
+                this._animator.addOwner(this._entity);
+            if (this._material) {
+                this._material.iRemoveOwner(this._entity);
+                this._material.iAddOwner(this._entity);
+            }
+            var shape;
+            var len = this._shapes.length;
+            for (var i = 0; i < len; ++i) {
+                shape = this._shapes[i];
+                // cause material to be unregistered and registered again to work with the new animation type (if possible)
+                if (shape.material && shape.material != this._material) {
+                    shape.material.iRemoveOwner(this._entity);
+                    shape.material.iAddOwner(this._entity);
+                }
+                //invalidate any existing shape objects in case they need to pull new elements
+                shape.invalidateElements();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "style", {
+        /**
+         *
+         */
+        get: function () {
+            return this._style;
+        },
+        set: function (value) {
+            if (this._style == value)
+                return;
+            if (this._style)
+                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this._style = value;
+            if (this._style)
+                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
+            this.invalidateMaterials();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "queued_stroke_pathes", {
+        get: function () {
+            return this._queued_stroke_pathes;
+        },
+        set: function (value) {
+            this._queued_stroke_pathes = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "queued_fill_pathes", {
+        get: function () {
+            return this._queued_fill_pathes;
+        },
+        set: function (value) {
+            this._queued_fill_pathes = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Graphics.prototype, "material", {
+        /**
+         * The material with which to render the Graphics.
+         */
+        get: function () {
+            return this._material;
+        },
+        set: function (value) {
+            if (value == this._material)
+                return;
+            if (this._material && !this._isShapeMaterial(this._material))
+                this._material.iRemoveOwner(this._entity);
+            this._material = value;
+            if (this._material && !this._isShapeMaterial(this._material))
+                this._material.iAddOwner(this._entity);
+            this.invalidateMaterials();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Adds a GraphicBase wrapping a Elements.
+     *
+     * @param elements
+     */
+    Graphics.prototype.addShape = function (shape) {
+        var shapeIndex = this.getShapeIndex(shape);
+        if (shapeIndex != -1)
+            this.removeShapeAt(shapeIndex);
+        this._shapes.push(shape);
+        shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        this.invalidate();
+        return shape;
+    };
+    Graphics.prototype.removeShape = function (shape) {
+        var shapeIndex = this.getShapeIndex(shape);
+        if (shapeIndex == -1)
+            throw new _awayjs_core.ArgumentError("Shape parameter is not a shape of the caller");
+        this.removeShapeAt(shapeIndex);
+    };
+    Graphics.prototype.removeShapeAt = function (index) {
+        if (index < 0 || index >= this._shapes.length)
+            throw new _awayjs_core.RangeError("Index is out of range");
+        this._shapes.splice(index, 1)[0].removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        this.invalidate();
+    };
+    Graphics.prototype.removeAllShapes = function () {
+        var shape;
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++) {
+            shape = this._shapes[i];
+            shape.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+            shape.removeEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
+            shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
+        }
+        this._shapes.length = 0;
+        this.invalidate();
+    };
+    Graphics.prototype.getShapeAt = function (index) {
+        return this._shapes[index];
+    };
+    Graphics.prototype.getShapeIndex = function (shape) {
+        return this._shapes.indexOf(shape);
+    };
+    Graphics.prototype.applyTransformation = function (transform) {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; ++i) {
+            this._shapes[i].applyTransformation(transform);
+        }
+    };
+    Graphics.prototype.copyTo = function (graphics) {
+        graphics.material = this._material;
+        graphics.style = this._style;
+        graphics.particles = this.particles;
+        graphics.numParticles = this.numParticles;
+        graphics._addShapes(this._shapes);
+        if (this._animator)
+            graphics.animator = this._animator.clone();
+    };
+    /**
+     * Scales the geometry.
+     * @param scale The amount by which to scale.
+     */
+    Graphics.prototype.scale = function (scale) {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; ++i)
+            this._shapes[i].scale(scale);
+    };
+    Graphics.prototype.clear = function () {
+        for (var i = this._shapes.length - 1; i >= 0; i--) {
+            this._shapes[i].clear();
+        }
+    };
+    /**
+     * Clears all resources used by the Graphics object, including SubGeometries.
+     */
+    Graphics.prototype.dispose = function () {
+        this.material = null;
+        this.removeAllShapes();
+        if (this._animator)
+            this._animator.dispose();
+    };
+    /**
+     * Scales the uv coordinates (tiling)
+     * @param scaleU The amount by which to scale on the u axis. Default is 1;
+     * @param scaleV The amount by which to scale on the v axis. Default is 1;
+     */
+    Graphics.prototype.scaleUV = function (scaleU, scaleV) {
+        if (scaleU === void 0) { scaleU = 1; }
+        if (scaleV === void 0) { scaleV = 1; }
+        var len = this._shapes.length;
+        for (var i = 0; i < len; ++i)
+            this._shapes[i].scaleUV(scaleU, scaleV);
+    };
+    Graphics.prototype.getBoxBounds = function () {
+        if (this._boxBoundsInvalid) {
+            this._boxBoundsInvalid = false;
+            if (!this._boxBounds)
+                this._boxBounds = new _awayjs_core.Box();
+            if (this._shapes.length) {
+                this._boxBounds.setBoundIdentity();
+                var len = this._shapes.length;
+                for (var i = 0; i < len; i++) {
+                    this._boxBounds = this._boxBounds.union(this._shapes[i].getBoxBounds(), this._boxBounds);
+                }
+            }
+            else {
+                this._boxBounds.setEmpty();
+            }
+        }
+        return this._boxBounds;
+    };
+    Graphics.prototype.getSphereBounds = function (center, target) {
+        if (target === void 0) { target = null; }
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++) {
+            target = this._shapes[i].getSphereBounds(center, target);
+        }
+        return target;
+    };
+    Graphics.prototype.invalidate = function () {
+        _super.prototype.invalidate.call(this);
+        this._boxBoundsInvalid = true;
+        this._sphereBoundsInvalid = true;
+    };
+    Graphics.prototype.invalidateMaterials = function () {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; ++i)
+            this._shapes[i].invalidateMaterial();
+    };
+    Graphics.prototype.invalidateElements = function () {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; ++i)
+            this._shapes[i].invalidateElements();
+    };
+    Graphics.prototype._hitTestPointInternal = function (x, y) {
+        //TODO: handle lines as well
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++)
+            if (this._shapes[i].hitTestPoint(x, y, 0))
+                return true;
+        return false;
+    };
+    Graphics.prototype.acceptTraverser = function (traverser) {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++)
+            traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
+    };
+    Graphics.prototype._onInvalidateProperties = function (event) {
+        this.invalidateMaterials();
+    };
+    Graphics.prototype._onInvalidateVertices = function (event) {
+        //callback for bounds update
+        if (event.attributesView != event.target.positions)
+            return;
+        this.invalidate();
+    };
+    Graphics.prototype._onAddMaterial = function (event) {
+        var material = event.shape.material;
+        if (material != this._material)
+            material.iAddOwner(this._entity);
+    };
+    Graphics.prototype._onRemoveMaterial = function (event) {
+        var material = event.shape.material;
+        if (material != this._material)
+            material.iRemoveOwner(this._entity);
+    };
+    Graphics.prototype.draw_fills = function () {
+        GraphicsFactoryFills.draw_pathes(this);
+    };
+    Graphics.prototype.draw_strokes = function () {
+        var i = 0;
+        for (i = 0; i < this.queued_stroke_pathes.length; i++) {
+            var material = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color);
+            material.bothSides = true;
+            var final_vert_list = [];
+            GraphicsFactoryStrokes.draw_pathes([this.queued_stroke_pathes[i]], final_vert_list, material.curves);
+            final_vert_list = final_vert_list.concat(this.queued_stroke_pathes[i].verts);
+            var attributesView = new _awayjs_core.AttributesView(Float32Array, material.curves ? 3 : 2);
+            attributesView.set(final_vert_list);
+            var attributesBuffer = attributesView.attributesBuffer;
+            attributesView.dispose();
+            var elements = new TriangleElements(attributesBuffer);
+            elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
+            if (material.curves)
+                elements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(attributesBuffer, false));
+            material.alpha = this.queued_stroke_pathes[i].style.alpha;
+            this.addShape(Shape.getShape(elements, material));
+        }
+        this.queued_stroke_pathes.length = 0;
+    };
+    /**
+     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
+     * tiled to fill the area. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called. </p>
+     *
+     * @param bitmap A transparent or opaque bitmap image that contains the bits
+     *               to be displayed.
+     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+     *               can use to define transformations on the bitmap. For
+     *               example, you can use the following matrix to rotate a bitmap
+     *               by 45 degrees(pi/4 radians):
+     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
+     *               pattern. If <code>false</code>, the bitmap image does not
+     *               repeat, and the edges of the bitmap are used for any fill
+     *               area that extends beyond the bitmap.
+     *
+     *               <p>For example, consider the following bitmap(a 20 x
+     *               20-pixel checkerboard pattern):</p>
+     *
+     *               <p>When <code>repeat</code> is set to <code>true</code>(as
+     *               in the following example), the bitmap fill repeats the
+     *               bitmap:</p>
+     *
+     *               <p>When <code>repeat</code> is set to <code>false</code>,
+     *               the bitmap fill uses the edge pixels for the fill area
+     *               outside the bitmap:</p>
+     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
+     *               by using a nearest-neighbor algorithm and look pixelated. If
+     *               <code>true</code>, upscaled bitmap images are rendered by
+     *               using a bilinear algorithm. Rendering by using the nearest
+     *               neighbor algorithm is faster.
+     */
+    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
+        if (matrix === void 0) { matrix = null; }
+        if (repeat === void 0) { repeat = true; }
+        if (smooth === void 0) { smooth = false; }
+        this.draw_fills();
+        // start a new fill path
+        this._active_fill_path = new GraphicsPath();
+        // todo: create bitmap fill style
+        this._active_fill_path.style = new GraphicsFillStyle(0xffffff, 1);
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_fill_pathes.push(this._active_fill_path);
+    };
+    /**
+     * Specifies a simple one-color fill that subsequent calls to other Graphics
+     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
+     * when drawing. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called.</p>
+     *
+     * @param color The color of the fill(0xRRGGBB).
+     * @param alpha The alpha value of the fill(0.0 to 1.0).
+     */
+    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
+        if (alpha === void 0) { alpha = 1; }
+        this.draw_fills();
+        // start a new fill path
+        this._active_fill_path = new GraphicsPath();
+        this._active_fill_path.style = new GraphicsFillStyle(color, alpha);
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_fill_pathes.push(this._active_fill_path);
+    };
+    /**
+     * Specifies a gradient fill used by subsequent calls to other Graphics
+     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
+     * the object. The fill remains in effect until you call the
+     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+     * method. Calling the <code>clear()</code> method clears the fill.
+     *
+     * <p>The application renders the fill whenever three or more points are
+     * drawn, or when the <code>endFill()</code> method is called. </p>
+     *
+     * @param type                A value from the GradientType class that
+     *                            specifies which gradient type to use:
+     *                            <code>GradientType.LINEAR</code> or
+     *                            <code>GradientType.RADIAL</code>.
+     * @param colors              An array of RGB hexadecimal color values used
+     *                            in the gradient; for example, red is 0xFF0000,
+     *                            blue is 0x0000FF, and so on. You can specify
+     *                            up to 15 colors. For each color, specify a
+     *                            corresponding value in the alphas and ratios
+     *                            parameters.
+     * @param alphas              An array of alpha values for the corresponding
+     *                            colors in the colors array; valid values are 0
+     *                            to 1. If the value is less than 0, the default
+     *                            is 0. If the value is greater than 1, the
+     *                            default is 1.
+     * @param ratios              An array of color distribution ratios; valid
+     *                            values are 0-255. This value defines the
+     *                            percentage of the width where the color is
+     *                            sampled at 100%. The value 0 represents the
+     *                            left position in the gradient box, and 255
+     *                            represents the right position in the gradient
+     *                            box.
+     * @param matrix              A transformation matrix as defined by the
+     *                            flash.geom.Matrix class. The flash.geom.Matrix
+     *                            class includes a
+     *                            <code>createGradientBox()</code> method, which
+     *                            lets you conveniently set up the matrix for use
+     *                            with the <code>beginGradientFill()</code>
+     *                            method.
+     * @param spreadMethod        A value from the SpreadMethod class that
+     *                            specifies which spread method to use, either:
+     *                            <code>SpreadMethod.PAD</code>,
+     *                            <code>SpreadMethod.REFLECT</code>, or
+     *                            <code>SpreadMethod.REPEAT</code>.
+     *
+     *                            <p>For example, consider a simple linear
+     *                            gradient between two colors:</p>
+     *
+     *                            <p>This example uses
+     *                            <code>SpreadMethod.PAD</code> for the spread
+     *                            method, and the gradient fill looks like the
+     *                            following:</p>
+     *
+     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
+     *                            for the spread method, the gradient fill looks
+     *                            like the following:</p>
+     *
+     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
+     *                            for the spread method, the gradient fill looks
+     *                            like the following:</p>
+     * @param interpolationMethod A value from the InterpolationMethod class that
+     *                            specifies which value to use:
+     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
+     *                            <code>InterpolationMethod.RGB</code>
+     *
+     *                            <p>For example, consider a simple linear
+     *                            gradient between two colors(with the
+     *                            <code>spreadMethod</code> parameter set to
+     *                            <code>SpreadMethod.REFLECT</code>). The
+     *                            different interpolation methods affect the
+     *                            appearance as follows: </p>
+     * @param focalPointRatio     A number that controls the location of the
+     *                            focal point of the gradient. 0 means that the
+     *                            focal point is in the center. 1 means that the
+     *                            focal point is at one border of the gradient
+     *                            circle. -1 means that the focal point is at the
+     *                            other border of the gradient circle. A value
+     *                            less than -1 or greater than 1 is rounded to -1
+     *                            or 1. For example, the following example shows
+     *                            a <code>focalPointRatio</code> set to 0.75:
+     * @throws ArgumentError If the <code>type</code> parameter is not valid.
+     */
+    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+        if (matrix === void 0) { matrix = null; }
+        if (spreadMethod === void 0) { spreadMethod = "pad"; }
+        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
+        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+        this.draw_fills();
+        // start a new fill path
+        this._active_fill_path = new GraphicsPath();
+        // todo: create gradient fill style
+        this._active_fill_path.style = new GraphicsFillStyle(colors[0], alphas[0]);
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_fill_pathes.push(this._active_fill_path);
+    };
+    /**
+     * Copies all of drawing commands from the source Graphics object into the
+     * calling Graphics object.
+     *
+     * @param sourceGraphics The Graphics object from which to copy the drawing
+     *                       commands.
+     */
+    Graphics.prototype.copyFrom = function (sourceGraphics) {
+        sourceGraphics.copyTo(this);
+    };
+    /**
+     * Draws a cubic Bezier curve from the current drawing position to the
+     * specified anchor point. Cubic Bezier curves consist of two anchor points
+     * and two control points. The curve interpolates the two anchor points and
+     * curves toward the two control points.
+     *
+     * The four points you use to draw a cubic Bezier curve with the
+     * <code>cubicCurveTo()</code> method are as follows:
+     *
+     * <ul>
+     *   <li>The current drawing position is the first anchor point. </li>
+     *   <li>The anchorX and anchorY parameters specify the second anchor point.
+     *   </li>
+     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
+     *   specify the first control point.</li>
+     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
+     *   specify the second control point.</li>
+     * </ul>
+     *
+     * If you call the <code>cubicCurveTo()</code> method before calling the
+     * <code>moveTo()</code> method, your curve starts at position (0, 0).
+     *
+     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
+     * the current drawing position to (<code>anchorX</code>,
+     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
+     * the current drawing position remains unchanged.
+     *
+     * If your movie clip contains content created with the Flash drawing tools,
+     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
+     * underneath that content.
+     *
+     * @param controlX1 Specifies the horizontal position of the first control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlY1 Specifies the vertical position of the first control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlX2 Specifies the horizontal position of the second control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param controlY2 Specifies the vertical position of the second control
+     *                  point relative to the registration point of the parent
+     *                  display object.
+     * @param anchorX   Specifies the horizontal position of the anchor point
+     *                  relative to the registration point of the parent display
+     *                  object.
+     * @param anchorY   Specifies the vertical position of the anchor point
+     *                  relative to the registration point of the parent display
+     *                  object.
+     */
+    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
+        throw new _awayjs_core.PartialImplementationError("cubicCurveTo");
+        /*
+         t = 0.5; // given example value
+         x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
+         y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
+
+         this.queued_command_types.push(Graphics.CMD_BEZIER);
+         this.queued_command_data.push(controlX1);
+         this.queued_command_data.push(controlY1);
+         this.queued_command_data.push(controlX2);
+         this.queued_command_data.push(controlY2);
+         this.queued_command_data.push(anchorX);
+         this.queued_command_data.push(anchorY);
+
+         // todo: somehow convert cubic bezier curve into 2 quadric curves...
+
+         this.draw_direction+=0;
+         */
+    };
+    /**
+     * Draws a curve using the current line style from the current drawing
+     * position to(anchorX, anchorY) and using the control point that
+     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
+     * drawing position is then set to(<code>anchorX</code>,
+     * <code>anchorY</code>). If the movie clip in which you are drawing contains
+     * content created with the Flash drawing tools, calls to the
+     * <code>curveTo()</code> method are drawn underneath this content. If you
+     * call the <code>curveTo()</code> method before any calls to the
+     * <code>moveTo()</code> method, the default of the current drawing position
+     * is(0, 0). If any of the parameters are missing, this method fails and the
+     * current drawing position is not changed.
+     *
+     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
+     * consist of two anchor points and one control point. The curve interpolates
+     * the two anchor points and curves toward the control point. </p>
+     *
+     * @param controlX A number that specifies the horizontal position of the
+     *                 control point relative to the registration point of the
+     *                 parent display object.
+     * @param controlY A number that specifies the vertical position of the
+     *                 control point relative to the registration point of the
+     *                 parent display object.
+     * @param anchorX  A number that specifies the horizontal position of the
+     *                 next anchor point relative to the registration point of
+     *                 the parent display object.
+     * @param anchorY  A number that specifies the vertical position of the next
+     *                 anchor point relative to the registration point of the
+     *                 parent display object.
+     */
+    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+        if (this._active_fill_path != null) {
+            this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
+        }
+        this._current_position.x = anchorX;
+        this._current_position.y = anchorY;
+    };
+    /**
+     * Draws a circle. Set the line style, fill, or both before you call the
+     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
+     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method.
+     *
+     * @param x      The <i>x</i> location of the center of the circle relative
+     *               to the registration point of the parent display object(in
+     *               pixels).
+     * @param y      The <i>y</i> location of the center of the circle relative
+     *               to the registration point of the parent display object(in
+     *               pixels).
+     * @param radius The radius of the circle(in pixels).
+     */
+    Graphics.prototype.drawCircle = function (x, y, radius) {
+        //var radius2=radius*1.065;
+        if (this._active_fill_path != null) {
+            this._active_fill_path.moveTo(x, y);
+            /*
+            for(var i=8; i>=0;i--){
+
+                var degree = (i) *(360/8)*Math.PI/180;
+                var degree2 = degree + ((360/16)*Math.PI/180);
+                this._active_fill_path.curveTo(x-(Math.cos(degree2)*radius2), y+(Math.sin(degree2)*radius2),x-(Math.cos(degree)*radius), y+(Math.sin(degree)*radius));
+            }*/
+            var r = radius;
+            if (this._active_stroke_path != null) {
+                r -= this._active_stroke_path.style.thickness / 2;
+            }
+            GraphicsFactoryHelper.drawElipse(x, y, r, r, this._active_fill_path.verts, 0, 360, 5, false);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.moveTo(x, y);
+            /*
+                        var radius2=radius*0.93;
+                        this._active_stroke_path.curveTo(x-(radius2), y+(radius2), x-radius, y);
+                        this._active_stroke_path.curveTo(x-(radius2), y-(radius2), x, y-radius);
+                        this._active_stroke_path.curveTo(x+(radius2), y-(radius2), x+radius, y);
+                        this._active_stroke_path.curveTo(x+(radius2), y+(radius2), x, y+radius);
+                        */
+            GraphicsFactoryHelper.drawElipseStrokes(x, y, radius, radius, this._active_stroke_path.verts, 0, 360, 5, this._active_stroke_path.style.thickness / 2, false);
+        }
+    };
+    /**
+     * Draws an ellipse. Set the line style, fill, or both before you call the
+     * <code>drawEllipse()</code> method, by calling the
+     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method.
+     *
+     * @param x      The <i>x</i> location of the top-left of the bounding-box of
+     *               the ellipse relative to the registration point of the parent
+     *               display object(in pixels).
+     * @param y      The <i>y</i> location of the top left of the bounding-box of
+     *               the ellipse relative to the registration point of the parent
+     *               display object(in pixels).
+     * @param width  The width of the ellipse(in pixels).
+     * @param height The height of the ellipse(in pixels).
+     */
+    Graphics.prototype.drawEllipse = function (x, y, width, height) {
+        //var radius2=radius*1.065;
+        if (this._active_fill_path != null) {
+            this._active_fill_path.moveTo(x, y);
+            /*
+             for(var i=8; i>=0;i--){
+
+             var degree = (i) *(360/8)*Math.PI/180;
+             var degree2 = degree + ((360/16)*Math.PI/180);
+             this._active_fill_path.curveTo(x-(Math.cos(degree2)*radius2), y+(Math.sin(degree2)*radius2),x-(Math.cos(degree)*radius), y+(Math.sin(degree)*radius));
+             }*/
+            var w = width;
+            var h = height;
+            if (this._active_stroke_path != null) {
+                w -= this._active_stroke_path.style.thickness / 2;
+                h -= this._active_stroke_path.style.thickness / 2;
+            }
+            GraphicsFactoryHelper.drawElipse(x, y, w, h, this._active_fill_path.verts, 0, 360, 5, false);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.moveTo(x, y);
+            GraphicsFactoryHelper.drawElipseStrokes(x, y, width, height, this._active_stroke_path.verts, 0, 360, 5, this._active_stroke_path.style.thickness / 2, false);
+        }
+    };
+    /**
+     * Submits a series of IGraphicsData instances for drawing. This method
+     * accepts a Vector containing objects including paths, fills, and strokes
+     * that implement the IGraphicsData interface. A Vector of IGraphicsData
+     * instances can refer to a part of a shape, or a complex fully defined set
+     * of data for rendering a complete shape.
+     *
+     * <p> Graphics paths can contain other graphics paths. If the
+     * <code>graphicsData</code> Vector includes a path, that path and all its
+     * sub-paths are rendered during this operation. </p>
+     *
+     */
+    Graphics.prototype.drawGraphicsData = function (graphicsData) {
+        //this.draw_fills();
+        /*
+         for (var i:number=0; i<graphicsData.length; i++){
+         //todo
+         if(graphicsData[i].dataType=="beginFill"){
+
+         }
+         else if(graphicsData[i].dataType=="endFill"){
+
+         }
+         else if(graphicsData[i].dataType=="endFill"){
+
+         }
+         else if(graphicsData[i].dataType=="Path"){
+
+         }
+
+         }
+         */
+    };
+    /**
+     * Submits a series of commands for drawing. The <code>drawPath()</code>
+     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
+     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
+     * single call. The <code>drawPath()</code> method parameters combine drawing
+     * commands with x- and y-coordinate value pairs and a drawing direction. The
+     * drawing commands are values from the GraphicsPathCommand class. The x- and
+     * y-coordinate value pairs are Numbers in an array where each pair defines a
+     * coordinate location. The drawing direction is a value from the
+     * GraphicsPathWinding class.
+     *
+     * <p> Generally, drawings render faster with <code>drawPath()</code> than
+     * with a series of individual <code>lineTo()</code> and
+     * <code>curveTo()</code> methods. </p>
+     *
+     * <p> The <code>drawPath()</code> method uses a uses a floating computation
+     * so rotation and scaling of shapes is more accurate and gives better
+     * results. However, curves submitted using the <code>drawPath()</code>
+     * method can have small sub-pixel alignment errors when used in conjunction
+     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
+     *
+     * <p> The <code>drawPath()</code> method also uses slightly different rules
+     * for filling and drawing lines. They are: </p>
+     *
+     * <ul>
+     *   <li>When a fill is applied to rendering a path:
+     * <ul>
+     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
+     * stroke rendering will still occur, consistent with the rules for strokes
+     * below.)</li>
+     *   <li>A sub-path that isn't closed(the end point is not equal to the
+     * begin point) is implicitly closed.</li>
+     * </ul>
+     * </li>
+     *   <li>When a stroke is applied to rendering a path:
+     * <ul>
+     *   <li>The sub-paths can be composed of any number of points.</li>
+     *   <li>The sub-path is never implicitly closed.</li>
+     * </ul>
+     * </li>
+     * </ul>
+     *
+     * @param winding Specifies the winding rule using a value defined in the
+     *                GraphicsPathWinding class.
+     */
+    Graphics.prototype.drawPath = function (commands, data, winding) {
+        //todo
+        /*
+         if(this._active_fill_path!=null){
+         this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
+         }
+         if(this._active_stroke_path!=null){
+         this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
+         }
+         this._current_position.x=anchorX;
+         this._current_position.y=anchorY;
+         */
+    };
+    /**
+     * Draws a rectangle. Set the line style, fill, or both before you call the
+     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
+     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method.
+     *
+     * @param x      A number indicating the horizontal position relative to the
+     *               registration point of the parent display object(in pixels).
+     * @param y      A number indicating the vertical position relative to the
+     *               registration point of the parent display object(in pixels).
+     * @param width  The width of the rectangle(in pixels).
+     * @param height The height of the rectangle(in pixels).
+     * @throws ArgumentError If the <code>width</code> or <code>height</code>
+     *                       parameters are not a number
+     *                      (<code>Number.NaN</code>).
+     */
+    Graphics.prototype.drawRect = function (x, y, width, height) {
+        if (this._active_fill_path != null) {
+            this._active_fill_path.moveTo(x, y);
+            /*
+            this._active_fill_path.lineTo(x+width, y);
+            this._active_fill_path.lineTo(x+width, y+height);
+            this._active_fill_path.lineTo(x, y+height);
+            this._active_fill_path.lineTo(x, y);
+            */
+            var w = width;
+            var h = height;
+            var t = 0;
+            if (this._active_stroke_path != null) {
+                t = this._active_stroke_path.style.thickness / 2;
+                w -= this._active_stroke_path.style.thickness;
+                h -= this._active_stroke_path.style.thickness;
+            }
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t, y + t, x + w + t, y + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t + w, y + t, x + w + t, y + h + t, 0, this._active_fill_path.verts, false);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.moveTo(x, y);
+            var t = this._active_stroke_path.style.thickness / 2;
+            // todo: respect Jointstyle here (?)
+            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x - t, y - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x + t, y + height - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x - t, y - t, x + width + t, y - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + t, x + width + t, y - t, x + width - t, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + width - t, y + height - t, x + width - t, y + t, x + width + t, y + height + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + width + t, y + height + t, x + width + t, y - t, x + width - t, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x + width + t, y + height + t, x + t, y + height - t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + height - t, x + width + t, y + height + t, x + width - t, y + height - t, 0, this._active_stroke_path.verts, false);
+        }
+    };
+    /**
+     * Draws a rounded rectangle. Set the line style, fill, or both before you
+     * call the <code>drawRoundRect()</code> method, by calling the
+     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method.
+     *
+     * @param x             A number indicating the horizontal position relative
+     *                      to the registration point of the parent display
+     *                      object(in pixels).
+     * @param y             A number indicating the vertical position relative to
+     *                      the registration point of the parent display object
+     *                     (in pixels).
+     * @param width         The width of the round rectangle(in pixels).
+     * @param height        The height of the round rectangle(in pixels).
+     * @param ellipseWidth  The width of the ellipse used to draw the rounded
+     *                      corners(in pixels).
+     * @param ellipseHeight The height of the ellipse used to draw the rounded
+     *                      corners(in pixels). Optional; if no value is
+     *                      specified, the default value matches that provided
+     *                      for the <code>ellipseWidth</code> parameter.
+     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
+     *                       <code>ellipseWidth</code> or
+     *                       <code>ellipseHeight</code> parameters are not a
+     *                       number(<code>Number.NaN</code>).
+     */
+    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
+        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
+        var w = width;
+        var h = height;
+        var ew = ellipseWidth;
+        var eh = ellipseHeight;
+        var t = 0;
+        if (this._active_fill_path != null) {
+            this._active_fill_path.moveTo(x, y);
+            if (this._active_stroke_path != null) {
+                t = this._active_stroke_path.style.thickness / 2;
+                w -= this._active_stroke_path.style.thickness;
+                h -= this._active_stroke_path.style.thickness;
+            }
+            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + t, y + eh, x + w - t, y + eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + w - t, y + eh, x + w - t, y + h - eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + t, x + ew, y + eh, x + w - ew, y + eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + t, x + w - ew, y + eh, x + w - ew, y + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + h - eh, x + ew, y + h - t, x + w - ew, y + h - t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + h - eh, x + w - ew, y + h - t, x + w - ew, y + h - eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.drawElipse(x + ew, y + eh, ew - t, eh - t, this._active_fill_path.verts, 180, 270, 5, false);
+            GraphicsFactoryHelper.drawElipse(x + w - ew, y + eh, ew - t, eh - t, this._active_fill_path.verts, 270, 360, 5, false);
+            GraphicsFactoryHelper.drawElipse(x + w - ew, y + h - eh, ew - t, eh - t, this._active_fill_path.verts, 0, 90, 5, false);
+            GraphicsFactoryHelper.drawElipse(x + ew, y + h - eh, ew - t, eh - t, this._active_fill_path.verts, 90, 180, 5, false);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.moveTo(x, y);
+            t = this._active_stroke_path.style.thickness / 2;
+            GraphicsFactoryHelper.addTriangle(x - t, y + h - eh, x - t, y + eh, x + t, y + eh, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x - t, y + h - eh, x + t, y + h - eh, x + t, y + eh, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y - t, x + w - ew, y - t, x + ew, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + t, x + w - ew, y - t, x + w - ew, y + t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + w - t, y + h - eh, x + w - t, y + eh, x + w + t, y + h - eh, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + w + t, y + h - eh, x + w + t, y + eh, x + w - t, y + eh, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + h + t, x + w - ew, y + h + t, x + ew, y + h - t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + ew, y + h - t, x + w - ew, y + h + t, x + w - ew, y + h - t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.drawElipseStrokes(x + ew, y + eh, ew, eh, this._active_stroke_path.verts, 180, 270, 5, t, false);
+            GraphicsFactoryHelper.drawElipseStrokes(x + w - ew, y + eh, ew, eh, this._active_stroke_path.verts, 270, 360, 5, t, false);
+            GraphicsFactoryHelper.drawElipseStrokes(x + w - ew, y + h - eh, ew, eh, this._active_stroke_path.verts, 0, 90, 5, t, false);
+            GraphicsFactoryHelper.drawElipseStrokes(x + ew, y + h - eh, ew, eh, this._active_stroke_path.verts, 90, 180, 5, t, false);
+        }
+    };
+    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
+    /**
+     * Renders a set of triangles, typically to distort bitmaps and give them a
+     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
+     * either the current fill, or a bitmap fill, to the triangle faces using a
+     * set of(u,v) coordinates.
+     *
+     * <p> Any type of fill can be used, but if the fill has a transform matrix
+     * that transform matrix is ignored. </p>
+     *
+     * <p> A <code>uvtData</code> parameter improves texture mapping when a
+     * bitmap fill is used. </p>
+     *
+     * @param culling Specifies whether to render triangles that face in a
+     *                specified direction. This parameter prevents the rendering
+     *                of triangles that cannot be seen in the current view. This
+     *                parameter can be set to any value defined by the
+     *                TriangleCulling class.
+     */
+    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
+        if (indices === void 0) { indices = null; }
+        if (uvtData === void 0) { uvtData = null; }
+        if (culling === void 0) { culling = null; }
+        if (this._active_fill_path != null) {
+        }
+        if (this._active_stroke_path != null) {
+        }
+    };
+    /**
+     * Applies a fill to the lines and curves that were added since the last call
+     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
+     * specified in the previous call to the <code>beginFill()</code>,
+     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+     * method. If the current drawing position does not equal the previous
+     * position specified in a <code>moveTo()</code> method and a fill is
+     * defined, the path is closed with a line and then filled.
+     *
+     */
+    Graphics.prototype.endFill = function () {
+        this.draw_strokes();
+        this.draw_fills();
+        this._active_fill_path = null;
+        this._active_stroke_path = null;
+        this.invalidate();
+    };
+    /**
+     * Specifies a bitmap to use for the line stroke when drawing lines.
+     *
+     * <p>The bitmap line style is used for subsequent calls to Graphics methods
+     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+     * the <code>lineBitmapStyle()</code> method again with different parameters.
+     * </p>
+     *
+     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param bitmap The bitmap to use for the line stroke.
+     * @param matrix An optional transformation matrix as defined by the
+     *               flash.geom.Matrix class. The matrix can be used to scale or
+     *               otherwise manipulate the bitmap before applying it to the
+     *               line style.
+     * @param repeat Whether to repeat the bitmap in a tiled fashion.
+     * @param smooth Whether smoothing should be applied to the bitmap.
+     */
+    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
+        if (matrix === void 0) { matrix = null; }
+        if (repeat === void 0) { repeat = true; }
+        if (smooth === void 0) { smooth = false; }
+        // start a new stroke path
+        this._active_stroke_path = new GraphicsPath();
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_stroke_pathes.push(this._active_stroke_path);
+    };
+    /**
+     * Specifies a gradient to use for the stroke when drawing lines.
+     *
+     * <p>The gradient line style is used for subsequent calls to Graphics
+     * methods such as the <code>lineTo()</code> methods or the
+     * <code>drawCircle()</code> method. The line style remains in effect until
+     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
+     * methods, or the <code>lineGradientStyle()</code> method again with
+     * different parameters. </p>
+     *
+     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
+     * of drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param type                A value from the GradientType class that
+     *                            specifies which gradient type to use, either
+     *                            GradientType.LINEAR or GradientType.RADIAL.
+     * @param colors              An array of RGB hexadecimal color values used
+     *                            in the gradient; for example, red is 0xFF0000,
+     *                            blue is 0x0000FF, and so on. You can specify
+     *                            up to 15 colors. For each color, specify a
+     *                            corresponding value in the alphas and ratios
+     *                            parameters.
+     * @param alphas              An array of alpha values for the corresponding
+     *                            colors in the colors array; valid values are 0
+     *                            to 1. If the value is less than 0, the default
+     *                            is 0. If the value is greater than 1, the
+     *                            default is 1.
+     * @param ratios              An array of color distribution ratios; valid
+     *                            values are 0-255. This value defines the
+     *                            percentage of the width where the color is
+     *                            sampled at 100%. The value 0 represents the
+     *                            left position in the gradient box, and 255
+     *                            represents the right position in the gradient
+     *                            box.
+     * @param matrix              A transformation matrix as defined by the
+     *                            flash.geom.Matrix class. The flash.geom.Matrix
+     *                            class includes a
+     *                            <code>createGradientBox()</code> method, which
+     *                            lets you conveniently set up the matrix for use
+     *                            with the <code>lineGradientStyle()</code>
+     *                            method.
+     * @param spreadMethod        A value from the SpreadMethod class that
+     *                            specifies which spread method to use:
+     * @param interpolationMethod A value from the InterpolationMethod class that
+     *                            specifies which value to use. For example,
+     *                            consider a simple linear gradient between two
+     *                            colors(with the <code>spreadMethod</code>
+     *                            parameter set to
+     *                            <code>SpreadMethod.REFLECT</code>). The
+     *                            different interpolation methods affect the
+     *                            appearance as follows:
+     * @param focalPointRatio     A number that controls the location of the
+     *                            focal point of the gradient. The value 0 means
+     *                            the focal point is in the center. The value 1
+     *                            means the focal point is at one border of the
+     *                            gradient circle. The value -1 means that the
+     *                            focal point is at the other border of the
+     *                            gradient circle. Values less than -1 or greater
+     *                            than 1 are rounded to -1 or 1. The following
+     *                            image shows a gradient with a
+     *                            <code>focalPointRatio</code> of -0.75:
+     */
+    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+        if (matrix === void 0) { matrix = null; }
+        if (spreadMethod === void 0) { spreadMethod = null; }
+        if (interpolationMethod === void 0) { interpolationMethod = null; }
+        if (focalPointRatio === void 0) { focalPointRatio = 0; }
+        // start a new stroke path
+        this._active_stroke_path = new GraphicsPath();
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_stroke_pathes.push(this._active_stroke_path);
+    };
+    /**
+     * Specifies a shader to use for the line stroke when drawing lines.
+     *
+     * <p>The shader line style is used for subsequent calls to Graphics methods
+     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+     * the <code>lineBitmapStyle()</code> method again with different parameters.
+     * </p>
+     *
+     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within a path. </p>
+     *
+     * <p>Call the <code>lineStyle()</code> method before you call the
+     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
+     * value of the line style is <code>undefined</code>.</p>
+     *
+     * <p>Calls to the <code>clear()</code> method set the line style back to
+     * <code>undefined</code>. </p>
+     *
+     * @param shader The shader to use for the line stroke.
+     * @param matrix An optional transformation matrix as defined by the
+     *               flash.geom.Matrix class. The matrix can be used to scale or
+     *               otherwise manipulate the bitmap before applying it to the
+     *               line style.
+     */
+    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
+    //		{
+    //
+    //		}
+    /**
+     * Specifies a line style used for subsequent calls to Graphics methods such
+     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+     * method. The line style remains in effect until you call the
+     * <code>lineGradientStyle()</code> method, the
+     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
+     * method with different parameters.
+     *
+     * <p>You can call the <code>lineStyle()</code> method in the middle of
+     * drawing a path to specify different styles for different line segments
+     * within the path.</p>
+     *
+     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
+     * style back to <code>undefined</code>.</p>
+     *
+     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
+     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
+     *
+     * @param thickness    An integer that indicates the thickness of the line in
+     *                     points; valid values are 0-255. If a number is not
+     *                     specified, or if the parameter is undefined, a line is
+     *                     not drawn. If a value of less than 0 is passed, the
+     *                     default is 0. The value 0 indicates hairline
+     *                     thickness; the maximum thickness is 255. If a value
+     *                     greater than 255 is passed, the default is 255.
+     * @param color        A hexadecimal color value of the line; for example,
+     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
+     *                     value is not indicated, the default is 0x000000
+     *                    (black). Optional.
+     * @param alpha        A number that indicates the alpha value of the color
+     *                     of the line; valid values are 0 to 1. If a value is
+     *                     not indicated, the default is 1(solid). If the value
+     *                     is less than 0, the default is 0. If the value is
+     *                     greater than 1, the default is 1.
+     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+     *                     specifies whether to hint strokes to full pixels. This
+     *                     affects both the position of anchors of a curve and
+     *                     the line stroke size itself. With
+     *                     <code>pixelHinting</code> set to <code>true</code>,
+     *                     line widths are adjusted to full pixel widths. With
+     *                     <code>pixelHinting</code> set to <code>false</code>,
+     *                     disjoints can appear for curves and straight lines.
+     *                     For example, the following illustrations show how
+     *                     Flash Player or Adobe AIR renders two rounded
+     *                     rectangles that are identical, except that the
+     *                     <code>pixelHinting</code> parameter used in the
+     *                     <code>lineStyle()</code> method is set differently
+     *                    (the images are scaled by 200%, to emphasize the
+     *                     difference):
+     *
+     *                     <p>If a value is not supplied, the line does not use
+     *                     pixel hinting.</p>
+     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
+     *                     LineScaleMode class that specifies which scale mode to
+     *                     use:
+     *                     <ul>
+     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
+     *                     scale the line thickness when the object is scaled
+     *                    (the default). </li>
+     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
+     *                     the line thickness. </li>
+     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
+     *                     scale the line thickness if the object is scaled
+     *                     vertically <i>only</i>. For example, consider the
+     *                     following circles, drawn with a one-pixel line, and
+     *                     each with the <code>scaleMode</code> parameter set to
+     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
+     *                     left is scaled vertically only, and the circle on the
+     *                     right is scaled both vertically and horizontally:
+     *                     </li>
+     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
+     *                     scale the line thickness if the object is scaled
+     *                     horizontally <i>only</i>. For example, consider the
+     *                     following circles, drawn with a one-pixel line, and
+     *                     each with the <code>scaleMode</code> parameter set to
+     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
+     *                     the left is scaled horizontally only, and the circle
+     *                     on the right is scaled both vertically and
+     *                     horizontally:   </li>
+     *                     </ul>
+     * @param caps        (Not supported in Flash Lite 4) A value from the
+     *                     CapsStyle class that specifies the type of caps at the
+     *                     end of lines. Valid values are:
+     *                     <code>CapsStyle.NONE</code>,
+     *                     <code>CapsStyle.ROUND</code>, and
+     *                     <code>CapsStyle.SQUARE</code>. If a value is not
+     *                     indicated, Flash uses round caps.
+     *
+     *                     <p>For example, the following illustrations show the
+     *                     different <code>capsStyle</code> settings. For each
+     *                     setting, the illustration shows a blue line with a
+     *                     thickness of 30(for which the <code>capsStyle</code>
+     *                     applies), and a superimposed black line with a
+     *                     thickness of 1(for which no <code>capsStyle</code>
+     *                     applies): </p>
+     * @param joints      (Not supported in Flash Lite 4) A value from the
+     *                     JointStyle class that specifies the type of joint
+     *                     appearance used at angles. Valid values are:
+     *                     <code>JointStyle.BEVEL</code>,
+     *                     <code>JointStyle.MITER</code>, and
+     *                     <code>JointStyle.ROUND</code>. If a value is not
+     *                     indicated, Flash uses round joints.
+     *
+     *                     <p>For example, the following illustrations show the
+     *                     different <code>joints</code> settings. For each
+     *                     setting, the illustration shows an angled blue line
+     *                     with a thickness of 30(for which the
+     *                     <code>jointStyle</code> applies), and a superimposed
+     *                     angled black line with a thickness of 1(for which no
+     *                     <code>jointStyle</code> applies): </p>
+     *
+     *                     <p><b>Note:</b> For <code>joints</code> set to
+     *                     <code>JointStyle.MITER</code>, you can use the
+     *                     <code>miterLimit</code> parameter to limit the length
+     *                     of the miter.</p>
+     * @param miterLimit  (Not supported in Flash Lite 4) A number that
+     *                     indicates the limit at which a miter is cut off. Valid
+     *                     values range from 1 to 255(and values outside that
+     *                     range are rounded to 1 or 255). This value is only
+     *                     used if the <code>jointStyle</code> is set to
+     *                     <code>"miter"</code>. The <code>miterLimit</code>
+     *                     value represents the length that a miter can extend
+     *                     beyond the point at which the lines meet to form a
+     *                     joint. The value expresses a factor of the line
+     *                     <code>thickness</code>. For example, with a
+     *                     <code>miterLimit</code> factor of 2.5 and a
+     *                     <code>thickness</code> of 10 pixels, the miter is cut
+     *                     off at 25 pixels.
+     *
+     *                     <p>For example, consider the following angled lines,
+     *                     each drawn with a <code>thickness</code> of 20, but
+     *                     with <code>miterLimit</code> set to 1, 2, and 4.
+     *                     Superimposed are black reference lines showing the
+     *                     meeting points of the joints:</p>
+     *
+     *                     <p>Notice that a given <code>miterLimit</code> value
+     *                     has a specific maximum angle for which the miter is
+     *                     cut off. The following table lists some examples:</p>
+     */
+    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, capstyle, jointstyle, miterLimit) {
+        if (thickness === void 0) { thickness = 0; }
+        if (color === void 0) { color = 0; }
+        if (alpha === void 0) { alpha = 1; }
+        if (pixelHinting === void 0) { pixelHinting = false; }
+        if (scaleMode === void 0) { scaleMode = null; }
+        if (capstyle === void 0) { capstyle = CapsStyle.NONE; }
+        if (jointstyle === void 0) { jointstyle = JointStyle.MITER; }
+        if (miterLimit === void 0) { miterLimit = 100; }
+        // start a new stroke path
+        this._active_stroke_path = new GraphicsPath();
+        this._active_stroke_path.style = new GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miterLimit);
+        if (this._current_position.x != 0 || this._current_position.y != 0)
+            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
+        this._queued_stroke_pathes.push(this._active_stroke_path);
+    };
+    /**
+     * Draws a line using the current line style from the current drawing
+     * position to(<code>x</code>, <code>y</code>); the current drawing position
+     * is then set to(<code>x</code>, <code>y</code>). If the display object in
+     * which you are drawing contains content that was created with the Flash
+     * drawing tools, calls to the <code>lineTo()</code> method are drawn
+     * underneath the content. If you call <code>lineTo()</code> before any calls
+     * to the <code>moveTo()</code> method, the default position for the current
+     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
+     * method fails and the current drawing position is not changed.
+     *
+     * @param x A number that indicates the horizontal position relative to the
+     *          registration point of the parent display object(in pixels).
+     * @param y A number that indicates the vertical position relative to the
+     *          registration point of the parent display object(in pixels).
+     */
+    Graphics.prototype.lineTo = function (x, y) {
+        if (this._active_fill_path != null) {
+            this._active_fill_path.lineTo(x, y);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.lineTo(x, y);
+        }
+        this._current_position.x = x;
+        this._current_position.y = y;
+    };
+    /**
+     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
+     * any of the parameters are missing, this method fails and the current
+     * drawing position is not changed.
+     *
+     * @param x A number that indicates the horizontal position relative to the
+     *          registration point of the parent display object(in pixels).
+     * @param y A number that indicates the vertical position relative to the
+     *          registration point of the parent display object(in pixels).
+     */
+    Graphics.prototype.moveTo = function (x, y) {
+        if (this._active_fill_path != null) {
+            this._active_fill_path.moveTo(x, y);
+        }
+        if (this._active_stroke_path != null) {
+            this._active_stroke_path.moveTo(x, y);
+        }
+        this._current_position.x = x;
+        this._current_position.y = y;
+    };
+    Graphics.prototype._addShapes = function (shapes) {
+        var shape;
+        var len = shapes.length;
+        for (var i = 0; i < len; i++) {
+            shape = shapes[i];
+            shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+            shape.addEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
+            shape.addEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
+            this._shapes.push(shape);
+        }
+        this.invalidate();
+    };
+    Graphics.prototype._isShapeMaterial = function (material) {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++)
+            if (material == this._shapes[i].material)
+                return true;
+        return false;
+    };
+    return Graphics;
+}(_awayjs_core.AssetBase));
+Graphics._pool = new Array();
+Graphics.get_material_for_color = function (color) {
+    return DefaultMaterialManager.getDefaultMaterial();
+};
+Graphics.assetType = "[asset Graphics]";
+
+/**
  * The Graphics class contains a set of methods that you can use to create a
  * vector shape. Display objects that support drawing include Sprite and Shape
  * objects. Each of these classes includes a <code>graphics</code> property
@@ -18774,8 +21081,8 @@ var GraphicsFactoryFills = (function () {
                 var last_direction = 0;
                 var tmp_dir_point = new _awayjs_core.Point();
                 if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
-                    data[data.length] == data[0];
-                    data[data.length] == data[1];
+                    data[data.length] = data[0];
+                    data[data.length] = data[1];
                 }
                 lastPoint.x = data[0];
                 lastPoint.y = data[1];
@@ -18887,48 +21194,46 @@ var GraphicsFactoryFills = (function () {
                             if (GraphicsFactoryHelper.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
                                 final_vert_list[final_vert_cnt++] = end_x;
                                 final_vert_list[final_vert_cnt++] = end_y;
+                                /*
                                 final_vert_list[final_vert_cnt++] = curve_attr_1;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 0.0;
+                                */
                                 final_vert_list[final_vert_cnt++] = control_x;
                                 final_vert_list[final_vert_cnt++] = control_y;
+                                /*
                                 final_vert_list[final_vert_cnt++] = curve_attr_1;
                                 final_vert_list[final_vert_cnt++] = 0.5;
                                 final_vert_list[final_vert_cnt++] = 0.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 0.0;
+                                 */
                                 final_vert_list[final_vert_cnt++] = lastPoint.x;
                                 final_vert_list[final_vert_cnt++] = lastPoint.y;
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
                             }
                             else {
                                 final_vert_list[final_vert_cnt++] = lastPoint.x;
                                 final_vert_list[final_vert_cnt++] = lastPoint.y;
+                                /*
                                 final_vert_list[final_vert_cnt++] = curve_attr_1;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 0.0;
+                                 */
                                 final_vert_list[final_vert_cnt++] = control_x;
                                 final_vert_list[final_vert_cnt++] = control_y;
+                                /*
                                 final_vert_list[final_vert_cnt++] = curve_attr_1;
                                 final_vert_list[final_vert_cnt++] = 0.5;
                                 final_vert_list[final_vert_cnt++] = 0.0;
                                 final_vert_list[final_vert_cnt++] = 1.0;
                                 final_vert_list[final_vert_cnt++] = 0.0;
+                                 */
                                 final_vert_list[final_vert_cnt++] = end_x;
                                 final_vert_list[final_vert_cnt++] = end_y;
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
                             }
                             lastPoint.x = end_x;
                             lastPoint.y = end_y;
@@ -18941,7 +21246,6 @@ var GraphicsFactoryFills = (function () {
             }
             var verts = [];
             var all_verts = [];
-            var vertIndicess = [];
             var elems = [];
             for (k = 0; k < contours_vertices.length; k++) {
                 var vertices = contours_vertices[k];
@@ -18952,910 +21256,67 @@ var GraphicsFactoryFills = (function () {
                 //console.log("in vertices", vertices);
                 //var tess = new TESS();
                 if (GraphicsFactoryHelper._tess_obj == null) {
-                    console.log("No libtess2 tesselator available.\nMake it available using Graphics._tess_obj=new TESS();");
-                    return;
                 }
-                GraphicsFactoryHelper._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
+                else {
+                    GraphicsFactoryHelper._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
+                }
             }
-            GraphicsFactoryHelper._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-            //console.log("out vertices", Graphics._tess_obj.getVertices());
-            verts = GraphicsFactoryHelper._tess_obj.getVertices();
-            elems = GraphicsFactoryHelper._tess_obj.getElements();
-            //console.log("out elements", Graphics._tess_obj.getElements());
-            var numVerts = verts.length / 2;
-            var numElems = elems.length / 3;
-            for (i = 0; i < numVerts; ++i)
-                all_verts.push(new _awayjs_core.Point(verts[i * 2], verts[i * 2 + 1]));
-            for (i = 0; i < numElems; ++i) {
-                var p1 = elems[i * 3];
-                var p2 = elems[i * 3 + 1];
-                var p3 = elems[i * 3 + 2];
-                final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-                final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-                final_vert_list[final_vert_cnt++] = 1;
-                final_vert_list[final_vert_cnt++] = 2.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
-                final_vert_list[final_vert_cnt++] = 1.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
-                final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-                final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-                final_vert_list[final_vert_cnt++] = 1;
-                final_vert_list[final_vert_cnt++] = 2.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
-                final_vert_list[final_vert_cnt++] = 1.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
-                final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-                final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-                final_vert_list[final_vert_cnt++] = 1;
-                final_vert_list[final_vert_cnt++] = 2.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
-                final_vert_list[final_vert_cnt++] = 1.0;
-                final_vert_list[final_vert_cnt++] = 0.0;
+            if (GraphicsFactoryHelper._tess_obj != null) {
+                GraphicsFactoryHelper._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
+                //console.log("out vertices", Graphics._tess_obj.getVertices());
+                verts = GraphicsFactoryHelper._tess_obj.getVertices();
+                elems = GraphicsFactoryHelper._tess_obj.getElements();
+                //console.log("out elements", Graphics._tess_obj.getElements());
+                var numVerts = verts.length / 2;
+                var numElems = elems.length / 3;
+                for (i = 0; i < numVerts; ++i)
+                    all_verts.push(new _awayjs_core.Point(verts[i * 2], verts[i * 2 + 1]));
+                for (i = 0; i < numElems; ++i) {
+                    var p1 = elems[i * 3];
+                    var p2 = elems[i * 3 + 1];
+                    var p3 = elems[i * 3 + 2];
+                    final_vert_list[final_vert_cnt++] = all_verts[p3].x;
+                    final_vert_list[final_vert_cnt++] = all_verts[p3].y;
+                    /*
+                     final_vert_list[final_vert_cnt++] = 1;
+                     final_vert_list[final_vert_cnt++] = 2.0;
+                     final_vert_list[final_vert_cnt++] = 0.0;
+                     final_vert_list[final_vert_cnt++] = 1.0;
+                     final_vert_list[final_vert_cnt++] = 0.0;
+                     */
+                    final_vert_list[final_vert_cnt++] = all_verts[p2].x;
+                    final_vert_list[final_vert_cnt++] = all_verts[p2].y;
+                    /*
+                     final_vert_list[final_vert_cnt++] = 1;
+                     final_vert_list[final_vert_cnt++] = 2.0;
+                     final_vert_list[final_vert_cnt++] = 0.0;
+                     final_vert_list[final_vert_cnt++] = 1.0;
+                     final_vert_list[final_vert_cnt++] = 0.0;
+                     */
+                    final_vert_list[final_vert_cnt++] = all_verts[p1].x;
+                    final_vert_list[final_vert_cnt++] = all_verts[p1].y;
+                }
             }
+            final_vert_list = final_vert_list.concat(targetGraphics.queued_fill_pathes[cp].verts);
             //for (i = 0; i < final_vert_list.length/7; ++i)
             //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-            var attributesView = new _awayjs_core.AttributesView(Float32Array, 7);
+            var attributesView = new _awayjs_core.AttributesView(Float32Array, 2);
             attributesView.set(final_vert_list);
             var attributesBuffer = attributesView.attributesBuffer;
             attributesView.dispose();
             var elements = new TriangleElements(attributesBuffer);
             elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
-            elements.setCustomAttributes("curves", new _awayjs_core.Float3Attributes(attributesBuffer));
-            elements.setUVs(new _awayjs_core.Float2Attributes(attributesBuffer));
-            var material = DefaultMaterialManager.getDefaultMaterial();
+            //elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
+            //elements.setUVs(new Float2Attributes(attributesBuffer));
+            var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
             material.bothSides = true;
-            material.useColorTransform = true;
-            material.curves = true;
-            var thisShape = targetGraphics.addShape(Shape.getShape(elements, material));
+            material.alpha = 0.5;
+            targetGraphics.addShape(Shape.getShape(elements, material));
         }
         targetGraphics.queued_fill_pathes.length = 0;
     };
     return GraphicsFactoryFills;
 }());
-
-/**
- * The JointStyle class is an enumeration of constant values that specify the
- * joint style to use in drawing lines. These constants are provided for use
- * as values in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
- * three types of joints: miter, round, and bevel, as the following example
- * shows:
- */
-var JointStyle = (function () {
-    function JointStyle() {
-    }
-    return JointStyle;
-}());
-/**
- * Specifies beveled joints in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method.
- */
-JointStyle.BEVEL = 2;
-/**
- * Specifies mitered joints in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method.
- */
-JointStyle.MITER = 0;
-/**
- * Specifies round joints in the <code>joints</code> parameter of the
- * <code>flash.display.Graphics.lineStyle()</code> method.
- */
-JointStyle.ROUND = 1;
-
-/**
- * The Graphics class contains a set of methods that you can use to create a
- * vector shape. Display objects that support drawing include Sprite and Shape
- * objects. Each of these classes includes a <code>graphics</code> property
- * that is a Graphics object. The following are among those helper functions
- * provided for ease of use: <code>drawRect()</code>,
- * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
- * <code>drawEllipse()</code>.
- *
- * <p>You cannot create a Graphics object directly from ActionScript code. If
- * you call <code>new Graphics()</code>, an exception is thrown.</p>
- *
- * <p>The Graphics class is final; it cannot be subclassed.</p>
- */
-var GraphicsFactoryStrokes = (function () {
-    function GraphicsFactoryStrokes() {
-    }
-    GraphicsFactoryStrokes.draw_pathes = function (graphic_pathes, final_vert_list) {
-        var len = graphic_pathes.length;
-        var contour_commands;
-        var contour_data;
-        var strokeStyle;
-        var one_path;
-        var commands;
-        var data;
-        var i = 0;
-        var k = 0;
-        var vert_cnt = 0;
-        var data_cnt = 0;
-        var final_vert_cnt = 0;
-        var lastPoint = new _awayjs_core.Point();
-        var start_point = new _awayjs_core.Point();
-        var end_point = new _awayjs_core.Point();
-        var start_left = new _awayjs_core.Point();
-        var start_right = new _awayjs_core.Point();
-        var ctr_left = new _awayjs_core.Point();
-        var ctr_right = new _awayjs_core.Point();
-        var ctr_left2 = new _awayjs_core.Point();
-        var ctr_right2 = new _awayjs_core.Point();
-        var end_left = new _awayjs_core.Point();
-        var end_right = new _awayjs_core.Point();
-        var tmp_point = new _awayjs_core.Point();
-        var tmp_point2 = new _awayjs_core.Point();
-        var tmp_point3 = new _awayjs_core.Point();
-        var closed = false;
-        var last_dir_vec = new _awayjs_core.Point();
-        var cp = 0;
-        for (cp = 0; cp < len; cp++) {
-            one_path = graphic_pathes[cp];
-            contour_commands = one_path.commands;
-            contour_data = one_path.data;
-            strokeStyle = one_path.stroke();
-            for (k = 0; k < contour_commands.length; k++) {
-                commands = contour_commands[k];
-                data = contour_data[k];
-                vert_cnt = 0;
-                data_cnt = 0;
-                var new_dir = 0;
-                var dir_delta = 0;
-                var last_direction = 0;
-                var tmp_dir_point = new _awayjs_core.Point();
-                closed = true;
-                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1]))
-                    closed = false;
-                else {
-                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
-                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
-                    last_dir_vec.normalize();
-                    last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                }
-                data_cnt = 0;
-                lastPoint.x = data[data_cnt++];
-                lastPoint.y = data[data_cnt++];
-                var new_cmds = [];
-                var new_pnts = [];
-                var new_cmds_cnt = 0;
-                var new_pnts_cnt = 0;
-                var prev_normal = new _awayjs_core.Point();
-                var le_point = new _awayjs_core.Point();
-                var curve_end_point = new _awayjs_core.Point();
-                var ri_point = new _awayjs_core.Point();
-                var ctr_point = new _awayjs_core.Point();
-                prev_normal.x = -1 * last_dir_vec.y;
-                prev_normal.y = last_dir_vec.x;
-                for (i = 1; i < commands.length; i++) {
-                    if (commands[i] == GraphicsPathCommand.MOVE_TO) {
-                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
-                        continue;
-                    }
-                    //console.log("");
-                    //console.log("segment "+i+"lastPoint x = "+lastPoint.x+" y = "+lastPoint.y)
-                    end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
-                    //console.log("segment "+i+"end_point x = "+end_point.x+" y = "+end_point.y)
-                    if (commands[i] == GraphicsPathCommand.CURVE_TO) {
-                        curve_end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
-                    }
-                    //get the directional vector and the direction for this segment
-                    tmp_dir_point.x = end_point.x - lastPoint.x;
-                    tmp_dir_point.y = end_point.y - lastPoint.y;
-                    tmp_dir_point.normalize();
-                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                    // get the difference in angle to the last segment
-                    dir_delta = new_dir - last_direction;
-                    if (dir_delta > 180) {
-                        dir_delta -= 360;
-                    }
-                    if (dir_delta < -180) {
-                        dir_delta += 360;
-                    }
-                    //console.log("DIRECTION DELTA: "+dir_delta);
-                    last_direction = new_dir;
-                    //console.log("segment "+i+" direction: "+dir_delta);
-                    // rotate direction around 90 degree
-                    tmp_point.x = -1 * tmp_dir_point.y;
-                    tmp_point.y = tmp_dir_point.x;
-                    ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                    le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
-                    var add_segment = false;
-                    // check if this is the first segment, and the path is not closed
-                    // in this case, we can just set the points to the contour points
-                    if ((i == 1) && (!closed)) {
-                        //console.log("segment "+i+"Path is not closed, we can just add the first segment")
-                        add_segment = true;
-                    }
-                    else {
-                        // we need to figure out if we need to add a joint or not
-                        if ((dir_delta == 0) || (dir_delta == 180)) {
-                            // check if this and the prev segment was a line. if yes, than they can be merged
-                            if ((i != 1) && (commands[i] == GraphicsPathCommand.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand.LINE_TO)) {
-                                //console.log("straight line can be merged in prev straight line");
-                                add_segment = false;
-                            }
-                            else {
-                                add_segment = true;
-                            }
-                        }
-                        if (Math.abs(dir_delta) == 180) {
-                            add_segment = true;
-                        }
-                        else if (dir_delta != 0) {
-                            add_segment = true;
-                            var half_angle = (180 - (dir_delta));
-                            if (dir_delta < 0) {
-                                half_angle = (-180 - (dir_delta));
-                            }
-                            half_angle = half_angle * -0.5 * _awayjs_core.MathConsts.DEGREES_TO_RADIANS;
-                            var distance = strokeStyle.half_thickness / Math.sin(half_angle);
-                            tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
-                            tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
-                            tmp_point2.normalize();
-                            var merged_pnt_ri = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
-                            var merged_pnt_le = new _awayjs_core.Point(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
-                            if (dir_delta > 0) {
-                                ri_point = merged_pnt_ri;
-                                var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
-                                var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * strokeStyle.half_thickness), lastPoint.y - (prev_normal.y * strokeStyle.half_thickness));
-                                le_point = contour_le;
-                            }
-                            else {
-                                le_point = merged_pnt_le;
-                                var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                                var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * strokeStyle.half_thickness), lastPoint.y + (prev_normal.y * strokeStyle.half_thickness));
-                                ri_point = contour_ri;
-                            }
-                            var addJoints = true;
-                            if (strokeStyle.jointstyle == JointStyle.MITER) {
-                                var distance_miter = (Math.sqrt((distance * distance) - (strokeStyle.half_thickness * strokeStyle.half_thickness)) / strokeStyle.half_thickness);
-                                if (distance_miter <= strokeStyle.miter_limit) {
-                                    addJoints = false;
-                                    ri_point = merged_pnt_ri;
-                                    le_point = merged_pnt_le;
-                                }
-                                else {
-                                    if (dir_delta > 0) {
-                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        tmp_point3.x = prev_normal.y * -1;
-                                        tmp_point3.y = prev_normal.x;
-                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                    }
-                                    else {
-                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        tmp_point3.x = prev_normal.y * -1;
-                                        tmp_point3.y = prev_normal.x;
-                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                    }
-                                }
-                            }
-                            if (addJoints) {
-                                new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle.ROUND) ? GraphicsPathCommand.BUILD_JOINT : GraphicsPathCommand.BUILD_ROUND_JOINT;
-                                if (dir_delta > 0) {
-                                    new_pnts[new_pnts_cnt++] = merged_pnt_ri;
-                                    new_pnts[new_pnts_cnt++] = contour_prev_le;
-                                    new_pnts[new_pnts_cnt++] = contour_le;
-                                }
-                                else {
-                                    new_pnts[new_pnts_cnt++] = contour_prev_ri;
-                                    new_pnts[new_pnts_cnt++] = merged_pnt_le;
-                                    new_pnts[new_pnts_cnt++] = contour_ri;
-                                }
-                                if (strokeStyle.jointstyle == JointStyle.ROUND) {
-                                    new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
-                                    if (dir_delta > 0) {
-                                        new_pnts[new_pnts_cnt++] = contour_prev_le;
-                                        new_pnts[new_pnts_cnt++] = contour_le;
-                                    }
-                                    else {
-                                        new_pnts[new_pnts_cnt++] = contour_prev_ri;
-                                        new_pnts[new_pnts_cnt++] = contour_ri;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    prev_normal.x = tmp_point.x;
-                    prev_normal.y = tmp_point.y;
-                    if (add_segment) {
-                        if (commands[i] == GraphicsPathCommand.LINE_TO) {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
-                            new_pnts[new_pnts_cnt++] = ri_point;
-                            new_pnts[new_pnts_cnt++] = le_point;
-                        }
-                        else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
-                            tmp_dir_point.x = curve_end_point.x - end_point.x;
-                            tmp_dir_point.y = curve_end_point.y - end_point.y;
-                            tmp_dir_point.normalize();
-                            new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                            dir_delta = new_dir - last_direction;
-                            last_direction = new_dir;
-                            tmp_point.x = -1 * tmp_dir_point.y;
-                            tmp_point.y = tmp_dir_point.x;
-                            if ((dir_delta != 0) && (dir_delta != 180)) {
-                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.CURVE_TO;
-                                new_pnts[new_pnts_cnt++] = ri_point;
-                                new_pnts[new_pnts_cnt++] = le_point;
-                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x, lastPoint.y);
-                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(end_point.x, end_point.y);
-                                new_pnts[new_pnts_cnt++] = curve_end_point;
-                            }
-                            else {
-                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
-                                new_pnts[new_pnts_cnt++] = ri_point;
-                                new_pnts[new_pnts_cnt++] = le_point;
-                            }
-                            prev_normal.x = tmp_point.x;
-                            prev_normal.y = tmp_point.y;
-                            lastPoint = curve_end_point;
-                        }
-                    }
-                    if (commands[i] == GraphicsPathCommand.LINE_TO) {
-                        lastPoint = end_point;
-                    }
-                    if (i == commands.length - 1) {
-                        if (!closed) {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
-                        }
-                        else {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
-                            new_pnts[new_pnts_cnt++] = new_pnts[0];
-                            new_pnts[new_pnts_cnt++] = new_pnts[1];
-                        }
-                    }
-                }
-                // first we draw all the curves:
-                new_cmds_cnt = 0;
-                new_pnts_cnt = 0;
-                for (i = 0; i < new_cmds.length; i++) {
-                    if (new_cmds[i] == GraphicsPathCommand.LINE_TO) {
-                        new_pnts_cnt += 2;
-                    }
-                    else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
-                        start_right = new_pnts[new_pnts_cnt++];
-                        start_left = new_pnts[new_pnts_cnt++];
-                        start_point = new_pnts[new_pnts_cnt++];
-                        ctr_point = new_pnts[new_pnts_cnt++];
-                        end_point = new_pnts[new_pnts_cnt++];
-                        end_right = new_pnts[new_pnts_cnt];
-                        end_left = new_pnts[new_pnts_cnt + 1];
-                        // get the directional vector for the first part of the curve
-                        tmp_dir_point.x = ctr_point.x - start_point.x;
-                        tmp_dir_point.y = ctr_point.y - start_point.y;
-                        tmp_point3.x = ctr_point.x - start_point.x;
-                        tmp_point3.y = ctr_point.y - start_point.y;
-                        var length1 = tmp_point3.length;
-                        tmp_dir_point.normalize();
-                        // get the directional vector for the second part of the curve
-                        tmp_point2.x = end_point.x - ctr_point.x;
-                        tmp_point2.y = end_point.y - ctr_point.y;
-                        var length2 = tmp_point2.length;
-                        tmp_point2.normalize();
-                        var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
-                        if (length1 > length2) {
-                            length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
-                        }
-                        // get angle to positive x-axis for both dir-vectors, than get the difference between those
-                        var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                        var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                        dir_delta = angle_2 - angle_1;
-                        if (dir_delta > 180)
-                            dir_delta -= 360;
-                        if (dir_delta < -180)
-                            dir_delta += 360;
-                        //var half_angle:number=dir_delta*0.5*MathConsts.DEGREES_TO_RADIANS;
-                        //var distance:number=strokeStyle.half_thickness / Math.sin(half_angle);
-                        //tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
-                        //tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
-                        //tmp_point3.normalize();
-                        //var merged_pnt_ri:Point = new Point(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
-                        //var merged_pnt_le:Point = new Point(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
-                        var curve_x = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
-                        var curve_y = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
-                        var curve_2x = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
-                        var curve_2y = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
-                        tmp_point3.x = -1 * (curve_y - curve_2y);
-                        tmp_point3.y = curve_x - curve_2x;
-                        tmp_point3.normalize();
-                        //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
-                        // move the point on the curve to use correct thickness
-                        ctr_right.x = curve_x - (tmp_point3.x * strokeStyle.half_thickness);
-                        ctr_right.y = curve_y - (tmp_point3.y * strokeStyle.half_thickness);
-                        ctr_left.x = curve_x + (tmp_point3.x * strokeStyle.half_thickness);
-                        ctr_left.y = curve_y + (tmp_point3.y * strokeStyle.half_thickness);
-                        //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
-                        //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
-                        // calculate the actual controlpoints
-                        ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
-                        ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
-                        ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
-                        ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
-                        //ctr_right=merged_pnt_ri;
-                        //ctr_left=merged_pnt_le;
-                        /*
-                         // controlpoints version2:
-                         tmp_dir_point.x = start_left.x-start_right.x;
-                         tmp_dir_point.y = start_left.y-start_right.y;
-                         tmp_point2.x = end_left.x-end_right.x;
-                         tmp_point2.y = end_left.y-end_right.y;
-
-                         ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
-                         ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
-                         var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
-
-                         ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
-                         ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
-                         var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
-
-                         */
-                        /*
-                         tmp_point2.x=ctr_point.x-start_point.x;
-                         tmp_point2.y=ctr_point.y-start_point.y;
-                         var m1:number=tmp_point2.y/tmp_point2.x;
-                         tmp_point2.x=end_point.x-ctr_point.x;
-                         tmp_point2.y=end_point.y-ctr_point.y;
-                         var m2:number=tmp_point2.y/tmp_point2.x;
-
-                         if(m1==m2){
-                         console.log("lines for curve are parallel - this should not be possible!")
-                         }
-                         if((!isFinite(m1))&&(!isFinite(m2))){
-                         console.log("both lines are vertical - this should not be possible!")
-                         }
-                         else if((isFinite(m1))&&(isFinite(m2))) {
-                         var b_r1:number = start_right.y - (m1 * start_right.x);
-                         var b_l1:number = start_left.y - (m1 * start_left.x);
-                         var b_r2:number = end_right.y - (m2 * end_right.x);
-                         var b_l2:number = end_left.y - (m2 * end_left.x);
-                         ctr_right.x = (b_r2 - b_r1) / (m1 - m2);
-                         ctr_right.y = m1 * ctr_right.x + b_r1;
-                         ctr_left.x = (b_l2 - b_l1) / (m1 - m2);
-                         ctr_left.y = m1 * ctr_left.x + b_l1;
-                         }
-                         else if((!isFinite(m1))&&(isFinite(m2))) {
-                         console.log("second part of curve is vertical line");
-                         var b_r2:number = end_right.y - (m2 * end_right.x);
-                         var b_l2:number = end_left.y - (m2 * end_left.x);
-                         ctr_right.x =  start_right.x;
-                         ctr_right.y = m2 * ctr_right.x + b_r2;
-                         ctr_left.x =  start_left.x;
-                         ctr_left.y = m2 * ctr_left.x + b_l2;
-                         }
-                         else if((isFinite(m1))&&(!isFinite(m2))) {
-                         console.log("first part of curve is vertical line");
-                         var b_r1:number = start_right.y - (m1 * start_right.x);
-                         var b_l1:number = start_left.y - (m1 * start_left.x);
-                         ctr_right.x =  end_right.x;
-                         ctr_right.y = m1 * ctr_right.x + b_r1;
-                         ctr_left.x =  end_left.x;
-                         ctr_left.y = m1 * ctr_left.x + b_l1;
-                         }
-                         */
-                        /*
-                         tmp_point2.x=ctr_right.x-ctr_left.x;
-                         tmp_point2.y=ctr_right.y-ctr_left.y;
-                         if(tmp_point2.length!=strokeStyle.thickness){
-
-                         tmp_point.x=ctr_left.x+tmp_point2.x*0.5;
-                         tmp_point.y=ctr_left.y+tmp_point2.y*0.5;
-                         tmp_point2.normalize();
-                         ctr_left.x=tmp_point.x-tmp_point2.x*strokeStyle.half_thickness;
-                         ctr_left.y=tmp_point.y-tmp_point2.y*strokeStyle.half_thickness;
-                         ctr_right.x=tmp_point.x+tmp_point2.x*strokeStyle.half_thickness;
-                         ctr_right.y=tmp_point.y+tmp_point2.y*strokeStyle.half_thickness;
-                         }
-                         */
-                        //ctr_right=ctr_point;
-                        //ctr_left=ctr_point;
-                        //console.log(start_point.x);
-                        //console.log(start_point.y);
-                        //console.log(ctr_point.x);
-                        //console.log(ctr_point.y);
-                        //console.log(end_point.x);
-                        //console.log(end_point.y);
-                        var subdivided = [];
-                        var subdivided2 = [];
-                        GraphicsFactoryHelper.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
-                        if (dir_delta > 0) {
-                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                                // right curved
-                                // concave curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -128, final_vert_list);
-                                // fills
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list);
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list);
-                                // convex curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 127, final_vert_list);
-                            }
-                        }
-                        else {
-                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                                // left curved
-                                // convex curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 127, final_vert_list);
-                                // fills
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list);
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list);
-                                // concave curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -128, final_vert_list);
-                            }
-                        }
-                    }
-                    else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
-                        new_pnts_cnt += 3;
-                        if (new_cmds[i] == GraphicsPathCommand.BUILD_ROUND_JOINT) {
-                            end_left = new_pnts[new_pnts_cnt++]; // concave curves:
-                            start_right = new_pnts[new_pnts_cnt++];
-                            start_left = new_pnts[new_pnts_cnt++];
-                            GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, end_left.x, end_left.y, start_left.x, start_left.y, -1, final_vert_list);
-                        }
-                    }
-                }
-                // now we draw all the normal triangles.
-                // we do it in 2 steps, to prevent curves cut anything out of underlying normal tris
-                new_cmds_cnt = 0;
-                new_pnts_cnt = 0;
-                for (i = 0; i < new_cmds.length; i++) {
-                    if (new_cmds[i] == GraphicsPathCommand.LINE_TO) {
-                        start_right = new_pnts[new_pnts_cnt++];
-                        start_left = new_pnts[new_pnts_cnt++];
-                        end_right = new_pnts[new_pnts_cnt];
-                        end_left = new_pnts[new_pnts_cnt + 1];
-                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
-                        GraphicsFactoryHelper.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list);
-                    }
-                    else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
-                        new_pnts_cnt += 5;
-                    }
-                    else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
-                        end_right = new_pnts[new_pnts_cnt++];
-                        start_right = new_pnts[new_pnts_cnt++];
-                        start_left = new_pnts[new_pnts_cnt++];
-                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list);
-                        if (new_cmds[i] == GraphicsPathCommand.BUILD_ROUND_JOINT) {
-                            new_pnts_cnt += 3;
-                        }
-                    }
-                }
-                if (!closed) {
-                    last_dir_vec.x = data[2] - data[0];
-                    last_dir_vec.y = data[3] - data[1];
-                    last_dir_vec.normalize();
-                    GraphicsFactoryHelper.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -128, strokeStyle.half_thickness, final_vert_list);
-                    last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
-                    last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
-                    last_dir_vec.normalize();
-                    GraphicsFactoryHelper.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 127, strokeStyle.half_thickness, final_vert_list);
-                }
-            }
-        }
-        //targetGraphic.queued_stroke_pathes.length=0;
-    };
-    return GraphicsFactoryStrokes;
-}());
-
-var GraphicsFillStyle = (function () {
-    function GraphicsFillStyle(color, alpha) {
-        if (color === void 0) { color = 0xffffff; }
-        if (alpha === void 0) { alpha = 1; }
-        this._color = color;
-        this._alpha = alpha;
-    }
-    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
-        get: function () {
-            return GraphicsFillStyle.data_type;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return GraphicsFillStyle;
-}());
-GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
-
-var GraphicsStrokeStyle = (function () {
-    function GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miter_limit) {
-        if (color === void 0) { color = 0xffffff; }
-        if (alpha === void 0) { alpha = 1; }
-        if (thickness === void 0) { thickness = 10; }
-        if (jointstyle === void 0) { jointstyle = JointStyle.ROUND; }
-        if (capstyle === void 0) { capstyle = CapsStyle.SQUARE; }
-        if (miter_limit === void 0) { miter_limit = 10; }
-        this._color = color;
-        this._alpha = alpha;
-        this._thickness = thickness;
-        this._jointstyle = jointstyle;
-        this._capstyle = capstyle;
-        this._miter_limit = miter_limit;
-    }
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "data_type", {
-        get: function () {
-            return GraphicsStrokeStyle.data_type;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "color", {
-        get: function () {
-            return this._color;
-        },
-        set: function (value) {
-            this._color = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "alpha", {
-        get: function () {
-            return this._alpha;
-        },
-        set: function (value) {
-            this._alpha = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "half_thickness", {
-        get: function () {
-            return this._thickness / 2;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "thickness", {
-        get: function () {
-            return this._thickness;
-        },
-        set: function (value) {
-            this._thickness = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "jointstyle", {
-        get: function () {
-            return this._jointstyle;
-        },
-        set: function (value) {
-            this._jointstyle = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "miter_limit", {
-        get: function () {
-            return this._miter_limit;
-        },
-        set: function (value) {
-            this._miter_limit = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsStrokeStyle.prototype, "capstyle", {
-        get: function () {
-            return this._capstyle;
-        },
-        set: function (value) {
-            this._capstyle = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return GraphicsStrokeStyle;
-}());
-GraphicsStrokeStyle.data_type = "[graphicsdata StrokeStyle]";
-
-/**
- * The GraphicsPathWinding class provides values for the
- * <code>flash.display.GraphicsPath.winding</code> property and the
- * <code>flash.display.Graphics.drawPath()</code> method to determine the
- * direction to draw a path. A clockwise path is positively wound, and a
- * counter-clockwise path is negatively wound:
- *
- * <p> When paths intersect or overlap, the winding direction determines the
- * rules for filling the areas created by the intersection or overlap:</p>
- */
-var GraphicsPathWinding = (function () {
-    function GraphicsPathWinding() {
-    }
-    return GraphicsPathWinding;
-}());
-GraphicsPathWinding.EVEN_ODD = "evenOdd";
-GraphicsPathWinding.NON_ZERO = "nonZero";
-
-/**
-
- * Defines the values to use for specifying path-drawing commands.
- * The values in this class are used by the Graphics.drawPath() method,
- *or stored in the commands vector of a GraphicsPath object.
- */
-var GraphicsPath = (function () {
-    function GraphicsPath(commands, data, winding_rule) {
-        if (commands === void 0) { commands = null; }
-        if (data === void 0) { data = null; }
-        if (winding_rule === void 0) { winding_rule = GraphicsPathWinding.EVEN_ODD; }
-        this._data = [];
-        this._commands = [];
-        this._style = null;
-        if (commands != null && data != null) {
-            this._data[0] = data;
-            this._commands[0] = commands;
-        }
-        else {
-            this._data[0] = [];
-            this._commands[0] = [];
-        }
-        this._startPoint = new _awayjs_core.Point();
-        this._cur_point = new _awayjs_core.Point();
-        this._winding_rule = winding_rule;
-        this._winding_directions = [];
-    }
-    Object.defineProperty(GraphicsPath.prototype, "data_type", {
-        get: function () {
-            return GraphicsPath.data_type;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsPath.prototype, "style", {
-        get: function () {
-            return this._style;
-        },
-        set: function (value) {
-            this._style = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GraphicsPath.prototype.fill = function () {
-        if (this._style == null)
-            return null;
-        if (this._style.data_type == GraphicsFillStyle.data_type)
-            return this._style;
-        return null;
-    };
-    GraphicsPath.prototype.stroke = function () {
-        if (this._style == null)
-            return null;
-        if (this._style.data_type == GraphicsStrokeStyle.data_type)
-            return this._style;
-        return null;
-    };
-    Object.defineProperty(GraphicsPath.prototype, "commands", {
-        get: function () {
-            return this._commands;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GraphicsPath.prototype, "data", {
-        get: function () {
-            return this._data;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GraphicsPath.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-        // if controlpoint and anchor are same, we add lineTo command
-        if ((controlX == anchorX) && (controlY == anchorY)) {
-            this.lineTo(controlX, controlY);
-            this.moveTo(anchorX, anchorY);
-            return;
-        }
-        // if anchor is current point, but controlpoint is different, we lineto controlpoint
-        if (((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) && ((this._cur_point.x != controlX) || (this._cur_point.y != controlY))) {
-            this.lineTo(controlX, controlY);
-            this.moveTo(anchorX, anchorY);
-            return;
-        }
-        // if controlpoint is current point, but anchor is different, we lineto anchor
-        if (((this._cur_point.x != anchorX) || (this._cur_point.y != anchorY)) && ((this._cur_point.x == controlX) && (this._cur_point.y == controlY))) {
-            this.lineTo(anchorX, anchorY);
-            return;
-        }
-        // if controlpoint and anchor are same as current point
-        if (((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) && ((this._cur_point.x == controlX) && (this._cur_point.y == controlY))) {
-            console.log("curveTo command not added because startpoint and endpoint are the same.");
-            this.lineTo(anchorX, anchorY);
-            return;
-        }
-        if (this._commands[this._commands.length - 1].length == 0) {
-            // every contour must start with a moveTo command, so we make sure we have correct startpoint
-            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
-            this._data[this._data.length - 1].push(this._cur_point.x);
-            this._data[this._data.length - 1].push(this._cur_point.y);
-        }
-        this._commands[this._commands.length - 1].push(GraphicsPathCommand.CURVE_TO);
-        this._data[this._data.length - 1].push(controlX);
-        this._data[this._data.length - 1].push(controlY);
-        this._data[this._data.length - 1].push(anchorX);
-        this._data[this._data.length - 1].push(anchorY);
-        this._cur_point.x = anchorX;
-        this._cur_point.y = anchorY;
-    };
-    GraphicsPath.prototype.cubicCurveTo = function (controlX, controlY, control2X, control2Y, anchorX, anchorY) {
-        console.log("cubicCurveTo not yet fully supported.");
-        if ((this._cur_point.x == anchorX) && (this._cur_point.y == anchorY)) {
-            console.log("curveTo command not added because startpoint and endpoint are the same.");
-            return;
-        }
-        if (this._commands[this._commands.length - 1].length == 0) {
-            // every contour must start with a moveTo command, so we make sure we have correct startpoint
-            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
-            this._data[this._data.length - 1].push(this._cur_point.x);
-            this._data[this._data.length - 1].push(this._cur_point.y);
-        }
-        this._commands[this._commands.length - 1].push(GraphicsPathCommand.CURVE_TO);
-        this._data[this._data.length - 1].push(controlX);
-        this._data[this._data.length - 1].push(controlY);
-        this._data[this._data.length - 1].push(anchorX);
-        this._data[this._data.length - 1].push(anchorY);
-        this._cur_point.x = anchorX;
-        this._cur_point.y = anchorY;
-    };
-    GraphicsPath.prototype.lineTo = function (x, y) {
-        if ((this._cur_point.x == x) && (this._cur_point.y == y)) {
-            console.log("lineTo command not added because startpoint and endpoint are the same.");
-            return;
-        }
-        if (this._commands[this._commands.length - 1].length == 0) {
-            // every contour must start with a moveTo command, so we make sure we have correct startpoint
-            this._commands[this._commands.length - 1].push(GraphicsPathCommand.MOVE_TO);
-            this._data[this._data.length - 1].push(this._cur_point.x);
-            this._data[this._data.length - 1].push(this._cur_point.y);
-        }
-        this._commands[this._commands.length - 1].push(GraphicsPathCommand.LINE_TO);
-        this._data[this._data.length - 1].push(x);
-        this._data[this._data.length - 1].push(y);
-        this._cur_point.x = x;
-        this._cur_point.y = y;
-    };
-    GraphicsPath.prototype.moveTo = function (x, y) {
-        if ((this._cur_point.x == x) && (this._cur_point.y == y)) {
-            console.log("moveTo command not added because startpoint and endpoint are the same.");
-            return;
-        }
-        // whenever a moveTo command apears, we start a new contour
-        if (this._commands[this._commands.length - 1].length > 0) {
-            this._commands.push([GraphicsPathCommand.MOVE_TO]);
-            this._data.push([x, y]);
-        }
-        this._startPoint.x = x;
-        this._startPoint.y = y;
-        this._cur_point.x = x;
-        this._cur_point.y = y;
-    };
-    GraphicsPath.prototype.wideLineTo = function (x, y) {
-        // not used
-        /*
-         this._commands.push(GraphicsPathCommand.WIDE_LINE_TO);
-         this._data.push(0);
-         this._data.push(0);
-         this._data.push(x);
-         this._data.push(y);
-         */
-    };
-    GraphicsPath.prototype.wideMoveTo = function (x, y) {
-        // not used
-        /*
-         this._commands.push(GraphicsPathCommand.WIDE_MOVE_TO);
-         this._data.push(0);
-         this._data.push(0);
-         this._data.push(x);
-         this._data.push(y);
-         */
-    };
-    return GraphicsPath;
-}());
-GraphicsPath.data_type = "[graphicsdata path]";
 
 /**
  * The InterpolationMethod class provides values for the
@@ -20902,1320 +22363,6 @@ var BoxFilter = (function () {
     };
     return BoxFilter;
 }());
-
-/**
- *
- * Graphics is a collection of Shapes, each of which contain the actual geometrical data such as vertices,
- * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
- * A Graphics object is assigned to a Sprite, a scene graph occurence of the geometry, which in turn assigns
- * the SubGeometries to its respective TriangleGraphic objects.
- *
- *
- *
- *
- * @class Graphics
- */
-var Graphics = (function (_super) {
-    __extends(Graphics, _super);
-    /**
-     * Creates a new Graphics object.
-     */
-    function Graphics(entity) {
-        if (entity === void 0) { entity = null; }
-        var _this = _super.call(this) || this;
-        _this._boxBoundsInvalid = true;
-        _this._sphereBoundsInvalid = true;
-        _this._shapes = [];
-        _this._current_position = new _awayjs_core.Point();
-        //store associated entity object, otherwise assign itself as entity
-        _this._entity = entity;
-        _this._current_position = new _awayjs_core.Point();
-        _this._queued_fill_pathes = [];
-        _this._queued_stroke_pathes = [];
-        _this._active_fill_path = null;
-        _this._active_stroke_path = null;
-        _this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
-        _this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
-        _this._onAddMaterialDelegate = function (event) { return _this._onAddMaterial(event); };
-        _this._onRemoveMaterialDelegate = function (event) { return _this._onRemoveMaterial(event); };
-        return _this;
-    }
-    Graphics.getGraphics = function (entity) {
-        if (Graphics._pool.length) {
-            var graphics = Graphics._pool.pop();
-            graphics._entity = entity;
-            return graphics;
-        }
-        return new Graphics(entity);
-    };
-    Graphics.storeGraphics = function (graphics) {
-        graphics.clear();
-        Graphics._pool.push(graphics);
-    };
-    Object.defineProperty(Graphics.prototype, "assetType", {
-        get: function () {
-            return Graphics.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "count", {
-        get: function () {
-            return this._shapes.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "animator", {
-        /**
-         * Defines the animator of the graphics object.  Default value is <code>null</code>.
-         */
-        get: function () {
-            return this._animator;
-        },
-        set: function (value) {
-            if (this._animator)
-                this._animator.removeOwner(this._entity);
-            this._animator = value;
-            if (this._animator)
-                this._animator.addOwner(this._entity);
-            if (this._material) {
-                this._material.iRemoveOwner(this._entity);
-                this._material.iAddOwner(this._entity);
-            }
-            var shape;
-            var len = this._shapes.length;
-            for (var i = 0; i < len; ++i) {
-                shape = this._shapes[i];
-                // cause material to be unregistered and registered again to work with the new animation type (if possible)
-                if (shape.material && shape.material != this._material) {
-                    shape.material.iRemoveOwner(this._entity);
-                    shape.material.iAddOwner(this._entity);
-                }
-                //invalidate any existing shape objects in case they need to pull new elements
-                shape.invalidateElements();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "style", {
-        /**
-         *
-         */
-        get: function () {
-            return this._style;
-        },
-        set: function (value) {
-            if (this._style == value)
-                return;
-            if (this._style)
-                this._style.removeEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this._style = value;
-            if (this._style)
-                this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, this._onInvalidatePropertiesDelegate);
-            this.invalidateMaterials();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "queued_stroke_pathes", {
-        get: function () {
-            return this._queued_stroke_pathes;
-        },
-        set: function (value) {
-            this._queued_stroke_pathes = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "queued_fill_pathes", {
-        get: function () {
-            return this._queued_fill_pathes;
-        },
-        set: function (value) {
-            this._queued_fill_pathes = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Graphics.prototype, "material", {
-        /**
-         * The material with which to render the Graphics.
-         */
-        get: function () {
-            return this._material;
-        },
-        set: function (value) {
-            if (value == this._material)
-                return;
-            if (this._material && !this._isShapeMaterial(this._material))
-                this._material.iRemoveOwner(this._entity);
-            this._material = value;
-            if (this._material && !this._isShapeMaterial(this._material))
-                this._material.iAddOwner(this._entity);
-            this.invalidateMaterials();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Adds a GraphicBase wrapping a Elements.
-     *
-     * @param elements
-     */
-    Graphics.prototype.addShape = function (shape) {
-        var shapeIndex = this.getShapeIndex(shape);
-        if (shapeIndex != -1)
-            this.removeShapeAt(shapeIndex);
-        this._shapes.push(shape);
-        shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-        this.invalidate();
-        return shape;
-    };
-    Graphics.prototype.removeShape = function (shape) {
-        var shapeIndex = this.getShapeIndex(shape);
-        if (shapeIndex == -1)
-            throw new _awayjs_core.ArgumentError("Shape parameter is not a shape of the caller");
-        this.removeShapeAt(shapeIndex);
-    };
-    Graphics.prototype.removeShapeAt = function (index) {
-        if (index < 0 || index >= this._shapes.length)
-            throw new _awayjs_core.RangeError("Index is out of range");
-        this._shapes.splice(index, 1)[0].removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-        this.invalidate();
-    };
-    Graphics.prototype.removeAllShapes = function () {
-        var shape;
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++) {
-            shape = this._shapes[i];
-            shape.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-            shape.removeEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
-            shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
-        }
-        this._shapes.length = 0;
-        this.invalidate();
-    };
-    Graphics.prototype.getShapeAt = function (index) {
-        return this._shapes[index];
-    };
-    Graphics.prototype.getShapeIndex = function (shape) {
-        return this._shapes.indexOf(shape);
-    };
-    Graphics.prototype.applyTransformation = function (transform) {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; ++i) {
-            this._shapes[i].applyTransformation(transform);
-        }
-    };
-    Graphics.prototype.copyTo = function (graphics) {
-        graphics.material = this._material;
-        graphics.style = this._style;
-        graphics.particles = this.particles;
-        graphics.numParticles = this.numParticles;
-        graphics._addShapes(this._shapes);
-        if (this._animator)
-            graphics.animator = this._animator.clone();
-    };
-    /**
-     * Scales the geometry.
-     * @param scale The amount by which to scale.
-     */
-    Graphics.prototype.scale = function (scale) {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; ++i)
-            this._shapes[i].scale(scale);
-    };
-    Graphics.prototype.clear = function () {
-        for (var i = this._shapes.length - 1; i >= 0; i--) {
-            this._shapes[i].clear();
-        }
-    };
-    /**
-     * Clears all resources used by the Graphics object, including SubGeometries.
-     */
-    Graphics.prototype.dispose = function () {
-        this.material = null;
-        this.removeAllShapes();
-        if (this._animator)
-            this._animator.dispose();
-    };
-    /**
-     * Scales the uv coordinates (tiling)
-     * @param scaleU The amount by which to scale on the u axis. Default is 1;
-     * @param scaleV The amount by which to scale on the v axis. Default is 1;
-     */
-    Graphics.prototype.scaleUV = function (scaleU, scaleV) {
-        if (scaleU === void 0) { scaleU = 1; }
-        if (scaleV === void 0) { scaleV = 1; }
-        var len = this._shapes.length;
-        for (var i = 0; i < len; ++i)
-            this._shapes[i].scaleUV(scaleU, scaleV);
-    };
-    Graphics.prototype.getBoxBounds = function () {
-        if (this._boxBoundsInvalid) {
-            this._boxBoundsInvalid = false;
-            if (!this._boxBounds)
-                this._boxBounds = new _awayjs_core.Box();
-            if (this._shapes.length) {
-                this._boxBounds.setBoundIdentity();
-                var len = this._shapes.length;
-                for (var i = 0; i < len; i++) {
-                    this._boxBounds = this._boxBounds.union(this._shapes[i].getBoxBounds(), this._boxBounds);
-                }
-            }
-            else {
-                this._boxBounds.setEmpty();
-            }
-        }
-        return this._boxBounds;
-    };
-    Graphics.prototype.getSphereBounds = function (center, target) {
-        if (target === void 0) { target = null; }
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++) {
-            target = this._shapes[i].getSphereBounds(center, target);
-        }
-        return target;
-    };
-    Graphics.prototype.invalidate = function () {
-        _super.prototype.invalidate.call(this);
-        this._boxBoundsInvalid = true;
-        this._sphereBoundsInvalid = true;
-    };
-    Graphics.prototype.invalidateMaterials = function () {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; ++i)
-            this._shapes[i].invalidateMaterial();
-    };
-    Graphics.prototype.invalidateElements = function () {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; ++i)
-            this._shapes[i].invalidateElements();
-    };
-    Graphics.prototype._hitTestPointInternal = function (x, y) {
-        //TODO: handle lines as well
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++)
-            if (this._shapes[i].hitTestPoint(x, y, 0))
-                return true;
-        return false;
-    };
-    Graphics.prototype.acceptTraverser = function (traverser) {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++)
-            traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
-    };
-    Graphics.prototype._onInvalidateProperties = function (event) {
-        this.invalidateMaterials();
-    };
-    Graphics.prototype._onInvalidateVertices = function (event) {
-        //callback for bounds update
-        if (event.attributesView != event.target.positions)
-            return;
-        this.invalidate();
-    };
-    Graphics.prototype.draw_fills = function () {
-        GraphicsFactoryFills.draw_pathes(this);
-    };
-    Graphics.prototype._onAddMaterial = function (event) {
-        var material = event.shape.material;
-        if (material != this._material)
-            material.iAddOwner(this._entity);
-    };
-    Graphics.prototype._onRemoveMaterial = function (event) {
-        var material = event.shape.material;
-        if (material != this._material)
-            material.iRemoveOwner(this._entity);
-    };
-    Graphics.prototype.draw_strokes = function () {
-        var final_vert_list = [];
-        GraphicsFactoryStrokes.draw_pathes(this.queued_stroke_pathes, final_vert_list);
-        this.queued_stroke_pathes.length = 0;
-        var attributesView = new _awayjs_core.AttributesView(Float32Array, 3);
-        attributesView.set(final_vert_list);
-        var attributesBuffer = attributesView.attributesBuffer;
-        attributesView.dispose();
-        var elements = new TriangleElements(attributesBuffer);
-        elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
-        elements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(attributesBuffer, false));
-        //elements.setUVs(new Float2Attributes(attributesBuffer));
-        //curve_sub_geom.setUVs(new Float2Attributes(attributesBuffer));
-        var material = DefaultMaterialManager.getDefaultMaterial();
-        material.bothSides = true;
-        material.useColorTransform = true;
-        material.curves = true;
-        var sampler = new Sampler2D();
-        var shape = this.addShape(Shape.getShape(elements, material));
-        if (shape) {
-            shape.style = new Style();
-            shape.style.addSamplerAt(sampler, shape.material.getTextureAt(0));
-            //sampler.imageRect = new Rectangle(0, 0, 0.5, 0.5);
-            shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, 0.126, 0);
-            shape.material.animateUVs = true;
-        }
-    };
-    /**
-     * Fills a drawing area with a bitmap image. The bitmap can be repeated or
-     * tiled to fill the area. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called. </p>
-     *
-     * @param bitmap A transparent or opaque bitmap image that contains the bits
-     *               to be displayed.
-     * @param matrix A matrix object(of the flash.geom.Matrix class), which you
-     *               can use to define transformations on the bitmap. For
-     *               example, you can use the following matrix to rotate a bitmap
-     *               by 45 degrees(pi/4 radians):
-     * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
-     *               pattern. If <code>false</code>, the bitmap image does not
-     *               repeat, and the edges of the bitmap are used for any fill
-     *               area that extends beyond the bitmap.
-     *
-     *               <p>For example, consider the following bitmap(a 20 x
-     *               20-pixel checkerboard pattern):</p>
-     *
-     *               <p>When <code>repeat</code> is set to <code>true</code>(as
-     *               in the following example), the bitmap fill repeats the
-     *               bitmap:</p>
-     *
-     *               <p>When <code>repeat</code> is set to <code>false</code>,
-     *               the bitmap fill uses the edge pixels for the fill area
-     *               outside the bitmap:</p>
-     * @param smooth If <code>false</code>, upscaled bitmap images are rendered
-     *               by using a nearest-neighbor algorithm and look pixelated. If
-     *               <code>true</code>, upscaled bitmap images are rendered by
-     *               using a bilinear algorithm. Rendering by using the nearest
-     *               neighbor algorithm is faster.
-     */
-    Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
-        if (matrix === void 0) { matrix = null; }
-        if (repeat === void 0) { repeat = true; }
-        if (smooth === void 0) { smooth = false; }
-        this.draw_fills();
-        // start a new fill path
-        this._active_fill_path = new GraphicsPath();
-        // todo: create bitmap fill style
-        this._active_fill_path.style = new GraphicsFillStyle(0xffffff, 1);
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_fill_pathes.push(this._active_fill_path);
-    };
-    /**
-     * Specifies a simple one-color fill that subsequent calls to other Graphics
-     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
-     * when drawing. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called.</p>
-     *
-     * @param color The color of the fill(0xRRGGBB).
-     * @param alpha The alpha value of the fill(0.0 to 1.0).
-     */
-    Graphics.prototype.beginFill = function (color /*int*/, alpha) {
-        if (alpha === void 0) { alpha = 1; }
-        this.draw_fills();
-        // start a new fill path
-        this._active_fill_path = new GraphicsPath();
-        this._active_fill_path.style = new GraphicsFillStyle(color, alpha);
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_fill_pathes.push(this._active_fill_path);
-    };
-    /**
-     * Specifies a gradient fill used by subsequent calls to other Graphics
-     * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
-     * the object. The fill remains in effect until you call the
-     * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
-     * method. Calling the <code>clear()</code> method clears the fill.
-     *
-     * <p>The application renders the fill whenever three or more points are
-     * drawn, or when the <code>endFill()</code> method is called. </p>
-     *
-     * @param type                A value from the GradientType class that
-     *                            specifies which gradient type to use:
-     *                            <code>GradientType.LINEAR</code> or
-     *                            <code>GradientType.RADIAL</code>.
-     * @param colors              An array of RGB hexadecimal color values used
-     *                            in the gradient; for example, red is 0xFF0000,
-     *                            blue is 0x0000FF, and so on. You can specify
-     *                            up to 15 colors. For each color, specify a
-     *                            corresponding value in the alphas and ratios
-     *                            parameters.
-     * @param alphas              An array of alpha values for the corresponding
-     *                            colors in the colors array; valid values are 0
-     *                            to 1. If the value is less than 0, the default
-     *                            is 0. If the value is greater than 1, the
-     *                            default is 1.
-     * @param ratios              An array of color distribution ratios; valid
-     *                            values are 0-255. This value defines the
-     *                            percentage of the width where the color is
-     *                            sampled at 100%. The value 0 represents the
-     *                            left position in the gradient box, and 255
-     *                            represents the right position in the gradient
-     *                            box.
-     * @param matrix              A transformation matrix as defined by the
-     *                            flash.geom.Matrix class. The flash.geom.Matrix
-     *                            class includes a
-     *                            <code>createGradientBox()</code> method, which
-     *                            lets you conveniently set up the matrix for use
-     *                            with the <code>beginGradientFill()</code>
-     *                            method.
-     * @param spreadMethod        A value from the SpreadMethod class that
-     *                            specifies which spread method to use, either:
-     *                            <code>SpreadMethod.PAD</code>,
-     *                            <code>SpreadMethod.REFLECT</code>, or
-     *                            <code>SpreadMethod.REPEAT</code>.
-     *
-     *                            <p>For example, consider a simple linear
-     *                            gradient between two colors:</p>
-     *
-     *                            <p>This example uses
-     *                            <code>SpreadMethod.PAD</code> for the spread
-     *                            method, and the gradient fill looks like the
-     *                            following:</p>
-     *
-     *                            <p>If you use <code>SpreadMethod.REFLECT</code>
-     *                            for the spread method, the gradient fill looks
-     *                            like the following:</p>
-     *
-     *                            <p>If you use <code>SpreadMethod.REPEAT</code>
-     *                            for the spread method, the gradient fill looks
-     *                            like the following:</p>
-     * @param interpolationMethod A value from the InterpolationMethod class that
-     *                            specifies which value to use:
-     *                            <code>InterpolationMethod.LINEAR_RGB</code> or
-     *                            <code>InterpolationMethod.RGB</code>
-     *
-     *                            <p>For example, consider a simple linear
-     *                            gradient between two colors(with the
-     *                            <code>spreadMethod</code> parameter set to
-     *                            <code>SpreadMethod.REFLECT</code>). The
-     *                            different interpolation methods affect the
-     *                            appearance as follows: </p>
-     * @param focalPointRatio     A number that controls the location of the
-     *                            focal point of the gradient. 0 means that the
-     *                            focal point is in the center. 1 means that the
-     *                            focal point is at one border of the gradient
-     *                            circle. -1 means that the focal point is at the
-     *                            other border of the gradient circle. A value
-     *                            less than -1 or greater than 1 is rounded to -1
-     *                            or 1. For example, the following example shows
-     *                            a <code>focalPointRatio</code> set to 0.75:
-     * @throws ArgumentError If the <code>type</code> parameter is not valid.
-     */
-    Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-        if (matrix === void 0) { matrix = null; }
-        if (spreadMethod === void 0) { spreadMethod = "pad"; }
-        if (interpolationMethod === void 0) { interpolationMethod = "rgb"; }
-        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-        this.draw_fills();
-        // start a new fill path
-        this._active_fill_path = new GraphicsPath();
-        // todo: create gradient fill style
-        this._active_fill_path.style = new GraphicsFillStyle(colors[0], alphas[0]);
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_fill_pathes.push(this._active_fill_path);
-    };
-    /**
-     * Copies all of drawing commands from the source Graphics object into the
-     * calling Graphics object.
-     *
-     * @param sourceGraphics The Graphics object from which to copy the drawing
-     *                       commands.
-     */
-    Graphics.prototype.copyFrom = function (sourceGraphics) {
-        sourceGraphics.copyTo(this);
-    };
-    /**
-     * Draws a cubic Bezier curve from the current drawing position to the
-     * specified anchor point. Cubic Bezier curves consist of two anchor points
-     * and two control points. The curve interpolates the two anchor points and
-     * curves toward the two control points.
-     *
-     * The four points you use to draw a cubic Bezier curve with the
-     * <code>cubicCurveTo()</code> method are as follows:
-     *
-     * <ul>
-     *   <li>The current drawing position is the first anchor point. </li>
-     *   <li>The anchorX and anchorY parameters specify the second anchor point.
-     *   </li>
-     *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
-     *   specify the first control point.</li>
-     *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
-     *   specify the second control point.</li>
-     * </ul>
-     *
-     * If you call the <code>cubicCurveTo()</code> method before calling the
-     * <code>moveTo()</code> method, your curve starts at position (0, 0).
-     *
-     * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
-     * the current drawing position to (<code>anchorX</code>,
-     * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
-     * the current drawing position remains unchanged.
-     *
-     * If your movie clip contains content created with the Flash drawing tools,
-     * the results of calls to the <code>cubicCurveTo()</code> method are drawn
-     * underneath that content.
-     *
-     * @param controlX1 Specifies the horizontal position of the first control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlY1 Specifies the vertical position of the first control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlX2 Specifies the horizontal position of the second control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param controlY2 Specifies the vertical position of the second control
-     *                  point relative to the registration point of the parent
-     *                  display object.
-     * @param anchorX   Specifies the horizontal position of the anchor point
-     *                  relative to the registration point of the parent display
-     *                  object.
-     * @param anchorY   Specifies the vertical position of the anchor point
-     *                  relative to the registration point of the parent display
-     *                  object.
-     */
-    Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
-        throw new _awayjs_core.PartialImplementationError("cubicCurveTo");
-        /*
-         t = 0.5; // given example value
-         x = (1 - t) * (1 - t) * p[0].x + 2 * (1 - t) * t * p[1].x + t * t * p[2].x;
-         y = (1 - t) * (1 - t) * p[0].y + 2 * (1 - t) * t * p[1].y + t * t * p[2].y;
-
-         this.queued_command_types.push(Graphics.CMD_BEZIER);
-         this.queued_command_data.push(controlX1);
-         this.queued_command_data.push(controlY1);
-         this.queued_command_data.push(controlX2);
-         this.queued_command_data.push(controlY2);
-         this.queued_command_data.push(anchorX);
-         this.queued_command_data.push(anchorY);
-
-         // todo: somehow convert cubic bezier curve into 2 quadric curves...
-
-         this.draw_direction+=0;
-         */
-    };
-    /**
-     * Draws a curve using the current line style from the current drawing
-     * position to(anchorX, anchorY) and using the control point that
-     * (<code>controlX</code>, <code>controlY</code>) specifies. The current
-     * drawing position is then set to(<code>anchorX</code>,
-     * <code>anchorY</code>). If the movie clip in which you are drawing contains
-     * content created with the Flash drawing tools, calls to the
-     * <code>curveTo()</code> method are drawn underneath this content. If you
-     * call the <code>curveTo()</code> method before any calls to the
-     * <code>moveTo()</code> method, the default of the current drawing position
-     * is(0, 0). If any of the parameters are missing, this method fails and the
-     * current drawing position is not changed.
-     *
-     * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
-     * consist of two anchor points and one control point. The curve interpolates
-     * the two anchor points and curves toward the control point. </p>
-     *
-     * @param controlX A number that specifies the horizontal position of the
-     *                 control point relative to the registration point of the
-     *                 parent display object.
-     * @param controlY A number that specifies the vertical position of the
-     *                 control point relative to the registration point of the
-     *                 parent display object.
-     * @param anchorX  A number that specifies the horizontal position of the
-     *                 next anchor point relative to the registration point of
-     *                 the parent display object.
-     * @param anchorY  A number that specifies the vertical position of the next
-     *                 anchor point relative to the registration point of the
-     *                 parent display object.
-     */
-    Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-        if (this._active_fill_path != null) {
-            this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
-        }
-        this._current_position.x = anchorX;
-        this._current_position.y = anchorY;
-    };
-    /**
-     * Draws a circle. Set the line style, fill, or both before you call the
-     * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
-     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method.
-     *
-     * @param x      The <i>x</i> location of the center of the circle relative
-     *               to the registration point of the parent display object(in
-     *               pixels).
-     * @param y      The <i>y</i> location of the center of the circle relative
-     *               to the registration point of the parent display object(in
-     *               pixels).
-     * @param radius The radius of the circle(in pixels).
-     */
-    Graphics.prototype.drawCircle = function (x, y, radius) {
-        // todo: directly create triangles instead of draw commands ?
-        var radius2 = radius * 1.065;
-        if (this._active_fill_path != null) {
-            this._active_fill_path.moveTo(x - radius, y);
-            for (var i = 8; i >= 0; i--) {
-                var degree = (i) * (360 / 8) * Math.PI / 180;
-                var degree2 = degree + ((360 / 16) * Math.PI / 180);
-                this._active_fill_path.curveTo(x - (Math.cos(degree2) * radius2), y + (Math.sin(degree2) * radius2), x - (Math.cos(degree) * radius), y + (Math.sin(degree) * radius));
-            }
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.moveTo(x, y + radius);
-            var radius2 = radius * 0.93;
-            this._active_stroke_path.curveTo(x - (radius2), y + (radius2), x - radius, y);
-            this._active_stroke_path.curveTo(x - (radius2), y - (radius2), x, y - radius);
-            this._active_stroke_path.curveTo(x + (radius2), y - (radius2), x + radius, y);
-            this._active_stroke_path.curveTo(x + (radius2), y + (radius2), x, y + radius);
-        }
-    };
-    /**
-     * Draws an ellipse. Set the line style, fill, or both before you call the
-     * <code>drawEllipse()</code> method, by calling the
-     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method.
-     *
-     * @param x      The <i>x</i> location of the top-left of the bounding-box of
-     *               the ellipse relative to the registration point of the parent
-     *               display object(in pixels).
-     * @param y      The <i>y</i> location of the top left of the bounding-box of
-     *               the ellipse relative to the registration point of the parent
-     *               display object(in pixels).
-     * @param width  The width of the ellipse(in pixels).
-     * @param height The height of the ellipse(in pixels).
-     */
-    Graphics.prototype.drawEllipse = function (x, y, width, height) {
-        width /= 2;
-        height /= 2;
-        if (this._active_fill_path != null) {
-            this._active_fill_path.moveTo(x, y + height);
-            this._active_fill_path.curveTo(x - (width), y + (height), x - width, y);
-            this._active_fill_path.curveTo(x - (width), y - (height), x, y - height);
-            this._active_fill_path.curveTo(x + (width), y - (height), x + width, y);
-            this._active_fill_path.curveTo(x + (width), y + (height), x, y + height);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.moveTo(x, y + height);
-            this._active_stroke_path.curveTo(x - (width), y + (height), x - width, y);
-            this._active_stroke_path.curveTo(x - (width), y - (height), x, y - height);
-            this._active_stroke_path.curveTo(x + (width), y - (height), x + width, y);
-            this._active_stroke_path.curveTo(x + (width), y + (height), x, y + height);
-        }
-    };
-    /**
-     * Submits a series of IGraphicsData instances for drawing. This method
-     * accepts a Vector containing objects including paths, fills, and strokes
-     * that implement the IGraphicsData interface. A Vector of IGraphicsData
-     * instances can refer to a part of a shape, or a complex fully defined set
-     * of data for rendering a complete shape.
-     *
-     * <p> Graphics paths can contain other graphics paths. If the
-     * <code>graphicsData</code> Vector includes a path, that path and all its
-     * sub-paths are rendered during this operation. </p>
-     *
-     */
-    Graphics.prototype.drawGraphicsData = function (graphicsData) {
-        //this.draw_fills();
-        /*
-         for (var i:number=0; i<graphicsData.length; i++){
-         //todo
-         if(graphicsData[i].dataType=="beginFill"){
-
-         }
-         else if(graphicsData[i].dataType=="endFill"){
-
-         }
-         else if(graphicsData[i].dataType=="endFill"){
-
-         }
-         else if(graphicsData[i].dataType=="Path"){
-
-         }
-
-         }
-         */
-    };
-    /**
-     * Submits a series of commands for drawing. The <code>drawPath()</code>
-     * method uses vector arrays to consolidate individual <code>moveTo()</code>,
-     * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
-     * single call. The <code>drawPath()</code> method parameters combine drawing
-     * commands with x- and y-coordinate value pairs and a drawing direction. The
-     * drawing commands are values from the GraphicsPathCommand class. The x- and
-     * y-coordinate value pairs are Numbers in an array where each pair defines a
-     * coordinate location. The drawing direction is a value from the
-     * GraphicsPathWinding class.
-     *
-     * <p> Generally, drawings render faster with <code>drawPath()</code> than
-     * with a series of individual <code>lineTo()</code> and
-     * <code>curveTo()</code> methods. </p>
-     *
-     * <p> The <code>drawPath()</code> method uses a uses a floating computation
-     * so rotation and scaling of shapes is more accurate and gives better
-     * results. However, curves submitted using the <code>drawPath()</code>
-     * method can have small sub-pixel alignment errors when used in conjunction
-     * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
-     *
-     * <p> The <code>drawPath()</code> method also uses slightly different rules
-     * for filling and drawing lines. They are: </p>
-     *
-     * <ul>
-     *   <li>When a fill is applied to rendering a path:
-     * <ul>
-     *   <li>A sub-path of less than 3 points is not rendered.(But note that the
-     * stroke rendering will still occur, consistent with the rules for strokes
-     * below.)</li>
-     *   <li>A sub-path that isn't closed(the end point is not equal to the
-     * begin point) is implicitly closed.</li>
-     * </ul>
-     * </li>
-     *   <li>When a stroke is applied to rendering a path:
-     * <ul>
-     *   <li>The sub-paths can be composed of any number of points.</li>
-     *   <li>The sub-path is never implicitly closed.</li>
-     * </ul>
-     * </li>
-     * </ul>
-     *
-     * @param winding Specifies the winding rule using a value defined in the
-     *                GraphicsPathWinding class.
-     */
-    Graphics.prototype.drawPath = function (commands, data, winding) {
-        //todo
-        /*
-         if(this._active_fill_path!=null){
-         this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
-         }
-         if(this._active_stroke_path!=null){
-         this._active_stroke_path.curveTo(controlX, controlY, anchorX, anchorY);
-         }
-         this._current_position.x=anchorX;
-         this._current_position.y=anchorY;
-         */
-    };
-    /**
-     * Draws a rectangle. Set the line style, fill, or both before you call the
-     * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
-     * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method.
-     *
-     * @param x      A number indicating the horizontal position relative to the
-     *               registration point of the parent display object(in pixels).
-     * @param y      A number indicating the vertical position relative to the
-     *               registration point of the parent display object(in pixels).
-     * @param width  The width of the rectangle(in pixels).
-     * @param height The height of the rectangle(in pixels).
-     * @throws ArgumentError If the <code>width</code> or <code>height</code>
-     *                       parameters are not a number
-     *                      (<code>Number.NaN</code>).
-     */
-    Graphics.prototype.drawRect = function (x, y, width, height) {
-        //todo: directly create triangles instead of drawing commands ?
-        if (this._active_fill_path != null) {
-            this._active_fill_path.moveTo(x, y);
-            this._active_fill_path.lineTo(x + width, y);
-            this._active_fill_path.lineTo(x + width, y + height);
-            this._active_fill_path.lineTo(x, y + height);
-            this._active_fill_path.lineTo(x, y);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.moveTo(x, y);
-            this._active_stroke_path.lineTo(x + width, y);
-            this._active_stroke_path.lineTo(x + width, y + height);
-            this._active_stroke_path.lineTo(x, y + height);
-            this._active_stroke_path.lineTo(x, y);
-        }
-    };
-    /**
-     * Draws a rounded rectangle. Set the line style, fill, or both before you
-     * call the <code>drawRoundRect()</code> method, by calling the
-     * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
-     * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method.
-     *
-     * @param x             A number indicating the horizontal position relative
-     *                      to the registration point of the parent display
-     *                      object(in pixels).
-     * @param y             A number indicating the vertical position relative to
-     *                      the registration point of the parent display object
-     *                     (in pixels).
-     * @param width         The width of the round rectangle(in pixels).
-     * @param height        The height of the round rectangle(in pixels).
-     * @param ellipseWidth  The width of the ellipse used to draw the rounded
-     *                      corners(in pixels).
-     * @param ellipseHeight The height of the ellipse used to draw the rounded
-     *                      corners(in pixels). Optional; if no value is
-     *                      specified, the default value matches that provided
-     *                      for the <code>ellipseWidth</code> parameter.
-     * @throws ArgumentError If the <code>width</code>, <code>height</code>,
-     *                       <code>ellipseWidth</code> or
-     *                       <code>ellipseHeight</code> parameters are not a
-     *                       number(<code>Number.NaN</code>).
-     */
-    Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
-        if (ellipseHeight === void 0) { ellipseHeight = NaN; }
-        //todo: directly create triangles instead of drawing commands ?
-        if (!ellipseHeight) {
-            ellipseHeight = ellipseWidth;
-        }
-        if (this._active_fill_path != null) {
-            this._active_fill_path.moveTo(x + ellipseWidth, y);
-            this._active_fill_path.lineTo(x + width - ellipseWidth, y);
-            this._active_fill_path.curveTo(x + width, y, x + width, y + ellipseHeight);
-            this._active_fill_path.lineTo(x + width, y + height - ellipseHeight);
-            this._active_fill_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
-            this._active_fill_path.lineTo(x + ellipseWidth, y + height);
-            this._active_fill_path.curveTo(x, y + height, x, y + height - ellipseHeight);
-            this._active_fill_path.lineTo(x, y + ellipseHeight);
-            this._active_fill_path.curveTo(x, y, x + ellipseWidth, y);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.moveTo(x + ellipseWidth, y);
-            this._active_stroke_path.lineTo(x + width - ellipseWidth, y);
-            this._active_stroke_path.curveTo(x + width, y, x + width, y + ellipseHeight);
-            this._active_stroke_path.lineTo(x + width, y + height - ellipseHeight);
-            this._active_stroke_path.curveTo(x + width, y + height, x + width - ellipseWidth, y + height);
-            this._active_stroke_path.lineTo(x + ellipseWidth, y + height);
-            this._active_stroke_path.curveTo(x, y + height, x, y + height - ellipseHeight);
-            this._active_stroke_path.lineTo(x, y + ellipseHeight);
-            this._active_stroke_path.curveTo(x, y, x + ellipseWidth, y);
-        }
-    };
-    //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
-    /**
-     * Renders a set of triangles, typically to distort bitmaps and give them a
-     * three-dimensional appearance. The <code>drawTriangles()</code> method maps
-     * either the current fill, or a bitmap fill, to the triangle faces using a
-     * set of(u,v) coordinates.
-     *
-     * <p> Any type of fill can be used, but if the fill has a transform matrix
-     * that transform matrix is ignored. </p>
-     *
-     * <p> A <code>uvtData</code> parameter improves texture mapping when a
-     * bitmap fill is used. </p>
-     *
-     * @param culling Specifies whether to render triangles that face in a
-     *                specified direction. This parameter prevents the rendering
-     *                of triangles that cannot be seen in the current view. This
-     *                parameter can be set to any value defined by the
-     *                TriangleCulling class.
-     */
-    Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
-        if (indices === void 0) { indices = null; }
-        if (uvtData === void 0) { uvtData = null; }
-        if (culling === void 0) { culling = null; }
-        if (this._active_fill_path != null) {
-        }
-        if (this._active_stroke_path != null) {
-        }
-    };
-    /**
-     * Applies a fill to the lines and curves that were added since the last call
-     * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
-     * <code>beginBitmapFill()</code> method. Flash uses the fill that was
-     * specified in the previous call to the <code>beginFill()</code>,
-     * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
-     * method. If the current drawing position does not equal the previous
-     * position specified in a <code>moveTo()</code> method and a fill is
-     * defined, the path is closed with a line and then filled.
-     *
-     */
-    Graphics.prototype.endFill = function () {
-        this.draw_strokes();
-        this.draw_fills();
-        this._active_fill_path = null;
-        this._active_stroke_path = null;
-    };
-    /**
-     * Specifies a bitmap to use for the line stroke when drawing lines.
-     *
-     * <p>The bitmap line style is used for subsequent calls to Graphics methods
-     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-     * the <code>lineBitmapStyle()</code> method again with different parameters.
-     * </p>
-     *
-     * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param bitmap The bitmap to use for the line stroke.
-     * @param matrix An optional transformation matrix as defined by the
-     *               flash.geom.Matrix class. The matrix can be used to scale or
-     *               otherwise manipulate the bitmap before applying it to the
-     *               line style.
-     * @param repeat Whether to repeat the bitmap in a tiled fashion.
-     * @param smooth Whether smoothing should be applied to the bitmap.
-     */
-    Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
-        if (matrix === void 0) { matrix = null; }
-        if (repeat === void 0) { repeat = true; }
-        if (smooth === void 0) { smooth = false; }
-        // start a new stroke path
-        this._active_stroke_path = new GraphicsPath();
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_stroke_pathes.push(this._active_stroke_path);
-    };
-    /**
-     * Specifies a gradient to use for the stroke when drawing lines.
-     *
-     * <p>The gradient line style is used for subsequent calls to Graphics
-     * methods such as the <code>lineTo()</code> methods or the
-     * <code>drawCircle()</code> method. The line style remains in effect until
-     * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
-     * methods, or the <code>lineGradientStyle()</code> method again with
-     * different parameters. </p>
-     *
-     * <p>You can call the <code>lineGradientStyle()</code> method in the middle
-     * of drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineGradientStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param type                A value from the GradientType class that
-     *                            specifies which gradient type to use, either
-     *                            GradientType.LINEAR or GradientType.RADIAL.
-     * @param colors              An array of RGB hexadecimal color values used
-     *                            in the gradient; for example, red is 0xFF0000,
-     *                            blue is 0x0000FF, and so on. You can specify
-     *                            up to 15 colors. For each color, specify a
-     *                            corresponding value in the alphas and ratios
-     *                            parameters.
-     * @param alphas              An array of alpha values for the corresponding
-     *                            colors in the colors array; valid values are 0
-     *                            to 1. If the value is less than 0, the default
-     *                            is 0. If the value is greater than 1, the
-     *                            default is 1.
-     * @param ratios              An array of color distribution ratios; valid
-     *                            values are 0-255. This value defines the
-     *                            percentage of the width where the color is
-     *                            sampled at 100%. The value 0 represents the
-     *                            left position in the gradient box, and 255
-     *                            represents the right position in the gradient
-     *                            box.
-     * @param matrix              A transformation matrix as defined by the
-     *                            flash.geom.Matrix class. The flash.geom.Matrix
-     *                            class includes a
-     *                            <code>createGradientBox()</code> method, which
-     *                            lets you conveniently set up the matrix for use
-     *                            with the <code>lineGradientStyle()</code>
-     *                            method.
-     * @param spreadMethod        A value from the SpreadMethod class that
-     *                            specifies which spread method to use:
-     * @param interpolationMethod A value from the InterpolationMethod class that
-     *                            specifies which value to use. For example,
-     *                            consider a simple linear gradient between two
-     *                            colors(with the <code>spreadMethod</code>
-     *                            parameter set to
-     *                            <code>SpreadMethod.REFLECT</code>). The
-     *                            different interpolation methods affect the
-     *                            appearance as follows:
-     * @param focalPointRatio     A number that controls the location of the
-     *                            focal point of the gradient. The value 0 means
-     *                            the focal point is in the center. The value 1
-     *                            means the focal point is at one border of the
-     *                            gradient circle. The value -1 means that the
-     *                            focal point is at the other border of the
-     *                            gradient circle. Values less than -1 or greater
-     *                            than 1 are rounded to -1 or 1. The following
-     *                            image shows a gradient with a
-     *                            <code>focalPointRatio</code> of -0.75:
-     */
-    Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-        if (matrix === void 0) { matrix = null; }
-        if (spreadMethod === void 0) { spreadMethod = null; }
-        if (interpolationMethod === void 0) { interpolationMethod = null; }
-        if (focalPointRatio === void 0) { focalPointRatio = 0; }
-        // start a new stroke path
-        this._active_stroke_path = new GraphicsPath();
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_stroke_pathes.push(this._active_stroke_path);
-    };
-    /**
-     * Specifies a shader to use for the line stroke when drawing lines.
-     *
-     * <p>The shader line style is used for subsequent calls to Graphics methods
-     * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
-     * the <code>lineBitmapStyle()</code> method again with different parameters.
-     * </p>
-     *
-     * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within a path. </p>
-     *
-     * <p>Call the <code>lineStyle()</code> method before you call the
-     * <code>lineShaderStyle()</code> method to enable a stroke, or else the
-     * value of the line style is <code>undefined</code>.</p>
-     *
-     * <p>Calls to the <code>clear()</code> method set the line style back to
-     * <code>undefined</code>. </p>
-     *
-     * @param shader The shader to use for the line stroke.
-     * @param matrix An optional transformation matrix as defined by the
-     *               flash.geom.Matrix class. The matrix can be used to scale or
-     *               otherwise manipulate the bitmap before applying it to the
-     *               line style.
-     */
-    //		public lineShaderStyle(shader:Shader, matrix:Matrix = null)
-    //		{
-    //
-    //		}
-    /**
-     * Specifies a line style used for subsequent calls to Graphics methods such
-     * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
-     * method. The line style remains in effect until you call the
-     * <code>lineGradientStyle()</code> method, the
-     * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
-     * method with different parameters.
-     *
-     * <p>You can call the <code>lineStyle()</code> method in the middle of
-     * drawing a path to specify different styles for different line segments
-     * within the path.</p>
-     *
-     * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
-     * style back to <code>undefined</code>.</p>
-     *
-     * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
-     * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
-     *
-     * @param thickness    An integer that indicates the thickness of the line in
-     *                     points; valid values are 0-255. If a number is not
-     *                     specified, or if the parameter is undefined, a line is
-     *                     not drawn. If a value of less than 0 is passed, the
-     *                     default is 0. The value 0 indicates hairline
-     *                     thickness; the maximum thickness is 255. If a value
-     *                     greater than 255 is passed, the default is 255.
-     * @param color        A hexadecimal color value of the line; for example,
-     *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
-     *                     value is not indicated, the default is 0x000000
-     *                    (black). Optional.
-     * @param alpha        A number that indicates the alpha value of the color
-     *                     of the line; valid values are 0 to 1. If a value is
-     *                     not indicated, the default is 1(solid). If the value
-     *                     is less than 0, the default is 0. If the value is
-     *                     greater than 1, the default is 1.
-     * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
-     *                     specifies whether to hint strokes to full pixels. This
-     *                     affects both the position of anchors of a curve and
-     *                     the line stroke size itself. With
-     *                     <code>pixelHinting</code> set to <code>true</code>,
-     *                     line widths are adjusted to full pixel widths. With
-     *                     <code>pixelHinting</code> set to <code>false</code>,
-     *                     disjoints can appear for curves and straight lines.
-     *                     For example, the following illustrations show how
-     *                     Flash Player or Adobe AIR renders two rounded
-     *                     rectangles that are identical, except that the
-     *                     <code>pixelHinting</code> parameter used in the
-     *                     <code>lineStyle()</code> method is set differently
-     *                    (the images are scaled by 200%, to emphasize the
-     *                     difference):
-     *
-     *                     <p>If a value is not supplied, the line does not use
-     *                     pixel hinting.</p>
-     * @param scaleMode   (Not supported in Flash Lite 4) A value from the
-     *                     LineScaleMode class that specifies which scale mode to
-     *                     use:
-     *                     <ul>
-     *                       <li> <code>LineScaleMode.NORMAL</code> - Always
-     *                     scale the line thickness when the object is scaled
-     *                    (the default). </li>
-     *                       <li> <code>LineScaleMode.NONE</code> - Never scale
-     *                     the line thickness. </li>
-     *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
-     *                     scale the line thickness if the object is scaled
-     *                     vertically <i>only</i>. For example, consider the
-     *                     following circles, drawn with a one-pixel line, and
-     *                     each with the <code>scaleMode</code> parameter set to
-     *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
-     *                     left is scaled vertically only, and the circle on the
-     *                     right is scaled both vertically and horizontally:
-     *                     </li>
-     *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
-     *                     scale the line thickness if the object is scaled
-     *                     horizontally <i>only</i>. For example, consider the
-     *                     following circles, drawn with a one-pixel line, and
-     *                     each with the <code>scaleMode</code> parameter set to
-     *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
-     *                     the left is scaled horizontally only, and the circle
-     *                     on the right is scaled both vertically and
-     *                     horizontally:   </li>
-     *                     </ul>
-     * @param caps        (Not supported in Flash Lite 4) A value from the
-     *                     CapsStyle class that specifies the type of caps at the
-     *                     end of lines. Valid values are:
-     *                     <code>CapsStyle.NONE</code>,
-     *                     <code>CapsStyle.ROUND</code>, and
-     *                     <code>CapsStyle.SQUARE</code>. If a value is not
-     *                     indicated, Flash uses round caps.
-     *
-     *                     <p>For example, the following illustrations show the
-     *                     different <code>capsStyle</code> settings. For each
-     *                     setting, the illustration shows a blue line with a
-     *                     thickness of 30(for which the <code>capsStyle</code>
-     *                     applies), and a superimposed black line with a
-     *                     thickness of 1(for which no <code>capsStyle</code>
-     *                     applies): </p>
-     * @param joints      (Not supported in Flash Lite 4) A value from the
-     *                     JointStyle class that specifies the type of joint
-     *                     appearance used at angles. Valid values are:
-     *                     <code>JointStyle.BEVEL</code>,
-     *                     <code>JointStyle.MITER</code>, and
-     *                     <code>JointStyle.ROUND</code>. If a value is not
-     *                     indicated, Flash uses round joints.
-     *
-     *                     <p>For example, the following illustrations show the
-     *                     different <code>joints</code> settings. For each
-     *                     setting, the illustration shows an angled blue line
-     *                     with a thickness of 30(for which the
-     *                     <code>jointStyle</code> applies), and a superimposed
-     *                     angled black line with a thickness of 1(for which no
-     *                     <code>jointStyle</code> applies): </p>
-     *
-     *                     <p><b>Note:</b> For <code>joints</code> set to
-     *                     <code>JointStyle.MITER</code>, you can use the
-     *                     <code>miterLimit</code> parameter to limit the length
-     *                     of the miter.</p>
-     * @param miterLimit  (Not supported in Flash Lite 4) A number that
-     *                     indicates the limit at which a miter is cut off. Valid
-     *                     values range from 1 to 255(and values outside that
-     *                     range are rounded to 1 or 255). This value is only
-     *                     used if the <code>jointStyle</code> is set to
-     *                     <code>"miter"</code>. The <code>miterLimit</code>
-     *                     value represents the length that a miter can extend
-     *                     beyond the point at which the lines meet to form a
-     *                     joint. The value expresses a factor of the line
-     *                     <code>thickness</code>. For example, with a
-     *                     <code>miterLimit</code> factor of 2.5 and a
-     *                     <code>thickness</code> of 10 pixels, the miter is cut
-     *                     off at 25 pixels.
-     *
-     *                     <p>For example, consider the following angled lines,
-     *                     each drawn with a <code>thickness</code> of 20, but
-     *                     with <code>miterLimit</code> set to 1, 2, and 4.
-     *                     Superimposed are black reference lines showing the
-     *                     meeting points of the joints:</p>
-     *
-     *                     <p>Notice that a given <code>miterLimit</code> value
-     *                     has a specific maximum angle for which the miter is
-     *                     cut off. The following table lists some examples:</p>
-     */
-    Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, capstyle, jointstyle, miterLimit) {
-        if (thickness === void 0) { thickness = 0; }
-        if (color === void 0) { color = 0; }
-        if (alpha === void 0) { alpha = 1; }
-        if (pixelHinting === void 0) { pixelHinting = false; }
-        if (scaleMode === void 0) { scaleMode = null; }
-        if (capstyle === void 0) { capstyle = CapsStyle.NONE; }
-        if (jointstyle === void 0) { jointstyle = JointStyle.MITER; }
-        if (miterLimit === void 0) { miterLimit = 100; }
-        // start a new stroke path
-        this._active_stroke_path = new GraphicsPath();
-        this._active_stroke_path.style = new GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miterLimit);
-        if (this._current_position.x != 0 || this._current_position.y != 0)
-            this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
-        this._queued_stroke_pathes.push(this._active_stroke_path);
-    };
-    /**
-     * Draws a line using the current line style from the current drawing
-     * position to(<code>x</code>, <code>y</code>); the current drawing position
-     * is then set to(<code>x</code>, <code>y</code>). If the display object in
-     * which you are drawing contains content that was created with the Flash
-     * drawing tools, calls to the <code>lineTo()</code> method are drawn
-     * underneath the content. If you call <code>lineTo()</code> before any calls
-     * to the <code>moveTo()</code> method, the default position for the current
-     * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
-     * method fails and the current drawing position is not changed.
-     *
-     * @param x A number that indicates the horizontal position relative to the
-     *          registration point of the parent display object(in pixels).
-     * @param y A number that indicates the vertical position relative to the
-     *          registration point of the parent display object(in pixels).
-     */
-    Graphics.prototype.lineTo = function (x, y) {
-        if (this._active_fill_path != null) {
-            this._active_fill_path.lineTo(x, y);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.lineTo(x, y);
-        }
-        this._current_position.x = x;
-        this._current_position.y = y;
-    };
-    /**
-     * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
-     * any of the parameters are missing, this method fails and the current
-     * drawing position is not changed.
-     *
-     * @param x A number that indicates the horizontal position relative to the
-     *          registration point of the parent display object(in pixels).
-     * @param y A number that indicates the vertical position relative to the
-     *          registration point of the parent display object(in pixels).
-     */
-    Graphics.prototype.moveTo = function (x, y) {
-        if (this._active_fill_path != null) {
-            this._active_fill_path.moveTo(x, y);
-        }
-        if (this._active_stroke_path != null) {
-            this._active_stroke_path.moveTo(x, y);
-        }
-        this._current_position.x = x;
-        this._current_position.y = y;
-    };
-    Graphics.prototype._addShapes = function (shapes) {
-        var shape;
-        var len = shapes.length;
-        for (var i = 0; i < len; i++) {
-            shape = shapes[i];
-            shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-            shape.addEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
-            shape.addEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
-            this._shapes.push(shape);
-        }
-        this.invalidate();
-    };
-    Graphics.prototype._isShapeMaterial = function (material) {
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++)
-            if (material == this._shapes[i].material)
-                return true;
-        return false;
-    };
-    return Graphics;
-}(_awayjs_core.AssetBase));
-Graphics._pool = new Array();
-Graphics.assetType = "[asset Graphics]";
 
 exports.ParticleData = ParticleData;
 exports.AnimationNodeBase = AnimationNodeBase;
