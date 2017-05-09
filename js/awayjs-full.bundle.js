@@ -29921,7 +29921,8 @@ var TesselatedFontTable = (function (_super) {
                         }
                         awayPath.style = new _awayjs_graphics.GraphicsStrokeStyle(0xff0000, 1, 1, _awayjs_graphics.JointStyle.MITER, _awayjs_graphics.CapsStyle.NONE, 100);
                         var final_vert_list = [];
-                        _awayjs_graphics.GraphicsFactoryStrokes.draw_pathes([awayPath], final_vert_list);
+                        //todo
+                        _awayjs_graphics.GraphicsFactoryStrokes.draw_pathes([awayPath], final_vert_list, false);
                         var attributesView = new _awayjs_core.AttributesView(Float32Array, 3);
                         attributesView.set(final_vert_list);
                         var attributesBuffer = attributesView.attributesBuffer;
