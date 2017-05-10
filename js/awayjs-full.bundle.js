@@ -21113,251 +21113,255 @@ var GraphicsFactoryFills = (function () {
             var lastPoint = new _awayjs_core.Point();
             var last_dir_vec = new _awayjs_core.Point();
             var end_point = new _awayjs_core.Point();
-            for (k = 0; k < contour_commands.length; k++) {
-                contours_vertices.push([]);
-                vert_cnt = 0;
-                data_cnt = 0;
-                commands = contour_commands[k];
-                data = contour_data[k];
-                draw_direction = 0;
-                var new_dir = 0;
-                var new_dir_1 = 0;
-                var new_dir_2 = 0;
-                var dir_delta = 0;
-                var last_direction = 0;
-                var tmp_dir_point = new _awayjs_core.Point();
-                if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
-                    data[data.length] = data[0];
-                    data[data.length] = data[1];
-                }
-                lastPoint.x = data[0];
-                lastPoint.y = data[1];
-                if (commands[1] == GraphicsPathCommand.LINE_TO) {
-                    last_dir_vec.x = data[2] - lastPoint.x;
-                    last_dir_vec.y = data[3] - lastPoint.y;
-                }
-                else if (commands[1] == GraphicsPathCommand.CURVE_TO) {
-                    last_dir_vec.x = data[4] - lastPoint.x;
-                    last_dir_vec.y = data[5] - lastPoint.y;
-                }
-                data_cnt = 2;
-                last_dir_vec.normalize();
-                last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                for (i = 1; i < commands.length; i++) {
-                    end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
-                    if (commands[i] == GraphicsPathCommand.MOVE_TO) {
-                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+            if (contour_commands.length > 1) {
+                for (k = 0; k < contour_commands.length; k++) {
+                    contours_vertices.push([]);
+                    vert_cnt = 0;
+                    data_cnt = 0;
+                    commands = contour_commands[k];
+                    data = contour_data[k];
+                    draw_direction = 0;
+                    var new_dir = 0;
+                    var new_dir_1 = 0;
+                    var new_dir_2 = 0;
+                    var dir_delta = 0;
+                    var last_direction = 0;
+                    var tmp_dir_point = new _awayjs_core.Point();
+                    if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
+                        data[data.length] = data[0];
+                        data[data.length] = data[1];
                     }
-                    else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
+                    lastPoint.x = data[0];
+                    lastPoint.y = data[1];
+                    if (commands[1] == GraphicsPathCommand.LINE_TO) {
+                        last_dir_vec.x = data[2] - lastPoint.x;
+                        last_dir_vec.y = data[3] - lastPoint.y;
+                    }
+                    else if (commands[1] == GraphicsPathCommand.CURVE_TO) {
+                        last_dir_vec.x = data[4] - lastPoint.x;
+                        last_dir_vec.y = data[5] - lastPoint.y;
+                    }
+                    data_cnt = 2;
+                    last_dir_vec.normalize();
+                    last_direction = Math.atan2(last_dir_vec.y, last_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                    for (i = 1; i < commands.length; i++) {
                         end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
-                    }
-                    //get the directional vector and the direction for this segment
-                    tmp_dir_point.x = end_point.x - lastPoint.x;
-                    tmp_dir_point.y = end_point.y - lastPoint.y;
-                    tmp_dir_point.normalize();
-                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                    // get the difference in angle to the last segment
-                    dir_delta = new_dir - last_direction;
-                    if (dir_delta > 180) {
-                        dir_delta -= 360;
-                    }
-                    if (dir_delta < -180) {
-                        dir_delta += 360;
-                    }
-                    draw_direction += dir_delta;
-                    last_direction = new_dir;
-                    lastPoint.x = end_point.x;
-                    lastPoint.y = end_point.y;
-                }
-                lastPoint.x = data[0];
-                lastPoint.y = data[1];
-                data_cnt = 2;
-                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-                contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-                //console.log("Draw directions complete: "+draw_direction);
-                for (i = 1; i < commands.length; i++) {
-                    switch (commands[i]) {
-                        case GraphicsPathCommand.MOVE_TO:
+                        if (commands[i] == GraphicsPathCommand.MOVE_TO) {
                             console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
-                            break;
-                        case GraphicsPathCommand.LINE_TO:
-                            lastPoint.x = data[data_cnt++];
-                            lastPoint.y = data[data_cnt++];
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
-                            contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
-                            break;
-                        case GraphicsPathCommand.CURVE_TO:
-                            var control_x = data[data_cnt++];
-                            var control_y = data[data_cnt++];
-                            var end_x = data[data_cnt++];
-                            var end_y = data[data_cnt++];
-                            tmp_dir_point.x = control_x - lastPoint.x;
-                            tmp_dir_point.y = control_y - lastPoint.y;
-                            tmp_dir_point.normalize();
-                            new_dir_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                            tmp_dir_point.x = end_x - lastPoint.x;
-                            tmp_dir_point.y = end_y - lastPoint.y;
-                            tmp_dir_point.normalize();
-                            new_dir_2 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                            // get the difference in angle to the last segment
-                            var curve_direction = new_dir_2 - new_dir_1;
-                            if (curve_direction > 180) {
-                                curve_direction -= 360;
-                            }
-                            if (curve_direction < -180) {
-                                curve_direction += 360;
-                            }
-                            if ((curve_direction == 0) && (curve_direction == 180) && (curve_direction == -180)) {
-                                lastPoint.x = end_x;
-                                lastPoint.y = end_y;
+                        }
+                        else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
+                            end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                        }
+                        //get the directional vector and the direction for this segment
+                        tmp_dir_point.x = end_point.x - lastPoint.x;
+                        tmp_dir_point.y = end_point.y - lastPoint.y;
+                        tmp_dir_point.normalize();
+                        new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                        // get the difference in angle to the last segment
+                        dir_delta = new_dir - last_direction;
+                        if (dir_delta > 180) {
+                            dir_delta -= 360;
+                        }
+                        if (dir_delta < -180) {
+                            dir_delta += 360;
+                        }
+                        draw_direction += dir_delta;
+                        last_direction = new_dir;
+                        lastPoint.x = end_point.x;
+                        lastPoint.y = end_point.y;
+                    }
+                    lastPoint.x = data[0];
+                    lastPoint.y = data[1];
+                    data_cnt = 2;
+                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+                    //console.log("Draw directions complete: "+draw_direction);
+                    for (i = 1; i < commands.length; i++) {
+                        switch (commands[i]) {
+                            case GraphicsPathCommand.MOVE_TO:
+                                console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                                break;
+                            case GraphicsPathCommand.LINE_TO:
+                                lastPoint.x = data[data_cnt++];
+                                lastPoint.y = data[data_cnt++];
                                 contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
                                 contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
                                 break;
-                            }
-                            var curve_attr_1 = -1;
-                            if (draw_direction < 0) {
-                                if (curve_direction > 0) {
-                                    //convex
-                                    //console.log("convex");
-                                    curve_attr_1 = 1;
-                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                            case GraphicsPathCommand.CURVE_TO:
+                                var control_x = data[data_cnt++];
+                                var control_y = data[data_cnt++];
+                                var end_x = data[data_cnt++];
+                                var end_y = data[data_cnt++];
+                                tmp_dir_point.x = control_x - lastPoint.x;
+                                tmp_dir_point.y = control_y - lastPoint.y;
+                                tmp_dir_point.normalize();
+                                new_dir_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                                tmp_dir_point.x = end_x - lastPoint.x;
+                                tmp_dir_point.y = end_y - lastPoint.y;
+                                tmp_dir_point.normalize();
+                                new_dir_2 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                                // get the difference in angle to the last segment
+                                var curve_direction = new_dir_2 - new_dir_1;
+                                if (curve_direction > 180) {
+                                    curve_direction -= 360;
                                 }
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-                            }
-                            else {
-                                if (curve_direction < 0) {
-                                    //convex
-                                    //console.log("convex");
-                                    curve_attr_1 = 1;
-                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
-                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                                if (curve_direction < -180) {
+                                    curve_direction += 360;
                                 }
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
-                                contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
-                            }
-                            if (GraphicsFactoryHelper.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
-                                final_vert_list[final_vert_cnt++] = end_x;
-                                final_vert_list[final_vert_cnt++] = end_y;
-                                /*
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                */
-                                final_vert_list[final_vert_cnt++] = control_x;
-                                final_vert_list[final_vert_cnt++] = control_y;
-                                /*
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 0.5;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                 */
-                                final_vert_list[final_vert_cnt++] = lastPoint.x;
-                                final_vert_list[final_vert_cnt++] = lastPoint.y;
-                            }
-                            else {
-                                final_vert_list[final_vert_cnt++] = lastPoint.x;
-                                final_vert_list[final_vert_cnt++] = lastPoint.y;
-                                /*
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                 */
-                                final_vert_list[final_vert_cnt++] = control_x;
-                                final_vert_list[final_vert_cnt++] = control_y;
-                                /*
-                                final_vert_list[final_vert_cnt++] = curve_attr_1;
-                                final_vert_list[final_vert_cnt++] = 0.5;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                final_vert_list[final_vert_cnt++] = 1.0;
-                                final_vert_list[final_vert_cnt++] = 0.0;
-                                 */
-                                final_vert_list[final_vert_cnt++] = end_x;
-                                final_vert_list[final_vert_cnt++] = end_y;
-                            }
-                            lastPoint.x = end_x;
-                            lastPoint.y = end_y;
-                            break;
-                        case GraphicsPathCommand.CUBIC_CURVE:
-                            //todo
-                            break;
+                                if ((curve_direction == 0) && (curve_direction == 180) && (curve_direction == -180)) {
+                                    lastPoint.x = end_x;
+                                    lastPoint.y = end_y;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.x;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = lastPoint.y;
+                                    break;
+                                }
+                                var curve_attr_1 = -1;
+                                if (draw_direction < 0) {
+                                    if (curve_direction > 0) {
+                                        //convex
+                                        //console.log("convex");
+                                        curve_attr_1 = 1;
+                                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+                                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                                    }
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+                                }
+                                else {
+                                    if (curve_direction < 0) {
+                                        //convex
+                                        //console.log("convex");
+                                        curve_attr_1 = 1;
+                                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_x;
+                                        contours_vertices[contours_vertices.length - 1][vert_cnt++] = control_y;
+                                    }
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_x;
+                                    contours_vertices[contours_vertices.length - 1][vert_cnt++] = end_y;
+                                }
+                                if (GraphicsFactoryHelper.isClockWiseXY(end_x, end_y, control_x, control_y, lastPoint.x, lastPoint.y)) {
+                                    final_vert_list[final_vert_cnt++] = end_x;
+                                    final_vert_list[final_vert_cnt++] = end_y;
+                                    /*
+                                     final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     */
+                                    final_vert_list[final_vert_cnt++] = control_x;
+                                    final_vert_list[final_vert_cnt++] = control_y;
+                                    /*
+                                     final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                     final_vert_list[final_vert_cnt++] = 0.5;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     */
+                                    final_vert_list[final_vert_cnt++] = lastPoint.x;
+                                    final_vert_list[final_vert_cnt++] = lastPoint.y;
+                                }
+                                else {
+                                    final_vert_list[final_vert_cnt++] = lastPoint.x;
+                                    final_vert_list[final_vert_cnt++] = lastPoint.y;
+                                    /*
+                                     final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     */
+                                    final_vert_list[final_vert_cnt++] = control_x;
+                                    final_vert_list[final_vert_cnt++] = control_y;
+                                    /*
+                                     final_vert_list[final_vert_cnt++] = curve_attr_1;
+                                     final_vert_list[final_vert_cnt++] = 0.5;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     final_vert_list[final_vert_cnt++] = 1.0;
+                                     final_vert_list[final_vert_cnt++] = 0.0;
+                                     */
+                                    final_vert_list[final_vert_cnt++] = end_x;
+                                    final_vert_list[final_vert_cnt++] = end_y;
+                                }
+                                lastPoint.x = end_x;
+                                lastPoint.y = end_y;
+                                break;
+                            case GraphicsPathCommand.CUBIC_CURVE:
+                                //todo
+                                break;
+                        }
+                    }
+                }
+                var verts = [];
+                var all_verts = [];
+                var elems = [];
+                for (k = 0; k < contours_vertices.length; k++) {
+                    var vertices = contours_vertices[k];
+                    //for (i = 0; i < vertices.length / 2; ++i)
+                    //console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
+                    var verticesF32 = new Float32Array(vertices);
+                    //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
+                    //console.log("in vertices", vertices);
+                    //var tess = new TESS();
+                    if (GraphicsFactoryHelper._tess_obj == null) {
+                    }
+                    else {
+                        GraphicsFactoryHelper._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
+                    }
+                }
+                if (GraphicsFactoryHelper._tess_obj != null) {
+                    GraphicsFactoryHelper._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
+                    //console.log("out vertices", Graphics._tess_obj.getVertices());
+                    verts = GraphicsFactoryHelper._tess_obj.getVertices();
+                    elems = GraphicsFactoryHelper._tess_obj.getElements();
+                    //console.log("out elements", Graphics._tess_obj.getElements());
+                    var numVerts = verts.length / 2;
+                    var numElems = elems.length / 3;
+                    for (i = 0; i < numVerts; ++i)
+                        all_verts.push(new _awayjs_core.Point(verts[i * 2], verts[i * 2 + 1]));
+                    for (i = 0; i < numElems; ++i) {
+                        var p1 = elems[i * 3];
+                        var p2 = elems[i * 3 + 1];
+                        var p3 = elems[i * 3 + 2];
+                        final_vert_list[final_vert_cnt++] = all_verts[p3].x;
+                        final_vert_list[final_vert_cnt++] = all_verts[p3].y;
+                        /*
+                         final_vert_list[final_vert_cnt++] = 1;
+                         final_vert_list[final_vert_cnt++] = 2.0;
+                         final_vert_list[final_vert_cnt++] = 0.0;
+                         final_vert_list[final_vert_cnt++] = 1.0;
+                         final_vert_list[final_vert_cnt++] = 0.0;
+                         */
+                        final_vert_list[final_vert_cnt++] = all_verts[p2].x;
+                        final_vert_list[final_vert_cnt++] = all_verts[p2].y;
+                        /*
+                         final_vert_list[final_vert_cnt++] = 1;
+                         final_vert_list[final_vert_cnt++] = 2.0;
+                         final_vert_list[final_vert_cnt++] = 0.0;
+                         final_vert_list[final_vert_cnt++] = 1.0;
+                         final_vert_list[final_vert_cnt++] = 0.0;
+                         */
+                        final_vert_list[final_vert_cnt++] = all_verts[p1].x;
+                        final_vert_list[final_vert_cnt++] = all_verts[p1].y;
                     }
                 }
             }
-            var verts = [];
-            var all_verts = [];
-            var elems = [];
-            for (k = 0; k < contours_vertices.length; k++) {
-                var vertices = contours_vertices[k];
-                //for (i = 0; i < vertices.length / 2; ++i)
-                //console.log("vert collected" + i + " = " + vertices[i * 2] + " / " + vertices[i * 2 + 1]);
-                var verticesF32 = new Float32Array(vertices);
-                //var verticesF32 = new Float32Array([0,0, 100,0, 100,100, 0,100]);
-                //console.log("in vertices", vertices);
-                //var tess = new TESS();
-                if (GraphicsFactoryHelper._tess_obj == null) {
-                }
-                else {
-                    GraphicsFactoryHelper._tess_obj.addContour(verticesF32, 2, 8, vertices.length / 2);
-                }
-            }
-            if (GraphicsFactoryHelper._tess_obj != null) {
-                GraphicsFactoryHelper._tess_obj.tesselate(0 /*TESS.WINDING_ODD*/, 0 /*TESS.ELEMENT_POLYGONS*/, 3, 2, null);
-                //console.log("out vertices", Graphics._tess_obj.getVertices());
-                verts = GraphicsFactoryHelper._tess_obj.getVertices();
-                elems = GraphicsFactoryHelper._tess_obj.getElements();
-                //console.log("out elements", Graphics._tess_obj.getElements());
-                var numVerts = verts.length / 2;
-                var numElems = elems.length / 3;
-                for (i = 0; i < numVerts; ++i)
-                    all_verts.push(new _awayjs_core.Point(verts[i * 2], verts[i * 2 + 1]));
-                for (i = 0; i < numElems; ++i) {
-                    var p1 = elems[i * 3];
-                    var p2 = elems[i * 3 + 1];
-                    var p3 = elems[i * 3 + 2];
-                    final_vert_list[final_vert_cnt++] = all_verts[p3].x;
-                    final_vert_list[final_vert_cnt++] = all_verts[p3].y;
-                    /*
-                     final_vert_list[final_vert_cnt++] = 1;
-                     final_vert_list[final_vert_cnt++] = 2.0;
-                     final_vert_list[final_vert_cnt++] = 0.0;
-                     final_vert_list[final_vert_cnt++] = 1.0;
-                     final_vert_list[final_vert_cnt++] = 0.0;
-                     */
-                    final_vert_list[final_vert_cnt++] = all_verts[p2].x;
-                    final_vert_list[final_vert_cnt++] = all_verts[p2].y;
-                    /*
-                     final_vert_list[final_vert_cnt++] = 1;
-                     final_vert_list[final_vert_cnt++] = 2.0;
-                     final_vert_list[final_vert_cnt++] = 0.0;
-                     final_vert_list[final_vert_cnt++] = 1.0;
-                     final_vert_list[final_vert_cnt++] = 0.0;
-                     */
-                    final_vert_list[final_vert_cnt++] = all_verts[p1].x;
-                    final_vert_list[final_vert_cnt++] = all_verts[p1].y;
-                }
-            }
             final_vert_list = final_vert_list.concat(targetGraphics.queued_fill_pathes[cp].verts);
-            //for (i = 0; i < final_vert_list.length/7; ++i)
-            //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
-            var attributesView = new _awayjs_core.AttributesView(Float32Array, 2);
-            attributesView.set(final_vert_list);
-            var attributesBuffer = attributesView.attributesBuffer;
-            attributesView.dispose();
-            var elements = new TriangleElements(attributesBuffer);
-            elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
-            //elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
-            //elements.setUVs(new Float2Attributes(attributesBuffer));
-            var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
-            material.bothSides = true;
-            material.alpha = 0.5;
-            targetGraphics.addShape(Shape.getShape(elements, material));
+            if (final_vert_list.length > 0) {
+                //for (i = 0; i < final_vert_list.length/7; ++i)
+                //	console.log("final verts "+i+" = "+final_vert_list[i*7]+" / "+final_vert_list[i*7+1]);
+                var attributesView = new _awayjs_core.AttributesView(Float32Array, 2);
+                attributesView.set(final_vert_list);
+                var attributesBuffer = attributesView.attributesBuffer;
+                attributesView.dispose();
+                var elements = new TriangleElements(attributesBuffer);
+                elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
+                //elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
+                //elements.setUVs(new Float2Attributes(attributesBuffer));
+                var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
+                material.bothSides = true;
+                material.alpha = 0.5;
+                targetGraphics.addShape(Shape.getShape(elements, material));
+            }
         }
         targetGraphics.queued_fill_pathes.length = 0;
     };
@@ -30368,6 +30372,8 @@ var TextFormat = (function (_super) {
         _this.rightMargin = rightMargin;
         _this.indent = indent;
         _this.leading = leading;
+        // todo: implement a way to supply a default fonttable / font to formats
+        _this.font_table = new TesselatedFontTable();
         return _this;
     }
     Object.defineProperty(TextFormat.prototype, "assetType", {
