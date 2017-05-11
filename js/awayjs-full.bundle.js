@@ -15516,7 +15516,7 @@ var GraphicsFillStyle = (function () {
         if (color === void 0) { color = 0xffffff; }
         if (alpha === void 0) { alpha = 1; }
         this.color = color;
-        this._alpha = alpha;
+        this.alpha = alpha;
     }
     Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
         get: function () {
@@ -21359,7 +21359,7 @@ var GraphicsFactoryFills = (function () {
                 //elements.setUVs(new Float2Attributes(attributesBuffer));
                 var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
                 material.bothSides = true;
-                material.alpha = 0.5;
+                material.alpha = targetGraphics.queued_fill_pathes[cp].style.color;
                 targetGraphics.addShape(Shape.getShape(elements, material));
             }
         }
