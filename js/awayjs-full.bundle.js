@@ -20815,6 +20815,7 @@ var Graphics = (function (_super) {
         if (focalPointRatio === void 0) { focalPointRatio = 0; }
         // start a new stroke path
         this._active_stroke_path = new GraphicsPath();
+        this._active_stroke_path.style = new GraphicsStrokeStyle(colors[0], alphas[0], 1); //, jointstyle, capstyle, miterLimit);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_stroke_pathes.push(this._active_stroke_path);
@@ -20999,7 +21000,7 @@ var Graphics = (function (_super) {
         if (jointstyle === void 0) { jointstyle = JointStyle.MITER; }
         if (miterLimit === void 0) { miterLimit = 100; }
         if (thickness == 0) {
-            thickness = 0.5;
+            thickness = 0.3;
         }
         if (color == 0) {
             color = 0x010101;
@@ -30945,8 +30946,8 @@ var TextField = (function (_super) {
         }
         var tl_startx = [];
         // calculate the final positions of the chars
-        this.textWidth = 0;
-        this.textHeight = 0;
+        this.textWidth = 2;
+        this.textHeight = 2;
         for (tl = 0; tl < tl_width.length; tl++) {
             var indent = this._textFormat.indent;
             if (!tl_linebreak[tl]) {
@@ -30956,17 +30957,19 @@ var TextField = (function (_super) {
                 this.textWidth = tl_width[tl];
             var x_offset = 2 + this._textFormat.leftMargin + indent;
             var justify_addion = 0;
-            if (this._textFormat.align == "center") {
-                x_offset = 2 + this._textFormat.leftMargin + indent + (maxlineWidth - tl_width[tl]) / 2;
+            /*
+            if(this._textFormat.align=="center"){
+                x_offset = 2 + this._textFormat.leftMargin + indent+(maxlineWidth-tl_width[tl])/2;
             }
-            else if (this._textFormat.align == "justify") {
-                if (tl_justify[tl]) {
-                    justify_addion = ((maxlineWidth) - tl_width[tl]) / tl_word_cnt[tl];
+            else if(this._textFormat.align=="justify"){
+                if(tl_justify[tl]){
+                    justify_addion=((maxlineWidth)-tl_width[tl])/tl_word_cnt[tl];
                 }
             }
-            else if (this._textFormat.align == "right") {
-                x_offset = (this._textWidth - tl_width[tl]) - (2 + this._textFormat.rightMargin);
+            else if(this._textFormat.align=="right"){
+                x_offset=(this._textWidth-tl_width[tl])-(2 + this._textFormat.rightMargin);
             }
+            */
             tl_startx[tl] = [];
             if (tl_char_codes[tl].length == 0) {
                 tl_height[tl] = this._textFormat.font_table.getLineHeight();
@@ -30986,11 +30989,13 @@ var TextField = (function (_super) {
         }
         //this.width=this.textWidth;
         //this.height=this.textHeight;
-        /*this.graphics.clear();
+        /*
+        this.graphics.clear();
         this.graphics.beginFill(0x000001, 0.3);
         this.graphics.lineStyle(2, 0x000001);
         this.graphics.drawRect(0,0,this.textWidth, this.textHeight);
-        this.graphics.endFill();*/
+        this.graphics.endFill();
+        */
         if (this._textFormat.font_table.assetType == BitmapFontTable.assetType) {
             //console.log("contruct bitmap text = "+this._text);
             var bitmap_fontTable = this._textFormat.font_table;
