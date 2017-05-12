@@ -31134,20 +31134,8 @@ var TextField = (function (_super) {
                     this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
                 }
                 else {
-                    this._textShape.material = _awayjs_graphics.DefaultMaterialManager.getDefaultMaterial();
+                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0xff0000); //this._textFormat.color);
                     this._textShape.material.bothSides = true;
-                    //this._textShape.material.useColorTransform = true;
-                    if (tess_fontTable.usesCurves) {
-                        this._textShape.material.curves = true;
-                    }
-                    this._textShape.style.addSamplerAt(sampler, this._textShape.material.getTextureAt(0));
-                    //sampler.imageRect = new Rectangle(0, 0, 0.5, 0.5);
-                    this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, 0.126, 0);
-                    this._textShape.material.animateUVs = true;
-                    //graphic.material.imageRect = true;
-                    var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
-                    this.transform.colorTransform.color = activeFormat.color;
-                    this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
                 }
             }
             if (this._textShape) {
