@@ -23108,7 +23108,8 @@ var DisplayObject = (function (_super) {
         get: function () {
             if (this._registrationMatrix3D)
                 return this.getBox().height * this.scaleY * this._registrationMatrix3D[5];
-            return this.getBox().height * this.scaleY;
+            var result = this.getBox().height * this.scaleY; //todo remove
+            return result;
         },
         set: function (val) {
             if (this._height == val)
@@ -23793,7 +23794,8 @@ var DisplayObject = (function (_super) {
         get: function () {
             if (this._registrationMatrix3D)
                 return this.getBox().width * this.scaleX * this._registrationMatrix3D[0];
-            return this.getBox().width * this.scaleX;
+            var result = this.getBox().width * this.scaleX; //todo remove
+            return result;
         },
         set: function (val) {
             if (this._width == val)
@@ -30248,6 +30250,38 @@ var BitmapFontTable = (function (_super) {
 BitmapFontTable.assetType = "[asset BitmapFontTable]";
 
 /**
+ * The TextFieldAutoSize class is an enumeration of constant values used in
+ * setting the <code>autoSize</code> property of the TextField class.
+ */
+var TextFieldAutoSize = (function () {
+    function TextFieldAutoSize() {
+    }
+    return TextFieldAutoSize;
+}());
+/**
+ * Specifies that the text is to be treated as center-justified text. Any
+ * resizing of a single line of a text field is equally distributed to both
+ * the right and left sides.
+ */
+TextFieldAutoSize.CENTER = "center";
+/**
+ * Specifies that the text is to be treated as left-justified text, meaning
+ * that the left side of the text field remains fixed and any resizing of a
+ * single line is on the right side.
+ */
+TextFieldAutoSize.LEFT = "left";
+/**
+ * Specifies that no resizing is to occur.
+ */
+TextFieldAutoSize.NONE = "none";
+/**
+ * Specifies that the text is to be treated as right-justified text, meaning
+ * that the right side of the text field remains fixed and any resizing of a
+ * single line is on the left side.
+ */
+TextFieldAutoSize.RIGHT = "right";
+
+/**
  * The TextFieldType class is an enumeration of constant values used in setting the
  * <code>type</code> property of the TextField class.
  *
@@ -30484,9 +30518,8 @@ var TextField = (function (_super) {
         var _this = _super.call(this) || this;
         _this._line_indices = [];
         _this._text = "";
-        _this.width = 300;
-        _this.height = 50;
         _this.type = TextFieldType.STATIC;
+        _this.autoSize = TextFieldAutoSize.NONE;
         return _this;
     }
     Object.defineProperty(TextField.prototype, "assetType", {
@@ -30772,17 +30805,16 @@ var TextField = (function (_super) {
         }
         if (this._text == "")
             return;
-        this.graphics.clear();
-        this.graphics.beginFill(0x000001, 0.3);
-        this.graphics.lineStyle(4, 0x000001);
-        this.graphics.drawRect(0, 0, this.width, this.height);
-        this.graphics.endFill();
         var activeFormat = this._textFormat;
         activeFormat.font_table.initFontSize(activeFormat.size);
         if (activeFormat.font_table.fallbackTable)
             activeFormat.font_table.fallbackTable.initFontSize(activeFormat.size);
         var textlines = this.text.toString().split("\\n");
         var maxlineWidth = this.width - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
+        if (this.autoSize != TextFieldAutoSize.NONE) {
+            maxlineWidth = 300; //Number.MAX_VALUE;
+        }
+        //if()
         var tl_char_codes = [];
         var tl_char_widths = [];
         var tl_char_heights = [];
@@ -30927,12 +30959,12 @@ var TextField = (function (_super) {
                 x_offset = (this._textWidth - tl_width[tl]) - (2 + this._textFormat.rightMargin);
             }
             tl_startx[tl] = [];
-            this.textHeight = 0;
             if (tl_char_codes[tl].length == 0) {
                 tl_height[tl] = this._textFormat.font_table.getLineHeight();
             }
+            this.textHeight += tl_height[tl];
             for (var c = 0; c < tl_char_codes[tl].length; c++) {
-                this.textHeight += tl_height[tl];
+                //this.textHeight+=tl_height[tl];
                 tl_startx[tl][c] = x_offset;
                 x_offset += tl_char_widths[tl][c];
                 // if this is a whitespace, we add the justify additional spacer
@@ -30943,6 +30975,13 @@ var TextField = (function (_super) {
                 }
             }
         }
+        //this.width=this.textWidth;
+        //this.height=this.textHeight;
+        /*this.graphics.clear();
+        this.graphics.beginFill(0x000001, 0.3);
+        this.graphics.lineStyle(2, 0x000001);
+        this.graphics.drawRect(0,0,this.textWidth, this.textHeight);
+        this.graphics.endFill();*/
         if (this._textFormat.font_table.assetType == BitmapFontTable.assetType) {
             //console.log("contruct bitmap text = "+this._text);
             var bitmap_fontTable = this._textFormat.font_table;
@@ -34694,38 +34733,6 @@ GridFitType.PIXEL = "pixel";
  * TextField class. Use the syntax <code>GridFitType.SUBPIXEL</code>.
  */
 GridFitType.SUBPIXEL = "subpixel";
-
-/**
- * The TextFieldAutoSize class is an enumeration of constant values used in
- * setting the <code>autoSize</code> property of the TextField class.
- */
-var TextFieldAutoSize = (function () {
-    function TextFieldAutoSize() {
-    }
-    return TextFieldAutoSize;
-}());
-/**
- * Specifies that the text is to be treated as center-justified text. Any
- * resizing of a single line of a text field is equally distributed to both
- * the right and left sides.
- */
-TextFieldAutoSize.CENTER = "center";
-/**
- * Specifies that the text is to be treated as left-justified text, meaning
- * that the left side of the text field remains fixed and any resizing of a
- * single line is on the right side.
- */
-TextFieldAutoSize.LEFT = "left";
-/**
- * Specifies that no resizing is to occur.
- */
-TextFieldAutoSize.NONE = "none";
-/**
- * Specifies that the text is to be treated as right-justified text, meaning
- * that the right side of the text field remains fixed and any resizing of a
- * single line is on the left side.
- */
-TextFieldAutoSize.RIGHT = "right";
 
 /**
  * The TextFormatAlign class provides values for text alignment in the
