@@ -20085,6 +20085,9 @@ var Graphics = (function (_super) {
      */
     Graphics.prototype.beginFill = function (color /*int*/, alpha) {
         if (alpha === void 0) { alpha = 1; }
+        if (color == 0) {
+            color = 0x010101;
+        }
         this.draw_fills();
         // start a new fill path
         this._active_fill_path = new GraphicsPath();
@@ -20995,6 +20998,12 @@ var Graphics = (function (_super) {
         if (capstyle === void 0) { capstyle = CapsStyle.NONE; }
         if (jointstyle === void 0) { jointstyle = JointStyle.MITER; }
         if (miterLimit === void 0) { miterLimit = 100; }
+        if (thickness == 0) {
+            thickness = 0.5;
+        }
+        if (color == 0) {
+            color = 0x010101;
+        }
         // start a new stroke path
         this._active_stroke_path = new GraphicsPath();
         this._active_stroke_path.style = new GraphicsStrokeStyle(color, alpha, thickness, jointstyle, capstyle, miterLimit);
