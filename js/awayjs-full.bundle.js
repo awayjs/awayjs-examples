@@ -30372,6 +30372,7 @@ var TextFormat = (function (_super) {
         _this.rightMargin = rightMargin;
         _this.indent = indent;
         _this.leading = leading;
+        _this.letterSpacing = 0;
         // todo: implement a way to supply a default fonttable / font to formats
         _this.font_table = new TesselatedFontTable();
         return _this;
@@ -30483,6 +30484,8 @@ var TextField = (function (_super) {
         var _this = _super.call(this) || this;
         _this._line_indices = [];
         _this._text = "";
+        _this.width = 300;
+        _this.height = 50;
         _this.type = TextFieldType.STATIC;
         return _this;
     }
@@ -30607,6 +30610,7 @@ var TextField = (function (_super) {
             if (this._text == value)
                 return;
             this._text = value;
+            this.reConstruct();
             this._textGraphicsDirty = true;
         },
         enumerable: true,
@@ -30768,12 +30772,17 @@ var TextField = (function (_super) {
         }
         if (this._text == "")
             return;
+        this.graphics.clear();
+        this.graphics.beginFill(0x000001, 0.3);
+        this.graphics.lineStyle(4, 0x000001);
+        this.graphics.drawRect(0, 0, this.width, this.height);
+        this.graphics.endFill();
         var activeFormat = this._textFormat;
         activeFormat.font_table.initFontSize(activeFormat.size);
         if (activeFormat.font_table.fallbackTable)
             activeFormat.font_table.fallbackTable.initFontSize(activeFormat.size);
         var textlines = this.text.toString().split("\\n");
-        var maxlineWidth = this.textWidth - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
+        var maxlineWidth = this.width - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
         var tl_char_codes = [];
         var tl_char_widths = [];
         var tl_char_heights = [];
@@ -30895,11 +30904,15 @@ var TextField = (function (_super) {
         }
         var tl_startx = [];
         // calculate the final positions of the chars
+        this.textWidth = 0;
+        this.textHeight = 0;
         for (tl = 0; tl < tl_width.length; tl++) {
             var indent = this._textFormat.indent;
             if (!tl_linebreak[tl]) {
                 indent = 0;
             }
+            if (tl_width[tl] > this.textWidth)
+                this.textWidth = tl_width[tl];
             var x_offset = 2 + this._textFormat.leftMargin + indent;
             var justify_addion = 0;
             if (this._textFormat.align == "center") {
@@ -31134,7 +31147,7 @@ var TextField = (function (_super) {
                     this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
                 }
                 else {
-                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0xff0000); //this._textFormat.color);
+                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0x000001); //this.textColor);//this._textFormat.color);
                     this._textShape.material.bothSides = true;
                 }
             }
