@@ -21359,7 +21359,7 @@ var GraphicsFactoryFills = (function () {
                 //elements.setUVs(new Float2Attributes(attributesBuffer));
                 var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
                 material.bothSides = true;
-                material.alpha = targetGraphics.queued_fill_pathes[cp].style.color;
+                material.alpha = targetGraphics.queued_fill_pathes[cp].style.alpha;
                 targetGraphics.addShape(Shape.getShape(elements, material));
             }
         }
