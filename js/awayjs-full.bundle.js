@@ -20001,8 +20001,7 @@ var Graphics = (function (_super) {
     Graphics.prototype.draw_strokes = function () {
         var i = 0;
         for (i = 0; i < this.queued_stroke_pathes.length; i++) {
-            var material = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color);
-            material.bothSides = true;
+            var material = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color, this.queued_stroke_pathes[i].style.alpha);
             var final_vert_list = [];
             GraphicsFactoryStrokes.draw_pathes([this.queued_stroke_pathes[i]], final_vert_list, material.curves);
             final_vert_list = final_vert_list.concat(this.queued_stroke_pathes[i].verts);
@@ -21080,7 +21079,7 @@ var Graphics = (function (_super) {
     return Graphics;
 }(_awayjs_core.AssetBase));
 Graphics._pool = new Array();
-Graphics.get_material_for_color = function (color) {
+Graphics.get_material_for_color = function (color, alpha) {
     return DefaultMaterialManager.getDefaultMaterial();
 };
 Graphics.assetType = "[asset Graphics]";
@@ -21367,9 +21366,7 @@ var GraphicsFactoryFills = (function () {
                 elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
                 //elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
                 //elements.setUVs(new Float2Attributes(attributesBuffer));
-                var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color);
-                material.bothSides = true;
-                material.alpha = targetGraphics.queued_fill_pathes[cp].style.alpha;
+                var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
                 targetGraphics.addShape(Shape.getShape(elements, material));
             }
         }
@@ -30821,6 +30818,9 @@ var TextField = (function (_super) {
             activeFormat.font_table.fallbackTable.initFontSize(activeFormat.size);
         var textlines = this.text.toString().split("\\n");
         var maxlineWidth = this.width - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
+        if (this.width == 0) {
+            maxlineWidth = 300;
+        }
         if (this.autoSize != TextFieldAutoSize.NONE) {
             maxlineWidth = 300; //Number.MAX_VALUE;
         }
@@ -30946,7 +30946,7 @@ var TextField = (function (_super) {
         }
         var tl_startx = [];
         // calculate the final positions of the chars
-        this.textWidth = 2;
+        this.textWidth = 4;
         this.textHeight = 2;
         for (tl = 0; tl < tl_width.length; tl++) {
             var indent = this._textFormat.indent;
@@ -30990,12 +30990,13 @@ var TextField = (function (_super) {
         //this.width=this.textWidth;
         //this.height=this.textHeight;
         /*
-        this.graphics.clear();
-        this.graphics.beginFill(0x000001, 0.3);
-        this.graphics.lineStyle(2, 0x000001);
-        this.graphics.drawRect(0,0,this.textWidth, this.textHeight);
-        this.graphics.endFill();
-        */
+                this.graphics.clear();
+                this.graphics.beginFill(0x000001, 0);
+                if(this.border){
+                    this.graphics.lineStyle(2, 0x000001);
+                }
+                this.graphics.drawRect(0,0,this.textWidth, this.textHeight);
+                this.graphics.endFill();*/
         if (this._textFormat.font_table.assetType == BitmapFontTable.assetType) {
             //console.log("contruct bitmap text = "+this._text);
             var bitmap_fontTable = this._textFormat.font_table;
@@ -31200,8 +31201,7 @@ var TextField = (function (_super) {
                     this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
                 }
                 else {
-                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0x000001); //this.textColor);//this._textFormat.color);
-                    this._textShape.material.bothSides = true;
+                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0x000001, 1); //this.textColor);//this._textFormat.color);
                 }
             }
             if (this._textShape) {
