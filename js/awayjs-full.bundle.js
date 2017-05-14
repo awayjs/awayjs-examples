@@ -302,71 +302,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-
-
-
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 var ErrorBase = (function () {
@@ -4201,10 +4140,27 @@ var Matrix3D = (function () {
         maxZ = box.depth + (minZ = box.z);
         if (!target)
             target = new Box();
-        //TODO: take account of shear
-        target.width = maxX * this._rawData[0] + maxY * this._rawData[4] + maxZ * this._rawData[8] + this._rawData[12] - (target.x = minX * this._rawData[0] + minY * this._rawData[4] + minZ * this._rawData[8] + this._rawData[12]);
-        target.height = maxX * this._rawData[1] + maxY * this._rawData[5] + maxZ * this._rawData[9] + this._rawData[13] - (target.y = minX * this._rawData[1] + minY * this._rawData[5] + minZ * this._rawData[9] + this._rawData[13]);
-        target.depth = maxX * this._rawData[2] + maxY * this._rawData[6] + maxZ * this._rawData[10] + this._rawData[14] - (target.z = minX * this._rawData[2] + minY * this._rawData[6] + minZ * this._rawData[10] + this._rawData[14]);
+        var hx = box.width / 2;
+        var hy = box.height / 2;
+        var hz = box.depth / 2;
+        var cx = box.x + hx;
+        var cy = box.y + hy;
+        var cz = box.z + hz;
+        var m11 = this._rawData[0], m12 = this._rawData[4], m13 = this._rawData[8], m14 = this._rawData[12];
+        var m21 = this._rawData[1], m22 = this._rawData[5], m23 = this._rawData[9], m24 = this._rawData[13];
+        var m31 = this._rawData[2], m32 = this._rawData[6], m33 = this._rawData[10], m34 = this._rawData[14];
+        var centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+        var centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+        var centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+        var halfExtentsX = Math.abs(hx * m11 + hy * m12 + hz * m13);
+        var halfExtentsY = Math.abs(hx * m21 + hy * m22 + hz * m23);
+        var halfExtentsZ = Math.abs(hx * m31 + hy * m32 + hz * m33);
+        target.width = halfExtentsX * 2;
+        target.height = halfExtentsY * 2;
+        target.depth = halfExtentsZ * 2;
+        target.x = centerX - halfExtentsX;
+        target.y = centerY - halfExtentsY;
+        target.z = centerZ - halfExtentsZ;
         return target;
     };
     Matrix3D.prototype.transformVector = function (vector, target) {
