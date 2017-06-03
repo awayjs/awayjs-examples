@@ -302,10 +302,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 var ErrorBase = (function () {
@@ -1388,6 +1449,17 @@ var StreamingAudioChannel = (function () {
     StreamingAudioChannel.prototype.isDecoding = function () {
         return false;
     };
+    Object.defineProperty(StreamingAudioChannel.prototype, "pan", {
+        get: function () {
+            //todo
+            return 0;
+        },
+        set: function (value) {
+            //todo
+        },
+        enumerable: true,
+        configurable: true
+    });
     StreamingAudioChannel.prototype.play = function (buffer, offset, loop) {
         if (offset === void 0) { offset = 0; }
         if (loop === void 0) { loop = false; }
@@ -1476,11 +1548,15 @@ var WebAudioChannel = (function () {
         this._isLooping = false;
         this._isDecoding = false;
         this._volume = 1;
+        this._pan = 0;
         this._startTime = 0;
         this._audioCtx = WebAudioChannel._audioCtx || (WebAudioChannel._audioCtx = new (window["AudioContext"] || window["webkitAudioContext"])());
         this._gainNode = this._audioCtx.createGain();
         this._gainNode.gain.value = this._volume;
-        this._gainNode.connect(this._audioCtx.destination);
+        this._pannerNode = this._audioCtx.createStereoPanner();
+        this._pannerNode.pan.value = this._pan;
+        this._gainNode.connect(this._pannerNode);
+        this._pannerNode.connect(this._audioCtx.destination);
         this._onEndedDelegate = function (event) { return _this._onEnded(event); };
     }
     WebAudioChannel.stopAllSounds = function () {
@@ -1513,6 +1589,19 @@ var WebAudioChannel = (function () {
                 return;
             this._volume = value;
             this._gainNode.gain.value = this._volume;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WebAudioChannel.prototype, "pan", {
+        get: function () {
+            return this._pan;
+        },
+        set: function (value) {
+            if (this._pan == value)
+                return;
+            this._pan = value;
+            this._pannerNode.pan.value = this._pan;
         },
         enumerable: true,
         configurable: true
@@ -1626,7 +1715,7 @@ var AudioManager = (function () {
     AudioManager.getChannel = function (byteLength) {
         //choose best audio channel by bytelength
         //todo: StreamingAudioChannel doesnt seem to be working. no error, but also no sound is playing
-        var channelClass = (byteLength > 50000) ? StreamingAudioChannel : WebAudioChannel;
+        var channelClass = (byteLength > 50000000) ? StreamingAudioChannel : WebAudioChannel;
         //var channelClass:IAudioChannelClass = WebAudioChannel;
         var i = 0;
         while (channelClass._channels[i] && channelClass._channels[i].isPlaying())
@@ -1662,6 +1751,7 @@ var WaveAudio = (function (_super) {
     function WaveAudio(buffer) {
         var _this = _super.call(this) || this;
         _this._volume = 1;
+        _this._pan = 0;
         _this._buffer = buffer;
         return _this;
     }
@@ -1672,6 +1762,20 @@ var WaveAudio = (function (_super) {
          */
         get: function () {
             return WaveAudio.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(WaveAudio.prototype, "pan", {
+        get: function () {
+            return this._pan;
+        },
+        set: function (value) {
+            if (this._pan == value)
+                return;
+            this._pan = value;
+            if (this._audioChannel)
+                this._audioChannel.pan = this._pan;
         },
         enumerable: true,
         configurable: true
@@ -19856,6 +19960,18 @@ var Graphics = (function (_super) {
         for (var i = this._shapes.length - 1; i >= 0; i--) {
             this._shapes[i].clear();
         }
+        //this.invalidateElements();
+    };
+    Graphics.prototype.clearDrawing = function () {
+        /*
+         for (var i:number = this._shapes.length - 1; i>=0; i--){
+         this._shapes[i].clear();
+         //this._shapes[i].dispose();
+         }*/
+        this.removeAllShapes();
+        this._active_fill_path = null;
+        this._active_stroke_path = null;
+        //this.invalidateElements();
     };
     /**
      * Clears all resources used by the Graphics object, including SubGeometries.
@@ -19929,8 +20045,14 @@ var Graphics = (function (_super) {
     };
     Graphics.prototype.acceptTraverser = function (traverser) {
         var len = this._shapes.length;
-        for (var i = 0; i < len; i++)
-            traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
+        /*
+                for (var i:number = 0; i < len; i++)
+                    traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
+                */
+        while (len > 0) {
+            len--;
+            traverser[this._shapes[len].elements.traverseName](this._shapes[len]);
+        }
     };
     Graphics.prototype._onInvalidateProperties = function (event) {
         this.invalidateMaterials();
@@ -20652,7 +20774,7 @@ var Graphics = (function (_super) {
         this.draw_fills();
         this._active_fill_path = null;
         this._active_stroke_path = null;
-        this.invalidate();
+        //this.invalidate();
     };
     /**
      * Specifies a bitmap to use for the line stroke when drawing lines.
@@ -22824,7 +22946,7 @@ var DisplayObject = (function (_super) {
         _this._pImplicitVisibility = true;
         _this._pImplicitMaskId = -1;
         _this._pImplicitMaskIds = new Array();
-        _this._explicitMouseEnabled = false;
+        _this._explicitMouseEnabled = true;
         _this._pImplicitMouseEnabled = true;
         _this._orientationMatrix = new _awayjs_core.Matrix3D();
         _this._inheritColorTransform = false;
@@ -23071,8 +23193,7 @@ var DisplayObject = (function (_super) {
         get: function () {
             if (this._registrationMatrix3D)
                 return this.getBox().height * this.scaleY * this._registrationMatrix3D[5];
-            var result = this.getBox().height * this.scaleY; //todo remove
-            return result;
+            return this.getBox().height * this.scaleY;
         },
         set: function (val) {
             if (this._height == val)
@@ -23757,8 +23878,7 @@ var DisplayObject = (function (_super) {
         get: function () {
             if (this._registrationMatrix3D)
                 return this.getBox().width * this.scaleX * this._registrationMatrix3D[0];
-            var result = this.getBox().width * this.scaleX; //todo remove
-            return result;
+            return this.getBox().width * this.scaleX;
         },
         set: function (val) {
             if (this._width == val)
@@ -24528,6 +24648,585 @@ var DisplayObject = (function (_super) {
 DisplayObject.traverseName = "applyEntity";
 
 /**
+ * The DisplayObjectContainer class is the base class for all objects that can
+ * serve as display object containers on the display list. The display list
+ * manages all objects displayed in the Flash runtimes. Use the
+ * DisplayObjectContainer class to arrange the display objects in the display
+ * list. Each DisplayObjectContainer object has its own child list for
+ * organizing the z-order of the objects. The z-order is the front-to-back
+ * order that determines which object is drawn in front, which is behind, and
+ * so on.
+ *
+ * <p>DisplayObject is an abstract base class; therefore, you cannot call
+ * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
+ * <code>ArgumentError</code> exception.</p>
+ * The DisplayObjectContainer class is an abstract base class for all objects
+ * that can contain child objects. It cannot be instantiated directly; calling
+ * the <code>new DisplayObjectContainer()</code> constructor throws an
+ * <code>ArgumentError</code> exception.
+ *
+ * <p>For more information, see the "Display Programming" chapter of the
+ * <i>ActionScript 3.0 Developer's Guide</i>.</p>
+ */
+var DisplayObjectContainer = (function (_super) {
+    __extends(DisplayObjectContainer, _super);
+    /**
+     * Calling the <code>new DisplayObjectContainer()</code> constructor throws
+     * an <code>ArgumentError</code> exception. You <i>can</i>, however, call
+     * constructors for the following subclasses of DisplayObjectContainer:
+     * <ul>
+     *   <li><code>new Loader()</code></li>
+     *   <li><code>new Sprite()</code></li>
+     *   <li><code>new MovieClip()</code></li>
+     * </ul>
+     */
+    function DisplayObjectContainer() {
+        var _this = _super.call(this) || this;
+        _this._mouseChildren = true;
+        _this._depth_childs = {};
+        _this._nextHighestDepth = 0;
+        _this._children = new Array();
+        return _this;
+    }
+    Object.defineProperty(DisplayObjectContainer.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return DisplayObjectContainer.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DisplayObjectContainer.prototype, "mouseChildren", {
+        /**
+         * Determines whether or not the children of the object are mouse, or user
+         * input device, enabled. If an object is enabled, a user can interact with
+         * it by using a mouse or user input device. The default is
+         * <code>true</code>.
+         *
+         * <p>This property is useful when you create a button with an instance of
+         * the Sprite class(instead of using the SimpleButton class). When you use a
+         * Sprite instance to create a button, you can choose to decorate the button
+         * by using the <code>addChild()</code> method to add additional Sprite
+         * instances. This process can cause unexpected behavior with mouse events
+         * because the Sprite instances you add as children can become the target
+         * object of a mouse event when you expect the parent instance to be the
+         * target object. To ensure that the parent instance serves as the target
+         * objects for mouse events, you can set the <code>mouseChildren</code>
+         * property of the parent instance to <code>false</code>.</p>
+         *
+         * <p> No event is dispatched by setting this property. You must use the
+         * <code>addEventListener()</code> method to create interactive
+         * functionality.</p>
+         */
+        get: function () {
+            if (this._hierarchicalPropsDirty & HierarchicalProperties.MOUSE_ENABLED)
+                this._updateMouseEnabled();
+            return this._mouseChildren;
+        },
+        set: function (value) {
+            if (this._mouseChildren == value)
+                return;
+            this._mouseChildren = value;
+            this.pInvalidateHierarchicalProperties(HierarchicalProperties.MOUSE_ENABLED);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
+        /**
+         * Returns the number of children of this object.
+         */
+        get: function () {
+            return this._children.length;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Adds a child DisplayObject instance to this DisplayObjectContainer
+     * instance. The child is added to the front(top) of all other children in
+     * this DisplayObjectContainer instance.(To add a child to a specific index
+     * position, use the <code>addChildAt()</code> method.)
+     *
+     * <p>If you add a child object that already has a different display object
+     * container as a parent, the object is removed from the child list of the
+     * other display object container. </p>
+     *
+     * <p><b>Note:</b> The command <code>stage.addChild()</code> can cause
+     * problems with a published SWF file, including security problems and
+     * conflicts with other loaded SWF files. There is only one Stage within a
+     * Flash runtime instance, no matter how many SWF files you load into the
+     * runtime. So, generally, objects should not be added to the Stage,
+     * directly, at all. The only object the Stage should contain is the root
+     * object. Create a DisplayObjectContainer to contain all of the items on the
+     * display list. Then, if necessary, add that DisplayObjectContainer instance
+     * to the Stage.</p>
+     *
+     * @param child The DisplayObject instance to add as a child of this
+     *              DisplayObjectContainer instance.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child is the same as the parent. Also
+     *                       throws if the caller is a child(or grandchild etc.)
+     *                       of the child being added.
+     * @event added Dispatched when a display object is added to the display
+     *              list.
+     */
+    DisplayObjectContainer.prototype.addChild = function (child) {
+        return this.addChildAt(child, this._children.length);
+    };
+    DisplayObjectContainer.prototype.addChildAtDepth = function (child, depth, replace) {
+        if (replace === void 0) { replace = true; }
+        if (child == null)
+            throw new _awayjs_core.ArgumentError("Parameter child cannot be null.");
+        //if child already has a parent, remove it.
+        if (child._pParent)
+            child._pParent.removeChildAtInternal(child._pParent.getChildIndex(child));
+        var index = this.getDepthIndexInternal(depth);
+        if (index != -1) {
+            if (replace) {
+                this.removeChildAt(index);
+            }
+            else {
+                //move depth of existing child up by 1
+                this.addChildAtDepth(this._children[index], depth + 1, false);
+            }
+        }
+        if (this._nextHighestDepth < depth + 1)
+            this._nextHighestDepth = depth + 1;
+        this._depth_childs[depth] = child;
+        this._children.push(child);
+        child._depthID = depth;
+        child.iSetParent(this);
+        this._invalidateChildren();
+        return child;
+    };
+    /**
+     * Adds a child DisplayObject instance to this DisplayObjectContainer
+     * instance. The child is added at the index position specified. An index of
+     * 0 represents the back(bottom) of the display list for this
+     * DisplayObjectContainer object.
+     *
+     * <p>For example, the following example shows three display objects, labeled
+     * a, b, and c, at index positions 0, 2, and 1, respectively:</p>
+     *
+     * <p>If you add a child object that already has a different display object
+     * container as a parent, the object is removed from the child list of the
+     * other display object container. </p>
+     *
+     * @param child The DisplayObject instance to add as a child of this
+     *              DisplayObjectContainer instance.
+     * @param index The index position to which the child is added. If you
+     *              specify a currently occupied index position, the child object
+     *              that exists at that position and all higher positions are
+     *              moved up one position in the child list.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child is the same as the parent. Also
+     *                       throws if the caller is a child(or grandchild etc.)
+     *                       of the child being added.
+     * @throws RangeError    Throws if the index position does not exist in the
+     *                       child list.
+     * @event added Dispatched when a display object is added to the display
+     *              list.
+     */
+    DisplayObjectContainer.prototype.addChildAt = function (child, index) {
+        return this.addChildAtDepth(child, (index < this._children.length) ? this._children[index]._depthID : this.getNextHighestDepth(), false);
+    };
+    DisplayObjectContainer.prototype.addChildren = function () {
+        var childarray = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            childarray[_i] = arguments[_i];
+        }
+        var len = childarray.length;
+        for (var i = 0; i < len; i++)
+            this.addChild(childarray[i]);
+    };
+    /**
+     *
+     */
+    DisplayObjectContainer.prototype.clone = function () {
+        var newInstance = new DisplayObjectContainer();
+        this.copyTo(newInstance);
+        return newInstance;
+    };
+    DisplayObjectContainer.prototype.copyTo = function (newInstance) {
+        _super.prototype.copyTo.call(this, newInstance);
+        newInstance.mouseChildren = this._mouseChildren;
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            newInstance.addChild(this._children[i].clone());
+    };
+    /**
+     * Determines whether the specified display object is a child of the
+     * DisplayObjectContainer instance or the instance itself. The search
+     * includes the entire display list including this DisplayObjectContainer
+     * instance. Grandchildren, great-grandchildren, and so on each return
+     * <code>true</code>.
+     *
+     * @param child The child object to test.
+     * @return <code>true</code> if the <code>child</code> object is a child of
+     *         the DisplayObjectContainer or the container itself; otherwise
+     *         <code>false</code>.
+     */
+    DisplayObjectContainer.prototype.contains = function (child) {
+        return this._children.indexOf(child) >= 0;
+    };
+    /**
+     *
+     */
+    DisplayObjectContainer.prototype.disposeValues = function () {
+        for (var i = this._children.length - 1; i >= 0; i--)
+            this.removeChild(this._children[i]);
+        _super.prototype.disposeValues.call(this);
+    };
+    DisplayObjectContainer.prototype.getChildAtDepth = function (depth) {
+        return this._depth_childs[depth];
+    };
+    /**
+     * Returns the child display object instance that exists at the specified
+     * index.
+     *
+     * @param index The index position of the child object.
+     * @return The child display object at the specified index position.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     */
+    DisplayObjectContainer.prototype.getChildAt = function (index) {
+        var child = this._children[index];
+        if (child == null)
+            throw new _awayjs_core.RangeError("Index does not exist in the child list of the caller");
+        return child;
+    };
+    /**
+     * Returns the child display object that exists with the specified name. If
+     * more that one child display object has the specified name, the method
+     * returns the first object in the child list.
+     *
+     * <p>The <code>getChildAt()</code> method is faster than the
+     * <code>getChildByName()</code> method. The <code>getChildAt()</code> method
+     * accesses a child from a cached array, whereas the
+     * <code>getChildByName()</code> method has to traverse a linked list to
+     * access a child.</p>
+     *
+     * @param name The name of the child to return.
+     * @return The child display object with the specified name.
+     */
+    DisplayObjectContainer.prototype.getChildByName = function (name) {
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            if (this._children[i].name == name)
+                return this._children[i];
+        return null;
+    };
+    /**
+     * Returns the index position of a <code>child</code> DisplayObject instance.
+     *
+     * @param child The DisplayObject instance to identify.
+     * @return The index position of the child display object to identify.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     */
+    DisplayObjectContainer.prototype.getChildIndex = function (child) {
+        var childIndex = this._children.indexOf(child);
+        if (childIndex == -1)
+            throw new _awayjs_core.ArgumentError("Child parameter is not a child of the caller");
+        return childIndex;
+    };
+    DisplayObjectContainer.prototype.getNextHighestDepth = function () {
+        if (this._nextHighestDepthDirty)
+            this._updateNextHighestDepth();
+        return this._nextHighestDepth;
+    };
+    /**
+     * Returns an array of objects that lie under the specified point and are
+     * children(or grandchildren, and so on) of this DisplayObjectContainer
+     * instance. Any child objects that are inaccessible for security reasons are
+     * omitted from the returned array. To determine whether this security
+     * restriction affects the returned array, call the
+     * <code>areInaccessibleObjectsUnderPoint()</code> method.
+     *
+     * <p>The <code>point</code> parameter is in the coordinate space of the
+     * Stage, which may differ from the coordinate space of the display object
+     * container(unless the display object container is the Stage). You can use
+     * the <code>globalToLocal()</code> and the <code>localToGlobal()</code>
+     * methods to convert points between these coordinate spaces.</p>
+     *
+     * @param point The point under which to look.
+     * @return An array of objects that lie under the specified point and are
+     *         children(or grandchildren, and so on) of this
+     *         DisplayObjectContainer instance.
+     */
+    DisplayObjectContainer.prototype.getObjectsUnderPoint = function (point) {
+        return new Array();
+    };
+    /**
+     * Removes the specified <code>child</code> DisplayObject instance from the
+     * child list of the DisplayObjectContainer instance. The <code>parent</code>
+     * property of the removed child is set to <code>null</code> , and the object
+     * is garbage collected if no other references to the child exist. The index
+     * positions of any display objects above the child in the
+     * DisplayObjectContainer are decreased by 1.
+     *
+     * <p>The garbage collector reallocates unused memory space. When a variable
+     * or object is no longer actively referenced or stored somewhere, the
+     * garbage collector sweeps through and wipes out the memory space it used to
+     * occupy if no other references to it exist.</p>
+     *
+     * @param child The DisplayObject instance to remove.
+     * @return The DisplayObject instance that you pass in the <code>child</code>
+     *         parameter.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     */
+    DisplayObjectContainer.prototype.removeChild = function (child) {
+        if (child == null)
+            throw new _awayjs_core.ArgumentError("Parameter child cannot be null");
+        this.removeChildAt(this.getChildIndex(child));
+        return child;
+    };
+    DisplayObjectContainer.prototype.removeChildAtDepth = function (depth) {
+        return this.removeChildAt(this.getDepthIndexInternal(depth));
+    };
+    /**
+     * Removes a child DisplayObject from the specified <code>index</code>
+     * position in the child list of the DisplayObjectContainer. The
+     * <code>parent</code> property of the removed child is set to
+     * <code>null</code>, and the object is garbage collected if no other
+     * references to the child exist. The index positions of any display objects
+     * above the child in the DisplayObjectContainer are decreased by 1.
+     *
+     * <p>The garbage collector reallocates unused memory space. When a variable
+     * or object is no longer actively referenced or stored somewhere, the
+     * garbage collector sweeps through and wipes out the memory space it used to
+     * occupy if no other references to it exist.</p>
+     *
+     * @param index The child index of the DisplayObject to remove.
+     * @return The DisplayObject instance that was removed.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     * @throws SecurityError This child display object belongs to a sandbox to
+     *                       which the calling object does not have access. You
+     *                       can avoid this situation by having the child movie
+     *                       call the <code>Security.allowDomain()</code> method.
+     */
+    DisplayObjectContainer.prototype.removeChildAt = function (index) {
+        var child = this.removeChildAtInternal(index);
+        child.iSetParent(null);
+        this._invalidateChildren();
+        return child;
+    };
+    /**
+     * Removes all <code>child</code> DisplayObject instances from the child list
+     * of the DisplayObjectContainer instance. The <code>parent</code> property
+     * of the removed children is set to <code>null</code>, and the objects are
+     * garbage collected if no other references to the children exist.
+     *
+     * The garbage collector reallocates unused memory space. When a variable or
+     * object is no longer actively referenced or stored somewhere, the garbage
+     * collector sweeps through and wipes out the memory space it used to occupy
+     * if no other references to it exist.
+     *
+     * @param beginIndex The beginning position. A value smaller than 0 throws a RangeError.
+     * @param endIndex The ending position. A value smaller than 0 throws a RangeError.
+     * @throws RangeError    Throws if the beginIndex or endIndex positions do
+     *                       not exist in the child list.
+     */
+    DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
+        if (beginIndex === void 0) { beginIndex = 0; }
+        if (endIndex === void 0) { endIndex = 2147483647; }
+        if (beginIndex < 0)
+            throw new _awayjs_core.RangeError("beginIndex is out of range of the child list");
+        if (endIndex > this._children.length)
+            throw new _awayjs_core.RangeError("endIndex is out of range of the child list");
+        //var oldChilds:DisplayObject[]=this._children.slice();
+        for (var i = endIndex - 1; i >= beginIndex; i--)
+            this.removeChildAtInternal(i).iSetParent(null);
+        this._invalidateChildren();
+    };
+    /**
+     * Changes the position of an existing child in the display object container.
+     * This affects the layering of child objects. For example, the following
+     * example shows three display objects, labeled a, b, and c, at index
+     * positions 0, 1, and 2, respectively:
+     *
+     * <p>When you use the <code>setChildIndex()</code> method and specify an
+     * index position that is already occupied, the only positions that change
+     * are those in between the display object's former and new position. All
+     * others will stay the same. If a child is moved to an index LOWER than its
+     * current index, all children in between will INCREASE by 1 for their index
+     * reference. If a child is moved to an index HIGHER than its current index,
+     * all children in between will DECREASE by 1 for their index reference. For
+     * example, if the display object container in the previous example is named
+     * <code>container</code>, you can swap the position of the display objects
+     * labeled a and b by calling the following code:</p>
+     *
+     * <p>This code results in the following arrangement of objects:</p>
+     *
+     * @param child The child DisplayObject instance for which you want to change
+     *              the index number.
+     * @param index The resulting index number for the <code>child</code> display
+     *              object.
+     * @throws ArgumentError Throws if the child parameter is not a child of this
+     *                       object.
+     * @throws RangeError    Throws if the index does not exist in the child
+     *                       list.
+     */
+    DisplayObjectContainer.prototype.setChildIndex = function (child, index) {
+        //TODO
+    };
+    /**
+     * Swaps the z-order (front-to-back order) of the two specified child
+     * objects. All other child objects in the display object container remain in
+     * the same index positions.
+     *
+     * @param child1 The first child object.
+     * @param child2 The second child object.
+     * @throws ArgumentError Throws if either child parameter is not a child of
+     *                       this object.
+     */
+    DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
+        this.swapChildrenAt(this.getChildIndex(child1), this.getChildIndex(child2));
+    };
+    /**
+     * Swaps the z-order(front-to-back order) of the child objects at the two
+     * specified index positions in the child list. All other child objects in
+     * the display object container remain in the same index positions.
+     *
+     * @param index1 The index position of the first child object.
+     * @param index2 The index position of the second child object.
+     * @throws RangeError If either index does not exist in the child list.
+     */
+    DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
+        var depth = this._children[index2]._depthID;
+        var child = this._children[index1];
+        this.addChildAtDepth(this._children[index2], this._children[index1]._depthID);
+        this.addChildAtDepth(child, depth);
+    };
+    /**
+     * //TODO
+     *
+     * @protected
+     */
+    DisplayObjectContainer.prototype._pUpdateBoxBounds = function () {
+        _super.prototype._pUpdateBoxBounds.call(this);
+        var box;
+        var numChildren = this._children.length;
+        if (numChildren > 0) {
+            var min;
+            var max;
+            var minX, minY, minZ;
+            var maxX, maxY, maxZ;
+            for (var i = 0; i < numChildren; ++i) {
+                box = this._children[i].getBox(this);
+                if (i == 0) {
+                    maxX = box.width + (minX = box.x);
+                    maxY = box.height + (minY = box.y);
+                    maxZ = box.depth + (minZ = box.z);
+                }
+                else {
+                    max = box.width + (min = box.x);
+                    if (min < minX)
+                        minX = min;
+                    if (max > maxX)
+                        maxX = max;
+                    max = box.height + (min = box.y);
+                    if (min < minY)
+                        minY = min;
+                    if (max > maxY)
+                        maxY = max;
+                    max = box.depth + (min = box.z);
+                    if (min < minZ)
+                        minZ = min;
+                    if (max > maxZ)
+                        maxZ = max;
+                }
+            }
+            this._pBoxBounds.width = maxX - (this._pBoxBounds.x = minX);
+            this._pBoxBounds.height = maxY - (this._pBoxBounds.y = minY);
+            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
+        }
+        else {
+            this._pBoxBounds.setBoundIdentity();
+        }
+    };
+    /**
+     * @protected
+     */
+    DisplayObjectContainer.prototype.pInvalidateHierarchicalProperties = function (propDirty) {
+        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, propDirty))
+            return true;
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            this._children[i].pInvalidateHierarchicalProperties(propDirty);
+        return false;
+    };
+    /**
+     * @internal
+     */
+    DisplayObjectContainer.prototype._iSetScene = function (value, partition) {
+        _super.prototype._iSetScene.call(this, value, partition);
+        var len = this._children.length;
+        for (var i = 0; i < len; ++i)
+            this._children[i]._iSetScene(value, this._pPartition);
+    };
+    /**
+     * @private
+     *
+     * @param child
+     */
+    DisplayObjectContainer.prototype.removeChildAtInternal = function (index) {
+        var child = this._children.splice(index, 1)[0];
+        //update next highest depth
+        if (this._nextHighestDepth == child._depthID + 1)
+            this._nextHighestDepthDirty = true;
+        delete this._depth_childs[child._depthID];
+        child._depthID = -16384;
+        return child;
+    };
+    DisplayObjectContainer.prototype.getDepthIndexInternal = function (depth) {
+        if (!this._depth_childs[depth])
+            return -1;
+        return this._children.indexOf(this._depth_childs[depth]);
+    };
+    DisplayObjectContainer.prototype._updateNextHighestDepth = function () {
+        this._nextHighestDepthDirty = false;
+        this._nextHighestDepth = 0;
+        var len = this._children.length;
+        for (var i = 0; i < len; i++)
+            if (this._nextHighestDepth < this._children[i]._depthID)
+                this._nextHighestDepth = this._children[i]._depthID;
+        this._nextHighestDepth += 1;
+    };
+    DisplayObjectContainer.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
+        var numChildren = this._children.length;
+        for (var i = 0; i < numChildren; i++)
+            if (this._children[i].hitTestPoint(x, y, shapeFlag, masksFlag))
+                return true;
+        return false;
+    };
+    DisplayObjectContainer.prototype._updateMaskMode = function () {
+        if (this.maskMode)
+            this.mouseChildren = false;
+        _super.prototype._updateMaskMode.call(this);
+    };
+    DisplayObjectContainer.prototype._invalidateChildren = function () {
+        if (this._pIsContainer != Boolean(this._children.length)) {
+            if (this._pScene)
+                this._pScene._iUnregisterObject(this);
+            this._pIsContainer = Boolean(this._children.length);
+            if (this._pScene)
+                this._pScene._iRegisterObject(this);
+        }
+        this._pInvalidateBounds();
+    };
+    return DisplayObjectContainer;
+}(DisplayObject));
+DisplayObjectContainer.assetType = "[asset DisplayObjectContainer]";
+
+/**
  * The Billboard class represents display objects that represent bitmap images.
  * These can be images that you load with the <code>flash.Assets</code> or
  * <code>flash.display.Loader</code> classes, or they can be images that you
@@ -24561,6 +25260,8 @@ DisplayObject.traverseName = "applyEntity";
  * <code>addEventListener()</code> method of the display object container that
  * contains the Billboard object.</p>
  */
+// todo: billboard needed to extend on DisplayObjectContainer in order for as3web/away3d adapters to compile without errors
+// (in away3d Sprite3D extends on ObjectContainer3D)
 var Billboard = (function (_super) {
     __extends(Billboard, _super);
     function Billboard(material, pixelSnapping, smoothing) {
@@ -24634,6 +25335,7 @@ var Billboard = (function (_super) {
                 this._material.iAddOwner(this);
                 this._material.addEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_TEXTURE, this._onInvalidateTextureDelegate);
             }
+            this._updateDimensions();
         },
         enumerable: true,
         configurable: true
@@ -24648,6 +25350,8 @@ var Billboard = (function (_super) {
     };
     Billboard.prototype.clone = function () {
         var clone = new Billboard(this.material);
+        if (this.adapter)
+            clone.adapter = this.adapter.clone(clone);
         return clone;
     };
     Billboard.prototype._acceptTraverser = function (traverser) {
@@ -24694,7 +25398,7 @@ var Billboard = (function (_super) {
         this._updateDimensions();
     };
     return Billboard;
-}(DisplayObject));
+}(DisplayObjectContainer));
 Billboard.traverseName = _awayjs_graphics.TraverserBase.addRenderableName("applyBillboard");
 Billboard.assetType = "[asset Billboard]";
 
@@ -25182,584 +25886,6 @@ var TouchPoint = (function () {
     }
     return TouchPoint;
 }());
-
-/**
- * The DisplayObjectContainer class is the base class for all objects that can
- * serve as display object containers on the display list. The display list
- * manages all objects displayed in the Flash runtimes. Use the
- * DisplayObjectContainer class to arrange the display objects in the display
- * list. Each DisplayObjectContainer object has its own child list for
- * organizing the z-order of the objects. The z-order is the front-to-back
- * order that determines which object is drawn in front, which is behind, and
- * so on.
- *
- * <p>DisplayObject is an abstract base class; therefore, you cannot call
- * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
- * <code>ArgumentError</code> exception.</p>
- * The DisplayObjectContainer class is an abstract base class for all objects
- * that can contain child objects. It cannot be instantiated directly; calling
- * the <code>new DisplayObjectContainer()</code> constructor throws an
- * <code>ArgumentError</code> exception.
- *
- * <p>For more information, see the "Display Programming" chapter of the
- * <i>ActionScript 3.0 Developer's Guide</i>.</p>
- */
-var DisplayObjectContainer = (function (_super) {
-    __extends(DisplayObjectContainer, _super);
-    /**
-     * Calling the <code>new DisplayObjectContainer()</code> constructor throws
-     * an <code>ArgumentError</code> exception. You <i>can</i>, however, call
-     * constructors for the following subclasses of DisplayObjectContainer:
-     * <ul>
-     *   <li><code>new Loader()</code></li>
-     *   <li><code>new Sprite()</code></li>
-     *   <li><code>new MovieClip()</code></li>
-     * </ul>
-     */
-    function DisplayObjectContainer() {
-        var _this = _super.call(this) || this;
-        _this._mouseChildren = true;
-        _this._depth_childs = {};
-        _this._nextHighestDepth = 0;
-        _this._children = new Array();
-        _this.mouseEnabled = true;
-        return _this;
-    }
-    Object.defineProperty(DisplayObjectContainer.prototype, "assetType", {
-        /**
-         *
-         */
-        get: function () {
-            return DisplayObjectContainer.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectContainer.prototype, "mouseChildren", {
-        /**
-         * Determines whether or not the children of the object are mouse, or user
-         * input device, enabled. If an object is enabled, a user can interact with
-         * it by using a mouse or user input device. The default is
-         * <code>true</code>.
-         *
-         * <p>This property is useful when you create a button with an instance of
-         * the Sprite class(instead of using the SimpleButton class). When you use a
-         * Sprite instance to create a button, you can choose to decorate the button
-         * by using the <code>addChild()</code> method to add additional Sprite
-         * instances. This process can cause unexpected behavior with mouse events
-         * because the Sprite instances you add as children can become the target
-         * object of a mouse event when you expect the parent instance to be the
-         * target object. To ensure that the parent instance serves as the target
-         * objects for mouse events, you can set the <code>mouseChildren</code>
-         * property of the parent instance to <code>false</code>.</p>
-         *
-         * <p> No event is dispatched by setting this property. You must use the
-         * <code>addEventListener()</code> method to create interactive
-         * functionality.</p>
-         */
-        get: function () {
-            if (this._hierarchicalPropsDirty & HierarchicalProperties.MOUSE_ENABLED)
-                this._updateMouseEnabled();
-            return this._mouseChildren;
-        },
-        set: function (value) {
-            if (this._mouseChildren == value)
-                return;
-            this._mouseChildren = value;
-            this.pInvalidateHierarchicalProperties(HierarchicalProperties.MOUSE_ENABLED);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
-        /**
-         * Returns the number of children of this object.
-         */
-        get: function () {
-            return this._children.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Adds a child DisplayObject instance to this DisplayObjectContainer
-     * instance. The child is added to the front(top) of all other children in
-     * this DisplayObjectContainer instance.(To add a child to a specific index
-     * position, use the <code>addChildAt()</code> method.)
-     *
-     * <p>If you add a child object that already has a different display object
-     * container as a parent, the object is removed from the child list of the
-     * other display object container. </p>
-     *
-     * <p><b>Note:</b> The command <code>stage.addChild()</code> can cause
-     * problems with a published SWF file, including security problems and
-     * conflicts with other loaded SWF files. There is only one Stage within a
-     * Flash runtime instance, no matter how many SWF files you load into the
-     * runtime. So, generally, objects should not be added to the Stage,
-     * directly, at all. The only object the Stage should contain is the root
-     * object. Create a DisplayObjectContainer to contain all of the items on the
-     * display list. Then, if necessary, add that DisplayObjectContainer instance
-     * to the Stage.</p>
-     *
-     * @param child The DisplayObject instance to add as a child of this
-     *              DisplayObjectContainer instance.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child is the same as the parent. Also
-     *                       throws if the caller is a child(or grandchild etc.)
-     *                       of the child being added.
-     * @event added Dispatched when a display object is added to the display
-     *              list.
-     */
-    DisplayObjectContainer.prototype.addChild = function (child) {
-        return this.addChildAt(child, this._children.length);
-    };
-    DisplayObjectContainer.prototype.addChildAtDepth = function (child, depth, replace) {
-        if (replace === void 0) { replace = true; }
-        if (child == null)
-            throw new _awayjs_core.ArgumentError("Parameter child cannot be null.");
-        //if child already has a parent, remove it.
-        if (child._pParent)
-            child._pParent.removeChildAtInternal(child._pParent.getChildIndex(child));
-        var index = this.getDepthIndexInternal(depth);
-        if (index != -1) {
-            if (replace) {
-                this.removeChildAt(index);
-            }
-            else {
-                //move depth of existing child up by 1
-                this.addChildAtDepth(this._children[index], depth + 1, false);
-            }
-        }
-        if (this._nextHighestDepth < depth + 1)
-            this._nextHighestDepth = depth + 1;
-        this._depth_childs[depth] = child;
-        this._children.push(child);
-        child._depthID = depth;
-        child.iSetParent(this);
-        this._invalidateChildren();
-        return child;
-    };
-    /**
-     * Adds a child DisplayObject instance to this DisplayObjectContainer
-     * instance. The child is added at the index position specified. An index of
-     * 0 represents the back(bottom) of the display list for this
-     * DisplayObjectContainer object.
-     *
-     * <p>For example, the following example shows three display objects, labeled
-     * a, b, and c, at index positions 0, 2, and 1, respectively:</p>
-     *
-     * <p>If you add a child object that already has a different display object
-     * container as a parent, the object is removed from the child list of the
-     * other display object container. </p>
-     *
-     * @param child The DisplayObject instance to add as a child of this
-     *              DisplayObjectContainer instance.
-     * @param index The index position to which the child is added. If you
-     *              specify a currently occupied index position, the child object
-     *              that exists at that position and all higher positions are
-     *              moved up one position in the child list.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child is the same as the parent. Also
-     *                       throws if the caller is a child(or grandchild etc.)
-     *                       of the child being added.
-     * @throws RangeError    Throws if the index position does not exist in the
-     *                       child list.
-     * @event added Dispatched when a display object is added to the display
-     *              list.
-     */
-    DisplayObjectContainer.prototype.addChildAt = function (child, index) {
-        return this.addChildAtDepth(child, (index < this._children.length) ? this._children[index]._depthID : this.getNextHighestDepth(), false);
-    };
-    DisplayObjectContainer.prototype.addChildren = function () {
-        var childarray = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            childarray[_i] = arguments[_i];
-        }
-        var len = childarray.length;
-        for (var i = 0; i < len; i++)
-            this.addChild(childarray[i]);
-    };
-    /**
-     *
-     */
-    DisplayObjectContainer.prototype.clone = function () {
-        var newInstance = new DisplayObjectContainer();
-        this.copyTo(newInstance);
-        return newInstance;
-    };
-    DisplayObjectContainer.prototype.copyTo = function (newInstance) {
-        _super.prototype.copyTo.call(this, newInstance);
-        newInstance.mouseChildren = this._mouseChildren;
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            newInstance.addChild(this._children[i].clone());
-    };
-    /**
-     * Determines whether the specified display object is a child of the
-     * DisplayObjectContainer instance or the instance itself. The search
-     * includes the entire display list including this DisplayObjectContainer
-     * instance. Grandchildren, great-grandchildren, and so on each return
-     * <code>true</code>.
-     *
-     * @param child The child object to test.
-     * @return <code>true</code> if the <code>child</code> object is a child of
-     *         the DisplayObjectContainer or the container itself; otherwise
-     *         <code>false</code>.
-     */
-    DisplayObjectContainer.prototype.contains = function (child) {
-        return this._children.indexOf(child) >= 0;
-    };
-    /**
-     *
-     */
-    DisplayObjectContainer.prototype.disposeValues = function () {
-        for (var i = this._children.length - 1; i >= 0; i--)
-            this.removeChild(this._children[i]);
-        _super.prototype.disposeValues.call(this);
-    };
-    DisplayObjectContainer.prototype.getChildAtDepth = function (depth) {
-        return this._depth_childs[depth];
-    };
-    /**
-     * Returns the child display object instance that exists at the specified
-     * index.
-     *
-     * @param index The index position of the child object.
-     * @return The child display object at the specified index position.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     */
-    DisplayObjectContainer.prototype.getChildAt = function (index) {
-        var child = this._children[index];
-        if (child == null)
-            throw new _awayjs_core.RangeError("Index does not exist in the child list of the caller");
-        return child;
-    };
-    /**
-     * Returns the child display object that exists with the specified name. If
-     * more that one child display object has the specified name, the method
-     * returns the first object in the child list.
-     *
-     * <p>The <code>getChildAt()</code> method is faster than the
-     * <code>getChildByName()</code> method. The <code>getChildAt()</code> method
-     * accesses a child from a cached array, whereas the
-     * <code>getChildByName()</code> method has to traverse a linked list to
-     * access a child.</p>
-     *
-     * @param name The name of the child to return.
-     * @return The child display object with the specified name.
-     */
-    DisplayObjectContainer.prototype.getChildByName = function (name) {
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            if (this._children[i].name == name)
-                return this._children[i];
-        return null;
-    };
-    /**
-     * Returns the index position of a <code>child</code> DisplayObject instance.
-     *
-     * @param child The DisplayObject instance to identify.
-     * @return The index position of the child display object to identify.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     */
-    DisplayObjectContainer.prototype.getChildIndex = function (child) {
-        var childIndex = this._children.indexOf(child);
-        if (childIndex == -1)
-            throw new _awayjs_core.ArgumentError("Child parameter is not a child of the caller");
-        return childIndex;
-    };
-    DisplayObjectContainer.prototype.getNextHighestDepth = function () {
-        if (this._nextHighestDepthDirty)
-            this._updateNextHighestDepth();
-        return this._nextHighestDepth;
-    };
-    /**
-     * Returns an array of objects that lie under the specified point and are
-     * children(or grandchildren, and so on) of this DisplayObjectContainer
-     * instance. Any child objects that are inaccessible for security reasons are
-     * omitted from the returned array. To determine whether this security
-     * restriction affects the returned array, call the
-     * <code>areInaccessibleObjectsUnderPoint()</code> method.
-     *
-     * <p>The <code>point</code> parameter is in the coordinate space of the
-     * Stage, which may differ from the coordinate space of the display object
-     * container(unless the display object container is the Stage). You can use
-     * the <code>globalToLocal()</code> and the <code>localToGlobal()</code>
-     * methods to convert points between these coordinate spaces.</p>
-     *
-     * @param point The point under which to look.
-     * @return An array of objects that lie under the specified point and are
-     *         children(or grandchildren, and so on) of this
-     *         DisplayObjectContainer instance.
-     */
-    DisplayObjectContainer.prototype.getObjectsUnderPoint = function (point) {
-        return new Array();
-    };
-    /**
-     * Removes the specified <code>child</code> DisplayObject instance from the
-     * child list of the DisplayObjectContainer instance. The <code>parent</code>
-     * property of the removed child is set to <code>null</code> , and the object
-     * is garbage collected if no other references to the child exist. The index
-     * positions of any display objects above the child in the
-     * DisplayObjectContainer are decreased by 1.
-     *
-     * <p>The garbage collector reallocates unused memory space. When a variable
-     * or object is no longer actively referenced or stored somewhere, the
-     * garbage collector sweeps through and wipes out the memory space it used to
-     * occupy if no other references to it exist.</p>
-     *
-     * @param child The DisplayObject instance to remove.
-     * @return The DisplayObject instance that you pass in the <code>child</code>
-     *         parameter.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     */
-    DisplayObjectContainer.prototype.removeChild = function (child) {
-        if (child == null)
-            throw new _awayjs_core.ArgumentError("Parameter child cannot be null");
-        this.removeChildAt(this.getChildIndex(child));
-        return child;
-    };
-    DisplayObjectContainer.prototype.removeChildAtDepth = function (depth) {
-        return this.removeChildAt(this.getDepthIndexInternal(depth));
-    };
-    /**
-     * Removes a child DisplayObject from the specified <code>index</code>
-     * position in the child list of the DisplayObjectContainer. The
-     * <code>parent</code> property of the removed child is set to
-     * <code>null</code>, and the object is garbage collected if no other
-     * references to the child exist. The index positions of any display objects
-     * above the child in the DisplayObjectContainer are decreased by 1.
-     *
-     * <p>The garbage collector reallocates unused memory space. When a variable
-     * or object is no longer actively referenced or stored somewhere, the
-     * garbage collector sweeps through and wipes out the memory space it used to
-     * occupy if no other references to it exist.</p>
-     *
-     * @param index The child index of the DisplayObject to remove.
-     * @return The DisplayObject instance that was removed.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     * @throws SecurityError This child display object belongs to a sandbox to
-     *                       which the calling object does not have access. You
-     *                       can avoid this situation by having the child movie
-     *                       call the <code>Security.allowDomain()</code> method.
-     */
-    DisplayObjectContainer.prototype.removeChildAt = function (index) {
-        var child = this.removeChildAtInternal(index);
-        child.iSetParent(null);
-        this._invalidateChildren();
-        return child;
-    };
-    /**
-     * Removes all <code>child</code> DisplayObject instances from the child list
-     * of the DisplayObjectContainer instance. The <code>parent</code> property
-     * of the removed children is set to <code>null</code>, and the objects are
-     * garbage collected if no other references to the children exist.
-     *
-     * The garbage collector reallocates unused memory space. When a variable or
-     * object is no longer actively referenced or stored somewhere, the garbage
-     * collector sweeps through and wipes out the memory space it used to occupy
-     * if no other references to it exist.
-     *
-     * @param beginIndex The beginning position. A value smaller than 0 throws a RangeError.
-     * @param endIndex The ending position. A value smaller than 0 throws a RangeError.
-     * @throws RangeError    Throws if the beginIndex or endIndex positions do
-     *                       not exist in the child list.
-     */
-    DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
-        if (beginIndex === void 0) { beginIndex = 0; }
-        if (endIndex === void 0) { endIndex = 2147483647; }
-        if (beginIndex < 0)
-            throw new _awayjs_core.RangeError("beginIndex is out of range of the child list");
-        if (endIndex > this._children.length)
-            throw new _awayjs_core.RangeError("endIndex is out of range of the child list");
-        for (var i = beginIndex; i < endIndex; i++)
-            this.removeChild(this._children[i]);
-    };
-    /**
-     * Changes the position of an existing child in the display object container.
-     * This affects the layering of child objects. For example, the following
-     * example shows three display objects, labeled a, b, and c, at index
-     * positions 0, 1, and 2, respectively:
-     *
-     * <p>When you use the <code>setChildIndex()</code> method and specify an
-     * index position that is already occupied, the only positions that change
-     * are those in between the display object's former and new position. All
-     * others will stay the same. If a child is moved to an index LOWER than its
-     * current index, all children in between will INCREASE by 1 for their index
-     * reference. If a child is moved to an index HIGHER than its current index,
-     * all children in between will DECREASE by 1 for their index reference. For
-     * example, if the display object container in the previous example is named
-     * <code>container</code>, you can swap the position of the display objects
-     * labeled a and b by calling the following code:</p>
-     *
-     * <p>This code results in the following arrangement of objects:</p>
-     *
-     * @param child The child DisplayObject instance for which you want to change
-     *              the index number.
-     * @param index The resulting index number for the <code>child</code> display
-     *              object.
-     * @throws ArgumentError Throws if the child parameter is not a child of this
-     *                       object.
-     * @throws RangeError    Throws if the index does not exist in the child
-     *                       list.
-     */
-    DisplayObjectContainer.prototype.setChildIndex = function (child, index) {
-        //TODO
-    };
-    /**
-     * Swaps the z-order (front-to-back order) of the two specified child
-     * objects. All other child objects in the display object container remain in
-     * the same index positions.
-     *
-     * @param child1 The first child object.
-     * @param child2 The second child object.
-     * @throws ArgumentError Throws if either child parameter is not a child of
-     *                       this object.
-     */
-    DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
-        this.swapChildrenAt(this.getChildIndex(child1), this.getChildIndex(child2));
-    };
-    /**
-     * Swaps the z-order(front-to-back order) of the child objects at the two
-     * specified index positions in the child list. All other child objects in
-     * the display object container remain in the same index positions.
-     *
-     * @param index1 The index position of the first child object.
-     * @param index2 The index position of the second child object.
-     * @throws RangeError If either index does not exist in the child list.
-     */
-    DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
-        var depth = this._children[index2]._depthID;
-        var child = this._children[index1];
-        this.addChildAtDepth(this._children[index2], this._children[index1]._depthID);
-        this.addChildAtDepth(child, depth);
-    };
-    /**
-     * //TODO
-     *
-     * @protected
-     */
-    DisplayObjectContainer.prototype._pUpdateBoxBounds = function () {
-        _super.prototype._pUpdateBoxBounds.call(this);
-        var box;
-        var numChildren = this._children.length;
-        if (numChildren > 0) {
-            var min;
-            var max;
-            var minX, minY, minZ;
-            var maxX, maxY, maxZ;
-            for (var i = 0; i < numChildren; ++i) {
-                box = this._children[i].getBox(this);
-                if (i == 0) {
-                    maxX = box.width + (minX = box.x);
-                    maxY = box.height + (minY = box.y);
-                    maxZ = box.depth + (minZ = box.z);
-                }
-                else {
-                    max = box.width + (min = box.x);
-                    if (min < minX)
-                        minX = min;
-                    if (max > maxX)
-                        maxX = max;
-                    max = box.height + (min = box.y);
-                    if (min < minY)
-                        minY = min;
-                    if (max > maxY)
-                        maxY = max;
-                    max = box.depth + (min = box.z);
-                    if (min < minZ)
-                        minZ = min;
-                    if (max > maxZ)
-                        maxZ = max;
-                }
-            }
-            this._pBoxBounds.width = maxX - (this._pBoxBounds.x = minX);
-            this._pBoxBounds.height = maxY - (this._pBoxBounds.y = minY);
-            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
-        }
-        else {
-            this._pBoxBounds.setBoundIdentity();
-        }
-    };
-    /**
-     * @protected
-     */
-    DisplayObjectContainer.prototype.pInvalidateHierarchicalProperties = function (propDirty) {
-        if (_super.prototype.pInvalidateHierarchicalProperties.call(this, propDirty))
-            return true;
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            this._children[i].pInvalidateHierarchicalProperties(propDirty);
-        return false;
-    };
-    /**
-     * @internal
-     */
-    DisplayObjectContainer.prototype._iSetScene = function (value, partition) {
-        _super.prototype._iSetScene.call(this, value, partition);
-        var len = this._children.length;
-        for (var i = 0; i < len; ++i)
-            this._children[i]._iSetScene(value, this._pPartition);
-    };
-    /**
-     * @private
-     *
-     * @param child
-     */
-    DisplayObjectContainer.prototype.removeChildAtInternal = function (index) {
-        var child = this._children.splice(index, 1)[0];
-        //update next highest depth
-        if (this._nextHighestDepth == child._depthID + 1)
-            this._nextHighestDepthDirty = true;
-        delete this._depth_childs[child._depthID];
-        child._depthID = -16384;
-        return child;
-    };
-    DisplayObjectContainer.prototype.getDepthIndexInternal = function (depth) {
-        if (!this._depth_childs[depth])
-            return -1;
-        return this._children.indexOf(this._depth_childs[depth]);
-    };
-    DisplayObjectContainer.prototype._updateNextHighestDepth = function () {
-        this._nextHighestDepthDirty = false;
-        this._nextHighestDepth = 0;
-        var len = this._children.length;
-        for (var i = 0; i < len; i++)
-            if (this._nextHighestDepth < this._children[i]._depthID)
-                this._nextHighestDepth = this._children[i]._depthID;
-        this._nextHighestDepth += 1;
-    };
-    DisplayObjectContainer.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
-        var numChildren = this._children.length;
-        for (var i = 0; i < numChildren; i++)
-            if (this._children[i].hitTestPoint(x, y, shapeFlag, masksFlag))
-                return true;
-        return false;
-    };
-    DisplayObjectContainer.prototype._updateMaskMode = function () {
-        if (this.maskMode)
-            this.mouseChildren = false;
-        _super.prototype._updateMaskMode.call(this);
-    };
-    DisplayObjectContainer.prototype._invalidateChildren = function () {
-        if (this._pIsContainer != Boolean(this._children.length)) {
-            if (this._pScene)
-                this._pScene._iUnregisterObject(this);
-            this._pIsContainer = Boolean(this._children.length);
-            if (this._pScene)
-                this._pScene._iRegisterObject(this);
-        }
-        this._pInvalidateBounds();
-    };
-    return DisplayObjectContainer;
-}(DisplayObject));
-DisplayObjectContainer.assetType = "[asset DisplayObjectContainer]";
 
 /**
  * Sprite is an instance of a Graphics, augmenting it with a presence in the scene graph, a material, and an animation
@@ -30411,10 +30537,39 @@ var TextField = (function (_super) {
         var _this = _super.call(this) || this;
         _this._line_indices = [];
         _this._text = "";
+        _this._textFieldWidth = 100;
+        _this._textFieldHeight = 0;
+        _this._textWidth = 0;
+        _this._textHeight = 0;
         _this.type = TextFieldType.STATIC;
-        _this.autoSize = TextFieldAutoSize.NONE;
+        _this._numLines = 0;
+        _this.selectable = true;
+        _this._autoSize = TextFieldAutoSize.NONE;
+        _this._wordWrap = false;
+        
+        _this.background = false;
+        _this.backgroundColor = 0xffffff;
+        _this.border = false;
+        _this.borderColor = 0x000000;
         return _this;
     }
+    Object.defineProperty(TextField.prototype, "autoSize", {
+        get: function () {
+            return this._autoSize;
+        },
+        set: function (value) {
+            this._autoSize = value;
+            this._textGraphicsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TextField.prototype.getBox = function (targetCoordinateSpace) {
+        if (targetCoordinateSpace === void 0) { targetCoordinateSpace = null; }
+        if (!this.selectable) {
+        }
+        return _super.prototype.getBox.call(this, targetCoordinateSpace);
+    };
     Object.defineProperty(TextField.prototype, "assetType", {
         /**
          *
@@ -30458,6 +30613,22 @@ var TextField = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TextField.prototype, "defaultTextFormat", {
+        get: function () {
+            if (this._defaultTextFormat == null) {
+                this._defaultTextFormat = new TextFormat();
+            }
+            return this._defaultTextFormat;
+        },
+        set: function (value) {
+            if (this._defaultTextFormat == value)
+                return;
+            this._defaultTextFormat = value;
+            this._textGraphicsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TextField.prototype, "length", {
         /**
          * The number of characters in a text field. A character such as tab
@@ -30488,6 +30659,8 @@ var TextField = (function (_super) {
          * lines increases when text wraps.
          */
         get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
             return this._numLines;
         },
         enumerable: true,
@@ -30536,7 +30709,6 @@ var TextField = (function (_super) {
             if (this._text == value)
                 return;
             this._text = value;
-            this.reConstruct();
             this._textGraphicsDirty = true;
         },
         enumerable: true,
@@ -30611,10 +30783,35 @@ var TextField = (function (_super) {
          * The width of the text in pixels.
          */
         get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
             return this._textWidth;
         },
-        set: function (value) {
-            this._textWidth = value;
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textFieldWidth", {
+        get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
+            return this._textFieldWidth;
+        },
+        set: function (val) {
+            if (this._width == val)
+                return;
+            this._textFieldWidth = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "textFieldHeight", {
+        get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
+            return this._textFieldHeight;
+        },
+        set: function (val) {
+            this._textFieldHeight = val;
         },
         enumerable: true,
         configurable: true
@@ -30624,10 +30821,23 @@ var TextField = (function (_super) {
          * The width of the text in pixels.
          */
         get: function () {
+            if (this._textGraphicsDirty)
+                this.reConstruct();
             return this._textHeight;
         },
-        set: function (value) {
-            this._textHeight = value;
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "wordWrap", {
+        /**
+         * The width of the text in pixels.
+         */
+        get: function () {
+            return this._wordWrap;
+        },
+        set: function (val) {
+            this._wordWrap = val;
+            this._textGraphicsDirty = true;
         },
         enumerable: true,
         configurable: true
@@ -30674,6 +30884,9 @@ var TextField = (function (_super) {
     /**
      * Reconstructs the Graphics for this Text-field.
      */
+    TextField.prototype.reConstruct3 = function () {
+        this._textGraphicsDirty = false;
+    };
     TextField.prototype.reConstruct = function () {
         this._textGraphicsDirty = false;
         if (this._textFormat == null)
@@ -30696,21 +30909,28 @@ var TextField = (function (_super) {
             this._textElements2.dispose();
             this._textElements2 = null;
         }
+        this._graphics.clearDrawing();
         if (this._text == "")
             return;
         var activeFormat = this._textFormat;
         activeFormat.font_table.initFontSize(activeFormat.size);
         if (activeFormat.font_table.fallbackTable)
             activeFormat.font_table.fallbackTable.initFontSize(activeFormat.size);
-        var textlines = this.text.toString().split("\\n");
-        var maxlineWidth = this.width - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
-        if (this.width == 0) {
-            maxlineWidth = 300;
+        var textlines = this.text.toString().match(/[^\r\n]+/g);
+        //console.log("text = ", textlines.toString());
+        var maxlineWidth = this._textFieldWidth - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
+        if (this.autoSize != TextFieldAutoSize.NONE && !this.wordWrap) {
+            maxlineWidth = Number.MAX_VALUE;
         }
-        if (this.autoSize != TextFieldAutoSize.NONE) {
-            maxlineWidth = 300; //Number.MAX_VALUE;
-        }
-        //if()
+        /*
+                if(this.autoSize==TextFieldAutoSize.RIGHT){
+                    return;
+                }
+        
+                if(this.autoSize==TextFieldAutoSize.CENTER){
+                    return;
+                }
+                */
         var tl_char_codes = [];
         var tl_char_widths = [];
         var tl_char_heights = [];
@@ -30720,6 +30940,7 @@ var TextField = (function (_super) {
         var tl_linebreak = [];
         var tl_width = [];
         var tl_height = [];
+        var tl_ends_with_space = [];
         var tl_cnt = 0;
         var w = 0;
         var c = 0;
@@ -30742,6 +30963,7 @@ var TextField = (function (_super) {
             tl_word_cnt[tl_cnt] = 0;
             tl_justify[tl_cnt] = false;
             tl_linebreak[tl_cnt] = true;
+            tl_ends_with_space[tl_cnt] = textlines[tl].charCodeAt(textlines[tl].length - 1) == 32;
             tl_cnt++;
             words = textlines[tl].split(" ");
             for (w = 0; w < words.length; w++) {
@@ -30817,6 +31039,7 @@ var TextField = (function (_super) {
                         tl_word_cnt[tl_cnt] = 0;
                         tl_justify[tl_cnt] = false;
                         tl_linebreak[tl_cnt] = false;
+                        tl_ends_with_space[tl_cnt] = textlines[tl].charCodeAt(textlines[tl].length - 1) == 32;
                         tl_cnt++;
                         for (c = 0; c < words[w].length; c++) {
                             tl_char_codes[tl_cnt - 1].push(words[w].charCodeAt(c));
@@ -30830,17 +31053,28 @@ var TextField = (function (_super) {
                 }
             }
         }
+        for (tl = 0; tl < tl_width.length; tl++) {
+            if (tl_ends_with_space[tl]) {
+                tl_char_codes[tl].push(32);
+                tl_formatIdx[tl].push(1);
+                tl_char_widths[tl].push(activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing);
+                tl_width[tl] += activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing;
+            }
+        }
+        //console.log("tl_width = ", tl_width);
         var tl_startx = [];
         // calculate the final positions of the chars
-        this.textWidth = 4;
-        this.textHeight = 2;
+        this._textWidth = 0;
+        this._textHeight = 0;
+        this._length = 0;
+        this._numLines = tl_width.length;
         for (tl = 0; tl < tl_width.length; tl++) {
             var indent = this._textFormat.indent;
             if (!tl_linebreak[tl]) {
                 indent = 0;
             }
-            if (tl_width[tl] > this.textWidth)
-                this.textWidth = tl_width[tl];
+            if (tl_width[tl] > this._textWidth)
+                this._textWidth = tl_width[tl];
             var x_offset = 2 + this._textFormat.leftMargin + indent;
             var justify_addion = 0;
             /*
@@ -30860,7 +31094,8 @@ var TextField = (function (_super) {
             if (tl_char_codes[tl].length == 0) {
                 tl_height[tl] = this._textFormat.font_table.getLineHeight();
             }
-            this.textHeight += tl_height[tl];
+            this._textHeight += tl_height[tl] + this._textFormat.leading;
+            this._length += tl_char_codes[tl].length;
             for (var c = 0; c < tl_char_codes[tl].length; c++) {
                 //this.textHeight+=tl_height[tl];
                 tl_startx[tl][c] = x_offset;
@@ -30869,20 +31104,15 @@ var TextField = (function (_super) {
                 if (tl_char_codes[tl][c] == 32) {
                     x_offset += justify_addion;
                 }
-                else {
-                }
             }
         }
-        //this.width=this.textWidth;
-        //this.height=this.textHeight;
-        /*
-                this.graphics.clear();
-                this.graphics.beginFill(0x000001, 0);
-                if(this.border){
-                    this.graphics.lineStyle(2, 0x000001);
-                }
-                this.graphics.drawRect(0,0,this.textWidth, this.textHeight);
-                this.graphics.endFill();*/
+        this._textWidth += this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin;
+        this._textFieldWidth = this._textWidth + 4;
+        this._textFieldHeight = this._textHeight + 4;
+        this.graphics.beginFill(this.backgroundColor, this.background ? 1 : 0);
+        //this.graphics.lineStyle(1, this.borderColor, this.border?1:0);
+        this.graphics.drawRect(0, 0, this.textWidth + 4, this.textHeight + 4);
+        this.graphics.endFill();
         if (this._textFormat.font_table.assetType == BitmapFontTable.assetType) {
             //console.log("contruct bitmap text = "+this._text);
             var bitmap_fontTable = this._textFormat.font_table;
@@ -31000,9 +31230,8 @@ var TextField = (function (_super) {
             var charGlyph;
             var char_vertices;
             var char_scale = tess_fontTable._size_multiply;
-            var y_offset = 2 + (tess_fontTable.ascent - tess_fontTable.get_font_em_size()) * char_scale;
+            var y_offset = 1 + ((tess_fontTable.ascent - tess_fontTable.get_font_em_size())) * char_scale;
             var fallbackfont = this._textFormat.font_table.fallbackTable;
-            x_offset = 0;
             for (tl = 0; tl < tl_width.length; tl++) {
                 for (var c = 0; c < tl_char_codes[tl].length; c++) {
                     if (tl_char_codes[tl][c] == 32) {
@@ -31087,7 +31316,11 @@ var TextField = (function (_super) {
                     this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
                 }
                 else {
-                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0x000001, 1); //this.textColor);//this._textFormat.color);
+                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0xffffff, 1); //this.textColor);//this._textFormat.color);
+                    this._textShape.material.useColorTransform = true;
+                    var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
+                    this.transform.colorTransform.color = this._textFormat.color;
+                    this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
                 }
             }
             if (this._textShape) {
@@ -31115,6 +31348,7 @@ var TextField = (function (_super) {
      * e.g. the textfield will start a new line for future added text.
      */
     TextField.prototype.closeParagraph = function () {
+        this._text += "\n";
         //TODO
     };
     /**
@@ -31429,8 +31663,8 @@ var TextField = (function (_super) {
     };
     TextField.prototype.copyTo = function (newInstance) {
         _super.prototype.copyTo.call(this, newInstance);
-        newInstance.textWidth = this._textWidth;
-        newInstance.textHeight = this._textHeight;
+        //newInstance.textWidth = this._textWidth;
+        //newInstance.textHeight = this._textHeight;
         newInstance.textFormat = this._textFormat;
         //newInstance.textColor = this._textColor;
         newInstance.text = this._text;
@@ -31670,14 +31904,21 @@ var MovieClip = (function (_super) {
     /**
      * should be called right before the call to away3d-render.
      */
-    MovieClip.prototype.update = function () {
+    MovieClip.prototype.update = function (events) {
+        //if events is null, this is as2, if it is not null, this is as3web
+        if (events === void 0) { events = null; }
         MovieClip._skipAdvance = true;
+        if (events != null) {
+            this.adapter.dispatchEvent(events[0]);
+        }
         this.advanceFrame();
         MovieClip._skipAdvance = false;
         // after we advanced the scenegraph, we might have some script that needs executing
         FrameScriptManager.execute_queue();
-        // now we want to execute the onEnter
-        this.dispatchEvent(this._enterFrame);
+        if (events == null) {
+            // now we want to execute the onEnter
+            this.dispatchEvent(this._enterFrame);
+        }
         // after we executed the onEnter, we might have some script that needs executing
         FrameScriptManager.execute_queue();
         // now we execute any intervals queued
@@ -31686,6 +31927,9 @@ var MovieClip = (function (_super) {
         FrameScriptManager.execute_queue();
         //execute any disposes as a result of framescripts
         FrameScriptManager.execute_dispose();
+        if (events != null) {
+            this.adapter.dispatchEvent(events[1]);
+        }
     };
     MovieClip.prototype.getPotentialChildInstance = function (id) {
         if (!this._potentialInstances[id])
@@ -51910,13 +52154,13 @@ var ContextSoftware = (function () {
                 // Depth test.
                 if (!this._depthCompareModeSoftware[this._depthCompareMode](fragDepth, this._activeBufferZ[index]))
                     continue;
-                // Write z buffer.
-                if (this._writeDepth)
-                    this._activeBufferZ[index] = fragDepth; // TODO: fragmentVO.outputDepth?
                 // Process fragment shader.
                 var fragmentVO = this._program.fragment(this, this._barycentric, this._barycentricRight, this._barycentricBottom, varying0, varying1, varying2, fragDepth);
                 if (fragmentVO.discard)
                     continue;
+                // Write z buffer.
+                if (this._writeDepth)
+                    this._activeBufferZ[index] = fragDepth; // TODO: fragmentVO.outputDepth?
                 // Write to source and transform color space.
                 this._source[0] = fragmentVO.outputColor[0] * 0xFF;
                 this._source[1] = fragmentVO.outputColor[1] * 0xFF;
@@ -63798,7 +64042,6 @@ var AS2SoundAdapter = (function () {
     }
     AS2SoundAdapter.prototype.attachSound = function (id) {
         this._name = id.replace(".wav", "").replace(".mp3", "").replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
-        // TODO: This will be AudioAsset or something
         var asset = _awayjs_core.AssetLibrary.getAsset(this._name);
         if (asset)
             this._soundProps.audio = asset.clone();
@@ -63817,11 +64060,14 @@ var AS2SoundAdapter = (function () {
         return 1;
     }*/
     AS2SoundAdapter.prototype.getPan = function () {
-        return this._soundProps.pan;
+        return this._soundProps.pan * 100;
     };
     AS2SoundAdapter.prototype.setPan = function (value) {
-        this._soundProps.pan = value;
-        // panning not supported at this point
+        this._soundProps.pan = value / 100;
+        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
+        }
+        else if (this._soundProps.audio)
+            this._soundProps.audio.pan = value / 100;
     };
     /*getTransform():Object
     {
@@ -64966,71 +65212,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-
-
-
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 /**
@@ -65555,7 +65740,7 @@ var SceneGraphNode = (function (_super) {
             this._numMasks++;
         }
         else {
-            var depth = node._entity._depthID;
+            var depth = (node.isSceneGraphNode || !node._entity.isContainer) ? node._entity._depthID : -16384;
             var len = this._childDepths.length;
             var index = len;
             while (index--)
@@ -66497,6 +66682,13 @@ var View = (function () {
         set: function (value) {
             if (this._width == value)
                 return;
+            if (this._shareContext) {
+                this._pRenderer.scissorRect.width = value;
+                //this._pRenderer.viewPort.width = value;
+                this._scissorDirty = true;
+                //this._viewportDirty = false;
+                return;
+            }
             this._width = value;
             this._pRenderer.width = value;
             if (this._htmlElement) {
@@ -66516,6 +66708,13 @@ var View = (function () {
         set: function (value) {
             if (this._height == value)
                 return;
+            if (this._shareContext) {
+                this._pRenderer.scissorRect.height = 100;
+                //this._pRenderer.viewPort.height = 100;
+                this._scissorDirty = true;
+                //this._viewportDirty = false;
+                return;
+            }
             this._height = value;
             this._pRenderer.height = value;
             if (this._htmlElement) {
@@ -66554,6 +66753,13 @@ var View = (function () {
             if (this._pRenderer.x == value)
                 return;
             this._pRenderer.x = value;
+            if (this._shareContext) {
+                this._pRenderer.scissorRect.x = value;
+                //this._pRenderer.viewPort.x = value;
+                this._scissorDirty = true;
+                //this._viewportDirty = false;
+                return;
+            }
             if (this._htmlElement) {
                 this._htmlElement.style.left = value + "px";
             }
@@ -66572,6 +66778,13 @@ var View = (function () {
             if (this._pRenderer.y == value)
                 return;
             this._pRenderer.y = value;
+            if (this._shareContext) {
+                this._pRenderer.scissorRect.y = value;
+                //this._pRenderer.viewPort.y = value;
+                this._scissorDirty = true;
+                //this._viewportDirty = false;
+                return;
+            }
             if (this._htmlElement) {
                 this._htmlElement.style.top = value + "px";
             }
@@ -66622,7 +66835,7 @@ var View = (function () {
             this._pCamera.projection.setStageRect(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
         }
         // update picking
-        if (!this._shareContext) {
+        if (!this._shareContext && !this.disableMouseEvents) {
             if (this.forceMouseMove && this._htmlElement == this._mouseManager._iActiveDiv && !this._mouseManager._iUpdateDirty)
                 this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
             this._mouseManager.fireMouseEvents(this.forceMouseMove);
@@ -66697,14 +66910,16 @@ var View = (function () {
      */
     // TODO: required dependency stageGL
     View.prototype.updateCollider = function () {
-        if (!this._shareContext) {
-            if (this._htmlElement == this._mouseManager._iActiveDiv)
-                this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-        }
-        else {
-            var collidingObject = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-            if (this.layeredView || this._mouseManager._iCollision == null || collidingObject.rayEntryDistance < this._mouseManager._iCollision.rayEntryDistance)
-                this._mouseManager._iCollision = collidingObject;
+        if (!this.disableMouseEvents) {
+            if (!this._shareContext) {
+                if (this._htmlElement == this._mouseManager._iActiveDiv)
+                    this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
+            }
+            else {
+                var collidingObject = this.getViewCollision(this._pMouseX, this._pMouseY, this);
+                if (this.layeredView || this._mouseManager._iCollision == null || collidingObject.rayEntryDistance < this._mouseManager._iCollision.rayEntryDistance)
+                    this._mouseManager._iCollision = collidingObject;
+            }
         }
     };
     View.prototype.getViewCollision = function (x, y, view) {
@@ -66805,10 +67020,71 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+
+
+
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
 }
 
 var AWD3Utils = (function () {
@@ -67535,8 +67811,8 @@ var AWDParser = (function (_super) {
         if (text_field_type == 3)
             newTextField.displayAsPassword = true;
         //
-        newTextField.textWidth = Math.abs(this._newBlockBytes.readFloat());
-        newTextField.textHeight = Math.abs(this._newBlockBytes.readFloat());
+        newTextField.textFieldWidth = Math.abs(this._newBlockBytes.readFloat());
+        newTextField.textFieldHeight = Math.abs(this._newBlockBytes.readFloat());
         var num_paragraphs = this._newBlockBytes.readUnsignedInt();
         var complete_text = "";
         //console.log("num_paragraphs  '" + num_paragraphs);
