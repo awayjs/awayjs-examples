@@ -22661,16 +22661,7 @@ function __extends(d, b) {
 
 
 
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
+
 
 function __read(o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
@@ -22691,14 +22682,8 @@ function __read(o, n) {
 
 
 
-
-
-
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -30889,9 +30874,9 @@ var TextField = (function (_super) {
         var textlines = this.text.toString().match(/[^\r\n]+/g);
         //console.log("text = ", textlines.toString());
         var maxlineWidth = this._textFieldWidth - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
-        if (this.autoSize != TextFieldAutoSize.NONE && !this.wordWrap) {
-            maxlineWidth = Number.MAX_VALUE;
-        }
+        //if(this.autoSize!=TextFieldAutoSize.NONE && !this.wordWrap){
+        maxlineWidth = Number.MAX_VALUE;
+        //}
         /*
                 if(this.autoSize==TextFieldAutoSize.RIGHT){
                     return;
@@ -31048,17 +31033,17 @@ var TextField = (function (_super) {
             var x_offset = 2 + this._textFormat.leftMargin + indent;
             var justify_addion = 0;
             /*
-            if(this._textFormat.align=="center"){
-                x_offset = 2 + this._textFormat.leftMargin + indent+(maxlineWidth-tl_width[tl])/2;
-            }
-            else if(this._textFormat.align=="justify"){
-                if(tl_justify[tl]){
-                    justify_addion=((maxlineWidth)-tl_width[tl])/tl_word_cnt[tl];
-                }
-            }
-            else if(this._textFormat.align=="right"){
-                x_offset=(this._textWidth-tl_width[tl])-(2 + this._textFormat.rightMargin);
-            }
+                        if(this._textFormat.align=="center"){
+                            x_offset = 2 + this._textFormat.leftMargin + indent+(maxlineWidth-tl_width[tl])/2;
+                        }
+                        else if(this._textFormat.align=="justify"){
+                            if(tl_justify[tl]){
+                                justify_addion=((maxlineWidth)-tl_width[tl])/tl_word_cnt[tl];
+                            }
+                        }
+                        else if(this._textFormat.align=="right"){
+                            x_offset=(this._textWidth-tl_width[tl])-(2 + this._textFormat.rightMargin);
+                        }
             */
             tl_startx[tl] = [];
             if (tl_char_codes[tl].length == 0) {
@@ -31740,6 +31725,7 @@ var MovieClip = (function (_super) {
         },
         set: function (value) {
             this._timeline = value;
+            this.reset();
         },
         enumerable: true,
         configurable: true
@@ -31885,10 +31871,7 @@ var MovieClip = (function (_super) {
         MovieClip._skipAdvance = false;
         // after we advanced the scenegraph, we might have some script that needs executing
         FrameScriptManager.execute_queue();
-        if (events == null) {
-            // now we want to execute the onEnter
-            this.dispatchEvent(this._enterFrame);
-        }
+        //this.dispatchEvent(this._enterFrame);
         // after we executed the onEnter, we might have some script that needs executing
         FrameScriptManager.execute_queue();
         // now we execute any intervals queued
@@ -31942,6 +31925,7 @@ var MovieClip = (function (_super) {
             if (child.isAsset(MovieClip))
                 child.advanceFrame();
         }
+        this.dispatchEvent(this._enterFrame);
         this._skipAdvance = false;
     };
     // DEBUG CODE:
@@ -63752,16 +63736,7 @@ function __extends(d, b) {
 
 
 
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
+
 
 function __read(o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
@@ -63782,14 +63757,8 @@ function __read(o, n) {
 
 
 
-
-
-
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var AS2MCSoundProps = (function (_super) {
@@ -64346,8 +64315,37 @@ var AS2MovieClipAdapter = (function (_super) {
             SharedObject: AS2SharedObjectAdapter
         };
         _this.__pSoundProps = new AS2MCSoundProps();
+        _this._onLoaderCompleteDelegate = function (event) { return _this.onLoaderComplete(event); };
+        _this._onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
         return _this;
     }
+    AS2MovieClipAdapter.prototype.loadMovie = function (url, method) {
+        if (method === void 0) { method = null; }
+        this._loader = new _awayjs_scene.LoaderContainer();
+        this._loader.addEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
+        this._loader.addEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+        this._loader.load(new _awayjs_core.URLRequest(url));
+    };
+    AS2MovieClipAdapter.prototype.onLoaderComplete = function (event) {
+        console.log("loaded url!");
+        this._loader.removeEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
+        this._loader.removeEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+        this._loader = null;
+        //todo: dispose loader ?
+    };
+    AS2MovieClipAdapter.prototype.onAssetComplete = function (event) {
+        event.asset;
+        if (event.asset.isAsset(_awayjs_scene.MovieClip)) {
+            var awayMC = event.asset;
+            // if this is the "Scene 1", we transfer the timeline into the mc that is loading the movie
+            if (event.asset.name == "Scene 1" || event.asset.name == "main") {
+                //this.adaptee.addChild(awayMC);
+                this.adaptee.timeline = awayMC.timeline;
+                this.adaptee.reset();
+                this.gotoAndPlay(1);
+            }
+        }
+    };
     AS2MovieClipAdapter.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
         this.__pSoundProps.dispose();
@@ -64489,7 +64487,11 @@ var AS2MovieClipAdapter = (function (_super) {
     AS2MovieClipAdapter.prototype.prevFrame = function () {
         --this.adaptee.currentFrameIndex;
     };
-    //removeMovieClip():void {}
+    AS2MovieClipAdapter.prototype.removeMovieClip = function () {
+        if (this.adaptee.parent) {
+            this.adaptee.parent.removeChild(this.adaptee);
+        }
+    };
     AS2MovieClipAdapter.prototype.setMask = function (mc) {
         this.adaptee.masks = [mc];
     };
