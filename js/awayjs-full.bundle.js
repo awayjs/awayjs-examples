@@ -329,16 +329,7 @@ function __extends(d, b) {
 
 
 
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
+
 
 function __read(o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
@@ -359,14 +350,8 @@ function __read(o, n) {
 
 
 
-
-
-
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var ErrorBase = (function () {
