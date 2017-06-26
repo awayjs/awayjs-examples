@@ -6697,6 +6697,10 @@ var Rectangle = (function () {
      * @param sourceRect The Rectangle object from which to copy the data.
      */
     Rectangle.prototype.copyFrom = function (sourceRect) {
+        this.x = sourceRect.x;
+        this.y = sourceRect.y;
+        this.width = sourceRect.width;
+        this.height = sourceRect.height;
     };
     /**
      * Determines whether the object specified in the <code>toCompare</code>
@@ -13682,6 +13686,114 @@ GradientType.LINEAR = "linear";
  */
 GradientType.RADIAL = "radial";
 
+var GraphicsFillStyle = (function () {
+    function GraphicsFillStyle(color, alpha) {
+        if (color === void 0) { color = 0xffffff; }
+        if (alpha === void 0) { alpha = 1; }
+        this.color = color;
+        this.alpha = alpha;
+    }
+    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsFillStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return GraphicsFillStyle;
+}());
+GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
+
+var GradientFillStyle = (function (_super) {
+    __extends(GradientFillStyle, _super);
+    function GradientFillStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+        var _this = _super.call(this) || this;
+        if (colors.length != alphas.length || colors.length != ratios.length) {
+            throw ("GradientFillStyle: Error - colors, alphas and ratios must be of same length");
+        }
+        _this.colors = colors;
+        _this.colors_r = [];
+        _this.colors_g = [];
+        _this.colors_b = [];
+        _this.colors_r.length = _this.colors_g.length = _this.colors_g.length = _this.colors.length;
+        _this.alphas = alphas;
+        _this.ratios = ratios;
+        _this.matrix = matrix;
+        _this.uvRectangle = new _awayjs_core.Rectangle();
+        _this.ratio_min = _this.ratios[0];
+        _this.ratio_max = _this.ratios[_this.ratios.length - 1];
+        var r = _this.ratios.length;
+        while (r > 1) {
+            r--;
+            if (_this.ratios[r] < _this.ratios[r - 1]) {
+                throw ("GradientFillStyle: Error - ratios are not valid");
+            }
+        }
+        var c = colors.length;
+        var argb;
+        while (c > 0) {
+            c--;
+            argb = _awayjs_core.ColorUtils.float32ColorToARGB(colors[c]);
+            _this.colors_r[c] = argb[1];
+            _this.colors_g[c] = argb[2];
+            _this.colors_b[c] = argb[3];
+        }
+        return _this;
+    }
+    GradientFillStyle.prototype.getUVMatrix = function () {
+        // todo manipulate this.matrix so it works correct for the uvRectangle
+        return this.matrix;
+    };
+    GradientFillStyle.prototype.getColorAtPosition = function (value) {
+        var r1 = -1;
+        var r2 = -1;
+        if (value <= this.ratio_min) {
+            r1 = this.ratio_min;
+            r2 = this.ratio_min;
+        }
+        else if (value >= this.ratio_max) {
+            r1 = this.ratio_max;
+            r2 = this.ratio_max;
+        }
+        else {
+            var r = 0;
+            for (var r = 0; r < this.ratios.length - 1; r++) {
+                if (value == this.ratios[r]) {
+                    r1 = this.ratios[r];
+                    r2 = this.ratios[r];
+                }
+                else if (value == this.ratios[r + 1]) {
+                    r1 = this.ratios[r + 1];
+                    r2 = this.ratios[r + 1];
+                }
+                else if (value >= this.ratios[r] && value <= this.ratios[r + 1]) {
+                    r1 = this.ratios[r];
+                    r2 = this.ratios[r + 1];
+                }
+            }
+        }
+        if (r1 == r2) {
+            return _awayjs_core.ColorUtils.ARGBtoFloat32(this.alphas[r1], this.colors_r[r1], this.colors_g[r1], this.colors_b[r1]);
+        }
+        var mix = (value - this.ratios[r1]) / (this.ratios[r2] - this.ratios[r1]);
+        var mix_neg = 1 - mix;
+        var color_a = this.alphas[r1] * mix + this.alphas[r2] * mix_neg;
+        var color_r = this.colors_r[r1] * mix + this.colors_r[r2] * mix_neg;
+        var color_g = this.colors_g[r1] * mix + this.colors_g[r2] * mix_neg;
+        var color_b = this.colors_b[r1] * mix + this.colors_b[r2] * mix_neg;
+        return _awayjs_core.ColorUtils.ARGBtoFloat32(color_a, color_r, color_g, color_b);
+    };
+    Object.defineProperty(GradientFillStyle.prototype, "data_type", {
+        get: function () {
+            return GraphicsFillStyle.data_type;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return GradientFillStyle;
+}(GraphicsFillStyle));
+GradientFillStyle.data_type = "[graphicsdata GradientFillStyle]";
+
 var GraphicsFactoryHelper = (function () {
     function GraphicsFactoryHelper() {
     }
@@ -14701,6 +14813,118 @@ var ElementsUtils = (function () {
         output.radius = Math.sqrt(maxRadiusSquared);
         return output;
     };
+    ElementsUtils.updateTriangleGraphicsSlice9 = function (triangleElements, rect, init, copy) {
+        // todo: for now this only works for Float2Attributes.
+        if (init === void 0) { init = false; }
+        if (copy === void 0) { copy = false; }
+        if (triangleElements.slice9Indices.length != 9) {
+            throw ("ElementUtils: Error - triangleElement does not provide valid slice9Indices!");
+        }
+        var s_len = triangleElements.slice9Indices.length;
+        var innerWidth = rect.width - triangleElements.slice9offsets.x - triangleElements.slice9offsets.width;
+        var innerHeight = rect.height - triangleElements.slice9offsets.y - triangleElements.slice9offsets.height;
+        var newElem;
+        var positions;
+        if (copy) {
+            var newverts = new Uint8Array(triangleElements.positions.count * 8);
+            while (v < triangleElements.positions.count * 2) {
+                newverts[v] = positions[v++];
+                newverts[v] = positions[v++];
+            }
+            var vertexBuffer = new _awayjs_core.AttributesBuffer(8, triangleElements.positions.count);
+            vertexBuffer.bufferView = newverts;
+            var newElem = new TriangleElements(vertexBuffer);
+            newElem.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
+            newElem.slice9offsets = triangleElements.slice9offsets;
+            newElem.initialSlice9Positions = triangleElements.initialSlice9Positions;
+            newElem.slice9Indices = triangleElements.slice9Indices;
+            positions = newElem.positions.get(newElem.positions.count);
+            v = 0;
+        }
+        else {
+            positions = triangleElements.positions.get(triangleElements.positions.count);
+        }
+        // todo: i had trouble when just cloning the positions 
+        //	for now i just create the initialSlice9Positions by iterating the positions
+        var v = 0;
+        var init_positions;
+        if (init) {
+            init_positions = [];
+            init_positions.length = triangleElements.positions.count * 2;
+            while (v < triangleElements.positions.count * 2) {
+                init_positions[v] = positions[v++];
+                init_positions[v] = positions[v++];
+            }
+            triangleElements.initialSlice9Positions = init_positions;
+        }
+        else {
+            init_positions = triangleElements.initialSlice9Positions;
+        }
+        var slice9Indices = triangleElements.slice9Indices;
+        var s = 0;
+        v = 0;
+        var slice9Offsets_x = [];
+        slice9Offsets_x.length = 3;
+        var slice9Offsets_y = [];
+        slice9Offsets_y.length = 3;
+        slice9Offsets_x[0] = rect.x;
+        slice9Offsets_x[1] = rect.x + triangleElements.slice9offsets.x;
+        slice9Offsets_x[2] = rect.x + triangleElements.slice9offsets.x + innerWidth;
+        slice9Offsets_y[0] = rect.y;
+        slice9Offsets_y[1] = rect.y + triangleElements.slice9offsets.y;
+        slice9Offsets_y[2] = rect.y + triangleElements.slice9offsets.y + innerHeight;
+        //console.log("slice9Offsets_x",slice9Offsets_x);
+        //console.log("slice9Offsets_y",slice9Offsets_x);
+        var row_cnt = -1;
+        var col_cnt = 0;
+        var scalex = 0;
+        var scaley = 0;
+        var offsetx = 0;
+        var offsety = 0;
+        // iterating over the 9 chunks - keep in mind that we are constructing a 3x3 grid:
+        for (s = 0; s < s_len; s++) {
+            // keep track of column and row index
+            if (row_cnt == 2) {
+                col_cnt++;
+                row_cnt = -1;
+            }
+            row_cnt++;
+            // only need to x-scale if this is the middle column
+            // if the innerWidth<=0 we can skip this complete column
+            scalex = 1;
+            if (col_cnt == 1) {
+                if (innerWidth <= 0) {
+                    innerWidth = 0;
+                }
+                scalex = innerWidth;
+            }
+            // only need to y-scale if this is the middle row
+            // if the innerHeight<=0 we can skip this complete row
+            scaley = 1;
+            if (row_cnt == 1) {
+                if (innerHeight <= 0) {
+                    innerHeight = 0;
+                }
+                scaley = innerHeight;
+            }
+            // offsetx is different for each column
+            offsetx = slice9Offsets_x[col_cnt];
+            // offsety is different for each row
+            offsety = slice9Offsets_y[row_cnt];
+            // iterate the verts and apply the translation / scale
+            while (v < slice9Indices[s]) {
+                positions[v] = offsetx + (init_positions[v++] * scalex);
+                positions[v] = offsety + (init_positions[v++] * scaley);
+            }
+        }
+        //console.log("positions",positions);
+        if (copy) {
+            newElem.positions.invalidate();
+            return newElem;
+        }
+        triangleElements.positions.invalidate();
+        return triangleElements;
+    };
     return ElementsUtils;
 }());
 ElementsUtils.tempFloat32x4 = new Float32Array(4);
@@ -14996,6 +15220,8 @@ var TriangleElements = (function (_super) {
         // 	return pickingCollider.testTriangleCollision(this, material, pickingCollision, count || this._numVertices, offset);
         // }
     }
+    TriangleElements.prototype.updateSlice9 = function (width, height) {
+    };
     Object.defineProperty(TriangleElements.prototype, "assetType", {
         get: function () {
             return TriangleElements.assetType;
@@ -15421,6 +15647,12 @@ var TriangleElements = (function (_super) {
         //return auto derives to cloned values
         elements.autoDeriveNormals = this._autoDeriveNormals = autoDeriveNormals;
         elements.autoDeriveTangents = this._autoDeriveTangents = autoDeriveTangents;
+        if (this.slice9Indices) {
+            elements.originalSlice9Size = this.originalSlice9Size;
+            elements.slice9offsets = this.slice9offsets;
+            elements.slice9Indices = this.slice9Indices;
+            elements.initialSlice9Positions = this.initialSlice9Positions;
+        }
     };
     /**
      * Clones the current object
@@ -15524,6 +15756,180 @@ GraphicsPathCommand.WIDE_MOVE_TO = 5;
 GraphicsPathCommand.CUBIC_CURVE = 6;
 
 /**
+ *
+ */
+var SamplerBase = (function (_super) {
+    __extends(SamplerBase, _super);
+    /**
+     *
+     */
+    function SamplerBase(smooth, mipmap) {
+        if (smooth === void 0) { smooth = false; }
+        if (mipmap === void 0) { mipmap = false; }
+        var _this = _super.call(this) || this;
+        _this._smooth = smooth;
+        _this._mipmap = mipmap;
+        return _this;
+    }
+    Object.defineProperty(SamplerBase.prototype, "smooth", {
+        /**
+         *
+         */
+        get: function () {
+            return this._smooth;
+        },
+        set: function (value) {
+            if (this._smooth == value)
+                return;
+            this._smooth = value;
+            //TODO: update dependencies
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SamplerBase.prototype, "mipmap", {
+        /**
+         *
+         */
+        get: function () {
+            return this._mipmap;
+        },
+        set: function (value) {
+            if (this._mipmap == value)
+                return;
+            this._mipmap = value;
+            //TODO: update dependencies
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return SamplerBase;
+}(_awayjs_core.AssetBase));
+
+/**
+ * The Sampler2D export class represents display objects that represent bitmap images.
+ * These can be images that you load with the <code>flash.Assets</code> or
+ * <code>flash.display.Loader</code> classes, or they can be images that you
+ * create with the <code>Sampler2D()</code> constructor.
+ *
+ * <p>The <code>Sampler2D()</code> constructor allows you to create a Sampler2D
+ * object that contains a reference to a Image2D object. After you create a
+ * Sampler2D object, use the <code>addChild()</code> or <code>addChildAt()</code>
+ * method of the parent DisplayObjectContainer instance to place the bitmap on
+ * the display list.</p>
+ *
+ * <p>A Sampler2D object can share its Image2D reference among several Sampler2D
+ * objects, independent of translation or rotation properties. Because you can
+ * create multiple Sampler2D objects that reference the same Image2D object,
+ * multiple texture objects can use the same complex Image2D object without
+ * incurring the memory overhead of a Image2D object for each texture
+ * object instance.</p>
+
+ */
+var Sampler2D = (function (_super) {
+    __extends(Sampler2D, _super);
+    /**
+     *
+     * @param image2D
+     * @param smoothing
+     */
+    function Sampler2D(repeat, smooth, mipmap) {
+        if (repeat === void 0) { repeat = false; }
+        if (smooth === void 0) { smooth = false; }
+        if (mipmap === void 0) { mipmap = false; }
+        var _this = _super.call(this, smooth, mipmap) || this;
+        _this._repeat = repeat;
+        _this._updateRect();
+        return _this;
+    }
+    Object.defineProperty(Sampler2D.prototype, "assetType", {
+        /**
+         *
+         * @returns {string}
+         */
+        get: function () {
+            return Sampler2D.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Sampler2D.prototype, "repeat", {
+        /**
+         * Controls whether or not the Sampler2D object is snapped to the nearest pixel.
+         * This value is ignored in the native and HTML5 targets.
+         * The PixelSnapping export class includes possible values:
+         * <ul>
+         *   <li><code>PixelSnapping.NEVER</code> - No pixel snapping occurs.</li>
+         *   <li><code>PixelSnapping.ALWAYS</code> - The image is always snapped to
+         * the nearest pixel, independent of transformation.</li>
+         *   <li><code>PixelSnapping.AUTO</code> - The image is snapped to the
+         * nearest pixel if it is drawn with no rotation or skew and it is drawn at a
+         * scale factor of 99.9% to 100.1%. If these conditions are satisfied, the
+         * bitmap image is drawn at 100% scale, snapped to the nearest pixel.
+         * When targeting Flash Player, this value allows the image to be drawn as fast
+         * as possible using the internal vector renderer.</li>
+         * </ul>
+         */
+        //var pixelSnapping:PixelSnapping;
+        /**
+         * Controls whether or not the bitmap is smoothed when scaled. If
+         * <code>true</code>, the bitmap is smoothed when scaled. If
+         * <code>false</code>, the bitmap is not smoothed when scaled.
+         */
+        /**
+         *
+         */
+        get: function () {
+            return this._repeat;
+        },
+        set: function (value) {
+            if (this._repeat == value)
+                return;
+            this._repeat = value;
+            //TODO: update dependencies
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Sampler2D.prototype, "imageRect", {
+        /**
+         *
+         */
+        get: function () {
+            return this._imageRect;
+        },
+        set: function (value) {
+            if (this._imageRect == value)
+                return;
+            this._imageRect = value;
+            this._updateRect();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Sampler2D.prototype, "frameRect", {
+        /**
+         *
+         */
+        get: function () {
+            return this._frameRect;
+        },
+        set: function (value) {
+            if (this._frameRect == value)
+                return;
+            this._frameRect = value;
+            this._updateRect();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Sampler2D.prototype._updateRect = function () {
+    };
+    return Sampler2D;
+}(SamplerBase));
+Sampler2D.assetType = "[asset Sampler2D]";
+
+/**
  * The GraphicsPathWinding class provides values for the
  * <code>flash.display.GraphicsPath.winding</code> property and the
  * <code>flash.display.Graphics.drawPath()</code> method to determine the
@@ -15540,24 +15946,6 @@ var GraphicsPathWinding = (function () {
 }());
 GraphicsPathWinding.EVEN_ODD = "evenOdd";
 GraphicsPathWinding.NON_ZERO = "nonZero";
-
-var GraphicsFillStyle = (function () {
-    function GraphicsFillStyle(color, alpha) {
-        if (color === void 0) { color = 0xffffff; }
-        if (alpha === void 0) { alpha = 1; }
-        this.color = color;
-        this.alpha = alpha;
-    }
-    Object.defineProperty(GraphicsFillStyle.prototype, "data_type", {
-        get: function () {
-            return GraphicsFillStyle.data_type;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return GraphicsFillStyle;
-}());
-GraphicsFillStyle.data_type = "[graphicsdata FillStyle]";
 
 /**
  * The JointStyle class is an enumeration of constant values that specify the
@@ -16592,180 +16980,6 @@ var LineElements = (function (_super) {
 }(ElementsBase));
 LineElements.traverseName = TraverserBase.addRenderableName("applyLineShape");
 LineElements.assetType = "[asset LineElements]";
-
-/**
- *
- */
-var SamplerBase = (function (_super) {
-    __extends(SamplerBase, _super);
-    /**
-     *
-     */
-    function SamplerBase(smooth, mipmap) {
-        if (smooth === void 0) { smooth = false; }
-        if (mipmap === void 0) { mipmap = false; }
-        var _this = _super.call(this) || this;
-        _this._smooth = smooth;
-        _this._mipmap = mipmap;
-        return _this;
-    }
-    Object.defineProperty(SamplerBase.prototype, "smooth", {
-        /**
-         *
-         */
-        get: function () {
-            return this._smooth;
-        },
-        set: function (value) {
-            if (this._smooth == value)
-                return;
-            this._smooth = value;
-            //TODO: update dependencies
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SamplerBase.prototype, "mipmap", {
-        /**
-         *
-         */
-        get: function () {
-            return this._mipmap;
-        },
-        set: function (value) {
-            if (this._mipmap == value)
-                return;
-            this._mipmap = value;
-            //TODO: update dependencies
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return SamplerBase;
-}(_awayjs_core.AssetBase));
-
-/**
- * The Sampler2D export class represents display objects that represent bitmap images.
- * These can be images that you load with the <code>flash.Assets</code> or
- * <code>flash.display.Loader</code> classes, or they can be images that you
- * create with the <code>Sampler2D()</code> constructor.
- *
- * <p>The <code>Sampler2D()</code> constructor allows you to create a Sampler2D
- * object that contains a reference to a Image2D object. After you create a
- * Sampler2D object, use the <code>addChild()</code> or <code>addChildAt()</code>
- * method of the parent DisplayObjectContainer instance to place the bitmap on
- * the display list.</p>
- *
- * <p>A Sampler2D object can share its Image2D reference among several Sampler2D
- * objects, independent of translation or rotation properties. Because you can
- * create multiple Sampler2D objects that reference the same Image2D object,
- * multiple texture objects can use the same complex Image2D object without
- * incurring the memory overhead of a Image2D object for each texture
- * object instance.</p>
-
- */
-var Sampler2D = (function (_super) {
-    __extends(Sampler2D, _super);
-    /**
-     *
-     * @param image2D
-     * @param smoothing
-     */
-    function Sampler2D(repeat, smooth, mipmap) {
-        if (repeat === void 0) { repeat = false; }
-        if (smooth === void 0) { smooth = false; }
-        if (mipmap === void 0) { mipmap = false; }
-        var _this = _super.call(this, smooth, mipmap) || this;
-        _this._repeat = repeat;
-        _this._updateRect();
-        return _this;
-    }
-    Object.defineProperty(Sampler2D.prototype, "assetType", {
-        /**
-         *
-         * @returns {string}
-         */
-        get: function () {
-            return Sampler2D.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sampler2D.prototype, "repeat", {
-        /**
-         * Controls whether or not the Sampler2D object is snapped to the nearest pixel.
-         * This value is ignored in the native and HTML5 targets.
-         * The PixelSnapping export class includes possible values:
-         * <ul>
-         *   <li><code>PixelSnapping.NEVER</code> - No pixel snapping occurs.</li>
-         *   <li><code>PixelSnapping.ALWAYS</code> - The image is always snapped to
-         * the nearest pixel, independent of transformation.</li>
-         *   <li><code>PixelSnapping.AUTO</code> - The image is snapped to the
-         * nearest pixel if it is drawn with no rotation or skew and it is drawn at a
-         * scale factor of 99.9% to 100.1%. If these conditions are satisfied, the
-         * bitmap image is drawn at 100% scale, snapped to the nearest pixel.
-         * When targeting Flash Player, this value allows the image to be drawn as fast
-         * as possible using the internal vector renderer.</li>
-         * </ul>
-         */
-        //var pixelSnapping:PixelSnapping;
-        /**
-         * Controls whether or not the bitmap is smoothed when scaled. If
-         * <code>true</code>, the bitmap is smoothed when scaled. If
-         * <code>false</code>, the bitmap is not smoothed when scaled.
-         */
-        /**
-         *
-         */
-        get: function () {
-            return this._repeat;
-        },
-        set: function (value) {
-            if (this._repeat == value)
-                return;
-            this._repeat = value;
-            //TODO: update dependencies
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sampler2D.prototype, "imageRect", {
-        /**
-         *
-         */
-        get: function () {
-            return this._imageRect;
-        },
-        set: function (value) {
-            if (this._imageRect == value)
-                return;
-            this._imageRect = value;
-            this._updateRect();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sampler2D.prototype, "frameRect", {
-        /**
-         *
-         */
-        get: function () {
-            return this._frameRect;
-        },
-        set: function (value) {
-            if (this._frameRect == value)
-                return;
-            this._frameRect = value;
-            this._updateRect();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Sampler2D.prototype._updateRect = function () {
-    };
-    return Sampler2D;
-}(SamplerBase));
-Sampler2D.assetType = "[asset Sampler2D]";
 
 var ImageBase = (function (_super) {
     __extends(ImageBase, _super);
@@ -19751,6 +19965,25 @@ var Graphics = (function (_super) {
         graphics.clear();
         Graphics._pool.push(graphics);
     };
+    Graphics.prototype.updateSlice9 = function (width, height) {
+        if (width < this.minSlice9Width) {
+            width = this.minSlice9Width;
+        }
+        if (height < this.minSlice9Height) {
+            height = this.minSlice9Height;
+        }
+        if (width == this.slice9Rectangle.width && height == this.slice9Rectangle.height) {
+            return;
+        }
+        this.slice9Rectangle.width = width; //+this.minSlice9Width;
+        this.slice9Rectangle.height = height; //+this.minSlice9Height;
+        this.slice9Rectangle.x = this.originalSlice9Size.x - ((width - this.originalSlice9Size.width) / 2);
+        this.slice9Rectangle.y = this.originalSlice9Size.y - ((height - this.originalSlice9Size.height) / 2);
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++) {
+            ElementsUtils.updateTriangleGraphicsSlice9(this._shapes[i].elements, this.slice9Rectangle);
+        }
+    };
     Object.defineProperty(Graphics.prototype, "assetType", {
         get: function () {
             return Graphics.assetType;
@@ -19913,6 +20146,14 @@ var Graphics = (function (_super) {
         graphics.style = this._style;
         graphics.particles = this.particles;
         graphics.numParticles = this.numParticles;
+        if (this.slice9Rectangle) {
+            graphics.slice9Rectangle = new _awayjs_core.Rectangle();
+            graphics.slice9Rectangle.copyFrom(this.slice9Rectangle);
+            graphics.originalSlice9Size = new _awayjs_core.Rectangle();
+            graphics.originalSlice9Size.copyFrom(this.originalSlice9Size);
+            graphics.minSlice9Width = this.minSlice9Width;
+            graphics.minSlice9Height = this.minSlice9Height;
+        }
         graphics._addShapes(this._shapes);
         if (this._animator)
             graphics.animator = this._animator.clone();
@@ -20235,7 +20476,8 @@ var Graphics = (function (_super) {
         // start a new fill path
         this._active_fill_path = new GraphicsPath();
         // todo: create gradient fill style
-        this._active_fill_path.style = new GraphicsFillStyle(colors[0], alphas[0]);
+        this._active_fill_path.style = new GraphicsFillStyle(colors[0], alphas[0]); //, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+        //this._active_fill_path.style=new GradientFillStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
@@ -21110,6 +21352,13 @@ var Graphics = (function (_super) {
         var len = shapes.length;
         for (var i = 0; i < len; i++) {
             shape = shapes[i];
+            if (this.slice9Rectangle) {
+                // todo: this is a dirty workaround to get the slice9-shapes cloned:
+                var new_shape = new Shape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, false, true));
+                new_shape.material = shape.material;
+                new_shape.style = shape.style;
+                shape = new_shape;
+            }
             shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
             shape.addEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
             shape.addEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
@@ -21128,6 +21377,9 @@ var Graphics = (function (_super) {
 }(_awayjs_core.AssetBase));
 Graphics._pool = new Array();
 Graphics.get_material_for_color = function (color, alpha) {
+    return DefaultMaterialManager.getDefaultMaterial();
+};
+Graphics.get_material_for_gradient = function (gradient) {
     return DefaultMaterialManager.getDefaultMaterial();
 };
 Graphics.assetType = "[asset Graphics]";
@@ -21414,8 +21666,33 @@ var GraphicsFactoryFills = (function () {
                 elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
                 //elements.setCustomAttributes("curves", new Float3Attributes(attributesBuffer));
                 //elements.setUVs(new Float2Attributes(attributesBuffer));
-                var material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
-                targetGraphics.addShape(Shape.getShape(elements, material));
+                var sampler;
+                var style;
+                var material;
+                if (targetGraphics.queued_fill_pathes[cp].style.data_type == GraphicsFillStyle.data_type) {
+                    material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
+                }
+                else if (targetGraphics.queued_fill_pathes[cp].style.data_type == GradientFillStyle.data_type) {
+                    var gradientStyle = targetGraphics.queued_fill_pathes[cp].style;
+                    material = Graphics.get_material_for_gradient(gradientStyle);
+                    style = new Style();
+                    sampler = new Sampler2D();
+                    style.addSamplerAt(sampler, material.getTextureAt(0));
+                    material.animateUVs = true;
+                    style.uvMatrix = gradientStyle.getUVMatrix();
+                    if (gradientStyle.type == GradientType.LINEAR) {
+                    }
+                    else if (gradientStyle.type == GradientType.RADIAL) {
+                        sampler.imageRect = gradientStyle.uvRectangle;
+                        material.imageRect = true;
+                    }
+                    style.uvMatrix = gradientStyle.getUVMatrix();
+                }
+                var shape = Shape.getShape(elements, material);
+                if (shape) {
+                    shape.style = style;
+                }
+                targetGraphics.addShape(shape);
             }
         }
         targetGraphics.queued_fill_pathes.length = 0;
