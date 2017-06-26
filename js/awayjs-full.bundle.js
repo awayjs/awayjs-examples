@@ -46124,7 +46124,7 @@ var GL_BillboardRenderable = (function (_super) {
             elements.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
             elements.setNormals(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
             elements.setTangents(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
-            elements.setUVs(Array(0, 0, 1, 0, 1, 1, 0, 1));
+            elements.setUVs(Array(0, 1, 1, 1, 1, 0, 0, 0));
         }
         else {
             elements.setPositions(Array(-billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, height - billboardRect.y, 0, width - billboardRect.x, -billboardRect.y, 0, -billboardRect.x, -billboardRect.y, 0));
