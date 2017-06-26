@@ -69067,7 +69067,8 @@ var AWDParser = (function (_super) {
         new_timeline.init();
         var sceneID = 0;
         var fps = 25;
-        this.parseProperties(AWDParser.movieClipProperties);
+        var props = this.parseProperties(AWDParser.movieClipProperties);
+        new_mc.isSlice9ScaledMC = props.get(4, false);
         this.parseUserAttributes();
         this._pFinalizeAsset(new_mc, name);
         this._blocks[blockID].data = new_mc;
@@ -69095,6 +69096,7 @@ var AWDParser = (function (_super) {
             var sm_len, sm_end;
             var w_indices;
             var weights;
+            var slice9Indices;
             target_start_idx = 0;
             target_vert_cnt = 0;
             element_type = ElementType.STANDART_STREAMS;
@@ -69209,6 +69211,34 @@ var AWDParser = (function (_super) {
                     var curveData = new _awayjs_core.ByteArray(str_len);
                     this._newBlockBytes.readBytes(curveData, 0, str_len);
                 }
+                else if (str_type == 23) {
+                    slice9Indices = [];
+                    var cnt = 0;
+                    var cnt2 = 0;
+                    graphics.slice9Rectangle = new _awayjs_core.Rectangle();
+                    graphics.originalSlice9Size = new _awayjs_core.Rectangle();
+                    while (this._newBlockBytes.position < str_end) {
+                        if (cnt == 0)
+                            graphics.slice9Rectangle.x = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 1)
+                            graphics.slice9Rectangle.y = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 2)
+                            graphics.slice9Rectangle.width = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 3)
+                            graphics.slice9Rectangle.height = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 4)
+                            graphics.originalSlice9Size.x = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 5)
+                            graphics.originalSlice9Size.y = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 6)
+                            graphics.originalSlice9Size.width = (this._newBlockBytes.readInt() / 20);
+                        else if (cnt == 7)
+                            graphics.originalSlice9Size.height = (this._newBlockBytes.readInt() / 20);
+                        else
+                            slice9Indices[cnt2++] = this._newBlockBytes.readInt();
+                        cnt++;
+                    }
+                }
                 else {
                     console.log("skipping unknown subgeom stream");
                     this._newBlockBytes.position = str_end;
@@ -69220,15 +69250,37 @@ var AWDParser = (function (_super) {
                 var vertexBuffer = new _awayjs_core.AttributesBuffer(attr_count, str_len / attr_count);
                 vertexBuffer.bufferView = new Uint8Array(curveData.arraybytes);
                 var curve_elements = new _awayjs_graphics.TriangleElements(vertexBuffer);
-                curve_elements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
-                if (attr_count == 20) {
-                    curve_elements.setCustomAttributes("curves", new _awayjs_core.Float3Attributes(vertexBuffer));
+                if (graphics.slice9Rectangle) {
+                    curve_elements.slice9Indices = slice9Indices;
+                    curve_elements.slice9offsets = new _awayjs_core.Rectangle();
+                    curve_elements.slice9offsets.copyFrom(graphics.slice9Rectangle);
+                    graphics.minSlice9Width = curve_elements.slice9offsets.x + curve_elements.slice9offsets.width;
+                    graphics.minSlice9Height = curve_elements.slice9offsets.y + curve_elements.slice9offsets.height;
+                    /*graphics.originalSlice9Size.x-=graphics.minSlice9Width/2;
+                    graphics.originalSlice9Size.y-=graphics.minSlice9Height/2;
+
+
+                    graphics.originalSlice9Size.width+=graphics.minSlice9Width;
+                    graphics.originalSlice9Size.height+=graphics.minSlice9Height;*/
+                    curve_elements.originalSlice9Size = new _awayjs_core.Rectangle();
+                    curve_elements.originalSlice9Size.copyFrom(graphics.originalSlice9Size);
+                    // set the slice9Rectangle of the graphics to represent the original size
+                    // as long as graphics.slice9Rectangle==graphics.originalSlice9Size, the elements should be in correct size
+                    graphics.slice9Rectangle.copyFrom(graphics.originalSlice9Size);
+                    curve_elements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
+                    _awayjs_graphics.ElementsUtils.updateTriangleGraphicsSlice9(curve_elements, curve_elements.originalSlice9Size, true);
                 }
-                else if (attr_count == 12) {
-                    curve_elements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(vertexBuffer, false));
+                else {
+                    curve_elements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
+                    if (attr_count == 20) {
+                        curve_elements.setCustomAttributes("curves", new _awayjs_core.Float3Attributes(vertexBuffer));
+                    }
+                    else if (attr_count == 12) {
+                        curve_elements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(vertexBuffer, false));
+                    }
+                    if (attr_count == 28)
+                        curve_elements.setUVs(new _awayjs_core.Float2Attributes(vertexBuffer));
                 }
-                if (attr_count == 28)
-                    curve_elements.setUVs(new _awayjs_core.Float2Attributes(vertexBuffer));
                 graphics.addShape(new _awayjs_graphics.Shape(curve_elements));
                 if (this._debug)
                     console.log("Parsed a TriangleElements with curves");
@@ -70650,8 +70702,9 @@ AWDParser.spriteLibraryProperties = {
 AWDParser.movieClipProperties = {
     1: AWDParser.FLOAT32,
     2: AWDParser.UINT16,
-    3: AWDParser.UINT8
-}; // scripting-language right now its always as2
+    3: AWDParser.UINT8,
+    4: AWDParser.UINT8 // isScale9SliceMC
+};
 AWDParser.graphicsProperties = {
     1: AWDParser.GEO_NUMBER,
     2: AWDParser.GEO_NUMBER
