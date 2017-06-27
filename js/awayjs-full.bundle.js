@@ -13719,6 +13719,7 @@ var GradientFillStyle = (function (_super) {
         _this.alphas = alphas;
         _this.ratios = ratios;
         _this.matrix = matrix;
+        _this.type = type;
         _this.uvRectangle = new _awayjs_core.Rectangle();
         _this.ratio_min = _this.ratios[0];
         _this.ratio_max = _this.ratios[_this.ratios.length - 1];
@@ -13741,51 +13742,97 @@ var GradientFillStyle = (function (_super) {
         return _this;
     }
     GradientFillStyle.prototype.getUVMatrix = function () {
-        // todo manipulate this.matrix so it works correct for the uvRectangle
+        if (!this.matrix) {
+            this.matrix = new _awayjs_core.Matrix();
+        }
+        // console.log(this.uvRectangle);
+        // console.log(this.matrix);
+        // todo: this is ported from exporter-cpp code
+        // probably a lot to optimize here
+        var projection_width = 1638.4;
+        var projection_height = 1638.4;
+        var projection_width_half = projection_width * 0.5;
+        var projection_height_half = projection_height * 0.5;
+        //	Get and invert the uv transform:
+        var a = this.matrix.a;
+        var b = this.matrix.b;
+        var c = this.matrix.c;
+        var d = this.matrix.d;
+        var tx = this.matrix.tx;
+        var ty = this.matrix.ty;
+        var a_inv = d / (a * d - b * c);
+        var b_inv = -b / (a * d - b * c);
+        var c_inv = -c / (a * d - b * c);
+        var d_inv = a / (a * d - b * c);
+        var tx_inv = (c * ty - d * tx) / (a * d - b * c);
+        var ty_inv = -(a * ty - b * tx) / (a * d - b * c);
+        var a_out = (a_inv / projection_width) * (1 - (1 / 256));
+        var b_out = 0; //(b_inv / projection_width)*(1-(1/256));
+        var c_out = (c_inv / projection_width) * (1 - (1 / 256));
+        var d_out = 0; //(d_inv / projection_width)*(1-(1/256));
+        var tx_out = (this.uvRectangle.x) + ((tx_inv + projection_width_half) / projection_width) * (1 - (1 / 256));
+        var ty_out = (this.uvRectangle.y); //+((ty_inv + projection_height_half)/projection_width)*(1-(1/256));
+        this.matrix = new _awayjs_core.Matrix(a_out, c_out, 0, 0, tx_out, ty_out);
+        if (this.type == GradientType.RADIAL) {
+            this.matrix = new _awayjs_core.Matrix(a_inv / projection_width_half, c_inv / projection_width_half, b_inv / projection_width_half, d_inv / projection_width_half, ((tx_inv + projection_width_half) / projection_width_half) - 1, ((ty_inv + projection_height_half) / projection_width_half) - 1);
+        }
         return this.matrix;
     };
     GradientFillStyle.prototype.getColorAtPosition = function (value) {
         var r1 = -1;
         var r2 = -1;
         if (value <= this.ratio_min) {
-            r1 = this.ratio_min;
-            r2 = this.ratio_min;
+            r1 = 0;
+            r2 = 0;
         }
         else if (value >= this.ratio_max) {
-            r1 = this.ratio_max;
-            r2 = this.ratio_max;
+            r1 = this.ratios.length - 1;
+            r2 = this.ratios.length - 1;
         }
         else {
             var r = 0;
             for (var r = 0; r < this.ratios.length - 1; r++) {
                 if (value == this.ratios[r]) {
-                    r1 = this.ratios[r];
-                    r2 = this.ratios[r];
+                    r1 = r;
+                    r2 = r;
+                    break;
                 }
                 else if (value == this.ratios[r + 1]) {
-                    r1 = this.ratios[r + 1];
-                    r2 = this.ratios[r + 1];
+                    r1 = r + 1;
+                    r2 = r + 1;
+                    break;
                 }
                 else if (value >= this.ratios[r] && value <= this.ratios[r + 1]) {
-                    r1 = this.ratios[r];
-                    r2 = this.ratios[r + 1];
+                    r1 = r;
+                    r2 = r + 1;
+                    break;
                 }
             }
         }
         if (r1 == r2) {
-            return _awayjs_core.ColorUtils.ARGBtoFloat32(this.alphas[r1], this.colors_r[r1], this.colors_g[r1], this.colors_b[r1]);
+            return [this.alphas[r1], this.colors_r[r1], this.colors_g[r1], this.colors_b[r1]];
         }
         var mix = (value - this.ratios[r1]) / (this.ratios[r2] - this.ratios[r1]);
         var mix_neg = 1 - mix;
-        var color_a = this.alphas[r1] * mix + this.alphas[r2] * mix_neg;
-        var color_r = this.colors_r[r1] * mix + this.colors_r[r2] * mix_neg;
-        var color_g = this.colors_g[r1] * mix + this.colors_g[r2] * mix_neg;
-        var color_b = this.colors_b[r1] * mix + this.colors_b[r2] * mix_neg;
-        return _awayjs_core.ColorUtils.ARGBtoFloat32(color_a, color_r, color_g, color_b);
+        var color_a = this.alphas[r2] * mix + this.alphas[r1] * mix_neg;
+        var color_r = this.colors_r[r2] * mix + this.colors_r[r1] * mix_neg;
+        var color_g = this.colors_g[r2] * mix + this.colors_g[r1] * mix_neg;
+        var color_b = this.colors_b[r2] * mix + this.colors_b[r1] * mix_neg;
+        return [color_a, color_r, color_g, color_b];
+    };
+    GradientFillStyle.prototype.toString = function () {
+        var str = "";
+        var c = this.colors.length;
+        var argb;
+        while (c > 0) {
+            c--;
+            str += this.colors[c] + "#" + this.alphas[c] + "#" + this.ratios[c] + "#";
+        }
+        return str;
     };
     Object.defineProperty(GradientFillStyle.prototype, "data_type", {
         get: function () {
-            return GraphicsFillStyle.data_type;
+            return GradientFillStyle.data_type;
         },
         enumerable: true,
         configurable: true
@@ -18102,7 +18149,24 @@ var BitmapImage2D = (function (_super) {
         this._imageData.data[index + 0] = argb[1];
         this._imageData.data[index + 1] = argb[2];
         this._imageData.data[index + 2] = argb[3];
-        this._imageData.data[index + 3] = 0xFF;
+        this._imageData.data[index + 3] = argb[0] * 0xFF;
+        /*console.log(argb[0]);
+        console.log(argb[1]);
+        console.log(argb[2]);
+        console.log(argb[3]);*/
+        if (!this._locked)
+            this._context.putImageData(this._imageData, 0, 0);
+        this.invalidate();
+    };
+    BitmapImage2D.prototype.setPixelFromArray = function (x, y, colors) {
+        if (!this._imageData)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var index = (x + y * this._imageData.width) * 4;
+        this._imageData.data[index + 0] = colors[1];
+        this._imageData.data[index + 1] = colors[2];
+        this._imageData.data[index + 2] = colors[3];
+        this._imageData.data[index + 3] = colors[0] * 0xff;
+        //console.log(colors[0], colors[1], colors[2], colors[3]);
         if (!this._locked)
             this._context.putImageData(this._imageData, 0, 0);
         this.invalidate();
@@ -20476,8 +20540,8 @@ var Graphics = (function (_super) {
         // start a new fill path
         this._active_fill_path = new GraphicsPath();
         // todo: create gradient fill style
-        this._active_fill_path.style = new GraphicsFillStyle(colors[0], alphas[0]); //, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-        //this._active_fill_path.style=new GradientFillStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+        //this._active_fill_path.style=new GraphicsFillStyle(colors[0], alphas[0]);//, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+        this._active_fill_path.style = new GradientFillStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
@@ -21671,28 +21735,23 @@ var GraphicsFactoryFills = (function () {
                 var material;
                 if (targetGraphics.queued_fill_pathes[cp].style.data_type == GraphicsFillStyle.data_type) {
                     material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
+                    targetGraphics.addShape(Shape.getShape(elements, material));
                 }
                 else if (targetGraphics.queued_fill_pathes[cp].style.data_type == GradientFillStyle.data_type) {
                     var gradientStyle = targetGraphics.queued_fill_pathes[cp].style;
-                    material = Graphics.get_material_for_gradient(gradientStyle);
-                    style = new Style();
+                    var obj = Graphics.get_material_for_gradient(gradientStyle);
+                    material = obj.material;
+                    var shape = targetGraphics.addShape(Shape.getShape(elements, material));
+                    shape.style = new Style();
                     sampler = new Sampler2D();
-                    style.addSamplerAt(sampler, material.getTextureAt(0));
+                    shape.style.addSamplerAt(sampler, material.getTextureAt(0));
                     material.animateUVs = true;
-                    style.uvMatrix = gradientStyle.getUVMatrix();
-                    if (gradientStyle.type == GradientType.LINEAR) {
-                    }
-                    else if (gradientStyle.type == GradientType.RADIAL) {
-                        sampler.imageRect = gradientStyle.uvRectangle;
-                        material.imageRect = true;
-                    }
-                    style.uvMatrix = gradientStyle.getUVMatrix();
+                    shape.style.uvMatrix = gradientStyle.getUVMatrix();
+                    // todo: always use mappingmode = Radial ?
+                    sampler.imageRect = gradientStyle.uvRectangle;
+                    material.imageRect = true;
+                    material.getTextureAt(0).mappingMode = exports.MappingMode.RADIAL;
                 }
-                var shape = Shape.getShape(elements, material);
-                if (shape) {
-                    shape.style = style;
-                }
-                targetGraphics.addShape(shape);
             }
         }
         targetGraphics.queued_fill_pathes.length = 0;
@@ -22140,6 +22199,131 @@ var SpecularImage2D = (function (_super) {
     return SpecularImage2D;
 }(Image2D));
 SpecularImage2D.assetType = "[asset SpecularImage2D]";
+
+/*import {IRenderable} from "../base/IRenderable";
+import {LineElements} from "../elements/LineElements";
+import {Sampler2D} from "../image/Sampler2D";
+import {BitmapImageCube} from "../image/BitmapImageCube";
+import {MaterialBase} from "../materials/MaterialBase";
+import {BasicMaterial} from "../materials/BasicMaterial";
+import {Single2DTexture} from "../textures/Single2DTexture";
+import {SingleCubeTexture} from "../textures/SingleCubeTexture";
+import {Shape} from "../base/Shape";
+*/
+var TextureAtlas = (function () {
+    function TextureAtlas() {
+        this.availableRows = 256;
+        this.gradient_row = -1;
+        this.color_row = 255;
+        this.color_position = 256;
+        this.availableGradients = 256;
+        this.availableColors = 0;
+        this.bitmap = new BitmapImage2D(256, 256, false, 0xff0000);
+        this.texture = new Single2DTexture(this.bitmap);
+        this.availableRows = 256;
+        this.availableColors = 0;
+    }
+    TextureAtlas.getTextureForColor = function (color, alpha) {
+        if (TextureAtlas._allColors.hasOwnProperty(color.toString())) {
+            var textObj = TextureAtlas._allColors[color.toString()];
+            return textObj.texture;
+        }
+        // find textureAtlas that has empty space:
+        var t_len = TextureAtlas._allTextureAtlas.length;
+        var t = 0;
+        var textureAtlas;
+        var argb;
+        for (t = 0; t < t_len; t++) {
+            if (TextureAtlas._allTextureAtlas[t].fit_color()) {
+                textureAtlas = TextureAtlas._allTextureAtlas[t];
+                break;
+            }
+        }
+        if (!textureAtlas) {
+            textureAtlas = new TextureAtlas();
+            TextureAtlas._allTextureAtlas.push(textureAtlas);
+        }
+        var newColorObj = {};
+        newColorObj.colorPos = textureAtlas.draw_color(color, alpha);
+        newColorObj.texture = textureAtlas.texture;
+        TextureAtlas._allColors[color.toString()] = newColorObj;
+        return newColorObj;
+    };
+    TextureAtlas.getTextureForGradient = function (gradient) {
+        var gradientStr = gradient.toString();
+        if (TextureAtlas._allGradients.hasOwnProperty(gradientStr)) {
+            gradient.uvRectangle = TextureAtlas._allGradients[gradientStr].uvRectangle;
+            return TextureAtlas._allGradients[gradientStr];
+        }
+        var t_len = TextureAtlas._allTextureAtlas.length;
+        var t = 0;
+        var textureAtlas;
+        var argb;
+        for (t = 0; t < t_len; t++) {
+            if (TextureAtlas._allTextureAtlas[t].fit_gradient()) {
+                textureAtlas = TextureAtlas._allTextureAtlas[t];
+                break;
+            }
+        }
+        if (!textureAtlas) {
+            textureAtlas = new TextureAtlas();
+            TextureAtlas._allTextureAtlas.push(textureAtlas);
+        }
+        var newColorObj = {};
+        textureAtlas.draw_gradient(gradient);
+        newColorObj.uvRectangle = new _awayjs_core.Rectangle();
+        newColorObj.uvRectangle.copyFrom(gradient.uvRectangle);
+        newColorObj.texture = textureAtlas.texture;
+        TextureAtlas._allGradients[gradientStr] = newColorObj;
+        return newColorObj;
+    };
+    TextureAtlas.prototype.fit_gradient = function () {
+        return (this.availableRows > 0);
+    };
+    TextureAtlas.prototype.fit_color = function () {
+        if (this.availableColors > 0)
+            return true;
+        return (this.availableRows > 0);
+    };
+    TextureAtlas.prototype.draw_gradient = function (gradient) {
+        if (this.availableRows < 0) {
+            console.log("error in TextureAtlasManager.draw_color");
+            return;
+        }
+        this.gradient_row++;
+        this.availableRows--;
+        var px;
+        for (px = 0; px < 256; px++) {
+            this.bitmap.setPixelFromArray(px, this.gradient_row, gradient.getColorAtPosition(px));
+        }
+        this.bitmap.invalidate();
+        gradient.uvRectangle.x = 1 / 512;
+        gradient.uvRectangle.y = 1 / 512 + (this.gradient_row / 256); //+1/512;
+        gradient.uvRectangle.width = 1 - 1 / 512;
+        gradient.uvRectangle.height = gradient.uvRectangle.y;
+        return this.availableRows;
+    };
+    TextureAtlas.prototype.draw_color = function (color, alpha) {
+        if (alpha === void 0) { alpha = 1; }
+        this.color_position--;
+        if (this.color_position < 0) {
+            if (this.availableRows > 0) {
+                this.color_row--;
+                this.availableRows--;
+                this.color_position = 255;
+            }
+            else {
+                console.log("error in TextureAtlasManager.draw_color");
+            }
+        }
+        this.bitmap.setPixel(this.color_position, this.color_row, color);
+        return new _awayjs_core.Point(this.color_position / 256, this.color_row / 256);
+    };
+    return TextureAtlas;
+}());
+TextureAtlas._allTextureAtlas = [];
+TextureAtlas._allGradients = {};
+TextureAtlas._allColors = {};
 
 /**
  * Image2DParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
@@ -22758,6 +22942,7 @@ exports.GraphicsFactoryFills = GraphicsFactoryFills;
 exports.GraphicsFactoryHelper = GraphicsFactoryHelper;
 exports.GraphicsFactoryStrokes = GraphicsFactoryStrokes;
 exports.GraphicsFillStyle = GraphicsFillStyle;
+exports.GradientFillStyle = GradientFillStyle;
 exports.GraphicsStrokeStyle = GraphicsStrokeStyle;
 exports.GraphicsPath = GraphicsPath;
 exports.GraphicsPathCommand = GraphicsPathCommand;
@@ -22793,6 +22978,7 @@ exports.SamplerBase = SamplerBase;
 exports.SamplerCube = SamplerCube;
 exports.SpecularImage2D = SpecularImage2D;
 exports.DefaultMaterialManager = DefaultMaterialManager;
+exports.TextureAtlas = TextureAtlas;
 exports.BasicMaterial = BasicMaterial;
 exports.MaterialBase = MaterialBase;
 exports.Image2DParser = Image2DParser;
