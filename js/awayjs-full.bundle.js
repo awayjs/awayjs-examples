@@ -65599,6 +65599,19 @@ var MouseManager = (function () {
         this.onMouseWheelDelegate = function (event) { return _this.onMouseWheel(event); };
         this.onMouseOverDelegate = function (event) { return _this.onMouseOver(event); };
         this.onMouseOutDelegate = function (event) { return _this.onMouseOut(event); };
+        if (document) {
+            document.addEventListener("click", this.onClickDelegate);
+            document.addEventListener("dblclick", this.onDoubleClickDelegate);
+            document.addEventListener("touchstart", this.onMouseDownDelegate);
+            document.addEventListener("mousedown", this.onMouseDownDelegate);
+            document.addEventListener("touchmove", this.onMouseMoveDelegate);
+            document.addEventListener("mousemove", this.onMouseMoveDelegate);
+            document.addEventListener("mouseup", this.onMouseUpDelegate);
+            document.addEventListener("touchend", this.onMouseUpDelegate);
+            document.addEventListener("mousewheel", this.onMouseWheelDelegate);
+            document.addEventListener("mouseover", this.onMouseOverDelegate);
+            document.addEventListener("mouseout", this.onMouseOutDelegate);
+        }
     }
     MouseManager.getInstance = function () {
         if (this._instance)
@@ -65653,36 +65666,12 @@ var MouseManager = (function () {
     //			_viewCount = _childDepth;
     //		}
     MouseManager.prototype.registerView = function (view) {
-        if (view && view.htmlElement) {
-            view.htmlElement.addEventListener("click", this.onClickDelegate);
-            view.htmlElement.addEventListener("dblclick", this.onDoubleClickDelegate);
-            view.htmlElement.addEventListener("touchstart", this.onMouseDownDelegate);
-            view.htmlElement.addEventListener("mousedown", this.onMouseDownDelegate);
-            view.htmlElement.addEventListener("touchmove", this.onMouseMoveDelegate);
-            view.htmlElement.addEventListener("mousemove", this.onMouseMoveDelegate);
-            view.htmlElement.addEventListener("mouseup", this.onMouseUpDelegate);
-            view.htmlElement.addEventListener("touchend", this.onMouseUpDelegate);
-            view.htmlElement.addEventListener("mousewheel", this.onMouseWheelDelegate);
-            view.htmlElement.addEventListener("mouseover", this.onMouseOverDelegate);
-            view.htmlElement.addEventListener("mouseout", this.onMouseOutDelegate);
+        if (view)
             this._viewLookup.push(view);
-        }
     };
     MouseManager.prototype.unregisterView = function (view) {
-        if (view && view.htmlElement) {
-            view.htmlElement.removeEventListener("click", this.onClickDelegate);
-            view.htmlElement.removeEventListener("dblclick", this.onDoubleClickDelegate);
-            view.htmlElement.removeEventListener("touchstart", this.onMouseDownDelegate);
-            view.htmlElement.removeEventListener("mousedown", this.onMouseDownDelegate);
-            view.htmlElement.removeEventListener("touchmove", this.onMouseMoveDelegate);
-            view.htmlElement.removeEventListener("mousemove", this.onMouseMoveDelegate);
-            view.htmlElement.removeEventListener("touchend", this.onMouseUpDelegate);
-            view.htmlElement.removeEventListener("mouseup", this.onMouseUpDelegate);
-            view.htmlElement.removeEventListener("mousewheel", this.onMouseWheelDelegate);
-            view.htmlElement.removeEventListener("mouseover", this.onMouseOverDelegate);
-            view.htmlElement.removeEventListener("mouseout", this.onMouseOutDelegate);
+        if (view)
             this._viewLookup.slice(this._viewLookup.indexOf(view), 1);
-        }
     };
     MouseManager.prototype.addEventsForViewBinary = function (touchMessage, viewIdx) {
         if (viewIdx === void 0) { viewIdx = 0; }
@@ -65746,8 +65735,6 @@ var MouseManager = (function () {
                 }
             }
         }
-        // set the target in order to have a collision
-        newTouchEvent.target = this._viewLookup[viewIdx].htmlElement;
         //console.log("Touch ID:"+touchtype+" activeTouchID "+activeTouchID+" numTouches "+numTouches+" x"+x+" y"+y);
         /*
          public static final int ACTION_DOWN = 0;
@@ -65827,7 +65814,6 @@ var MouseManager = (function () {
             }
             
         }
-        newTouchEvent.target = this._viewLookup[viewIdx].htmlElement;
         if (touchtype == 0) {
             this.onMouseDown(newTouchEvent);
         }
@@ -65895,13 +65881,11 @@ var MouseManager = (function () {
             this.queueDispatch(this._mouseMove, this._mouseMoveEvent = event);
     };
     MouseManager.prototype.onMouseOut = function (event) {
-        this._iActiveDiv = null;
         this.updateColliders(event);
         if (this._iCollision)
             this.queueDispatch(this._mouseOut, event);
     };
     MouseManager.prototype.onMouseOver = function (event) {
-        this._iActiveDiv = event.target;
         this.updateColliders(event);
         if (this._iCollision)
             this.queueDispatch(this._mouseOver, event);
@@ -65918,7 +65902,6 @@ var MouseManager = (function () {
     };
     MouseManager.prototype.onMouseDown = function (event) {
         event.preventDefault();
-        this._iActiveDiv = event.target;
         this.updateColliders(event);
         if (this._iCollision)
             this.queueDispatch(this._mouseDown, event);
@@ -65936,31 +65919,29 @@ var MouseManager = (function () {
     };
     MouseManager.prototype.updateColliders = function (event) {
         var view;
-        var bounds;
         var mouseX = (event.clientX != null) ? event.clientX : event.changedTouches[0].clientX;
         var mouseY = (event.clientY != null) ? event.clientY : event.changedTouches[0].clientY;
         var len = this._viewLookup.length;
         for (var i = 0; i < len; i++) {
             view = this._viewLookup[i];
             view._pTouchPoints.length = 0;
-            bounds = view.htmlElement.getBoundingClientRect();
             if (event.touches) {
                 var touch;
                 var len = event.touches.length;
                 for (var i = 0; i < len; i++) {
                     touch = event.touches[i];
-                    view._pTouchPoints.push(new _awayjs_scene.TouchPoint(touch.clientX + bounds.left, touch.clientY + bounds.top, touch.identifier));
+                    view._pTouchPoints.push(new _awayjs_scene.TouchPoint(touch.clientX + view.x, touch.clientY + view.y, touch.identifier));
                 }
             }
             if (this._iUpdateDirty)
                 continue;
-            if (mouseX < bounds.left || mouseX > bounds.right || mouseY < bounds.top || mouseY > bounds.bottom) {
+            if (mouseX < view.x || mouseX > view.x + view.width || mouseY < view.y || mouseY > view.y + view.height) {
                 view._pMouseX = null;
                 view._pMouseY = null;
             }
             else {
-                view._pMouseX = mouseX + bounds.left;
-                view._pMouseY = mouseY + bounds.top;
+                view._pMouseX = mouseX + view.x;
+                view._pMouseY = mouseY + view.y;
                 view.updateCollider();
                 if (view.layeredView && this._iCollision)
                     break;
@@ -65969,180 +65950,6 @@ var MouseManager = (function () {
         this._iUpdateDirty = true;
     };
     return MouseManager;
-}());
-
-var TouchManager = (function () {
-    function TouchManager() {
-        var _this = this;
-        this._updateDirty = true;
-        this._nullVector = new _awayjs_core.Vector3D();
-        this._queuedEvents = new Array();
-        this._touchOut = new _awayjs_scene.TouchEvent(_awayjs_scene.TouchEvent.TOUCH_OUT);
-        this._touchBegin = new _awayjs_scene.TouchEvent(_awayjs_scene.TouchEvent.TOUCH_BEGIN);
-        this._touchMove = new _awayjs_scene.TouchEvent(_awayjs_scene.TouchEvent.TOUCH_MOVE);
-        this._touchEnd = new _awayjs_scene.TouchEvent(_awayjs_scene.TouchEvent.TOUCH_END);
-        this._touchOver = new _awayjs_scene.TouchEvent(_awayjs_scene.TouchEvent.TOUCH_OVER);
-        this._touchPoints = new Array();
-        this._touchPointFromId = new Object();
-        TouchManager._iCollisionFromTouchId = new Object();
-        TouchManager._previousCollidingObjectFromTouchId = new Object();
-        this.onTouchBeginDelegate = function (event) { return _this.onTouchBegin(event); };
-        this.onTouchMoveDelegate = function (event) { return _this.onTouchMove(event); };
-        this.onTouchEndDelegate = function (event) { return _this.onTouchEnd(event); };
-    }
-    TouchManager.getInstance = function () {
-        if (this._instance)
-            return this._instance;
-        return (this._instance = new TouchManager());
-    };
-    // ---------------------------------------------------------------------
-    // Interface.
-    // ---------------------------------------------------------------------
-    TouchManager.prototype.updateCollider = function (forceTouchMove) {
-        //if (forceTouchMove || this._updateDirty) { // If forceTouchMove is off, and no 2D Touch events dirty the update, don't update either.
-        //	for (var i:number; i < this._numTouchPoints; ++i) {
-        //		this._touchPoint = this._touchPoints[ i ];
-        //		this._iCollision = this._touchPicker.getViewCollision(this._touchPoint.x, this._touchPoint.y, this._view);
-        //		TouchManager._iCollisionFromTouchId[ this._touchPoint.id ] = this._iCollision;
-        //	}
-        //}
-    };
-    TouchManager.prototype.fireTouchEvents = function (forceTouchMove) {
-        var i;
-        for (i = 0; i < this._numTouchPoints; ++i) {
-            this._touchPoint = this._touchPoints[i];
-            // If colliding object has changed, queue over/out events.
-            this._iCollision = TouchManager._iCollisionFromTouchId[this._touchPoint.id];
-            this._previousCollidingObject = TouchManager._previousCollidingObjectFromTouchId[this._touchPoint.id];
-            if (this._iCollision != this._previousCollidingObject) {
-                if (this._previousCollidingObject)
-                    this.queueDispatch(this._touchOut, this._touchMoveEvent, this._previousCollidingObject, this._touchPoint);
-                if (this._iCollision)
-                    this.queueDispatch(this._touchOver, this._touchMoveEvent, this._iCollision, this._touchPoint);
-            }
-            // Fire Touch move events here if forceTouchMove is on.
-            if (forceTouchMove && this._iCollision)
-                this.queueDispatch(this._touchMove, this._touchMoveEvent, this._iCollision, this._touchPoint);
-        }
-        var event;
-        var dispatcher;
-        // Dispatch all queued events.
-        var len = this._queuedEvents.length;
-        for (i = 0; i < len; ++i) {
-            // Only dispatch from first implicitly enabled object ( one that is not a child of a TouchChildren = false hierarchy ).
-            event = this._queuedEvents[i];
-            dispatcher = event.entity;
-            while (dispatcher && !dispatcher._iIsMouseEnabled())
-                dispatcher = dispatcher.parent;
-            if (dispatcher)
-                dispatcher.dispatchEvent(event);
-        }
-        this._queuedEvents.length = 0;
-        this._updateDirty = false;
-        for (i = 0; i < this._numTouchPoints; ++i) {
-            this._touchPoint = this._touchPoints[i];
-            TouchManager._previousCollidingObjectFromTouchId[this._touchPoint.id] = TouchManager._iCollisionFromTouchId[this._touchPoint.id];
-        }
-    };
-    TouchManager.prototype.registerView = function (view) {
-        view.htmlElement.addEventListener("touchstart", this.onTouchBeginDelegate);
-        view.htmlElement.addEventListener("touchmove", this.onTouchMoveDelegate);
-        view.htmlElement.addEventListener("touchend", this.onTouchEndDelegate);
-    };
-    TouchManager.prototype.unregisterView = function (view) {
-        view.htmlElement.removeEventListener("touchstart", this.onTouchBeginDelegate);
-        view.htmlElement.removeEventListener("touchmove", this.onTouchMoveDelegate);
-        view.htmlElement.removeEventListener("touchend", this.onTouchEndDelegate);
-    };
-    // ---------------------------------------------------------------------
-    // Private.
-    // ---------------------------------------------------------------------
-    TouchManager.prototype.queueDispatch = function (event, sourceEvent, collider, touch) {
-        // 2D properties.
-        event.ctrlKey = sourceEvent.ctrlKey;
-        event.altKey = sourceEvent.altKey;
-        event.shiftKey = sourceEvent.shiftKey;
-        event.screenX = touch.x;
-        event.screenY = touch.y;
-        event.touchPointID = touch.id;
-        // 3D properties.
-        if (collider) {
-            // Object.
-            event.entity = collider.entity;
-            event.renderable = collider.renderable;
-            // UV.
-            event.uv = collider.uv;
-            // Position.
-            event.position = collider.position ? collider.position.clone() : null;
-            // Normal.
-            event.normal = collider.normal ? collider.normal.clone() : null;
-            // ElementsIndex.
-            event.elementIndex = collider.elementIndex;
-        }
-        else {
-            // Set all to null.
-            event.uv = null;
-            event.entity = null;
-            event.position = this._nullVector;
-            event.normal = this._nullVector;
-            event.elementIndex = 0;
-        }
-        // Store event to be dispatched later.
-        this._queuedEvents.push(event);
-    };
-    // ---------------------------------------------------------------------
-    // Event handlers.
-    // ---------------------------------------------------------------------
-    TouchManager.prototype.onTouchBegin = function (event) {
-        var touch = new TouchPoint$1();
-        //touch.id = event.touchPointID;
-        //touch.x = event.stageX;
-        //touch.y = event.stageY;
-        this._numTouchPoints++;
-        this._touchPoints.push(touch);
-        this._touchPointFromId[touch.id] = touch;
-        //this.updateCollider(event); // ensures collision check is done with correct mouse coordinates on mobile
-        this._iCollision = TouchManager._iCollisionFromTouchId[touch.id];
-        if (this._iCollision)
-            this.queueDispatch(this._touchBegin, event, this._iCollision, touch);
-        this._updateDirty = true;
-    };
-    TouchManager.prototype.onTouchMove = function (event) {
-        //var touch:TouchPoint = this._touchPointFromId[ event.touchPointID ];
-        //
-        //if (!touch) return;
-        //
-        ////touch.x = event.stageX;
-        ////touch.y = event.stageY;
-        //
-        //this._iCollision = TouchManager._iCollisionFromTouchId[ touch.id ];
-        //
-        //if (this._iCollision)
-        //	this.queueDispatch(this._touchMove, this._touchMoveEvent = event, this._iCollision, touch);
-        //
-        //this._updateDirty = true;
-    };
-    TouchManager.prototype.onTouchEnd = function (event) {
-        //var touch:TouchPoint = this._touchPointFromId[ event.touchPointID ];
-        //
-        //if (!touch) return;
-        //
-        //this._iCollision = TouchManager._iCollisionFromTouchId[ touch.id ];
-        //if (this._iCollision)
-        //	this.queueDispatch(this._touchEnd, event, this._iCollision, touch);
-        //
-        //this._touchPointFromId[ touch.id ] = null;
-        //this._numTouchPoints--;
-        //this._touchPoints.splice(this._touchPoints.indexOf(touch), 1);
-        //
-        //this._updateDirty = true;
-    };
-    return TouchManager;
-}());
-var TouchPoint$1 = (function () {
-    function TouchPoint$$1() {
-    }
-    return TouchPoint$$1;
 }());
 
 /*! *****************************************************************************
@@ -67409,9 +67216,6 @@ var View = (function () {
         if (scene === void 0) { scene = null; }
         if (camera === void 0) { camera = null; }
         var _this = this;
-        // Private
-        this._width = 0;
-        this._height = 0;
         this._time = 0;
         this._deltaTime = 0;
         this._backgroundColor = 0x000000;
@@ -67427,15 +67231,6 @@ var View = (function () {
         this.scene = scene || new _awayjs_scene.Scene();
         this.camera = camera || new _awayjs_scene.Camera();
         this.renderer = renderer || new _awayjs_renderer.DefaultRenderer();
-        //make sure document border is zero
-        if (typeof document !== "undefined") {
-            document.body.style.margin = "0px";
-            this._htmlElement = document.createElement("div");
-            this._htmlElement.style.position = "absolute";
-            this._htmlElement.style.left = "0px";
-            this._htmlElement.style.top = "0px";
-            document.body.appendChild(this._htmlElement);
-        }
         this._mouseManager = MouseManager.getInstance();
         this._mouseManager.registerView(this);
         //			if (this._shareContext)
@@ -67503,16 +67298,6 @@ var View = (function () {
         }
         return localTouchPoints;
     };
-    Object.defineProperty(View.prototype, "htmlElement", {
-        /**
-         *
-         */
-        get: function () {
-            return this._htmlElement;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(View.prototype, "renderer", {
         /**
          *
@@ -67524,6 +67309,9 @@ var View = (function () {
             if (this._pRenderer == value)
                 return;
             if (this._pRenderer) {
+                //swap the old renderer width and height to the new renderer
+                value.width = this._pRenderer.width;
+                value.height = this._pRenderer.height;
                 this._pRenderer.dispose();
                 this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
                 this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
@@ -67536,26 +67324,6 @@ var View = (function () {
             this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
             this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
             this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
-            this._pRenderer.width = this._width;
-            this._pRenderer.height = this._height;
-            this._pRenderer.shareContext = this._shareContext;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "shareContext", {
-        /**
-         *
-         */
-        get: function () {
-            return this._shareContext;
-        },
-        set: function (value) {
-            if (this._shareContext == value)
-                return;
-            this._shareContext = value;
-            if (this._pRenderer)
-                this._pRenderer.shareContext = this._shareContext;
         },
         enumerable: true,
         configurable: true
@@ -67671,23 +67439,10 @@ var View = (function () {
          *
          */
         get: function () {
-            return this._width;
+            return this._pRenderer.width;
         },
         set: function (value) {
-            if (this._width == value)
-                return;
-            if (this._shareContext) {
-                this._pRenderer.scissorRect.width = value;
-                //this._pRenderer.viewPort.width = value;
-                this._scissorDirty = true;
-                //this._viewportDirty = false;
-                return;
-            }
-            this._width = value;
             this._pRenderer.width = value;
-            if (this._htmlElement) {
-                this._htmlElement.style.width = value + "px";
-            }
         },
         enumerable: true,
         configurable: true
@@ -67697,23 +67452,10 @@ var View = (function () {
          *
          */
         get: function () {
-            return this._height;
+            return this._pRenderer.height;
         },
         set: function (value) {
-            if (this._height == value)
-                return;
-            if (this._shareContext) {
-                this._pRenderer.scissorRect.height = 100;
-                //this._pRenderer.viewPort.height = 100;
-                this._scissorDirty = true;
-                //this._viewportDirty = false;
-                return;
-            }
-            this._height = value;
             this._pRenderer.height = value;
-            if (this._htmlElement) {
-                this._htmlElement.style.height = value + "px";
-            }
         },
         enumerable: true,
         configurable: true
@@ -67744,19 +67486,7 @@ var View = (function () {
             return this._pRenderer.x;
         },
         set: function (value) {
-            if (this._pRenderer.x == value)
-                return;
             this._pRenderer.x = value;
-            if (this._shareContext) {
-                this._pRenderer.scissorRect.x = value;
-                //this._pRenderer.viewPort.x = value;
-                this._scissorDirty = true;
-                //this._viewportDirty = false;
-                return;
-            }
-            if (this._htmlElement) {
-                this._htmlElement.style.left = value + "px";
-            }
         },
         enumerable: true,
         configurable: true
@@ -67769,35 +67499,7 @@ var View = (function () {
             return this._pRenderer.y;
         },
         set: function (value) {
-            if (this._pRenderer.y == value)
-                return;
             this._pRenderer.y = value;
-            if (this._shareContext) {
-                this._pRenderer.scissorRect.y = value;
-                //this._pRenderer.viewPort.y = value;
-                this._scissorDirty = true;
-                //this._viewportDirty = false;
-                return;
-            }
-            if (this._htmlElement) {
-                this._htmlElement.style.top = value + "px";
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "visible", {
-        /**
-         *
-         */
-        get: function () {
-            return (this._htmlElement && this._htmlElement.style.visibility == "visible");
-        },
-        set: function (value) {
-            if (this._htmlElement) {
-                this._htmlElement.style.visibility = value ? "visible" : "hidden";
-            }
-            //TODO transfer visible property to associated context (if one exists)
         },
         enumerable: true,
         configurable: true
@@ -67829,8 +67531,8 @@ var View = (function () {
             this._pCamera.projection.setStageRect(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
         }
         // update picking
-        if (!this._shareContext && !this.disableMouseEvents) {
-            if (this.forceMouseMove && this._htmlElement == this._mouseManager._iActiveDiv && !this._mouseManager._iUpdateDirty)
+        if (!this.disableMouseEvents) {
+            if (this.forceMouseMove && !this._mouseManager._iUpdateDirty)
                 this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
             this._mouseManager.fireMouseEvents(this.forceMouseMove);
         }
@@ -67882,12 +67584,12 @@ var View = (function () {
     };
     View.prototype.project = function (point3d) {
         var v = this._pCamera.project(point3d);
-        v.x = v.x * this._pRenderer.viewPort.width / 2 + this._width * this._pCamera.projection.originX;
-        v.y = v.y * this._pRenderer.viewPort.height / 2 + this._height * this._pCamera.projection.originY;
+        v.x = v.x * this._pRenderer.viewPort.width / 2 + this._pRenderer.width * this._pCamera.projection.originX;
+        v.y = v.y * this._pRenderer.viewPort.height / 2 + this._pRenderer.height * this._pCamera.projection.originY;
         return v;
     };
     View.prototype.unproject = function (sX, sY, sZ) {
-        return this._pCamera.unproject((2 * sX - this._width) / this._pRenderer.viewPort.width, (2 * sY - this._height) / this._pRenderer.viewPort.height, sZ);
+        return this._pCamera.unproject((2 * sX - this._pRenderer.width) / this._pRenderer.viewPort.width, (2 * sY - this._pRenderer.height) / this._pRenderer.viewPort.height, sZ);
     };
     /*TODO: implement Background
      public get background():away.textures.Texture2DBase
@@ -67905,15 +67607,8 @@ var View = (function () {
     // TODO: required dependency stageGL
     View.prototype.updateCollider = function () {
         if (!this.disableMouseEvents) {
-            if (!this._shareContext) {
-                if (this._htmlElement == this._mouseManager._iActiveDiv)
-                    this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-            }
-            else {
-                var collidingObject = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-                if (this.layeredView || this._mouseManager._iCollision == null || collidingObject.rayEntryDistance < this._mouseManager._iCollision.rayEntryDistance)
-                    this._mouseManager._iCollision = collidingObject;
-            }
+            // if (!this._pRenderer.shareContext) {
+            this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
         }
     };
     View.prototype.getViewCollision = function (x, y, view) {
@@ -67936,7 +67631,6 @@ var View = (function () {
 }());
 
 exports.MouseManager = MouseManager;
-exports.TouchManager = TouchManager;
 exports.BasicPartition = BasicPartition;
 exports.CameraNode = CameraNode;
 exports.DisplayObjectNode = DisplayObjectNode;
