@@ -31100,6 +31100,7 @@ var TextField = (function (_super) {
             this._autoSize = value;
             //console.log("set autoSize", value);
             this._positionsDirty = true;
+            this.reConstruct();
         },
         enumerable: true,
         configurable: true
@@ -31109,7 +31110,9 @@ var TextField = (function (_super) {
         this._pBoxBounds.bottom = this._textHeight;
         this._pBoxBounds.top = 0;
         this._pBoxBounds.right = this._textWidth;
-        this._pBoxBounds.top = 0;
+        this._pBoxBounds.left = 0;
+        this._pBoxBounds.width = this._textWidth;
+        this._pBoxBounds.height = this._textHeight;
         //this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
     };
     TextField.prototype.getBox = function (targetCoordinateSpace) {
@@ -31612,6 +31615,7 @@ var TextField = (function (_super) {
             lineWordEndIndices.length = 1;
             lineLength.length = 1;
             numSpacesPerline.length = 1;
+            var line_width = 0;
             w_len = this._textRuns_words[(tr * 4)] + (this._textRuns_words[(tr * 4) + 1] * 5);
             tr_length = this._textRuns_words[(tr * 4) + 2];
             //console.log(this._textFieldWidth, tr_length, maxLineWidth);
@@ -31688,23 +31692,26 @@ var TextField = (function (_super) {
                 else if (format.align == "right") {
                     offsetx += lineSpaceLeft;
                 }
+                line_width = 0;
+                line_width += format.leftMargin + format.indent + format.rightMargin;
                 for (w = start_idx; w < end_idx; w += 5) {
                     this.words[w + 1] = offsetx;
                     this.words[w + 2] = offsety;
                     offsetx += this.words[w + 3];
+                    line_width += this.words[w + 3];
                     if (format.align == "justify" && this.chars_codes[this.words[w]] == 32) {
                         // this is whitepace, we need to add extra space for justified text
                         offsetx += additionalWhiteSpace;
                     }
                 }
                 offsety += format.font_table.getLineHeight() + format.leading;
-                if (offsetx > text_width) {
-                    text_width = offsetx;
+                if (line_width > text_width) {
+                    text_width = line_width;
                 }
             }
         }
         // -2 so this values do not include the left and top border
-        this._textWidth = text_width - 2;
+        this._textWidth = text_width;
         this._textHeight = offsety - 1;
         if (this._autoSize == TextFieldAutoSize.NONE || this._wordWrap) {
             this._textWidth = this._textFieldWidth - 4;
