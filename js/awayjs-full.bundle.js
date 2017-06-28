@@ -36751,56 +36751,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -43878,7 +43832,6 @@ var RendererBase = (function (_super) {
         _this._numUsedStreams = 0;
         _this._numUsedTextures = 0;
         _this._cameraForward = new _awayjs_core.Vector3D();
-        _this._viewPort = new _awayjs_core.Rectangle();
         _this._pBackBufferInvalid = true;
         _this._pDepthTextureInvalid = true;
         _this._depthPrepass = false;
@@ -43886,10 +43839,13 @@ var RendererBase = (function (_super) {
         _this._backgroundG = 0;
         _this._backgroundB = 0;
         _this._backgroundAlpha = 1;
+        // only used by renderers that need to render geometry to textures
+        _this._width = 0;
+        _this._height = 0;
         _this.textureRatioX = 1;
         _this.textureRatioY = 1;
-        _this._localPos = new _awayjs_core.Point();
-        _this._globalPos = new _awayjs_core.Point();
+        _this._x = 0;
+        _this._y = 0;
         _this._pScissorRect = new _awayjs_core.Rectangle();
         _this._pNumElements = 0;
         _this._disableColor = false;
@@ -43960,7 +43916,7 @@ var RendererBase = (function (_super) {
          * A viewPort rectangle equivalent of the Stage size and position.
          */
         get: function () {
-            return this._viewPort;
+            return this._pStage.viewPort;
         },
         enumerable: true,
         configurable: true
@@ -43970,6 +43926,17 @@ var RendererBase = (function (_super) {
          * A scissor rectangle equivalent of the view size and position.
          */
         get: function () {
+            if (this._scissorDirty) {
+                this._scissorDirty = false;
+                if (this.shareContext) {
+                    this._pScissorRect.x = this._x - this._pStage.viewPort.x;
+                    this._pScissorRect.y = this._y - this._pStage.viewPort.y;
+                }
+                else {
+                    this._pScissorRect.x = 0;
+                    this._pScissorRect.y = 0;
+                }
+            }
             return this._pScissorRect;
         },
         enumerable: true,
@@ -43980,14 +43947,15 @@ var RendererBase = (function (_super) {
          *
          */
         get: function () {
-            return this._localPos.x;
+            return this._x;
         },
         set: function (value) {
-            if (this.x == value)
+            if (this._x == value)
                 return;
-            this._pStage.x = value;
-            this._globalPos.x = this._localPos.x = value;
-            this.updateGlobalPos();
+            this._x = value;
+            if (!this.shareContext)
+                this._pStage.x = value;
+            this.notifyScissorUpdate();
         },
         enumerable: true,
         configurable: true
@@ -43997,14 +43965,15 @@ var RendererBase = (function (_super) {
          *
          */
         get: function () {
-            return this._localPos.y;
+            return this._y;
         },
         set: function (value) {
-            if (this.y == value)
+            if (this._y == value)
                 return;
-            this._pStage.y = value;
-            this._globalPos.y = this._localPos.y = value;
-            this.updateGlobalPos();
+            this._y = value;
+            if (!this.shareContext)
+                this._pStage.y = value;
+            this.notifyScissorUpdate();
         },
         enumerable: true,
         configurable: true
@@ -44023,8 +43992,10 @@ var RendererBase = (function (_super) {
             this._pScissorRect.width = value;
             if (this._pRttBufferManager)
                 this._pRttBufferManager.viewWidth = value;
-            this._pBackBufferInvalid = true;
-            this._pDepthTextureInvalid = true;
+            if (!this.shareContext) {
+                this._pBackBufferInvalid = true;
+                this._pDepthTextureInvalid = true;
+            }
             this.notifyScissorUpdate();
         },
         enumerable: true,
@@ -44044,8 +44015,10 @@ var RendererBase = (function (_super) {
             this._pScissorRect.height = value;
             if (this._pRttBufferManager)
                 this._pRttBufferManager.viewHeight = value;
-            this._pBackBufferInvalid = true;
-            this._pDepthTextureInvalid = true;
+            if (!this.shareContext) {
+                this._pBackBufferInvalid = true;
+                this._pDepthTextureInvalid = true;
+            }
             this.notifyScissorUpdate();
         },
         enumerable: true,
@@ -44166,8 +44139,6 @@ var RendererBase = (function (_super) {
          */
     };
     RendererBase.prototype.render = function (view) {
-        this._viewportDirty = false;
-        this._scissorDirty = false;
     };
     /**
      * Renders the potentially visible geometry to the back buffer or texture.
@@ -44447,9 +44418,6 @@ var RendererBase = (function (_super) {
      * @private
      */
     RendererBase.prototype.notifyViewportUpdate = function () {
-        if (this._viewportDirty)
-            return;
-        this._viewportDirty = true;
         if (!this._viewPortUpdated)
             this._viewPortUpdated = new RendererEvent(RendererEvent.VIEWPORT_UPDATED);
         this.dispatchEvent(this._viewPortUpdated);
@@ -44458,30 +44426,9 @@ var RendererBase = (function (_super) {
      *
      */
     RendererBase.prototype.onViewportUpdated = function (event) {
-        this._viewPort = this._pStage.viewPort;
-        //TODO stop firing viewport updated for every stagegl viewport change
-        if (this.shareContext) {
-            this._pScissorRect.x = this._globalPos.x - this._pStage.x;
-            this._pScissorRect.y = this._globalPos.y - this._pStage.y;
+        if (this.shareContext)
             this.notifyScissorUpdate();
-        }
         this.notifyViewportUpdate();
-    };
-    /**
-     *
-     */
-    RendererBase.prototype.updateGlobalPos = function () {
-        if (this.shareContext) {
-            this._pScissorRect.x = this._globalPos.x - this._viewPort.x;
-            this._pScissorRect.y = this._globalPos.y - this._viewPort.y;
-        }
-        else {
-            this._pScissorRect.x = 0;
-            this._pScissorRect.y = 0;
-            this._viewPort.x = this._globalPos.x;
-            this._viewPort.y = this._globalPos.y;
-        }
-        this.notifyScissorUpdate();
     };
     /**
      *
