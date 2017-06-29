@@ -14822,12 +14822,16 @@ var ElementsUtils = (function () {
             throw ("ElementUtils: Error - triangleElement does not provide valid slice9Indices!");
         }
         var s_len = triangleElements.slice9Indices.length;
-        var innerWidth = originalRect.width - triangleElements.slice9offsets.x / scaleX - triangleElements.slice9offsets.width / scaleX;
-        var innerHeight = originalRect.height - triangleElements.slice9offsets.y / scaleY - triangleElements.slice9offsets.height / scaleY;
-        if (innerWidth < 0)
+        var innerWidth = originalRect.width - (triangleElements.slice9offsets.x + triangleElements.slice9offsets.width) / scaleX;
+        var innerHeight = originalRect.height - (triangleElements.slice9offsets.y + triangleElements.slice9offsets.height) / scaleY;
+        if (innerWidth < 0) {
             innerWidth = 0;
-        if (innerHeight < 0)
+            scaleX = (triangleElements.slice9offsets.x + triangleElements.slice9offsets.width) / originalRect.width;
+        }
+        if (innerHeight < 0) {
             innerHeight = 0;
+            scaleY = (triangleElements.slice9offsets.y + triangleElements.slice9offsets.height) / originalRect.height;
+        }
         var newElem;
         var positions;
         if (copy) {
@@ -23060,10 +23064,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -26277,8 +26327,8 @@ var Sprite = (function (_super) {
             if (this._iSourcePrefab)
                 this._iSourcePrefab._iValidate();
             if (this.isSlice9ScaledSprite) {
-                var comps = this.transform.concatenatedMatrix3D.decompose();
-                this._graphics.updateSlice9(comps[3].x, comps[3].y);
+                //var comps:Array<Vector3D> = this.transform.concatenatedMatrix3D.decompose();
+                this._graphics.updateSlice9(this.parent.scaleX, this.parent.scaleY);
             }
             return this._graphics;
         },
@@ -31654,7 +31704,7 @@ var TextField = (function (_super) {
         var tr_len = this._textRuns_formats.length;
         for (tr = 0; tr < tr_len; tr++) {
             this._textRuns_formats[tr].font_table.initFontSize(this._textRuns_formats[tr].size);
-            this._textRuns_formats[tr].font_table.fillTextRun(this, this._textRuns_formats[tr], this._textRuns_words[(tr * 3)], this._textRuns_words[(tr * 3) + 1]);
+            this._textRuns_formats[tr].font_table.fillTextRun(this, this._textRuns_formats[tr], this._textRuns_words[(tr * 4)], this._textRuns_words[(tr * 4) + 1]);
         }
         for (var key in this.textShapes) {
             textShape = this.textShapes[key];
