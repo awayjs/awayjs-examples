@@ -13037,56 +13037,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -14860,7 +14814,7 @@ var ElementsUtils = (function () {
         output.radius = Math.sqrt(maxRadiusSquared);
         return output;
     };
-    ElementsUtils.updateTriangleGraphicsSlice9 = function (triangleElements, rect, init, copy) {
+    ElementsUtils.updateTriangleGraphicsSlice9 = function (triangleElements, originalRect, scaleX, scaleY, init, copy) {
         // todo: for now this only works for Float2Attributes.
         if (init === void 0) { init = false; }
         if (copy === void 0) { copy = false; }
@@ -14868,8 +14822,12 @@ var ElementsUtils = (function () {
             throw ("ElementUtils: Error - triangleElement does not provide valid slice9Indices!");
         }
         var s_len = triangleElements.slice9Indices.length;
-        var innerWidth = rect.width - triangleElements.slice9offsets.x - triangleElements.slice9offsets.width;
-        var innerHeight = rect.height - triangleElements.slice9offsets.y - triangleElements.slice9offsets.height;
+        var innerWidth = originalRect.width - triangleElements.slice9offsets.x / scaleX - triangleElements.slice9offsets.width / scaleX;
+        var innerHeight = originalRect.height - triangleElements.slice9offsets.y / scaleY - triangleElements.slice9offsets.height / scaleY;
+        if (innerWidth < 0)
+            innerWidth = 0;
+        if (innerHeight < 0)
+            innerHeight = 0;
         var newElem;
         var positions;
         if (copy) {
@@ -14914,12 +14872,12 @@ var ElementsUtils = (function () {
         slice9Offsets_x.length = 3;
         var slice9Offsets_y = [];
         slice9Offsets_y.length = 3;
-        slice9Offsets_x[0] = rect.x;
-        slice9Offsets_x[1] = rect.x + triangleElements.slice9offsets.x;
-        slice9Offsets_x[2] = rect.x + triangleElements.slice9offsets.x + innerWidth;
-        slice9Offsets_y[0] = rect.y;
-        slice9Offsets_y[1] = rect.y + triangleElements.slice9offsets.y;
-        slice9Offsets_y[2] = rect.y + triangleElements.slice9offsets.y + innerHeight;
+        slice9Offsets_x[0] = originalRect.x;
+        slice9Offsets_x[1] = originalRect.x + triangleElements.slice9offsets.x / scaleX;
+        slice9Offsets_x[2] = originalRect.x + triangleElements.slice9offsets.x / scaleX + innerWidth;
+        slice9Offsets_y[0] = originalRect.y;
+        slice9Offsets_y[1] = originalRect.y + triangleElements.slice9offsets.y / scaleY;
+        slice9Offsets_y[2] = originalRect.y + triangleElements.slice9offsets.y / scaleY + innerHeight;
         //console.log("slice9Offsets_x",slice9Offsets_x);
         //console.log("slice9Offsets_y",slice9Offsets_x);
         var row_cnt = -1;
@@ -14938,21 +14896,19 @@ var ElementsUtils = (function () {
             row_cnt++;
             // only need to x-scale if this is the middle column
             // if the innerWidth<=0 we can skip this complete column
-            scalex = 1;
             if (col_cnt == 1) {
-                if (innerWidth <= 0) {
-                    innerWidth = 0;
-                }
                 scalex = innerWidth;
+            }
+            else {
+                scalex = 1 / scaleX;
             }
             // only need to y-scale if this is the middle row
             // if the innerHeight<=0 we can skip this complete row
-            scaley = 1;
             if (row_cnt == 1) {
-                if (innerHeight <= 0) {
-                    innerHeight = 0;
-                }
                 scaley = innerHeight;
+            }
+            else {
+                scaley = 1 / scaleY;
             }
             // offsetx is different for each column
             offsetx = slice9Offsets_x[col_cnt];
@@ -18288,7 +18244,7 @@ var BitmapImage2D = (function (_super) {
      * @private
      */
     BitmapImage2D.prototype._setSize = function (width, height) {
-        if (this._locked)
+        if (this._imageData)
             this._context.putImageData(this._imageData, 0, 0);
         if (this._imageCanvas) {
             this._imageCanvas.width = width;
@@ -19279,7 +19235,7 @@ var MaterialBase = (function (_super) {
         _this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, _this._onInvalidatePropertiesDelegate);
         if (imageColor instanceof ImageBase)
             _this._style.image = imageColor;
-        else if (imageColor)
+        else if (!isNaN(imageColor))
             _this._style.color = Number(imageColor);
         _this.alpha = alpha;
         _this._onTextureInvalidateDelegate = function (event) { return _this.onTextureInvalidate(event); };
@@ -20004,6 +19960,8 @@ var Graphics = (function (_super) {
         _this._sphereBoundsInvalid = true;
         _this._shapes = [];
         _this._current_position = new _awayjs_core.Point();
+        _this.slice9ScaleX = 1;
+        _this.slice9ScaleY = 1;
         //store associated entity object, otherwise assign itself as entity
         _this._entity = entity;
         _this._current_position = new _awayjs_core.Point();
@@ -20029,23 +19987,28 @@ var Graphics = (function (_super) {
         graphics.clear();
         Graphics._pool.push(graphics);
     };
-    Graphics.prototype.updateSlice9 = function (width, height) {
-        if (width < this.minSlice9Width) {
-            width = this.minSlice9Width;
-        }
-        if (height < this.minSlice9Height) {
-            height = this.minSlice9Height;
-        }
-        if (width == this.slice9Rectangle.width && height == this.slice9Rectangle.height) {
+    Graphics.prototype.updateSlice9 = function (scaleX, scaleY) {
+        if (this.slice9ScaleX == scaleX && this.slice9ScaleY == scaleY)
             return;
-        }
-        this.slice9Rectangle.width = width; //+this.minSlice9Width;
-        this.slice9Rectangle.height = height; //+this.minSlice9Height;
-        this.slice9Rectangle.x = this.originalSlice9Size.x - ((width - this.originalSlice9Size.width) / 2);
-        this.slice9Rectangle.y = this.originalSlice9Size.y - ((height - this.originalSlice9Size.height) / 2);
+        this.slice9ScaleX = scaleX;
+        this.slice9ScaleY = scaleY;
+        // if(width<this.minSlice9Width){
+        // 	width=this.minSlice9Width;
+        // }
+        // if(height<this.minSlice9Height){
+        // 	height=this.minSlice9Height;
+        // }
+        // if(width==this.slice9Rectangle.width && height == this.slice9Rectangle.height){
+        // 	return;
+        // }
+        // this.slice9Rectangle.width=width;//+this.minSlice9Width;
+        // this.slice9Rectangle.height=height;//+this.minSlice9Height;
+        //
+        // this.slice9Rectangle.x= this.originalSlice9Size.x-((width-this.originalSlice9Size.width)/2);
+        // this.slice9Rectangle.y= this.originalSlice9Size.y-((height-this.originalSlice9Size.height)/2);
         var len = this._shapes.length;
         for (var i = 0; i < len; i++) {
-            ElementsUtils.updateTriangleGraphicsSlice9(this._shapes[i].elements, this.slice9Rectangle);
+            ElementsUtils.updateTriangleGraphicsSlice9(this._shapes[i].elements, this.originalSlice9Size, scaleX, scaleY);
         }
     };
     Object.defineProperty(Graphics.prototype, "assetType", {
@@ -21418,7 +21381,7 @@ var Graphics = (function (_super) {
             shape = shapes[i];
             if (this.slice9Rectangle) {
                 // todo: this is a dirty workaround to get the slice9-shapes cloned:
-                var new_shape = new Shape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, false, true));
+                var new_shape = new Shape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, 1, 1, false, true));
                 new_shape.material = shape.material;
                 new_shape.style = shape.style;
                 shape = new_shape;
