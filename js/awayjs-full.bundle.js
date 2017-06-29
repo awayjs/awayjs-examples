@@ -23060,56 +23060,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -23447,7 +23401,7 @@ var DisplayObject = (function (_super) {
          */
         get: function () {
             if (this._registrationMatrix3D)
-                return this.getBox().depth * this.scaleZ * this._registrationMatrix3D[10];
+                return this.getBox().depth * this.scaleZ * this._registrationMatrix3D._rawData[10];
             return this.getBox().depth * this.scaleZ;
         },
         set: function (val) {
@@ -23575,7 +23529,7 @@ var DisplayObject = (function (_super) {
          */
         get: function () {
             if (this._registrationMatrix3D)
-                return this.getBox().height * this.scaleY * this._registrationMatrix3D[5];
+                return this.getBox().height * this.scaleY * this._registrationMatrix3D._rawData[5];
             return this.getBox().height * this.scaleY;
         },
         set: function (val) {
@@ -24263,7 +24217,7 @@ var DisplayObject = (function (_super) {
          */
         get: function () {
             if (this._registrationMatrix3D)
-                return this.getBox().width * this.scaleX * this._registrationMatrix3D[0];
+                return this.getBox().width * this.scaleX * this._registrationMatrix3D._rawData[0];
             return this.getBox().width * this.scaleX;
         },
         set: function (val) {
@@ -26323,7 +26277,8 @@ var Sprite = (function (_super) {
             if (this._iSourcePrefab)
                 this._iSourcePrefab._iValidate();
             if (this.isSlice9ScaledSprite) {
-                this._graphics.updateSlice9(this.parent.width, this.parent.height);
+                var comps = this.transform.concatenatedMatrix3D.decompose();
+                this._graphics.updateSlice9(comps[3].x, comps[3].y);
             }
             return this._graphics;
         },
@@ -26369,33 +26324,6 @@ var Sprite = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Sprite.prototype, "slice9Matrix", {
-        get: function () {
-            if (!this._slice9Matrix) {
-                this._slice9Matrix = new _awayjs_core.Matrix3D();
-            }
-            return this._slice9Matrix;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Sprite.prototype.getRenderSceneTransform = function (cameraTransform) {
-        var sceneMtx = _super.prototype.getRenderSceneTransform.call(this, cameraTransform);
-        if (this.isSlice9ScaledSprite) {
-            // for slice9, we do not want the graphic to be scaled.
-            // we just hand a mtx to the renderer that has only translation part.
-            this.slice9Matrix.identity();
-            // if width or height of the slice9 is smaller than its minimal size, we need to scale it after all
-            if (this.parent.width <= this._graphics.minSlice9Width) {
-            }
-            if (this.parent.height <= this._graphics.minSlice9Height) {
-            }
-            this._slice9Matrix.appendTranslation(this._transform.concatenatedMatrix3D.position.x, this._transform.concatenatedMatrix3D.position.y, this._transform.concatenatedMatrix3D.position.z);
-            // todo: get the rotation part ? skew can not supported...
-            return this._slice9Matrix;
-        }
-        return sceneMtx;
-    };
     /**
      * @inheritDoc
      */
@@ -67692,56 +67620,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var AWD3Utils = (function () {
@@ -69034,7 +68916,7 @@ var AWDParser = (function (_super) {
                     // as long as graphics.slice9Rectangle==graphics.originalSlice9Size, the elements should be in correct size
                     graphics.slice9Rectangle.copyFrom(graphics.originalSlice9Size);
                     curve_elements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
-                    _awayjs_graphics.ElementsUtils.updateTriangleGraphicsSlice9(curve_elements, curve_elements.originalSlice9Size, true);
+                    _awayjs_graphics.ElementsUtils.updateTriangleGraphicsSlice9(curve_elements, curve_elements.originalSlice9Size, 1, 1, true);
                 }
                 else {
                     curve_elements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
