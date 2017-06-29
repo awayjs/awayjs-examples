@@ -31062,12 +31062,12 @@ var TextField = (function (_super) {
     });
     TextField.prototype._pUpdateBoxBounds = function () {
         _super.prototype._pUpdateBoxBounds.call(this);
-        this._pBoxBounds.bottom = this._textHeight;
         this._pBoxBounds.top = 0;
-        this._pBoxBounds.right = this._textWidth;
         this._pBoxBounds.left = 0;
-        this._pBoxBounds.width = this._textWidth;
-        this._pBoxBounds.height = this._textHeight;
+        this._pBoxBounds.bottom = this._textFieldHeight + 4;
+        this._pBoxBounds.right = this._textFieldWidth + 4;
+        //this._pBoxBounds.width=this._textWidth;
+        //this._pBoxBounds.height=this._textHeight;
         //this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
     };
     TextField.prototype.getBox = function (targetCoordinateSpace) {
