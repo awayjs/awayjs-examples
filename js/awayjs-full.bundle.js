@@ -20938,8 +20938,8 @@ var Graphics = (function (_super) {
         }
         var w = width;
         var h = height;
-        var ew = ellipseWidth;
-        var eh = ellipseHeight;
+        var ew = ellipseWidth - 4;
+        var eh = ellipseHeight - 4;
         var t = 0;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
