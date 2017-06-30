@@ -13037,56 +13037,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -17803,12 +17757,6 @@ var BitmapImage2D = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    BitmapImage2D.prototype.invalidate = function () {
-        if (!this._imageDataDirty) {
-            this._imageDataDirty = true;
-            _super.prototype.invalidate.call(this);
-        }
-    };
     /**
      * Returns a new BitmapImage2D object that is a clone of the original instance
      * with an exact copy of the contained bitmap.
@@ -56112,6 +56060,8 @@ var GL_MaterialBase = (function (_super) {
      */
     GL_MaterialBase.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
+        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
         this._material = null;
         this._elementsClass = null;
         this._stage = null;
