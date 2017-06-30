@@ -46207,14 +46207,12 @@ var GL_BillboardRenderable = (function (_super) {
      */
     GL_BillboardRenderable.prototype._getElements = function () {
         var texture = this._billboard.material.getTextureAt(0);
-        var id = -1;
-        if (texture)
-            id = ((this.renderable.style ? this.renderable.style.getSamplerAt(texture) || texture.getSamplerAt(0) : texture.getSamplerAt(0)) || _awayjs_graphics.DefaultMaterialManager.getDefaultSampler()).id;
-        this._id = id;
-        var elements = GL_BillboardRenderable._samplerElements[id];
         var width = this._billboard.billboardWidth;
         var height = this._billboard.billboardHeight;
         var billboardRect = this._billboard.billboardRect;
+        var id = width.toString() + height.toString() + billboardRect.toString();
+        this._id = id;
+        var elements = GL_BillboardRenderable._samplerElements[id];
         if (!elements) {
             elements = GL_BillboardRenderable._samplerElements[id] = new _awayjs_graphics.TriangleElements(new _awayjs_core.AttributesBuffer(11, 4));
             elements.autoDeriveNormals = false;
