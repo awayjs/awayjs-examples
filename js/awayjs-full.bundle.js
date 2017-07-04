@@ -25695,8 +25695,12 @@ var Billboard = (function (_super) {
      */
     Billboard.prototype._pUpdateBoxBounds = function () {
         _super.prototype._pUpdateBoxBounds.call(this);
+        this._pBoxBounds.x = 0;
+        this._pBoxBounds.y = 0;
+        this._pBoxBounds.z = 0;
         this._pBoxBounds.width = this._billboardRect.width;
         this._pBoxBounds.height = this._billboardRect.height;
+        this._pBoxBounds.depth = 0;
     };
     Billboard.prototype.clone = function () {
         var clone = new Billboard(this.material);
