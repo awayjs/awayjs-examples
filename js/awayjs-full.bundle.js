@@ -13037,10 +13037,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -19960,8 +20006,10 @@ var Graphics = (function (_super) {
         _this._current_position = new _awayjs_core.Point();
         _this.slice9ScaleX = 1;
         _this.slice9ScaleY = 1;
+        _this._drawingDirty = false;
         //store associated entity object, otherwise assign itself as entity
         _this._entity = entity;
+        _this._drawingDirty = false;
         _this._current_position = new _awayjs_core.Point();
         _this._queued_fill_pathes = [];
         _this._queued_stroke_pathes = [];
@@ -20207,6 +20255,7 @@ var Graphics = (function (_super) {
         this.removeAllShapes();
         this._active_fill_path = null;
         this._active_stroke_path = null;
+        this._drawingDirty = false;
         //this.invalidateElements();
     };
     /**
@@ -20231,6 +20280,9 @@ var Graphics = (function (_super) {
             this._shapes[i].scaleUV(scaleU, scaleV);
     };
     Graphics.prototype.getBoxBounds = function () {
+        if (this._drawingDirty) {
+            this.endFill();
+        }
         if (this._boxBoundsInvalid) {
             this._boxBoundsInvalid = false;
             if (!this._boxBounds)
@@ -20280,6 +20332,9 @@ var Graphics = (function (_super) {
         return false;
     };
     Graphics.prototype.acceptTraverser = function (traverser) {
+        if (this._drawingDirty) {
+            this.endFill();
+        }
         var len = this._shapes.length;
         /*
                 for (var i:number = 0; i < len; i++)
@@ -20374,6 +20429,7 @@ var Graphics = (function (_super) {
         if (repeat === void 0) { repeat = true; }
         if (smooth === void 0) { smooth = false; }
         this.draw_fills();
+        this._drawingDirty = true;
         // start a new fill path
         this._active_fill_path = new GraphicsPath();
         // todo: create bitmap fill style
@@ -20402,6 +20458,7 @@ var Graphics = (function (_super) {
             color = 0x010101;
         }
         this.draw_fills();
+        this._drawingDirty = true;
         // start a new fill path
         this._active_fill_path = new GraphicsPath();
         this._active_fill_path.style = new GraphicsFillStyle(color, alpha);
@@ -20499,6 +20556,7 @@ var Graphics = (function (_super) {
         if (focalPointRatio === void 0) { focalPointRatio = 0; }
         this.draw_fills();
         // start a new fill path
+        this._drawingDirty = true;
         this._active_fill_path = new GraphicsPath();
         // todo: create gradient fill style
         //this._active_fill_path.style=new GraphicsFillStyle(colors[0], alphas[0]);//, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
@@ -20618,6 +20676,7 @@ var Graphics = (function (_super) {
      *                 parent display object.
      */
     Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+        this._drawingDirty = true;
         if (this._active_fill_path != null) {
             this._active_fill_path.curveTo(controlX, controlY, anchorX, anchorY);
         }
@@ -20643,6 +20702,7 @@ var Graphics = (function (_super) {
      * @param radius The radius of the circle(in pixels).
      */
     Graphics.prototype.drawCircle = function (x, y, radius) {
+        this._drawingDirty = true;
         //var radius2=radius*1.065;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
@@ -20688,6 +20748,7 @@ var Graphics = (function (_super) {
      * @param height The height of the ellipse(in pixels).
      */
     Graphics.prototype.drawEllipse = function (x, y, width, height) {
+        this._drawingDirty = true;
         //var radius2=radius*1.065;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
@@ -20820,6 +20881,7 @@ var Graphics = (function (_super) {
      *                      (<code>Number.NaN</code>).
      */
     Graphics.prototype.drawRect = function (x, y, width, height) {
+        this._drawingDirty = true;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
             /*
@@ -20881,6 +20943,7 @@ var Graphics = (function (_super) {
      */
     Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
         if (ellipseHeight === void 0) { ellipseHeight = NaN; }
+        this._drawingDirty = true;
         if (isNaN(ellipseHeight)) {
             ellipseHeight = ellipseWidth;
         }
@@ -20931,6 +20994,7 @@ var Graphics = (function (_super) {
         var tr = topRightRadius;
         var bl = bottomLeftRadius;
         var br = bottomRightRadius;
+        this._drawingDirty = true;
         var t = 0;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
@@ -20993,6 +21057,7 @@ var Graphics = (function (_super) {
         if (indices === void 0) { indices = null; }
         if (uvtData === void 0) { uvtData = null; }
         if (culling === void 0) { culling = null; }
+        this._drawingDirty = true;
         if (this._active_fill_path != null) {
         }
         if (this._active_stroke_path != null) {
@@ -21014,6 +21079,7 @@ var Graphics = (function (_super) {
         this.draw_fills();
         this._active_fill_path = null;
         this._active_stroke_path = null;
+        this._drawingDirty = false;
         //this.invalidate();
     };
     /**
@@ -21049,6 +21115,7 @@ var Graphics = (function (_super) {
         if (matrix === void 0) { matrix = null; }
         if (repeat === void 0) { repeat = true; }
         if (smooth === void 0) { smooth = false; }
+        this._drawingDirty = true;
         // start a new stroke path
         this._active_stroke_path = new GraphicsPath();
         if (this._current_position.x != 0 || this._current_position.y != 0)
@@ -21130,6 +21197,7 @@ var Graphics = (function (_super) {
         if (spreadMethod === void 0) { spreadMethod = null; }
         if (interpolationMethod === void 0) { interpolationMethod = null; }
         if (focalPointRatio === void 0) { focalPointRatio = 0; }
+        this._drawingDirty = true;
         // start a new stroke path
         this._active_stroke_path = new GraphicsPath();
         this._active_stroke_path.style = new GraphicsStrokeStyle(colors[0], alphas[0], 1); //, jointstyle, capstyle, miterLimit);
@@ -21316,6 +21384,7 @@ var Graphics = (function (_super) {
         if (capstyle === void 0) { capstyle = CapsStyle.NONE; }
         if (jointstyle === void 0) { jointstyle = JointStyle.MITER; }
         if (miterLimit === void 0) { miterLimit = 100; }
+        this._drawingDirty = true;
         if (thickness == 0) {
             thickness = 0.3;
         }
@@ -21346,6 +21415,7 @@ var Graphics = (function (_super) {
      *          registration point of the parent display object(in pixels).
      */
     Graphics.prototype.lineTo = function (x, y) {
+        this._drawingDirty = true;
         if (this._active_fill_path != null) {
             this._active_fill_path.lineTo(x, y);
         }
@@ -21366,6 +21436,7 @@ var Graphics = (function (_super) {
      *          registration point of the parent display object(in pixels).
      */
     Graphics.prototype.moveTo = function (x, y) {
+        this._drawingDirty = true;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
         }
