@@ -23061,10 +23061,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -30161,6 +30207,7 @@ var TesselatedFontTable = (function (_super) {
             return;
         this._current_size = font_size;
         this._size_multiply = font_size / this._font_em_size;
+        //console.log("text-font-table: ",this._ascent, this._descent, this._font_em_size)
     };
     TesselatedFontTable.prototype.getCharVertCnt = function (char_code) {
         var tesselated_font_char = this._font_chars_dic[char_code];
@@ -30187,7 +30234,7 @@ var TesselatedFontTable = (function (_super) {
         configurable: true
     });
     TesselatedFontTable.prototype.getLineHeight = function () {
-        return this._current_size;
+        return this._current_size * (this._font_em_size / this._ascent); //(this._ascent+this._descent)*this._size_multiply;
     };
     Object.defineProperty(TesselatedFontTable.prototype, "assetType", {
         get: function () {
@@ -30275,7 +30322,7 @@ var TesselatedFontTable = (function (_super) {
         for (w = startWord; w < w_len; w += 5) {
             startIdx = tf.words[w];
             x = tf.words[w + 1];
-            y = tf.words[w + 2];
+            y = tf.words[w + 2]; //-this._descent*this._size_multiply;
             c_len = startIdx + tf.words[w + 4];
             for (c = startIdx; c < c_len; c++) {
                 hack_x_mirror = false;
@@ -31018,10 +31065,11 @@ var TextField = (function (_super) {
     });
     TextField.prototype._pUpdateBoxBounds = function () {
         _super.prototype._pUpdateBoxBounds.call(this);
+        this.reConstruct();
         this._pBoxBounds.top = 0;
         this._pBoxBounds.left = 0;
-        this._pBoxBounds.bottom = this._textFieldHeight + 4;
-        this._pBoxBounds.right = this._textFieldWidth + 4;
+        this._pBoxBounds.bottom = this._textFieldHeight;
+        this._pBoxBounds.right = this._textFieldWidth;
         //this._pBoxBounds.width=this._textWidth;
         //this._pBoxBounds.height=this._textHeight;
         //this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
@@ -31375,24 +31423,18 @@ var TextField = (function (_super) {
             this._textRuns_words.length = 0;
             this._textRuns_formats.length = 0;
             this._maxWidthLine = 0;
-            if (this._textFormat == null)
-                return;
-            if (this._text == "")
-                return;
-            //console.log("TextField buildParagraph", this.id, this._text);
-            //console.log("TextField buildParagraph", this.id, this._autoSize);
-            //console.log("TextField buildParagraph", this.id, this._wordWrap);
-            //console.log("TextField buildParagraph", this.id, this.multiline);
-            if (this.multiline) {
-                var paragraphs = this.text.toString().match(/[^\r\n]+/g);
-                var tl = 0;
-                var tl_len = paragraphs.length;
-                for (tl = 0; tl < tl_len; tl++) {
-                    this.buildParagraph(paragraphs[tl]);
+            if (this._text != "" && this._textFormat != null) {
+                if (this.multiline) {
+                    var paragraphs = this.text.toString().match(/[^\r\n]+/g);
+                    var tl = 0;
+                    var tl_len = paragraphs.length;
+                    for (tl = 0; tl < tl_len; tl++) {
+                        this.buildParagraph(paragraphs[tl]);
+                    }
                 }
-            }
-            else {
-                this.buildParagraph(this._text);
+                else {
+                    this.buildParagraph(this._text);
+                }
             }
         }
         // 	Step 2: positioning the words
@@ -31403,8 +31445,19 @@ var TextField = (function (_super) {
         //	if we have AUTOSIZE!=None
         if (this._positionsDirty) {
             this._glyphsDirty = true;
-            //console.log("TextField getWordPositions", this.id, this.words);
-            this.getWordPositions();
+            if (this._text != "" && this._textFormat != null) {
+                //console.log("TextField getWordPositions", this.id, this.words);
+                this.getWordPositions();
+            }
+            else {
+                // this is empty text, we need to reset the text-size
+                this._textWidth = 0;
+                this._textHeight = 0;
+                if (this._autoSize != TextFieldAutoSize.NONE) {
+                    this._textFieldWidth = 4;
+                    this._textFieldHeight = 4;
+                }
+            }
         }
         this._textDirty = false;
         this._positionsDirty = false;
@@ -31570,7 +31623,7 @@ var TextField = (function (_super) {
                 }
             }
             var offsetx = 0;
-            var offsety = 1;
+            var offsety = 2;
             var start_idx;
             var start_idx;
             var numSpaces;
@@ -31623,7 +31676,7 @@ var TextField = (function (_super) {
         }
         // -2 so this values do not include the left and top border
         this._textWidth = text_width;
-        this._textHeight = offsety - 1;
+        this._textHeight = offsety - 2;
         if (this._autoSize == TextFieldAutoSize.NONE || this._wordWrap) {
             this._textWidth = this._textFieldWidth - 4;
         }
