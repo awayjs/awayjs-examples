@@ -13037,56 +13037,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -20287,15 +20241,23 @@ var Graphics = (function (_super) {
             this._boxBoundsInvalid = false;
             if (!this._boxBounds)
                 this._boxBounds = new _awayjs_core.Box();
-            if (this._shapes.length) {
-                this._boxBounds.setBoundIdentity();
-                var len = this._shapes.length;
-                for (var i = 0; i < len; i++) {
-                    this._boxBounds = this._boxBounds.union(this._shapes[i].getBoxBounds(), this._boxBounds);
+            this._boxBounds.setEmpty();
+            var numShapes = this._shapes.length;
+            if (numShapes) {
+                var shapeBox;
+                var first = true;
+                for (var i = 0; i < numShapes; i++) {
+                    shapeBox = this._shapes[i].getBoxBounds();
+                    if (shapeBox.isEmpty())
+                        continue;
+                    if (first) {
+                        first = false;
+                        this._boxBounds.copyFrom(shapeBox);
+                    }
+                    else {
+                        this._boxBounds = this._boxBounds.union(shapeBox, this._boxBounds);
+                    }
                 }
-            }
-            else {
-                this._boxBounds.setEmpty();
             }
         }
         return this._boxBounds;
