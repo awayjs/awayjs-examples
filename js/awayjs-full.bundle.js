@@ -24960,6 +24960,7 @@ var DisplayObject = (function (_super) {
         this._boxBoundsInvalid = false;
         if (this._pBoxBounds == null)
             this._pBoxBounds = new _awayjs_core.Box();
+        this._pBoxBounds.setEmpty();
     };
     DisplayObject.prototype._pUpdateSphereBounds = function () {
         this._sphereBoundsInvalid = false;
@@ -25535,44 +25536,23 @@ var DisplayObjectContainer = (function (_super) {
      */
     DisplayObjectContainer.prototype._pUpdateBoxBounds = function () {
         _super.prototype._pUpdateBoxBounds.call(this);
-        var box;
         var numChildren = this._children.length;
         if (numChildren > 0) {
-            var min;
-            var max;
-            var minX, minY, minZ;
-            var maxX, maxY, maxZ;
+            var childBox;
+            var first = true;
             for (var i = 0; i < numChildren; ++i) {
-                box = this._children[i].getBox(this);
-                if (i == 0) {
-                    maxX = box.width + (minX = box.x);
-                    maxY = box.height + (minY = box.y);
-                    maxZ = box.depth + (minZ = box.z);
+                childBox = this._children[i].getBox();
+                if (childBox.isEmpty())
+                    continue;
+                childBox = this._children[i].getBox(this);
+                if (first) {
+                    first = false;
+                    this._pBoxBounds.copyFrom(childBox);
                 }
                 else {
-                    max = box.width + (min = box.x);
-                    if (min < minX)
-                        minX = min;
-                    if (max > maxX)
-                        maxX = max;
-                    max = box.height + (min = box.y);
-                    if (min < minY)
-                        minY = min;
-                    if (max > maxY)
-                        maxY = max;
-                    max = box.depth + (min = box.z);
-                    if (min < minZ)
-                        minZ = min;
-                    if (max > maxZ)
-                        maxZ = max;
+                    this._pBoxBounds = this._pBoxBounds.union(childBox, this._pBoxBounds);
                 }
             }
-            this._pBoxBounds.width = maxX - (this._pBoxBounds.x = minX);
-            this._pBoxBounds.height = maxY - (this._pBoxBounds.y = minY);
-            this._pBoxBounds.depth = maxZ - (this._pBoxBounds.z = minZ);
-        }
-        else {
-            this._pBoxBounds.setBoundIdentity();
         }
     };
     /**
