@@ -302,56 +302,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var ErrorBase = (function () {
@@ -3135,14 +3089,6 @@ var Box = (function () {
         this.width = 0;
         this.height = 0;
         this.depth = 0;
-    };
-    Box.prototype.setBoundIdentity = function () {
-        this.x = Number.MAX_VALUE / 2;
-        this.y = Number.MAX_VALUE / 2;
-        this.z = Number.MAX_VALUE / 2;
-        this.width = -Number.MAX_VALUE;
-        this.height = -Number.MAX_VALUE;
-        this.depth = -Number.MAX_VALUE;
     };
     /**
      * Sets the members of Box to the specified values
