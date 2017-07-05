@@ -13037,10 +13037,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -20332,7 +20378,8 @@ var Graphics = (function (_super) {
     Graphics.prototype.draw_strokes = function () {
         var i = 0;
         for (i = 0; i < this.queued_stroke_pathes.length; i++) {
-            var material = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color, this.queued_stroke_pathes[i].style.alpha);
+            var obj = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color, this.queued_stroke_pathes[i].style.alpha);
+            var material = obj.material;
             var final_vert_list = [];
             GraphicsFactoryStrokes.draw_pathes([this.queued_stroke_pathes[i]], final_vert_list, material.curves);
             final_vert_list = final_vert_list.concat(this.queued_stroke_pathes[i].verts);
@@ -20342,10 +20389,17 @@ var Graphics = (function (_super) {
             attributesView.dispose();
             var elements = new TriangleElements(attributesBuffer);
             elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
-            if (material.curves)
-                elements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(attributesBuffer, false));
-            material.alpha = this.queued_stroke_pathes[i].style.alpha;
-            this.addShape(Shape.getShape(elements, material));
+            //	if(material.curves)
+            //		elements.setCustomAttributes("curves", new Byte4Attributes(attributesBuffer, false));
+            //	material.alpha=(<GraphicsStrokeStyle>this.queued_stroke_pathes[i].style).alpha;
+            var shape = this.addShape(Shape.getShape(elements, material));
+            if (obj.colorPos) {
+                shape.style = new Style();
+                var sampler = new Sampler2D();
+                material.animateUVs = true;
+                shape.style.addSamplerAt(sampler, material.getTextureAt(0));
+                shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
+            }
         }
         this.queued_stroke_pathes.length = 0;
     };
@@ -21438,10 +21492,10 @@ var Graphics = (function (_super) {
 }(_awayjs_core.AssetBase));
 Graphics._pool = new Array();
 Graphics.get_material_for_color = function (color, alpha) {
-    return DefaultMaterialManager.getDefaultMaterial();
+    return { material: DefaultMaterialManager.getDefaultMaterial() };
 };
 Graphics.get_material_for_gradient = function (gradient) {
-    return DefaultMaterialManager.getDefaultMaterial();
+    return { material: DefaultMaterialManager.getDefaultMaterial() };
 };
 Graphics.assetType = "[asset Graphics]";
 
@@ -21731,8 +21785,16 @@ var GraphicsFactoryFills = (function () {
                 var style;
                 var material;
                 if (targetGraphics.queued_fill_pathes[cp].style.data_type == GraphicsFillStyle.data_type) {
-                    material = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
-                    targetGraphics.addShape(Shape.getShape(elements, material));
+                    var obj = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
+                    material = obj.material;
+                    var shape = targetGraphics.addShape(Shape.getShape(elements, material));
+                    if (obj.colorPos) {
+                        shape.style = new Style();
+                        sampler = new Sampler2D();
+                        material.animateUVs = true;
+                        shape.style.addSamplerAt(sampler, material.getTextureAt(0));
+                        shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
+                    }
                 }
                 else if (targetGraphics.queued_fill_pathes[cp].style.data_type == GradientFillStyle.data_type) {
                     var gradientStyle = targetGraphics.queued_fill_pathes[cp].style;
@@ -22216,20 +22278,20 @@ var TextureAtlas = (function () {
         this.availableGradients = 256;
         this.availableColors = 0;
         this.bitmap = new BitmapImage2D(256, 256, false, 0xff0000);
-        this.texture = new Single2DTexture(this.bitmap);
+        this.colorTexture = new Single2DTexture(this.bitmap);
+        this.gradientTexture = new Single2DTexture(this.bitmap);
         this.availableRows = 256;
         this.availableColors = 0;
     }
     TextureAtlas.getTextureForColor = function (color, alpha) {
-        if (TextureAtlas._allColors.hasOwnProperty(color.toString())) {
-            var textObj = TextureAtlas._allColors[color.toString()];
-            return textObj.texture;
+        var colorString = color.toString() + "#" + alpha.toString();
+        if (TextureAtlas._allColors.hasOwnProperty(colorString)) {
+            return TextureAtlas._allColors[colorString];
         }
         // find textureAtlas that has empty space:
         var t_len = TextureAtlas._allTextureAtlas.length;
         var t = 0;
         var textureAtlas;
-        var argb;
         for (t = 0; t < t_len; t++) {
             if (TextureAtlas._allTextureAtlas[t].fit_color()) {
                 textureAtlas = TextureAtlas._allTextureAtlas[t];
@@ -22242,8 +22304,8 @@ var TextureAtlas = (function () {
         }
         var newColorObj = {};
         newColorObj.colorPos = textureAtlas.draw_color(color, alpha);
-        newColorObj.texture = textureAtlas.texture;
-        TextureAtlas._allColors[color.toString()] = newColorObj;
+        newColorObj.texture = textureAtlas.colorTexture;
+        TextureAtlas._allColors[colorString] = newColorObj;
         return newColorObj;
     };
     TextureAtlas.getTextureForGradient = function (gradient) {
@@ -22255,7 +22317,6 @@ var TextureAtlas = (function () {
         var t_len = TextureAtlas._allTextureAtlas.length;
         var t = 0;
         var textureAtlas;
-        var argb;
         for (t = 0; t < t_len; t++) {
             if (TextureAtlas._allTextureAtlas[t].fit_gradient()) {
                 textureAtlas = TextureAtlas._allTextureAtlas[t];
@@ -22270,7 +22331,7 @@ var TextureAtlas = (function () {
         textureAtlas.draw_gradient(gradient);
         newColorObj.uvRectangle = new _awayjs_core.Rectangle();
         newColorObj.uvRectangle.copyFrom(gradient.uvRectangle);
-        newColorObj.texture = textureAtlas.texture;
+        newColorObj.texture = textureAtlas.gradientTexture;
         TextureAtlas._allGradients[gradientStr] = newColorObj;
         return newColorObj;
     };
@@ -22313,8 +22374,10 @@ var TextureAtlas = (function () {
                 console.log("error in TextureAtlasManager.draw_color");
             }
         }
-        this.bitmap.setPixel(this.color_position, this.color_row, color);
-        return new _awayjs_core.Point(this.color_position / 256, this.color_row / 256);
+        var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
+        argb[0] = alpha;
+        this.bitmap.setPixelFromArray(this.color_position, this.color_row, argb);
+        return new _awayjs_core.Point(1 / 512 + this.color_position / 256, 1 / 512 + this.color_row / 256);
     };
     return TextureAtlas;
 }());
@@ -23094,10 +23157,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -30203,7 +30312,8 @@ var TesselatedFontTable = (function (_super) {
         configurable: true
     });
     TesselatedFontTable.prototype.getLineHeight = function () {
-        return this._current_size * (this._font_em_size / this._ascent); //(this._ascent+this._descent)*this._size_multiply;
+        var thisLineheighttest = this._current_size * (this._font_em_size / this._ascent);
+        return thisLineheighttest; // ;//(this._ascent+this._descent)*this._size_multiply;
     };
     Object.defineProperty(TesselatedFontTable.prototype, "assetType", {
         get: function () {
@@ -30467,249 +30577,6 @@ var TesselatedFontTable = (function (_super) {
 TesselatedFontTable.assetType = "[asset TesselatedFontTable]";
 
 /**
- * The TextFormat class represents character formatting information. Use the
- * TextFormat class to create specific text formatting for text fields. You
- * can apply text formatting to both static and dynamic text fields. The
- * properties of the TextFormat class apply to device and embedded fonts.
- * However, for embedded fonts, bold and italic text actually require specific
- * fonts. If you want to display bold or italic text with an embedded font,
- * you need to embed the bold and italic variations of that font.
- *
- * <p> You must use the constructor <code>new TextFormat()</code> to create a
- * TextFormat object before setting its properties. When you apply a
- * TextFormat object to a text field using the
- * <code>TextField.defaultTextFormat</code> property or the
- * <code>TextField.setTextFormat()</code> method, only its defined properties
- * are applied. Use the <code>TextField.defaultTextFormat</code> property to
- * apply formatting BEFORE you add text to the <code>TextField</code>, and the
- * <code>setTextFormat()</code> method to add formatting AFTER you add text to
- * the <code>TextField</code>. The TextFormat properties are <code>null</code>
- * by default because if you don't provide values for the properties, Flash
- * Player uses its own default formatting. The default formatting that Flash
- * Player uses for each property(if property's value is <code>null</code>) is
- * as follows:</p>
- *
- * <p>The default formatting for each property is also described in each
- * property description.</p>
- */
-var BitmapFontChar = (function () {
-    function BitmapFontChar(id, x, y, width, height, xoff, yoff, xadv, page, channel) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.x_offset = xoff;
-        this.y_offset = yoff;
-        this.x_advance = xadv;
-        this.page = page;
-        this.channel = channel;
-    }
-    return BitmapFontChar;
-}());
-
-/**
- * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
- *
- *
- * @see away.base.TriangleElements
- * @see away.entities.Sprite
- *
- * @class away.base.GraphicBase
- */
-var BitmapFontTable = (function (_super) {
-    __extends(BitmapFontTable, _super);
-    //TODO test shader picking
-    //		public get shaderPickingDetails():boolean
-    //		{
-    //
-    //			return this.sourceEntity.shaderPickingDetails;
-    //		}
-    /**
-     * Creates a new TesselatedFont object
-     */
-    function BitmapFontTable() {
-        var _this = _super.call(this) || this;
-        _this._font_chars = [];
-        _this._materials = [];
-        _this._font_chars_dic = new Object();
-        _this._ascent = 0;
-        _this._descent = 0;
-        _this._current_size = 0;
-        _this._size_multiply = 0;
-        _this._init_size = 0;
-        _this._texture_width = 0;
-        _this._texture_height = 0;
-        _this._adjust_size = 0;
-        return _this;
-    }
-    Object.defineProperty(BitmapFontTable.prototype, "assetType", {
-        get: function () {
-            return BitmapFontTable.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BitmapFontTable.prototype.initFontSize = function (font_size) {
-        if (this.fallbackTable)
-            this.fallbackTable.initFontSize(font_size);
-        if (this._adjust_size)
-            font_size *= this._adjust_size;
-        if (this._current_size == font_size)
-            return;
-        this._current_size = font_size;
-        this._size_multiply = font_size / this._init_size;
-    };
-    BitmapFontTable.prototype.getCharDataCanvas = function (char_code) {
-        var this_char = this._font_chars_dic[char_code];
-        if (this_char) {
-            //console.log("this_char found");
-            return [this_char.x, this_char.y, this_char.width, this_char.height, this_char.x_offset * this._size_multiply, this_char.y_offset * this._size_multiply];
-        }
-        //console.log("this_char not found" + char_code);
-        return [];
-    };
-    BitmapFontTable.prototype.getCharData = function (char_code) {
-        var this_char = this._font_chars_dic[char_code];
-        if (this_char) {
-            var realheight = (this_char.height / this._init_size) * this._current_size;
-            var realWidth = (this_char.width / this._init_size) * this._current_size;
-            //console.log("this_char found");
-            return [this_char.x / this._texture_width, this_char.y / this._texture_height, this_char.width / this._texture_width, this_char.height / this._texture_height, this_char.x_offset * this._size_multiply, this_char.y_offset * this._size_multiply, realheight, realWidth];
-        }
-        //console.log("this_char not found" + char_code);
-        return [];
-    };
-    BitmapFontTable.prototype.getCharVertCnt = function (char_code) {
-        return 6 * 4;
-    };
-    Object.defineProperty(BitmapFontTable.prototype, "texture_width", {
-        get: function () {
-            return this._texture_width;
-        },
-        set: function (value) {
-            this._texture_width = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BitmapFontTable.prototype, "texture_height", {
-        get: function () {
-            return this._texture_height;
-        },
-        set: function (value) {
-            this._texture_height = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BitmapFontTable.prototype.hasChar = function (char_code) {
-        return this._font_chars_dic[char_code] != null;
-    };
-    BitmapFontTable.prototype.getCharWidth = function (char_code) {
-        var this_char = this._font_chars_dic[char_code];
-        if (this_char)
-            return this._size_multiply * (this_char.x_advance);
-        return 0;
-    };
-    BitmapFontTable.prototype.fillTextRun = function (tf, format, startWord, wordCnt) {
-    };
-    BitmapFontTable.prototype.getLineHeight = function () {
-        return this._current_size;
-    };
-    /**
-     *
-     */
-    BitmapFontTable.prototype.dispose = function () {
-        var len = this._materials.length;
-        for (var i = 0; i < len; ++i) {
-            this._materials[i].dispose();
-        }
-        this._materials.length = 0;
-        this._font_chars.length = 0;
-        this._font_chars_dic = null;
-    };
-    BitmapFontTable.prototype.addMaterial = function (material) {
-        this._materials.push(material);
-    };
-    BitmapFontTable.prototype.getMaterial = function (idx) {
-        if (idx === void 0) { idx = 0; }
-        return this._materials[idx];
-    };
-    Object.defineProperty(BitmapFontTable.prototype, "ascent", {
-        get: function () {
-            return this._ascent;
-        },
-        set: function (value) {
-            this._ascent = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BitmapFontTable.prototype, "descent", {
-        get: function () {
-            return this._descent;
-        },
-        set: function (value) {
-            this._descent = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BitmapFontTable.prototype, "offset_x", {
-        get: function () {
-            return this._offset_x;
-        },
-        set: function (value) {
-            this._offset_x = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BitmapFontTable.prototype, "offset_y", {
-        get: function () {
-            return this._offset_y;
-        },
-        set: function (value) {
-            this._offset_y = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BitmapFontTable.prototype.get_font_chars = function () {
-        return this._font_chars;
-    };
-    BitmapFontTable.prototype.get_font_em_size = function () {
-        return this._font_em_size;
-    };
-    BitmapFontTable.prototype.set_whitespace_width = function (value) {
-        this._whitespace_width = value;
-    };
-    BitmapFontTable.prototype.get_whitespace_width = function () {
-        return this._whitespace_width;
-    };
-    BitmapFontTable.prototype.set_font_em_size = function (font_em_size) {
-        this._font_em_size = font_em_size;
-    };
-    /**
-     *
-     */
-    BitmapFontTable.prototype.getChar = function (name) {
-        return this._font_chars_dic[name];
-    };
-    /**
-     *
-     */
-    BitmapFontTable.prototype.setChar = function (id, x, y, width, height, xoff, yoff, xadv, page, channel) {
-        var bitmap_font_char = new BitmapFontChar(id, x, y, width, height, xoff, yoff, xadv, page, channel);
-        this._font_chars.push(bitmap_font_char);
-        this._font_chars_dic[id] = bitmap_font_char;
-    };
-    return BitmapFontTable;
-}(_awayjs_core.AssetBase));
-BitmapFontTable.assetType = "[asset BitmapFontTable]";
-
-/**
  * The TextFieldAutoSize class is an enumeration of constant values used in
  * setting the <code>autoSize</code> property of the TextField class.
  */
@@ -30871,6 +30738,16 @@ var TextFormat = (function (_super) {
         _this.font_table = new TesselatedFontTable();
         return _this;
     }
+    Object.defineProperty(TextFormat.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TextFormat.prototype, "assetType", {
         /**
          *
@@ -31027,7 +30904,7 @@ var TextField = (function (_super) {
             this._autoSize = value;
             //console.log("set autoSize", value);
             this._positionsDirty = true;
-            this.reConstruct();
+            //	this.reConstruct();
         },
         enumerable: true,
         configurable: true
@@ -31207,8 +31084,6 @@ var TextField = (function (_super) {
             return this._textFormat;
         },
         set: function (value) {
-            if (this._textFormat == value)
-                return;
             this._textFormat = value;
             this._textDirty = true;
         },
@@ -31646,9 +31521,6 @@ var TextField = (function (_super) {
         // -2 so this values do not include the left and top border
         this._textWidth = text_width;
         this._textHeight = offsety - 2;
-        if (this._autoSize == TextFieldAutoSize.NONE || this._wordWrap) {
-            this._textWidth = this._textFieldWidth - 4;
-        }
         //console.log(this._textWidth, "/", this._textHeight);
         //this._textWidth+=this._textFormat.indent+ this._textFormat.leftMargin+ this._textFormat.rightMargin;
         // if autosize is enabled, we adjust the textFieldHeight
@@ -31706,458 +31578,13 @@ var TextField = (function (_super) {
                 textShape.shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, textShape.format.uv_values[0], textShape.format.uv_values[1]);
             }
             else {
-                textShape.shape.material = _awayjs_graphics.Graphics.get_material_for_color(0xffffff, 1); //this.textColor);//this._textFormat.color);
-                textShape.shape.material.useColorTransform = true;
-                var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
-                this.transform.colorTransform.color = textShape.format.color;
-                this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
-            }
-        }
-    };
-    TextField.prototype.reConstruct_old = function (buildGraphics) {
-        if (buildGraphics === void 0) { buildGraphics = false; }
-        this._textGraphicsDirty = false;
-        if (this._textFormat == null)
-            return;
-        if (this._textShape) {
-            this._graphics.removeShape(this._textShape);
-            _awayjs_graphics.Shape.storeShape(this._textShape);
-            this._textShape.dispose();
-            this._textShape = null;
-            this._textElements.clear();
-            this._textElements.dispose();
-            this._textElements = null;
-        }
-        if (this._textShape2) {
-            this._graphics.removeShape(this._textShape2);
-            _awayjs_graphics.Shape.storeShape(this._textShape2);
-            this._textShape2.dispose();
-            this._textShape2 = null;
-            this._textElements2.clear();
-            this._textElements2.dispose();
-            this._textElements2 = null;
-        }
-        this._graphics.clearDrawing();
-        if (this._text == "")
-            return;
-        var activeFormat = this._textFormat;
-        activeFormat.font_table.initFontSize(activeFormat.size);
-        if (activeFormat.font_table.fallbackTable)
-            activeFormat.font_table.fallbackTable.initFontSize(activeFormat.size);
-        var textlines = this.text.toString().match(/[^\r\n]+/g);
-        //console.log("text = ", textlines.toString());
-        var maxlineWidth = this._textFieldWidth - (4 + this._textFormat.leftMargin + this._textFormat.rightMargin + this._textFormat.indent);
-        //if(this.autoSize!=TextFieldAutoSize.NONE && !this.wordWrap){
-        maxlineWidth = Number.MAX_VALUE;
-        //}
-        /*
-                if(this.autoSize==TextFieldAutoSize.RIGHT){
-                    return;
-                }
-        
-                if(this.autoSize==TextFieldAutoSize.CENTER){
-                    return;
-                }
-                */
-        var tl_char_codes = [];
-        var tl_char_widths = [];
-        var tl_char_heights = [];
-        var tl_formatIdx = [];
-        var tl_word_cnt = [];
-        var tl_justify = [];
-        var tl_linebreak = [];
-        var tl_width = [];
-        var tl_height = [];
-        var tl_ends_with_space = [];
-        var tl_cnt = 0;
-        var w = 0;
-        var c = 0;
-        var tl = 0;
-        var words;
-        var char_cnt = 0;
-        var char_width = 0;
-        var numVertices = 0;
-        var numVertices2 = 0;
-        this._line_indices = [];
-        // sort all chars into final lines
-        for (tl = 0; tl < textlines.length; tl++) {
-            this._line_indices[tl_cnt] = char_cnt;
-            tl_char_codes[tl_cnt] = [];
-            tl_char_widths[tl_cnt] = [];
-            tl_char_heights[tl_cnt] = [];
-            tl_formatIdx[tl_cnt] = [];
-            tl_width[tl_cnt] = 0;
-            tl_height[tl_cnt] = 0;
-            tl_word_cnt[tl_cnt] = 0;
-            tl_justify[tl_cnt] = false;
-            tl_linebreak[tl_cnt] = true;
-            tl_ends_with_space[tl_cnt] = textlines[tl].charCodeAt(textlines[tl].length - 1) == 32;
-            tl_cnt++;
-            words = textlines[tl].split(" ");
-            for (w = 0; w < words.length; w++) {
-                if (words[w].length > 0) {
-                    var word_width = 0;
-                    var char_widths = [];
-                    var char_heights = [];
-                    var formatIdx = [];
-                    var max_word_height = 0;
-                    for (c = 0; c < words[w].length; c++) {
-                        var lineHeight = activeFormat.font_table.getLineHeight();
-                        if (lineHeight > max_word_height)
-                            max_word_height = lineHeight;
-                        char_width = 0;
-                        if (activeFormat.font_table.hasChar(words[w].charCodeAt(c).toString())) {
-                            char_width = activeFormat.font_table.getCharWidth(words[w].charCodeAt(c).toString());
-                            formatIdx[c] = 0;
-                            numVertices += activeFormat.font_table.getCharVertCnt(words[w].charCodeAt(c).toString());
-                        }
-                        else if (activeFormat.font_table.fallbackTable && activeFormat.font_table.fallbackTable.hasChar(words[w].charCodeAt(c).toString())) {
-                            formatIdx[c] = 1;
-                            char_width = activeFormat.font_table.fallbackTable.getCharWidth(words[w].charCodeAt(c).toString());
-                            numVertices2 += activeFormat.font_table.fallbackTable.getCharVertCnt(words[w].charCodeAt(c).toString());
-                            lineHeight = activeFormat.font_table.fallbackTable.getLineHeight();
-                            if (lineHeight > max_word_height)
-                                max_word_height = lineHeight;
-                        }
-                        else {
-                            formatIdx[c] = -1;
-                        }
-                        char_widths[c] = char_width + this._textFormat.letterSpacing;
-                        char_heights[c] = lineHeight;
-                        word_width += char_width + this._textFormat.letterSpacing;
-                        char_cnt++;
-                    }
-                    // word fits into line, just add it to the last line
-                    if ((tl_width[tl_cnt - 1] + word_width + activeFormat.font_table.getCharWidth("32")) <= maxlineWidth) {
-                        if (tl_width[tl_cnt - 1] != 0) {
-                            // there is already a word in this line. we want to add a space
-                            tl_char_codes[tl_cnt - 1].push(32);
-                            tl_formatIdx[tl_cnt - 1].push(1);
-                            tl_char_widths[tl_cnt - 1].push(activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing);
-                            tl_width[tl_cnt - 1] += activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing;
-                        }
-                        for (c = 0; c < words[w].length; c++) {
-                            tl_formatIdx[tl_cnt - 1].push(formatIdx[c]);
-                            tl_char_codes[tl_cnt - 1].push(words[w].charCodeAt(c));
-                            tl_char_widths[tl_cnt - 1].push(char_widths[c]);
-                        }
-                        tl_width[tl_cnt - 1] += word_width;
-                        tl_word_cnt[tl_cnt - 1] += 1;
-                        if (tl_height[tl_cnt - 1] < max_word_height)
-                            tl_height[tl_cnt - 1] = max_word_height;
-                    }
-                    else if (tl_width[tl_cnt - 1] == 0) {
-                        for (c = 0; c < words[w].length; c++) {
-                            tl_formatIdx[tl_cnt - 1].push(formatIdx[c]);
-                            tl_char_codes[tl_cnt - 1].push(words[w].charCodeAt(c));
-                            tl_char_widths[tl_cnt - 1].push(char_widths[c]);
-                        }
-                        tl_word_cnt[tl_cnt - 1] += 1;
-                        tl_width[tl_cnt - 1] += word_width;
-                        if (tl_height[tl_cnt - 1] < max_word_height)
-                            tl_height[tl_cnt - 1] = max_word_height;
-                    }
-                    else {
-                        tl_justify[tl_cnt - 1] = true;
-                        tl_char_codes[tl_cnt] = [];
-                        tl_char_widths[tl_cnt] = [];
-                        tl_formatIdx[tl_cnt] = [];
-                        tl_width[tl_cnt] = 0;
-                        tl_height[tl_cnt] = 0;
-                        tl_word_cnt[tl_cnt] = 0;
-                        tl_justify[tl_cnt] = false;
-                        tl_linebreak[tl_cnt] = false;
-                        tl_ends_with_space[tl_cnt] = textlines[tl].charCodeAt(textlines[tl].length - 1) == 32;
-                        tl_cnt++;
-                        for (c = 0; c < words[w].length; c++) {
-                            tl_char_codes[tl_cnt - 1].push(words[w].charCodeAt(c));
-                            tl_char_widths[tl_cnt - 1].push(char_widths[c]);
-                            tl_formatIdx[tl_cnt - 1].push(formatIdx[c]);
-                        }
-                        tl_width[tl_cnt - 1] += word_width;
-                        if (tl_height[tl_cnt - 1] < max_word_height)
-                            tl_height[tl_cnt - 1] = max_word_height;
-                    }
-                }
-            }
-        }
-        for (tl = 0; tl < tl_width.length; tl++) {
-            if (tl_ends_with_space[tl]) {
-                tl_char_codes[tl].push(32);
-                tl_formatIdx[tl].push(1);
-                tl_char_widths[tl].push(activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing);
-                tl_width[tl] += activeFormat.font_table.getCharWidth("32") + this._textFormat.letterSpacing;
-            }
-        }
-        //console.log("tl_width = ", tl_width);
-        var tl_startx = [];
-        // calculate the final positions of the chars
-        this._textWidth = 0;
-        this._textHeight = 0;
-        this._length = 0;
-        this._numLines = tl_width.length;
-        for (tl = 0; tl < tl_width.length; tl++) {
-            var indent = this._textFormat.indent;
-            if (!tl_linebreak[tl]) {
-                indent = 0;
-            }
-            if (tl_width[tl] > this._textWidth)
-                this._textWidth = tl_width[tl];
-            var x_offset = 2 + this._textFormat.leftMargin + indent;
-            var justify_addion = 0;
-            /*
-                        if(this._textFormat.align=="center"){
-                            x_offset = 2 + this._textFormat.leftMargin + indent+(maxlineWidth-tl_width[tl])/2;
-                        }
-                        else if(this._textFormat.align=="justify"){
-                            if(tl_justify[tl]){
-                                justify_addion=((maxlineWidth)-tl_width[tl])/tl_word_cnt[tl];
-                            }
-                        }
-                        else if(this._textFormat.align=="right"){
-                            x_offset=(this._textWidth-tl_width[tl])-(2 + this._textFormat.rightMargin);
-                        }
-            */
-            tl_startx[tl] = [];
-            if (tl_char_codes[tl].length == 0) {
-                tl_height[tl] = this._textFormat.font_table.getLineHeight();
-            }
-            this._textHeight += tl_height[tl] + this._textFormat.leading;
-            this._length += tl_char_codes[tl].length;
-            for (var c = 0; c < tl_char_codes[tl].length; c++) {
-                //this.textHeight+=tl_height[tl];
-                tl_startx[tl][c] = x_offset;
-                x_offset += tl_char_widths[tl][c];
-                // if this is a whitespace, we add the justify additional spacer
-                if (tl_char_codes[tl][c] == 32) {
-                    x_offset += justify_addion;
-                }
-            }
-        }
-        this._textWidth += this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin;
-        this._textFieldWidth = this._textWidth + 4;
-        this._textFieldHeight = this._textHeight + 4;
-        /*
-                this._graphics.clearDrawing();
-                this._graphics.beginFill(this.backgroundColor, this.background?1:0);
-                //this.graphics.lineStyle(1, this.borderColor, this.border?1:0);
-                this._graphics.drawRect(0,0,this._textWidth+4, this._textHeight+4);
-                this._graphics.endFill();
-        */
-        if (this._textFormat.font_table.assetType == BitmapFontTable.assetType) {
-            //console.log("contruct bitmap text = "+this._text);
-            var bitmap_fontTable = this._textFormat.font_table;
-            var vertices = new Float32Array(numVertices);
-            var vertices2 = new Float32Array(numVertices2);
-            var vert_cnt = 0;
-            var vert_cnt2 = 0;
-            var y_offset = 2; //2+(tess_fontTable.ascent-tess_fontTable.get_font_em_size())*char_scale;
-            for (tl = 0; tl < tl_width.length; tl++) {
-                y_offset += tl_height[tl];
-                for (var c = 0; c < tl_char_codes[tl].length; c++) {
-                    if (tl_char_codes[tl][c] == 32) {
-                        continue;
-                    }
-                    if (tl_formatIdx[tl][c] < 0) {
-                        continue;
-                    }
-                    var char_data;
-                    if (tl_formatIdx[tl][c] == 0) {
-                        char_data = bitmap_fontTable.getCharData(tl_char_codes[tl][c].toString());
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5];
-                        vertices[vert_cnt++] = char_data[0];
-                        vertices[vert_cnt++] = char_data[1];
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4] + char_data[7];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5];
-                        vertices[vert_cnt++] = char_data[0] + char_data[2];
-                        vertices[vert_cnt++] = char_data[1];
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4] + char_data[7];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5] + char_data[6];
-                        vertices[vert_cnt++] = char_data[0] + char_data[2];
-                        vertices[vert_cnt++] = char_data[1] + char_data[3];
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4] + char_data[7];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5] + char_data[6];
-                        vertices[vert_cnt++] = char_data[0] + char_data[2];
-                        vertices[vert_cnt++] = char_data[1] + char_data[3];
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5] + char_data[6];
-                        vertices[vert_cnt++] = char_data[0];
-                        vertices[vert_cnt++] = char_data[1] + char_data[3];
-                        vertices[vert_cnt++] = tl_startx[tl][c] + char_data[4];
-                        vertices[vert_cnt++] = y_offset - activeFormat.font_table.getLineHeight() + char_data[5];
-                        vertices[vert_cnt++] = char_data[0];
-                        vertices[vert_cnt++] = char_data[1];
-                    }
-                    if (tl_formatIdx[tl][c] == 1) {
-                        char_data = bitmap_fontTable.fallbackTable.getCharData(tl_char_codes[tl][c].toString());
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset - activeFormat.font_table.fallbackTable.getLineHeight() + char_data[5];
-                        vertices2[vert_cnt2++] = char_data[0];
-                        vertices2[vert_cnt2++] = char_data[1];
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + tl_char_widths[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset - activeFormat.font_table.fallbackTable.getLineHeight() + char_data[5];
-                        vertices2[vert_cnt2++] = char_data[0] + char_data[2];
-                        vertices2[vert_cnt2++] = char_data[1];
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + tl_char_widths[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset;
-                        vertices2[vert_cnt2++] = char_data[0] + char_data[2];
-                        vertices2[vert_cnt2++] = char_data[1] + char_data[3];
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + tl_char_widths[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset;
-                        vertices2[vert_cnt2++] = char_data[0] + char_data[2];
-                        vertices2[vert_cnt2++] = char_data[1] + char_data[3];
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset;
-                        vertices2[vert_cnt2++] = char_data[0];
-                        vertices2[vert_cnt2++] = char_data[1] + char_data[3];
-                        vertices2[vert_cnt2++] = tl_startx[tl][c] + char_data[4];
-                        vertices2[vert_cnt2++] = y_offset - activeFormat.font_table.fallbackTable.getLineHeight() + char_data[5];
-                        vertices2[vert_cnt2++] = char_data[0];
-                        vertices2[vert_cnt2++] = char_data[1];
-                    }
-                }
-                //todo: this is a hack to fix multiline spacing in icycle. normally the multipliers should not be needed
-                if (this._textFormat.leading == 5) {
-                    y_offset += this._textFormat.leading * 1.6;
-                }
-                else if (this._textFormat.leading == 11) {
-                    y_offset += this._textFormat.leading * 1.8;
-                }
-                else {
-                    y_offset += this._textFormat.leading;
-                }
-            }
-            if (vert_cnt > 0) {
-                var attributesView = new _awayjs_core.AttributesView(Float32Array, 4);
-                attributesView.set(vertices);
-                var vertexBuffer = attributesView.attributesBuffer;
-                attributesView.dispose();
-                this._textElements = new _awayjs_graphics.TriangleElements(vertexBuffer);
-                this._textElements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
-                this._textElements.setUVs(new _awayjs_core.Float2Attributes(vertexBuffer));
-                this._textShape = this._graphics.addShape(_awayjs_graphics.Shape.getShape(this._textElements));
-                this._textShape.material = bitmap_fontTable.getMaterial();
-            }
-            if (vert_cnt2 > 0) {
-                var attributesView2 = new _awayjs_core.AttributesView(Float32Array, 4);
-                attributesView2.set(vertices2);
-                var vertexBuffer2 = attributesView2.attributesBuffer;
-                attributesView2.dispose();
-                this._textElements2 = new _awayjs_graphics.TriangleElements(vertexBuffer2);
-                this._textElements2.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer2));
-                this._textElements2.setUVs(new _awayjs_core.Float2Attributes(vertexBuffer2));
-                this._textShape2 = this._graphics.addShape(_awayjs_graphics.Shape.getShape(this._textElements2));
-                this._textShape2.material = bitmap_fontTable.fallbackTable.getMaterial();
-            }
-            var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
-            this.transform.colorTransform.color = activeFormat.color;
-            this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
-        }
-        else if (this._textFormat.font_table.assetType == TesselatedFontTable.assetType) {
-            var tess_fontTable = this._textFormat.font_table;
-            var vertices = new Float32Array(numVertices + numVertices2);
-            var vert_cnt = 0;
-            var charGlyph;
-            var char_vertices;
-            var char_scale = tess_fontTable._size_multiply;
-            var y_offset = 1 + ((tess_fontTable.ascent - tess_fontTable.get_font_em_size())) * char_scale;
-            var fallbackfont = this._textFormat.font_table.fallbackTable;
-            for (tl = 0; tl < tl_width.length; tl++) {
-                for (var c = 0; c < tl_char_codes[tl].length; c++) {
-                    if (tl_char_codes[tl][c] == 32) {
-                        continue;
-                    }
-                    if (tl_formatIdx[tl][c] < 0) {
-                        continue;
-                    }
-                    if (tl_formatIdx[tl][c] == 0) {
-                        charGlyph = tess_fontTable.getChar(tl_char_codes[tl][c].toString());
-                        if (charGlyph) {
-                            char_scale = tess_fontTable._size_multiply;
-                            //y_offset=2+(tess_fontTable.ascent-tess_fontTable.get_font_em_size())*char_scale;
-                            x_offset = tl_startx[tl][c];
-                            //char_scale = final_lines_char_scale[i][t] ;
-                            char_vertices = charGlyph.fill_data;
-                            if (char_vertices != null) {
-                                var buffer = new Float32Array(char_vertices.buffer);
-                                if (tess_fontTable.usesCurves) {
-                                    for (var v = 0; v < char_vertices.count; v++) {
-                                        vertices[vert_cnt++] = buffer[v * 3] * char_scale + x_offset;
-                                        vertices[vert_cnt++] = buffer[v * 3 + 1] * char_scale + y_offset;
-                                        vertices[vert_cnt++] = buffer[v * 3 + 2];
-                                    }
-                                }
-                                else {
-                                    for (var v = 0; v < char_vertices.count; v++) {
-                                        vertices[vert_cnt++] = buffer[v * 2] * char_scale + x_offset;
-                                        vertices[vert_cnt++] = buffer[v * 2 + 1] * char_scale + y_offset;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (tl_formatIdx[tl][c] == 1) {
-                        charGlyph = tess_fontTable.fallbackTable.getChar(tl_char_codes[tl][c].toString());
-                        if (charGlyph) {
-                            x_offset = tl_startx[tl][c];
-                            char_scale = fallbackfont._size_multiply;
-                            //y_offset=2+(fallbackfont.ascent-fallbackfont.get_font_em_size())*char_scale;
-                            char_vertices = charGlyph.fill_data;
-                            if (char_vertices != null) {
-                                var buffer = new Float32Array(char_vertices.buffer);
-                                if (tess_fontTable.usesCurves) {
-                                    for (var v = 0; v < char_vertices.count; v++) {
-                                        vertices[vert_cnt++] = buffer[v * 3] * char_scale + x_offset;
-                                        vertices[vert_cnt++] = buffer[v * 3 + 1] * char_scale + y_offset;
-                                        vertices[vert_cnt++] = buffer[v * 3 + 2];
-                                    }
-                                }
-                                else {
-                                    for (var v = 0; v < char_vertices.count; v++) {
-                                        vertices[vert_cnt++] = buffer[v * 2] * char_scale + x_offset;
-                                        vertices[vert_cnt++] = buffer[v * 2 + 1] * char_scale + y_offset;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                y_offset += (tess_fontTable.ascent + tess_fontTable.descent) * char_scale;
-                y_offset += this._textFormat.leading;
-            }
-            if (vert_cnt > 0) {
-                var attr_length = (tess_fontTable.usesCurves) ? 3 : 2;
-                var attributesView = new _awayjs_core.AttributesView(Float32Array, attr_length);
-                attributesView.set(vertices);
-                var vertexBuffer = attributesView.attributesBuffer;
-                attributesView.dispose();
-                this._textElements = new _awayjs_graphics.TriangleElements(vertexBuffer);
-                this._textElements.setPositions(new _awayjs_core.Float2Attributes(vertexBuffer));
-                if (tess_fontTable.usesCurves) {
-                    this._textElements.setCustomAttributes("curves", new _awayjs_core.Byte4Attributes(vertexBuffer, false));
-                }
-                this._textShape = this._graphics.addShape(_awayjs_graphics.Shape.getShape(this._textElements));
-                var sampler = new _awayjs_graphics.Sampler2D();
-                this._textShape.style = new _awayjs_graphics.Style();
-                if (this._textFormat.material) {
-                    this._textShape.material = this._textFormat.material;
-                    this._textShape.style.addSamplerAt(sampler, this._textShape.material.getTextureAt(0));
-                    this._textShape.material.animateUVs = true;
-                    this._textShape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, this._textFormat.uv_values[0], this._textFormat.uv_values[1]);
-                }
-                else {
-                    this._textShape.material = _awayjs_graphics.Graphics.get_material_for_color(0xffffff, 1); //this.textColor);//this._textFormat.color);
-                    this._textShape.material.useColorTransform = true;
-                    var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
-                    this.transform.colorTransform.color = this._textFormat.color;
-                    this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
-                }
-            }
-            if (this._textShape) {
-                this.material = this._textShape.material;
-                if (tess_fontTable.usesCurves) {
-                    this.material.curves = true;
+                var obj = _awayjs_graphics.Graphics.get_material_for_color(textShape.format.color, 1);
+                textShape.shape.material = obj.material;
+                if (obj.colorPos) {
+                    textShape.shape.material = obj.material;
+                    textShape.shape.style.addSamplerAt(sampler, textShape.shape.material.getTextureAt(0));
+                    textShape.shape.material.animateUVs = true;
+                    textShape.shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
                 }
             }
         }
@@ -35590,6 +35017,249 @@ AntiAliasType.ADVANCED = "advanced";
  * <code>AntiAliasType.NORMAL</code>.
  */
 AntiAliasType.NORMAL = "normal";
+
+/**
+ * The TextFormat class represents character formatting information. Use the
+ * TextFormat class to create specific text formatting for text fields. You
+ * can apply text formatting to both static and dynamic text fields. The
+ * properties of the TextFormat class apply to device and embedded fonts.
+ * However, for embedded fonts, bold and italic text actually require specific
+ * fonts. If you want to display bold or italic text with an embedded font,
+ * you need to embed the bold and italic variations of that font.
+ *
+ * <p> You must use the constructor <code>new TextFormat()</code> to create a
+ * TextFormat object before setting its properties. When you apply a
+ * TextFormat object to a text field using the
+ * <code>TextField.defaultTextFormat</code> property or the
+ * <code>TextField.setTextFormat()</code> method, only its defined properties
+ * are applied. Use the <code>TextField.defaultTextFormat</code> property to
+ * apply formatting BEFORE you add text to the <code>TextField</code>, and the
+ * <code>setTextFormat()</code> method to add formatting AFTER you add text to
+ * the <code>TextField</code>. The TextFormat properties are <code>null</code>
+ * by default because if you don't provide values for the properties, Flash
+ * Player uses its own default formatting. The default formatting that Flash
+ * Player uses for each property(if property's value is <code>null</code>) is
+ * as follows:</p>
+ *
+ * <p>The default formatting for each property is also described in each
+ * property description.</p>
+ */
+var BitmapFontChar = (function () {
+    function BitmapFontChar(id, x, y, width, height, xoff, yoff, xadv, page, channel) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.x_offset = xoff;
+        this.y_offset = yoff;
+        this.x_advance = xadv;
+        this.page = page;
+        this.channel = channel;
+    }
+    return BitmapFontChar;
+}());
+
+/**
+ * GraphicBase wraps a TriangleElements as a scene graph instantiation. A GraphicBase is owned by a Sprite object.
+ *
+ *
+ * @see away.base.TriangleElements
+ * @see away.entities.Sprite
+ *
+ * @class away.base.GraphicBase
+ */
+var BitmapFontTable = (function (_super) {
+    __extends(BitmapFontTable, _super);
+    //TODO test shader picking
+    //		public get shaderPickingDetails():boolean
+    //		{
+    //
+    //			return this.sourceEntity.shaderPickingDetails;
+    //		}
+    /**
+     * Creates a new TesselatedFont object
+     */
+    function BitmapFontTable() {
+        var _this = _super.call(this) || this;
+        _this._font_chars = [];
+        _this._materials = [];
+        _this._font_chars_dic = new Object();
+        _this._ascent = 0;
+        _this._descent = 0;
+        _this._current_size = 0;
+        _this._size_multiply = 0;
+        _this._init_size = 0;
+        _this._texture_width = 0;
+        _this._texture_height = 0;
+        _this._adjust_size = 0;
+        return _this;
+    }
+    Object.defineProperty(BitmapFontTable.prototype, "assetType", {
+        get: function () {
+            return BitmapFontTable.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapFontTable.prototype.initFontSize = function (font_size) {
+        if (this.fallbackTable)
+            this.fallbackTable.initFontSize(font_size);
+        if (this._adjust_size)
+            font_size *= this._adjust_size;
+        if (this._current_size == font_size)
+            return;
+        this._current_size = font_size;
+        this._size_multiply = font_size / this._init_size;
+    };
+    BitmapFontTable.prototype.getCharDataCanvas = function (char_code) {
+        var this_char = this._font_chars_dic[char_code];
+        if (this_char) {
+            //console.log("this_char found");
+            return [this_char.x, this_char.y, this_char.width, this_char.height, this_char.x_offset * this._size_multiply, this_char.y_offset * this._size_multiply];
+        }
+        //console.log("this_char not found" + char_code);
+        return [];
+    };
+    BitmapFontTable.prototype.getCharData = function (char_code) {
+        var this_char = this._font_chars_dic[char_code];
+        if (this_char) {
+            var realheight = (this_char.height / this._init_size) * this._current_size;
+            var realWidth = (this_char.width / this._init_size) * this._current_size;
+            //console.log("this_char found");
+            return [this_char.x / this._texture_width, this_char.y / this._texture_height, this_char.width / this._texture_width, this_char.height / this._texture_height, this_char.x_offset * this._size_multiply, this_char.y_offset * this._size_multiply, realheight, realWidth];
+        }
+        //console.log("this_char not found" + char_code);
+        return [];
+    };
+    BitmapFontTable.prototype.getCharVertCnt = function (char_code) {
+        return 6 * 4;
+    };
+    Object.defineProperty(BitmapFontTable.prototype, "texture_width", {
+        get: function () {
+            return this._texture_width;
+        },
+        set: function (value) {
+            this._texture_width = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapFontTable.prototype, "texture_height", {
+        get: function () {
+            return this._texture_height;
+        },
+        set: function (value) {
+            this._texture_height = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapFontTable.prototype.hasChar = function (char_code) {
+        return this._font_chars_dic[char_code] != null;
+    };
+    BitmapFontTable.prototype.getCharWidth = function (char_code) {
+        var this_char = this._font_chars_dic[char_code];
+        if (this_char)
+            return this._size_multiply * (this_char.x_advance);
+        return 0;
+    };
+    BitmapFontTable.prototype.fillTextRun = function (tf, format, startWord, wordCnt) {
+    };
+    BitmapFontTable.prototype.getLineHeight = function () {
+        return this._current_size;
+    };
+    /**
+     *
+     */
+    BitmapFontTable.prototype.dispose = function () {
+        var len = this._materials.length;
+        for (var i = 0; i < len; ++i) {
+            this._materials[i].dispose();
+        }
+        this._materials.length = 0;
+        this._font_chars.length = 0;
+        this._font_chars_dic = null;
+    };
+    BitmapFontTable.prototype.addMaterial = function (material) {
+        this._materials.push(material);
+    };
+    BitmapFontTable.prototype.getMaterial = function (idx) {
+        if (idx === void 0) { idx = 0; }
+        return this._materials[idx];
+    };
+    Object.defineProperty(BitmapFontTable.prototype, "ascent", {
+        get: function () {
+            return this._ascent;
+        },
+        set: function (value) {
+            this._ascent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapFontTable.prototype, "descent", {
+        get: function () {
+            return this._descent;
+        },
+        set: function (value) {
+            this._descent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapFontTable.prototype, "offset_x", {
+        get: function () {
+            return this._offset_x;
+        },
+        set: function (value) {
+            this._offset_x = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapFontTable.prototype, "offset_y", {
+        get: function () {
+            return this._offset_y;
+        },
+        set: function (value) {
+            this._offset_y = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapFontTable.prototype.get_font_chars = function () {
+        return this._font_chars;
+    };
+    BitmapFontTable.prototype.get_font_em_size = function () {
+        return this._font_em_size;
+    };
+    BitmapFontTable.prototype.set_whitespace_width = function (value) {
+        this._whitespace_width = value;
+    };
+    BitmapFontTable.prototype.get_whitespace_width = function () {
+        return this._whitespace_width;
+    };
+    BitmapFontTable.prototype.set_font_em_size = function (font_em_size) {
+        this._font_em_size = font_em_size;
+    };
+    /**
+     *
+     */
+    BitmapFontTable.prototype.getChar = function (name) {
+        return this._font_chars_dic[name];
+    };
+    /**
+     *
+     */
+    BitmapFontTable.prototype.setChar = function (id, x, y, width, height, xoff, yoff, xadv, page, channel) {
+        var bitmap_font_char = new BitmapFontChar(id, x, y, width, height, xoff, yoff, xadv, page, channel);
+        this._font_chars.push(bitmap_font_char);
+        this._font_chars_dic[id] = bitmap_font_char;
+    };
+    return BitmapFontTable;
+}(_awayjs_core.AssetBase));
+BitmapFontTable.assetType = "[asset BitmapFontTable]";
 
 /**
  * Font is a container for FontTables.
