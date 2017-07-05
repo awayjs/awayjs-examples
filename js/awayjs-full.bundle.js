@@ -23103,56 +23103,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -30818,8 +30772,8 @@ var TextField = (function (_super) {
         _this._textRuns_words = []; // stores words-offset, word-count and width for each textrun
         _this._maxWidthLine = 0;
         _this.textShapes = {};
-        _this._textFieldWidth = 100;
-        _this._textFieldHeight = 100;
+        _this._width = 100;
+        _this._height = 100;
         _this._textWidth = 0;
         _this._textHeight = 0;
         _this.type = TextFieldType.STATIC;
@@ -30832,6 +30786,7 @@ var TextField = (function (_super) {
         _this.backgroundColor = 0xffffff;
         _this.border = false;
         _this.borderColor = 0x000000;
+        _this._graphics = _awayjs_graphics.Graphics.getGraphics(_this); //unique graphics object for each TextField
         return _this;
     }
     TextField.prototype.getTextShapeForIdentifierAndFormat = function (id, format) {
@@ -30847,10 +30802,12 @@ var TextField = (function (_super) {
             return this._autoSize;
         },
         set: function (value) {
+            if (this._autoSize == value)
+                return;
             this._autoSize = value;
-            //console.log("set autoSize", value);
             this._positionsDirty = true;
-            //	this.reConstruct();
+            if (this._autoSize != TextFieldAutoSize.NONE)
+                this._pInvalidateBounds();
         },
         enumerable: true,
         configurable: true
@@ -30858,26 +30815,32 @@ var TextField = (function (_super) {
     TextField.prototype._pUpdateBoxBounds = function () {
         _super.prototype._pUpdateBoxBounds.call(this);
         this.reConstruct();
-        this._pBoxBounds.top = 0;
-        this._pBoxBounds.left = 0;
-        this._pBoxBounds.bottom = this._textFieldHeight;
-        this._pBoxBounds.right = this._textFieldWidth;
-        //this._pBoxBounds.width=this._textWidth;
-        //this._pBoxBounds.height=this._textHeight;
-        //this._pBoxBounds.union(this._graphics.getBoxBounds(), this._pBoxBounds);
+        this._pBoxBounds.x = 0;
+        this._pBoxBounds.y = 0;
+        this._pBoxBounds.width = this._width;
+        this._pBoxBounds.height = this._height;
     };
     TextField.prototype.getBox = function (targetCoordinateSpace) {
         if (targetCoordinateSpace === void 0) { targetCoordinateSpace = null; }
-        if (!this.selectable) {
+        //TODO targetCoordinateSpace
+        if (this._boxBoundsInvalid)
+            this._pUpdateBoxBounds();
+        if (targetCoordinateSpace == null || targetCoordinateSpace == this)
+            return this._pBoxBounds;
+        if (targetCoordinateSpace == this._pParent) {
+            if (this._registrationMatrix3D) {
+                if (this._tempTransform == null)
+                    this._tempTransform = new _awayjs_core.Matrix3D();
+                this._tempTransform.copyFrom(this._transform.matrix3D);
+                this._tempTransform.prepend(this._registrationMatrix3D);
+                if (this.alignmentMode != AlignmentMode.REGISTRATION_POINT)
+                    this._tempTransform.appendTranslation(-this._registrationMatrix3D._rawData[12] * this._transform.scale.x, -this._registrationMatrix3D._rawData[13] * this._transform.scale.y, -this._registrationMatrix3D._rawData[14] * this._transform.scale.z);
+                return this._tempTransform.transformBox(this._pBoxBounds);
+            }
+            return this._transform.matrix3D.transformBox(this._pBoxBounds);
         }
-        /*
-        var box:Box=new Box();
-        box.bottom=this._textHeight;
-        box.left=0;
-        box.right=this._textWidth;
-        box.top=0;
-        */
-        return _super.prototype.getBox.call(this, targetCoordinateSpace);
+        else
+            return targetCoordinateSpace.transform.inverseConcatenatedMatrix3D.transformBox(this.transform.concatenatedMatrix3D.transformBox(this._pBoxBounds));
     };
     Object.defineProperty(TextField.prototype, "assetType", {
         /**
@@ -30934,6 +30897,27 @@ var TextField = (function (_super) {
                 return;
             this._defaultTextFormat = value;
             this._textDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "height", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._autoSize != TextFieldAutoSize.NONE)
+                this.reConstruct();
+            return this._height;
+        },
+        set: function (val) {
+            if (this._height == val)
+                return;
+            if (this._autoSize != TextFieldAutoSize.NONE)
+                return;
+            this._height = val;
+            this._positionsDirty = true;
+            this._pInvalidateBounds();
         },
         enumerable: true,
         configurable: true
@@ -31018,6 +31002,8 @@ var TextField = (function (_super) {
                 return;
             this._text = value;
             this._textDirty = true;
+            if (this._autoSize != TextFieldAutoSize.NONE)
+                this._pInvalidateBounds();
         },
         enumerable: true,
         configurable: true
@@ -31032,23 +31018,60 @@ var TextField = (function (_super) {
         set: function (value) {
             this._textFormat = value;
             this._textDirty = true;
+            if (this._autoSize != TextFieldAutoSize.NONE)
+                this._pInvalidateBounds();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TextField.prototype, "graphics", {
+    /**
+     *
+     * @param renderer
+     *
+     * @internal
+     */
+    TextField.prototype._acceptTraverser = function (traverser) {
+        this.reConstruct(true);
+        if (this._textFormat && !(this._textFormat.font_table.isAsset(TesselatedFontTable) && (this._textFormat.material))) {
+            var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
+            //if(new_ct.color==0xffffff){
+            this.transform.colorTransform.color = (this.textColor != null) ? this.textColor : this._textFormat.color;
+            this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
+        }
+        this._graphics.acceptTraverser(traverser);
+    };
+    Object.defineProperty(TextField.prototype, "scaleX", {
         /**
-         * The graphics used by the sprite that provides it with its shape.
+         * Indicates the horizontal scale(percentage) of the object as applied from
+         * the registration point. The default registration point is(0,0). 1.0
+         * equals 100% scale.
+         *
+         * <p>Scaling the local coordinate system changes the <code>x</code> and
+         * <code>y</code> property values, which are defined in whole pixels. </p>
          */
         get: function () {
-            this.reConstruct(true);
-            if (this._textFormat && !(this._textFormat.font_table.isAsset(TesselatedFontTable) && (this._textFormat.material))) {
-                var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
-                //if(new_ct.color==0xffffff){
-                this.transform.colorTransform.color = (this.textColor != null) ? this.textColor : this._textFormat.color;
-                this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
-            }
-            return this._graphics;
+            return this._transform.scale.x;
+        },
+        set: function (val) {
+            this._setScaleX(val);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "scaleY", {
+        /**
+         * Indicates the vertical scale(percentage) of an object as applied from the
+         * registration point of the object. The default registration point is(0,0).
+         * 1.0 is 100% scale.
+         *
+         * <p>Scaling the local coordinate system changes the <code>x</code> and
+         * <code>y</code> property values, which are defined in whole pixels. </p>
+         */
+        get: function () {
+            return this._transform.scale.y;
+        },
+        set: function (val) {
+            this._setScaleY(val);
         },
         enumerable: true,
         configurable: true
@@ -31089,36 +31112,7 @@ var TextField = (function (_super) {
          */
         get: function () {
             this.reConstruct();
-            //console.log("get textWidth size", this._textWidth);
             return this._textWidth;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textFieldWidth", {
-        get: function () {
-            this.reConstruct();
-            //console.log("get textfiekld size", this._textFieldWidth);
-            return this._textFieldWidth;
-        },
-        set: function (val) {
-            if (this._textFieldWidth == val)
-                return;
-            this._positionsDirty = true;
-            //console.log("set textfiekld size", val);
-            this._textFieldWidth = val;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TextField.prototype, "textFieldHeight", {
-        get: function () {
-            this.reConstruct();
-            return this._textFieldHeight;
-        },
-        set: function (val) {
-            this._positionsDirty = true;
-            this._textFieldHeight = val;
         },
         enumerable: true,
         configurable: true
@@ -31134,6 +31128,44 @@ var TextField = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TextField.prototype, "x", {
+        get: function () {
+            if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap)
+                this.reConstruct();
+            return this._transform.position.x;
+        },
+        set: function (val) {
+            if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap)
+                this.reConstruct();
+            if (this._transform.position.x == val)
+                return;
+            this._transform.matrix3D._rawData[12] = val;
+            this._transform.invalidatePosition();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "width", {
+        /**
+         *
+         */
+        get: function () {
+            if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap)
+                this.reConstruct();
+            return this._width;
+        },
+        set: function (val) {
+            if (this._width == val)
+                return;
+            if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap)
+                return;
+            this._width = val;
+            this._positionsDirty = true;
+            this._pInvalidateBounds();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TextField.prototype, "wordWrap", {
         /**
          * The width of the text in pixels.
@@ -31142,8 +31174,12 @@ var TextField = (function (_super) {
             return this._wordWrap;
         },
         set: function (val) {
+            if (this._wordWrap == val)
+                return;
             this._wordWrap = val;
             this._positionsDirty = true;
+            if (!val)
+                this._pInvalidateBounds();
         },
         enumerable: true,
         configurable: true
@@ -31244,8 +31280,9 @@ var TextField = (function (_super) {
                 this._textWidth = 0;
                 this._textHeight = 0;
                 if (this._autoSize != TextFieldAutoSize.NONE) {
-                    this._textFieldWidth = 4;
-                    this._textFieldHeight = 4;
+                    this._width = 4;
+                    this._height = 4;
+                    this._pInvalidateBounds();
                 }
             }
         }
@@ -31350,17 +31387,20 @@ var TextField = (function (_super) {
         var lineLength = [];
         var numSpacesPerline = [];
         // if we have autosize enabled, and no wordWrap, we can adjust the textfield width
-        if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap) {
-            var oldSize = this._textFieldWidth;
-            this._textFieldWidth = 4 + this._maxWidthLine + this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin;
+        if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap && this._textDirty) {
+            var oldSize = this._width;
+            this._width = 4 + this._maxWidthLine + this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin;
+            this._pInvalidateBounds();
             if (this._autoSize == TextFieldAutoSize.RIGHT) {
-                this.x -= this._textFieldWidth - oldSize;
+                this._transform.matrix3D._rawData[12] -= this._width - oldSize;
+                this._transform.invalidatePosition();
             }
-            if (this._autoSize == TextFieldAutoSize.CENTER) {
-                this.x -= (this._textFieldWidth - oldSize) / 2;
+            else if (this._autoSize == TextFieldAutoSize.CENTER) {
+                this._transform.matrix3D._rawData[12] -= (this._width - oldSize) / 2;
+                this._transform.invalidatePosition();
             }
         }
-        var maxLineWidth = this._textFieldWidth - (4 + this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin);
+        var maxLineWidth = this._width - (4 + this._textFormat.indent + this._textFormat.leftMargin + this._textFormat.rightMargin);
         for (tr = 0; tr < tr_len; tr++) {
             format = this._textRuns_formats[tr];
             format.font_table.initFontSize(format.size);
@@ -31471,7 +31511,8 @@ var TextField = (function (_super) {
         //this._textWidth+=this._textFormat.indent+ this._textFormat.leftMargin+ this._textFormat.rightMargin;
         // if autosize is enabled, we adjust the textFieldHeight
         if (this.autoSize != TextFieldAutoSize.NONE) {
-            this._textFieldHeight = this._textHeight + 4;
+            this._height = this._textHeight + 4;
+            this._pInvalidateBounds();
         }
     };
     TextField.prototype.buildGlyphs = function () {
@@ -31546,6 +31587,9 @@ var TextField = (function (_super) {
      */
     TextField.prototype.appendText = function (newText) {
         this._text += newText;
+        this._textDirty = true;
+        if (this._autoSize != TextFieldAutoSize.NONE)
+            this._pInvalidateBounds();
     };
     /**
      * *tells the Textfield that a paragraph is defined completly.
@@ -31553,7 +31597,10 @@ var TextField = (function (_super) {
      */
     TextField.prototype.closeParagraph = function () {
         this._text += "\n";
+        this._textDirty = true;
         //TODO
+        if (this._autoSize != TextFieldAutoSize.NONE)
+            this._pInvalidateBounds();
     };
     /**
      * Returns a rectangle that is the bounding box of the character.
@@ -31874,7 +31921,7 @@ var TextField = (function (_super) {
         newInstance.text = this._text;
     };
     return TextField;
-}(Sprite));
+}(DisplayObject));
 TextField._textFields = [];
 TextField.assetType = "[asset TextField]";
 
