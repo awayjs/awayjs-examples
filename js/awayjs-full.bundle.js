@@ -16531,175 +16531,186 @@ var GraphicsFactoryStrokes = (function () {
                         new_pnts_cnt += 2;
                     }
                     else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
-                        start_right = new_pnts[new_pnts_cnt++];
-                        start_left = new_pnts[new_pnts_cnt++];
-                        start_point = new_pnts[new_pnts_cnt++];
-                        ctr_point = new_pnts[new_pnts_cnt++];
-                        end_point = new_pnts[new_pnts_cnt++];
-                        end_right = new_pnts[new_pnts_cnt];
-                        end_left = new_pnts[new_pnts_cnt + 1];
-                        // get the directional vector for the first part of the curve
-                        tmp_dir_point.x = ctr_point.x - start_point.x;
-                        tmp_dir_point.y = ctr_point.y - start_point.y;
-                        tmp_point3.x = ctr_point.x - start_point.x;
-                        tmp_point3.y = ctr_point.y - start_point.y;
-                        var length1 = tmp_point3.length;
-                        tmp_dir_point.normalize();
-                        // get the directional vector for the second part of the curve
-                        tmp_point2.x = end_point.x - ctr_point.x;
-                        tmp_point2.y = end_point.y - ctr_point.y;
-                        var length2 = tmp_point2.length;
-                        tmp_point2.normalize();
-                        var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
-                        if (length1 > length2) {
-                            length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
-                        }
-                        // get angle to positive x-axis for both dir-vectors, than get the difference between those
-                        var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                        var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                        dir_delta = angle_2 - angle_1;
-                        if (dir_delta > 180)
-                            dir_delta -= 360;
-                        if (dir_delta < -180)
-                            dir_delta += 360;
-                        //var half_angle:number=dir_delta*0.5*MathConsts.DEGREES_TO_RADIANS;
-                        //var distance:number=strokeStyle.half_thickness / Math.sin(half_angle);
-                        //tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
-                        //tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
-                        //tmp_point3.normalize();
-                        //var merged_pnt_ri:Point = new Point(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
-                        //var merged_pnt_le:Point = new Point(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
-                        var curve_x = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
-                        var curve_y = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
-                        var curve_2x = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
-                        var curve_2y = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
-                        tmp_point3.x = -1 * (curve_y - curve_2y);
-                        tmp_point3.y = curve_x - curve_2x;
-                        tmp_point3.normalize();
-                        //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
-                        // move the point on the curve to use correct thickness
-                        ctr_right.x = curve_x - (tmp_point3.x * strokeStyle.half_thickness);
-                        ctr_right.y = curve_y - (tmp_point3.y * strokeStyle.half_thickness);
-                        ctr_left.x = curve_x + (tmp_point3.x * strokeStyle.half_thickness);
-                        ctr_left.y = curve_y + (tmp_point3.y * strokeStyle.half_thickness);
-                        //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
-                        //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
-                        // calculate the actual controlpoints
-                        ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
-                        ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
-                        ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
-                        ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
-                        //ctr_right=merged_pnt_ri;
-                        //ctr_left=merged_pnt_le;
-                        /*
-                         // controlpoints version2:
-                         tmp_dir_point.x = start_left.x-start_right.x;
-                         tmp_dir_point.y = start_left.y-start_right.y;
-                         tmp_point2.x = end_left.x-end_right.x;
-                         tmp_point2.y = end_left.y-end_right.y;
+                        if (curves) {
+                            start_right = new_pnts[new_pnts_cnt++];
+                            start_left = new_pnts[new_pnts_cnt++];
+                            start_point = new_pnts[new_pnts_cnt++];
+                            ctr_point = new_pnts[new_pnts_cnt++];
+                            end_point = new_pnts[new_pnts_cnt++];
+                            end_right = new_pnts[new_pnts_cnt];
+                            end_left = new_pnts[new_pnts_cnt + 1];
+                            // get the directional vector for the first part of the curve
+                            tmp_dir_point.x = ctr_point.x - start_point.x;
+                            tmp_dir_point.y = ctr_point.y - start_point.y;
+                            tmp_point3.x = ctr_point.x - start_point.x;
+                            tmp_point3.y = ctr_point.y - start_point.y;
+                            var length1 = tmp_point3.length;
+                            tmp_dir_point.normalize();
+                            // get the directional vector for the second part of the curve
+                            tmp_point2.x = end_point.x - ctr_point.x;
+                            tmp_point2.y = end_point.y - ctr_point.y;
+                            var length2 = tmp_point2.length;
+                            tmp_point2.normalize();
+                            var length_calc = 0.5 - ((length2 - length1) / length1) * 0.5;
+                            if (length1 > length2) {
+                                length_calc = 0.5 + ((length1 - length2) / length2) * 0.5;
+                            }
+                            // get angle to positive x-axis for both dir-vectors, than get the difference between those
+                            var angle_1 = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                            var angle_2 = Math.atan2(tmp_point2.y, tmp_point2.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                            dir_delta = angle_2 - angle_1;
+                            if (dir_delta > 180)
+                                dir_delta -= 360;
+                            if (dir_delta < -180)
+                                dir_delta += 360;
+                            //var half_angle:number=dir_delta*0.5*MathConsts.DEGREES_TO_RADIANS;
+                            //var distance:number=strokeStyle.half_thickness / Math.sin(half_angle);
+                            //tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
+                            //tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
+                            //tmp_point3.normalize();
+                            //var merged_pnt_ri:Point = new Point(ctr_point.x - (tmp_point3.x * distance), ctr_point.y - (tmp_point3.y * distance));
+                            //var merged_pnt_le:Point = new Point(ctr_point.x + (tmp_point3.x * distance), ctr_point.y + (tmp_point3.y * distance));
+                            var curve_x = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.x, ctr_point.x, end_point.x);
+                            var curve_y = GraphicsFactoryHelper.getQuadricBezierPosition(0.5, start_point.y, ctr_point.y, end_point.y);
+                            var curve_2x = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.x, ctr_point.x, end_point.x);
+                            var curve_2y = GraphicsFactoryHelper.getQuadricBezierPosition(0.501, start_point.y, ctr_point.y, end_point.y);
+                            tmp_point3.x = -1 * (curve_y - curve_2y);
+                            tmp_point3.y = curve_x - curve_2x;
+                            tmp_point3.normalize();
+                            //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
+                            // move the point on the curve to use correct thickness
+                            ctr_right.x = curve_x - (tmp_point3.x * strokeStyle.half_thickness);
+                            ctr_right.y = curve_y - (tmp_point3.y * strokeStyle.half_thickness);
+                            ctr_left.x = curve_x + (tmp_point3.x * strokeStyle.half_thickness);
+                            ctr_left.y = curve_y + (tmp_point3.y * strokeStyle.half_thickness);
+                            //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
+                            //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
+                            // calculate the actual controlpoints
+                            ctr_right.x = ctr_right.x * 2 - start_right.x / 2 - end_right.x / 2;
+                            ctr_right.y = ctr_right.y * 2 - start_right.y / 2 - end_right.y / 2;
+                            ctr_left.x = ctr_left.x * 2 - start_left.x / 2 - end_left.x / 2;
+                            ctr_left.y = ctr_left.y * 2 - start_left.y / 2 - end_left.y / 2;
+                            //ctr_right=merged_pnt_ri;
+                            //ctr_left=merged_pnt_le;
+                            /*
+                             // controlpoints version2:
+                             tmp_dir_point.x = start_left.x-start_right.x;
+                             tmp_dir_point.y = start_left.y-start_right.y;
+                             tmp_point2.x = end_left.x-end_right.x;
+                             tmp_point2.y = end_left.y-end_right.y;
 
-                         ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
-                         ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
-                         var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
+                             ctr_right.x = ctr_point.x-(tmp_dir_point.x/2);
+                             ctr_right.y = ctr_point.y-(tmp_dir_point.y/2);
+                             var new_end_ri:Point = new Point(end_point.x+(tmp_dir_point.x/2), end_point.y+(tmp_dir_point.y/2));
 
-                         ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
-                         ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
-                         var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
+                             ctr_left.x = ctr_point.x+(tmp_dir_point.x/2);
+                             ctr_left.y = ctr_point.y+(tmp_dir_point.y/2);
+                             var new_end_le:Point = new Point(end_point.x-(tmp_dir_point.x/2), end_point.y-(tmp_dir_point.y/2));
 
-                         */
-                        /*
-                         tmp_point2.x=ctr_point.x-start_point.x;
-                         tmp_point2.y=ctr_point.y-start_point.y;
-                         var m1:number=tmp_point2.y/tmp_point2.x;
-                         tmp_point2.x=end_point.x-ctr_point.x;
-                         tmp_point2.y=end_point.y-ctr_point.y;
-                         var m2:number=tmp_point2.y/tmp_point2.x;
+                             */
+                            /*
+                             tmp_point2.x=ctr_point.x-start_point.x;
+                             tmp_point2.y=ctr_point.y-start_point.y;
+                             var m1:number=tmp_point2.y/tmp_point2.x;
+                             tmp_point2.x=end_point.x-ctr_point.x;
+                             tmp_point2.y=end_point.y-ctr_point.y;
+                             var m2:number=tmp_point2.y/tmp_point2.x;
 
-                         if(m1==m2){
-                         console.log("lines for curve are parallel - this should not be possible!")
-                         }
-                         if((!isFinite(m1))&&(!isFinite(m2))){
-                         console.log("both lines are vertical - this should not be possible!")
-                         }
-                         else if((isFinite(m1))&&(isFinite(m2))) {
-                         var b_r1:number = start_right.y - (m1 * start_right.x);
-                         var b_l1:number = start_left.y - (m1 * start_left.x);
-                         var b_r2:number = end_right.y - (m2 * end_right.x);
-                         var b_l2:number = end_left.y - (m2 * end_left.x);
-                         ctr_right.x = (b_r2 - b_r1) / (m1 - m2);
-                         ctr_right.y = m1 * ctr_right.x + b_r1;
-                         ctr_left.x = (b_l2 - b_l1) / (m1 - m2);
-                         ctr_left.y = m1 * ctr_left.x + b_l1;
-                         }
-                         else if((!isFinite(m1))&&(isFinite(m2))) {
-                         console.log("second part of curve is vertical line");
-                         var b_r2:number = end_right.y - (m2 * end_right.x);
-                         var b_l2:number = end_left.y - (m2 * end_left.x);
-                         ctr_right.x =  start_right.x;
-                         ctr_right.y = m2 * ctr_right.x + b_r2;
-                         ctr_left.x =  start_left.x;
-                         ctr_left.y = m2 * ctr_left.x + b_l2;
-                         }
-                         else if((isFinite(m1))&&(!isFinite(m2))) {
-                         console.log("first part of curve is vertical line");
-                         var b_r1:number = start_right.y - (m1 * start_right.x);
-                         var b_l1:number = start_left.y - (m1 * start_left.x);
-                         ctr_right.x =  end_right.x;
-                         ctr_right.y = m1 * ctr_right.x + b_r1;
-                         ctr_left.x =  end_left.x;
-                         ctr_left.y = m1 * ctr_left.x + b_l1;
-                         }
-                         */
-                        /*
-                         tmp_point2.x=ctr_right.x-ctr_left.x;
-                         tmp_point2.y=ctr_right.y-ctr_left.y;
-                         if(tmp_point2.length!=strokeStyle.thickness){
+                             if(m1==m2){
+                             console.log("lines for curve are parallel - this should not be possible!")
+                             }
+                             if((!isFinite(m1))&&(!isFinite(m2))){
+                             console.log("both lines are vertical - this should not be possible!")
+                             }
+                             else if((isFinite(m1))&&(isFinite(m2))) {
+                             var b_r1:number = start_right.y - (m1 * start_right.x);
+                             var b_l1:number = start_left.y - (m1 * start_left.x);
+                             var b_r2:number = end_right.y - (m2 * end_right.x);
+                             var b_l2:number = end_left.y - (m2 * end_left.x);
+                             ctr_right.x = (b_r2 - b_r1) / (m1 - m2);
+                             ctr_right.y = m1 * ctr_right.x + b_r1;
+                             ctr_left.x = (b_l2 - b_l1) / (m1 - m2);
+                             ctr_left.y = m1 * ctr_left.x + b_l1;
+                             }
+                             else if((!isFinite(m1))&&(isFinite(m2))) {
+                             console.log("second part of curve is vertical line");
+                             var b_r2:number = end_right.y - (m2 * end_right.x);
+                             var b_l2:number = end_left.y - (m2 * end_left.x);
+                             ctr_right.x =  start_right.x;
+                             ctr_right.y = m2 * ctr_right.x + b_r2;
+                             ctr_left.x =  start_left.x;
+                             ctr_left.y = m2 * ctr_left.x + b_l2;
+                             }
+                             else if((isFinite(m1))&&(!isFinite(m2))) {
+                             console.log("first part of curve is vertical line");
+                             var b_r1:number = start_right.y - (m1 * start_right.x);
+                             var b_l1:number = start_left.y - (m1 * start_left.x);
+                             ctr_right.x =  end_right.x;
+                             ctr_right.y = m1 * ctr_right.x + b_r1;
+                             ctr_left.x =  end_left.x;
+                             ctr_left.y = m1 * ctr_left.x + b_l1;
+                             }
+                             */
+                            /*
+                             tmp_point2.x=ctr_right.x-ctr_left.x;
+                             tmp_point2.y=ctr_right.y-ctr_left.y;
+                             if(tmp_point2.length!=strokeStyle.thickness){
 
-                         tmp_point.x=ctr_left.x+tmp_point2.x*0.5;
-                         tmp_point.y=ctr_left.y+tmp_point2.y*0.5;
-                         tmp_point2.normalize();
-                         ctr_left.x=tmp_point.x-tmp_point2.x*strokeStyle.half_thickness;
-                         ctr_left.y=tmp_point.y-tmp_point2.y*strokeStyle.half_thickness;
-                         ctr_right.x=tmp_point.x+tmp_point2.x*strokeStyle.half_thickness;
-                         ctr_right.y=tmp_point.y+tmp_point2.y*strokeStyle.half_thickness;
-                         }
-                         */
-                        //ctr_right=ctr_point;
-                        //ctr_left=ctr_point;
-                        //console.log(start_point.x);
-                        //console.log(start_point.y);
-                        //console.log(ctr_point.x);
-                        //console.log(ctr_point.y);
-                        //console.log(end_point.x);
-                        //console.log(end_point.y);
-                        var subdivided = [];
-                        var subdivided2 = [];
-                        GraphicsFactoryHelper.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
-                        if (dir_delta > 0) {
-                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                                // right curved
-                                // concave curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -128, final_vert_list, curves);
-                                // fills
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list, curves);
-                                // convex curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 127, final_vert_list, curves);
+                             tmp_point.x=ctr_left.x+tmp_point2.x*0.5;
+                             tmp_point.y=ctr_left.y+tmp_point2.y*0.5;
+                             tmp_point2.normalize();
+                             ctr_left.x=tmp_point.x-tmp_point2.x*strokeStyle.half_thickness;
+                             ctr_left.y=tmp_point.y-tmp_point2.y*strokeStyle.half_thickness;
+                             ctr_right.x=tmp_point.x+tmp_point2.x*strokeStyle.half_thickness;
+                             ctr_right.y=tmp_point.y+tmp_point2.y*strokeStyle.half_thickness;
+                             }
+                             */
+                            //ctr_right=ctr_point;
+                            //ctr_left=ctr_point;
+                            //console.log(start_point.x);
+                            //console.log(start_point.y);
+                            //console.log(ctr_point.x);
+                            //console.log(ctr_point.y);
+                            //console.log(end_point.x);
+                            //console.log(end_point.y);
+                            var subdivided = [];
+                            var subdivided2 = [];
+                            GraphicsFactoryHelper.subdivideCurve(start_right.x, start_right.y, ctr_right.x, ctr_right.y, end_right.x, end_right.y, start_left.x, start_left.y, ctr_left.x, ctr_left.y, end_left.x, end_left.y, subdivided, subdivided2);
+                            if (dir_delta > 0) {
+                                for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                    // right curved
+                                    // concave curves:
+                                    GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], -128, final_vert_list, curves);
+                                    // fills
+                                    GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
+                                    GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], 0, final_vert_list, curves);
+                                    GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 0, final_vert_list, curves);
+                                    // convex curves:
+                                    GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 127, final_vert_list, curves);
+                                }
+                            }
+                            else {
+                                for (var sc = 0; sc < subdivided.length / 6; sc++) {
+                                    // left curved
+                                    // convex curves:
+                                    GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 127, final_vert_list, curves);
+                                    // fills
+                                    GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
+                                    GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
+                                    GraphicsFactoryHelper.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list, curves);
+                                    // concave curves:
+                                    GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -128, final_vert_list, curves);
+                                }
                             }
                         }
                         else {
-                            for (var sc = 0; sc < subdivided.length / 6; sc++) {
-                                // left curved
-                                // convex curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 2], subdivided[sc * 6 + 3], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], 127, final_vert_list, curves);
-                                // fills
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6], subdivided[sc * 6 + 1], subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], 0, final_vert_list, curves);
-                                GraphicsFactoryHelper.addTriangle(subdivided[sc * 6 + 4], subdivided[sc * 6 + 5], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], 0, final_vert_list, curves);
-                                // concave curves:
-                                GraphicsFactoryHelper.addTriangle(subdivided2[sc * 6], subdivided2[sc * 6 + 1], subdivided2[sc * 6 + 2], subdivided2[sc * 6 + 3], subdivided2[sc * 6 + 4], subdivided2[sc * 6 + 5], -128, final_vert_list, curves);
-                            }
+                            start_right = new_pnts[new_pnts_cnt++];
+                            start_left = new_pnts[new_pnts_cnt++];
+                            start_point = new_pnts[new_pnts_cnt++];
+                            ctr_point = new_pnts[new_pnts_cnt++];
+                            end_point = new_pnts[new_pnts_cnt++];
+                            end_right = new_pnts[new_pnts_cnt];
+                            end_left = new_pnts[new_pnts_cnt + 1];
                         }
                     }
                     else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
@@ -19984,24 +19995,11 @@ var Graphics = (function (_super) {
             return;
         this.slice9ScaleX = scaleX;
         this.slice9ScaleY = scaleY;
-        // if(width<this.minSlice9Width){
-        // 	width=this.minSlice9Width;
-        // }
-        // if(height<this.minSlice9Height){
-        // 	height=this.minSlice9Height;
-        // }
-        // if(width==this.slice9Rectangle.width && height == this.slice9Rectangle.height){
-        // 	return;
-        // }
-        // this.slice9Rectangle.width=width;//+this.minSlice9Width;
-        // this.slice9Rectangle.height=height;//+this.minSlice9Height;
-        //
-        // this.slice9Rectangle.x= this.originalSlice9Size.x-((width-this.originalSlice9Size.width)/2);
-        // this.slice9Rectangle.y= this.originalSlice9Size.y-((height-this.originalSlice9Size.height)/2);
         var len = this._shapes.length;
         for (var i = 0; i < len; i++) {
             ElementsUtils.updateTriangleGraphicsSlice9(this._shapes[i].elements, this.originalSlice9Size, scaleX, scaleY);
         }
+        this.invalidate();
     };
     Object.defineProperty(Graphics.prototype, "assetType", {
         get: function () {
@@ -21042,7 +21040,7 @@ var Graphics = (function (_super) {
         this._active_fill_path = null;
         this._active_stroke_path = null;
         this._drawingDirty = false;
-        //this.invalidate();
+        this.invalidate();
     };
     /**
      * Specifies a bitmap to use for the line stroke when drawing lines.
@@ -22323,6 +22321,7 @@ var TextureAtlas = (function () {
         var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
         argb[0] = alpha;
         this.bitmap.setPixelFromArray(this.color_position, this.color_row, argb);
+        this.bitmap.invalidate();
         return new _awayjs_core.Point(1 / 512 + this.color_position / 256, 1 / 512 + this.color_row / 256);
     };
     return TextureAtlas;
