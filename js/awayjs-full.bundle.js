@@ -49489,6 +49489,13 @@ var ContextFlash = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(ContextFlash.prototype, "pixelRatio", {
+        get: function () {
+            return 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ContextFlash.prototype._iAddResource = function (resource) {
         this._resources.push(resource);
     };
@@ -50191,6 +50198,13 @@ var ContextGLES = (function () {
     Object.defineProperty(ContextGLES.prototype, "standardDerivatives", {
         get: function () {
             return this._standardDerivatives;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ContextGLES.prototype, "pixelRatio", {
+        get: function () {
+            return 1;
         },
         enumerable: true,
         configurable: true
@@ -52295,6 +52309,13 @@ var ContextSoftware = (function () {
         this._blendModeSoftware[exports.ContextGLBlendFactor.SOURCE_COLOR] = BlendModeSoftware.sourceColor;
         this._blendModeSoftware[exports.ContextGLBlendFactor.ZERO] = BlendModeSoftware.zero;
     }
+    Object.defineProperty(ContextSoftware.prototype, "pixelRatio", {
+        get: function () {
+            return 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ContextSoftware.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
         this._antialias = antiAlias;
         if (this._antialias % 2 != 0)
@@ -53209,6 +53230,13 @@ var ContextWebGL = (function () {
             this._stencilCompareMode = this._gl.ALWAYS;
             this._stencilCompareModeBack = this._gl.ALWAYS;
             this._stencilCompareModeFront = this._gl.ALWAYS;
+            var dpr = window.devicePixelRatio || 1;
+            var bsr = this._gl["webkitBackingStorePixelRatio"] ||
+                this._gl["mozBackingStorePixelRatio"] ||
+                this._gl["msBackingStorePixelRatio"] ||
+                this._gl["oBackingStorePixelRatio"] ||
+                this._gl["backingStorePixelRatio"] || 1;
+            this._pixelRatio = dpr / bsr;
         }
         else {
             //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
@@ -53222,6 +53250,13 @@ var ContextWebGL = (function () {
             this._samplerStates[i].mipfilter = this._gl.LINEAR;
         }
     }
+    Object.defineProperty(ContextWebGL.prototype, "pixelRatio", {
+        get: function () {
+            return this._pixelRatio;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ContextWebGL.prototype, "container", {
         get: function () {
             return this._container;
@@ -53265,15 +53300,15 @@ var ContextWebGL = (function () {
     };
     ContextWebGL.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
         if (enableDepthAndStencil === void 0) { enableDepthAndStencil = true; }
-        this._width = width;
-        this._height = height;
+        this._width = width * this._pixelRatio;
+        this._height = height * this._pixelRatio;
         if (enableDepthAndStencil) {
             this._gl.enable(this._gl.STENCIL_TEST);
             this._gl.enable(this._gl.DEPTH_TEST);
         }
-        this._gl.viewport['width'] = width;
-        this._gl.viewport['height'] = height;
-        this._gl.viewport(0, 0, width, height);
+        this._gl.viewport['width'] = this._width;
+        this._gl.viewport['height'] = this._height;
+        this._gl.viewport(0, 0, this._width, this._height);
     };
     ContextWebGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
         if (streamingLevels === void 0) { streamingLevels = 0; }
@@ -53417,7 +53452,7 @@ var ContextWebGL = (function () {
             return;
         }
         this._gl.enable(this._gl.SCISSOR_TEST);
-        this._gl.scissor(rectangle.x, this._height - rectangle.y - rectangle.height, rectangle.width, rectangle.height);
+        this._gl.scissor(rectangle.x * this._pixelRatio, this._height - (rectangle.y + rectangle.height) * this._pixelRatio, rectangle.width * this._pixelRatio, rectangle.height * this._pixelRatio);
     };
     ContextWebGL.prototype.setTextureAt = function (sampler, texture) {
         var samplerState = this._samplerStates[sampler];
@@ -53676,7 +53711,8 @@ var Stage = (function (_super) {
         set: function (val) {
             if (this._width == val)
                 return;
-            _awayjs_core.CSS.setElementWidth(this._container, val);
+            this._container.style.width = val + "px";
+            this._container.width = val * this._context.pixelRatio;
             this._width = this._viewPort.width = val;
             this._backBufferDirty = true;
             this.notifyViewportUpdated();
@@ -53694,7 +53730,8 @@ var Stage = (function (_super) {
         set: function (val) {
             if (this._height == val)
                 return;
-            _awayjs_core.CSS.setElementHeight(this._container, val);
+            this._container.style.height = val + "px";
+            this._container.height = val * this._context.pixelRatio;
             this._height = this._viewPort.height = val;
             this._backBufferDirty = true;
             this.notifyViewportUpdated();
