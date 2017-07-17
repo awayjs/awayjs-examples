@@ -23284,56 +23284,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -25813,11 +25767,17 @@ var DisplayObjectContainer = (function (_super) {
             this.mouseChildren = false;
         _super.prototype._updateMaskMode.call(this);
     };
+    DisplayObjectContainer.prototype._isEntityInternal = function () {
+        return Boolean(this._children.length);
+    };
     DisplayObjectContainer.prototype._invalidateChildren = function () {
-        if (this._pIsContainer != Boolean(this._children.length)) {
+        var isContainer = Boolean(this._children.length);
+        var isEntity = this._isEntityInternal();
+        if (this._pIsContainer != isContainer || this._pIsEntity != isEntity) {
             if (this._pScene)
                 this._pScene._iUnregisterObject(this);
-            this._pIsContainer = Boolean(this._children.length);
+            this._pIsContainer = isContainer;
+            this._pIsEntity = isEntity;
             if (this._pScene)
                 this._pScene._iRegisterObject(this);
         }
@@ -26639,20 +26599,16 @@ var Sprite = (function (_super) {
         this._center.z = box.z + box.depth / 2;
         this._pSphereBounds = this._graphics.getSphereBounds(this._center, this._pSphereBounds);
     };
+    Sprite.prototype._isEntityInternal = function () {
+        return Boolean(this._graphics.count) || Boolean(this._children.length);
+    };
     /**
      * //TODO
      *
      * @private
      */
     Sprite.prototype._onGraphicsInvalidate = function (event) {
-        if (this._pIsEntity != Boolean(this._graphics.count)) {
-            if (this._pScene)
-                this._pScene._iUnregisterObject(this);
-            this._pIsEntity = Boolean(this._graphics.count);
-            if (this._pScene)
-                this._pScene._iRegisterObject(this);
-        }
-        this._pInvalidateBounds();
+        this._invalidateChildren();
     };
     /**
      *
@@ -27577,6 +27533,7 @@ var AxisAlignedBoundingBox = (function (_super) {
             this._prefab.width = this._box.width;
             this._prefab.height = this._box.height;
             this._prefab.depth = this._box.depth;
+            this._pBoundsPrimitive.registrationPoint = new _awayjs_core.Vector3D(-cx, -cy, -cz);
             this._pBoundsPrimitive.transform.matrix3D = matrix;
         }
         this._width = this._halfExtentsX * 2;
@@ -30627,7 +30584,7 @@ var TesselatedFontTable = (function (_super) {
                         awayPath.style = new _awayjs_graphics.GraphicsStrokeStyle(0xff0000, 1, 1, _awayjs_graphics.JointStyle.MITER, _awayjs_graphics.CapsStyle.NONE, 100);
                         var final_vert_list = [];
                         //todo
-                        _awayjs_graphics.GraphicsFactoryStrokes.draw_pathes([awayPath], final_vert_list, false);
+                        //GraphicsFactoryStrokes.draw_pathes([awayPath], final_vert_list, false);
                         var attributesView = new _awayjs_core.AttributesView(Float32Array, 3);
                         attributesView.set(final_vert_list);
                         var attributesBuffer = attributesView.attributesBuffer;
@@ -36251,6 +36208,16 @@ var Scene = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Scene.prototype, "assetType", {
+        /**
+         *
+         */
+        get: function () {
+            return Scene.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @internal
      */
@@ -36289,6 +36256,7 @@ var Scene = (function (_super) {
     };
     return Scene;
 }(DisplayObjectContainer));
+Scene.assetType = "[asset Scene]";
 
 exports.AlignmentMode = AlignmentMode;
 exports.HierarchicalProperties = HierarchicalProperties;
