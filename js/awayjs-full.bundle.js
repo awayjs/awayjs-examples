@@ -13250,6 +13250,33 @@ var Shape = (function (_super) {
         shape.clear();
         Shape._pool.push(shape);
     };
+    Object.defineProperty(Shape.prototype, "strokePath", {
+        /*
+         * _strokePath provides the original stroke-path that was used to create this shape
+         * when the strokepath is set, it should already be prepared so that its faster to update stroke for new thickness
+         */
+        get: function () {
+            return this._strokePath;
+        },
+        set: function (value) {
+            this._strokePath = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Shape.prototype, "isStroke", {
+        /*
+            * true if this shape was created for a stroke
+         */
+        get: function () {
+            return this._isStroke;
+        },
+        set: function (value) {
+            this._isStroke = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Shape.prototype, "elements", {
         /**
          * The Elements object which provides the geometry data for this Shape.
@@ -13977,6 +14004,41 @@ var GraphicsFactoryHelper = (function () {
         var ay2 = c1y2 + (c2y2 - c1y2) * 0.5;
         GraphicsFactoryHelper.subdivideCurve(startx, starty, c1x, c1y, ax, ay, startx2, starty2, c1x2, c1y2, ax2, ay2, array_out, array2_out);
         GraphicsFactoryHelper.subdivideCurve(ax, ay, c2x, c2y, endx, endy, ax2, ay2, c2x2, c2y2, endx2, endy2, array_out, array2_out);
+    };
+    GraphicsFactoryHelper.tesselateCurve = function (startx, starty, cx, cy, endx, endy, array_out) {
+        var angle_1 = Math.atan2(cy - starty, cx - startx) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+        var angle_2 = Math.atan2(endy - cy, endx - cx) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+        var angle_delta = angle_2 - angle_1;
+        //console.log("angle_delta "+angle_delta);
+        while (angle_delta > 180) {
+            angle_delta -= 360;
+        }
+        while (angle_delta < -180) {
+            angle_delta += 360;
+        }
+        var diff_x = endx - startx;
+        var diff_y = endy - starty;
+        var len = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
+        console.log("len", len, "angle_delta", angle_delta);
+        // if the curve angle is smaller than threshold_ang_2 and the len is smaller than threshold_len, we just early out. we will not use the ctr-point at all
+        // todo: find best constants / checks to test if a curve need more subdividing
+        /*if(Math.abs(angle_delta)>=150 && len <=3){
+            array_out.push(endx, endy);
+            return;
+        }*/
+        if (Math.abs(angle_delta) <= 2 || len <= 10) {
+            array_out.push(endx, endy);
+            return;
+        }
+        // curve needs to be subdivided:
+        var c1x = startx + (cx - startx) * 0.5; // new controlpoint 1
+        var c1y = starty + (cy - starty) * 0.5;
+        var c2x = cx + (endx - cx) * 0.5; // new controlpoint 2
+        var c2y = cy + (endy - cy) * 0.5;
+        var ax = c1x + (c2x - c1x) * 0.5; // new middlepoint 1
+        var ay = c1y + (c2y - c1y) * 0.5;
+        GraphicsFactoryHelper.tesselateCurve(startx, starty, c1x, c1y, ax, ay, array_out);
+        GraphicsFactoryHelper.tesselateCurve(ax, ay, c2x, c2y, endx, endy, array_out);
     };
     return GraphicsFactoryHelper;
 }());
@@ -16079,10 +16141,13 @@ var GraphicsPath = (function () {
         if (commands === void 0) { commands = null; }
         if (data === void 0) { data = null; }
         if (winding_rule === void 0) { winding_rule = GraphicsPathWinding.EVEN_ODD; }
+        this.forceClose = false;
         this._data = [];
         this._commands = [];
         this._style = null;
         this.verts = [];
+        this._positions = [];
+        this._newCommands = [];
         if (commands != null && data != null) {
             this._data[0] = data;
             this._commands[0] = commands;
@@ -16251,6 +16316,100 @@ var GraphicsPath = (function () {
          this._data.push(y);
          */
     };
+    GraphicsPath.prototype.prepare = function () {
+        var new_dir;
+        var dir_delta;
+        var last_direction;
+        var closed;
+        var tmp_dir_point = new _awayjs_core.Point();
+        var prev_dir_vec = new _awayjs_core.Point();
+        var prev_point = new _awayjs_core.Point();
+        var end_point = new _awayjs_core.Point();
+        var commands;
+        var data;
+        var c, i = 0;
+        var cmd_len = this.commands.length;
+        for (c = 0; c < cmd_len; c++) {
+            commands = this.commands[c];
+            data = this.data[c];
+            new_dir = 0;
+            dir_delta = 0;
+            last_direction = 0;
+            tmp_dir_point.x = 0;
+            tmp_dir_point.y = 0;
+            prev_dir_vec.x = 0;
+            prev_dir_vec.y = 0;
+            this._positions[c] = [];
+            this._newCommands[c] = [];
+            // check if the path is closed. 
+            // if its not closed, we optionally close it by adding the extra lineTo-cmd
+            closed = true;
+            if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1])) {
+                if (this.forceClose) {
+                    commands[commands.length] = GraphicsPathCommand.LINE_TO;
+                    data[data.length] = data[0];
+                    data[data.length] = data[1];
+                }
+                else {
+                    closed = false;
+                }
+            }
+            // if the path is closed, we init the prevDirection with the last segments direction
+            if (closed) {
+                console.log("path is closed");
+                prev_dir_vec.x = data[data.length - 2] - data[data.length - 4];
+                prev_dir_vec.y = data[data.length - 1] - data[data.length - 3];
+                prev_dir_vec.normalize();
+                last_direction = Math.atan2(prev_dir_vec.y, prev_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+            }
+            else {
+                console.log("path is not closed");
+            }
+            var data_cnt = 0;
+            prev_point.x = data[data_cnt++];
+            prev_point.y = data[data_cnt++];
+            var prev_x = prev_point.x;
+            var prev_y = prev_point.y;
+            this._positions[c].push(prev_point.x);
+            this._positions[c].push(prev_point.y);
+            this._newCommands[c].push(GraphicsPathCommand.MOVE_TO);
+            var ctr_point = new _awayjs_core.Point();
+            for (i = 1; i < commands.length; i++) {
+                switch (commands[i]) {
+                    case GraphicsPathCommand.MOVE_TO:
+                        console.log("ERROR ! ONLY THE FIRST COMMAND FOR A CONTOUR IS ALLOWED TO BE A 'MOVE_TO' COMMAND");
+                        break;
+                    case GraphicsPathCommand.LINE_TO:
+                        end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                        console.log("LINE_TO ", i, end_point.x, end_point.y);
+                        this._positions[c].push(end_point.x);
+                        this._positions[c].push(end_point.y);
+                        this._newCommands[c].push(GraphicsPathCommand.LINE_TO);
+                        prev_x = end_point.x;
+                        prev_y = end_point.y;
+                        break;
+                    case GraphicsPathCommand.CURVE_TO:
+                        end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                        ctr_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
+                        console.log("CURVE_TO ", i, ctr_point.x, ctr_point.y, end_point.x, end_point.y);
+                        var curve_verts = [];
+                        GraphicsFactoryHelper.tesselateCurve(prev_x, prev_y, ctr_point.x, ctr_point.y, end_point.x, end_point.y, curve_verts);
+                        var k_len = curve_verts.length;
+                        var k = 0;
+                        for (k = 0; k < k_len; k += 2) {
+                            var newPoint = new _awayjs_core.Point(curve_verts[k], curve_verts[k + 1]);
+                            console.log("tesselated curve to ", k, newPoint.x, newPoint.y);
+                            this._newCommands[c].push(GraphicsPathCommand.LINE_TO);
+                            this._positions[c].push(newPoint.x);
+                            this._positions[c].push(newPoint.y);
+                        }
+                        prev_x = end_point.x;
+                        prev_y = end_point.y;
+                        break;
+                }
+            }
+        }
+    };
     return GraphicsPath;
 }());
 GraphicsPath.data_type = "[graphicsdata path]";
@@ -16272,7 +16431,63 @@ GraphicsPath.data_type = "[graphicsdata path]";
 var GraphicsFactoryStrokes = (function () {
     function GraphicsFactoryStrokes() {
     }
-    GraphicsFactoryStrokes.draw_pathes = function (graphic_pathes, final_vert_list, curves) {
+    GraphicsFactoryStrokes.draw_pathes = function (targetGraphics) {
+        var len = targetGraphics.queued_stroke_pathes.length;
+        var i = 0;
+        for (i = 0; i < len; i++) {
+            var strokePath = targetGraphics.queued_stroke_pathes[i];
+            var strokeStyle = strokePath.style;
+            var obj = Graphics.get_material_for_color(strokeStyle.color, strokeStyle.alpha);
+            var material = obj.material;
+            var final_vert_list = [];
+            strokePath.prepare();
+            GraphicsFactoryStrokes.draw_path([strokePath], final_vert_list, material.curves);
+            final_vert_list = final_vert_list.concat(strokePath.verts);
+            var attributesView = new _awayjs_core.AttributesView(Float32Array, material.curves ? 3 : 2);
+            attributesView.set(final_vert_list);
+            var attributesBuffer = attributesView.attributesBuffer;
+            attributesView.dispose();
+            var elements = new TriangleElements(attributesBuffer);
+            elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
+            //	if(material.curves)
+            //		elements.setCustomAttributes("curves", new Byte4Attributes(attributesBuffer, false));
+            //	material.alpha=(<GraphicsStrokeStyle>this.queued_stroke_pathes[i].style).alpha;
+            var shape = targetGraphics.addShape(Shape.getShape(elements, material));
+            shape.isStroke = true;
+            if (obj.colorPos) {
+                shape.style = new Style();
+                var sampler = new Sampler2D();
+                material.animateUVs = true;
+                shape.style.addSamplerAt(sampler, material.getTextureAt(0));
+                shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
+            }
+        }
+        targetGraphics.queued_stroke_pathes.length = 0;
+        /*
+                var len=graphic_pathes.length;
+                var one_path:GraphicsPath;
+                var cp, i=0;
+                for(cp=0; cp<len; cp++) {
+                    one_path = graphic_pathes[cp];
+                    one_path.prepare();
+                    for (i = 0; i < one_path._positions[cp].length; i+=2) {
+                        GraphicsFactoryHelper.drawPoint(one_path._positions[cp][i], one_path._positions[cp][i+1], final_vert_list, false);
+                    }
+                }
+                GraphicsFactoryStrokes.draw_pathes_old(graphic_pathes, final_vert_list, false);
+                */
+    };
+    GraphicsFactoryStrokes.updateStrokesForShape = function (shape, scale) {
+        if (scale === void 0) { scale = 1; }
+        var graphicsPath = shape.strokePath;
+        var final_vert_list = [];
+        GraphicsFactoryStrokes.draw_path([graphicsPath], final_vert_list, false, scale);
+        var elements = shape.elements;
+        elements.setPositions(final_vert_list);
+        elements.invalidate();
+    };
+    GraphicsFactoryStrokes.draw_path = function (graphic_pathes, final_vert_list, curves, scale) {
+        if (scale === void 0) { scale = 1; }
         var len = graphic_pathes.length;
         var contour_commands;
         var contour_data;
@@ -16302,10 +16517,11 @@ var GraphicsFactoryStrokes = (function () {
         var closed = false;
         var last_dir_vec = new _awayjs_core.Point();
         var cp = 0;
+        var half_thickness = strokeStyle.half_thickness * scale;
         for (cp = 0; cp < len; cp++) {
             one_path = graphic_pathes[cp];
-            contour_commands = one_path.commands;
-            contour_data = one_path.data;
+            contour_commands = one_path._newCommands;
+            contour_data = one_path._positions;
             strokeStyle = one_path.stroke();
             for (k = 0; k < contour_commands.length; k++) {
                 commands = contour_commands[k];
@@ -16316,6 +16532,7 @@ var GraphicsFactoryStrokes = (function () {
                 var dir_delta = 0;
                 var last_direction = 0;
                 var tmp_dir_point = new _awayjs_core.Point();
+                // check if the path is closed. if yes, than set the last_dir_vec from last segment
                 closed = true;
                 if ((data[0] != data[data.length - 2]) || (data[1] != data[data.length - 1]))
                     closed = false;
@@ -16370,8 +16587,8 @@ var GraphicsFactoryStrokes = (function () {
                     // rotate direction around 90 degree
                     tmp_point.x = -1 * tmp_dir_point.y;
                     tmp_point.y = tmp_dir_point.x;
-                    ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                    le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                    ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                    le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
                     var add_segment = false;
                     // check if this is the first segment, and the path is not closed
                     // in this case, we can just set the points to the contour points
@@ -16401,7 +16618,7 @@ var GraphicsFactoryStrokes = (function () {
                                 half_angle = (-180 - (dir_delta));
                             }
                             half_angle = half_angle * -0.5 * _awayjs_core.MathConsts.DEGREES_TO_RADIANS;
-                            var distance = strokeStyle.half_thickness / Math.sin(half_angle);
+                            var distance = half_thickness / Math.sin(half_angle);
                             tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
                             tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
                             tmp_point2.normalize();
@@ -16409,19 +16626,19 @@ var GraphicsFactoryStrokes = (function () {
                             var merged_pnt_le = new _awayjs_core.Point(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
                             if (dir_delta > 0) {
                                 ri_point = merged_pnt_ri;
-                                var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
-                                var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * strokeStyle.half_thickness), lastPoint.y - (prev_normal.y * strokeStyle.half_thickness));
+                                var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
+                                var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * half_thickness), lastPoint.y - (prev_normal.y * half_thickness));
                                 le_point = contour_le;
                             }
                             else {
                                 le_point = merged_pnt_le;
-                                var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                                var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * strokeStyle.half_thickness), lastPoint.y + (prev_normal.y * strokeStyle.half_thickness));
+                                var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                                var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * half_thickness), lastPoint.y + (prev_normal.y * half_thickness));
                                 ri_point = contour_ri;
                             }
                             var addJoints = true;
                             if (strokeStyle.jointstyle == JointStyle.MITER) {
-                                var distance_miter = (Math.sqrt((distance * distance) - (strokeStyle.half_thickness * strokeStyle.half_thickness)) / strokeStyle.half_thickness);
+                                var distance_miter = (Math.sqrt((distance * distance) - (half_thickness * half_thickness)) / half_thickness);
                                 if (distance_miter <= strokeStyle.miter_limit) {
                                     addJoints = false;
                                     ri_point = merged_pnt_ri;
@@ -16429,20 +16646,20 @@ var GraphicsFactoryStrokes = (function () {
                                 }
                                 else {
                                     if (dir_delta > 0) {
-                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
+                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
                                         tmp_point3.x = prev_normal.y * -1;
                                         tmp_point3.y = prev_normal.x;
-                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
+                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
                                     }
                                     else {
-                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
+                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
                                         tmp_point3.x = prev_normal.y * -1;
                                         tmp_point3.y = prev_normal.x;
-                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * strokeStyle.half_thickness));
-                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * strokeStyle.half_thickness));
+                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
+                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
                                     }
                                 }
                             }
@@ -16513,8 +16730,8 @@ var GraphicsFactoryStrokes = (function () {
                     if (i == commands.length - 1) {
                         if (!closed) {
                             new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * strokeStyle.half_thickness), lastPoint.y + (tmp_point.y * strokeStyle.half_thickness));
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * strokeStyle.half_thickness), lastPoint.y - (tmp_point.y * strokeStyle.half_thickness));
+                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
                         }
                         else {
                             new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
@@ -16564,7 +16781,7 @@ var GraphicsFactoryStrokes = (function () {
                             if (dir_delta < -180)
                                 dir_delta += 360;
                             //var half_angle:number=dir_delta*0.5*MathConsts.DEGREES_TO_RADIANS;
-                            //var distance:number=strokeStyle.half_thickness / Math.sin(half_angle);
+                            //var distance:number=half_thickness / Math.sin(half_angle);
                             //tmp_point3.x = tmp_point2.x * Math.cos(half_angle) + tmp_point2.y * Math.sin(half_angle);
                             //tmp_point3.y = tmp_point2.y * Math.cos(half_angle) - tmp_point2.x * Math.sin(half_angle);
                             //tmp_point3.normalize();
@@ -16579,10 +16796,10 @@ var GraphicsFactoryStrokes = (function () {
                             tmp_point3.normalize();
                             //GraphicsFactoryHelper.drawPoint(curve_x,curve_y, final_vert_list);
                             // move the point on the curve to use correct thickness
-                            ctr_right.x = curve_x - (tmp_point3.x * strokeStyle.half_thickness);
-                            ctr_right.y = curve_y - (tmp_point3.y * strokeStyle.half_thickness);
-                            ctr_left.x = curve_x + (tmp_point3.x * strokeStyle.half_thickness);
-                            ctr_left.y = curve_y + (tmp_point3.y * strokeStyle.half_thickness);
+                            ctr_right.x = curve_x - (tmp_point3.x * half_thickness);
+                            ctr_right.y = curve_y - (tmp_point3.y * half_thickness);
+                            ctr_left.x = curve_x + (tmp_point3.x * half_thickness);
+                            ctr_left.y = curve_y + (tmp_point3.y * half_thickness);
                             //GraphicsFactoryHelper.drawPoint(ctr_right.x, ctr_right.y , final_vert_list);
                             //GraphicsFactoryHelper.drawPoint(ctr_left.x, ctr_left.y , final_vert_list);
                             // calculate the actual controlpoints
@@ -16659,10 +16876,10 @@ var GraphicsFactoryStrokes = (function () {
                              tmp_point.x=ctr_left.x+tmp_point2.x*0.5;
                              tmp_point.y=ctr_left.y+tmp_point2.y*0.5;
                              tmp_point2.normalize();
-                             ctr_left.x=tmp_point.x-tmp_point2.x*strokeStyle.half_thickness;
-                             ctr_left.y=tmp_point.y-tmp_point2.y*strokeStyle.half_thickness;
-                             ctr_right.x=tmp_point.x+tmp_point2.x*strokeStyle.half_thickness;
-                             ctr_right.y=tmp_point.y+tmp_point2.y*strokeStyle.half_thickness;
+                             ctr_left.x=tmp_point.x-tmp_point2.x*half_thickness;
+                             ctr_left.y=tmp_point.y-tmp_point2.y*half_thickness;
+                             ctr_right.x=tmp_point.x+tmp_point2.x*half_thickness;
+                             ctr_right.y=tmp_point.y+tmp_point2.y*half_thickness;
                              }
                              */
                             //ctr_right=ctr_point;
@@ -16711,6 +16928,13 @@ var GraphicsFactoryStrokes = (function () {
                             end_point = new_pnts[new_pnts_cnt++];
                             end_right = new_pnts[new_pnts_cnt];
                             end_left = new_pnts[new_pnts_cnt + 1];
+                            var curve_verts = [];
+                            GraphicsFactoryHelper.tesselateCurve(start_point.x, start_point.y, ctr_point.x, ctr_point.y, end_right.x, end_right.y, curve_verts);
+                            var c_cnt = curve_verts.length;
+                            while (c_cnt > 0) {
+                                c_cnt -= 2;
+                                GraphicsFactoryHelper.drawPoint(curve_verts[c_cnt], curve_verts[c_cnt + 1], final_vert_list, false);
+                            }
                         }
                     }
                     else if (new_cmds[i] >= GraphicsPathCommand.BUILD_JOINT) {
@@ -16733,6 +16957,10 @@ var GraphicsFactoryStrokes = (function () {
                         start_left = new_pnts[new_pnts_cnt++];
                         end_right = new_pnts[new_pnts_cnt];
                         end_left = new_pnts[new_pnts_cnt + 1];
+                        //0GraphicsFactoryHelper.drawPoint(start_right.x,start_right.y, final_vert_list, false);
+                        //GraphicsFactoryHelper.drawPoint(start_left.x,start_left.y, final_vert_list, false);
+                        //GraphicsFactoryHelper.drawPoint(end_right.x,end_right.y, final_vert_list, false);
+                        //GraphicsFactoryHelper.drawPoint(end_left.x,end_left.y, final_vert_list, false);
                         GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
                         GraphicsFactoryHelper.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
                     }
@@ -16753,11 +16981,11 @@ var GraphicsFactoryStrokes = (function () {
                     last_dir_vec.x = data[2] - data[0];
                     last_dir_vec.y = data[3] - data[1];
                     last_dir_vec.normalize();
-                    GraphicsFactoryHelper.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -128, strokeStyle.half_thickness, final_vert_list, curves);
+                    GraphicsFactoryHelper.createCap(data[0], data[1], new_pnts[0], new_pnts[1], last_dir_vec, strokeStyle.capstyle, -128, half_thickness, final_vert_list, curves);
                     last_dir_vec.x = data[data.length - 2] - data[data.length - 4];
                     last_dir_vec.y = data[data.length - 1] - data[data.length - 3];
                     last_dir_vec.normalize();
-                    GraphicsFactoryHelper.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 127, strokeStyle.half_thickness, final_vert_list, curves);
+                    GraphicsFactoryHelper.createCap(data[data.length - 2], data[data.length - 1], new_pnts[new_pnts.length - 2], new_pnts[new_pnts.length - 1], last_dir_vec, strokeStyle.capstyle, 127, half_thickness, final_vert_list, curves);
                 }
             }
         }
@@ -19961,8 +20189,8 @@ var Graphics = (function (_super) {
         _this._sphereBoundsInvalid = true;
         _this._shapes = [];
         _this._current_position = new _awayjs_core.Point();
-        _this.slice9ScaleX = 1;
-        _this.slice9ScaleY = 1;
+        _this._scaleX = 1;
+        _this._scaleY = 1;
         _this._drawingDirty = false;
         //store associated entity object, otherwise assign itself as entity
         _this._entity = entity;
@@ -19990,11 +20218,26 @@ var Graphics = (function (_super) {
         graphics.clear();
         Graphics._pool.push(graphics);
     };
-    Graphics.prototype.updateSlice9 = function (scaleX, scaleY) {
-        if (this.slice9ScaleX == scaleX && this.slice9ScaleY == scaleY)
+    Graphics.prototype.updateScale = function (scaleX, scaleY) {
+        if (this._scaleX == scaleX && this._scaleY == scaleY)
             return;
-        this.slice9ScaleX = scaleX;
-        this.slice9ScaleY = scaleY;
+        var len = this._shapes.length;
+        var doInvalid = false;
+        for (var i = 0; i < len; i++) {
+            if (this._shapes[i].isStroke) {
+                doInvalid = true;
+                GraphicsFactoryStrokes.updateStrokesForShape(this._shapes[i], this._scaleX);
+            }
+        }
+        if (doInvalid) {
+            this.invalidate();
+        }
+    };
+    Graphics.prototype.updateSlice9 = function (scaleX, scaleY) {
+        if (this._scaleX == scaleX && this._scaleY == scaleY)
+            return;
+        this._scaleX = scaleX;
+        this._scaleY = scaleY;
         var len = this._shapes.length;
         for (var i = 0; i < len; i++) {
             ElementsUtils.updateTriangleGraphicsSlice9(this._shapes[i].elements, this.originalSlice9Size, scaleX, scaleY);
@@ -20320,32 +20563,7 @@ var Graphics = (function (_super) {
         GraphicsFactoryFills.draw_pathes(this);
     };
     Graphics.prototype.draw_strokes = function () {
-        var i = 0;
-        for (i = 0; i < this.queued_stroke_pathes.length; i++) {
-            var obj = Graphics.get_material_for_color(this.queued_stroke_pathes[i].style.color, this.queued_stroke_pathes[i].style.alpha);
-            var material = obj.material;
-            var final_vert_list = [];
-            GraphicsFactoryStrokes.draw_pathes([this.queued_stroke_pathes[i]], final_vert_list, material.curves);
-            final_vert_list = final_vert_list.concat(this.queued_stroke_pathes[i].verts);
-            var attributesView = new _awayjs_core.AttributesView(Float32Array, material.curves ? 3 : 2);
-            attributesView.set(final_vert_list);
-            var attributesBuffer = attributesView.attributesBuffer;
-            attributesView.dispose();
-            var elements = new TriangleElements(attributesBuffer);
-            elements.setPositions(new _awayjs_core.Float2Attributes(attributesBuffer));
-            //	if(material.curves)
-            //		elements.setCustomAttributes("curves", new Byte4Attributes(attributesBuffer, false));
-            //	material.alpha=(<GraphicsStrokeStyle>this.queued_stroke_pathes[i].style).alpha;
-            var shape = this.addShape(Shape.getShape(elements, material));
-            if (obj.colorPos) {
-                shape.style = new Style();
-                var sampler = new Sampler2D();
-                material.animateUVs = true;
-                shape.style.addSamplerAt(sampler, material.getTextureAt(0));
-                shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
-            }
-        }
-        this.queued_stroke_pathes.length = 0;
+        GraphicsFactoryStrokes.draw_pathes(this);
     };
     /**
      * Fills a drawing area with a bitmap image. The bitmap can be repeated or
@@ -20858,8 +21076,8 @@ var Graphics = (function (_super) {
                 w -= this._active_stroke_path.style.thickness;
                 h -= this._active_stroke_path.style.thickness;
             }
-            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t, y + t, x + w + t, y + t, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t + w, y + t, x + w + t, y + h + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + w + t, y + t, x + t, y + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + w + t, y + h + t, x + t + w, y + t, 0, this._active_fill_path.verts, false);
         }
         if (this._active_stroke_path != null) {
             this._active_stroke_path.moveTo(x, y);
@@ -20909,8 +21127,8 @@ var Graphics = (function (_super) {
         }
         var w = width;
         var h = height;
-        var ew = ellipseWidth - 4;
-        var eh = ellipseHeight - 4;
+        var ew = ellipseWidth / 2;
+        var eh = ellipseHeight / 2;
         var t = 0;
         if (this._active_fill_path != null) {
             this._active_fill_path.moveTo(x, y);
@@ -20919,8 +21137,8 @@ var Graphics = (function (_super) {
                 w -= this._active_stroke_path.style.thickness;
                 h -= this._active_stroke_path.style.thickness;
             }
-            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + t, y + eh, x + w - t, y + eh, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + w - t, y + eh, x + w - t, y + h - eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + w - t, y + eh, x + t, y + eh, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h - eh, x + w - t, y + h - eh, x + w - t, y + eh, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + ew, y + t, x + ew, y + eh, x + w - ew, y + eh, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + ew, y + t, x + w - ew, y + eh, x + w - ew, y + t, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + ew, y + h - eh, x + ew, y + h - t, x + w - ew, y + h - t, 0, this._active_fill_path.verts, false);
@@ -20963,16 +21181,16 @@ var Graphics = (function (_super) {
                 w -= this._active_stroke_path.style.thickness;
                 h -= this._active_stroke_path.style.thickness;
             }
-            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - tr, y + tr, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - br, y + h - br, x + w - tr, y + tr, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + bl, y + h - bl, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + t, y + tl, x + tl, y + tl, x + t, y + h - bl, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + t, y + h - bl, x + bl, y + h - bl, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + t, x + tl, y + tl, x + w - tr, y + t, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - tr, y + tr, x + w - tr, y + t, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + w - t, y + tr, x + w - tr, y + tr, x + w - t, y + h - br, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + w - tr, y + tr, x + w - t, y + h - br, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + bl, y + h - t, x + bl, y + h - bl, x + w - br, y + h - t, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + bl, y + h - bl, x + w - br, y + h - br, x + w - br, y + h - t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + w - tr, y + tr, x + w - br, y + h - br, x + w - t, y + h - br, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + bl, y + h - t, x + w - br, y + h - t, x + bl, y + h - bl, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + bl, y + h - bl, x + w - br, y + h - t, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.drawElipse(x + tl, y + tl, tl - t, tl - t, this._active_fill_path.verts, 180, 270, 5, false);
             GraphicsFactoryHelper.drawElipse(x + w - tr, y + tr, tr - t, tr - t, this._active_fill_path.verts, 270, 360, 5, false);
             GraphicsFactoryHelper.drawElipse(x + w - br, y + h - br, br - t, br - t, this._active_fill_path.verts, 0, 90, 5, false);
@@ -21041,6 +21259,7 @@ var Graphics = (function (_super) {
         this._active_stroke_path = null;
         this._drawingDirty = false;
         this.invalidate();
+        this.invalidateElements();
     };
     /**
      * Specifies a bitmap to use for the line stroke when drawing lines.
