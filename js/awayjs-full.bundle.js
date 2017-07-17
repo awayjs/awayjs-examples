@@ -12983,56 +12983,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -14533,14 +14487,12 @@ var ElementsUtils = (function () {
                 by = positions[id1 * posStride + 1];
                 cx = positions[id2 * posStride];
                 cy = positions[id2 * posStride + 1];
-                //console.log(ax, ay, bx, by, cx, cy);
                 //from a to p
                 var dx = ax - x;
                 var dy = ay - y;
                 //edge normal (a-b)
                 var nx = by - ay;
                 var ny = -(bx - ax);
-                //console.log(ax,ay,bx,by,cx,cy);
                 var dot = (dx * nx) + (dy * ny);
                 if (dot > 0)
                     break precheck;
@@ -14607,7 +14559,7 @@ var ElementsUtils = (function () {
                     else {
                         id0 = k + 2;
                         id1 = k + 1;
-                        id2 = k + 0;
+                        id2 = k;
                     }
                     ax = positions[id0 * posStride];
                     ay = positions[id0 * posStride + 1];
@@ -14622,28 +14574,40 @@ var ElementsUtils = (function () {
                     var max_index_y = Math.floor((Math.max(ay, by, cy) - miny) * conversionY);
                     for (var i = min_index_x; i <= max_index_x; i++) {
                         for (var j = min_index_y; j <= max_index_y; j++) {
-                            var index = i + j * divisions;
-                            var nodes = cells[index] || (cells[index] = new Array());
+                            var c = i + j * divisions;
+                            var nodes = cells[c] || (cells[c] = new Array());
                             //push in the triangle ids
-                            nodes.push(id0, id1, id2);
+                            nodes.push(k);
                         }
                     }
                 }
             }
             var index_x = Math.floor((x - minx) * conversionX);
             var index_y = Math.floor((y - miny) * conversionY);
-            if ((index_x < 0 || index_x > divisions || index_y < 0 || index_y > divisions))
-                return false;
             var nodes = cells[index_x + index_y * divisions];
-            if (nodes == null)
+            if (nodes == null) {
+                hitTestCache.lastCollisionIndex = -1;
                 return false;
+            }
             var nodeCount = nodes.length;
-            for (var k = 0; k < nodeCount; k += 3) {
-                id2 = nodes[k + 2];
+            for (var n = 0; n < nodeCount; n++) {
+                var k = nodes[n];
+                if (indices) {
+                    id2 = indices[k];
+                }
+                else {
+                    id2 = k;
+                }
                 if (id2 == index)
                     continue;
-                id1 = nodes[k + 1];
-                id0 = nodes[k];
+                if (indices) {
+                    id0 = indices[k + 2];
+                    id1 = indices[k + 1];
+                }
+                else {
+                    id0 = k + 2;
+                    id1 = k + 1;
+                }
                 ax = positions[id0 * posStride];
                 ay = positions[id0 * posStride + 1];
                 bx = positions[id1 * posStride];
@@ -14691,13 +14655,15 @@ var ElementsUtils = (function () {
                         var vv = w;
                         var d = uu * uu - vv;
                         var az = curves[id0 * curveStride];
-                        if (d > 0 && az == -128)
+                        if (d > 0 && az == -128) {
                             continue;
-                        else if (d < 0 && az == 127)
+                        }
+                        else if (d < 0 && az == 127) {
                             continue;
+                        }
                     }
                 }
-                hitTestCache.lastCollisionIndex = id2;
+                hitTestCache.lastCollisionIndex = k;
                 return true;
             }
             hitTestCache.lastCollisionIndex = -1;
@@ -14727,14 +14693,12 @@ var ElementsUtils = (function () {
             by = positions[id1 * posStride + 1];
             cx = positions[id2 * posStride];
             cy = positions[id2 * posStride + 1];
-            //console.log(ax, ay, bx, by, cx, cy);
             //from a to p
             var dx = ax - x;
             var dy = ay - y;
             //edge normal (a-b)
             var nx = by - ay;
             var ny = -(bx - ax);
-            //console.log(ax,ay,bx,by,cx,cy);
             var dot = (dx * nx) + (dy * ny);
             if (dot > 0)
                 continue;
@@ -21075,8 +21039,8 @@ var Graphics = (function (_super) {
                 w -= this._active_stroke_path.style.thickness;
                 h -= this._active_stroke_path.style.thickness;
             }
-            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + w + t, y + t, x + t, y + t, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + w + t, y + h + t, x + t + w, y + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t, y + t, x + w + t, y + t, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + t, y + h + t, x + t + w, y + t, x + w + t, y + h + t, 0, this._active_fill_path.verts, false);
         }
         if (this._active_stroke_path != null) {
             this._active_stroke_path.moveTo(x, y);
@@ -21180,8 +21144,8 @@ var Graphics = (function (_super) {
                 w -= this._active_stroke_path.style.thickness;
                 h -= this._active_stroke_path.style.thickness;
             }
-            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - br, y + h - br, x + w - tr, y + tr, 0, this._active_fill_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + bl, y + h - bl, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - tr, y + tr, x + w - br, y + h - br, 0, this._active_fill_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + w - br, y + h - br, x + bl, y + h - bl, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + t, y + tl, x + tl, y + tl, x + t, y + h - bl, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + tl, x + t, y + h - bl, x + bl, y + h - bl, 0, this._active_fill_path.verts, false);
             GraphicsFactoryHelper.addTriangle(x + tl, y + t, x + tl, y + tl, x + w - tr, y + t, 0, this._active_fill_path.verts, false);
