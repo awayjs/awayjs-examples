@@ -14019,7 +14019,7 @@ var GraphicsFactoryHelper = (function () {
         var diff_x = endx - startx;
         var diff_y = endy - starty;
         var len = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
-        console.log("len", len, "angle_delta", angle_delta);
+        //console.log("len", len, "angle_delta", angle_delta);
         // if the curve angle is smaller than threshold_ang_2 and the len is smaller than threshold_len, we just early out. we will not use the ctr-point at all
         // todo: find best constants / checks to test if a curve need more subdividing
         /*if(Math.abs(angle_delta)>=150 && len <=3){
@@ -16356,14 +16356,13 @@ var GraphicsPath = (function () {
             }
             // if the path is closed, we init the prevDirection with the last segments direction
             if (closed) {
-                console.log("path is closed");
+                //console.log("path is closed");
                 prev_dir_vec.x = data[data.length - 2] - data[data.length - 4];
                 prev_dir_vec.y = data[data.length - 1] - data[data.length - 3];
                 prev_dir_vec.normalize();
                 last_direction = Math.atan2(prev_dir_vec.y, prev_dir_vec.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
             }
             else {
-                console.log("path is not closed");
             }
             var data_cnt = 0;
             prev_point.x = data[data_cnt++];
@@ -16381,7 +16380,7 @@ var GraphicsPath = (function () {
                         break;
                     case GraphicsPathCommand.LINE_TO:
                         end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
-                        console.log("LINE_TO ", i, end_point.x, end_point.y);
+                        // console.log("LINE_TO ", i, end_point.x, end_point.y);
                         this._positions[c].push(end_point.x);
                         this._positions[c].push(end_point.y);
                         this._newCommands[c].push(GraphicsPathCommand.LINE_TO);
@@ -16398,7 +16397,7 @@ var GraphicsPath = (function () {
                         var k = 0;
                         for (k = 0; k < k_len; k += 2) {
                             var newPoint = new _awayjs_core.Point(curve_verts[k], curve_verts[k + 1]);
-                            console.log("tesselated curve to ", k, newPoint.x, newPoint.y);
+                            // console.log("tesselated curve to ", k, newPoint.x, newPoint.y);
                             this._newCommands[c].push(GraphicsPathCommand.LINE_TO);
                             this._positions[c].push(newPoint.x);
                             this._positions[c].push(newPoint.y);
@@ -16517,12 +16516,12 @@ var GraphicsFactoryStrokes = (function () {
         var closed = false;
         var last_dir_vec = new _awayjs_core.Point();
         var cp = 0;
-        var half_thickness = strokeStyle.half_thickness * scale;
         for (cp = 0; cp < len; cp++) {
             one_path = graphic_pathes[cp];
             contour_commands = one_path._newCommands;
             contour_data = one_path._positions;
             strokeStyle = one_path.stroke();
+            var half_thickness = strokeStyle.half_thickness * scale;
             for (k = 0; k < contour_commands.length; k++) {
                 commands = contour_commands[k];
                 data = contour_data[k];
@@ -16961,8 +16960,8 @@ var GraphicsFactoryStrokes = (function () {
                         //GraphicsFactoryHelper.drawPoint(start_left.x,start_left.y, final_vert_list, false);
                         //GraphicsFactoryHelper.drawPoint(end_right.x,end_right.y, final_vert_list, false);
                         //GraphicsFactoryHelper.drawPoint(end_left.x,end_left.y, final_vert_list, false);
-                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, start_left.x, start_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
-                        GraphicsFactoryHelper.addTriangle(start_left.x, start_left.y, end_left.x, end_left.y, end_right.x, end_right.y, 0, final_vert_list, curves);
+                        GraphicsFactoryHelper.addTriangle(start_right.x, start_right.y, end_right.x, end_right.y, start_left.x, start_left.y, 0, final_vert_list, curves);
+                        GraphicsFactoryHelper.addTriangle(start_left.x, start_left.y, end_right.x, end_right.y, end_left.x, end_left.y, 0, final_vert_list, curves);
                     }
                     else if (new_cmds[i] == GraphicsPathCommand.CURVE_TO) {
                         new_pnts_cnt += 5;
