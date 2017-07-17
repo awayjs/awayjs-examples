@@ -66407,7 +66407,7 @@ var SceneGraphPartition = (function (_super) {
      * @returns {away.partition.NodeBase}
      */
     SceneGraphPartition.prototype.findParentForNode = function (node) {
-        if (this._root == node._entity) {
+        if (this._root == node._entity && node.isSceneGraphNode) {
             this._rootNode = node;
             return null;
         }
