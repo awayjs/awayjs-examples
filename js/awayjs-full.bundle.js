@@ -56103,17 +56103,17 @@ var GL_MaterialBase = (function (_super) {
      */
     GL_MaterialBase.prototype.onClear = function (event) {
         _super.prototype.onClear.call(this, event);
-        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
-        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
-        this._material = null;
-        this._elementsClass = null;
-        this._stage = null;
         var len = this._passes.length;
         for (var i = 0; i < len; i++) {
             this._passes[i].removeEventListener(PassEvent.INVALIDATE, this._onPassInvalidateDelegate);
             this._passes[i].dispose();
         }
         this._passes = null;
+        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_ANIMATION, this._onInvalidateAnimationDelegate);
+        this._material.removeEventListener(_awayjs_graphics.MaterialEvent.INVALIDATE_PASSES, this._onInvalidatePassesDelegate);
+        this._material = null;
+        this._elementsClass = null;
+        this._stage = null;
     };
     /**
      *
