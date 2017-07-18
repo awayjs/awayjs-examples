@@ -1898,10 +1898,10 @@ var ColorTransform = (function () {
          * value.
          */
         get: function () {
-            return this._rawData[7] * 0xFF;
+            return this._rawData[7];
         },
         set: function (value) {
-            this._rawData[7] = value / 0xFF;
+            this._rawData[7] = value;
         },
         enumerable: true,
         configurable: true
@@ -1925,10 +1925,10 @@ var ColorTransform = (function () {
          * has been multiplied by the <code>blueMultiplier</code> value.
          */
         get: function () {
-            return this._rawData[6] * 0xFF;
+            return this._rawData[6];
         },
         set: function (value) {
-            this._rawData[6] = value / 0xFF;
+            this._rawData[6] = value;
         },
         enumerable: true,
         configurable: true
@@ -1952,10 +1952,10 @@ var ColorTransform = (function () {
          * it has been multiplied by the <code>greenMultiplier</code> value.
          */
         get: function () {
-            return this._rawData[5] * 0xFF;
+            return this._rawData[5];
         },
         set: function (value) {
-            this._rawData[5] = value / 0xFF;
+            this._rawData[5] = value;
         },
         enumerable: true,
         configurable: true
@@ -1979,10 +1979,10 @@ var ColorTransform = (function () {
          * has been multiplied by the <code>redMultiplier</code> value.
          */
         get: function () {
-            return this._rawData[4] * 0xFF;
+            return this._rawData[4];
         },
         set: function (value) {
-            this._rawData[4] = value / 0xFF;
+            this._rawData[4] = value;
         },
         enumerable: true,
         configurable: true
@@ -2005,7 +2005,7 @@ var ColorTransform = (function () {
          * value.</p>
          */
         get: function () {
-            return ((this._rawData[0] << 16) | (this._rawData[1] << 8) | this._rawData[2]);
+            return ((this._rawData[4] << 16) | (this._rawData[5] << 8) | this._rawData[6]);
         },
         set: function (value) {
             var argb = ColorUtils.float32ColorToARGB(value);
@@ -2021,14 +2021,14 @@ var ColorTransform = (function () {
     });
     ColorTransform.prototype.copyRawDataFrom = function (sourceData) {
         var targetData = this._rawData;
-        targetData[0] = targetData[0];
-        targetData[1] = targetData[1];
-        targetData[2] = targetData[2];
-        targetData[3] = targetData[3];
-        targetData[4] = targetData[4];
-        targetData[5] = targetData[5];
-        targetData[6] = targetData[6];
-        targetData[7] = targetData[7];
+        targetData[0] = sourceData[0];
+        targetData[1] = sourceData[1];
+        targetData[2] = sourceData[2];
+        targetData[3] = sourceData[3];
+        targetData[4] = sourceData[4];
+        targetData[5] = sourceData[5];
+        targetData[6] = sourceData[6];
+        targetData[7] = sourceData[7];
     };
     ColorTransform.prototype.clear = function () {
         this._rawData[0] = 1;
@@ -4420,7 +4420,7 @@ var Transform = (function (_super) {
             return this._colorTransform;
         },
         set: function (val) {
-            var sourceData = val._rawData, targetData = this._matrix3D._rawData;
+            var sourceData = val._rawData, targetData = this._colorTransform._rawData;
             targetData[0] = sourceData[0];
             targetData[1] = sourceData[1];
             targetData[2] = sourceData[2];
@@ -23347,56 +23347,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -23617,7 +23571,7 @@ var DisplayObject = (function (_super) {
         _this._explicitMouseEnabled = true;
         _this._pImplicitMouseEnabled = true;
         _this._orientationMatrix = new _awayjs_core.Matrix3D();
-        _this._inheritColorTransform = false;
+        _this._inheritColorTransform = true;
         _this._maskMode = false;
         //temp vector used in global to local
         _this._tempVector3D = new _awayjs_core.Vector3D();
@@ -23694,11 +23648,9 @@ var DisplayObject = (function (_super) {
          * even though they are invisible.
          */
         get: function () {
-            return this._transform.colorTransform ? this._transform.colorTransform.alphaMultiplier : 1;
+            return this._transform.colorTransform.alphaMultiplier;
         },
         set: function (value) {
-            if (!this._transform.colorTransform)
-                this._transform.colorTransform = new _awayjs_core.ColorTransform();
             this._transform.colorTransform.alphaMultiplier = value;
             this._transform.invalidateColorTransform();
         },
@@ -25012,10 +24964,8 @@ var DisplayObject = (function (_super) {
     };
     DisplayObject.prototype.reset = function () {
         this.visible = true;
-        if (this._transform.matrix3D)
-            this._transform.clearMatrix3D();
-        if (this._transform.colorTransform)
-            this._transform.clearColorTransform();
+        this._transform.clearMatrix3D();
+        this._transform.clearColorTransform();
         //this.name="";
         this.masks = null;
         this.maskMode = false;
@@ -25286,14 +25236,10 @@ var DisplayObject = (function (_super) {
             this._pImplicitColorTransform = new _awayjs_core.ColorTransform();
         if (this._inheritColorTransform && this._pParent && this._pParent._iAssignedColorTransform()) {
             this._pImplicitColorTransform.copyFrom(this._pParent._iAssignedColorTransform());
-            if (this._transform.colorTransform)
-                this._pImplicitColorTransform.prepend(this._transform.colorTransform);
+            this._pImplicitColorTransform.prepend(this._transform.colorTransform);
         }
         else {
-            if (this._transform.colorTransform)
-                this._pImplicitColorTransform.copyFrom(this._transform.colorTransform);
-            else
-                this._pImplicitColorTransform.clear();
+            this._pImplicitColorTransform.copyFrom(this._transform.colorTransform);
         }
         this._hierarchicalPropsDirty ^= HierarchicalProperties.COLOR_TRANSFORM;
     };
@@ -31332,7 +31278,7 @@ var TextField = (function (_super) {
      */
     TextField.prototype._acceptTraverser = function (traverser) {
         this.reConstruct(true);
-        if (this._textFormat && !(this._textFormat.font_table.isAsset(TesselatedFontTable) && (this._textFormat.material))) {
+        if (this._textFormat && !this._textFormat.font_table.isAsset(TesselatedFontTable) && !this._textFormat.material) {
             var new_ct = this.transform.colorTransform || (this.transform.colorTransform = new _awayjs_core.ColorTransform());
             //if(new_ct.color==0xffffff){
             this.transform.colorTransform.color = (this.textColor != null) ? this.textColor : this._textFormat.color;
@@ -31383,10 +31329,15 @@ var TextField = (function (_super) {
         set: function (value) {
             this._textColor = value;
             this._textFormat.color = value;
-            if (!this.transform.colorTransform)
-                this.transform.colorTransform = new _awayjs_core.ColorTransform();
-            this.transform.colorTransform.color = value;
-            this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
+            if (this._textFormat && !this._textFormat.font_table.isAsset(TesselatedFontTable) && !this._textFormat.material) {
+                if (!this.transform.colorTransform)
+                    this.transform.colorTransform = new _awayjs_core.ColorTransform();
+                this.transform.colorTransform.color = value;
+                this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
+            }
+            else {
+                this._glyphsDirty = true;
+            }
         },
         enumerable: true,
         configurable: true
@@ -32423,8 +32374,6 @@ var MovieClip = (function (_super) {
     };
     MovieClip.prototype.addChildAtDepth = function (child, depth, replace) {
         if (replace === void 0) { replace = true; }
-        //this should be implemented for all display objects
-        child.inheritColorTransform = true;
         child.reset(); // this takes care of transform and visibility
         return _super.prototype.addChildAtDepth.call(this, child, depth, replace);
     };
