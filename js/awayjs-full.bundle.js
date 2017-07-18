@@ -12983,10 +12983,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -16378,6 +16424,47 @@ var GraphicsPath = (function () {
 GraphicsPath.data_type = "[graphicsdata path]";
 
 /**
+ * The LineScaleMode class provides values for the <code>scaleMode</code>
+ * parameter in the <code>Graphics.lineStyle()</code> method.
+ */
+var LineScaleMode = (function () {
+    function LineScaleMode() {
+    }
+    return LineScaleMode;
+}());
+/**
+ * With this setting used as the <code>scaleMode</code> parameter of the
+ * <code>lineStyle()</code> method, the thickness of the line scales
+ * <i>only</i> vertically. For example, consider the following circles, drawn
+ * with a one-pixel line, and each with the <code>scaleMode</code> parameter
+ * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
+ * scaled only vertically, and the circle on the right is scaled both
+ * vertically and horizontally.
+ */
+LineScaleMode.HORIZONTAL = "horizontal";
+/**
+ * With this setting used as the <code>scaleMode</code> parameter of the
+ * <code>lineStyle()</code> method, the thickness of the line never scales.
+ */
+LineScaleMode.NONE = "none";
+/**
+ * With this setting used as the <code>scaleMode</code> parameter of the
+ * <code>lineStyle()</code> method, the thickness of the line always scales
+ * when the object is scaled(the default).
+ */
+LineScaleMode.NORMAL = "normal";
+/**
+ * With this setting used as the <code>scaleMode</code> parameter of the
+ * <code>lineStyle()</code> method, the thickness of the line scales
+ * <i>only</i> horizontally. For example, consider the following circles,
+ * drawn with a one-pixel line, and each with the <code>scaleMode</code>
+ * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
+ * left is scaled only horizontally, and the circle on the right is scaled
+ * both vertically and horizontally.
+ */
+LineScaleMode.VERTICAL = "vertical";
+
+/**
  * The Graphics class contains a set of methods that you can use to create a
  * vector shape. Display objects that support drawing include Sprite and Shape
  * objects. Each of these classes includes a <code>graphics</code> property
@@ -16417,6 +16504,7 @@ var GraphicsFactoryStrokes = (function () {
             //	material.alpha=(<GraphicsStrokeStyle>this.queued_stroke_pathes[i].style).alpha;
             var shape = targetGraphics.addShape(Shape.getShape(elements, material));
             shape.isStroke = true;
+            shape.strokePath = strokePath;
             if (obj.colorPos) {
                 shape.style = new Style();
                 var sampler = new Sampler2D();
@@ -16444,13 +16532,14 @@ var GraphicsFactoryStrokes = (function () {
         if (scale === void 0) { scale = 1; }
         var graphicsPath = shape.strokePath;
         var final_vert_list = [];
-        GraphicsFactoryStrokes.draw_path([graphicsPath], final_vert_list, false, scale);
+        GraphicsFactoryStrokes.draw_path([graphicsPath], final_vert_list, false, scale, LineScaleMode.NORMAL);
         var elements = shape.elements;
         elements.setPositions(final_vert_list);
         elements.invalidate();
     };
-    GraphicsFactoryStrokes.draw_path = function (graphic_pathes, final_vert_list, curves, scale) {
+    GraphicsFactoryStrokes.draw_path = function (graphic_pathes, final_vert_list, curves, scale, scaleMode) {
         if (scale === void 0) { scale = 1; }
+        if (scaleMode === void 0) { scaleMode = LineScaleMode.NORMAL; }
         var len = graphic_pathes.length;
         var contour_commands;
         var contour_data;
@@ -16485,7 +16574,15 @@ var GraphicsFactoryStrokes = (function () {
             contour_commands = one_path._newCommands;
             contour_data = one_path._positions;
             strokeStyle = one_path.stroke();
-            var half_thickness = strokeStyle.half_thickness * scale;
+            var half_thickness = strokeStyle.half_thickness;
+            if (scaleMode == LineScaleMode.NORMAL) {
+                if ((half_thickness * scale) < 6) {
+                    half_thickness = 6 * (1 / scale);
+                }
+            }
+            else if (scaleMode == LineScaleMode.NONE) {
+                half_thickness *= (1 / scale);
+            }
             for (k = 0; k < contour_commands.length; k++) {
                 commands = contour_commands[k];
                 data = contour_data[k];
@@ -20154,6 +20251,8 @@ var Graphics = (function (_super) {
         _this._current_position = new _awayjs_core.Point();
         _this._scaleX = 1;
         _this._scaleY = 1;
+        // todo: this is a temp workarpound to prevent strokes from getting scaled, if they are not coming from awd
+        _this.scaleStrokes = false;
         _this._drawingDirty = false;
         //store associated entity object, otherwise assign itself as entity
         _this._entity = entity;
@@ -20184,6 +20283,8 @@ var Graphics = (function (_super) {
     Graphics.prototype.updateScale = function (scaleX, scaleY) {
         if (this._scaleX == scaleX && this._scaleY == scaleY)
             return;
+        this._scaleX = scaleX;
+        this._scaleY = scaleY;
         var len = this._shapes.length;
         var doInvalid = false;
         for (var i = 0; i < len; i++) {
@@ -21984,47 +22085,6 @@ InterpolationMethod.LINEAR_RGB = "linearRGB";
 InterpolationMethod.RGB = "rgb";
 
 /**
- * The LineScaleMode class provides values for the <code>scaleMode</code>
- * parameter in the <code>Graphics.lineStyle()</code> method.
- */
-var LineScaleMode = (function () {
-    function LineScaleMode() {
-    }
-    return LineScaleMode;
-}());
-/**
- * With this setting used as the <code>scaleMode</code> parameter of the
- * <code>lineStyle()</code> method, the thickness of the line scales
- * <i>only</i> vertically. For example, consider the following circles, drawn
- * with a one-pixel line, and each with the <code>scaleMode</code> parameter
- * set to <code>LineScaleMode.VERTICAL</code>. The circle on the left is
- * scaled only vertically, and the circle on the right is scaled both
- * vertically and horizontally.
- */
-LineScaleMode.HORIZONTAL = "horizontal";
-/**
- * With this setting used as the <code>scaleMode</code> parameter of the
- * <code>lineStyle()</code> method, the thickness of the line never scales.
- */
-LineScaleMode.NONE = "none";
-/**
- * With this setting used as the <code>scaleMode</code> parameter of the
- * <code>lineStyle()</code> method, the thickness of the line always scales
- * when the object is scaled(the default).
- */
-LineScaleMode.NORMAL = "normal";
-/**
- * With this setting used as the <code>scaleMode</code> parameter of the
- * <code>lineStyle()</code> method, the thickness of the line scales
- * <i>only</i> horizontally. For example, consider the following circles,
- * drawn with a one-pixel line, and each with the <code>scaleMode</code>
- * parameter set to <code>LineScaleMode.HORIZONTAL</code>. The circle on the
- * left is scaled only horizontally, and the circle on the right is scaled
- * both vertically and horizontally.
- */
-LineScaleMode.VERTICAL = "vertical";
-
-/**
  * The PixelSnapping class is an enumeration of constant values for setting
  * the pixel snapping options by using the <code>pixelSnapping</code> property
  * of a Bitmap object.
@@ -23284,10 +23344,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -26496,6 +26602,9 @@ var Sprite = (function (_super) {
             if (this.isSlice9ScaledSprite) {
                 //var comps:Array<Vector3D> = this.transform.concatenatedMatrix3D.decompose();
                 this._graphics.updateSlice9(this.parent.scaleX, this.parent.scaleY);
+            }
+            else if (this._graphics.scaleStrokes) {
+                this._graphics.updateScale(this.scaleX, this.scaleY);
             }
             return this._graphics;
         },
@@ -67507,10 +67616,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var AWD3Utils = (function () {
@@ -68333,6 +68488,9 @@ var AWDParser = (function (_super) {
             sampler = new _awayjs_graphics.Sampler2D();
             shape = sprite.graphics.getShapeAt(i);
             material = shape.material || sprite.material;
+            if (!material) {
+                shape = null;
+            }
             if (shape) {
                 shape.style = new _awayjs_graphics.Style();
                 shape.style.addSamplerAt(sampler, material.getTextureAt(0));
@@ -68773,6 +68931,31 @@ var AWDParser = (function (_super) {
                             slice9Indices[cnt2++] = this._newBlockBytes.readInt();
                         cnt++;
                     }
+                }
+                else if (str_type == 24) {
+                    element_type = ElementType.STROKE_DATA;
+                    // todo: store the lineStyle as optional props on subgeom-properties ?
+                    var color = this._newBlockBytes.readInt();
+                    var thickness = this._newBlockBytes.readFloat();
+                    var capStyle = this._newBlockBytes.readUnsignedByte(); //todo
+                    var jointStyle = this._newBlockBytes.readUnsignedByte(); //todo
+                    var mitter = this._newBlockBytes.readFloat(); //todo
+                    graphics.lineStyle(thickness, color);
+                    var seg_type;
+                    while (this._newBlockBytes.position < str_end) {
+                        seg_type = this._newBlockBytes.readFloat();
+                        if (seg_type == 1.0) {
+                            graphics.moveTo(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+                        }
+                        else if (seg_type == 2.0) {
+                            graphics.lineTo(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+                        }
+                        else if (seg_type == 3.0) {
+                            graphics.curveTo(this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat(), this._newBlockBytes.readFloat());
+                        }
+                    }
+                    graphics.endFill();
+                    graphics.scaleStrokes = true;
                 }
                 else {
                     console.log("skipping unknown subgeom stream");
@@ -70385,6 +70568,7 @@ ElementType.SHARED_BUFFER = 2;
 ElementType.CONCATENATED_SUBGEO = 3;
 ElementType.SHARED_INDEXBUFFER = 4;
 ElementType.CONCENATED_STREAMS_UINT16 = 5;
+ElementType.STROKE_DATA = 6;
 var AWDProperties = (function () {
     function AWDProperties() {
     }
