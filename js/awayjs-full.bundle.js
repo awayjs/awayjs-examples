@@ -16576,8 +16576,10 @@ var GraphicsFactoryStrokes = (function () {
             strokeStyle = one_path.stroke();
             var half_thickness = strokeStyle.half_thickness;
             if (scaleMode == LineScaleMode.NORMAL) {
-                if ((half_thickness * scale) < 6) {
-                    half_thickness = 6 * (1 / scale);
+                if (scale < 1) {
+                    if ((half_thickness * scale) < 0.5) {
+                        half_thickness = 0.5 * (1 / scale);
+                    }
                 }
             }
             else if (scaleMode == LineScaleMode.NONE) {
@@ -20470,6 +20472,7 @@ var Graphics = (function (_super) {
         graphics.style = this._style;
         graphics.particles = this.particles;
         graphics.numParticles = this.numParticles;
+        graphics.scaleStrokes = this.scaleStrokes;
         if (this.slice9Rectangle) {
             graphics.slice9Rectangle = new _awayjs_core.Rectangle();
             graphics.slice9Rectangle.copyFrom(this.slice9Rectangle);
@@ -26603,8 +26606,8 @@ var Sprite = (function (_super) {
                 //var comps:Array<Vector3D> = this.transform.concatenatedMatrix3D.decompose();
                 this._graphics.updateSlice9(this.parent.scaleX, this.parent.scaleY);
             }
-            else if (this._graphics.scaleStrokes) {
-                this._graphics.updateScale(this.scaleX, this.scaleY);
+            else if (this._graphics.scaleStrokes && this.parent) {
+                this._graphics.updateScale(this.parent.scaleX, this.parent.scaleY);
             }
             return this._graphics;
         },
