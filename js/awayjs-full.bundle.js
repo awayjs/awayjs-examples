@@ -23347,56 +23347,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -23600,6 +23554,8 @@ var DisplayObject = (function (_super) {
      */
     function DisplayObject() {
         var _this = _super.call(this) || this;
+        //temp point used in hit testing
+        _this._tempPoint = new _awayjs_core.Point();
         _this._queuedEvents = new Array();
         _this._boxBoundsInvalid = true;
         _this._sphereBoundsInvalid = true;
@@ -24897,9 +24853,15 @@ var DisplayObject = (function (_super) {
         if (shapeFlag === void 0) { shapeFlag = false; }
         if (masksFlag === void 0) { masksFlag = false; }
         if (!this._pImplicitVisibility)
-            return;
+            return false;
         if (this._pImplicitMaskId != -1 && !masksFlag)
-            return;
+            return false;
+        //set local tempPoint for later reference
+        this._tempPoint.setTo(x, y);
+        this.globalToLocal(this._tempPoint, this._tempPoint);
+        //early out for box test
+        if (!this.getBox().contains(this._tempPoint.x, this._tempPoint.y, 0))
+            return false;
         if (this._explicitMasks) {
             var numMasks = this._explicitMasks.length;
             var maskHit = false;
@@ -24912,6 +24874,9 @@ var DisplayObject = (function (_super) {
             if (!maskHit)
                 return false;
         }
+        //early out for non-shape tests
+        if (!shapeFlag)
+            return true;
         return this._hitTestPointInternal(x, y, shapeFlag, masksFlag);
     };
     /**
@@ -26568,8 +26533,6 @@ var Sprite = (function (_super) {
     function Sprite(material) {
         if (material === void 0) { material = null; }
         var _this = _super.call(this) || this;
-        //temp point used in hit testing
-        _this._tempPoint = new _awayjs_core.Point();
         _this._onGraphicsInvalidateDelegate = function (event) { return _this._onGraphicsInvalidate(event); };
         _this._graphics = _awayjs_graphics.Graphics.getGraphics(_this); //unique graphics object for each Sprite
         _this._graphics.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, _this._onGraphicsInvalidateDelegate);
@@ -26725,17 +26688,11 @@ var Sprite = (function (_super) {
     };
     Sprite.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
         if (this._graphics.count) {
-            this._tempPoint.setTo(x, y);
-            var local = this.globalToLocal(this._tempPoint, this._tempPoint);
-            var box;
-            //early out for box test
-            if (!(box = this.getBox()).contains(local.x, local.y, 0))
-                return false;
             //early out for non-shape tests
             if (!shapeFlag)
                 return true;
             //ok do the graphics thing
-            if (this._graphics._hitTestPointInternal(local.x, local.y))
+            if (this._graphics._hitTestPointInternal(this._tempPoint.x, this._tempPoint.y))
                 return true;
         }
         return _super.prototype._hitTestPointInternal.call(this, x, y, shapeFlag, masksFlag);
@@ -31053,8 +31010,6 @@ var TextField = (function (_super) {
     function TextField() {
         var _this = _super.call(this) || this;
         _this._line_indices = [];
-        //temp point used in hit testing
-        _this._tempPoint = new _awayjs_core.Point();
         _this._text = "";
         _this._textDirty = false; // if text is dirty, the text-content or the text-size has changed, and we need to recalculate word-width
         _this._positionsDirty = false; // if formatting is dirty, we need to recalculate text-positions / size
@@ -31321,17 +31276,7 @@ var TextField = (function (_super) {
     });
     TextField.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
         if (this._graphics.count) {
-            this._tempPoint.setTo(x, y);
-            var local = this.globalToLocal(this._tempPoint, this._tempPoint);
-            var box;
-            //early out for box test
-            if (!(box = this.getBox()).contains(local.x, local.y, 0))
-                return false;
-            //early out for non-shape tests
-            if (!shapeFlag)
-                return true;
-            //ok do the graphics thing
-            if (this._graphics._hitTestPointInternal(local.x, local.y))
+            if (this._graphics._hitTestPointInternal(this._tempPoint.x, this._tempPoint.y))
                 return true;
         }
         return false;
