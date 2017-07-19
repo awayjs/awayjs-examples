@@ -65558,6 +65558,7 @@ var MouseManager = (function () {
     function MouseManager() {
         var _this = this;
         this._viewLookup = new Array();
+        this._containerLookup = new Array();
         this._nullVector = new _awayjs_core.Vector3D();
         this._queuedEvents = new Array();
         this._mouseUp = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_UP);
@@ -65576,20 +65577,39 @@ var MouseManager = (function () {
         this.onMouseWheelDelegate = function (event) { return _this.onMouseWheel(event); };
         this.onMouseOverDelegate = function (event) { return _this.onMouseOver(event); };
         this.onMouseOutDelegate = function (event) { return _this.onMouseOut(event); };
-        if (document) {
-            document.addEventListener("click", this.onClickDelegate);
-            document.addEventListener("dblclick", this.onDoubleClickDelegate);
-            document.addEventListener("touchstart", this.onMouseDownDelegate);
-            document.addEventListener("mousedown", this.onMouseDownDelegate);
-            document.addEventListener("touchmove", this.onMouseMoveDelegate);
-            document.addEventListener("mousemove", this.onMouseMoveDelegate);
-            document.addEventListener("mouseup", this.onMouseUpDelegate);
-            document.addEventListener("touchend", this.onMouseUpDelegate);
-            document.addEventListener("mousewheel", this.onMouseWheelDelegate);
-            document.addEventListener("mouseover", this.onMouseOverDelegate);
-            document.addEventListener("mouseout", this.onMouseOutDelegate);
-        }
     }
+    MouseManager.prototype.registerContainer = function (container) {
+        if (container && this._containerLookup.indexOf(container) == -1) {
+            container.addEventListener("click", this.onClickDelegate);
+            container.addEventListener("dblclick", this.onDoubleClickDelegate);
+            container.addEventListener("touchstart", this.onMouseDownDelegate);
+            container.addEventListener("mousedown", this.onMouseDownDelegate);
+            container.addEventListener("touchmove", this.onMouseMoveDelegate);
+            container.addEventListener("mousemove", this.onMouseMoveDelegate);
+            container.addEventListener("mouseup", this.onMouseUpDelegate);
+            container.addEventListener("touchend", this.onMouseUpDelegate);
+            container.addEventListener("mousewheel", this.onMouseWheelDelegate);
+            container.addEventListener("mouseover", this.onMouseOverDelegate);
+            container.addEventListener("mouseout", this.onMouseOutDelegate);
+            this._containerLookup.push(container);
+        }
+    };
+    MouseManager.prototype.unregisterContainer = function (container) {
+        if (container && this._containerLookup.indexOf(container) != -1) {
+            container.removeEventListener("click", this.onClickDelegate);
+            container.removeEventListener("dblclick", this.onDoubleClickDelegate);
+            container.removeEventListener("touchstart", this.onMouseDownDelegate);
+            container.removeEventListener("mousedown", this.onMouseDownDelegate);
+            container.removeEventListener("touchmove", this.onMouseMoveDelegate);
+            container.removeEventListener("mousemove", this.onMouseMoveDelegate);
+            container.removeEventListener("touchend", this.onMouseUpDelegate);
+            container.removeEventListener("mouseup", this.onMouseUpDelegate);
+            container.removeEventListener("mousewheel", this.onMouseWheelDelegate);
+            container.removeEventListener("mouseover", this.onMouseOverDelegate);
+            container.removeEventListener("mouseout", this.onMouseOutDelegate);
+            this._containerLookup.slice(this._containerLookup.indexOf(container), 1);
+        }
+    };
     MouseManager.getInstance = function () {
         if (this._instance)
             return this._instance;
@@ -67076,7 +67096,7 @@ var RaycastPicker = (function (_super) {
         return false;
     };
     RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
-        return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance ? 1 : -1;
+        return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance ? 1 : entity1._iPickingCollision.rayEntryDistance < entity2._iPickingCollision.rayEntryDistance ? -1 : 0;
     };
     RaycastPicker.prototype.getPickingCollision = function (view) {
         // Sort entities from closest to furthest to reduce tests.
@@ -67205,11 +67225,11 @@ var View = (function () {
         this._onProjectionChangedDelegate = function (event) { return _this._onProjectionChanged(event); };
         this._onViewportUpdatedDelegate = function (event) { return _this._onViewportUpdated(event); };
         this._onScissorUpdatedDelegate = function (event) { return _this._onScissorUpdated(event); };
+        this._mouseManager = MouseManager.getInstance();
+        this._mouseManager.registerView(this);
         this.scene = scene || new _awayjs_scene.Scene();
         this.camera = camera || new _awayjs_scene.Camera();
         this.renderer = renderer || new _awayjs_renderer.DefaultRenderer();
-        this._mouseManager = MouseManager.getInstance();
-        this._mouseManager.registerView(this);
         //			if (this._shareContext)
         //				this._mouse3DManager.addViewLayer(this);
     }
@@ -67292,10 +67312,12 @@ var View = (function () {
                 this._pRenderer.dispose();
                 this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
                 this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+                this._mouseManager.unregisterContainer(this._pRenderer.stage.container);
             }
             this._pRenderer = value;
             this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
             this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+            this._mouseManager.registerContainer(this._pRenderer.stage.container);
             //reset back buffer
             this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
             this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
