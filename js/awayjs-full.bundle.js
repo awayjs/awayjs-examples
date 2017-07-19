@@ -31176,7 +31176,7 @@ var TextField = (function (_super) {
          * (<code>\t</code>) counts as one character.
          */
         get: function () {
-            return this._length;
+            return this._text.length;
         },
         enumerable: true,
         configurable: true
