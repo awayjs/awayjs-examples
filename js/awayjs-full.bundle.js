@@ -31007,6 +31007,8 @@ var TextField = (function (_super) {
     function TextField() {
         var _this = _super.call(this) || this;
         _this._line_indices = [];
+        //temp point used in hit testing
+        _this._tempPoint = new _awayjs_core.Point();
         _this._text = "";
         _this._textDirty = false; // if text is dirty, the text-content or the text-size has changed, and we need to recalculate word-width
         _this._positionsDirty = false; // if formatting is dirty, we need to recalculate text-positions / size
@@ -31270,6 +31272,23 @@ var TextField = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TextField.prototype._hitTestPointInternal = function (x, y, shapeFlag, masksFlag) {
+        if (this._graphics.count) {
+            this._tempPoint.setTo(x, y);
+            var local = this.globalToLocal(this._tempPoint, this._tempPoint);
+            var box;
+            //early out for box test
+            if (!(box = this.getBox()).contains(local.x, local.y, 0))
+                return false;
+            //early out for non-shape tests
+            if (!shapeFlag)
+                return true;
+            //ok do the graphics thing
+            if (this._graphics._hitTestPointInternal(local.x, local.y))
+                return true;
+        }
+        return false;
+    };
     /**
      *
      * @param renderer
