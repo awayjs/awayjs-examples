@@ -224,6 +224,8 @@ __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__["DefaultMaterialGroup"].registerA
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["CameraNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["Camera"]);
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["DirectionalLight"]);
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["Sprite"]);
+__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["DisplayObjectContainer"]);
+__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["Scene"]);
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["MovieClip"]);
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["Billboard"]);
 __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__["EntityNode"], __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__["LineSegment"]);
@@ -1490,10 +1492,14 @@ var WebAudioChannel = (function () {
         this._pan = 0;
         this._startTime = 0;
         this._audioCtx = WebAudioChannel._audioCtx || (WebAudioChannel._audioCtx = new (window["AudioContext"] || window["webkitAudioContext"])());
+        this._usingNativePanner = typeof this._audioCtx.createStereoPanner === 'function';
         this._gainNode = this._audioCtx.createGain();
         this._gainNode.gain.value = this._volume;
-        this._pannerNode = this._audioCtx.createStereoPanner();
-        this._pannerNode.pan.value = this._pan;
+        this._pannerNode = this._usingNativePanner ? this._audioCtx.createStereoPanner() : this._audioCtx.createPanner();
+        if (this._usingNativePanner)
+            this._pannerNode.pan.value = this._pan;
+        else
+            this._pannerNode.setPosition(Math.sin(this._pan * (Math.PI / 2)), 0, Math.cos(this._pan * (Math.PI / 2)));
         this._gainNode.connect(this._pannerNode);
         this._pannerNode.connect(this._audioCtx.destination);
         this._onEndedDelegate = function (event) { return _this._onEnded(event); };
@@ -1540,7 +1546,10 @@ var WebAudioChannel = (function () {
             if (this._pan == value)
                 return;
             this._pan = value;
-            this._pannerNode.pan.value = this._pan;
+            if (this._usingNativePanner)
+                this._pannerNode.pan.value = this._pan;
+            else
+                this._pannerNode.setPosition(Math.sin(this._pan * (Math.PI / 2)), 0, Math.cos(this._pan * (Math.PI / 2)));
         },
         enumerable: true,
         configurable: true
