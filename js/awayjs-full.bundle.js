@@ -25814,16 +25814,19 @@ var DisplayObjectContainer = (function (_super) {
             var childBox;
             var first = true;
             for (var i = 0; i < numChildren; ++i) {
-                childBox = this._children[i].getBox();
-                if (childBox.isEmpty())
-                    continue;
-                childBox = this._children[i].getBox(this);
-                if (first) {
-                    first = false;
-                    this._pBoxBounds.copyFrom(childBox);
-                }
-                else {
-                    this._pBoxBounds = this._pBoxBounds.union(childBox, this._pBoxBounds);
+                // ignore bounds of childs that are masked
+                if (this._children[i].masks == null) {
+                    childBox = this._children[i].getBox();
+                    if (childBox.isEmpty())
+                        continue;
+                    childBox = this._children[i].getBox(this);
+                    if (first) {
+                        first = false;
+                        this._pBoxBounds.copyFrom(childBox);
+                    }
+                    else {
+                        this._pBoxBounds = this._pBoxBounds.union(childBox, this._pBoxBounds);
+                    }
                 }
             }
         }
@@ -30504,6 +30507,8 @@ var TesselatedFontTable = (function (_super) {
         if (tesselated_font_char) {
             return tesselated_font_char.char_width * this._size_multiply;
         }
+        if (this.fallbackTable)
+            return this.fallbackTable.getCharWidth(char_code);
         return 0;
     };
     Object.defineProperty(TesselatedFontTable.prototype, "usesCurves", {
@@ -30515,10 +30520,6 @@ var TesselatedFontTable = (function (_super) {
     });
     TesselatedFontTable.prototype.getLineHeight = function () {
         var thisLineheighttest = this._current_size * (this._font_em_size / this._ascent);
-        /*console.log("getLineHeight", thisLineheighttest);
-        console.log("_font_em_size", this._font_em_size);
-        console.log("_ascent", this._ascent);
-        console.log("_descent", this._descent);*/
         return thisLineheighttest; // ;//(this._ascent+this._descent)*this._size_multiply;
     };
     Object.defineProperty(TesselatedFontTable.prototype, "assetType", {
@@ -30601,13 +30602,15 @@ var TesselatedFontTable = (function (_super) {
         var startIdx = 0;
         var buffer;
         var v;
+        var size_multiply;
         var hack_x_mirror = false;
         // loop over all the words and create the text data for it
         // each word provides its own start-x and start-y values, so we can just ignore whitespace-here
         for (w = startWord; w < w_len; w += 5) {
             startIdx = tf.words[w];
             x = tf.words[w + 1];
-            y = tf.words[w + 2]; //-this.getLineHeight()+(this._ascent*this._size_multiply);
+            y = tf.words[w + 2]; // sunflower
+            //y=tf.words[w+2]+(this.ascent-this.get_font_em_size())*this._size_multiply; // icycle
             c_len = startIdx + tf.words[w + 4];
             for (c = startIdx; c < c_len; c++) {
                 hack_x_mirror = false;
@@ -30617,34 +30620,36 @@ var TesselatedFontTable = (function (_super) {
                 }
                 if (tf.chars_codes[c] != 32) {
                     charGlyph = this.getChar(tf.chars_codes[c].toString());
+                    size_multiply = this._size_multiply;
                     if (!charGlyph && this.fallbackTable) {
                         charGlyph = this.fallbackTable.getChar(tf.chars_codes[c].toString());
+                        size_multiply = this.fallbackTable._size_multiply;
                     }
                     if (charGlyph) {
                         char_vertices = charGlyph.fill_data;
                         buffer = new Float32Array(char_vertices.buffer);
                         if (this.usesCurves) {
                             for (v = 0; v < char_vertices.count; v++) {
-                                textShape.verts[textShape.verts.length] = buffer[v * 3] * this._size_multiply + x;
-                                textShape.verts[textShape.verts.length] = buffer[v * 3 + 1] * this._size_multiply + y;
+                                textShape.verts[textShape.verts.length] = buffer[v * 3] * size_multiply + x;
+                                textShape.verts[textShape.verts.length] = buffer[v * 3 + 1] * size_multiply + y;
                                 textShape.verts[textShape.verts.length] = buffer[v * 3 + 2];
                             }
                         }
                         else {
                             if (hack_x_mirror) {
                                 for (v = 0; v < char_vertices.count; v++) {
-                                    textShape.verts[textShape.verts.length] = (charGlyph.char_width - buffer[v * 2]) * this._size_multiply + x;
-                                    textShape.verts[textShape.verts.length] = buffer[v * 2 + 1] * this._size_multiply + y;
+                                    textShape.verts[textShape.verts.length] = (charGlyph.char_width - buffer[v * 2]) * size_multiply + x;
+                                    textShape.verts[textShape.verts.length] = buffer[v * 2 + 1] * size_multiply + y;
                                 }
                             }
                             else {
                                 for (v = 0; v < char_vertices.count; v++) {
-                                    textShape.verts[textShape.verts.length] = buffer[v * 2] * this._size_multiply + x;
-                                    textShape.verts[textShape.verts.length] = buffer[v * 2 + 1] * this._size_multiply + y;
+                                    textShape.verts[textShape.verts.length] = buffer[v * 2] * size_multiply + x;
+                                    textShape.verts[textShape.verts.length] = buffer[v * 2 + 1] * size_multiply + y;
                                 }
                             }
                         }
-                        x += charGlyph.char_width * this._size_multiply;
+                        x += charGlyph.char_width * size_multiply;
                     }
                     else {
                         console.log("TesselatedFontTable: Error: char not found in fontTable");
@@ -31078,6 +31083,7 @@ var TextField = (function (_super) {
         _this._textRuns_words = []; // stores words-offset, word-count and width for each textrun
         _this._maxWidthLine = 0;
         _this.textShapes = {};
+        _this._textColor = -1;
         _this._width = 100;
         _this._height = 100;
         _this._textWidth = 0;
@@ -31396,7 +31402,7 @@ var TextField = (function (_super) {
         },
         set: function (value) {
             this._textColor = value;
-            this._textFormat.color = value;
+            //this._textFormat.color=value;
             if (this._textFormat && !this._textFormat.font_table.isAsset(TesselatedFontTable) && !this._textFormat.material) {
                 if (!this.transform.colorTransform)
                     this.transform.colorTransform = new _awayjs_core.ColorTransform();
@@ -31570,15 +31576,27 @@ var TextField = (function (_super) {
             this._maxWidthLine = 0;
             if (this._text != "" && this._textFormat != null) {
                 if (this.multiline) {
-                    var paragraphs = this.text.toString().match(/[^\r\n]+/g);
+                    var paragraphs = this.text.toString().split("\\n");
+                    var tl = 0;
+                    var tl_len = paragraphs.length;
+                    var extra_split;
+                    var tl_extra = 0;
+                    var tl_extra_len = paragraphs.length;
+                    for (tl = 0; tl < tl_len; tl++) {
+                        extra_split = paragraphs[tl].match(/[^\r\n]+/g);
+                        tl_extra_len = extra_split.length;
+                        for (tl_extra = 0; tl_extra < tl_extra_len; tl_extra++) {
+                            this.buildParagraph(extra_split[tl_extra]);
+                        }
+                    }
+                }
+                else {
+                    var paragraphs = this.text.toString().split("\\n");
                     var tl = 0;
                     var tl_len = paragraphs.length;
                     for (tl = 0; tl < tl_len; tl++) {
                         this.buildParagraph(paragraphs[tl]);
                     }
-                }
-                else {
-                    this.buildParagraph(this._text);
                 }
             }
         }
@@ -31636,7 +31654,7 @@ var TextField = (function (_super) {
         var linewidh = 0;
         var whitespace_cnt = 0;
         for (c = 0; c < c_len; c++) {
-            char_code = this.text.charCodeAt(c);
+            char_code = paragraphText.charCodeAt(c);
             this.chars_codes[this.chars_codes.length] = char_code;
             char_width = this._textFormat.font_table.getCharWidth(char_code.toString());
             if (char_width <= 0) {
@@ -31644,7 +31662,7 @@ var TextField = (function (_super) {
             }
             // if this is a letter, and next symbol is a letter, we add the letterSpacing to the letter-width
             if (char_code != 32 && c < c_len - 1) {
-                char_width += (this.text.charCodeAt(c + 1) == 32) ? 0 : this._textFormat.letterSpacing;
+                char_width += (paragraphText.charCodeAt(c + 1) == 32) ? 0 : this._textFormat.letterSpacing;
             }
             linewidh += char_width;
             this.chars_width[this.chars_width.length] = char_width;
@@ -31708,6 +31726,7 @@ var TextField = (function (_super) {
         var lineWordEndIndices = [];
         var lineLength = [];
         var numSpacesPerline = [];
+        var offsety = 2;
         // if we have autosize enabled, and no wordWrap, we can adjust the textfield width
         if (this._autoSize != TextFieldAutoSize.NONE && !this._wordWrap && this._textDirty) {
             var oldSize = this._width;
@@ -31735,7 +31754,9 @@ var TextField = (function (_super) {
             w_len = this._textRuns_words[(tr * 4)] + (this._textRuns_words[(tr * 4) + 1] * 5);
             tr_length = this._textRuns_words[(tr * 4) + 2];
             //console.log(this._textFieldWidth, tr_length, maxLineWidth);
-            if (!this.multiline || tr_length < maxLineWidth || !this.wordWrap) {
+            //80pro: change for icycle:
+            if (!this.multiline || tr_length <= maxLineWidth || !this.wordWrap) {
+                //if(tr_length<maxLineWidth || !this.wordWrap){
                 // this must be a single textline
                 //console.log("one line");
                 lineWordStartIndices[0] = this._textRuns_words[(tr * 4)];
@@ -31775,7 +31796,6 @@ var TextField = (function (_super) {
                 }
             }
             var offsetx = 0;
-            var offsety = 2;
             var start_idx;
             var start_idx;
             var numSpaces;
@@ -31856,9 +31876,9 @@ var TextField = (function (_super) {
         this.textShapes = {};
         /*
                 this._graphics.clearDrawing();
-                this._graphics.beginFill(this.backgroundColor, this.background?1:0);
-                //this.graphics.lineStyle(1, this.borderColor, this.border?1:0);
-                this._graphics.drawRect(0,0,this._textWidth+4, this._textHeight+4);
+                this._graphics.beginFill(0xff0000, 1);//this.background?1:0);
+                this._graphics.lineStyle(1, 0x00ff00, 1);//this.borderColor, this.border?1:0);
+                this._graphics.drawRect(0,0,this._width, this._height);
                 this._graphics.endFill();
         */
         var textShape;
@@ -31884,17 +31904,16 @@ var TextField = (function (_super) {
             textShape.shape = this._graphics.addShape(_awayjs_graphics.Shape.getShape(textShape.elements));
             var sampler = new _awayjs_graphics.Sampler2D();
             textShape.shape.style = new _awayjs_graphics.Style();
-            if (textShape.format.material) {
+            if (textShape.format.material && this._textColor == -1) {
                 textShape.shape.material = this._textFormat.material;
                 textShape.shape.style.addSamplerAt(sampler, textShape.shape.material.getTextureAt(0));
                 textShape.shape.material.animateUVs = true;
                 textShape.shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, textShape.format.uv_values[0], textShape.format.uv_values[1]);
             }
             else {
-                var obj = _awayjs_graphics.Graphics.get_material_for_color(textShape.format.color, 1);
+                var obj = _awayjs_graphics.Graphics.get_material_for_color(this._textColor == -1 ? textShape.format.color : this._textColor, 1);
                 textShape.shape.material = obj.material;
                 if (obj.colorPos) {
-                    textShape.shape.material = obj.material;
                     textShape.shape.style.addSamplerAt(sampler, textShape.shape.material.getTextureAt(0));
                     textShape.shape.material.animateUVs = true;
                     textShape.shape.style.uvMatrix = new _awayjs_core.Matrix(0, 0, 0, 0, obj.colorPos.x, obj.colorPos.y);
