@@ -12992,56 +12992,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -20328,7 +20282,7 @@ var Graphics = (function (_super) {
     });
     Object.defineProperty(Graphics.prototype, "count", {
         get: function () {
-            return this._shapes.length;
+            return (this._shapes.length + this._queued_stroke_pathes.length + this._queued_fill_pathes.length);
         },
         enumerable: true,
         configurable: true
@@ -20437,6 +20391,8 @@ var Graphics = (function (_super) {
             this.removeShapeAt(shapeIndex);
         this._shapes.push(shape);
         shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        //shape.addEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
+        //shape.addEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
         this.invalidate();
         return shape;
     };
@@ -20449,7 +20405,10 @@ var Graphics = (function (_super) {
     Graphics.prototype.removeShapeAt = function (index) {
         if (index < 0 || index >= this._shapes.length)
             throw new _awayjs_core.RangeError("Index is out of range");
-        this._shapes.splice(index, 1)[0].removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        var shape = this._shapes.splice(index, 1)[0];
+        shape.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+        //shape.removeEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
+        //shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
         this.invalidate();
     };
     Graphics.prototype.removeAllShapes = function () {
@@ -20607,14 +20566,8 @@ var Graphics = (function (_super) {
             this.endFill();
         }
         var len = this._shapes.length;
-        /*
-                for (var i:number = 0; i < len; i++)
-                    traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
-                */
-        while (len > 0) {
-            len--;
-            traverser[this._shapes[len].elements.traverseName](this._shapes[len]);
-        }
+        for (var i = len - 1; i >= 0; i--)
+            traverser[this._shapes[i].elements.traverseName](this._shapes[i]);
     };
     Graphics.prototype._onInvalidateProperties = function (event) {
         this.invalidateMaterials();
@@ -20691,6 +20644,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
+        this.invalidate();
     };
     /**
      * Specifies a simple one-color fill that subsequent calls to other Graphics
@@ -20719,6 +20673,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
+        this.invalidate();
     };
     /**
      * Specifies a gradient fill used by subsequent calls to other Graphics
@@ -20818,6 +20773,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_fill_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_fill_pathes.push(this._active_fill_path);
+        this.invalidate();
     };
     /**
      * Copies all of drawing commands from the source Graphics object into the
@@ -21329,11 +21285,11 @@ var Graphics = (function (_super) {
      *
      */
     Graphics.prototype.endFill = function () {
+        this._drawingDirty = false;
         this.draw_strokes();
         this.draw_fills();
         this._active_fill_path = null;
         this._active_stroke_path = null;
-        this._drawingDirty = false;
         this.invalidate();
         this.invalidateElements();
     };
