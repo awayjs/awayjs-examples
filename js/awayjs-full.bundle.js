@@ -21286,8 +21286,8 @@ var Graphics = (function (_super) {
      */
     Graphics.prototype.endFill = function () {
         this._drawingDirty = false;
-        this.draw_strokes();
         this.draw_fills();
+        this.draw_strokes();
         this._active_fill_path = null;
         this._active_stroke_path = null;
         this.invalidate();
