@@ -13179,7 +13179,6 @@ var Shape = (function (_super) {
         var _this = _super.call(this) || this;
         _this._boxBoundsInvalid = true;
         _this._sphereBoundsInvalid = true;
-        _this.persistent = true;
         _this._onInvalidatePropertiesDelegate = function (event) { return _this._onInvalidateProperties(event); };
         _this._onInvalidateVerticesDelegate = function (event) { return _this._onInvalidateVertices(event); };
         _this._elements = elements;
@@ -16467,7 +16466,6 @@ var GraphicsFactoryStrokes = (function () {
             //		elements.setCustomAttributes("curves", new Byte4Attributes(attributesBuffer, false));
             //	material.alpha=(<GraphicsStrokeStyle>this.queued_stroke_pathes[i].style).alpha;
             var shape = targetGraphics.addShape(Shape.getShape(elements, material));
-            shape.persistent = false;
             shape.isStroke = true;
             shape.strokePath = strokePath;
             if (obj.colorPos) {
@@ -16542,8 +16540,8 @@ var GraphicsFactoryStrokes = (function () {
             var half_thickness = strokeStyle.half_thickness;
             if (scaleMode == LineScaleMode.NORMAL) {
                 if (scale < 1) {
-                    if ((half_thickness * scale) < 0.25) {
-                        half_thickness = 0.25 * (1 / scale);
+                    if ((half_thickness * scale) < 0.5) {
+                        half_thickness = 0.5 * (1 / scale);
                     }
                 }
             }
@@ -20413,18 +20411,6 @@ var Graphics = (function (_super) {
         //shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
         this.invalidate();
     };
-    Graphics.prototype.removeAllShapes = function () {
-        var shape;
-        var len = this._shapes.length;
-        for (var i = 0; i < len; i++) {
-            shape = this._shapes[i];
-            shape.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
-            shape.removeEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
-            shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
-        }
-        this._shapes.length = 0;
-        this.invalidate();
-    };
     Graphics.prototype.getShapeAt = function (index) {
         return this._shapes[index];
     };
@@ -20464,29 +20450,36 @@ var Graphics = (function (_super) {
         for (var i = 0; i < len; ++i)
             this._shapes[i].scale(scale);
     };
+    Graphics.prototype.clearInternal = function () {
+        for (var i = this._shapes.length - 1; i >= 0; i--)
+            this._shapes[i].clear();
+        //this.invalidateElements();
+    };
     Graphics.prototype.clear = function () {
         var shape;
-        for (var i = this._shapes.length - 1; i >= 0; i--) {
+        var len = this._shapes.length;
+        for (var i = 0; i < len; i++) {
             shape = this._shapes[i];
-            if (shape.persistent) {
-                shape.clear();
-            }
-            else {
-                this.removeShapeAt(i);
-                shape.dispose();
-            }
+            shape.clear();
+            shape.removeEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
+            shape.removeEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
+            shape.removeEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
         }
-        //this.invalidateElements();
+        this._shapes.length = 0;
+        this.invalidate();
         this._active_fill_path = null;
         this._active_stroke_path = null;
+        this._queued_fill_pathes.length = 0;
+        this._queued_stroke_pathes.length = 0;
         this._drawingDirty = false;
+        //this.invalidateElements();
     };
     /**
      * Clears all resources used by the Graphics object, including SubGeometries.
      */
     Graphics.prototype.dispose = function () {
         this.material = null;
-        this.removeAllShapes();
+        this.clear();
         if (this._animator)
             this._animator.dispose();
     };
@@ -21663,8 +21656,6 @@ var Graphics = (function (_super) {
         var len = shapes.length;
         for (var i = 0; i < len; i++) {
             shape = shapes[i];
-            if (!shape.persistent)
-                continue;
             if (this.slice9Rectangle) {
                 // todo: this is a dirty workaround to get the slice9-shapes cloned:
                 var new_shape = new Shape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, 1, 1, false, true));
@@ -21986,7 +21977,6 @@ var GraphicsFactoryFills = (function () {
                     var obj = Graphics.get_material_for_color(targetGraphics.queued_fill_pathes[cp].style.color, targetGraphics.queued_fill_pathes[cp].style.alpha);
                     material = obj.material;
                     var shape = targetGraphics.addShape(Shape.getShape(elements, material));
-                    shape.persistent = false;
                     if (obj.colorPos) {
                         shape.style = new Style();
                         sampler = new Sampler2D();
@@ -22000,7 +21990,6 @@ var GraphicsFactoryFills = (function () {
                     var obj = Graphics.get_material_for_gradient(gradientStyle);
                     material = obj.material;
                     var shape = targetGraphics.addShape(Shape.getShape(elements, material));
-                    shape.persistent = false;
                     shape.style = new Style();
                     sampler = new Sampler2D();
                     shape.style.addSamplerAt(sampler, material.getTextureAt(0));
@@ -23317,56 +23306,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -26720,7 +26663,7 @@ var Sprite = (function (_super) {
     };
     Sprite.prototype.clear = function () {
         _super.prototype.clear.call(this);
-        this._graphics.clear();
+        this._graphics.clearInternal();
     };
     /**
      *
