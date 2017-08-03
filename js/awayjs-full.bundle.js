@@ -21284,8 +21284,8 @@ var Graphics = (function (_super) {
         this.draw_strokes();
         this._active_fill_path = null;
         this._active_stroke_path = null;
-        this.invalidate();
-        this.invalidateElements();
+        //this.invalidate();
+        //this.invalidateElements();
     };
     /**
      * Specifies a bitmap to use for the line stroke when drawing lines.
@@ -21326,6 +21326,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_stroke_pathes.push(this._active_stroke_path);
+        this.invalidate();
     };
     /**
      * Specifies a gradient to use for the stroke when drawing lines.
@@ -21409,6 +21410,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_stroke_pathes.push(this._active_stroke_path);
+        this.invalidate();
     };
     /**
      * Specifies a shader to use for the line stroke when drawing lines.
@@ -21602,6 +21604,7 @@ var Graphics = (function (_super) {
         if (this._current_position.x != 0 || this._current_position.y != 0)
             this._active_stroke_path.moveTo(this._current_position.x, this._current_position.y);
         this._queued_stroke_pathes.push(this._active_stroke_path);
+        this.invalidate();
     };
     /**
      * Draws a line using the current line style from the current drawing
