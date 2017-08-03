@@ -17441,8 +17441,8 @@ var BitmapImageUtils = (function () {
             context.fillRect(rect.x, rect.y, rect.width, rect.height);
         }
     };
-    BitmapImageUtils._copyPixels = function (context, bmpd, sourceRect, destRect) {
-        context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+    BitmapImageUtils._copyPixels = function (context, bmpd, sourceRect, destPoint) {
+        context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
     };
     BitmapImageUtils._draw = function (context, source, matrix, colorTransform, blendMode, clipRect, smoothing) {
         context.save();
@@ -17969,7 +17969,7 @@ var BitmapImage2D = (function (_super) {
         if (fillColor === void 0) { fillColor = null; }
         if (powerOfTwo === void 0) { powerOfTwo = true; }
         var _this = _super.call(this, width, height, powerOfTwo) || this;
-        _this._locked = false;
+        _this._locked = true;
         _this._transparent = transparent;
         if (typeof document !== "undefined") {
             _this._imageCanvas = document.createElement("canvas");
@@ -18116,12 +18116,12 @@ var BitmapImage2D = (function (_super) {
             this._context.putImageData(this._imageData, 0, 0);
         this.invalidate();
     };
-    BitmapImage2D.prototype.copyPixels = function (source, sourceRect, destRect) {
+    BitmapImage2D.prototype.copyPixels = function (source, sourceRect, destPoint) {
         if (source instanceof BitmapImage2D)
             source = source.getCanvas();
         if (this._locked && this._imageData)
             this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
-        BitmapImageUtils._copyPixels(this._context, source, sourceRect, destRect);
+        BitmapImageUtils._copyPixels(this._context, source, sourceRect, destPoint);
         this._imageData = null;
         this.invalidate();
     };
@@ -18359,7 +18359,7 @@ var BitmapImage2D = (function (_super) {
         this._imageData.data[index + 0] = argb[1];
         this._imageData.data[index + 1] = argb[2];
         this._imageData.data[index + 2] = argb[3];
-        this._imageData.data[index + 3] = argb[0] * 0xFF;
+        //this._imageData.data[index + 3] = 0xFF;
         /*console.log(argb[0]);
         console.log(argb[1]);
         console.log(argb[2]);
@@ -18829,7 +18829,7 @@ var BitmapImageCube = (function (_super) {
         }
         this.invalidate();
     };
-    BitmapImageCube.prototype.copyPixels = function (side, source, sourceRect, destRect) {
+    BitmapImageCube.prototype.copyPixels = function (side, source, sourceRect, destPoint) {
         if (source instanceof BitmapImage2D)
             source = source.getCanvas();
         if (this._locked) {
@@ -18839,11 +18839,11 @@ var BitmapImageCube = (function (_super) {
             //      2) draw object
             //      3) read _imageData back out
             this._context[side].putImageData(this._imageData[side], 0, 0); // at coords 0,0
-            BitmapImageUtils._copyPixels(this._context[side], source, sourceRect, destRect);
+            BitmapImageUtils._copyPixels(this._context[side], source, sourceRect, destPoint);
             this._imageData[side] = this._context[side].getImageData(0, 0, this._size, this._size);
         }
         else {
-            BitmapImageUtils._copyPixels(this._context[side], source, sourceRect, destRect);
+            BitmapImageUtils._copyPixels(this._context[side], source, sourceRect, destPoint);
         }
         this.invalidate();
     };
