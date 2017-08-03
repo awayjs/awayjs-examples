@@ -10861,7 +10861,8 @@ var ProjectionBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ProjectionBase.prototype.unproject = function (nX, nY, sZ) {
+    ProjectionBase.prototype.unproject = function (nX, nY, sZ, target) {
+        if (target === void 0) { target = null; }
         throw new AbstractMethodError();
     };
     ProjectionBase.prototype.clone = function () {
@@ -11215,12 +11216,18 @@ var OrthographicProjection = (function (_super) {
         configurable: true
     });
     //@override
-    OrthographicProjection.prototype.unproject = function (nX, nY, sZ) {
-        var v = new Vector3D(nX + this.viewMatrix3D._rawData[12], -nY + this.viewMatrix3D._rawData[13], sZ, 1.0);
-        v = this.inverseViewMatrix3D.transformVector(v);
+    OrthographicProjection.prototype.unproject = function (nX, nY, sZ, target) {
+        if (target === void 0) { target = null; }
+        if (target == null)
+            target = new Vector3D();
+        target.x = nX + this.viewMatrix3D._rawData[12];
+        target.y = -nY + this.viewMatrix3D._rawData[13];
+        target.z = sZ;
+        target.w = 1.0;
+        this.inverseViewMatrix3D.transformVector(target, target);
         //z is unaffected by transform
-        v.z = sZ;
-        return v;
+        target.z = sZ;
+        return target;
     };
     //@override
     OrthographicProjection.prototype.clone = function () {
@@ -11404,11 +11411,16 @@ var PerspectiveProjection = (function (_super) {
         configurable: true
     });
     //@override
-    PerspectiveProjection.prototype.unproject = function (nX, nY, sZ) {
-        var v = new Vector3D(nX * sZ, -nY * sZ, (this._far + this._near) / (this._far - this._near) * sZ - 2 * this._far * this._near / (this._far - this._near), sZ);
-        v = this.inverseViewMatrix3D.transformVector(v, v);
-        v.w = 1;
-        return v;
+    PerspectiveProjection.prototype.unproject = function (nX, nY, sZ, target) {
+        if (target === void 0) { target = null; }
+        if (target == null)
+            target = new Vector3D();
+        target.x = nX * sZ, -nY * sZ;
+        target.y = (this._far + this._near) / (this._far - this._near) * sZ - 2 * this._far * this._near / (this._far - this._near);
+        target.z = sZ;
+        this.inverseViewMatrix3D.transformVector(target, target);
+        target.w = 1;
+        return target;
     };
     /**
      *
@@ -28834,8 +28846,9 @@ var Camera = (function (_super) {
      * @param sZ The z coordinate in screen space, representing the distance into the screen.
      * @return The scene position of the given screen coordinates.
      */
-    Camera.prototype.unproject = function (nX, nY, sZ) {
-        return this._projection.unproject(nX, nY, sZ);
+    Camera.prototype.unproject = function (nX, nY, sZ, target) {
+        if (target === void 0) { target = null; }
+        return this._projection.unproject(nX, nY, sZ, target);
     };
     return Camera;
 }(DisplayObjectContainer));
