@@ -17318,7 +17318,7 @@ var Image2D = (function (_super) {
         if (powerOfTwo === void 0) { powerOfTwo = true; }
         var _this = _super.call(this) || this;
         _this._powerOfTwo = true;
-        _this._rect = new _awayjs_core.Rectangle(0, 0, width, height);
+        _this._rect = new _awayjs_core.Rectangle(0, 0, Math.round(width), Math.round(height));
         _this._powerOfTwo = powerOfTwo;
         _this._testDimensions();
         return _this;
@@ -17342,8 +17342,6 @@ var Image2D = (function (_super) {
             return this._rect.height;
         },
         set: function (value) {
-            if (this._rect.height == value)
-                return;
             this._setSize(this._rect.width, value);
         },
         enumerable: true,
@@ -17369,8 +17367,6 @@ var Image2D = (function (_super) {
             return this._rect.width;
         },
         set: function (value) {
-            if (this._rect.width == value)
-                return;
             this._setSize(value, this._rect.height);
         },
         enumerable: true,
@@ -17383,8 +17379,11 @@ var Image2D = (function (_super) {
      * @private
      */
     Image2D.prototype._setSize = function (width, height) {
-        if (this._rect.width != width || this._rect.height != height)
-            this.clear();
+        width = Math.round(width);
+        height = Math.round(height);
+        if (this._rect.width == width && this._rect.height == height)
+            return;
+        this.clear();
         this._rect.width = width;
         this._rect.height = height;
         this._testDimensions();
@@ -17977,8 +17976,8 @@ var BitmapImage2D = (function (_super) {
         else {
             _this._imageCanvas = new CPUCanvas();
         }
-        _this._imageCanvas.width = width;
-        _this._imageCanvas.height = height;
+        _this._imageCanvas.width = _this._rect.width;
+        _this._imageCanvas.height = _this._rect.height;
         _this._context = _this._imageCanvas.getContext("2d");
         if (fillColor != null)
             _this.fillRect(_this._rect, fillColor);
