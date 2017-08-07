@@ -67531,7 +67531,7 @@ var View = (function () {
     };
     View.prototype.unproject = function (sX, sY, sZ, target) {
         if (target === void 0) { target = null; }
-        return this._pCamera.unproject((2 * sX - this._pRenderer.width) / this._pRenderer.viewPort.width, (2 * sY - this._pRenderer.height) / this._pRenderer.viewPort.height, sZ, target);
+        return this._pCamera.unproject((2 * sX - this._pRenderer.viewPort.width) / this._pRenderer.viewPort.width, (2 * sY - this._pRenderer.viewPort.height) / this._pRenderer.viewPort.height, sZ, target);
     };
     /*TODO: implement Background
      public get background():away.textures.Texture2DBase
