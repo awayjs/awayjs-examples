@@ -23321,10 +23321,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -30440,6 +30486,9 @@ var TesselatedFontTable = (function (_super) {
     });
     TesselatedFontTable.prototype.getLineHeight = function () {
         var thisLineheighttest = this._current_size * (this._font_em_size / this._ascent);
+        if (this.name == "BoldStyle") {
+            thisLineheighttest = this._current_size;
+        }
         return thisLineheighttest; // ;//(this._ascent+this._descent)*this._size_multiply;
     };
     Object.defineProperty(TesselatedFontTable.prototype, "assetType", {
@@ -30529,7 +30578,12 @@ var TesselatedFontTable = (function (_super) {
         for (w = startWord; w < w_len; w += 5) {
             startIdx = tf.words[w];
             x = tf.words[w + 1];
-            y = tf.words[w + 2]; // sunflower
+            y = tf.words[w + 2]; //-this.getLineHeight())+(this._size_multiply*this.ascent); // sunflower
+            if (this.name == "BoldStyle") {
+                y -= 0.2 * this.getLineHeight();
+            }
+            else {
+            }
             //y=tf.words[w+2]+(this.ascent-this.get_font_em_size())*this._size_multiply; // icycle
             c_len = startIdx + tf.words[w + 4];
             for (c = startIdx; c < c_len; c++) {
@@ -31014,10 +31068,10 @@ var TextField = (function (_super) {
         _this.selectable = true;
         _this._autoSize = TextFieldAutoSize.NONE;
         _this._wordWrap = false;
-        _this.background = false;
-        _this.backgroundColor = 0xffffff;
-        _this.border = false;
-        _this.borderColor = 0x000000;
+        _this._background = false;
+        _this._backgroundColor = 0xffffff;
+        _this._border = false;
+        _this._borderColor = 0x000000;
         _this._graphics = _awayjs_graphics.Graphics.getGraphics(_this); //unique graphics object for each TextField
         return _this;
     }
@@ -31081,6 +31135,50 @@ var TextField = (function (_super) {
          */
         get: function () {
             return TextField.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "background", {
+        get: function () {
+            return this._background;
+        },
+        set: function (value) {
+            this._background = value;
+            this._glyphsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "backgroundColor", {
+        get: function () {
+            return this._backgroundColor;
+        },
+        set: function (value) {
+            this._backgroundColor = value;
+            this._glyphsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "border", {
+        get: function () {
+            return this._border;
+        },
+        set: function (value) {
+            this._border = value;
+            this._glyphsDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextField.prototype, "borderColor", {
+        get: function () {
+            return this._borderColor;
+        },
+        set: function (value) {
+            this._borderColor = value;
+            this._glyphsDirty = true;
         },
         enumerable: true,
         configurable: true
@@ -31771,7 +31869,7 @@ var TextField = (function (_super) {
         }
         // -2 so this values do not include the left and top border
         this._textWidth = text_width;
-        this._textHeight = offsety - 2;
+        this._textHeight = offsety;
         //console.log(this._textWidth, "/", this._textHeight);
         //this._textWidth+=this._textFormat.indent+ this._textFormat.leftMargin+ this._textFormat.rightMargin;
         // if autosize is enabled, we adjust the textFieldHeight
@@ -31794,13 +31892,15 @@ var TextField = (function (_super) {
             textShape.verts.length = 0;
         }
         this.textShapes = {};
-        /*
-                this._graphics.clearDrawing();
-                this._graphics.beginFill(0xff0000, 1);//this.background?1:0);
-                this._graphics.lineStyle(1, 0x00ff00, 1);//this.borderColor, this.border?1:0);
-                this._graphics.drawRect(0,0,this._width, this._height);
-                this._graphics.endFill();
-        */
+        this._graphics.clear();
+        if (this._background || this._border) {
+            if (this._background)
+                this._graphics.beginFill(this._backgroundColor, 1); //this.background?1:0);
+            if (this._border)
+                this._graphics.lineStyle(1, this._borderColor, 1); //this.borderColor, this.border?1:0);
+            this._graphics.drawRect(0, 0, this._width, this._height);
+            this._graphics.endFill();
+        }
         var textShape;
         // process all textRuns
         var tr = 0;
@@ -35578,6 +35678,7 @@ var Font = (function (_super) {
         if (assetType === void 0) { assetType = TesselatedFontTable.assetType; }
         if (openTypeFont === void 0) { openTypeFont = null; }
         var len = this._font_styles.length;
+        //console.log("font name", this.name, style_name);
         for (var i = 0; i < len; ++i) {
             if ((this._font_styles[i].assetType == assetType) && (this._font_styles[i].name == style_name)) {
                 // mak
