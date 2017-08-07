@@ -30580,7 +30580,7 @@ var TesselatedFontTable = (function (_super) {
             x = tf.words[w + 1];
             y = tf.words[w + 2]; //-this.getLineHeight())+(this._size_multiply*this.ascent); // sunflower
             if (this.name == "BoldStyle") {
-                y -= 0.18 * this.getLineHeight();
+                y -= 0.2 * this.getLineHeight();
             }
             else {
             }
