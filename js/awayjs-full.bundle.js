@@ -30580,7 +30580,7 @@ var TesselatedFontTable = (function (_super) {
             x = tf.words[w + 1];
             y = tf.words[w + 2]; //-this.getLineHeight())+(this._size_multiply*this.ascent); // sunflower
             if (this.name == "BoldStyle") {
-                y -= 0.2 * this.getLineHeight();
+                y -= 0.18 * this.getLineHeight();
             }
             else {
             }
@@ -31869,7 +31869,7 @@ var TextField = (function (_super) {
         }
         // -2 so this values do not include the left and top border
         this._textWidth = text_width;
-        this._textHeight = offsety;
+        this._textHeight = offsety - 2;
         //console.log(this._textWidth, "/", this._textHeight);
         //this._textWidth+=this._textFormat.indent+ this._textFormat.leftMargin+ this._textFormat.rightMargin;
         // if autosize is enabled, we adjust the textFieldHeight
