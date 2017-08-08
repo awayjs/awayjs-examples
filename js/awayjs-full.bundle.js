@@ -4429,15 +4429,20 @@ var Transform = (function (_super) {
             return this._colorTransform;
         },
         set: function (val) {
-            var sourceData = val._rawData, targetData = this._colorTransform._rawData;
-            targetData[0] = sourceData[0];
-            targetData[1] = sourceData[1];
-            targetData[2] = sourceData[2];
-            targetData[3] = sourceData[3];
-            targetData[4] = sourceData[4];
-            targetData[5] = sourceData[5];
-            targetData[6] = sourceData[6];
-            targetData[7] = sourceData[7];
+            if (val) {
+                var sourceData = val._rawData, targetData = this._colorTransform._rawData;
+                targetData[0] = sourceData[0];
+                targetData[1] = sourceData[1];
+                targetData[2] = sourceData[2];
+                targetData[3] = sourceData[3];
+                targetData[4] = sourceData[4];
+                targetData[5] = sourceData[5];
+                targetData[6] = sourceData[6];
+                targetData[7] = sourceData[7];
+            }
+            else {
+                this._colorTransform.clear();
+            }
             this.invalidateColorTransform();
         },
         enumerable: true,
@@ -67373,10 +67378,15 @@ var ViewImage2D = (function (_super) {
      *                       application security sandbox.
      */
     ViewImage2D.prototype.draw = function (source, matrix, colorTransform) {
+        if (matrix === void 0) { matrix = null; }
+        if (colorTransform === void 0) { colorTransform = null; }
         var root = new _awayjs_scene.DisplayObjectContainer();
         root.addChild(source);
-        root.transform.scaleTo(matrix.a, -matrix.d, 1);
-        root.transform.moveTo(matrix.tx, matrix.ty, 0);
+        if (matrix) {
+            root.transform.scaleTo(matrix.a, -matrix.d, 1);
+            root.transform.moveTo(matrix.tx, matrix.ty, 0);
+        }
+        root.transform.colorTransform = colorTransform;
         this._view.scene.addChild(root);
         this._view.setPartition(root, new SceneGraphPartition(root));
         //clone.transform.
