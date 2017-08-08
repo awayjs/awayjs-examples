@@ -17441,17 +17441,14 @@ var BitmapImageUtils = (function () {
     function BitmapImageUtils() {
     }
     BitmapImageUtils._fillRect = function (context, rect, color, transparent) {
-        if (color == 0x0 && transparent) {
+        if ((color & 0xff000000) >>> 24 != 0xFF && transparent)
             context.clearRect(rect.x, rect.y, rect.width, rect.height);
-        }
-        else {
-            var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
-            if (transparent)
-                context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',' + argb[0] / 255 + ')';
-            else
-                context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',1)';
-            context.fillRect(rect.x, rect.y, rect.width, rect.height);
-        }
+        var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
+        if (transparent)
+            context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',' + argb[0] / 255 + ')';
+        else
+            context.fillStyle = 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',1)';
+        context.fillRect(rect.x, rect.y, rect.width, rect.height);
     };
     BitmapImageUtils._copyPixels = function (context, bmpd, sourceRect, destPoint) {
         context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
@@ -65585,10 +65582,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(9), __webpack_require__(11)) :
-    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/graphics', '@awayjs/renderer'], factory) :
-    (factory((global.AwayjsView = global.AwayjsView || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsGraphics,global.AwayjsRenderer));
-}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_graphics,_awayjs_renderer) { 'use strict';
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(11), __webpack_require__(9)) :
+    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/renderer', '@awayjs/graphics'], factory) :
+    (factory((global.AwayjsView = global.AwayjsView || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsRenderer,global.AwayjsGraphics));
+}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_renderer,_awayjs_graphics) { 'use strict';
 
 /**
  * MouseManager enforces a singleton pattern and is not intended to be instanced.
@@ -66060,104 +66057,176 @@ function __await(v) {
 }
 
 /**
- * @class away.partition.NodeBase
+ * @class away.partition.EntityNode
  */
-var NodeBase = (function () {
-    /**
-     *
-     */
-    function NodeBase() {
-        this._bounds = new _awayjs_scene.NullBounds();
-        this._pChildNodes = new Array();
-        this._pNumChildNodes = 0;
-        this.numEntities = 0;
+var DisplayObjectNode = (function (_super) {
+    __extends(DisplayObjectNode, _super);
+    function DisplayObjectNode(entity, pool) {
+        var _this = _super.call(this, entity, pool) || this;
+        _this.numEntities = 0;
+        _this.isSceneGraphNode = false;
+        _this._boundsDirty = true;
+        _this._onInvalidatePartitionBoundsDelegate = function (event) { return _this._onInvalidatePartitionBounds(event); };
+        _this._entity = entity;
+        _this._entity.addEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, _this._onInvalidatePartitionBoundsDelegate);
+        _this._boundsType = _this._entity.boundsType;
+        return _this;
     }
-    Object.defineProperty(NodeBase.prototype, "debugVisible", {
+    Object.defineProperty(DisplayObjectNode.prototype, "debugVisible", {
         get: function () {
-            return false;
+            return this._entity.debugVisible;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(NodeBase.prototype, "bounds", {
+    Object.defineProperty(DisplayObjectNode.prototype, "bounds", {
         /**
          * @internal
          */
         get: function () {
-            return this._bounds; //TODO
+            if (this._boundsDirty)
+                this._updateBounds();
+            return this._bounds;
         },
         enumerable: true,
         configurable: true
     });
+    /**
+     *
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isCastingShadow = function () {
+        return this._entity.castsShadows;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isMask = function () {
+        return this._entity.maskMode;
+    };
+    DisplayObjectNode.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._entity.removeEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, this._onInvalidatePartitionBoundsDelegate);
+        this._entity = null;
+        if (this._bounds)
+            this._bounds.dispose();
+        this._bounds = null;
+    };
+    DisplayObjectNode.prototype.onInvalidate = function (event) {
+        _super.prototype.onInvalidate.call(this, event);
+        if (this._boundsType != this._entity.boundsType) {
+            this._boundsType = this._entity.boundsType;
+            this._boundsDirty = true;
+        }
+    };
     /**
      *
      * @param planes
      * @param numPlanes
      * @returns {boolean}
-     * @internal
      */
-    NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+    DisplayObjectNode.prototype.isInFrustum = function (planes, numPlanes) {
         return true;
     };
     /**
-     *
-     * @param rayPosition
-     * @param rayDirection
-     * @returns {boolean}
+     * @inheritDoc
      */
-    NodeBase.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    NodeBase.prototype.isRenderable = function () {
+    DisplayObjectNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
         return true;
     };
     /**
      *
      * @returns {boolean}
      */
-    NodeBase.prototype.isCastingShadow = function () {
+    DisplayObjectNode.prototype.isRenderable = function () {
         return true;
     };
-    NodeBase.prototype.renderBounds = function (traverser) {
-        //nothing to do here
+    DisplayObjectNode.prototype.renderBounds = function (traverser) {
+        traverser.applyEntity(this.bounds.boundsPrimitive);
     };
     /**
-     *
-     * @returns {boolean}
+     * @inheritDoc
      */
-    NodeBase.prototype.isMask = function () {
-        return false;
+    DisplayObjectNode.prototype.acceptTraverser = function (traverser) {
+        // do nothing here
     };
-    NodeBase.prototype.dispose = function () {
-        this.parent = null;
-        this._pChildNodes = null;
+    DisplayObjectNode.prototype._onInvalidatePartitionBounds = function (event) {
+        // do nothing here
     };
+    DisplayObjectNode.prototype._updateBounds = function () {
+        if (this._bounds)
+            this._bounds.dispose();
+        if (this._boundsType == _awayjs_scene.BoundsType.AXIS_ALIGNED_BOX)
+            this._bounds = new _awayjs_scene.AxisAlignedBoundingBox(this._entity);
+        else if (this._boundsType == _awayjs_scene.BoundsType.SPHERE)
+            this._bounds = new _awayjs_scene.BoundingSphere(this._entity);
+        else if (this._boundsType == _awayjs_scene.BoundsType.NULL)
+            this._bounds = new _awayjs_scene.NullBounds();
+        this._boundsDirty = false;
+    };
+    return DisplayObjectNode;
+}(_awayjs_core.AbstractionBase));
+
+/**
+ * Maintains scenegraph heirarchy when collecting nodes
+ */
+var SceneGraphNode = (function (_super) {
+    __extends(SceneGraphNode, _super);
+    function SceneGraphNode() {
+        var _this = _super.apply(this, arguments) || this;
+        _this.isSceneGraphNode = true;
+        _this._numNodes = 0;
+        _this._pChildNodes = new Array();
+        _this._childDepths = new Array();
+        _this._numMasks = 0;
+        _this._childMasks = new Array();
+        return _this;
+    }
     /**
      *
      * @param traverser
      */
-    NodeBase.prototype.acceptTraverser = function (traverser) {
+    SceneGraphNode.prototype.acceptTraverser = function (traverser) {
+        //containers nodes are for ordering only, no need to check enterNode or debugVisible
         if (this.numEntities == 0)
             return;
-        if (traverser.enterNode(this)) {
-            for (var i = 0; i < this._pNumChildNodes; i++)
-                this._pChildNodes[i].acceptTraverser(traverser);
-        }
+        var i;
+        for (i = this._numNodes - 1; i >= 0; i--)
+            this._pChildNodes[i].acceptTraverser(traverser);
+        for (i = this._numMasks - 1; i >= 0; i--)
+            this._childMasks[i].acceptTraverser(traverser);
     };
     /**
      *
      * @param node
      * @internal
      */
-    NodeBase.prototype.iAddNode = function (node) {
+    SceneGraphNode.prototype.iAddNode = function (node) {
         node.parent = this;
-        this.numEntities += node.numEntities;
-        this._pChildNodes[this._pNumChildNodes++] = node;
-        var numEntities = node.numEntities;
+        if (node._entity.maskMode) {
+            this._childMasks.push(node);
+            this._numMasks++;
+        }
+        else {
+            var depth = (this._entity != node._entity) ? node._entity._depthID : -16384;
+            var len = this._childDepths.length;
+            var index = len;
+            while (index--)
+                if (this._childDepths[index] < depth)
+                    break;
+            index++;
+            if (index < len) {
+                this._pChildNodes.splice(index, 0, node);
+                this._childDepths.splice(index, 0, depth);
+            }
+            else {
+                this._pChildNodes.push(node);
+                this._childDepths.push(depth);
+            }
+            this._numNodes++;
+        }
+        var numEntities = node.isSceneGraphNode ? node.numEntities : 1;
         node = this;
         do {
             node.numEntities += numEntities;
@@ -66168,18 +66237,25 @@ var NodeBase = (function () {
      * @param node
      * @internal
      */
-    NodeBase.prototype.iRemoveNode = function (node) {
-        var index = this._pChildNodes.indexOf(node);
-        this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
-        this._pChildNodes.pop();
+    SceneGraphNode.prototype.iRemoveNode = function (node) {
+        if (node._entity.maskMode) {
+            this._childMasks.splice(this._childMasks.indexOf(node), 1);
+            this._numMasks--;
+        }
+        else {
+            var index = this._pChildNodes.indexOf(node);
+            this._pChildNodes.splice(index, 1);
+            this._childDepths.splice(index, 1);
+            this._numNodes--;
+        }
         var numEntities = node.numEntities;
         node = this;
         do {
             node.numEntities -= numEntities;
         } while ((node = node.parent) != null);
     };
-    return NodeBase;
-}());
+    return SceneGraphNode;
+}(DisplayObjectNode));
 
 /**
  * @class away.partition.Partition
@@ -66307,331 +66383,6 @@ PartitionBase._abstractionClassPool = new Object();
 /**
  * @class away.partition.Partition
  */
-var BasicPartition = (function (_super) {
-    __extends(BasicPartition, _super);
-    function BasicPartition(root) {
-        var _this = _super.call(this, root) || this;
-        _this._rootNode = new NodeBase();
-        return _this;
-    }
-    return BasicPartition;
-}(PartitionBase));
-
-/**
- * @class away.partition.EntityNode
- */
-var DisplayObjectNode = (function (_super) {
-    __extends(DisplayObjectNode, _super);
-    function DisplayObjectNode(entity, pool) {
-        var _this = _super.call(this, entity, pool) || this;
-        _this.numEntities = 0;
-        _this.isSceneGraphNode = false;
-        _this._boundsDirty = true;
-        _this._onInvalidatePartitionBoundsDelegate = function (event) { return _this._onInvalidatePartitionBounds(event); };
-        _this._entity = entity;
-        _this._entity.addEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, _this._onInvalidatePartitionBoundsDelegate);
-        _this._boundsType = _this._entity.boundsType;
-        return _this;
-    }
-    Object.defineProperty(DisplayObjectNode.prototype, "debugVisible", {
-        get: function () {
-            return this._entity.debugVisible;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectNode.prototype, "bounds", {
-        /**
-         * @internal
-         */
-        get: function () {
-            if (this._boundsDirty)
-                this._updateBounds();
-            return this._bounds;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isCastingShadow = function () {
-        return this._entity.castsShadows;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isMask = function () {
-        return this._entity.maskMode;
-    };
-    DisplayObjectNode.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._entity.removeEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, this._onInvalidatePartitionBoundsDelegate);
-        this._entity = null;
-        if (this._bounds)
-            this._bounds.dispose();
-        this._bounds = null;
-    };
-    DisplayObjectNode.prototype.onInvalidate = function (event) {
-        _super.prototype.onInvalidate.call(this, event);
-        if (this._boundsType != this._entity.boundsType) {
-            this._boundsType = this._entity.boundsType;
-            this._boundsDirty = true;
-        }
-    };
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isInFrustum = function (planes, numPlanes) {
-        return true;
-    };
-    /**
-     * @inheritDoc
-     */
-    DisplayObjectNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isRenderable = function () {
-        return true;
-    };
-    DisplayObjectNode.prototype.renderBounds = function (traverser) {
-        traverser.applyEntity(this.bounds.boundsPrimitive);
-    };
-    /**
-     * @inheritDoc
-     */
-    DisplayObjectNode.prototype.acceptTraverser = function (traverser) {
-        // do nothing here
-    };
-    DisplayObjectNode.prototype._onInvalidatePartitionBounds = function (event) {
-        // do nothing here
-    };
-    DisplayObjectNode.prototype._updateBounds = function () {
-        if (this._bounds)
-            this._bounds.dispose();
-        if (this._boundsType == _awayjs_scene.BoundsType.AXIS_ALIGNED_BOX)
-            this._bounds = new _awayjs_scene.AxisAlignedBoundingBox(this._entity);
-        else if (this._boundsType == _awayjs_scene.BoundsType.SPHERE)
-            this._bounds = new _awayjs_scene.BoundingSphere(this._entity);
-        else if (this._boundsType == _awayjs_scene.BoundsType.NULL)
-            this._bounds = new _awayjs_scene.NullBounds();
-        this._boundsDirty = false;
-    };
-    return DisplayObjectNode;
-}(_awayjs_core.AbstractionBase));
-
-/**
- * @class away.partition.EntityNode
- */
-var EntityNode = (function (_super) {
-    __extends(EntityNode, _super);
-    function EntityNode(displayObject, partition) {
-        var _this = _super.call(this, displayObject, partition) || this;
-        _this.numEntities = 1;
-        _this._maskPosition = new _awayjs_core.Vector3D();
-        _this._partition = partition;
-        return _this;
-    }
-    EntityNode.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._partition = null;
-    };
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    EntityNode.prototype.isInFrustum = function (planes, numPlanes) {
-        if (!this._entity._iIsVisible())
-            return false;
-        return true; // todo: hack for 2d. attention. might break stuff in 3d.
-        //return this._bounds.isInFrustum(planes, numPlanes);
-    };
-    /**
-     * @inheritDoc
-     */
-    EntityNode.prototype.isIntersectingRay = function (globalRayPosition, globalRayDirection) {
-        if (!this._entity._iIsVisible() || !this.isIntersectingMasks(globalRayPosition, globalRayDirection, this._entity._iAssignedMasks()))
-            return false;
-        var pickingCollision = this._entity._iPickingCollision;
-        pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition);
-        pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection);
-        if (!pickingCollision.normal)
-            pickingCollision.normal = new _awayjs_core.Vector3D();
-        var rayEntryDistance = this.bounds.rayIntersection(pickingCollision.rayPosition, pickingCollision.rayDirection, pickingCollision.normal);
-        if (rayEntryDistance < 0)
-            return false;
-        pickingCollision.rayEntryDistance = rayEntryDistance;
-        pickingCollision.globalRayPosition = globalRayPosition;
-        pickingCollision.globalRayDirection = globalRayDirection;
-        pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    EntityNode.prototype.isRenderable = function () {
-        return this._entity._iAssignedColorTransform()._isRenderable();
-    };
-    /**
-     * @inheritDoc
-     */
-    EntityNode.prototype.acceptTraverser = function (traverser) {
-        if (traverser.enterNode(this))
-            traverser[this._entity.traverseName](this._entity);
-    };
-    EntityNode.prototype._onInvalidatePartitionBounds = function (event) {
-        this.bounds.invalidate();
-        this._partition.iMarkForUpdate(this);
-    };
-    EntityNode.prototype.isIntersectingMasks = function (globalRayPosition, globalRayDirection, masks) {
-        //horrible hack for 2d masks
-        if (masks != null) {
-            this._maskPosition.x = globalRayPosition.x + globalRayDirection.x * 1000;
-            this._maskPosition.y = globalRayPosition.y + globalRayDirection.y * 1000;
-            var numLayers = masks.length;
-            var children;
-            var numChildren;
-            var layerHit;
-            for (var i = 0; i < numLayers; i++) {
-                children = masks[i];
-                numChildren = children.length;
-                layerHit = false;
-                for (var j = 0; j < numChildren; j++) {
-                    if (children[j].hitTestPoint(this._maskPosition.x, this._maskPosition.y, true, true)) {
-                        layerHit = true;
-                        break;
-                    }
-                }
-                if (!layerHit)
-                    return false;
-            }
-        }
-        return true;
-    };
-    return EntityNode;
-}(DisplayObjectNode));
-
-/**
- * @class away.partition.CameraNode
- */
-var CameraNode = (function (_super) {
-    __extends(CameraNode, _super);
-    function CameraNode() {
-        return _super.apply(this, arguments) || this;
-    }
-    /**
-     * @inheritDoc
-     */
-    CameraNode.prototype.acceptTraverser = function (traverser) {
-        // todo: dead end for now, if it has a debug sprite, then sure accept that
-    };
-    return CameraNode;
-}(EntityNode));
-
-/**
- * Maintains scenegraph heirarchy when collecting nodes
- */
-var SceneGraphNode = (function (_super) {
-    __extends(SceneGraphNode, _super);
-    function SceneGraphNode() {
-        var _this = _super.apply(this, arguments) || this;
-        _this.isSceneGraphNode = true;
-        _this._numNodes = 0;
-        _this._pChildNodes = new Array();
-        _this._childDepths = new Array();
-        _this._numMasks = 0;
-        _this._childMasks = new Array();
-        return _this;
-    }
-    /**
-     *
-     * @param traverser
-     */
-    SceneGraphNode.prototype.acceptTraverser = function (traverser) {
-        //containers nodes are for ordering only, no need to check enterNode or debugVisible
-        if (this.numEntities == 0)
-            return;
-        var i;
-        for (i = this._numNodes - 1; i >= 0; i--)
-            this._pChildNodes[i].acceptTraverser(traverser);
-        for (i = this._numMasks - 1; i >= 0; i--)
-            this._childMasks[i].acceptTraverser(traverser);
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    SceneGraphNode.prototype.iAddNode = function (node) {
-        node.parent = this;
-        if (node._entity.maskMode) {
-            this._childMasks.push(node);
-            this._numMasks++;
-        }
-        else {
-            var depth = (this._entity != node._entity) ? node._entity._depthID : -16384;
-            var len = this._childDepths.length;
-            var index = len;
-            while (index--)
-                if (this._childDepths[index] < depth)
-                    break;
-            index++;
-            if (index < len) {
-                this._pChildNodes.splice(index, 0, node);
-                this._childDepths.splice(index, 0, depth);
-            }
-            else {
-                this._pChildNodes.push(node);
-                this._childDepths.push(depth);
-            }
-            this._numNodes++;
-        }
-        var numEntities = node.isSceneGraphNode ? node.numEntities : 1;
-        node = this;
-        do {
-            node.numEntities += numEntities;
-        } while ((node = node.parent) != null);
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    SceneGraphNode.prototype.iRemoveNode = function (node) {
-        if (node._entity.maskMode) {
-            this._childMasks.splice(this._childMasks.indexOf(node), 1);
-            this._numMasks--;
-        }
-        else {
-            var index = this._pChildNodes.indexOf(node);
-            this._pChildNodes.splice(index, 1);
-            this._childDepths.splice(index, 1);
-            this._numNodes--;
-        }
-        var numEntities = node.numEntities;
-        node = this;
-        do {
-            node.numEntities -= numEntities;
-        } while ((node = node.parent) != null);
-    };
-    return SceneGraphNode;
-}(DisplayObjectNode));
-
-/**
- * @class away.partition.Partition
- */
 var SceneGraphPartition = (function (_super) {
     __extends(SceneGraphPartition, _super);
     function SceneGraphPartition(root) {
@@ -66699,363 +66450,6 @@ var SceneGraphNodePool = (function () {
         delete this._abstractionPool[entity.id];
     };
     return SceneGraphNodePool;
-}());
-
-/**
- * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
- *
- * @class away.partition.SkyboxNode
- */
-var SkyboxNode = (function (_super) {
-    __extends(SkyboxNode, _super);
-    function SkyboxNode() {
-        return _super.apply(this, arguments) || this;
-    }
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
-        if (!this._entity._iIsVisible)
-            return false;
-        //a skybox is always in view unless its visibility is set to false
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    SkyboxNode.prototype.isCastingShadow = function () {
-        return false; //skybox never casts shadows
-    };
-    return SkyboxNode;
-}(EntityNode));
-
-/**
- * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
- *
- * @see away.base.DisplayObject#pickingCollider
- * @see away.pick.RaycastPicker
- *
- * @class away.pick.JSPickingCollider
- */
-var JSPickingCollider = (function () {
-    /**
-     * Creates a new <code>JSPickingCollider</code> object.
-     *
-     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
-     */
-    function JSPickingCollider(findClosestCollision) {
-        if (findClosestCollision === void 0) { findClosestCollision = false; }
-        this._findClosestCollision = findClosestCollision;
-    }
-    /**
-     * Tests a <code>Billboard</code> object for a collision with the picking ray.
-     *
-     * @param billboard The billboard instance to be tested.
-     * @param pickingCollision The collision object used to store the collision results
-     * @param findClosest
-     */
-    JSPickingCollider.prototype.testBillboardCollision = function (billboard, material, pickingCollision) {
-        pickingCollision.renderable = null;
-        //if (this._testGraphicCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollision, shortestCollisionDistance)) {
-        //	shortestCollisionDistance = pickingCollision.rayEntryDistance;
-        //
-        //	pickingCollision.renderable = billboard;
-        //
-        //	return true;
-        //}
-        return false;
-    };
-    /**
-     * Tests a <code>TriangleElements</code> object for a collision with the picking ray.
-     *
-     * @param triangleElements
-     * @param material
-     * @param pickingCollision
-     * @returns {boolean}
-     */
-    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision, count, offset) {
-        if (offset === void 0) { offset = 0; }
-        var rayPosition = pickingCollision.rayPosition;
-        var rayDirection = pickingCollision.rayDirection;
-        var t;
-        var i0, i1, i2;
-        var rx, ry, rz;
-        var nx, ny, nz;
-        var cx, cy, cz;
-        var coeff, u, v, w;
-        var p0x, p0y, p0z;
-        var p1x, p1y, p1z;
-        var p2x, p2y, p2z;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl, nDotV, D, disToPlane;
-        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
-        var collisionTriangleIndex = -1;
-        var bothSides = material.bothSides;
-        var positions = triangleElements.positions.get(count, offset);
-        var posDim = triangleElements.positions.dimensions;
-        var posStride = triangleElements.positions.stride;
-        var indices;
-        if (triangleElements.indices) {
-            indices = triangleElements.indices.get(triangleElements.numElements);
-            count = indices.length;
-        }
-        for (var index = 0; index < count; index += 3) {
-            // evaluate triangle indices
-            if (indices) {
-                i0 = indices[index] * posStride;
-                i1 = indices[index + 1] * posStride;
-                i2 = indices[index + 2] * posStride;
-            }
-            else {
-                i0 = index * posStride;
-                i1 = (index + 1) * posStride;
-                i2 = (index + 2) * posStride;
-            }
-            // evaluate triangle positions
-            p0x = positions[i0];
-            p1x = positions[i1];
-            p2x = positions[i2];
-            s0x = p1x - p0x; // s0 = p1 - p0
-            s1x = p2x - p0x; // s1 = p2 - p0
-            p0y = positions[i0 + 1];
-            p1y = positions[i1 + 1];
-            p2y = positions[i2 + 1];
-            s0y = p1y - p0y;
-            s1y = p2y - p0y;
-            if (posDim == 3) {
-                p0z = positions[i0 + 2];
-                p1z = positions[i1 + 2];
-                p2z = positions[i2 + 2];
-                s0z = p1z - p0z;
-                s1z = p2z - p0z;
-                // evaluate sides and triangle normal
-                nx = s0y * s1z - s0z * s1y; // n = s0 x s1
-                ny = s0z * s1x - s0x * s1z;
-                nz = s0x * s1y - s0y * s1x;
-                nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
-                nx *= nl;
-                ny *= nl;
-                nz *= nl;
-            }
-            else {
-                nx = 0;
-                ny = 0;
-                nz = 1;
-            }
-            // -- plane intersection test --
-            nDotV = nx * rayDirection.x + ny * +rayDirection.y + nz * rayDirection.z; // rayDirection . normal
-            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
-                // find collision t
-                D = -(nx * p0x + ny * p0y + nz * p0z);
-                disToPlane = -(nx * rayPosition.x + ny * rayPosition.y + nz * rayPosition.z + D);
-                t = disToPlane / nDotV;
-                // find collision point
-                cx = rayPosition.x + t * rayDirection.x;
-                cy = rayPosition.y + t * rayDirection.y;
-                cz = rayPosition.z + t * rayDirection.z;
-                // collision point inside triangle? ( using barycentric coordinates )
-                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
-                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
-                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
-                rx = cx - p0x;
-                ry = cy - p0y;
-                rz = cz - p0z;
-                RQ1 = rx * s0x + ry * s0y + rz * s0z;
-                RQ2 = rx * s1x + ry * s1y + rz * s1z;
-                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
-                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
-                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
-                if (v < 0)
-                    continue;
-                if (w < 0)
-                    continue;
-                u = 1 - v - w;
-                if (!(u < 0) && t > 0 && t < pickingCollision.rayEntryDistance) {
-                    collisionTriangleIndex = index / 3;
-                    pickingCollision.rayEntryDistance = t;
-                    pickingCollision.position = new _awayjs_core.Vector3D(cx, cy, cz);
-                    pickingCollision.normal = new _awayjs_core.Vector3D(nx, ny, nz);
-                    if (triangleElements.uvs) {
-                        var uvs = triangleElements.uvs.get(triangleElements.numVertices);
-                        var uvStride = triangleElements.uvs.stride;
-                        var uIndex = indices[index] * uvStride;
-                        var uv0 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        uIndex = indices[index + 1] * uvStride;
-                        var uv1 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        uIndex = indices[index + 2] * uvStride;
-                        var uv2 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        pickingCollision.uv = new _awayjs_core.Point(u * uv0.x + v * uv1.x + w * uv2.x, u * uv0.y + v * uv1.y + w * uv2.y);
-                    }
-                    pickingCollision.elementIndex = collisionTriangleIndex;
-                    // if not looking for best hit, first found will do...
-                    if (!this._findClosestCollision)
-                        return true;
-                }
-            }
-        }
-        if (collisionTriangleIndex >= 0)
-            return true;
-        return false;
-    };
-    //
-    ///**
-    // * Tests a <code>CurveElements</code> object for a collision with the picking ray.
-    // *
-    // * @param triangleElements
-    // * @param material
-    // * @param pickingCollision
-    // * @returns {boolean}
-    // */
-    //public testCurveCollision(curveElements:CurveElements, material:MaterialBase, pickingCollision:PickingCollision, shortestCollisionDistance:number):boolean
-    //{
-    //	var rayPosition:Vector3D = pickingCollision.localRayPosition;
-    //	var rayDirection:Vector3D = pickingCollision.localRayDirection;
-    //
-    //	//project ray onto x/y plane to generate useful test points from mouse coordinates
-    //	//this will only work while all points lie on the x/y plane
-    //	var plane:Vector3D = new Vector3D(0,0,-1,0);
-    //
-    //	var result:Vector3D = new Vector3D();
-    //	var distance:number = plane.x * rayPosition.x + plane.y * rayPosition.y + plane.z * rayPosition.z + plane.w;//distance(position);
-    //	result.x = rayPosition.x - ( plane.x*distance);
-    //	result.y = rayPosition.y - ( plane.y*distance);
-    //	result.z = rayPosition.z - ( plane.z*distance);
-    //	var normal:Vector3D = new Vector3D(plane.x,plane.y,plane.z);
-    //	var t:number = -(rayPosition.dotProduct(normal))/(rayDirection.dotProduct(normal));
-    //	rayDirection.scaleBy(t);
-    //	var p:Vector3D = rayPosition.add(rayDirection);
-    //
-    //	var indices:Uint16Array = curveElements.indices.get(curveElements.numElements);
-    //	var collisionCurveIndex:number = -1;
-    //	var bothSides:boolean = material.bothSides;
-    //
-    //
-    //	var positions:Float32Array = curveElements.positions.get(curveElements.numVertices);
-    //	var posDim:number = curveElements.positions.dimensions;
-    //	var curves:Float32Array = curveElements.curves.get(curveElements.numVertices);
-    //	var curveDim:number = curveElements.curves.dimensions;
-    //	var uvs:ArrayBufferView = curveElements.uvs.get(curveElements.numVertices);
-    //	var uvDim:number = curveElements.uvs.dimensions;
-    //	var numIndices:number = indices.length;
-    //
-    //
-    //	for(var index:number = 0; index < numIndices; index+=3)
-    //	{
-    //		var id0:number = indices[index];
-    //		var id1:number = indices[index + 1] * posDim;
-    //		var id2:number = indices[index + 2] * posDim;
-    //
-    //		var ax:number = positions[id0 * posDim];
-    //		var ay:number = positions[id0 * posDim + 1];
-    //		var bx:number = positions[id1];
-    //		var by:number = positions[id1 + 1];
-    //		var cx:number = positions[id2];
-    //		var cy:number = positions[id2 + 1];
-    //
-    //		var curvex:number = curves[id0 * curveDim];
-    //		var az:number = positions[id0 * posDim + 2];
-    //
-    //		//console.log(ax, ay, bx, by, cx, cy);
-    //
-    //		//from a to p
-    //		var dx:number = ax - p.x;
-    //		var dy:number = ay - p.y;
-    //
-    //		//edge normal (a-b)
-    //		var nx:number = by - ay;
-    //		var ny:number = -(bx - ax);
-    //
-    //		//console.log(ax,ay,bx,by,cx,cy);
-    //
-    //		var dot:number = (dx * nx) + (dy * ny);
-    //		//console.log("dot a",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		dx = bx - p.x;
-    //		dy = by - p.y;
-    //		nx = cy - by;
-    //		ny = -(cx - bx);
-    //
-    //		dot = (dx * nx) + (dy * ny);
-    //		//console.log("dot b",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		dx = cx - p.x;
-    //		dy = cy - p.y;
-    //		nx = ay - cy;
-    //		ny = -(ax - cx);
-    //
-    //		dot = (dx * nx) + (dy * ny);
-    //		//console.log("dot c",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		//check if not solid
-    //		if (curvex != 2) {
-    //
-    //			var v0x:number = bx - ax;
-    //			var v0y:number = by - ay;
-    //			var v1x:number = cx - ax;
-    //			var v1y:number = cy - ay;
-    //			var v2x:number = p.x - ax;
-    //			var v2y:number = p.y - ay;
-    //
-    //			var den:number = v0x * v1y - v1x * v0y;
-    //			var v:number = (v2x * v1y - v1x * v2y) / den;
-    //			var w:number = (v0x * v2y - v2x * v0y) / den;
-    //			var u:number = 1 - v - w;
-    //
-    //			var uu:number = 0.5 * v + w;// (0 * u) + (0.5 * v) + (1 * w);// (lerp(0, 0.5, v) + lerp(0.5, 1, w) + lerp(1, 0, u)) / 1.5;
-    //			var vv:number = w;// (0 * u) + (0 * v) + (1 * w);// (lerp(0, 1, w) + lerp(1, 0, u)) / 1;
-    //
-    //			var d:number = uu * uu - vv;
-    //
-    //			if ((d > 0 && az == -1) || (d < 0 && az == 1))
-    //				continue;
-    //		}
-    //		//TODO optimize away this pointless check as the distance is always the same
-    //		//also this stuff should only be calculated right before the return and not for each hit
-    //		if (distance < shortestCollisionDistance) {
-    //			shortestCollisionDistance = distance;
-    //			collisionCurveIndex = index/3;
-    //			pickingCollision.rayEntryDistance = distance;
-    //			pickingCollision.localPosition = p;
-    //			pickingCollision.localNormal = new Vector3D(0, 0, 1);
-    //			pickingCollision.uv = this._getCollisionUV(indices, uvs, index, v, w, u, uvDim);
-    //			pickingCollision.index = index;
-    //			//						pickingCollision.elementIndex = this.pGetSpriteGraphicIndex(renderable);
-    //
-    //			// if not looking for best hit, first found will do...
-    //			if (!this._findClosestCollision)
-    //				return true;
-    //		}
-    //	}
-    //
-    //	if (collisionCurveIndex >= 0)
-    //		return true;
-    //
-    //	return false;
-    //}
-    /**
-     * Tests a <code>LineElements</code> object for a collision with the picking ray.
-     *
-     * @param triangleElements
-     * @param material
-     * @param pickingCollision
-     * @returns {boolean}
-     */
-    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision, count, offset) {
-        if (offset === void 0) { offset = 0; }
-        return false;
-    };
-    return JSPickingCollider;
 }());
 
 /**
@@ -67239,6 +66633,141 @@ var RaycastPicker = (function (_super) {
     };
     return RaycastPicker;
 }(_awayjs_graphics.TraverserBase));
+
+/**
+ * @class away.partition.NodeBase
+ */
+var NodeBase = (function () {
+    /**
+     *
+     */
+    function NodeBase() {
+        this._bounds = new _awayjs_scene.NullBounds();
+        this._pChildNodes = new Array();
+        this._pNumChildNodes = 0;
+        this.numEntities = 0;
+    }
+    Object.defineProperty(NodeBase.prototype, "debugVisible", {
+        get: function () {
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NodeBase.prototype, "bounds", {
+        /**
+         * @internal
+         */
+        get: function () {
+            return this._bounds; //TODO
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     * @internal
+     */
+    NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+        return true;
+    };
+    /**
+     *
+     * @param rayPosition
+     * @param rayDirection
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isRenderable = function () {
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isCastingShadow = function () {
+        return true;
+    };
+    NodeBase.prototype.renderBounds = function (traverser) {
+        //nothing to do here
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isMask = function () {
+        return false;
+    };
+    NodeBase.prototype.dispose = function () {
+        this.parent = null;
+        this._pChildNodes = null;
+    };
+    /**
+     *
+     * @param traverser
+     */
+    NodeBase.prototype.acceptTraverser = function (traverser) {
+        if (this.numEntities == 0)
+            return;
+        if (traverser.enterNode(this)) {
+            for (var i = 0; i < this._pNumChildNodes; i++)
+                this._pChildNodes[i].acceptTraverser(traverser);
+        }
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    NodeBase.prototype.iAddNode = function (node) {
+        node.parent = this;
+        this.numEntities += node.numEntities;
+        this._pChildNodes[this._pNumChildNodes++] = node;
+        var numEntities = node.numEntities;
+        node = this;
+        do {
+            node.numEntities += numEntities;
+        } while ((node = node.parent) != null);
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    NodeBase.prototype.iRemoveNode = function (node) {
+        var index = this._pChildNodes.indexOf(node);
+        this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
+        this._pChildNodes.pop();
+        var numEntities = node.numEntities;
+        node = this;
+        do {
+            node.numEntities -= numEntities;
+        } while ((node = node.parent) != null);
+    };
+    return NodeBase;
+}());
+
+/**
+ * @class away.partition.Partition
+ */
+var BasicPartition = (function (_super) {
+    __extends(BasicPartition, _super);
+    function BasicPartition(root) {
+        var _this = _super.call(this, root) || this;
+        _this._rootNode = new NodeBase();
+        return _this;
+    }
+    return BasicPartition;
+}(PartitionBase));
 
 var View = (function () {
     /*
@@ -67673,7 +67202,675 @@ var View = (function () {
     return View;
 }());
 
+/**
+ *
+ */
+var ViewImage2D = (function (_super) {
+    __extends(ViewImage2D, _super);
+    /**
+     * Creates a BitmapImage2D object with a specified width and height. If you
+     * specify a value for the <code>fillColor</code> parameter, every pixel in
+     * the bitmap is set to that color.
+     *
+     * <p>By default, the bitmap is created as transparent, unless you pass
+     * the value <code>false</code> for the transparent parameter. After you
+     * create an opaque bitmap, you cannot change it to a transparent bitmap.
+     * Every pixel in an opaque bitmap uses only 24 bits of color channel
+     * information. If you define the bitmap as transparent, every pixel uses 32
+     * bits of color channel information, including an alpha transparency
+     * channel.</p>
+     *
+     * @param width       The width of the bitmap image in pixels.
+     * @param height      The height of the bitmap image in pixels.
+     * @param transparent Specifies whether the bitmap image supports per-pixel
+     *                    transparency. The default value is <code>true</code>
+     *                    (transparent). To create a fully transparent bitmap,
+     *                    set the value of the <code>transparent</code>
+     *                    parameter to <code>true</code> and the value of the
+     *                    <code>fillColor</code> parameter to 0x00000000(or to
+     *                    0). Setting the <code>transparent</code> property to
+     *                    <code>false</code> can result in minor improvements
+     *                    in rendering performance.
+     * @param fillColor   A 32-bit ARGB color value that you use to fill the
+     *                    bitmap image area. The default value is
+     *                    0xFFFFFFFF(solid white).
+     */
+    function ViewImage2D(width, height, stage) {
+        if (stage === void 0) { stage = null; }
+        var _this = _super.call(this, width, height, false) || this;
+        //create the view
+        _this._view = new View(new _awayjs_renderer.DefaultRenderer(stage));
+        _this._view.disableMouseEvents = true;
+        _this._view.width = _this._rect.width;
+        _this._view.height = _this._rect.height;
+        _this._view.renderer.renderableSorter = null; //new RenderableSort2D();
+        //create the projection
+        var projection = new _awayjs_core.PerspectiveProjection();
+        projection.coordinateSystem = _awayjs_core.CoordinateSystem.RIGHT_HANDED;
+        projection.originX = 0;
+        projection.originY = 0;
+        projection.preserveFocalLength = true;
+        projection.setViewRect(0, 0, _this._rect.width, _this._rect.height);
+        projection.setStageRect(0, 0, _this._rect.width, _this._rect.height);
+        _this._view.camera.projection = projection;
+        return _this;
+    }
+    Object.defineProperty(ViewImage2D.prototype, "assetType", {
+        /**
+         *
+         * @returns {string}
+         */
+        get: function () {
+            return ViewImage2D.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Returns a new BitmapImage2D object that is a clone of the original instance
+     * with an exact copy of the contained bitmap.
+     *
+     * @return A new BitmapImage2D object that is identical to the original.
+     */
+    ViewImage2D.prototype.clone = function () {
+        var t = new ViewImage2D(this.width, this.height);
+        t.draw(this._view.scene);
+        return t;
+    };
+    /**
+     * Frees memory that is used to store the BitmapImage2D object.
+     *
+     * <p>When the <code>dispose()</code> method is called on an image, the width
+     * and height of the image are set to 0. All subsequent calls to methods or
+     * properties of this BitmapImage2D instance fail, and an exception is thrown.
+     * </p>
+     *
+     * <p><code>BitmapImage2D.dispose()</code> releases the memory occupied by the
+     * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
+     * memory). After using <code>BitmapImage2D.dispose()</code>, the BitmapImage2D
+     * object is no longer usable and an exception may be thrown if
+     * you call functions on the BitmapImage2D object. However,
+     * <code>BitmapImage2D.dispose()</code> does not garbage collect the BitmapImage2D
+     * object(approximately 128 bytes); the memory occupied by the actual
+     * BitmapImage2D object is released at the time the BitmapImage2D object is
+     * collected by the garbage collector.</p>
+     *
+     */
+    ViewImage2D.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        //todo
+    };
+    /**
+     * Draws the <code>source</code> display object onto the bitmap image, using
+     * the NME software renderer. You can specify <code>matrix</code>,
+     * <code>colorTransform</code>, <code>blendMode</code>, and a destination
+     * <code>clipRect</code> parameter to control how the rendering performs.
+     * Optionally, you can specify whether the bitmap should be smoothed when
+     * scaled(this works only if the source object is a BitmapImage2D object).
+     *
+     * <p>The source display object does not use any of its applied
+     * transformations for this call. It is treated as it exists in the library
+     * or file, with no matrix transform, no color transform, and no blend mode.
+     * To draw a display object(such as a movie clip) by using its own transform
+     * properties, you can copy its <code>transform</code> property object to the
+     * <code>transform</code> property of the Bitmap object that uses the
+     * BitmapImage2D object.</p>
+     *
+     * @param source         The display object or BitmapImage2D object to draw to
+     *                       the BitmapImage2D object.(The DisplayObject and
+     *                       BitmapImage2D classes implement the IBitmapDrawable
+     *                       interface.)
+     * @param matrix         A Matrix object used to scale, rotate, or translate
+     *                       the coordinates of the bitmap. If you do not want to
+     *                       apply a matrix transformation to the image, set this
+     *                       parameter to an identity matrix, created with the
+     *                       default <code>new Matrix()</code> constructor, or
+     *                       pass a <code>null</code> value.
+     * @param colorTransform A ColorTransform object that you use to adjust the
+     *                       color values of the bitmap. If no object is
+     *                       supplied, the bitmap image's colors are not
+     *                       transformed. If you must pass this parameter but you
+     *                       do not want to transform the image, set this
+     *                       parameter to a ColorTransform object created with
+     *                       the default <code>new ColorTransform()</code>
+     *                       constructor.
+     * @param blendMode      A string value, from the flash.display.BlendMode
+     *                       class, specifying the blend mode to be applied to
+     *                       the resulting bitmap.
+     * @param clipRect       A Rectangle object that defines the area of the
+     *                       source object to draw. If you do not supply this
+     *                       value, no clipping occurs and the entire source
+     *                       object is drawn.
+     * @param smoothing      A Boolean value that determines whether a BitmapImage2D
+     *                       object is smoothed when scaled or rotated, due to a
+     *                       scaling or rotation in the <code>matrix</code>
+     *                       parameter. The <code>smoothing</code> parameter only
+     *                       applies if the <code>source</code> parameter is a
+     *                       BitmapImage2D object. With <code>smoothing</code> set
+     *                       to <code>false</code>, the rotated or scaled
+     *                       BitmapImage2D image can appear pixelated or jagged. For
+     *                       example, the following two images use the same
+     *                       BitmapImage2D object for the <code>source</code>
+     *                       parameter, but the <code>smoothing</code> parameter
+     *                       is set to <code>true</code> on the left and
+     *                       <code>false</code> on the right:
+     *
+     *                       <p>Drawing a bitmap with <code>smoothing</code> set
+     *                       to <code>true</code> takes longer than doing so with
+     *                       <code>smoothing</code> set to
+     *                       <code>false</code>.</p>
+     * @throws ArgumentError The <code>source</code> parameter is not a
+     *                       BitmapImage2D or DisplayObject object.
+     * @throws ArgumentError The source is null or not a valid IBitmapDrawable
+     *                       object.
+     * @throws SecurityError The <code>source</code> object and(in the case of a
+     *                       Sprite or MovieClip object) all of its child objects
+     *                       do not come from the same domain as the caller, or
+     *                       are not in a content that is accessible to the
+     *                       caller by having called the
+     *                       <code>Security.allowDomain()</code> method. This
+     *                       restriction does not apply to AIR content in the
+     *                       application security sandbox.
+     */
+    ViewImage2D.prototype.draw = function (source, matrix, colorTransform) {
+        var root = new _awayjs_scene.DisplayObjectContainer();
+        root.addChild(source);
+        root.transform.scaleTo(matrix.a, -matrix.d, 1);
+        root.transform.moveTo(matrix.tx, matrix.ty, 0);
+        this._view.scene.addChild(root);
+        this._view.setPartition(root, new SceneGraphPartition(root));
+        //clone.transform.
+        this._view.backgroundAlpha = 0;
+        //render
+        this._view.renderer._iRender(this._view.camera.projection, this._view, this);
+    };
+    /**
+     *
+     * @param width
+     * @param height
+     * @private
+     */
+    ViewImage2D.prototype._setSize = function (width, height) {
+        _super.prototype._setSize.call(this, width, height);
+        this._view.width = this._rect.width;
+        this._view.height = this._rect.height;
+        this._view.camera.projection.setViewRect(0, 0, this._rect.width, this._rect.height);
+        this._view.camera.projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+    };
+    return ViewImage2D;
+}(_awayjs_graphics.Image2D));
+ViewImage2D.assetType = "[image ViewImage2D]";
+
+/**
+ * @class away.partition.EntityNode
+ */
+var EntityNode = (function (_super) {
+    __extends(EntityNode, _super);
+    function EntityNode(displayObject, partition) {
+        var _this = _super.call(this, displayObject, partition) || this;
+        _this.numEntities = 1;
+        _this._maskPosition = new _awayjs_core.Vector3D();
+        _this._partition = partition;
+        return _this;
+    }
+    EntityNode.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._partition = null;
+    };
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     */
+    EntityNode.prototype.isInFrustum = function (planes, numPlanes) {
+        if (!this._entity._iIsVisible())
+            return false;
+        return true; // todo: hack for 2d. attention. might break stuff in 3d.
+        //return this._bounds.isInFrustum(planes, numPlanes);
+    };
+    /**
+     * @inheritDoc
+     */
+    EntityNode.prototype.isIntersectingRay = function (globalRayPosition, globalRayDirection) {
+        if (!this._entity._iIsVisible() || !this.isIntersectingMasks(globalRayPosition, globalRayDirection, this._entity._iAssignedMasks()))
+            return false;
+        var pickingCollision = this._entity._iPickingCollision;
+        pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition);
+        pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection);
+        if (!pickingCollision.normal)
+            pickingCollision.normal = new _awayjs_core.Vector3D();
+        var rayEntryDistance = this.bounds.rayIntersection(pickingCollision.rayPosition, pickingCollision.rayDirection, pickingCollision.normal);
+        if (rayEntryDistance < 0)
+            return false;
+        pickingCollision.rayEntryDistance = rayEntryDistance;
+        pickingCollision.globalRayPosition = globalRayPosition;
+        pickingCollision.globalRayDirection = globalRayDirection;
+        pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    EntityNode.prototype.isRenderable = function () {
+        return this._entity._iAssignedColorTransform()._isRenderable();
+    };
+    /**
+     * @inheritDoc
+     */
+    EntityNode.prototype.acceptTraverser = function (traverser) {
+        if (traverser.enterNode(this))
+            traverser[this._entity.traverseName](this._entity);
+    };
+    EntityNode.prototype._onInvalidatePartitionBounds = function (event) {
+        this.bounds.invalidate();
+        this._partition.iMarkForUpdate(this);
+    };
+    EntityNode.prototype.isIntersectingMasks = function (globalRayPosition, globalRayDirection, masks) {
+        //horrible hack for 2d masks
+        if (masks != null) {
+            this._maskPosition.x = globalRayPosition.x + globalRayDirection.x * 1000;
+            this._maskPosition.y = globalRayPosition.y + globalRayDirection.y * 1000;
+            var numLayers = masks.length;
+            var children;
+            var numChildren;
+            var layerHit;
+            for (var i = 0; i < numLayers; i++) {
+                children = masks[i];
+                numChildren = children.length;
+                layerHit = false;
+                for (var j = 0; j < numChildren; j++) {
+                    if (children[j].hitTestPoint(this._maskPosition.x, this._maskPosition.y, true, true)) {
+                        layerHit = true;
+                        break;
+                    }
+                }
+                if (!layerHit)
+                    return false;
+            }
+        }
+        return true;
+    };
+    return EntityNode;
+}(DisplayObjectNode));
+
+/**
+ * @class away.partition.CameraNode
+ */
+var CameraNode = (function (_super) {
+    __extends(CameraNode, _super);
+    function CameraNode() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    CameraNode.prototype.acceptTraverser = function (traverser) {
+        // todo: dead end for now, if it has a debug sprite, then sure accept that
+    };
+    return CameraNode;
+}(EntityNode));
+
+/**
+ * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
+ *
+ * @class away.partition.SkyboxNode
+ */
+var SkyboxNode = (function (_super) {
+    __extends(SkyboxNode, _super);
+    function SkyboxNode() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     */
+    SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
+        if (!this._entity._iIsVisible)
+            return false;
+        //a skybox is always in view unless its visibility is set to false
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    SkyboxNode.prototype.isCastingShadow = function () {
+        return false; //skybox never casts shadows
+    };
+    return SkyboxNode;
+}(EntityNode));
+
+/**
+ * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
+ *
+ * @see away.base.DisplayObject#pickingCollider
+ * @see away.pick.RaycastPicker
+ *
+ * @class away.pick.JSPickingCollider
+ */
+var JSPickingCollider = (function () {
+    /**
+     * Creates a new <code>JSPickingCollider</code> object.
+     *
+     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+     */
+    function JSPickingCollider(findClosestCollision) {
+        if (findClosestCollision === void 0) { findClosestCollision = false; }
+        this._findClosestCollision = findClosestCollision;
+    }
+    /**
+     * Tests a <code>Billboard</code> object for a collision with the picking ray.
+     *
+     * @param billboard The billboard instance to be tested.
+     * @param pickingCollision The collision object used to store the collision results
+     * @param findClosest
+     */
+    JSPickingCollider.prototype.testBillboardCollision = function (billboard, material, pickingCollision) {
+        pickingCollision.renderable = null;
+        //if (this._testGraphicCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollision, shortestCollisionDistance)) {
+        //	shortestCollisionDistance = pickingCollision.rayEntryDistance;
+        //
+        //	pickingCollision.renderable = billboard;
+        //
+        //	return true;
+        //}
+        return false;
+    };
+    /**
+     * Tests a <code>TriangleElements</code> object for a collision with the picking ray.
+     *
+     * @param triangleElements
+     * @param material
+     * @param pickingCollision
+     * @returns {boolean}
+     */
+    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision, count, offset) {
+        if (offset === void 0) { offset = 0; }
+        var rayPosition = pickingCollision.rayPosition;
+        var rayDirection = pickingCollision.rayDirection;
+        var t;
+        var i0, i1, i2;
+        var rx, ry, rz;
+        var nx, ny, nz;
+        var cx, cy, cz;
+        var coeff, u, v, w;
+        var p0x, p0y, p0z;
+        var p1x, p1y, p1z;
+        var p2x, p2y, p2z;
+        var s0x, s0y, s0z;
+        var s1x, s1y, s1z;
+        var nl, nDotV, D, disToPlane;
+        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
+        var collisionTriangleIndex = -1;
+        var bothSides = material.bothSides;
+        var positions = triangleElements.positions.get(count, offset);
+        var posDim = triangleElements.positions.dimensions;
+        var posStride = triangleElements.positions.stride;
+        var indices;
+        if (triangleElements.indices) {
+            indices = triangleElements.indices.get(triangleElements.numElements);
+            count = indices.length;
+        }
+        for (var index = 0; index < count; index += 3) {
+            // evaluate triangle indices
+            if (indices) {
+                i0 = indices[index] * posStride;
+                i1 = indices[index + 1] * posStride;
+                i2 = indices[index + 2] * posStride;
+            }
+            else {
+                i0 = index * posStride;
+                i1 = (index + 1) * posStride;
+                i2 = (index + 2) * posStride;
+            }
+            // evaluate triangle positions
+            p0x = positions[i0];
+            p1x = positions[i1];
+            p2x = positions[i2];
+            s0x = p1x - p0x; // s0 = p1 - p0
+            s1x = p2x - p0x; // s1 = p2 - p0
+            p0y = positions[i0 + 1];
+            p1y = positions[i1 + 1];
+            p2y = positions[i2 + 1];
+            s0y = p1y - p0y;
+            s1y = p2y - p0y;
+            if (posDim == 3) {
+                p0z = positions[i0 + 2];
+                p1z = positions[i1 + 2];
+                p2z = positions[i2 + 2];
+                s0z = p1z - p0z;
+                s1z = p2z - p0z;
+                // evaluate sides and triangle normal
+                nx = s0y * s1z - s0z * s1y; // n = s0 x s1
+                ny = s0z * s1x - s0x * s1z;
+                nz = s0x * s1y - s0y * s1x;
+                nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
+                nx *= nl;
+                ny *= nl;
+                nz *= nl;
+            }
+            else {
+                nx = 0;
+                ny = 0;
+                nz = 1;
+            }
+            // -- plane intersection test --
+            nDotV = nx * rayDirection.x + ny * +rayDirection.y + nz * rayDirection.z; // rayDirection . normal
+            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
+                // find collision t
+                D = -(nx * p0x + ny * p0y + nz * p0z);
+                disToPlane = -(nx * rayPosition.x + ny * rayPosition.y + nz * rayPosition.z + D);
+                t = disToPlane / nDotV;
+                // find collision point
+                cx = rayPosition.x + t * rayDirection.x;
+                cy = rayPosition.y + t * rayDirection.y;
+                cz = rayPosition.z + t * rayDirection.z;
+                // collision point inside triangle? ( using barycentric coordinates )
+                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
+                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
+                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
+                rx = cx - p0x;
+                ry = cy - p0y;
+                rz = cz - p0z;
+                RQ1 = rx * s0x + ry * s0y + rz * s0z;
+                RQ2 = rx * s1x + ry * s1y + rz * s1z;
+                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
+                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
+                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
+                if (v < 0)
+                    continue;
+                if (w < 0)
+                    continue;
+                u = 1 - v - w;
+                if (!(u < 0) && t > 0 && t < pickingCollision.rayEntryDistance) {
+                    collisionTriangleIndex = index / 3;
+                    pickingCollision.rayEntryDistance = t;
+                    pickingCollision.position = new _awayjs_core.Vector3D(cx, cy, cz);
+                    pickingCollision.normal = new _awayjs_core.Vector3D(nx, ny, nz);
+                    if (triangleElements.uvs) {
+                        var uvs = triangleElements.uvs.get(triangleElements.numVertices);
+                        var uvStride = triangleElements.uvs.stride;
+                        var uIndex = indices[index] * uvStride;
+                        var uv0 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        uIndex = indices[index + 1] * uvStride;
+                        var uv1 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        uIndex = indices[index + 2] * uvStride;
+                        var uv2 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        pickingCollision.uv = new _awayjs_core.Point(u * uv0.x + v * uv1.x + w * uv2.x, u * uv0.y + v * uv1.y + w * uv2.y);
+                    }
+                    pickingCollision.elementIndex = collisionTriangleIndex;
+                    // if not looking for best hit, first found will do...
+                    if (!this._findClosestCollision)
+                        return true;
+                }
+            }
+        }
+        if (collisionTriangleIndex >= 0)
+            return true;
+        return false;
+    };
+    //
+    ///**
+    // * Tests a <code>CurveElements</code> object for a collision with the picking ray.
+    // *
+    // * @param triangleElements
+    // * @param material
+    // * @param pickingCollision
+    // * @returns {boolean}
+    // */
+    //public testCurveCollision(curveElements:CurveElements, material:MaterialBase, pickingCollision:PickingCollision, shortestCollisionDistance:number):boolean
+    //{
+    //	var rayPosition:Vector3D = pickingCollision.localRayPosition;
+    //	var rayDirection:Vector3D = pickingCollision.localRayDirection;
+    //
+    //	//project ray onto x/y plane to generate useful test points from mouse coordinates
+    //	//this will only work while all points lie on the x/y plane
+    //	var plane:Vector3D = new Vector3D(0,0,-1,0);
+    //
+    //	var result:Vector3D = new Vector3D();
+    //	var distance:number = plane.x * rayPosition.x + plane.y * rayPosition.y + plane.z * rayPosition.z + plane.w;//distance(position);
+    //	result.x = rayPosition.x - ( plane.x*distance);
+    //	result.y = rayPosition.y - ( plane.y*distance);
+    //	result.z = rayPosition.z - ( plane.z*distance);
+    //	var normal:Vector3D = new Vector3D(plane.x,plane.y,plane.z);
+    //	var t:number = -(rayPosition.dotProduct(normal))/(rayDirection.dotProduct(normal));
+    //	rayDirection.scaleBy(t);
+    //	var p:Vector3D = rayPosition.add(rayDirection);
+    //
+    //	var indices:Uint16Array = curveElements.indices.get(curveElements.numElements);
+    //	var collisionCurveIndex:number = -1;
+    //	var bothSides:boolean = material.bothSides;
+    //
+    //
+    //	var positions:Float32Array = curveElements.positions.get(curveElements.numVertices);
+    //	var posDim:number = curveElements.positions.dimensions;
+    //	var curves:Float32Array = curveElements.curves.get(curveElements.numVertices);
+    //	var curveDim:number = curveElements.curves.dimensions;
+    //	var uvs:ArrayBufferView = curveElements.uvs.get(curveElements.numVertices);
+    //	var uvDim:number = curveElements.uvs.dimensions;
+    //	var numIndices:number = indices.length;
+    //
+    //
+    //	for(var index:number = 0; index < numIndices; index+=3)
+    //	{
+    //		var id0:number = indices[index];
+    //		var id1:number = indices[index + 1] * posDim;
+    //		var id2:number = indices[index + 2] * posDim;
+    //
+    //		var ax:number = positions[id0 * posDim];
+    //		var ay:number = positions[id0 * posDim + 1];
+    //		var bx:number = positions[id1];
+    //		var by:number = positions[id1 + 1];
+    //		var cx:number = positions[id2];
+    //		var cy:number = positions[id2 + 1];
+    //
+    //		var curvex:number = curves[id0 * curveDim];
+    //		var az:number = positions[id0 * posDim + 2];
+    //
+    //		//console.log(ax, ay, bx, by, cx, cy);
+    //
+    //		//from a to p
+    //		var dx:number = ax - p.x;
+    //		var dy:number = ay - p.y;
+    //
+    //		//edge normal (a-b)
+    //		var nx:number = by - ay;
+    //		var ny:number = -(bx - ax);
+    //
+    //		//console.log(ax,ay,bx,by,cx,cy);
+    //
+    //		var dot:number = (dx * nx) + (dy * ny);
+    //		//console.log("dot a",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		dx = bx - p.x;
+    //		dy = by - p.y;
+    //		nx = cy - by;
+    //		ny = -(cx - bx);
+    //
+    //		dot = (dx * nx) + (dy * ny);
+    //		//console.log("dot b",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		dx = cx - p.x;
+    //		dy = cy - p.y;
+    //		nx = ay - cy;
+    //		ny = -(ax - cx);
+    //
+    //		dot = (dx * nx) + (dy * ny);
+    //		//console.log("dot c",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		//check if not solid
+    //		if (curvex != 2) {
+    //
+    //			var v0x:number = bx - ax;
+    //			var v0y:number = by - ay;
+    //			var v1x:number = cx - ax;
+    //			var v1y:number = cy - ay;
+    //			var v2x:number = p.x - ax;
+    //			var v2y:number = p.y - ay;
+    //
+    //			var den:number = v0x * v1y - v1x * v0y;
+    //			var v:number = (v2x * v1y - v1x * v2y) / den;
+    //			var w:number = (v0x * v2y - v2x * v0y) / den;
+    //			var u:number = 1 - v - w;
+    //
+    //			var uu:number = 0.5 * v + w;// (0 * u) + (0.5 * v) + (1 * w);// (lerp(0, 0.5, v) + lerp(0.5, 1, w) + lerp(1, 0, u)) / 1.5;
+    //			var vv:number = w;// (0 * u) + (0 * v) + (1 * w);// (lerp(0, 1, w) + lerp(1, 0, u)) / 1;
+    //
+    //			var d:number = uu * uu - vv;
+    //
+    //			if ((d > 0 && az == -1) || (d < 0 && az == 1))
+    //				continue;
+    //		}
+    //		//TODO optimize away this pointless check as the distance is always the same
+    //		//also this stuff should only be calculated right before the return and not for each hit
+    //		if (distance < shortestCollisionDistance) {
+    //			shortestCollisionDistance = distance;
+    //			collisionCurveIndex = index/3;
+    //			pickingCollision.rayEntryDistance = distance;
+    //			pickingCollision.localPosition = p;
+    //			pickingCollision.localNormal = new Vector3D(0, 0, 1);
+    //			pickingCollision.uv = this._getCollisionUV(indices, uvs, index, v, w, u, uvDim);
+    //			pickingCollision.index = index;
+    //			//						pickingCollision.elementIndex = this.pGetSpriteGraphicIndex(renderable);
+    //
+    //			// if not looking for best hit, first found will do...
+    //			if (!this._findClosestCollision)
+    //				return true;
+    //		}
+    //	}
+    //
+    //	if (collisionCurveIndex >= 0)
+    //		return true;
+    //
+    //	return false;
+    //}
+    /**
+     * Tests a <code>LineElements</code> object for a collision with the picking ray.
+     *
+     * @param triangleElements
+     * @param material
+     * @param pickingCollision
+     * @returns {boolean}
+     */
+    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision, count, offset) {
+        if (offset === void 0) { offset = 0; }
+        return false;
+    };
+    return JSPickingCollider;
+}());
+
 exports.MouseManager = MouseManager;
+exports.ViewImage2D = ViewImage2D;
 exports.BasicPartition = BasicPartition;
 exports.CameraNode = CameraNode;
 exports.DisplayObjectNode = DisplayObjectNode;
