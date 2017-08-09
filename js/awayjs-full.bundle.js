@@ -18139,6 +18139,29 @@ var BitmapImage2D = (function (_super) {
         this._imageData = null;
         this.invalidate();
     };
+    BitmapImage2D.prototype.merge = function (source, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier) {
+        if (!this._imageData)
+            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        var dest = this._imageData.data;
+        var src = source.getImageData().data;
+        redMultiplier = Math.floor(redMultiplier);
+        greenMultiplier = Math.floor(greenMultiplier);
+        blueMultiplier = Math.floor(blueMultiplier);
+        alphaMultiplier = Math.floor(alphaMultiplier);
+        var i, j, index;
+        for (i = 0; i < sourceRect.width; ++i) {
+            for (j = 0; j < sourceRect.height; ++j) {
+                index = (i + sourceRect.x + (j + sourceRect.y) * this.width) * 4;
+                dest[index] = Math.floor((src[index] * redMultiplier + dest[index] * (0x100 - redMultiplier)) / 0x100);
+                dest[index + 1] = Math.floor((src[index + 1] * greenMultiplier + dest[index + 1] * (0x100 - greenMultiplier)) / 0x100);
+                dest[index + 2] = Math.floor((src[index + 2] * blueMultiplier + dest[index + 2] * (0x100 - blueMultiplier)) / 0x100);
+                dest[index + 3] = Math.floor((src[index + 3] * alphaMultiplier + dest[index + 3] * (0x100 - alphaMultiplier)) / 0x100);
+            }
+        }
+        if (!this._locked)
+            this._context.putImageData(this._imageData, 0, 0);
+        this.invalidate();
+    };
     /**
      * Frees memory that is used to store the BitmapImage2D object.
      *
@@ -18503,6 +18526,9 @@ var BitmapImage2D = (function (_super) {
      * @returns {HTMLCanvasElement}
      */
     BitmapImage2D.prototype.getCanvas = function () {
+        if (this._imageData)
+            this._context.putImageData(this._imageData, 0, 0);
+        this._imageData = null;
         return this._imageCanvas;
     };
     /**
