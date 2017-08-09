@@ -67266,7 +67266,9 @@ var ViewImage2D = (function (_super) {
      *                    bitmap image area. The default value is
      *                    0xFFFFFFFF(solid white).
      */
-    function ViewImage2D(width, height, stage) {
+    function ViewImage2D(width, height, transparent, fillColor, stage) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = 0xffffffff; }
         if (stage === void 0) { stage = null; }
         var _this = _super.call(this, width, height, false) || this;
         //create the view
@@ -67274,6 +67276,10 @@ var ViewImage2D = (function (_super) {
         _this._view.disableMouseEvents = true;
         _this._view.width = _this._rect.width;
         _this._view.height = _this._rect.height;
+        _this._transparent = transparent;
+        _this._fillColor = fillColor;
+        _this._view.backgroundAlpha = transparent ? (fillColor & 0xff000000) >>> 24 : 1;
+        _this._view.backgroundColor = fillColor & 0xffffff;
         _this._view.renderer.renderableSorter = null; //new RenderableSort2D();
         //create the projection
         var projection = new _awayjs_core.PerspectiveProjection();
@@ -67293,6 +67299,39 @@ var ViewImage2D = (function (_super) {
          */
         get: function () {
             return ViewImage2D.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ViewImage2D.prototype, "transparent", {
+        /**
+         * Defines whether the bitmap image supports per-pixel transparency. You can
+         * set this value only when you construct a BitmapImage2D object by passing in
+         * <code>true</code> for the <code>transparent</code> parameter of the
+         * constructor. Then, after you create a BitmapImage2D object, you can check
+         * whether it supports per-pixel transparency by determining if the value of
+         * the <code>transparent</code> property is <code>true</code>.
+         */
+        get: function () {
+            return this._transparent;
+        },
+        set: function (value) {
+            this._transparent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ViewImage2D.prototype, "fillColor", {
+        /**
+         *
+         */
+        get: function () {
+            return this._fillColor;
+        },
+        set: function (value) {
+            this._fillColor = value;
+            this._view.backgroundAlpha = this._transparent ? (value & 0xff000000) >>> 24 : 1;
+            this._view.backgroundColor = value & 0xffffff;
         },
         enumerable: true,
         configurable: true
@@ -67415,8 +67454,6 @@ var ViewImage2D = (function (_super) {
         root.transform.colorTransform = colorTransform;
         this._view.scene.addChild(root);
         this._view.setPartition(root, new SceneGraphPartition(root));
-        //clone.transform.
-        this._view.backgroundAlpha = 0;
         //render
         this._view.renderer._iRender(this._view.camera.projection, this._view, this);
     };
