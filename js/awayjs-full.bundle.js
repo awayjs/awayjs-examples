@@ -67178,30 +67178,14 @@ var ViewImage2D = (function (_super) {
      *                    bitmap image area. The default value is
      *                    0xFFFFFFFF(solid white).
      */
-    function ViewImage2D(width, height, transparent, fillColor, stage) {
+    function ViewImage2D(width, height, transparent, fillColor, powerOfTwo, stage) {
         if (transparent === void 0) { transparent = true; }
         if (fillColor === void 0) { fillColor = 0xffffffff; }
+        if (powerOfTwo === void 0) { powerOfTwo = true; }
         if (stage === void 0) { stage = null; }
-        var _this = _super.call(this, width, height, false) || this;
-        //create the view
-        _this._view = new View(new _awayjs_renderer.DefaultRenderer(stage));
-        _this._view.disableMouseEvents = true;
-        _this._view.width = _this._rect.width;
-        _this._view.height = _this._rect.height;
-        _this._transparent = transparent;
+        var _this = _super.call(this, width, height, transparent, fillColor, powerOfTwo) || this;
         _this._fillColor = fillColor;
-        _this._view.backgroundAlpha = transparent ? (fillColor & 0xff000000) >>> 24 : 1;
-        _this._view.backgroundColor = fillColor & 0xffffff;
-        _this._view.renderer.renderableSorter = null; //new RenderableSort2D();
-        //create the projection
-        var projection = new _awayjs_core.PerspectiveProjection();
-        projection.coordinateSystem = _awayjs_core.CoordinateSystem.RIGHT_HANDED;
-        projection.originX = 0;
-        projection.originY = 0;
-        projection.preserveFocalLength = true;
-        projection.setViewRect(0, 0, _this._rect.width, _this._rect.height);
-        projection.setStageRect(0, 0, _this._rect.width, _this._rect.height);
-        _this._view.camera.projection = projection;
+        _this._stage = stage;
         return _this;
     }
     Object.defineProperty(ViewImage2D.prototype, "assetType", {
@@ -67215,49 +67199,25 @@ var ViewImage2D = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ViewImage2D.prototype, "transparent", {
-        /**
-         * Defines whether the bitmap image supports per-pixel transparency. You can
-         * set this value only when you construct a BitmapImage2D object by passing in
-         * <code>true</code> for the <code>transparent</code> parameter of the
-         * constructor. Then, after you create a BitmapImage2D object, you can check
-         * whether it supports per-pixel transparency by determining if the value of
-         * the <code>transparent</code> property is <code>true</code>.
-         */
-        get: function () {
-            return this._transparent;
-        },
-        set: function (value) {
-            this._transparent = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ViewImage2D.prototype, "fillColor", {
-        /**
-         *
-         */
-        get: function () {
-            return this._fillColor;
-        },
-        set: function (value) {
-            this._fillColor = value;
-            this._view.backgroundAlpha = this._transparent ? (value & 0xff000000) >>> 24 : 1;
-            this._view.backgroundColor = value & 0xffffff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Returns a new BitmapImage2D object that is a clone of the original instance
-     * with an exact copy of the contained bitmap.
-     *
-     * @return A new BitmapImage2D object that is identical to the original.
-     */
-    ViewImage2D.prototype.clone = function () {
-        var t = new ViewImage2D(this.width, this.height);
-        t.draw(this._view.scene);
-        return t;
+    ViewImage2D.prototype.createView = function () {
+        //create the view
+        this._view = new View(new _awayjs_renderer.DefaultRenderer(this._stage));
+        this._view.disableMouseEvents = true;
+        this._view.width = this._rect.width;
+        this._view.height = this._rect.height;
+        this._fillColor = this._fillColor;
+        this._view.backgroundAlpha = this._transparent ? (this._fillColor & 0xff000000) >>> 24 : 1;
+        this._view.backgroundColor = this._fillColor & 0xffffff;
+        this._view.renderer.renderableSorter = null; //new RenderableSort2D();
+        //create the projection
+        var projection = new _awayjs_core.PerspectiveProjection();
+        projection.coordinateSystem = _awayjs_core.CoordinateSystem.RIGHT_HANDED;
+        projection.originX = 0;
+        projection.originY = 0;
+        projection.preserveFocalLength = true;
+        projection.setViewRect(0, 0, this._rect.width, this._rect.height);
+        projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+        this._view.camera.projection = projection;
     };
     /**
      * Frees memory that is used to store the BitmapImage2D object.
@@ -67282,92 +67242,29 @@ var ViewImage2D = (function (_super) {
         _super.prototype.dispose.call(this);
         //todo
     };
-    /**
-     * Draws the <code>source</code> display object onto the bitmap image, using
-     * the NME software renderer. You can specify <code>matrix</code>,
-     * <code>colorTransform</code>, <code>blendMode</code>, and a destination
-     * <code>clipRect</code> parameter to control how the rendering performs.
-     * Optionally, you can specify whether the bitmap should be smoothed when
-     * scaled(this works only if the source object is a BitmapImage2D object).
-     *
-     * <p>The source display object does not use any of its applied
-     * transformations for this call. It is treated as it exists in the library
-     * or file, with no matrix transform, no color transform, and no blend mode.
-     * To draw a display object(such as a movie clip) by using its own transform
-     * properties, you can copy its <code>transform</code> property object to the
-     * <code>transform</code> property of the Bitmap object that uses the
-     * BitmapImage2D object.</p>
-     *
-     * @param source         The display object or BitmapImage2D object to draw to
-     *                       the BitmapImage2D object.(The DisplayObject and
-     *                       BitmapImage2D classes implement the IBitmapDrawable
-     *                       interface.)
-     * @param matrix         A Matrix object used to scale, rotate, or translate
-     *                       the coordinates of the bitmap. If you do not want to
-     *                       apply a matrix transformation to the image, set this
-     *                       parameter to an identity matrix, created with the
-     *                       default <code>new Matrix()</code> constructor, or
-     *                       pass a <code>null</code> value.
-     * @param colorTransform A ColorTransform object that you use to adjust the
-     *                       color values of the bitmap. If no object is
-     *                       supplied, the bitmap image's colors are not
-     *                       transformed. If you must pass this parameter but you
-     *                       do not want to transform the image, set this
-     *                       parameter to a ColorTransform object created with
-     *                       the default <code>new ColorTransform()</code>
-     *                       constructor.
-     * @param blendMode      A string value, from the flash.display.BlendMode
-     *                       class, specifying the blend mode to be applied to
-     *                       the resulting bitmap.
-     * @param clipRect       A Rectangle object that defines the area of the
-     *                       source object to draw. If you do not supply this
-     *                       value, no clipping occurs and the entire source
-     *                       object is drawn.
-     * @param smoothing      A Boolean value that determines whether a BitmapImage2D
-     *                       object is smoothed when scaled or rotated, due to a
-     *                       scaling or rotation in the <code>matrix</code>
-     *                       parameter. The <code>smoothing</code> parameter only
-     *                       applies if the <code>source</code> parameter is a
-     *                       BitmapImage2D object. With <code>smoothing</code> set
-     *                       to <code>false</code>, the rotated or scaled
-     *                       BitmapImage2D image can appear pixelated or jagged. For
-     *                       example, the following two images use the same
-     *                       BitmapImage2D object for the <code>source</code>
-     *                       parameter, but the <code>smoothing</code> parameter
-     *                       is set to <code>true</code> on the left and
-     *                       <code>false</code> on the right:
-     *
-     *                       <p>Drawing a bitmap with <code>smoothing</code> set
-     *                       to <code>true</code> takes longer than doing so with
-     *                       <code>smoothing</code> set to
-     *                       <code>false</code>.</p>
-     * @throws ArgumentError The <code>source</code> parameter is not a
-     *                       BitmapImage2D or DisplayObject object.
-     * @throws ArgumentError The source is null or not a valid IBitmapDrawable
-     *                       object.
-     * @throws SecurityError The <code>source</code> object and(in the case of a
-     *                       Sprite or MovieClip object) all of its child objects
-     *                       do not come from the same domain as the caller, or
-     *                       are not in a content that is accessible to the
-     *                       caller by having called the
-     *                       <code>Security.allowDomain()</code> method. This
-     *                       restriction does not apply to AIR content in the
-     *                       application security sandbox.
-     */
-    ViewImage2D.prototype.draw = function (source, matrix, colorTransform) {
-        if (matrix === void 0) { matrix = null; }
-        if (colorTransform === void 0) { colorTransform = null; }
-        var root = new _awayjs_scene.DisplayObjectContainer();
-        root.addChild(source);
-        if (matrix) {
-            root.transform.scaleTo(matrix.a, -matrix.d, 1);
-            root.transform.moveTo(matrix.tx, matrix.ty, 0);
+    ViewImage2D.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+        if (source instanceof _awayjs_scene.DisplayObject) {
+            var root = new _awayjs_scene.DisplayObjectContainer();
+            root.addChild(source);
+            if (matrix) {
+                root.transform.scaleTo(matrix.a, -matrix.d, 1);
+                root.transform.moveTo(matrix.tx, matrix.ty, 0);
+            }
+            root.transform.colorTransform = colorTransform;
+            if (!this._view)
+                this.createView();
+            this._view.scene = new _awayjs_scene.Scene();
+            this._view.scene.addChild(root);
+            this._view.setPartition(root, new SceneGraphPartition(root));
+            //save snapshot if unlocked
+            if (!this._locked)
+                this._view.renderer.queueSnapshot(this);
+            this._view.renderer.disableClear = !this._locked;
+            //render
+            this._view.renderer._iRender(this._view.camera.projection, this._view, this);
+            return;
         }
-        root.transform.colorTransform = colorTransform;
-        this._view.scene.addChild(root);
-        this._view.setPartition(root, new SceneGraphPartition(root));
-        //render
-        this._view.renderer._iRender(this._view.camera.projection, this._view, this);
+        _super.prototype.draw.call(this, source, matrix, colorTransform, blendMode, clipRect, smoothing);
     };
     /**
      *
@@ -67377,13 +67274,15 @@ var ViewImage2D = (function (_super) {
      */
     ViewImage2D.prototype._setSize = function (width, height) {
         _super.prototype._setSize.call(this, width, height);
-        this._view.width = this._rect.width;
-        this._view.height = this._rect.height;
-        this._view.camera.projection.setViewRect(0, 0, this._rect.width, this._rect.height);
-        this._view.camera.projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+        if (this._view) {
+            this._view.width = this._rect.width;
+            this._view.height = this._rect.height;
+            this._view.camera.projection.setViewRect(0, 0, this._rect.width, this._rect.height);
+            this._view.camera.projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+        }
     };
     return ViewImage2D;
-}(_awayjs_graphics.Image2D));
+}(_awayjs_graphics.BitmapImage2D));
 ViewImage2D.assetType = "[image ViewImage2D]";
 
 /**
