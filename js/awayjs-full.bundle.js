@@ -17262,6 +17262,35 @@ var LineElements = (function (_super) {
 LineElements.traverseName = TraverserBase.addRenderableName("applyLineShape");
 LineElements.assetType = "[asset LineElements]";
 
+var ImageEvent = (function (_super) {
+    __extends(ImageEvent, _super);
+    /**
+     * Create a new ImageEvent
+     * @param type The event type.
+     * @param image The instance of the image being updated.
+     */
+    function ImageEvent(type, image) {
+        var _this = _super.call(this, type) || this;
+        _this._image = image;
+        return _this;
+    }
+    Object.defineProperty(ImageEvent.prototype, "image", {
+        /**
+         * The image of the material.
+         */
+        get: function () {
+            return this._image;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ImageEvent;
+}(_awayjs_core.EventBase));
+/**
+ *
+ */
+ImageEvent.INVALIDATE_MIPMAPS = "invalidateMipmaps";
+
 var ImageBase = (function (_super) {
     __extends(ImageBase, _super);
     /**
@@ -17283,6 +17312,12 @@ var ImageBase = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    /**
+     *
+     */
+    ImageBase.prototype.invalidateMipmaps = function () {
+        this.dispatchEvent(new ImageEvent(ImageEvent.INVALIDATE_MIPMAPS, this));
+    };
     return ImageBase;
 }(_awayjs_core.AssetBase));
 
@@ -17840,7 +17875,7 @@ var CPURenderingContext2D = (function () {
     return CPURenderingContext2D;
 }());
 
-var ImageData = (function () {
+var ImageData$1 = (function () {
     function ImageData(width, height) {
         this.width = width;
         this.height = height;
@@ -17864,7 +17899,7 @@ var CPUCanvas = (function () {
     };
     CPUCanvas.prototype.reset = function () {
         if (!this.imageData) {
-            this.imageData = new ImageData(this.width, this.height);
+            this.imageData = new ImageData$1(this.width, this.height);
         }
         else {
             this.imageData.width = this.width;
@@ -17983,7 +18018,7 @@ var BitmapImage2D = (function (_super) {
         if (fillColor === void 0) { fillColor = null; }
         if (powerOfTwo === void 0) { powerOfTwo = true; }
         var _this = _super.call(this, width, height, powerOfTwo) || this;
-        _this._locked = true;
+        _this._locked = false;
         _this._transparent = transparent;
         if (typeof document !== "undefined") {
             _this._imageCanvas = document.createElement("canvas");
@@ -18035,7 +18070,7 @@ var BitmapImage2D = (function (_super) {
      */
     BitmapImage2D.prototype.clone = function () {
         var t = new BitmapImage2D(this.width, this.height, this.transparent, null, this.powerOfTwo);
-        t.draw(this);
+        t.copyPixels(this, this.rect, new _awayjs_core.Point());
         return t;
     };
     /**
@@ -18064,8 +18099,7 @@ var BitmapImage2D = (function (_super) {
             }
         }
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Transfers data from one channel of another BitmapImage2D object or the
@@ -18127,40 +18161,39 @@ var BitmapImage2D = (function (_super) {
             }
         }
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     BitmapImage2D.prototype.copyPixels = function (source, sourceRect, destPoint) {
         if (source instanceof BitmapImage2D)
             source = source.getCanvas();
-        if (this._locked && this._imageData)
+        if (this._imageData)
             this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
         BitmapImageUtils._copyPixels(this._context, source, sourceRect, destPoint);
         this._imageData = null;
-        this.invalidate();
+        if (!this._locked)
+            this.invalidate();
     };
     BitmapImage2D.prototype.merge = function (source, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier) {
         if (!this._imageData)
             this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
         var dest = this._imageData.data;
         var src = source.getImageData().data;
-        redMultiplier = Math.floor(redMultiplier);
-        greenMultiplier = Math.floor(greenMultiplier);
-        blueMultiplier = Math.floor(blueMultiplier);
-        alphaMultiplier = Math.floor(alphaMultiplier);
+        redMultiplier = ~~redMultiplier;
+        greenMultiplier = ~~greenMultiplier;
+        blueMultiplier = ~~blueMultiplier;
+        alphaMultiplier = ~~alphaMultiplier;
         var i, j, index;
         for (i = 0; i < sourceRect.width; ++i) {
             for (j = 0; j < sourceRect.height; ++j) {
                 index = (i + sourceRect.x + (j + sourceRect.y) * this.width) * 4;
-                dest[index] = Math.floor((src[index] * redMultiplier + dest[index] * (0x100 - redMultiplier)) / 0x100);
-                dest[index + 1] = Math.floor((src[index + 1] * greenMultiplier + dest[index + 1] * (0x100 - greenMultiplier)) / 0x100);
-                dest[index + 2] = Math.floor((src[index + 2] * blueMultiplier + dest[index + 2] * (0x100 - blueMultiplier)) / 0x100);
-                dest[index + 3] = Math.floor((src[index + 3] * alphaMultiplier + dest[index + 3] * (0x100 - alphaMultiplier)) / 0x100);
+                dest[index] = ~~((src[index] * redMultiplier + dest[index] * (0x100 - redMultiplier)) / 0x100);
+                dest[index + 1] = ~~((src[index + 1] * greenMultiplier + dest[index + 1] * (0x100 - greenMultiplier)) / 0x100);
+                dest[index + 2] = ~~((src[index + 2] * blueMultiplier + dest[index + 2] * (0x100 - blueMultiplier)) / 0x100);
+                dest[index + 3] = ~~((src[index + 3] * alphaMultiplier + dest[index + 3] * (0x100 - alphaMultiplier)) / 0x100);
             }
         }
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Frees memory that is used to store the BitmapImage2D object.
@@ -18193,11 +18226,12 @@ var BitmapImage2D = (function (_super) {
     BitmapImage2D.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
         if (source instanceof BitmapImage2D && source.getCanvas())
             source = source.getCanvas();
-        if (this._locked && this._imageData)
+        if (this._imageData)
             this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
         BitmapImageUtils._draw(this._context, source, matrix, colorTransform, blendMode, clipRect, smoothing);
         this._imageData = null;
-        this.invalidate();
+        if (!this._locked)
+            this.invalidate();
     };
     /**
      * Fills a rectangular area of pixels with a specified ARGB color.
@@ -18209,11 +18243,12 @@ var BitmapImage2D = (function (_super) {
      * @throws TypeError The rect is null.
      */
     BitmapImage2D.prototype.fillRect = function (rect, color) {
-        if (this._locked && this._imageData)
+        if (this._imageData)
             this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
         BitmapImageUtils._fillRect(this._context, rect, color, this._transparent);
         this._imageData = null;
-        this.invalidate();
+        if (!this._locked)
+            this.invalidate();
     };
     /**
      * Returns an integer that represents an RGB pixel value from a BitmapImage2D
@@ -18243,7 +18278,7 @@ var BitmapImage2D = (function (_super) {
         var g;
         var b;
         var a;
-        if (!this._locked) {
+        if (!this._imageData) {
             var pixelData = this._context.getImageData(x, y, 1, 1);
             r = pixelData.data[0];
             g = pixelData.data[1];
@@ -18251,8 +18286,6 @@ var BitmapImage2D = (function (_super) {
             a = pixelData.data[3];
         }
         else {
-            if (!this._imageData)
-                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
             var index = (x + y * this._imageData.width) * 4;
             r = this._imageData.data[index + 0];
             g = this._imageData.data[index + 1];
@@ -18291,7 +18324,7 @@ var BitmapImage2D = (function (_super) {
         var g;
         var b;
         var a;
-        if (!this._locked) {
+        if (!this._imageData) {
             var pixelData = this._context.getImageData(x, y, 1, 1);
             r = pixelData.data[0];
             g = pixelData.data[1];
@@ -18299,8 +18332,6 @@ var BitmapImage2D = (function (_super) {
             a = pixelData.data[3];
         }
         else {
-            if (!this._imageData)
-                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
             var index = (x + y * this._imageData.width) * 4;
             r = this._imageData.data[index + 0];
             g = this._imageData.data[index + 1];
@@ -18326,7 +18357,8 @@ var BitmapImage2D = (function (_super) {
         this._imageData.data[index + 1] = imagePixel[1];
         this._imageData.data[index + 2] = imagePixel[2];
         this._imageData.data[index + 3] = this._transparent ? imagePixel[3] : 0xFF;
-        this.invalidate();
+        if (!this._locked)
+            this.invalidate();
     };
     /**
      * Locks an image so that any objects that reference the BitmapImage2D object,
@@ -18368,8 +18400,7 @@ var BitmapImage2D = (function (_super) {
             }
         }
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Sets a single pixel of a BitmapImage2D object. The current alpha channel
@@ -18396,14 +18427,8 @@ var BitmapImage2D = (function (_super) {
         this._imageData.data[index + 0] = argb[1];
         this._imageData.data[index + 1] = argb[2];
         this._imageData.data[index + 2] = argb[3];
-        //this._imageData.data[index + 3] = 0xFF;
-        /*console.log(argb[0]);
-        console.log(argb[1]);
-        console.log(argb[2]);
-        console.log(argb[3]);*/
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     BitmapImage2D.prototype.setPixelFromArray = function (x, y, colors) {
         if (!this._imageData)
@@ -18413,10 +18438,8 @@ var BitmapImage2D = (function (_super) {
         this._imageData.data[index + 1] = colors[2];
         this._imageData.data[index + 2] = colors[3];
         this._imageData.data[index + 3] = colors[0] * 0xff;
-        //console.log(colors[0], colors[1], colors[2], colors[3]);
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Sets the color and alpha transparency values of a single pixel of a
@@ -18453,14 +18476,13 @@ var BitmapImage2D = (function (_super) {
         var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
         if (!this._imageData)
             this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-        var index = (x + y * this._imageData.width) * 4;
+        var index = (~~x + ~~y * this._imageData.width) * 4;
         this._imageData.data[index + 0] = argb[1];
         this._imageData.data[index + 1] = argb[2];
         this._imageData.data[index + 2] = argb[3];
         this._imageData.data[index + 3] = this._transparent ? argb[0] : 0xFF;
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Converts a byte array into a rectangular region of pixel data. For each
@@ -18482,16 +18504,21 @@ var BitmapImage2D = (function (_super) {
      * @throws TypeError The rect or inputByteArray are null.
      */
     BitmapImage2D.prototype.setPixels = function (rect, input) {
-        if (!this._imageData)
-            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-        var i;
-        var imageWidth = this._rect.width;
-        var inputWidth = rect.width;
-        for (i = 0; i < rect.height; ++i)
-            this._imageData.data.set(input.subarray(i * inputWidth * 4, (i + 1) * inputWidth * 4), (rect.x + (i + rect.y) * imageWidth) * 4);
+        //fast path for full imageData
+        if (rect.equals(this._rect)) {
+            this._imageData = new ImageData(input, this._rect.width, this._rect.height);
+        }
+        else {
+            if (!this._imageData)
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+            var i;
+            var imageWidth = this._rect.width;
+            var inputWidth = rect.width;
+            for (i = 0; i < rect.height; ++i)
+                this._imageData.data.set(input.subarray(i * inputWidth * 4, (i + 1) * inputWidth * 4), (rect.x + (i + rect.y) * imageWidth) * 4);
+        }
         if (!this._locked)
-            this._context.putImageData(this._imageData, 0, 0);
-        this.invalidate();
+            this.invalidate();
     };
     /**
      * Unlocks an image so that any objects that reference the BitmapImage2D object,
@@ -18509,8 +18536,7 @@ var BitmapImage2D = (function (_super) {
         if (!this._locked)
             return;
         this._locked = false;
-        if (this._imageData)
-            this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+        this.invalidate();
     };
     /**
      *
@@ -18545,8 +18571,7 @@ var BitmapImage2D = (function (_super) {
             this._imageCanvas.height = height;
         }
         _super.prototype._setSize.call(this, width, height);
-        if (this._locked)
-            this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+        this._imageData = null;
     };
     return BitmapImage2D;
 }(Image2D));
@@ -23206,6 +23231,7 @@ exports.PixelSnapping = PixelSnapping;
 exports.SpreadMethod = SpreadMethod;
 exports.TriangleCulling = TriangleCulling;
 exports.ElementsEvent = ElementsEvent;
+exports.ImageEvent = ImageEvent;
 exports.MaterialEvent = MaterialEvent;
 exports.RenderableEvent = RenderableEvent;
 exports.ShapeEvent = ShapeEvent;
@@ -23224,7 +23250,7 @@ exports.ExternalImage2D = ExternalImage2D;
 exports.Image2D = Image2D;
 exports.ImageBase = ImageBase;
 exports.ImageCube = ImageCube;
-exports.ImageData = ImageData;
+exports.ImageData = ImageData$1;
 exports.Sampler2D = Sampler2D;
 exports.SamplerBase = SamplerBase;
 exports.SamplerCube = SamplerCube;
@@ -43810,6 +43836,7 @@ var RendererBase = (function (_super) {
         _this._pScissorRect = new _awayjs_core.Rectangle();
         _this._pNumElements = 0;
         _this._disableColor = false;
+        _this._disableClear = false;
         _this._renderBlended = true;
         _this._numCullPlanes = 0;
         _this._onViewportUpdatedDelegate = function (event) { return _this.onViewportUpdated(event); };
@@ -43858,6 +43885,16 @@ var RendererBase = (function (_super) {
         },
         set: function (value) {
             this._disableColor = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RendererBase.prototype, "disableClear", {
+        get: function () {
+            return this._disableClear;
+        },
+        set: function (value) {
+            this._disableClear = value;
         },
         enumerable: true,
         configurable: true
@@ -44132,9 +44169,9 @@ var RendererBase = (function (_super) {
         // this._pRttViewProjectionMatrix.copyFrom(projection.viewMatrix3D);
         // this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
         this.pExecuteRender(projection, view, target, scissorRect, surfaceSelector);
-        // invalidate target (if target exists) to regenerate mipmaps (if required)
+        // invalidate mipmaps (if target exists) to regenerate if required
         if (target)
-            target.invalidate();
+            target.invalidateMipmaps();
         // clear buffers
         for (var i = 0; i < 8; ++i) {
             this._pContext.setVertexBufferAt(i, null);
@@ -44170,7 +44207,7 @@ var RendererBase = (function (_super) {
         if (scissorRect === void 0) { scissorRect = null; }
         if (surfaceSelector === void 0) { surfaceSelector = 0; }
         this._pStage.setRenderTarget(target, true, surfaceSelector);
-        if ((target || !this.shareContext) && !this._depthPrepass)
+        if ((target || !this.shareContext) && !this._depthPrepass && !this._disableClear)
             this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
         this._pStage.scissorRect = scissorRect;
         /*
@@ -44181,7 +44218,7 @@ var RendererBase = (function (_super) {
         this.pDraw(projection);
         //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
         //this._pContext.setDepthTest(false, ContextGLCompareMode.LESS_EQUAL); //oopsie
-        if (!this.shareContext) {
+        if (target || !this.shareContext) {
             if (this._snapshotRequired && this._snapshotBitmapImage2D) {
                 this._pContext.drawToBitmapImage2D(this._snapshotBitmapImage2D);
                 this._snapshotRequired = false;
