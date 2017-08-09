@@ -48036,10 +48036,10 @@ var AGALTokenizer = (function () {
 var AGLSLParser = (function () {
     function AGLSLParser() {
     }
-    AGLSLParser.prototype.parse = function (desc) {
+    AGLSLParser.prototype.parse = function (desc, precision) {
         var header = "";
         var body = "";
-        header += "precision highp float;\n";
+        header += "precision " + precision + " float;\n";
         var tag = desc.header.type[0]; //TODO
         // declare uniforms
         if (desc.header.type == "vertex") {
@@ -48394,56 +48394,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 var AnimationSetError = (function (_super) {
@@ -50319,8 +50273,11 @@ var ProgramGLES = (function (_super) {
         // this._program = this._gl.createProgram();
     }
     ProgramGLES.prototype.upload = function (vertexProgram, fragmentProgram) {
-        var vertexString = ProgramGLES._aglslParser.parse(ProgramGLES._tokenizer.decribeAGALByteArray(vertexProgram));
-        var fragmentString = ProgramGLES._aglslParser.parse(ProgramGLES._tokenizer.decribeAGALByteArray(fragmentProgram));
+        //detect whether highp can be used
+        var vertexPrecision = (this._gl.getShaderPrecisionFormat(this._gl.VERTEX_SHADER, this._gl.HIGH_FLOAT).precision != 0) ? "highp" : "mediump";
+        var fragmentPrecision = (this._gl.getShaderPrecisionFormat(this._gl.FRAGMENT_SHADER, this._gl.HIGH_FLOAT).precision != 0) ? "highp" : "mediump";
+        var vertexString = ProgramGLES._aglslParser.parse(ProgramGLES._tokenizer.decribeAGALByteArray(vertexProgram), vertexPrecision);
+        var fragmentString = ProgramGLES._aglslParser.parse(ProgramGLES._tokenizer.decribeAGALByteArray(fragmentProgram), fragmentPrecision);
         //(String.fromCharCode(OpCodes.uploadProgram)+""+this.id + "###"+vertexString +  "###" + fragmentString + "#END");
         var newSendbytes = new _awayjs_core.Byte32Array();
         newSendbytes.writeInt(1); //tells cpp that this is a create-bytes chunk
@@ -50937,20 +50894,19 @@ var GL_ImageBase = (function (_super) {
     function GL_ImageBase(asset, stage) {
         var _this = _super.call(this, asset, stage) || this;
         _this.usages = 0;
+        _this._invalidMipmaps = true;
         _this._stage = stage;
+        _this._onInvalidateMipmapsDelegate = function (event) { return _this.onInvalidateMipmaps(event); };
+        _this._asset.addEventListener(_awayjs_graphics.ImageEvent.INVALIDATE_MIPMAPS, _this._onInvalidateMipmapsDelegate);
         return _this;
     }
-    Object.defineProperty(GL_ImageBase.prototype, "texture", {
-        get: function () {
-            if (!this._texture) {
-                this._createTexture();
-                this._invalid = true;
-            }
-            return this._texture;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    GL_ImageBase.prototype.getTexture = function () {
+        if (!this._texture) {
+            this._createTexture();
+            this._invalid = true;
+        }
+        return this._texture;
+    };
     /**
      *
      */
@@ -50962,10 +50918,16 @@ var GL_ImageBase = (function (_super) {
         }
     };
     GL_ImageBase.prototype.activate = function (index, mipmap) {
-        this._stage.context.setTextureAt(index, this._texture);
+        this._stage.context.setTextureAt(index, this.getTexture());
     };
     GL_ImageBase.prototype._createTexture = function () {
         throw new _awayjs_core.AbstractMethodError();
+    };
+    /**
+     *
+     */
+    GL_ImageBase.prototype.onInvalidateMipmaps = function (event) {
+        this._invalidMipmaps = true;
     };
     return GL_ImageBase;
 }(_awayjs_core.AbstractionBase));
@@ -50979,6 +50941,20 @@ var GL_Image2D = (function (_super) {
     function GL_Image2D() {
         return _super.apply(this, arguments) || this;
     }
+    GL_Image2D.prototype.activate = function (index, mipmap) {
+        _super.prototype.activate.call(this, index, mipmap);
+        if (mipmap && this._stage.globalDisableMipmap)
+            mipmap = false;
+        if (!this._mipmap && mipmap) {
+            this._mipmap = true;
+            this._invalidMipmaps = true;
+        }
+        if (this._invalidMipmaps) {
+            this._invalidMipmaps = false;
+            if (mipmap)
+                this._texture.generateMipmaps();
+        }
+    };
     /**
      *
      * @param context
@@ -50999,48 +50975,14 @@ var GL_BitmapImage2D = (function (_super) {
     function GL_BitmapImage2D() {
         return _super.apply(this, arguments) || this;
     }
-    GL_BitmapImage2D.prototype.activate = function (index, mipmap) {
-        if (mipmap && this._stage.globalDisableMipmap)
-            mipmap = false;
-        if (!this._texture) {
-            this._createTexture();
-            this._invalid = true;
-        }
-        if (!this._mipmap && mipmap) {
-            this._mipmap = true;
-            this._invalid = true;
-        }
+    GL_BitmapImage2D.prototype.getTexture = function () {
+        _super.prototype.getTexture.call(this);
         if (this._invalid) {
             this._invalid = false;
             this._texture.uploadFromImage(this._asset, 0);
-            if (mipmap)
-                this._texture.generateMipmaps();
+            this._invalidMipmaps = true;
         }
-        // if (this._invalid) {
-        // 	this._invalid = false;
-        // 	if (mipmap) {
-        // 		var mipmapData:Array<BitmapImage2D> = this._mipmapData || (this._mipmapData = new Array<BitmapImage2D>());
-        //
-        // 		MipmapGenerator._generateMipMaps((<BitmapImage2D> this._asset).getCanvas(), mipmapData, true);
-        // 		var len:number = mipmapData.length;
-        // 		for (var i:number = 0; i < len; i++)
-        // 			(<ITexture> this._texture).uploadFromData(mipmapData[i].getImageData(), i);
-        // 	} else {
-        // 		(<ITexture> this._texture).uploadFromData((<BitmapImage2D> this._asset).getImageData(), 0);
-        // 	}
-        // }
-        _super.prototype.activate.call(this, index, mipmap);
-    };
-    /**
-     *
-     */
-    GL_BitmapImage2D.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        if (this._mipmapData) {
-            var len = this._mipmapData.length;
-            for (var i = 0; i < len; i++)
-                _awayjs_graphics.MipmapGenerator._freeMipMapHolder(this._mipmapData[i]);
-        }
+        return this._texture;
     };
     return GL_BitmapImage2D;
 }(GL_Image2D));
@@ -51054,28 +50996,14 @@ var GL_ExternalImage2D = (function (_super) {
     function GL_ExternalImage2D() {
         return _super.apply(this, arguments) || this;
     }
-    GL_ExternalImage2D.prototype.activate = function (index, mipmap) {
-        if (mipmap && this._stage.globalDisableMipmap)
-            mipmap = false;
-        if (!this._texture) {
-            this._createTexture();
-            this._invalid = true;
-        }
-        if (!this._mipmap && mipmap) {
-            this._mipmap = true;
-            this._invalid = true;
-        }
+    GL_ExternalImage2D.prototype.getTexture = function () {
+        _super.prototype.getTexture.call(this);
         if (this._invalid) {
             this._invalid = false;
             this._texture.uploadFromURL(this._asset.urlRequest, 0);
+            this._invalidMipmaps = true;
         }
-        _super.prototype.activate.call(this, index, mipmap);
-    };
-    /**
-     *
-     */
-    GL_ExternalImage2D.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
+        return this._texture;
     };
     return GL_ExternalImage2D;
 }(GL_Image2D));
@@ -51172,18 +51100,6 @@ var GL_RenderImage2D = (function (_super) {
     function GL_RenderImage2D() {
         return _super.apply(this, arguments) || this;
     }
-    GL_RenderImage2D.prototype.activate = function (index, mipmap) {
-        _super.prototype.activate.call(this, index, false);
-        if (!this._mipmap && mipmap) {
-            this._mipmap = true;
-            this._invalid = true;
-        }
-        if (this._invalid) {
-            this._invalid = false;
-            if (mipmap)
-                this._texture.generateMipmaps();
-        }
-    };
     return GL_RenderImage2D;
 }(GL_Image2D));
 
@@ -53379,8 +53295,11 @@ var ProgramWebGL = (function () {
         this._program = this._gl.createProgram();
     }
     ProgramWebGL.prototype.upload = function (vertexProgram, fragmentProgram) {
-        var vertexString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(vertexProgram));
-        var fragmentString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(fragmentProgram));
+        //detect whether highp can be used
+        var vertexPrecision = (this._gl.getShaderPrecisionFormat(this._gl.VERTEX_SHADER, this._gl.HIGH_FLOAT).precision != 0) ? "highp" : "mediump";
+        var fragmentPrecision = (this._gl.getShaderPrecisionFormat(this._gl.FRAGMENT_SHADER, this._gl.HIGH_FLOAT).precision != 0) ? "highp" : "mediump";
+        var vertexString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(vertexProgram), vertexPrecision);
+        var fragmentString = ProgramWebGL._aglslParser.parse(ProgramWebGL._tokenizer.decribeAGALByteArray(fragmentProgram), fragmentPrecision);
         this._vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
         this._fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
         this._gl.shaderSource(this._vertexShader, vertexString);
@@ -53777,7 +53696,9 @@ var ContextWebGL = (function () {
     ContextWebGL.prototype.drawToBitmapImage2D = function (destination) {
         var pixels = new Uint8Array(destination.width * destination.height * 4);
         this._gl.readPixels(0, 0, destination.width, destination.height, this._gl.RGBA, this._gl.UNSIGNED_BYTE, pixels);
-        destination.setPixels(new _awayjs_core.Rectangle(0, 0, destination.width, destination.height), new Uint8ClampedArray(pixels.buffer));
+        var dummy = new _awayjs_graphics.BitmapImage2D(destination.width, destination.height, true, 0x0, false);
+        dummy.setPixels(new _awayjs_core.Rectangle(0, 0, destination.width, destination.height), new Uint8ClampedArray(pixels.buffer));
+        destination.draw(dummy);
     };
     ContextWebGL.prototype.drawIndices = function (mode, indexBuffer, firstIndex, numIndices) {
         if (firstIndex === void 0) { firstIndex = 0; }
@@ -54084,7 +54005,7 @@ var Stage = (function (_super) {
         this._renderSurfaceSelector = surfaceSelector;
         this._enableDepthAndStencil = enableDepthAndStencil;
         if (target) {
-            this._context.setRenderToTexture(this.getAbstraction(target).texture, enableDepthAndStencil, this._antiAlias, surfaceSelector);
+            this._context.setRenderToTexture(this.getAbstraction(target).getTexture(), enableDepthAndStencil, this._antiAlias, surfaceSelector);
         }
         else {
             this._context.setRenderToBackBuffer();
