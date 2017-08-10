@@ -23375,10 +23375,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -24068,9 +24114,9 @@ var DisplayObject = (function (_super) {
             else {
                 if (!this._registrationMatrix3D)
                     this._registrationMatrix3D = new _awayjs_core.Matrix3D();
-                this._registrationMatrix3D._rawData[12] = -value.x / this._transform.scale.x;
-                this._registrationMatrix3D._rawData[13] = -value.y / this._transform.scale.y;
-                this._registrationMatrix3D._rawData[14] = -value.z / this._transform.scale.z;
+                this._registrationMatrix3D._rawData[12] = -value.x; // /this._transform.scale.x;
+                this._registrationMatrix3D._rawData[13] = -value.y; // /this._transform.scale.y;
+                this._registrationMatrix3D._rawData[14] = -value.z; // /this._transform.scale.z;
             }
             this._registrationMatrix3D.invalidatePosition();
             this.pInvalidateHierarchicalProperties(HierarchicalProperties.SCENE_TRANSFORM);
