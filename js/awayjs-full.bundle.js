@@ -1573,6 +1573,7 @@ var WebAudioChannel = (function () {
         this._currentTime = offset;
         this._id = id;
         this._isDecoding = true;
+        buffer = buffer.slice(0);
         //fast path for short sounds
         if (WebAudioChannel._decodeCache[id])
             this._onDecodeComplete(WebAudioChannel._decodeCache[id]);
@@ -4196,9 +4197,9 @@ var Matrix3D = (function () {
         var centerX = cx * m11 + cy * m12 + cz * m13 + m14;
         var centerY = cx * m21 + cy * m22 + cz * m23 + m24;
         var centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
-        var halfExtentsX = Math.abs(hx * m11 + hy * m12 + hz * m13);
-        var halfExtentsY = Math.abs(hx * m21 + hy * m22 + hz * m23);
-        var halfExtentsZ = Math.abs(hx * m31 + hy * m32 + hz * m33);
+        var halfExtentsX = Math.max(Math.abs(hx * m11 + hy * m12 + hz * m13), Math.abs(-hx * m11 + hy * m12 + hz * m13), Math.abs(hx * m11 - hy * m12 + hz * m13), Math.abs(hx * m11 + hy * m12 - hz * m13));
+        var halfExtentsY = Math.max(Math.abs(hx * m21 + hy * m22 + hz * m23), Math.abs(-hx * m21 + hy * m22 + hz * m23), Math.abs(hx * m21 - hy * m22 + hz * m23), Math.abs(hx * m21 + hy * m22 - hz * m23));
+        var halfExtentsZ = Math.max(Math.abs(hx * m31 + hy * m32 + hz * m33), Math.abs(-hx * m31 + hy * m32 + hz * m33), Math.abs(hx * m31 - hy * m32 + hz * m33), Math.abs(hx * m31 + hy * m32 - hz * m33));
         target.width = halfExtentsX * 2;
         target.height = halfExtentsY * 2;
         target.depth = halfExtentsZ * 2;
