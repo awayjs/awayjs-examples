@@ -26575,6 +26575,10 @@ var Sprite = (function (_super) {
         _this.material = material;
         return _this;
     }
+    Sprite.getNewSprite = function (material) {
+        if (material === void 0) { material = null; }
+        return (Sprite._sprites.length) ? Sprite._sprites.pop() : new Sprite(material);
+    };
     Object.defineProperty(Sprite.prototype, "assetType", {
         /**
          *
