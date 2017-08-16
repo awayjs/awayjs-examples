@@ -13032,10 +13032,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -16633,175 +16679,177 @@ var GraphicsFactoryStrokes = (function () {
                     if (commands[i] == GraphicsPathCommand.CURVE_TO) {
                         curve_end_point = new _awayjs_core.Point(data[data_cnt++], data[data_cnt++]);
                     }
-                    //get the directional vector and the direction for this segment
-                    tmp_dir_point.x = end_point.x - lastPoint.x;
-                    tmp_dir_point.y = end_point.y - lastPoint.y;
-                    tmp_dir_point.normalize();
-                    new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                    // get the difference in angle to the last segment
-                    dir_delta = new_dir - last_direction;
-                    if (dir_delta > 180) {
-                        dir_delta -= 360;
-                    }
-                    if (dir_delta < -180) {
-                        dir_delta += 360;
-                    }
-                    //console.log("DIRECTION DELTA: "+dir_delta);
-                    last_direction = new_dir;
-                    //console.log("segment "+i+" direction: "+dir_delta);
-                    // rotate direction around 90 degree
-                    tmp_point.x = -1 * tmp_dir_point.y;
-                    tmp_point.y = tmp_dir_point.x;
-                    ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
-                    le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
-                    var add_segment = false;
-                    // check if this is the first segment, and the path is not closed
-                    // in this case, we can just set the points to the contour points
-                    if ((i == 1) && (!closed)) {
-                        //console.log("segment "+i+"Path is not closed, we can just add the first segment")
-                        add_segment = true;
-                    }
-                    else {
-                        // we need to figure out if we need to add a joint or not
-                        if ((dir_delta == 0) || (dir_delta == 180)) {
-                            // check if this and the prev segment was a line. if yes, than they can be merged
-                            if ((i != 1) && (commands[i] == GraphicsPathCommand.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand.LINE_TO)) {
-                                //console.log("straight line can be merged in prev straight line");
-                                add_segment = false;
+                    if ((end_point.x != lastPoint.x) || (end_point.y != lastPoint.y)) {
+                        //get the directional vector and the direction for this segment
+                        tmp_dir_point.x = end_point.x - lastPoint.x;
+                        tmp_dir_point.y = end_point.y - lastPoint.y;
+                        tmp_dir_point.normalize();
+                        new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                        // get the difference in angle to the last segment
+                        dir_delta = new_dir - last_direction;
+                        if (dir_delta > 180) {
+                            dir_delta -= 360;
+                        }
+                        if (dir_delta < -180) {
+                            dir_delta += 360;
+                        }
+                        //console.log("DIRECTION DELTA: "+dir_delta);
+                        last_direction = new_dir;
+                        //console.log("segment "+i+" direction: "+dir_delta);
+                        // rotate direction around 90 degree
+                        tmp_point.x = -1 * tmp_dir_point.y;
+                        tmp_point.y = tmp_dir_point.x;
+                        ri_point = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                        le_point = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
+                        var add_segment = false;
+                        // check if this is the first segment, and the path is not closed
+                        // in this case, we can just set the points to the contour points
+                        if ((i == 1) && (!closed)) {
+                            //console.log("segment "+i+"Path is not closed, we can just add the first segment")
+                            add_segment = true;
+                        }
+                        else {
+                            // we need to figure out if we need to add a joint or not
+                            if ((dir_delta == 0) || (dir_delta == 180)) {
+                                // check if this and the prev segment was a line. if yes, than they can be merged
+                                if ((i != 1) && (commands[i] == GraphicsPathCommand.LINE_TO) && (new_cmds[new_cmds.length - 1] == GraphicsPathCommand.LINE_TO)) {
+                                    //console.log("straight line can be merged in prev straight line");
+                                    add_segment = false;
+                                }
+                                else {
+                                    add_segment = true;
+                                }
                             }
-                            else {
+                            if (Math.abs(dir_delta) == 180) {
                                 add_segment = true;
                             }
-                        }
-                        if (Math.abs(dir_delta) == 180) {
-                            add_segment = true;
-                        }
-                        else if (dir_delta != 0) {
-                            add_segment = true;
-                            var half_angle = (180 - (dir_delta));
-                            if (dir_delta < 0) {
-                                half_angle = (-180 - (dir_delta));
-                            }
-                            half_angle = half_angle * -0.5 * _awayjs_core.MathConsts.DEGREES_TO_RADIANS;
-                            var distance = half_thickness / Math.sin(half_angle);
-                            tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
-                            tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
-                            tmp_point2.normalize();
-                            var merged_pnt_ri = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
-                            var merged_pnt_le = new _awayjs_core.Point(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
-                            if (dir_delta > 0) {
-                                ri_point = merged_pnt_ri;
-                                var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
-                                var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * half_thickness), lastPoint.y - (prev_normal.y * half_thickness));
-                                le_point = contour_le;
-                            }
-                            else {
-                                le_point = merged_pnt_le;
-                                var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
-                                var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * half_thickness), lastPoint.y + (prev_normal.y * half_thickness));
-                                ri_point = contour_ri;
-                            }
-                            var addJoints = true;
-                            if (strokeStyle.jointstyle == JointStyle.MITER) {
-                                var distance_miter = (Math.sqrt((distance * distance) - (half_thickness * half_thickness)) / half_thickness);
-                                if (distance_miter <= strokeStyle.miter_limit) {
-                                    addJoints = false;
+                            else if (dir_delta != 0) {
+                                add_segment = true;
+                                var half_angle = (180 - (dir_delta));
+                                if (dir_delta < 0) {
+                                    half_angle = (-180 - (dir_delta));
+                                }
+                                half_angle = half_angle * -0.5 * _awayjs_core.MathConsts.DEGREES_TO_RADIANS;
+                                var distance = half_thickness / Math.sin(half_angle);
+                                tmp_point2.x = tmp_dir_point.x * Math.cos(half_angle) + tmp_dir_point.y * Math.sin(half_angle);
+                                tmp_point2.y = tmp_dir_point.y * Math.cos(half_angle) - tmp_dir_point.x * Math.sin(half_angle);
+                                tmp_point2.normalize();
+                                var merged_pnt_ri = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * distance), lastPoint.y - (tmp_point2.y * distance));
+                                var merged_pnt_le = new _awayjs_core.Point(lastPoint.x + (tmp_point2.x * distance), lastPoint.y + (tmp_point2.y * distance));
+                                if (dir_delta > 0) {
                                     ri_point = merged_pnt_ri;
-                                    le_point = merged_pnt_le;
+                                    var contour_le = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
+                                    var contour_prev_le = new _awayjs_core.Point(lastPoint.x - (prev_normal.x * half_thickness), lastPoint.y - (prev_normal.y * half_thickness));
+                                    le_point = contour_le;
                                 }
                                 else {
-                                    if (dir_delta > 0) {
-                                        contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
-                                        contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
-                                        tmp_point3.x = prev_normal.y * -1;
-                                        tmp_point3.y = prev_normal.x;
-                                        contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
-                                        contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
+                                    le_point = merged_pnt_le;
+                                    var contour_ri = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                                    var contour_prev_ri = new _awayjs_core.Point(lastPoint.x + (prev_normal.x * half_thickness), lastPoint.y + (prev_normal.y * half_thickness));
+                                    ri_point = contour_ri;
+                                }
+                                var addJoints = true;
+                                if (strokeStyle.jointstyle == JointStyle.MITER) {
+                                    var distance_miter = (Math.sqrt((distance * distance) - (half_thickness * half_thickness)) / half_thickness);
+                                    if (distance_miter <= strokeStyle.miter_limit) {
+                                        addJoints = false;
+                                        ri_point = merged_pnt_ri;
+                                        le_point = merged_pnt_le;
                                     }
                                     else {
-                                        contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
-                                        contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
-                                        tmp_point3.x = prev_normal.y * -1;
-                                        tmp_point3.y = prev_normal.x;
-                                        contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
-                                        contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
+                                        if (dir_delta > 0) {
+                                            contour_le.x = contour_le.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
+                                            contour_le.y = contour_le.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
+                                            tmp_point3.x = prev_normal.y * -1;
+                                            tmp_point3.y = prev_normal.x;
+                                            contour_prev_le.x = contour_prev_le.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
+                                            contour_prev_le.y = contour_prev_le.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
+                                        }
+                                        else {
+                                            contour_ri.x = contour_ri.x - (tmp_dir_point.x * (strokeStyle.miter_limit * half_thickness));
+                                            contour_ri.y = contour_ri.y - (tmp_dir_point.y * (strokeStyle.miter_limit * half_thickness));
+                                            tmp_point3.x = prev_normal.y * -1;
+                                            tmp_point3.y = prev_normal.x;
+                                            contour_prev_ri.x = contour_prev_ri.x - (tmp_point3.x * (strokeStyle.miter_limit * half_thickness));
+                                            contour_prev_ri.y = contour_prev_ri.y - (tmp_point3.y * (strokeStyle.miter_limit * half_thickness));
+                                        }
                                     }
                                 }
-                            }
-                            if (addJoints) {
-                                new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle.ROUND) ? GraphicsPathCommand.BUILD_JOINT : GraphicsPathCommand.BUILD_ROUND_JOINT;
-                                if (dir_delta > 0) {
-                                    new_pnts[new_pnts_cnt++] = merged_pnt_ri;
-                                    new_pnts[new_pnts_cnt++] = contour_prev_le;
-                                    new_pnts[new_pnts_cnt++] = contour_le;
-                                }
-                                else {
-                                    new_pnts[new_pnts_cnt++] = contour_prev_ri;
-                                    new_pnts[new_pnts_cnt++] = merged_pnt_le;
-                                    new_pnts[new_pnts_cnt++] = contour_ri;
-                                }
-                                if (strokeStyle.jointstyle == JointStyle.ROUND) {
-                                    new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
+                                if (addJoints) {
+                                    new_cmds[new_cmds_cnt++] = (strokeStyle.jointstyle != JointStyle.ROUND) ? GraphicsPathCommand.BUILD_JOINT : GraphicsPathCommand.BUILD_ROUND_JOINT;
                                     if (dir_delta > 0) {
+                                        new_pnts[new_pnts_cnt++] = merged_pnt_ri;
                                         new_pnts[new_pnts_cnt++] = contour_prev_le;
                                         new_pnts[new_pnts_cnt++] = contour_le;
                                     }
                                     else {
                                         new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                        new_pnts[new_pnts_cnt++] = merged_pnt_le;
                                         new_pnts[new_pnts_cnt++] = contour_ri;
+                                    }
+                                    if (strokeStyle.jointstyle == JointStyle.ROUND) {
+                                        new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point2.x * Math.abs(distance)), lastPoint.y - (tmp_point2.y * Math.abs(distance)));
+                                        if (dir_delta > 0) {
+                                            new_pnts[new_pnts_cnt++] = contour_prev_le;
+                                            new_pnts[new_pnts_cnt++] = contour_le;
+                                        }
+                                        else {
+                                            new_pnts[new_pnts_cnt++] = contour_prev_ri;
+                                            new_pnts[new_pnts_cnt++] = contour_ri;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    prev_normal.x = tmp_point.x;
-                    prev_normal.y = tmp_point.y;
-                    if (add_segment) {
-                        if (commands[i] == GraphicsPathCommand.LINE_TO) {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
-                            new_pnts[new_pnts_cnt++] = ri_point;
-                            new_pnts[new_pnts_cnt++] = le_point;
-                        }
-                        else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
-                            tmp_dir_point.x = curve_end_point.x - end_point.x;
-                            tmp_dir_point.y = curve_end_point.y - end_point.y;
-                            tmp_dir_point.normalize();
-                            new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
-                            dir_delta = new_dir - last_direction;
-                            last_direction = new_dir;
-                            tmp_point.x = -1 * tmp_dir_point.y;
-                            tmp_point.y = tmp_dir_point.x;
-                            if ((dir_delta != 0) && (dir_delta != 180)) {
-                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.CURVE_TO;
-                                new_pnts[new_pnts_cnt++] = ri_point;
-                                new_pnts[new_pnts_cnt++] = le_point;
-                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x, lastPoint.y);
-                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(end_point.x, end_point.y);
-                                new_pnts[new_pnts_cnt++] = curve_end_point;
-                            }
-                            else {
+                        prev_normal.x = tmp_point.x;
+                        prev_normal.y = tmp_point.y;
+                        if (add_segment) {
+                            if (commands[i] == GraphicsPathCommand.LINE_TO) {
                                 new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
                                 new_pnts[new_pnts_cnt++] = ri_point;
                                 new_pnts[new_pnts_cnt++] = le_point;
                             }
-                            prev_normal.x = tmp_point.x;
-                            prev_normal.y = tmp_point.y;
-                            lastPoint = curve_end_point;
+                            else if (commands[i] == GraphicsPathCommand.CURVE_TO) {
+                                tmp_dir_point.x = curve_end_point.x - end_point.x;
+                                tmp_dir_point.y = curve_end_point.y - end_point.y;
+                                tmp_dir_point.normalize();
+                                new_dir = Math.atan2(tmp_dir_point.y, tmp_dir_point.x) * _awayjs_core.MathConsts.RADIANS_TO_DEGREES;
+                                dir_delta = new_dir - last_direction;
+                                last_direction = new_dir;
+                                tmp_point.x = -1 * tmp_dir_point.y;
+                                tmp_point.y = tmp_dir_point.x;
+                                if ((dir_delta != 0) && (dir_delta != 180)) {
+                                    new_cmds[new_cmds_cnt++] = GraphicsPathCommand.CURVE_TO;
+                                    new_pnts[new_pnts_cnt++] = ri_point;
+                                    new_pnts[new_pnts_cnt++] = le_point;
+                                    new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x, lastPoint.y);
+                                    new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(end_point.x, end_point.y);
+                                    new_pnts[new_pnts_cnt++] = curve_end_point;
+                                }
+                                else {
+                                    new_cmds[new_cmds_cnt++] = GraphicsPathCommand.LINE_TO;
+                                    new_pnts[new_pnts_cnt++] = ri_point;
+                                    new_pnts[new_pnts_cnt++] = le_point;
+                                }
+                                prev_normal.x = tmp_point.x;
+                                prev_normal.y = tmp_point.y;
+                                lastPoint = curve_end_point;
+                            }
                         }
-                    }
-                    if (commands[i] == GraphicsPathCommand.LINE_TO) {
-                        lastPoint = end_point;
-                    }
-                    if (i == commands.length - 1) {
-                        if (!closed) {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
-                            new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
+                        if (commands[i] == GraphicsPathCommand.LINE_TO) {
+                            lastPoint = end_point;
                         }
-                        else {
-                            new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
-                            new_pnts[new_pnts_cnt++] = new_pnts[0];
-                            new_pnts[new_pnts_cnt++] = new_pnts[1];
+                        if (i == commands.length - 1) {
+                            if (!closed) {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
+                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x + (tmp_point.x * half_thickness), lastPoint.y + (tmp_point.y * half_thickness));
+                                new_pnts[new_pnts_cnt++] = new _awayjs_core.Point(lastPoint.x - (tmp_point.x * half_thickness), lastPoint.y - (tmp_point.y * half_thickness));
+                            }
+                            else {
+                                new_cmds[new_cmds_cnt++] = GraphicsPathCommand.NO_OP;
+                                new_pnts[new_pnts_cnt++] = new_pnts[0];
+                                new_pnts[new_pnts_cnt++] = new_pnts[1];
+                            }
                         }
                     }
                 }
