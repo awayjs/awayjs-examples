@@ -618,6 +618,27 @@ var AssetBase = (function (_super) {
         _this.updateFullPath();
         return _this;
     }
+    Object.defineProperty(AssetBase.prototype, "adaptee", {
+        get: function () {
+            return this;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AssetBase.prototype, "adapter", {
+        /**
+         * adapter is used to provide MovieClip to scripts taken from different platforms
+         * setter typically managed by factory. getter defaults to AwayJS class
+         */
+        get: function () {
+            return this._adapter || this;
+        },
+        set: function (value) {
+            this._adapter = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(AssetBase.prototype, "assetType", {
         /**
          *
@@ -7021,10 +7042,10 @@ var AssetLibraryIterator = (function () {
             for (var c = 0; c < l; c++) {
                 asset = this._assets[c];
                 // Skip this assets if filtering on type and this is wrong type
-                if (assetTypeFilter && asset.assetType != assetTypeFilter)
+                if (assetTypeFilter && asset.adaptee.assetType != assetTypeFilter)
                     continue;
                 // Skip this asset if filtering on namespace and this is wrong namespace
-                if (namespaceFilter && asset.assetNamespace != namespaceFilter)
+                if (namespaceFilter && asset.adaptee.assetNamespace != namespaceFilter)
                     continue;
                 // Skip this asset if a filter func has been provided and it returns false
                 if (filterFunc != null && !filterFunc(asset))
@@ -8447,11 +8468,11 @@ var ConflictStrategyBase = (function () {
         var loser;
         winner = (precedence === ConflictPrecedence.FAVOR_NEW) ? newAsset : oldAsset;
         loser = (precedence === ConflictPrecedence.FAVOR_NEW) ? oldAsset : newAsset;
-        loser_prev_name = loser.name;
-        assetsDictionary[winner.name] = winner;
+        loser_prev_name = loser.adaptee.name;
+        assetsDictionary[winner.adaptee.name] = winner;
         assetsDictionary[nonConflictingName] = loser;
-        loser.resetAssetPath(nonConflictingName, ns, false);
-        loser.dispatchEvent(new AssetEvent(AssetEvent.ASSET_CONFLICT_RESOLVED, loser, loser_prev_name));
+        loser.adaptee.resetAssetPath(nonConflictingName, ns, false);
+        loser.adaptee.dispatchEvent(new AssetEvent(AssetEvent.ASSET_CONFLICT_RESOLVED, loser.adaptee, loser_prev_name));
     };
     return ConflictStrategyBase;
 }());
@@ -8462,7 +8483,7 @@ var ErrorConflictStrategy = (function (_super) {
         return _super.call(this) || this;
     }
     ErrorConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
-        throw new ErrorBase('Asset name collision while AssetLibrary.namingStrategy set to AssetLibrary.THROW_ERROR. Asset path: ' + changedAsset.assetFullPath);
+        throw new ErrorBase('Asset name collision while AssetLibrary.namingStrategy set to AssetLibrary.THROW_ERROR. Asset path: ' + changedAsset.adaptee.assetFullPath);
     };
     ErrorConflictStrategy.prototype.create = function () {
         return new ErrorConflictStrategy();
@@ -8499,7 +8520,7 @@ var NumSuffixConflictStrategy = (function (_super) {
         var new_name;
         var base;
         var suffix;
-        orig = changedAsset.name;
+        orig = changedAsset.adaptee.name;
         if (orig.indexOf(this._separator) >= 0) {
             // Name has an ocurrence of the separator, so get base name and suffix,
             // unless suffix is non-numerical, in which case revert to zero and
@@ -8525,7 +8546,7 @@ var NumSuffixConflictStrategy = (function (_super) {
             new_name = base.concat(this._separator, suffix.toString());
         } while (assetsDictionary.hasOwnProperty(new_name));
         this._next_suffix[base] = suffix;
-        this._pUpdateNames(oldAsset.assetNamespace, new_name, oldAsset, changedAsset, assetsDictionary, precedence);
+        this._pUpdateNames(oldAsset.adaptee.assetNamespace, new_name, oldAsset, changedAsset, assetsDictionary, precedence);
     };
     NumSuffixConflictStrategy.prototype.create = function () {
         return new NumSuffixConflictStrategy(this._separator);
@@ -8590,7 +8611,7 @@ var AssetLibraryBundle = (function (_super) {
         _this.conflictPrecedence = ConflictPrecedence.FAVOR_NEW;
         _this._onAssetRenameDelegate = function (event) { return _this.onAssetRename(event); };
         _this._onAssetConflictResolvedDelegate = function (event) { return _this.onAssetConflictResolved(event); };
-        _this._onResourceCompleteDelegate = function (event) { return _this.onResourceComplete(event); };
+        _this._onLoadCompleteDelegate = function (event) { return _this.onLoadComplete(event); };
         _this._onTextureSizeErrorDelegate = function (event) { return _this.onTextureSizeError(event); };
         _this._onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
         _this._onLoadErrorDelegate = function (event) { return _this.onLoadError(event); };
@@ -8723,7 +8744,7 @@ var AssetLibraryBundle = (function (_super) {
     AssetLibraryBundle.prototype.getLoader = function () {
         var loader = new Loader();
         this._loaderSessions.push(loader);
-        loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this._onResourceCompleteDelegate);
+        loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this._onLoadCompleteDelegate);
         loader.addEventListener(AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
         loader.addEventListener(AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
         // Error are handled separately (see documentation for addErrorHandler)
@@ -8766,8 +8787,8 @@ var AssetLibraryBundle = (function (_super) {
         // Bail if asset has already been added.
         if (this._assets.indexOf(asset) >= 0)
             return;
-        old = this.getAsset(asset.name, asset.assetNamespace);
-        ns = asset.assetNamespace || AssetBase.DEFAULT_NAMESPACE;
+        old = this.getAsset(asset.adaptee.name, asset.adaptee.assetNamespace);
+        ns = asset.adaptee.assetNamespace || AssetBase.DEFAULT_NAMESPACE;
         if (old != null)
             this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
         //create unique-id (for now this is used in AwayBuilder only
@@ -8776,9 +8797,9 @@ var AssetLibraryBundle = (function (_super) {
         this._assets.push(asset);
         if (!this._assetDictionary.hasOwnProperty(ns))
             this._assetDictionary[ns] = new Object();
-        this._assetDictionary[ns][asset.name] = asset;
-        asset.addEventListener(AssetEvent.RENAME, this._onAssetRenameDelegate);
-        asset.addEventListener(AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
+        this._assetDictionary[ns][asset.adaptee.name] = asset;
+        asset.adaptee.addEventListener(AssetEvent.RENAME, this._onAssetRenameDelegate);
+        asset.adaptee.addEventListener(AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
     };
     /**
      * Removes an asset from the library, and optionally disposes that asset by calling
@@ -8792,8 +8813,8 @@ var AssetLibraryBundle = (function (_super) {
         if (dispose === void 0) { dispose = true; }
         var idx;
         this.removeAssetFromDict(asset);
-        asset.removeEventListener(AssetEvent.RENAME, this._onAssetRenameDelegate);
-        asset.removeEventListener(AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
+        asset.adaptee.removeEventListener(AssetEvent.RENAME, this._onAssetRenameDelegate);
+        asset.adaptee.removeEventListener(AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
         idx = this._assets.indexOf(asset);
         if (idx >= 0)
             this._assets.splice(idx, 1);
@@ -8863,7 +8884,7 @@ var AssetLibraryBundle = (function (_super) {
             asset = old_assets[d];
             // Remove from dict if in the supplied namespace. If not,
             // transfer over to the new vector.
-            if (asset.assetNamespace == ns) {
+            if (asset.adaptee.assetNamespace == ns) {
                 if (dispose)
                     asset.dispose();
                 // Remove asset from dictionary, but don't try to auto-remove
@@ -8902,18 +8923,18 @@ var AssetLibraryBundle = (function (_super) {
         if (autoRemoveEmptyNamespace === void 0) { autoRemoveEmptyNamespace = true; }
         if (this._assetDictDirty)
             this.rehashAssetDict();
-        if (this._assetDictionary.hasOwnProperty(asset.assetNamespace)) {
-            if (this._assetDictionary[asset.assetNamespace].hasOwnProperty(asset.name))
-                delete this._assetDictionary[asset.assetNamespace][asset.name];
+        if (this._assetDictionary.hasOwnProperty(asset.adaptee.assetNamespace)) {
+            if (this._assetDictionary[asset.adaptee.assetNamespace].hasOwnProperty(asset.adaptee.name))
+                delete this._assetDictionary[asset.adaptee.assetNamespace][asset.adaptee.name];
             if (autoRemoveEmptyNamespace) {
                 var key;
                 var empty = true;
-                for (key in this._assetDictionary[asset.assetNamespace]) {
+                for (key in this._assetDictionary[asset.adaptee.assetNamespace]) {
                     empty = false;
                     break;
                 }
                 if (empty)
-                    delete this._assetDictionary[asset.assetNamespace];
+                    delete this._assetDictionary[asset.adaptee.assetNamespace];
             }
         }
     };
@@ -8929,9 +8950,9 @@ var AssetLibraryBundle = (function (_super) {
         var len = this._assets.length;
         for (var c = 0; c < len; c++) {
             asset = this._assets[c];
-            if (!this._assetDictionary.hasOwnProperty(asset.assetNamespace))
-                this._assetDictionary[asset.assetNamespace] = {};
-            this._assetDictionary[asset.assetNamespace][asset.name] = asset;
+            if (!this._assetDictionary.hasOwnProperty(asset.adaptee.assetNamespace))
+                this._assetDictionary[asset.adaptee.assetNamespace] = {};
+            this._assetDictionary[asset.adaptee.assetNamespace][asset.adaptee.name] = asset;
         }
         this._assetDictDirty = false;
     };
@@ -8962,7 +8983,7 @@ var AssetLibraryBundle = (function (_super) {
     AssetLibraryBundle.prototype.onAssetComplete = function (event) {
         // Only add asset to library the first time.
         if (event.type == AssetEvent.ASSET_COMPLETE)
-            this.addAsset(event.asset);
+            this.addAsset(event.asset.adapter);
         this.dispatchEvent(event);
     };
     AssetLibraryBundle.prototype.onTextureSizeError = function (event) {
@@ -8971,7 +8992,7 @@ var AssetLibraryBundle = (function (_super) {
     /**
      * Called when the resource and all of its dependencies was retrieved.
      */
-    AssetLibraryBundle.prototype.onResourceComplete = function (event) {
+    AssetLibraryBundle.prototype.onLoadComplete = function (event) {
         var loader = event.target;
         this.dispatchEvent(event);
         this.disposeLoader(loader);
@@ -8986,16 +9007,16 @@ var AssetLibraryBundle = (function (_super) {
         this._gcTimeoutIID = null;
     };
     AssetLibraryBundle.prototype.killloaderSession = function (loader) {
-        loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this._onResourceCompleteDelegate);
+        loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this._onLoadCompleteDelegate);
         loader.removeEventListener(AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
         loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
         loader.stop();
     };
     AssetLibraryBundle.prototype.onAssetRename = function (event) {
-        var asset = event.target; // TODO: was ev.currentTarget - watch this var
-        var old = this.getAsset(asset.assetNamespace, asset.name);
+        var asset = event.target.adapter; // TODO: was ev.currentTarget - watch this var
+        var old = this.getAsset(asset.adaptee.assetNamespace, asset.adaptee.name);
         if (old != null) {
-            this._strategy.resolveConflict(asset, old, this._assetDictionary[asset.assetNamespace], this._strategyPreference);
+            this._strategy.resolveConflict(asset, old, this._assetDictionary[asset.adaptee.assetNamespace], this._strategyPreference);
         }
         else {
             var dict = this._assetDictionary[event.asset.assetNamespace];
