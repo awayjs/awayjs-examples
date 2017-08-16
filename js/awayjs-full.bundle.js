@@ -23665,20 +23665,6 @@ var DisplayObject = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DisplayObject.prototype, "adapter", {
-        /**
-         * adapter is used to provide MovieClip to scripts taken from different platforms
-         * setter typically managed by factory
-         */
-        get: function () {
-            return this._adapter;
-        },
-        set: function (value) {
-            this._adapter = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(DisplayObject.prototype, "inheritColorTransform", {
         get: function () {
             return this._inheritColorTransform;
@@ -24686,8 +24672,6 @@ var DisplayObject = (function (_super) {
         displayObject.isSlice9ScaledMC = this.isSlice9ScaledMC;
         if (this._explicitMasks)
             displayObject.masks = this._explicitMasks;
-        if (this._adapter)
-            displayObject.adapter = this._adapter.clone(displayObject);
         this._transform.copyRawDataTo(displayObject._transform);
     };
     /**
@@ -26034,10 +26018,9 @@ var Billboard = (function (_super) {
         this._pBoxBounds.depth = 0;
     };
     Billboard.prototype.clone = function () {
-        var clone = new Billboard(this.material);
-        if (this.adapter)
-            clone.adapter = this.adapter.clone(clone);
-        return clone;
+        var newInstance = new Billboard(this.material);
+        this.copyTo(newInstance);
+        return newInstance;
     };
     Billboard.prototype._acceptTraverser = function (traverser) {
         traverser[Billboard.traverseName](this);
@@ -26137,9 +26120,8 @@ var FrameScriptManager = (function () {
             // during the loop we might add more scripts to the queue
             mc = this._queued_mcs[i];
             if (mc.scene != null) {
-                var caller = mc.adapter ? mc.adapter : mc;
                 //	try {
-                this._queued_scripts[i].call(caller);
+                this._queued_scripts[i].call(mc.adapter);
             }
         }
         // all scripts executed. clear all
@@ -26281,7 +26263,7 @@ var Timeline = (function () {
         return this.keyframe_indices[frame_index];
     };
     Timeline.prototype.getPotentialChildInstance = function (id) {
-        var this_clone = this._potentialPrototypes[id].clone();
+        var this_clone = this._potentialPrototypes[id].adapter.clone().adaptee;
         this_clone.name = "";
         if (this_clone.isAsset(Billboard)) {
             var billboard = this_clone;
@@ -26342,7 +26324,7 @@ var Timeline = (function () {
                     target_mc.removeChildAt(i);
                 }
                 else if (!jump_forward) {
-                    if (child.adapter) {
+                    if (child._adapter) {
                         if (!child.adapter.isBlockedByScript()) {
                             child.transform.clearMatrix3D();
                             child.transform.clearColorTransform();
@@ -26460,7 +26442,7 @@ var Timeline = (function () {
             child = target_mc.getChildAtSessionID(this.update_child_stream[i]);
             if (child) {
                 // check if the child is active + not blocked by script
-                this._blocked = Boolean(child.adapter && child.adapter.isBlockedByScript());
+                this._blocked = Boolean(child._adapter && child.adapter.isBlockedByScript());
                 props_start_idx = this.update_child_props_indices_stream[i];
                 props_end_index = props_start_idx + this.update_child_props_length_stream[i];
                 for (p = props_start_idx; p < props_end_index; p++)
@@ -26521,7 +26503,7 @@ var Timeline = (function () {
         sourceMovieClip.adapter.registerScriptObject(target);
     };
     Timeline.prototype.update_visibility = function (child, target_mc, i) {
-        if (!child.adapter || !child.adapter.isVisibilityByScript())
+        if (!child._adapter || !child.adapter.isVisibilityByScript())
             child.visible = Boolean(i);
     };
     Timeline.prototype.update_mtx_scale_rot = function (child, target_mc, i) {
@@ -31106,6 +31088,9 @@ var TextField = (function (_super) {
         _this._graphics = _awayjs_graphics.Graphics.getGraphics(_this); //unique graphics object for each TextField
         return _this;
     }
+    TextField.getNewTextField = function () {
+        return (TextField._textFields.length) ? TextField._textFields.pop() : new TextField();
+    };
     TextField.prototype.getTextShapeForIdentifierAndFormat = function (id, format) {
         if (this.textShapes.hasOwnProperty(id)) {
             return this.textShapes[id];
@@ -32304,7 +32289,7 @@ var TextField = (function (_super) {
         return false;
     };
     TextField.prototype.clone = function () {
-        var newInstance = (TextField._textFields.length) ? TextField._textFields.pop() : new TextField();
+        var newInstance = TextField.getNewTextField();
         this.copyTo(newInstance);
         return newInstance;
     };
@@ -32364,20 +32349,10 @@ var MovieClip = (function (_super) {
         _this._timeline = timeline || new Timeline();
         return _this;
     }
-    Object.defineProperty(MovieClip.prototype, "adapter", {
-        /**
-         * adapter is used to provide MovieClip to scripts taken from different platforms
-         * setter typically managed by factory
-         */
-        get: function () {
-            return this._adapter;
-        },
-        set: function (value) {
-            this._adapter = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    MovieClip.getNewMovieClip = function (timeline) {
+        if (timeline === void 0) { timeline = null; }
+        return (MovieClip._movieClips.length) ? MovieClip._movieClips.pop() : new MovieClip(timeline);
+    };
     MovieClip.prototype.dispose = function () {
         this.disposeValues();
         MovieClip._movieClips.push(this);
@@ -32437,7 +32412,7 @@ var MovieClip = (function (_super) {
         _super.prototype.reset.call(this);
         // time only is relevant for the root mc, as it is the only one that executes the update function
         this._time = 0;
-        if (this.adapter)
+        if (this._adapter)
             this.adapter.freeFromScript();
         this.constructedKeyFrameIndex = -1;
         for (var i = this.numChildren - 1; i >= 0; i--)
@@ -32523,7 +32498,7 @@ var MovieClip = (function (_super) {
     };
     MovieClip.prototype.removeChildAtInternal = function (index) {
         var child = this._children[index];
-        if (child.adapter)
+        if (child._adapter)
             child.adapter.freeFromScript();
         this.adapter.unregisterScriptObject(child);
         //check to make sure _depth_sessionIDs wasn't modified with a new child
@@ -32586,7 +32561,7 @@ var MovieClip = (function (_super) {
         this._isPlaying = false;
     };
     MovieClip.prototype.clone = function () {
-        var newInstance = (MovieClip._movieClips.length) ? MovieClip._movieClips.pop() : new MovieClip(this._timeline);
+        var newInstance = MovieClip.getNewMovieClip(this._timeline);
         this.copyTo(newInstance);
         return newInstance;
     };
@@ -64653,6 +64628,7 @@ var AS2SymbolAdapter = (function () {
     function AS2SymbolAdapter(adaptee, view) {
         this.__quality = "high";
         this._adaptee = adaptee;
+        this._adaptee.adapter = this;
         this._view = view;
         this._blockedByScript = false;
         if (AS2SymbolAdapter.REFERENCE_TIME === -1)
@@ -64662,6 +64638,7 @@ var AS2SymbolAdapter = (function () {
     AS2SymbolAdapter.prototype.isVisibilityByScript = function () { return this._visibilityByScript; };
     AS2SymbolAdapter.prototype.freeFromScript = function () { this._blockedByScript = false; this._visibilityByScript = false; };
     AS2SymbolAdapter.prototype.dispose = function () {
+        this._adaptee.dispose();
         this._adaptee = null;
         this._view = null;
     };
@@ -64903,7 +64880,7 @@ var AS2SymbolAdapter = (function () {
     Object.defineProperty(AS2SymbolAdapter.prototype, "_parent", {
         get: function () {
             var parent = this.adaptee.parent;
-            return parent ? parent.adapter : null;
+            return parent ? parent._adapter : null;
         },
         enumerable: true,
         configurable: true
@@ -65125,7 +65102,7 @@ var AS2MovieClipAdapter = (function (_super) {
     function AS2MovieClipAdapter(adaptee, view) {
         var _this = 
         // create an empty MovieClip if none is passed
-        _super.call(this, adaptee || new _awayjs_scene.MovieClip(), view) || this;
+        _super.call(this, adaptee, view) || this;
         _this._includes = {
             Color: AS2ColorAdapter,
             System: AS2SystemAdapter,
@@ -65161,8 +65138,8 @@ var AS2MovieClipAdapter = (function (_super) {
             // if this is the "Scene 1", we transfer the timeline into the mc that is loading the movie
             if (event.asset.name == "Scene 1" || event.asset.name == "main") {
                 //this.adaptee.addChild(awayMC);
-                this.adaptee.timeline = awayMC.timeline;
-                this.adaptee.reset();
+                this._adaptee.timeline = awayMC.timeline;
+                this._adaptee.reset();
                 this.gotoAndPlay(1);
             }
         }
@@ -65175,28 +65152,28 @@ var AS2MovieClipAdapter = (function (_super) {
     Object.defineProperty(AS2MovieClipAdapter.prototype, "_framesloaded", {
         get: function () {
             // not loading frame by frame?
-            return this.adaptee.numFrames;
+            return this._adaptee.numFrames;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(AS2MovieClipAdapter.prototype, "_currentframe", {
         get: function () {
-            return this.adaptee.currentFrameIndex + 1;
+            return this._adaptee.currentFrameIndex + 1;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(AS2MovieClipAdapter.prototype, "_totalframes", {
         get: function () {
-            return this.adaptee.numFrames;
+            return this._adaptee.numFrames;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(AS2MovieClipAdapter.prototype, "enabled", {
         get: function () {
-            return this.adaptee.mouseEnabled;
+            return this._adaptee.mouseEnabled;
         },
         enumerable: true,
         configurable: true
@@ -65215,37 +65192,34 @@ var AS2MovieClipAdapter = (function (_super) {
     //attachBitmap(bmp: BitmapImage2D, depth: Number, pixelSnapping: String = null, smoothing: boolean = false):void { }
     AS2MovieClipAdapter.prototype.attachMovie = function (id, name, depth, initObject) {
         if (initObject === void 0) { initObject = null; }
-        var attached_mc = _awayjs_core.AssetLibrary.getAsset(id);
-        var cloned_mc = attached_mc.clone();
-        var adapter = new AS2MovieClipAdapter(cloned_mc, this._view);
-        this.adaptee.addChildAtDepth(adapter.adaptee, depth);
+        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        _awayjs_core.AssetLibrary.getAsset(id).adaptee.copyTo(adapter.adaptee);
+        this._adaptee.addChildAtDepth(adapter.adaptee, depth);
         adapter.adaptee.name = name;
         this.registerScriptObject(adapter.adaptee);
-        return attached_mc;
-        // todo: apply object from initObject to attached_mc
+        return adapter;
     };
     //beginBitmapFill(bmp: BitmapImage2D, matrix: Matrix = null, repeat: boolean = false, smoothing: boolean = false):void {}
     //beginFill(rgb: Number, alpha: number = 1.0):void {}
     //beginGradientFill(fillType: string, colors: Array, alphas: Array, ratios: Array, matrix: Object, spreadMethod: string = null, interpolationMethod: string  = null, focalPointRatio: number  = null):void {}
     //clear():void {}
     AS2MovieClipAdapter.prototype.createEmptyMovieClip = function (name, depth) {
-        var mc = new _awayjs_scene.MovieClip();
-        mc.adapter = new AS2MovieClipAdapter(mc, this._view);
-        mc.name = name;
-        this.adaptee.addChildAtDepth(mc, depth);
-        this.registerScriptObject(mc);
-        return mc.adapter;
+        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        adapter.adaptee.name = name;
+        this.adaptee.addChildAtDepth(adapter.adaptee, depth);
+        this.registerScriptObject(adapter.adaptee);
+        return adapter;
     };
     //createTextField(instanceName: String, depth: Number, x: Number, y: Number, width: Number, height: Number):TextField {}
     //curveTo(controlX: number, controlY: number, anchorX: number, anchorY: number):void {}
     AS2MovieClipAdapter.prototype.duplicateMovieClip = function (name, depth, initObject) {
-        var duplicate = this.adaptee.clone().adapter;
+        var duplicate = this.clone();
         duplicate.adaptee.name = name;
         if (initObject)
             for (var key in initObject)
                 if (duplicate.hasOwnProperty(key))
                     duplicate[key] = initObject[key];
-        this.adaptee.parent.addChildAtDepth(duplicate.adaptee, depth);
+        this._adaptee.parent.addChildAtDepth(duplicate.adaptee, depth);
         return duplicate;
     };
     //endFill():void {}
@@ -65255,17 +65229,17 @@ var AS2MovieClipAdapter = (function (_super) {
     // not applicable?
     AS2MovieClipAdapter.prototype.getBytesTotal = function () { return 1; };
     AS2MovieClipAdapter.prototype.getInstanceAtDepth = function (depth) {
-        return this.adaptee.getChildAtDepth(depth);
+        return this._adaptee.getChildAtDepth(depth);
     };
     AS2MovieClipAdapter.prototype.getNextHighestDepth = function () {
-        return this.adaptee.getNextHighestDepth();
+        return this._adaptee.getNextHighestDepth();
     };
     //getRect(bounds: Object):Object { return null; }
     //getSWFVersion():number { return 0; }
     //getTextSnapshot():TextSnapshot {}
     //getURL(url: string, window: string, method: string):void {}
     AS2MovieClipAdapter.prototype.globalToLocal = function (pt) {
-        var newPoint = this.adaptee.globalToLocal(new _awayjs_core.Point(pt.x, pt.y));
+        var newPoint = this._adaptee.globalToLocal(new _awayjs_core.Point(pt.x, pt.y));
         pt.x = newPoint.x;
         pt.y = newPoint.y;
     };
@@ -65282,14 +65256,14 @@ var AS2MovieClipAdapter = (function (_super) {
         this._gotoFrame(frame);
     };
     AS2MovieClipAdapter.prototype.play = function () {
-        this.adaptee.play();
+        this._adaptee.play();
     };
     AS2MovieClipAdapter.prototype.stop = function () {
-        this.adaptee.stop();
+        this._adaptee.stop();
     };
     AS2MovieClipAdapter.prototype.hitTest = function (x, y, shapeFlag) {
         if (shapeFlag === void 0) { shapeFlag = false; }
-        return this.adaptee.hitTestPoint(x, y, shapeFlag);
+        return this._adaptee.hitTestPoint(x, y, shapeFlag);
     };
     //lineGradientStyle(fillType: string, colors: array, alphas: array, ratios: array, matrix: Object, spreadMethod: string = null, interpolationMethod: string, focalPointRatio: number):void {}
     //lineStyle(thickness: number, rgb: number, alpha: number, pixelHinting: boolean, noScale: string, capsStyle: string, jointStyle: string, miterLimit: number):void {}
@@ -65297,35 +65271,37 @@ var AS2MovieClipAdapter = (function (_super) {
     //loadMovie(url: string, method: string = null):void {}
     //loadVariables(url: string, method: string = null):void {}
     AS2MovieClipAdapter.prototype.localToGlobal = function (pt) {
-        var newPoint = this.adaptee.localToGlobal(new _awayjs_core.Point(pt.x, pt.y));
+        var newPoint = this._adaptee.localToGlobal(new _awayjs_core.Point(pt.x, pt.y));
         pt.x = newPoint.x;
         pt.y = newPoint.y;
     };
     //moveTo(x: number, y: number):void {}
     AS2MovieClipAdapter.prototype.nextFrame = function () {
-        ++this.adaptee.currentFrameIndex;
+        ++this._adaptee.currentFrameIndex;
     };
     AS2MovieClipAdapter.prototype.prevFrame = function () {
-        --this.adaptee.currentFrameIndex;
+        --this._adaptee.currentFrameIndex;
     };
     AS2MovieClipAdapter.prototype.removeMovieClip = function () {
-        if (this.adaptee.parent) {
-            this.adaptee.parent.removeChild(this.adaptee);
+        if (this._adaptee.parent) {
+            this._adaptee.parent.removeChild(this._adaptee);
         }
     };
     AS2MovieClipAdapter.prototype.setMask = function (mc) {
-        this.adaptee.masks = [mc];
+        this._adaptee.masks = [mc];
     };
     //startDrag(lockCenter: boolean = false, left: number = 0, top: number = 0, right: number = 0, bottom: number = 0):void {}
     //stopDrag():void {}
     AS2MovieClipAdapter.prototype.swapDepths = function (target) {
-        var parent = this.adaptee.parent;
+        var parent = this._adaptee.parent;
         if (parent != null && target.parent == parent)
-            parent.swapChildren(this.adaptee, target);
+            parent.swapChildren(this._adaptee, target);
     };
     //unloadMovie():void {}
-    AS2MovieClipAdapter.prototype.clone = function (newAdaptee) {
-        return new AS2MovieClipAdapter(newAdaptee, this._view);
+    AS2MovieClipAdapter.prototype.clone = function () {
+        var clone = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        this.adaptee.copyTo(clone.adaptee);
+        return clone;
     };
     Object.defineProperty(AS2MovieClipAdapter.prototype, "onEnterFrame", {
         /**
@@ -65438,7 +65414,7 @@ var AS2MovieClipAdapter = (function (_super) {
     });
     AS2MovieClipAdapter.prototype.registerScriptObject = function (child) {
         if (child.name)
-            this[child.name] = child.adapter ? child.adapter : child;
+            this[child.name] = child._adapter ? child.adapter : child;
     };
     AS2MovieClipAdapter.prototype.unregisterScriptObject = function (child) {
         delete this[child.name];
@@ -65469,18 +65445,19 @@ var AS2MovieClipAdapter = (function (_super) {
 var AS2TextFieldAdapter = (function (_super) {
     __extends(AS2TextFieldAdapter, _super);
     function AS2TextFieldAdapter(adaptee, view) {
-        // create an empty text field if none is passed
-        return _super.call(this, adaptee || new _awayjs_scene.TextField(), view) || this;
+        return _super.call(this, adaptee, view) || this;
     }
-    AS2TextFieldAdapter.prototype.clone = function (newAdaptee) {
-        return new AS2TextFieldAdapter(newAdaptee, this._view);
+    AS2TextFieldAdapter.prototype.clone = function () {
+        var clone = new AS2TextFieldAdapter(_awayjs_scene.TextField.getNewTextField(), this._view);
+        this.adaptee.copyTo(clone.adaptee);
+        return clone;
     };
     Object.defineProperty(AS2TextFieldAdapter.prototype, "textColor", {
         get: function () {
-            return this.adaptee.textColor;
+            return this._adaptee.textColor;
         },
         set: function (value) {
-            this.adaptee.textColor = value;
+            this._adaptee.textColor = value;
         },
         enumerable: true,
         configurable: true
@@ -65497,10 +65474,10 @@ var AS2TextFieldAdapter = (function (_super) {
     });
     Object.defineProperty(AS2TextFieldAdapter.prototype, "text", {
         get: function () {
-            return this.adaptee.text;
+            return this._adaptee.text;
         },
         set: function (value) {
-            this.adaptee.text = value;
+            this._adaptee.text = value;
         },
         enumerable: true,
         configurable: true
@@ -65513,14 +65490,10 @@ var AS2SceneGraphFactory = (function () {
         this._view = view;
     }
     AS2SceneGraphFactory.prototype.createMovieClip = function (timeline) {
-        var mc = new _awayjs_scene.MovieClip(timeline);
-        mc.adapter = new AS2MovieClipAdapter(mc, this._view);
-        return mc;
+        return new AS2MovieClipAdapter(new _awayjs_scene.MovieClip(timeline), this._view).adaptee;
     };
     AS2SceneGraphFactory.prototype.createTextField = function () {
-        var tf = new _awayjs_scene.TextField();
-        tf.adapter = new AS2TextFieldAdapter(tf, this._view);
-        return tf;
+        return new AS2TextFieldAdapter(new _awayjs_scene.TextField(), this._view).adaptee;
     };
     return AS2SceneGraphFactory;
 }());
