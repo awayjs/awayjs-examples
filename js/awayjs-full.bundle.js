@@ -33342,6 +33342,28 @@ TouchEvent.TOUCH_OUT = "touchOut3d";
  */
 TouchEvent.TOUCH_OVER = "touchOver3d";
 
+var DefaultSceneGraphFactory = (function () {
+    function DefaultSceneGraphFactory() {
+    }
+    DefaultSceneGraphFactory.prototype.createMovieClip = function (timeline) {
+        if (timeline === void 0) { timeline = null; }
+        return new MovieClip(timeline);
+    };
+    DefaultSceneGraphFactory.prototype.createSprite = function () {
+        return new Sprite();
+    };
+    DefaultSceneGraphFactory.prototype.createDisplayObjectContainer = function () {
+        return new DisplayObjectContainer();
+    };
+    DefaultSceneGraphFactory.prototype.createTextField = function () {
+        return new TextField();
+    };
+    DefaultSceneGraphFactory.prototype.createBillboard = function (material) {
+        return new Billboard(material);
+    };
+    return DefaultSceneGraphFactory;
+}());
+
 /**
  * LightPickerBase provides an abstract base clase for light picker classes. These classes are responsible for
  * feeding materials with relevant lights. Usually, StaticLightPicker can be used, but LightPickerBase can be
@@ -36527,6 +36549,7 @@ exports.MouseEvent = MouseEvent;
 exports.ResizeEvent = ResizeEvent;
 exports.TextureProjectorEvent = TextureProjectorEvent;
 exports.TouchEvent = TouchEvent;
+exports.DefaultSceneGraphFactory = DefaultSceneGraphFactory;
 exports.FrameScriptManager = FrameScriptManager;
 exports.LightPickerBase = LightPickerBase;
 exports.LightSources = LightSources;
@@ -65537,18 +65560,22 @@ var AS2TextFieldAdapter = (function (_super) {
     return AS2TextFieldAdapter;
 }(AS2SymbolAdapter));
 
-var AS2SceneGraphFactory = (function () {
+var AS2SceneGraphFactory = (function (_super) {
+    __extends(AS2SceneGraphFactory, _super);
     function AS2SceneGraphFactory(view) {
-        this._view = view;
+        var _this = _super.call(this) || this;
+        _this._view = view;
+        return _this;
     }
     AS2SceneGraphFactory.prototype.createMovieClip = function (timeline) {
+        if (timeline === void 0) { timeline = null; }
         return new AS2MovieClipAdapter(new _awayjs_scene.MovieClip(timeline), this._view).adaptee;
     };
     AS2SceneGraphFactory.prototype.createTextField = function () {
         return new AS2TextFieldAdapter(new _awayjs_scene.TextField(), this._view).adaptee;
     };
     return AS2SceneGraphFactory;
-}());
+}(_awayjs_scene.DefaultSceneGraphFactory));
 
 exports.AS2ColorAdapter = AS2ColorAdapter;
 exports.AS2KeyAdapter = AS2KeyAdapter;
