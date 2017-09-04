@@ -11,6 +11,7 @@ webpackJsonp([21],{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_parsers__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_renderer__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_awayjs_full_lib_view__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_awayjs_full_lib_player__ = __webpack_require__(11);
 /*
 
  AWD3 file loading example in
@@ -46,6 +47,7 @@ webpackJsonp([21],{
  THE SOFTWARE.
 
  */
+
 
 
 
@@ -117,7 +119,7 @@ var AWD3ViewerMinimal = function () {
         //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
         //for plugin preview-runtime:
         //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
-        loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/MagnifyGlass.awd"), null, null, new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_parsers__["AWDParser"](this._view));
+        loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/MagnifyGlass.awd"), null, null, new __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_parsers__["AWDParser"](new __WEBPACK_IMPORTED_MODULE_7_awayjs_full_lib_player__["AS2SceneGraphFactory"](this._view)));
         //loader.load(new URLRequest("assets/AWD3/TextConstructionTest.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
         //loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));

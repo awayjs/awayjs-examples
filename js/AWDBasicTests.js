@@ -9,6 +9,7 @@ webpackJsonp([20],{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_view__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_player__ = __webpack_require__(11);
 /*
 
  AWD3 file loading example in
@@ -44,6 +45,7 @@ webpackJsonp([20],{
  THE SOFTWARE.
 
  */
+
 
 
 
@@ -293,7 +295,7 @@ var AWDBasicTests = function () {
         }
         this.thisDiv.innerHTML = "loading AWD";
         this.dropDown.selectedIndex = this._currentAWDIdx + 1;
-        this._loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/BasicTests/" + this._awd_names[this._currentAWDIdx]), null, null, new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__["AWDParser"](this._view));
+        this._loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/BasicTests/" + this._awd_names[this._currentAWDIdx]), null, null, new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__["AWDParser"](new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_player__["AS2SceneGraphFactory"](this._view)));
     };
     AWDBasicTests.prototype.loadPrev = function () {
         if (this._rootTimeLine) this._view.scene.removeChild(this._rootTimeLine);
@@ -304,7 +306,7 @@ var AWDBasicTests = function () {
         }
         this.thisDiv.innerHTML = "loading AWD";
         this.dropDown.selectedIndex = this._currentAWDIdx + 1;
-        this._loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/BasicTests/" + this._awd_names[this._currentAWDIdx]), null, null, new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__["AWDParser"](this._view));
+        this._loader.load(new __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__["URLRequest"]("assets/AWD3/BasicTests/" + this._awd_names[this._currentAWDIdx]), null, null, new __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__["AWDParser"](new __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_player__["AS2SceneGraphFactory"](this._view)));
     };
     /**
      * Key down listener for animation

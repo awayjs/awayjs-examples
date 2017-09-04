@@ -169,13 +169,13 @@
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_core___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_core__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__awayjs_graphics__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__awayjs_graphics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__awayjs_graphics__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__awayjs_stage__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__awayjs_stage__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__awayjs_stage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__awayjs_stage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__awayjs_scene__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__awayjs_scene___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__awayjs_scene__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__awayjs_renderer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__awayjs_renderer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__awayjs_materials__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__awayjs_materials__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__awayjs_materials___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__awayjs_materials__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__awayjs_view__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__awayjs_view___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__awayjs_view__);
@@ -251,7 +251,7 @@ __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_materials__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_materials__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_materials___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_materials__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_materials__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_materials__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -262,7 +262,7 @@ __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_parsers__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_parsers__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_parsers___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_parsers__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_parsers__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_parsers__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -273,7 +273,7 @@ __WEBPACK_IMPORTED_MODULE_6__awayjs_view__["PartitionBase"].registerAbstraction(
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_renderer__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_renderer__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_renderer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_renderer__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_renderer__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_renderer__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -2196,7 +2196,7 @@ var Vector3D = (function () {
      * </p>
      */
     Vector3D.prototype.add = function (a) {
-        return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w);
+        return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z);
     };
     /**
      * Returns the angle in radians between two vectors. The returned angle
@@ -2431,12 +2431,12 @@ var Vector3D = (function () {
      */
     Vector3D.prototype.normalize = function (thickness) {
         if (thickness === void 0) { thickness = 1; }
-        if (this.length != 0) {
-            var invLength = thickness / this.length;
+        var len = this.length;
+        if (len) {
+            var invLength = thickness / len;
             this.x *= invLength;
             this.y *= invLength;
             this.z *= invLength;
-            return;
         }
     };
     /**
@@ -2479,10 +2479,12 @@ var Vector3D = (function () {
      * @param ya The second element, such as the y coordinate.
      * @param za The third element, such as the z coordinate.
      */
-    Vector3D.prototype.setTo = function (xa, ya, za) {
+    Vector3D.prototype.setTo = function (xa, ya, za, wa) {
+        if (wa === void 0) { wa = 1; }
         this.x = xa;
         this.y = ya;
         this.z = za;
+        this.w = wa;
     };
     /**
      * Subtracts the value of the x, y, and z elements of the current
@@ -5234,13 +5236,12 @@ var Point = (function () {
      */
     Point.prototype.normalize = function (thickness) {
         if (thickness === void 0) { thickness = 1; }
-        if (this.length != 0) {
-            var invLength = thickness / this.length;
+        var len = this.length;
+        if (len) {
+            var invLength = thickness / len;
             this.x *= invLength;
             this.y *= invLength;
-            return;
         }
-        throw "Cannot divide by zero length.";
     };
     /**
      * Offsets the Point object by the specified amount. The value of
@@ -7885,6 +7886,7 @@ var Loader = (function (_super) {
         _this._onReadyForDependenciesDelegate = function (event) { return _this.onReadyForDependencies(event); };
         _this._onParseCompleteDelegate = function (event) { return _this.onParseComplete(event); };
         _this._onParseErrorDelegate = function (event) { return _this.onParseError(event); };
+        _this._onLoadProgressDelegate = function (event) { return _this.onLoadProgress(event); };
         _this._onLoadCompleteDelegate = function (event) { return _this.onLoadComplete(event); };
         _this._onLoadErrorDelegate = function (event) { return _this.onLoadError(event); };
         _this._onTextureSizeErrorDelegate = function (event) { return _this.onTextureSizeError(event); };
@@ -8001,7 +8003,6 @@ var Loader = (function (_super) {
         }
         else if (this._currentDependency.parser && this._currentDependency.parser.parsingPaused) {
             this._currentDependency.parser._iResumeParsing();
-            this._stack.pop();
         }
         else if (this._stack.length) {
             var prev = this._currentDependency;
@@ -8235,6 +8236,9 @@ var Loader = (function (_super) {
         else
             this.retrieveParserDependencies();
     };
+    Loader.prototype.onLoadProgress = function (event) {
+        this.dispatchEvent(event);
+    };
     /**
      * Called when a single dependency was parsed, and pushes further dependencies onto the stack.
      * @param event
@@ -8257,12 +8261,12 @@ var Loader = (function (_super) {
      */
     Loader.prototype.onParseComplete = function (event) {
         var parser = event.target;
-        this.resolveParserDependencies(); //resolve in front of removing listeners to allow any remaining asset events to propagate
         parser.removeEventListener(ParserEvent.READY_FOR_DEPENDENCIES, this._onReadyForDependenciesDelegate);
         parser.removeEventListener(ParserEvent.PARSE_COMPLETE, this._onParseCompleteDelegate);
         parser.removeEventListener(ParserEvent.PARSE_ERROR, this._onParseErrorDelegate);
         parser.removeEventListener(AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
         parser.removeEventListener(AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+        this.resolveParserDependencies();
     };
     /**
      * Called when an image is too large or it's dimensions are not a power of 2
@@ -8273,10 +8277,12 @@ var Loader = (function (_super) {
         this.dispatchEvent(event);
     };
     Loader.prototype.addEventListeners = function (loader) {
+        loader.addEventListener(URLLoaderEvent.LOAD_PROGRESS, this._onLoadProgressDelegate);
         loader.addEventListener(URLLoaderEvent.LOAD_COMPLETE, this._onLoadCompleteDelegate);
         loader.addEventListener(URLLoaderEvent.LOAD_ERROR, this._onLoadErrorDelegate);
     };
     Loader.prototype.removeEventListeners = function (loader) {
+        loader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this._onLoadProgressDelegate);
         loader.removeEventListener(URLLoaderEvent.LOAD_COMPLETE, this._onLoadCompleteDelegate);
         loader.removeEventListener(URLLoaderEvent.LOAD_ERROR, this._onLoadErrorDelegate);
     };
@@ -8753,12 +8759,9 @@ var AssetLibraryBundle = (function (_super) {
         return loader;
     };
     AssetLibraryBundle.prototype.disposeLoader = function (loader) {
-        var _this = this;
         var index = this._loaderSessions.indexOf(loader);
         this._loaderSessions.splice(index, 1);
-        // Add loader to a garbage array - for a collection sweep and kill
-        this._loaderSessionsGarbage.push(loader);
-        this._gcTimeoutIID = setTimeout(function () { _this.loaderSessionGC(); }, 100);
+        this.killloaderSession(loader);
     };
     /**
      *
@@ -8996,15 +8999,6 @@ var AssetLibraryBundle = (function (_super) {
         var loader = event.target;
         this.dispatchEvent(event);
         this.disposeLoader(loader);
-    };
-    AssetLibraryBundle.prototype.loaderSessionGC = function () {
-        var loader;
-        while (this._loaderSessionsGarbage.length > 0) {
-            loader = this._loaderSessionsGarbage.pop();
-            this.killloaderSession(loader);
-        }
-        clearTimeout(this._gcTimeoutIID);
-        this._gcTimeoutIID = null;
     };
     AssetLibraryBundle.prototype.killloaderSession = function (loader) {
         loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this._onLoadCompleteDelegate);
@@ -10450,12 +10444,13 @@ var ParserBase = (function (_super) {
         }
         this.dispatchEvent(new ParserEvent(ParserEvent.PARSE_ERROR, message));
     };
-    ParserBase.prototype._pAddDependency = function (id, req, retrieveAsRawData, data, suppressErrorEvents, sub_id) {
-        if (retrieveAsRawData === void 0) { retrieveAsRawData = false; }
+    ParserBase.prototype._pAddDependency = function (id, req, parser, data, retrieveAsRawData, suppressErrorEvents, sub_id) {
+        if (parser === void 0) { parser = null; }
         if (data === void 0) { data = null; }
+        if (retrieveAsRawData === void 0) { retrieveAsRawData = false; }
         if (suppressErrorEvents === void 0) { suppressErrorEvents = false; }
         if (sub_id === void 0) { sub_id = 0; }
-        var dependency = new ResourceDependency(id, req, data, null, this, retrieveAsRawData, suppressErrorEvents, sub_id);
+        var dependency = new ResourceDependency(id, req, data, parser, this, retrieveAsRawData, suppressErrorEvents, sub_id);
         this._dependencies.push(dependency);
         return dependency;
     };
@@ -12995,7 +12990,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_stage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_stage__);
 /* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_stage__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -13032,56 +13027,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -14014,7 +13963,7 @@ var GraphicsFactoryHelper = (function () {
         if (angle_delta < -180) {
             angle_delta += 360;
         }
-        if (Math.abs(angle_delta) >= 150) {
+        if (Math.abs(angle_delta) >= 175) {
             array_out.push(startx, starty, cx, cy, endx, endy);
             array2_out.push(startx2, starty2, cx2, cy2, endx2, endy2);
             return;
@@ -14075,7 +14024,7 @@ var GraphicsFactoryHelper = (function () {
             array_out.push(endx, endy);
             return;
         }*/
-        if (Math.abs(angle_delta) <= 2 || len <= 10) {
+        if (Math.abs(angle_delta) <= 2 || len <= 5) {
             array_out.push(endx, endy);
             return;
         }
@@ -16577,11 +16526,10 @@ var GraphicsFactoryStrokes = (function () {
                 GraphicsFactoryStrokes.draw_pathes_old(graphic_pathes, final_vert_list, false);
                 */
     };
-    GraphicsFactoryStrokes.updateStrokesForShape = function (shape, scale) {
-        if (scale === void 0) { scale = 1; }
+    GraphicsFactoryStrokes.updateStrokesForShape = function (shape, scale, scaleMode) {
         var graphicsPath = shape.strokePath;
         var final_vert_list = [];
-        GraphicsFactoryStrokes.draw_path([graphicsPath], final_vert_list, false, scale, LineScaleMode.NORMAL);
+        GraphicsFactoryStrokes.draw_path([graphicsPath], final_vert_list, false, scale, scaleMode);
         var elements = shape.elements;
         elements.setPositions(final_vert_list);
         elements.invalidate();
@@ -16625,9 +16573,13 @@ var GraphicsFactoryStrokes = (function () {
             strokeStyle = one_path.stroke();
             var half_thickness = strokeStyle.half_thickness;
             if (scaleMode == LineScaleMode.NORMAL) {
-                if (scale < 1) {
-                    if ((half_thickness * scale) < 0.25) {
-                        half_thickness = 0.25 * (1 / scale);
+                if (half_thickness != 0.15) {
+                    var minScale = 0.5;
+                    if (scale < 1) {
+                        minScale = 0.25;
+                    }
+                    if ((half_thickness * scale) < minScale) {
+                        half_thickness = minScale * (1 / scale);
                     }
                 }
             }
@@ -17046,7 +16998,6 @@ var GraphicsFactoryStrokes = (function () {
                             var c_cnt = curve_verts.length;
                             while (c_cnt > 0) {
                                 c_cnt -= 2;
-                                GraphicsFactoryHelper.drawPoint(curve_verts[c_cnt], curve_verts[c_cnt + 1], final_vert_list, false);
                             }
                         }
                     }
@@ -17391,17 +17342,32 @@ var ImageBase = (function (_super) {
     return ImageBase;
 }(_awayjs_core.AssetBase));
 
+var DefaultGraphicsFactory = (function () {
+    function DefaultGraphicsFactory() {
+    }
+    DefaultGraphicsFactory.prototype.createImage2D = function (width, height, transparent, fillColor, powerOfTwo) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = null; }
+        if (powerOfTwo === void 0) { powerOfTwo = true; }
+        return new BitmapImage2D(width, height, transparent, fillColor, powerOfTwo);
+    };
+    return DefaultGraphicsFactory;
+}());
+
 var ImageUtils = (function () {
     function ImageUtils() {
     }
     /**
      *
      */
-    ImageUtils.imageToBitmapImage2D = function (img, powerOfTwo) {
+    ImageUtils.imageToBitmapImage2D = function (img, powerOfTwo, factory) {
         if (powerOfTwo === void 0) { powerOfTwo = true; }
-        var bitmapData = new BitmapImage2D(img.width, img.height, true, null, powerOfTwo);
-        bitmapData.draw(img);
-        return bitmapData;
+        if (factory === void 0) { factory = null; }
+        if (!factory)
+            factory = new DefaultGraphicsFactory();
+        var image2D = factory.createImage2D(img.width, img.height, true, null, powerOfTwo);
+        image2D.draw(img);
+        return image2D;
     };
     ImageUtils.isImage2DValid = function (image2D) {
         if (image2D == null)
@@ -17561,7 +17527,8 @@ var BitmapImageUtils = (function () {
         context.fillRect(rect.x, rect.y, rect.width, rect.height);
     };
     BitmapImageUtils._copyPixels = function (context, bmpd, sourceRect, destPoint) {
-        context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
+        if (sourceRect.width > 0 && sourceRect.height > 0)
+            context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
     };
     BitmapImageUtils._draw = function (context, source, matrix, colorTransform, blendMode, clipRect, smoothing) {
         context.save();
@@ -18218,15 +18185,19 @@ var BitmapImage2D = (function (_super) {
         var imageData = sourceBitmap.getImageData();
         if (!this._imageData)
             this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-        var sourceData = sourceBitmap.getImageData().data;
+        var sourceData = imageData.data;
         var destData = this._imageData.data;
         var sourceOffset = Math.round(Math.log(sourceChannel) / Math.log(2));
         var destOffset = Math.round(Math.log(destChannel) / Math.log(2));
+        var sourceX = Math.round(sourceRect.x);
+        var sourceY = Math.round(sourceRect.y);
+        var destX = Math.round(destPoint.x);
+        var destY = Math.round(destPoint.y);
         var i, j, sourceIndex, destIndex;
         for (i = 0; i < sourceRect.width; ++i) {
             for (j = 0; j < sourceRect.height; ++j) {
-                sourceIndex = (i + sourceRect.x + (j + sourceRect.y) * sourceBitmap.width) * 4;
-                destIndex = (i + destPoint.x + (j + destPoint.y) * this.width) * 4;
+                sourceIndex = (i + sourceX + (j + sourceY) * imageData.width) * 4;
+                destIndex = (i + destX + (j + destY) * this._rect.width) * 4;
                 destData[destIndex + destOffset] = sourceData[sourceIndex + sourceOffset];
             }
         }
@@ -18315,6 +18286,10 @@ var BitmapImage2D = (function (_super) {
     BitmapImage2D.prototype.fillRect = function (rect, color) {
         if (this._imageData)
             this._context.putImageData(this._imageData, 0, 0); // at coords 0,0
+        rect.x = Math.ceil(rect.x);
+        rect.y = Math.ceil(rect.y);
+        rect.width = Math.ceil(rect.width);
+        rect.height = Math.ceil(rect.height);
         BitmapImageUtils._fillRect(this._context, rect, color, this._transparent);
         this._imageData = null;
         if (!this._locked)
@@ -18395,14 +18370,14 @@ var BitmapImage2D = (function (_super) {
         var b;
         var a;
         if (!this._imageData) {
-            var pixelData = this._context.getImageData(x, y, 1, 1);
+            var pixelData = this._context.getImageData(~~x, ~~y, 1, 1);
             r = pixelData.data[0];
             g = pixelData.data[1];
             b = pixelData.data[2];
             a = pixelData.data[3];
         }
         else {
-            var index = (x + y * this._imageData.width) * 4;
+            var index = (~~x + ~~y * this._imageData.width) * 4;
             r = this._imageData.data[index + 0];
             g = this._imageData.data[index + 1];
             b = this._imageData.data[index + 2];
@@ -18493,10 +18468,11 @@ var BitmapImage2D = (function (_super) {
         var argb = _awayjs_core.ColorUtils.float32ColorToARGB(color);
         if (!this._imageData)
             this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-        var index = (x + y * this._imageData.width) * 4;
+        var index = (~~x + ~~y * this._imageData.width) * 4;
         this._imageData.data[index + 0] = argb[1];
         this._imageData.data[index + 1] = argb[2];
         this._imageData.data[index + 2] = argb[3];
+        this._imageData.data[index + 3] = 0xff;
         if (!this._locked)
             this.invalidate();
     };
@@ -19601,7 +19577,7 @@ MaterialEvent.INVALIDATE_PASSES = "invalidatePasses";
 var MaterialBase = (function (_super) {
     __extends(MaterialBase, _super);
     function MaterialBase(imageColor, alpha) {
-        if (imageColor === void 0) { imageColor = null; }
+        if (imageColor === void 0) { imageColor = 0xFFFFFF; }
         if (alpha === void 0) { alpha = 1; }
         var _this = _super.call(this) || this;
         _this._textures = new Array();
@@ -19624,7 +19600,7 @@ var MaterialBase = (function (_super) {
         _this._style.addEventListener(StyleEvent.INVALIDATE_PROPERTIES, _this._onInvalidatePropertiesDelegate);
         if (imageColor instanceof ImageBase)
             _this._style.image = imageColor;
-        else if (!isNaN(imageColor))
+        else
             _this._style.color = Number(imageColor);
         _this.alpha = alpha;
         _this._onTextureInvalidateDelegate = function (event) { return _this.onTextureInvalidate(event); };
@@ -20352,7 +20328,7 @@ var Graphics = (function (_super) {
         _this._scaleX = 1;
         _this._scaleY = 1;
         // todo: this is a temp workarpound to prevent strokes from getting scaled, if they are not coming from awd
-        _this.scaleStrokes = false;
+        _this.scaleStrokes = LineScaleMode.NONE;
         _this._drawingDirty = false;
         //store associated entity object, otherwise assign itself as entity
         _this._entity = entity;
@@ -20390,7 +20366,7 @@ var Graphics = (function (_super) {
         for (var i = 0; i < len; i++) {
             if (this._shapes[i].isStroke) {
                 doInvalid = true;
-                GraphicsFactoryStrokes.updateStrokesForShape(this._shapes[i], this._scaleX);
+                GraphicsFactoryStrokes.updateStrokesForShape(this._shapes[i], this._scaleX, this.scaleStrokes);
             }
         }
         if (doInvalid) {
@@ -20558,7 +20534,8 @@ var Graphics = (function (_super) {
             this._shapes[i].applyTransformation(transform);
         }
     };
-    Graphics.prototype.copyTo = function (graphics) {
+    Graphics.prototype.copyTo = function (graphics, cloneShapes) {
+        if (cloneShapes === void 0) { cloneShapes = false; }
         graphics.material = this._material;
         graphics.style = this._style;
         graphics.particles = this.particles;
@@ -20572,7 +20549,7 @@ var Graphics = (function (_super) {
             graphics.minSlice9Width = this.minSlice9Width;
             graphics.minSlice9Height = this.minSlice9Height;
         }
-        graphics._addShapes(this._shapes);
+        graphics._addShapes(this._shapes, cloneShapes);
         if (this._animator)
             graphics.animator = this._animator.clone();
     };
@@ -21242,16 +21219,25 @@ var Graphics = (function (_super) {
         }
         if (this._active_stroke_path != null) {
             this._active_stroke_path.moveTo(x, y);
-            var t = this._active_stroke_path.style.thickness / 2;
+            //var t:number=(<GraphicsStrokeStyle>this._active_stroke_path.style).thickness/2;
             // todo: respect Jointstyle here (?)
-            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x - t, y - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x + t, y + height - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x - t, y - t, x + width + t, y - t, x + t, y + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + t, y + t, x + width + t, y - t, x + width - t, y + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + width - t, y + height - t, x + width - t, y + t, x + width + t, y + height + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + width + t, y + height + t, x + width + t, y - t, x + width - t, y + t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x - t, y + height + t, x + width + t, y + height + t, x + t, y + height - t, 0, this._active_stroke_path.verts, false);
-            GraphicsFactoryHelper.addTriangle(x + t, y + height - t, x + width + t, y + height + t, x + width - t, y + height - t, 0, this._active_stroke_path.verts, false);
+            /*
+            GraphicsFactoryHelper.addTriangle(x-t, y+height+t, x-t, y-t, x+t, y+t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x-t, y+height+t, x+t, y+height-t, x+t, y+t, 0, this._active_stroke_path.verts, false);
+
+            GraphicsFactoryHelper.addTriangle(x-t, y-t, x+width+t, y-t, x+t, y+t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x+t, y+t, x+width+t, y-t, x+width-t, y+t, 0, this._active_stroke_path.verts, false);
+
+            GraphicsFactoryHelper.addTriangle(x+width-t, y+height-t, x+width-t, y+t, x+width+t, y+height+t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x+width+t, y+height+t, x+width+t, y-t, x+width-t, y+t, 0, this._active_stroke_path.verts, false);
+
+            GraphicsFactoryHelper.addTriangle(x-t, y+height+t, x+width+t, y+height+t, x+t, y+height-t, 0, this._active_stroke_path.verts, false);
+            GraphicsFactoryHelper.addTriangle(x+t, y+height-t, x+width+t, y+height+t, x+width-t, y+height-t, 0, this._active_stroke_path.verts, false);
+            */
+            this._active_stroke_path.lineTo(x + width, y);
+            this._active_stroke_path.lineTo(x + width, y + height);
+            this._active_stroke_path.lineTo(x, y + height);
+            this._active_stroke_path.lineTo(x, y);
         }
     };
     /**
@@ -21789,18 +21775,16 @@ var Graphics = (function (_super) {
         this._current_position.x = x;
         this._current_position.y = y;
     };
-    Graphics.prototype._addShapes = function (shapes) {
+    Graphics.prototype._addShapes = function (shapes, cloneShapes) {
+        if (cloneShapes === void 0) { cloneShapes = false; }
         var shape;
         var len = shapes.length;
         for (var i = 0; i < len; i++) {
             shape = shapes[i];
-            if (this.slice9Rectangle) {
-                // todo: this is a dirty workaround to get the slice9-shapes cloned:
-                var new_shape = new Shape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, 1, 1, false, true));
-                new_shape.material = shape.material;
-                new_shape.style = shape.style;
-                shape = new_shape;
-            }
+            if (this.slice9Rectangle)
+                shape = Shape.getShape(ElementsUtils.updateTriangleGraphicsSlice9(shape.elements, this.originalSlice9Size, 1, 1, false, true), shape.material, shape.style);
+            else if (cloneShapes)
+                shape = Shape.getShape(shape.elements, shape.material, shape.style, shape.count, shape.offset);
             shape.addEventListener(ElementsEvent.INVALIDATE_VERTICES, this._onInvalidateVerticesDelegate);
             shape.addEventListener(ShapeEvent.ADD_MATERIAL, this._onAddMaterialDelegate);
             shape.addEventListener(ShapeEvent.REMOVE_MATERIAL, this._onRemoveMaterialDelegate);
@@ -21826,24 +21810,15 @@ Graphics.get_material_for_gradient = function (gradient) {
 };
 Graphics.assetType = "[asset Graphics]";
 
-/**
- * The Graphics class contains a set of methods that you can use to create a
- * vector shape. Display objects that support drawing include Sprite and Shape
- * objects. Each of these classes includes a <code>graphics</code> property
- * that is a Graphics object. The following are among those helper functions
- * provided for ease of use: <code>drawRect()</code>,
- * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
- * <code>drawEllipse()</code>.
- *
- * <p>You cannot create a Graphics object directly from ActionScript code. If
- * you call <code>new Graphics()</code>, an exception is thrown.</p>
- *
- * <p>The Graphics class is final; it cannot be subclassed.</p>
- */
 var GraphicsFactoryFills = (function () {
     function GraphicsFactoryFills() {
     }
     GraphicsFactoryFills.draw_pathes = function (targetGraphics) {
+        if (typeof window["TESS"] != 'undefined') {
+            if (GraphicsFactoryHelper._tess_obj == null) {
+                GraphicsFactoryHelper._tess_obj = new TESS();
+            }
+        }
         var len = targetGraphics.queued_fill_pathes.length;
         var cp = 0;
         for (cp = 0; cp < len; cp++) {
@@ -21864,7 +21839,10 @@ var GraphicsFactoryFills = (function () {
             var lastPoint = new _awayjs_core.Point();
             var last_dir_vec = new _awayjs_core.Point();
             var end_point = new _awayjs_core.Point();
-            if (contour_commands.length > 1) {
+            if (contour_commands.length > 0 && contour_commands[0].length > 0) {
+                if (GraphicsFactoryHelper._tess_obj != null) {
+                    GraphicsFactoryHelper._tess_obj.newTess(1024 * 512);
+                }
                 for (k = 0; k < contour_commands.length; k++) {
                     contours_vertices.push([]);
                     vert_cnt = 0;
@@ -22094,6 +22072,7 @@ var GraphicsFactoryFills = (function () {
                         final_vert_list[final_vert_cnt++] = all_verts[p1].x;
                         final_vert_list[final_vert_cnt++] = all_verts[p1].y;
                     }
+                    GraphicsFactoryHelper._tess_obj.deleteTess();
                 }
             }
             final_vert_list = final_vert_list.concat(targetGraphics.queued_fill_pathes[cp].verts);
@@ -22684,8 +22663,11 @@ var Image2DParser = (function (_super) {
      * @param uri The url or id of the data or file to be parsed.
      * @param extra The holder for extra contextual data that the parser might need.
      */
-    function Image2DParser() {
-        return _super.call(this, _awayjs_core.URLLoaderDataFormat.BLOB) || this;
+    function Image2DParser(factory) {
+        if (factory === void 0) { factory = null; }
+        var _this = _super.call(this, _awayjs_core.URLLoaderDataFormat.BLOB) || this;
+        _this._factory = factory || new DefaultGraphicsFactory();
+        return _this;
     }
     /**
      * Indicates whether or not a given file extension is supported by the parser.
@@ -22736,13 +22718,13 @@ var Image2DParser = (function (_super) {
         }
         else if (this._htmlImageElement) {
             //if (ImageUtils.isHTMLImageElementValid(this._htmlImageElement)) {
-            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false);
+            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false, this._factory);
             this._pFinalizeAsset(asset, this._iFileName);
         }
         else if (this.data instanceof HTMLImageElement) {
             var htmlImageElement = this.data;
             //if (ImageUtils.isHTMLImageElementValid(htmlImageElement)) {
-            asset = ImageUtils.imageToBitmapImage2D(htmlImageElement, false);
+            asset = ImageUtils.imageToBitmapImage2D(htmlImageElement, false, this._factory);
             this._pFinalizeAsset(asset, this._iFileName);
         }
         else if (this.data instanceof _awayjs_core.ByteArray) {
@@ -22755,12 +22737,12 @@ var Image2DParser = (function (_super) {
                 return _awayjs_core.ParserBase.MORE_TO_PARSE;
             }
             //if (ImageUtils.isHTMLImageElementValid(this._htmlImageElement)) {
-            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false);
+            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false, this._factory);
             this._pFinalizeAsset(asset, this._iFileName);
         }
         else if (this.data instanceof ArrayBuffer) {
             this._htmlImageElement = _awayjs_core.ParserUtils.arrayBufferToImage(this.data);
-            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false);
+            asset = ImageUtils.imageToBitmapImage2D(this._htmlImageElement, false, this._factory);
             this._pFinalizeAsset(asset, this._iFileName);
         }
         else if (this.data instanceof Blob) {
@@ -23310,6 +23292,7 @@ exports.ElementsBase = ElementsBase;
 exports.ElementsType = ElementsType;
 exports.LineElements = LineElements;
 exports.TriangleElements = TriangleElements;
+exports.DefaultGraphicsFactory = DefaultGraphicsFactory;
 exports.BitmapImage2D = BitmapImage2D;
 exports.BitmapImageChannel = BitmapImageChannel;
 exports.BitmapImageCube = BitmapImageCube;
@@ -23445,10 +23428,56 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
 function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -24711,6 +24740,7 @@ var DisplayObject = (function (_super) {
         displayObject.boundsType = this._boundsType;
         if (this._registrationMatrix3D)
             displayObject._registrationMatrix3D = this._registrationMatrix3D.clone();
+        displayObject._iSourcePrefab = this._iSourcePrefab;
         displayObject.debugVisible = this._debugVisible;
         displayObject.name = this._pName;
         displayObject.mouseEnabled = this._explicitMouseEnabled;
@@ -25254,6 +25284,8 @@ var DisplayObject = (function (_super) {
         this.pInvalidateHierarchicalProperties(HierarchicalProperties.COLOR_TRANSFORM);
     };
     DisplayObject.prototype._pInvalidateBounds = function () {
+        if (this._boxBoundsInvalid && this._sphereBoundsInvalid)
+            return;
         this._boxBoundsInvalid = true;
         this._sphereBoundsInvalid = true;
         if (this.isEntity)
@@ -25843,18 +25875,18 @@ var DisplayObjectContainer = (function (_super) {
             var first = true;
             for (var i = 0; i < numChildren; ++i) {
                 // ignore bounds of childs that are masked
-                if (this._children[i].masks == null) {
-                    childBox = this._children[i].getBox();
-                    if (childBox.isEmpty())
-                        continue;
-                    childBox = this._children[i].getBox(this);
-                    if (first) {
-                        first = false;
-                        this._pBoxBounds.copyFrom(childBox);
-                    }
-                    else {
-                        this._pBoxBounds = this._pBoxBounds.union(childBox, this._pBoxBounds);
-                    }
+                // todo: this check is only needed for icycle, to get mouseclicks work correct in shop
+                //if(this._children[i].masks==null){
+                childBox = this._children[i].getBox();
+                if (childBox.isEmpty())
+                    continue;
+                childBox = this._children[i].getBox(this);
+                if (first) {
+                    first = false;
+                    this._pBoxBounds.copyFrom(childBox);
+                }
+                else {
+                    this._pBoxBounds = this._pBoxBounds.union(childBox, this._pBoxBounds);
                 }
             }
         }
@@ -26095,6 +26127,10 @@ var Billboard = (function (_super) {
         }
         this._pInvalidateBounds();
         this.invalidateElements();
+        if (this._width != null)
+            this._setScaleX(this._width / this._billboardRect.width);
+        if (this._height != null)
+            this._setScaleY(this._height / this._billboardRect.height);
     };
     Billboard.prototype.invalidateElements = function () {
         this.dispatchEvent(new _awayjs_graphics.RenderableEvent(_awayjs_graphics.RenderableEvent.INVALIDATE_ELEMENTS, this));
@@ -26625,7 +26661,12 @@ var Sprite = (function (_super) {
     }
     Sprite.getNewSprite = function (material) {
         if (material === void 0) { material = null; }
-        return (Sprite._sprites.length) ? Sprite._sprites.pop() : new Sprite(material);
+        if (Sprite._sprites.length) {
+            var sprite = Sprite._sprites.pop();
+            sprite.material = material;
+            return sprite;
+        }
+        return new Sprite(material);
     };
     Object.defineProperty(Sprite.prototype, "assetType", {
         /**
@@ -26649,8 +26690,8 @@ var Sprite = (function (_super) {
                 //var comps:Array<Vector3D> = this.transform.concatenatedMatrix3D.decompose();
                 this._graphics.updateSlice9(this.parent.scaleX, this.parent.scaleY);
             }
-            else if (this._graphics.scaleStrokes && this.parent) {
-                this._graphics.updateScale(this.parent.scaleX, this.parent.scaleY);
+            else if (this.parent) {
+                this._graphics.updateScale(this.parent.scaleX * this.scaleX, this.parent.scaleY * this.scaleY);
             }
             return this._graphics;
         },
@@ -26731,9 +26772,10 @@ var Sprite = (function (_super) {
         this.copyTo(newInstance);
         return newInstance;
     };
-    Sprite.prototype.copyTo = function (sprite) {
+    Sprite.prototype.copyTo = function (sprite, cloneShapes) {
+        if (cloneShapes === void 0) { cloneShapes = false; }
         _super.prototype.copyTo.call(this, sprite);
-        this._graphics.copyTo(sprite.graphics);
+        this._graphics.copyTo(sprite.graphics, cloneShapes);
     };
     /**
      * //TODO
@@ -26922,7 +26964,7 @@ var PrimitivePrefabBase = (function (_super) {
             return this._scaleU;
         },
         set: function (value) {
-            if (this._scaleU = value)
+            if (this._scaleU == value)
                 return;
             this._scaleU = value;
             this._pInvalidateUVs();
@@ -26935,7 +26977,7 @@ var PrimitivePrefabBase = (function (_super) {
             return this._scaleV;
         },
         set: function (value) {
-            if (this._scaleV = value)
+            if (this._scaleV == value)
                 return;
             this._scaleV = value;
             this._pInvalidateUVs();
@@ -30649,6 +30691,10 @@ var TesselatedFontTable = (function (_super) {
             }
             else {
             }
+            //todo: this is a temporary fix for sunflower `si` VoltMeter text vertical align
+            if (format.font_name == "DJB Get Digital") {
+                y -= 2;
+            }
             //y=tf.words[w+2]+(this.ascent-this.get_font_em_size())*this._size_multiply; // icycle
             c_len = startIdx + tf.words[w + 4];
             for (c = startIdx; c < c_len; c++) {
@@ -30973,6 +31019,7 @@ var TextFormat = (function (_super) {
         _this.tabStops = [];
         _this.font_name = font;
         _this.size = size;
+        _this.color = color;
         _this.bold = bold;
         _this.italic = italic;
         _this.underline = underline;
@@ -31669,10 +31716,15 @@ var TextField = (function (_super) {
                     var tl_extra = 0;
                     var tl_extra_len = paragraphs.length;
                     for (tl = 0; tl < tl_len; tl++) {
-                        extra_split = paragraphs[tl].match(/[^\r\n]+/g);
-                        tl_extra_len = extra_split.length;
-                        for (tl_extra = 0; tl_extra < tl_extra_len; tl_extra++) {
-                            this.buildParagraph(extra_split[tl_extra]);
+                        extra_split = paragraphs[tl].split("\n"); //match(/[^\r\n]+/g));
+                        if (extra_split) {
+                            tl_extra_len = extra_split.length;
+                            for (tl_extra = 0; tl_extra < tl_extra_len; tl_extra++) {
+                                this.buildParagraph(extra_split[tl_extra]);
+                            }
+                        }
+                        else {
+                            this.buildParagraph(paragraphs[tl]);
                         }
                     }
                 }
@@ -33341,28 +33393,6 @@ TouchEvent.TOUCH_OUT = "touchOut3d";
  *
  */
 TouchEvent.TOUCH_OVER = "touchOver3d";
-
-var DefaultSceneGraphFactory = (function () {
-    function DefaultSceneGraphFactory() {
-    }
-    DefaultSceneGraphFactory.prototype.createMovieClip = function (timeline) {
-        if (timeline === void 0) { timeline = null; }
-        return new MovieClip(timeline);
-    };
-    DefaultSceneGraphFactory.prototype.createSprite = function () {
-        return new Sprite();
-    };
-    DefaultSceneGraphFactory.prototype.createDisplayObjectContainer = function () {
-        return new DisplayObjectContainer();
-    };
-    DefaultSceneGraphFactory.prototype.createTextField = function () {
-        return new TextField();
-    };
-    DefaultSceneGraphFactory.prototype.createBillboard = function (material) {
-        return new Billboard(material);
-    };
-    return DefaultSceneGraphFactory;
-}());
 
 /**
  * LightPickerBase provides an abstract base clase for light picker classes. These classes are responsible for
@@ -36442,7 +36472,7 @@ var Scene = (function (_super) {
     __extends(Scene, _super);
     function Scene() {
         var _this = _super.call(this) || this;
-        _this._objects = new Array();
+        _this._objects = new Object();
         _this._views = new Array();
         _this._iCollectionMark = 0;
         _this.mouseEnabled = false;
@@ -36452,13 +36482,6 @@ var Scene = (function (_super) {
         _this._pPartition = _this;
         return _this;
     }
-    Object.defineProperty(Scene.prototype, "objects", {
-        get: function () {
-            return this._objects;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Scene.prototype, "assetType", {
         /**
          *
@@ -36473,7 +36496,7 @@ var Scene = (function (_super) {
      * @internal
      */
     Scene.prototype._iRegisterObject = function (displayObject) {
-        this._objects.push(displayObject);
+        this._objects[displayObject.id] = displayObject;
         var len = this._views.length;
         for (var i = 0; i < len; i++)
             this._views[i].registerObject(displayObject);
@@ -36482,7 +36505,7 @@ var Scene = (function (_super) {
      * @internal
      */
     Scene.prototype._iUnregisterObject = function (displayObject) {
-        this._objects.splice(this._objects.indexOf(displayObject), 1);
+        delete this._objects[displayObject.id];
         var len = this._views.length;
         for (var i = 0; i < len; i++)
             this._views[i].unRegisterObject(displayObject);
@@ -36492,18 +36515,16 @@ var Scene = (function (_super) {
      */
     Scene.prototype._iRegisterView = function (view) {
         this._views.push(view);
-        var len = this._objects.length;
-        for (var i = 0; i < len; i++)
-            view.registerObject(this._objects[i]);
+        for (var key in this._objects)
+            view.registerObject(this._objects[key]);
     };
     /**
      * @internal
      */
     Scene.prototype._iUnregisterView = function (view) {
         this._views.splice(this._views.indexOf(view), 1);
-        var len = this._objects.length;
-        for (var i = 0; i < len; i++)
-            view.unRegisterObject(this._objects[i]);
+        for (var key in this._objects)
+            view.unRegisterObject(this._objects[key]);
     };
     return Scene;
 }(DisplayObjectContainer));
@@ -36549,7 +36570,6 @@ exports.MouseEvent = MouseEvent;
 exports.ResizeEvent = ResizeEvent;
 exports.TextureProjectorEvent = TextureProjectorEvent;
 exports.TouchEvent = TouchEvent;
-exports.DefaultSceneGraphFactory = DefaultSceneGraphFactory;
 exports.FrameScriptManager = FrameScriptManager;
 exports.LightPickerBase = LightPickerBase;
 exports.LightSources = LightSources;
@@ -36595,8 +36615,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_player__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_player___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_player__);
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_player__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_player__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(12), __webpack_require__(10)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(13), __webpack_require__(10)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/stage', '@awayjs/scene'], factory) :
     (factory((global.AwayjsRenderer = global.AwayjsRenderer || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsStage,global.AwayjsScene));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_stage,_awayjs_scene) { 'use strict';
@@ -47304,7 +47335,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
@@ -53570,7 +53601,6 @@ var ContextWebGL = (function () {
         this._separateStencil = false;
         this._container = canvas;
         var props = {
-            premultipliedAlpha: false,
             alpha: false,
             stencil: true
         };
@@ -53740,8 +53770,6 @@ var ContextWebGL = (function () {
             this._gl.enable(this._gl.STENCIL_TEST);
             this._gl.enable(this._gl.DEPTH_TEST);
         }
-        this._gl.viewport['width'] = this._width;
-        this._gl.viewport['height'] = this._height;
         this._gl.viewport(0, 0, this._width, this._height);
     };
     ContextWebGL.prototype.createCubeTexture = function (size, format, optimizeForRenderToTexture, streamingLevels) {
@@ -57148,11 +57176,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(12), __webpack_require__(11), __webpack_require__(10)) :
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(13), __webpack_require__(12), __webpack_require__(10)) :
     typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/stage', '@awayjs/renderer', '@awayjs/scene'], factory) :
     (factory((global.AwayjsMaterials = global.AwayjsMaterials || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsStage,global.AwayjsRenderer,global.AwayjsScene));
 }(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_stage,_awayjs_renderer,_awayjs_scene) { 'use strict';
@@ -57172,56 +57200,10 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
 function __extends(d, b) {
-    extendStatics(d, b);
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
 /**
@@ -57707,7 +57689,7 @@ MethodMaterialMode.MULTI_PASS = "multiPass";
 var MethodMaterial = (function (_super) {
     __extends(MethodMaterial, _super);
     function MethodMaterial(imageColor, alpha) {
-        if (imageColor === void 0) { imageColor = null; }
+        if (imageColor === void 0) { imageColor = 0xFFFFFF; }
         if (alpha === void 0) { alpha = 1; }
         var _this = _super.call(this, imageColor, alpha) || this;
         _this._effectMethods = new Array();
@@ -64433,1579 +64415,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_player__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__awayjs_player___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__awayjs_player__);
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__awayjs_player__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__awayjs_player__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-
-
-
-/***/ },
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(12)) :
-    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/stage'], factory) :
-    (factory((global.AwayjsPlayer = global.AwayjsPlayer || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsStage));
-}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_stage) { 'use strict';
-
-// also contains global AS2 functions
-var AS2ColorAdapter = (function () {
-    function AS2ColorAdapter(symbol) {
-        this._rgb = 0xffffff;
-        this._symbol = symbol;
-        this._symbol._blockedByScript = true;
-        this._target = symbol.adaptee.transform.colorTransform || (symbol.adaptee.transform.colorTransform = new _awayjs_core.ColorTransform());
-        this._transform = { ra: 100, rb: 0, ga: 100, gb: 0, ba: 100, bb: 0, aa: 100, ab: 0 };
-    }
-    AS2ColorAdapter.prototype.getRGB = function () {
-        return this._rgb;
-    };
-    AS2ColorAdapter.prototype.setRGB = function (value) {
-        this._rgb = value;
-        var r = (value >> 16) & 0xff;
-        var g = (value >> 8) & 0xff;
-        var b = value & 0xff;
-        this.setTransform({ ra: r / 0xff * 100, ga: g / 0xff * 100, ba: b / 0xff * 100, aa: 100, rb: 0, gb: 0, bb: 0, ab: 0 });
-    };
-    AS2ColorAdapter.prototype.getTransform = function () {
-        return this._transform;
-    };
-    AS2ColorAdapter.prototype.setTransform = function (value) {
-        this._transform = value;
-        var ct = this._target;
-        ct.redMultiplier = value.ra === undefined ? 1 : value.ra / 100;
-        ct.greenMultiplier = value.ga === undefined ? 1 : value.ga / 100;
-        ct.blueMultiplier = value.ba === undefined ? 1 : value.ba / 100;
-        ct.alphaMultiplier = value.aa === undefined ? 1 : value.aa / 100;
-        ct.redOffset = value.rb || 0;
-        ct.greenOffset = value.gb || 0;
-        ct.blueOffset = value.bb || 0;
-        ct.alphaOffset = value.ab || 0;
-        this._symbol.adaptee.pInvalidateHierarchicalProperties(_awayjs_scene.HierarchicalProperties.COLOR_TRANSFORM);
-    };
-    return AS2ColorAdapter;
-}());
-
-var AS2KeyAdapter = (function () {
-    function AS2KeyAdapter() {
-    }
-    AS2KeyAdapter.addListener = function (listener) {
-        AS2KeyAdapter._listeners.push(listener);
-    };
-    AS2KeyAdapter.removeListener = function (listener) {
-        var listeners = AS2KeyAdapter._listeners;
-        var index = listeners.indexOf(listener);
-        if (index != -1)
-            listeners.splice(index, 1);
-    };
-    AS2KeyAdapter.isDown = function (code) {
-        return AS2KeyAdapter._keys[code];
-    };
-    AS2KeyAdapter.getCode = function () {
-        return AS2KeyAdapter._key;
-    };
-    AS2KeyAdapter.getAscii = function () {
-        return AS2KeyAdapter._char;
-    };
-    AS2KeyAdapter._onKeyDown = function (event) {
-        AS2KeyAdapter._key = event.keyCode;
-        AS2KeyAdapter._char = event.charCode;
-        AS2KeyAdapter._keys[event.keyCode] = true;
-        var len = AS2KeyAdapter._listeners.length;
-        for (var i = 0; i < len; i++)
-            if (AS2KeyAdapter._listeners[i].onKeyDown)
-                AS2KeyAdapter._listeners[i].onKeyDown();
-    };
-    AS2KeyAdapter._onKeyUp = function (event) {
-        AS2KeyAdapter._keys[event.keyCode] = false;
-        var len = AS2KeyAdapter._listeners.length;
-        for (var i = 0; i < len; i++)
-            if (AS2KeyAdapter._listeners[i].onKeyUp)
-                AS2KeyAdapter._listeners[i].onKeyUp();
-    };
-    return AS2KeyAdapter;
-}());
-AS2KeyAdapter._keys = new Array();
-AS2KeyAdapter._listeners = new Array();
-AS2KeyAdapter._addListeners = (function () {
-    if (typeof document !== "undefined") {
-        document.onkeydown = function (event) { return AS2KeyAdapter._onKeyDown(event); };
-        document.onkeyup = function (event) { return AS2KeyAdapter._onKeyUp(event); };
-    }
-})();
-/**
- * Constant associated with the key code value for the Backspace key (8).
- */
-AS2KeyAdapter.BACKSPACE = 8;
-/**
- * Constant associated with the key code value for the Caps Lock key (20).
- */
-AS2KeyAdapter.CAPSLOCK = 20;
-/**
- * Constant associated with the key code value for the Control key (17).
- */
-AS2KeyAdapter.CONTROL = 17;
-/**
- * Constant associated with the key code value for the Delete key (46).
- */
-AS2KeyAdapter.DELETEKEY = 46;
-/**
- * Constant associated with the key code value for the Down Arrow key (40).
- */
-AS2KeyAdapter.DOWN = 40;
-/**
- * Constant associated with the key code value for the End key (35).
- */
-AS2KeyAdapter.END = 35;
-/**
- * Constant associated with the key code value for the Enter key (13).
- */
-AS2KeyAdapter.ENTER = 13;
-/**
- * Constant associated with the key code value for the Escape key (27).
- */
-AS2KeyAdapter.ESCAPE = 27;
-/**
- * Constant associated with the key code value for the Home key (36).
- */
-AS2KeyAdapter.HOME = 36;
-/**
- * Constant associated with the key code value for the Insert key (45).
- */
-AS2KeyAdapter.INSERT = 45;
-/**
- * Constant associated with the key code value for the Left Arrow key (37).
- */
-AS2KeyAdapter.LEFT = 37;
-/**
- * Constant associated with the key code value for the Page Down key (34).
- */
-AS2KeyAdapter.PGDN = 34;
-/**
- * Constant associated with the key code value for the Page Up key (33).
- */
-AS2KeyAdapter.PGUP = 33;
-/**
- * Constant associated with the key code value for the Right Arrow key (39).
- */
-AS2KeyAdapter.RIGHT = 39;
-/**
- * Constant associated with the key code value for the Shift key (16).
- */
-AS2KeyAdapter.SHIFT = 16;
-/**
- * Constant associated with the key code value for the Spacebar (32).
- */
-AS2KeyAdapter.SPACE = 32;
-/**
- * Constant associated with the key code value for the Tab key (9).
- */
-AS2KeyAdapter.TAB = 9;
-/**
- * Constant associated with the key code value for the Up Arrow key (38).
- */
-AS2KeyAdapter.UP = 38;
-
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-var AS2MCSoundProps = (function (_super) {
-    __extends(AS2MCSoundProps, _super);
-    function AS2MCSoundProps() {
-        var _this = _super.call(this) || this;
-        _this._volume = 1;
-        _this._pan = 1;
-        _this._changeEvent = new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.INVALIDATE, _this);
-        return _this;
-    }
-    AS2MCSoundProps.prototype.dispose = function () {
-        this._audio = null;
-        this._changeEvent = null;
-    };
-    Object.defineProperty(AS2MCSoundProps.prototype, "volume", {
-        get: function () {
-            return this._volume;
-        },
-        set: function (value) {
-            if (this._volume != value) {
-                this._volume = value;
-                this.dispatchEvent(this._changeEvent);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MCSoundProps.prototype, "pan", {
-        get: function () {
-            return this._pan;
-        },
-        set: function (value) {
-            if (this._pan != value) {
-                this._pan = value;
-                this.dispatchEvent(this._changeEvent);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MCSoundProps.prototype, "audio", {
-        get: function () {
-            return this._audio;
-        },
-        set: function (value) {
-            if (this._audio)
-                this._audio.stop();
-            this._audio = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return AS2MCSoundProps;
-}(_awayjs_core.AssetBase));
-
-var AS2MouseAdapter = (function () {
-    function AS2MouseAdapter() {
-    }
-    // this does nothing really, just to catch usage in scripts
-    AS2MouseAdapter.addListener = function (listener) {
-        AS2MouseAdapter._globalListeners.push(listener);
-        // TODO: Init actual mouse events here, relative to root MovieClip (I suppose?)
-    };
-    return AS2MouseAdapter;
-}());
-AS2MouseAdapter._globalListeners = [];
-
-// also contains global AS2 gunctions
-var AS2SymbolAdapter = (function () {
-    function AS2SymbolAdapter(adaptee, view) {
-        this.__quality = "high";
-        this._adaptee = adaptee;
-        this._adaptee.adapter = this;
-        this._view = view;
-        this._blockedByScript = false;
-        if (AS2SymbolAdapter.REFERENCE_TIME === -1)
-            AS2SymbolAdapter.REFERENCE_TIME = Date.now();
-    }
-    AS2SymbolAdapter.prototype.isBlockedByScript = function () { return this._blockedByScript; };
-    AS2SymbolAdapter.prototype.isVisibilityByScript = function () { return this._visibilityByScript; };
-    AS2SymbolAdapter.prototype.freeFromScript = function () { this._blockedByScript = false; this._visibilityByScript = false; };
-    AS2SymbolAdapter.prototype.dispose = function () {
-        this._adaptee.dispose();
-        this._adaptee = null;
-        this._view = null;
-    };
-    AS2SymbolAdapter.prototype.getVersion = function () {
-        return 0;
-    };
-    Object.defineProperty(AS2SymbolAdapter.prototype, "adaptee", {
-        get: function () {
-            return this._adaptee;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_height", {
-        get: function () {
-            return this._adaptee.height;
-        },
-        set: function (value) {
-            this._adaptee.height = value;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_name", {
-        get: function () {
-            return this._adaptee.name;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_rotation", {
-        get: function () {
-            return this._adaptee.rotationZ;
-        },
-        set: function (value) {
-            this._adaptee.rotationZ = value;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_x", {
-        get: function () {
-            return this._adaptee.x;
-        },
-        set: function (value) {
-            this._adaptee.x = value;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_xmouse", {
-        get: function () {
-            return this._view.getLocalMouseX(this._adaptee);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_y", {
-        get: function () {
-            return this._adaptee.y;
-        },
-        set: function (value) {
-            this._adaptee.y = value;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_ymouse", {
-        get: function () {
-            return this._view.getLocalMouseY(this._adaptee);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_xscale", {
-        get: function () {
-            return this._adaptee.scaleX * 100;
-        },
-        set: function (value) {
-            this._adaptee.scaleX = value / 100;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_yscale", {
-        get: function () {
-            return this._adaptee.scaleY * 100;
-        },
-        set: function (value) {
-            this._adaptee.scaleY = value / 100;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_visible", {
-        get: function () {
-            return this._adaptee.visible;
-        },
-        set: function (value) {
-            this._adaptee.visible = value;
-            this._visibilityByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_width", {
-        get: function () {
-            return this._adaptee.width;
-        },
-        set: function (value) {
-            this._adaptee.width = value;
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_touchpoints", {
-        get: function () {
-            return this._view.getLocalTouchPoints(this._adaptee);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2SymbolAdapter.prototype.getDepth = function () {
-        return this._adaptee.z;
-    };
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_quality", {
-        // just assure consistency for scripts, doesn't actually effect rendering.
-        get: function () {
-            return this.__quality;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "quality", {
-        set: function (value) {
-            this.__quality = value;
-            // this._blockedByScript=true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2SymbolAdapter.prototype.trace = function (message) {
-        console.log(message);
-    };
-    // may need proper high-def timer mechanism
-    AS2SymbolAdapter.prototype.getTimer = function () {
-        return Date.now() - AS2SymbolAdapter.REFERENCE_TIME;
-    };
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_alpha", {
-        get: function () {
-            return this.adaptee.transform.colorTransform ? (this.adaptee.transform.colorTransform.alphaMultiplier * 100) : 100;
-        },
-        set: function (value) {
-            if (!this.adaptee.transform.colorTransform)
-                this.adaptee.transform.colorTransform = new _awayjs_core.ColorTransform();
-            this.adaptee.transform.colorTransform.alphaMultiplier = value / 100;
-            this.adaptee.pInvalidateHierarchicalProperties(_awayjs_scene.HierarchicalProperties.COLOR_TRANSFORM);
-            this._blockedByScript = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_url", {
-        get: function () {
-            return document.URL;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_global", {
-        get: function () {
-            return null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_level0", {
-        get: function () {
-            return this._root;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2SymbolAdapter.prototype.clearInterval = function (handle) {
-        _awayjs_scene.FrameScriptManager.clearInterval(handle); //window.clearInterval(handle);
-        return;
-    };
-    AS2SymbolAdapter.prototype.setInterval = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var scope;
-        var func;
-        if (typeof (args[0]) == "function") {
-            scope = this;
-            func = args[0];
-        }
-        else {
-            //remove scope variable from args
-            scope = args.shift();
-            //reformat function string to actual function variable in the scope
-            func = scope[args[0]];
-        }
-        //wrap function to maintain scope
-        args[0] = function () { func.apply(scope, arguments); };
-        return _awayjs_scene.FrameScriptManager.setInterval(args[0]); // window.setInterval.apply(window, args);
-    };
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_level10301", {
-        // temporary:
-        get: function () {
-            return this._root;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_root", {
-        get: function () {
-            if (!this.__root) {
-                var p = this._parent;
-                // parents are always MovieClips
-                this.__root = p ? p._root : this;
-            }
-            return this.__root;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2SymbolAdapter.prototype.random = function (range) {
-        return Math.floor(Math.random() * range);
-    };
-    Object.defineProperty(AS2SymbolAdapter.prototype, "_parent", {
-        get: function () {
-            var parent = this.adaptee.parent;
-            return parent ? parent._adapter : null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return AS2SymbolAdapter;
-}());
-AS2SymbolAdapter.REFERENCE_TIME = -1;
-
-// also contains global AS2 functions
-var AS2SystemAdapter = (function () {
-    function AS2SystemAdapter() {
-    }
-    return AS2SystemAdapter;
-}());
-AS2SystemAdapter.security = null;
-AS2SystemAdapter.capabilities = { version: 6 };
-
-// also contains global AS2 functions
-var AS2SoundAdapter = (function () {
-    // TODO: Any real Sound stuff should be externalized for AwayJS use. For now use internally since it's only 2D.
-    function AS2SoundAdapter(target) {
-        var _this = this;
-        this._loop = false;
-        this._name = "";
-        this._id = -1;
-        this._playing = false;
-        this._volume = 0; // uses this vol property on sound.
-        // not sure how to handle target yet
-        this._id = AS2SoundAdapter._soundIDCnt++;
-        this._target = target;
-        this._soundProps = (target != null && target.__pSoundProps) ? this._target.__pSoundProps : AS2SoundAdapter._globalSoundProps;
-        this._onGlobalChangeDelegate = function (event) { return _this.onGlobalChange(event); };
-        AS2SoundAdapter._globalSoundProps.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, this._onGlobalChangeDelegate);
-    }
-    AS2SoundAdapter.prototype.attachSound = function (id) {
-        this._name = id.replace(".wav", "").replace(".mp3", "").replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
-        var asset = _awayjs_core.AssetLibrary.getAsset(this._name);
-        if (asset)
-            this._soundProps.audio = asset.clone();
-        else {
-            console.log("audio-asset not found " + this._name);
-        }
-        this.updateVolume();
-    };
-    /*getBytesLoaded():number
-    {
-        return 1;
-    }
-
-    getBytesTotal():number
-    {
-        return 1;
-    }*/
-    AS2SoundAdapter.prototype.getPan = function () {
-        return this._soundProps.pan * 100;
-    };
-    AS2SoundAdapter.prototype.setPan = function (value) {
-        this._soundProps.pan = value / 100;
-        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
-        }
-        else if (this._soundProps.audio)
-            this._soundProps.audio.pan = value / 100;
-    };
-    /*getTransform():Object
-    {
-        return this._transform;
-    }
-
-    setTransform(value:Object):void
-    {
-        this._transform = value;
-    }*/
-    AS2SoundAdapter.prototype.getVolume = function () {
-        return this._soundProps.volume * 100;
-    };
-    AS2SoundAdapter.prototype.setVolume = function (value) {
-        this._soundProps.volume = value / 100;
-        this.updateVolume();
-    };
-    /*loadSound(url:string, isStreaming:boolean):void
-    {
-        this.disposeAudio();
-        // how to handle isStreaming == false? Manually?
-        this._soundProps.audio = new Audio();
-        this._soundProps.audio.src = url;
-        this.initAudio();
-    }*/
-    AS2SoundAdapter.prototype.start = function (offsetInSeconds, loops) {
-        if (offsetInSeconds === void 0) { offsetInSeconds = 0; }
-        if (loops === void 0) { loops = 0; }
-        this._playing = true;
-        this._loop = Boolean(loops > 0);
-        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
-            _awayjs_stage.ContextGLES.startSound(this._name, this._id, this._volume, this._loop);
-            //AudioManager.getExternalSoundInterface().startSound(this._name, this._id, this._volume, this._loop);
-            return;
-        }
-        if (this._soundProps.audio) {
-            this._soundProps.audio.play(offsetInSeconds, this._loop);
-            return;
-        }
-        //console.log("Calling AS2SoundAdapter.start() was not successfull. Audio not set for this sound.")
-    };
-    AS2SoundAdapter.prototype.stop = function (linkageID) {
-        if (linkageID === void 0) { linkageID = null; }
-        if (!this._playing)
-            return;
-        this._playing = false;
-        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
-            _awayjs_stage.ContextGLES.stopSound(this._id);
-            //AudioManager.getExternalSoundInterface().stopSound(this._id);
-            return;
-        }
-        else if (this._soundProps.audio) {
-            this._soundProps.audio.stop();
-            return;
-        }
-        //console.log("Calling AS2SoundAdapter.stop() was not successfull. Audio not set for this sound.")
-    };
-    Object.defineProperty(AS2SoundAdapter.prototype, "position", {
-        get: function () {
-            if (this._soundProps.audio)
-                return this._soundProps.audio.currentTime;
-            return 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SoundAdapter.prototype, "duration", {
-        get: function () {
-            if (this._soundProps.audio)
-                return this._soundProps.audio.duration;
-            return 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2SoundAdapter.prototype, "id3", {
-        get: function () {
-            return {};
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2SoundAdapter.prototype.onGlobalChange = function (event) {
-        this.updateVolume();
-    };
-    AS2SoundAdapter.prototype.updateVolume = function () {
-        var vol = this._soundProps.volume * AS2SoundAdapter._globalSoundProps.volume;
-        if (vol > 1)
-            vol = 1;
-        if (vol < 0)
-            vol = 0;
-        vol = Math.round(vol * 100) / 100;
-        if (this._volume == vol)
-            return;
-        this._volume = vol;
-        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
-            if (this._playing) {
-                _awayjs_stage.ContextGLES.updateSound(this._id, this._volume, this._loop);
-            }
-        }
-        else if (this._soundProps.audio)
-            this._soundProps.audio.volume = this._volume;
-    };
-    return AS2SoundAdapter;
-}());
-AS2SoundAdapter._globalSoundProps = new AS2MCSoundProps();
-AS2SoundAdapter._soundIDCnt = 0;
-
-var AS2StageAdapter = (function () {
-    function AS2StageAdapter() {
-    }
-    return AS2StageAdapter;
-}());
-// this does nothing really, just to catch usage in scripts
-AS2StageAdapter.showMenu = true;
-
-var AS2SharedObjectAdapter = (function () {
-    function AS2SharedObjectAdapter(name) {
-        this._object_name = name;
-        if (typeof (Storage) !== "undefined") {
-            this.data = JSON.parse(localStorage.getItem(name));
-        }
-        if (this.data == null) {
-            console.log("no shared object found");
-            this.data = {};
-        }
-    }
-    // should become a static
-    AS2SharedObjectAdapter.getLocal = function (name, localPath, secure) {
-        return new AS2SharedObjectAdapter(name);
-    };
-    // needs to stay as it is
-    AS2SharedObjectAdapter.prototype.flush = function () {
-        if (typeof (Storage) !== "undefined") {
-            localStorage.setItem(this._object_name, JSON.stringify(this.data));
-        }
-        else {
-            console.log("no local storage available");
-        }
-        // save all local data to wherever it needs to go
-    };
-    return AS2SharedObjectAdapter;
-}());
-
-var includeString = 'var Color			= this._includes.Color;\n' +
-    'var System				= this._includes.System;\n' +
-    'var Sound				= this._includes.Sound;\n' +
-    'var Key				= this._includes.Key;\n' +
-    'var Mouse				= this._includes.Mouse;\n' +
-    'var Stage				= this._includes.Stage;\n' +
-    'var SharedObject		= this._includes.SharedObject;\n' +
-    'var int = function(value) {return Math.floor(value) | 0;}\n' +
-    'var string = function(value) {return value.toString();}\n' +
-    'var getURL = function(value) {window.open(value,"_blank");}\n\n';
-var AS2MovieClipAdapter = (function (_super) {
-    __extends(AS2MovieClipAdapter, _super);
-    function AS2MovieClipAdapter(adaptee, view) {
-        var _this = 
-        // create an empty MovieClip if none is passed
-        _super.call(this, adaptee, view) || this;
-        _this._includes = {
-            Color: AS2ColorAdapter,
-            System: AS2SystemAdapter,
-            Sound: AS2SoundAdapter,
-            Key: AS2KeyAdapter,
-            Mouse: AS2MouseAdapter,
-            Stage: AS2StageAdapter,
-            SharedObject: AS2SharedObjectAdapter
-        };
-        _this.__pSoundProps = new AS2MCSoundProps();
-        _this._onLoaderCompleteDelegate = function (event) { return _this.onLoaderComplete(event); };
-        _this._onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
-        return _this;
-    }
-    AS2MovieClipAdapter.prototype.loadMovie = function (url, method) {
-        if (method === void 0) { method = null; }
-        this._loader = new _awayjs_scene.LoaderContainer();
-        this._loader.addEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
-        this._loader.addEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
-        this._loader.load(new _awayjs_core.URLRequest(url));
-    };
-    AS2MovieClipAdapter.prototype.onLoaderComplete = function (event) {
-        console.log("loaded url!");
-        this._loader.removeEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
-        this._loader.removeEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
-        this._loader = null;
-        //todo: dispose loader ?
-    };
-    AS2MovieClipAdapter.prototype.onAssetComplete = function (event) {
-        event.asset;
-        if (event.asset.isAsset(_awayjs_scene.MovieClip)) {
-            var awayMC = event.asset;
-            // if this is the "Scene 1", we transfer the timeline into the mc that is loading the movie
-            if (event.asset.name == "Scene 1" || event.asset.name == "main") {
-                //this.adaptee.addChild(awayMC);
-                this._adaptee.timeline = awayMC.timeline;
-                this._adaptee.reset();
-                this.gotoAndPlay(1);
-            }
-        }
-    };
-    AS2MovieClipAdapter.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        this.__pSoundProps.dispose();
-        this.__pSoundProps = null;
-    };
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "_framesloaded", {
-        get: function () {
-            // not loading frame by frame?
-            return this._adaptee.numFrames;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "_currentframe", {
-        get: function () {
-            return this._adaptee.currentFrameIndex + 1;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "_totalframes", {
-        get: function () {
-            return this._adaptee.numFrames;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "enabled", {
-        get: function () {
-            return this._adaptee.mouseEnabled;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2MovieClipAdapter.prototype.evalScript = function (str) {
-        var tag = document.createElement('script');
-        tag.text = 'var __framescript__ = function() {\n' + includeString + str + '\n}';
-        //add and remove script tag to dom to trigger compilation
-        var sibling = document.scripts[0];
-        sibling.parentNode.insertBefore(tag, sibling).parentNode.removeChild(tag);
-        var script = __framescript__;
-        window['__framescript__'] = null;
-        return script;
-    };
-    //attachAudio(id: AS2SoundAdapter):void {	}
-    //attachBitmap(bmp: BitmapImage2D, depth: Number, pixelSnapping: String = null, smoothing: boolean = false):void { }
-    AS2MovieClipAdapter.prototype.attachMovie = function (id, name, depth, initObject) {
-        if (initObject === void 0) { initObject = null; }
-        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
-        _awayjs_core.AssetLibrary.getAsset(id).adaptee.copyTo(adapter.adaptee);
-        this._adaptee.addChildAtDepth(adapter.adaptee, depth);
-        adapter.adaptee.name = name;
-        this.registerScriptObject(adapter.adaptee);
-        return adapter;
-    };
-    //beginBitmapFill(bmp: BitmapImage2D, matrix: Matrix = null, repeat: boolean = false, smoothing: boolean = false):void {}
-    //beginFill(rgb: Number, alpha: number = 1.0):void {}
-    //beginGradientFill(fillType: string, colors: Array, alphas: Array, ratios: Array, matrix: Object, spreadMethod: string = null, interpolationMethod: string  = null, focalPointRatio: number  = null):void {}
-    //clear():void {}
-    AS2MovieClipAdapter.prototype.createEmptyMovieClip = function (name, depth) {
-        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
-        adapter.adaptee.name = name;
-        this.adaptee.addChildAtDepth(adapter.adaptee, depth);
-        this.registerScriptObject(adapter.adaptee);
-        return adapter;
-    };
-    //createTextField(instanceName: String, depth: Number, x: Number, y: Number, width: Number, height: Number):TextField {}
-    //curveTo(controlX: number, controlY: number, anchorX: number, anchorY: number):void {}
-    AS2MovieClipAdapter.prototype.duplicateMovieClip = function (name, depth, initObject) {
-        var duplicate = this.clone();
-        duplicate.adaptee.name = name;
-        if (initObject)
-            for (var key in initObject)
-                if (duplicate.hasOwnProperty(key))
-                    duplicate[key] = initObject[key];
-        this._adaptee.parent.addChildAtDepth(duplicate.adaptee, depth);
-        return duplicate;
-    };
-    //endFill():void {}
-    //getBounds(bounds: Object):Object { return null; }
-    // not applicable?
-    AS2MovieClipAdapter.prototype.getBytesLoaded = function () { return 1; };
-    // not applicable?
-    AS2MovieClipAdapter.prototype.getBytesTotal = function () { return 1; };
-    AS2MovieClipAdapter.prototype.getInstanceAtDepth = function (depth) {
-        return this._adaptee.getChildAtDepth(depth);
-    };
-    AS2MovieClipAdapter.prototype.getNextHighestDepth = function () {
-        return this._adaptee.getNextHighestDepth();
-    };
-    //getRect(bounds: Object):Object { return null; }
-    //getSWFVersion():number { return 0; }
-    //getTextSnapshot():TextSnapshot {}
-    //getURL(url: string, window: string, method: string):void {}
-    AS2MovieClipAdapter.prototype.globalToLocal = function (pt) {
-        var newPoint = this._adaptee.globalToLocal(new _awayjs_core.Point(pt.x, pt.y));
-        pt.x = newPoint.x;
-        pt.y = newPoint.y;
-    };
-    AS2MovieClipAdapter.prototype.gotoAndPlay = function (frame) {
-        if (frame == null)
-            return;
-        this.play();
-        this._gotoFrame(frame);
-    };
-    AS2MovieClipAdapter.prototype.gotoAndStop = function (frame) {
-        if (frame == null)
-            return;
-        this.stop();
-        this._gotoFrame(frame);
-    };
-    AS2MovieClipAdapter.prototype.play = function () {
-        this._adaptee.play();
-    };
-    AS2MovieClipAdapter.prototype.stop = function () {
-        this._adaptee.stop();
-    };
-    AS2MovieClipAdapter.prototype.hitTest = function (x, y, shapeFlag) {
-        if (shapeFlag === void 0) { shapeFlag = false; }
-        return this._adaptee.hitTestPoint(x, y, shapeFlag);
-    };
-    //lineGradientStyle(fillType: string, colors: array, alphas: array, ratios: array, matrix: Object, spreadMethod: string = null, interpolationMethod: string, focalPointRatio: number):void {}
-    //lineStyle(thickness: number, rgb: number, alpha: number, pixelHinting: boolean, noScale: string, capsStyle: string, jointStyle: string, miterLimit: number):void {}
-    //lineTo(x: number, y: number):void {}
-    //loadMovie(url: string, method: string = null):void {}
-    //loadVariables(url: string, method: string = null):void {}
-    AS2MovieClipAdapter.prototype.localToGlobal = function (pt) {
-        var newPoint = this._adaptee.localToGlobal(new _awayjs_core.Point(pt.x, pt.y));
-        pt.x = newPoint.x;
-        pt.y = newPoint.y;
-    };
-    //moveTo(x: number, y: number):void {}
-    AS2MovieClipAdapter.prototype.nextFrame = function () {
-        ++this._adaptee.currentFrameIndex;
-    };
-    AS2MovieClipAdapter.prototype.prevFrame = function () {
-        --this._adaptee.currentFrameIndex;
-    };
-    AS2MovieClipAdapter.prototype.removeMovieClip = function () {
-        if (this._adaptee.parent) {
-            this._adaptee.parent.removeChild(this._adaptee);
-        }
-    };
-    AS2MovieClipAdapter.prototype.setMask = function (mc) {
-        this._adaptee.masks = [mc];
-    };
-    //startDrag(lockCenter: boolean = false, left: number = 0, top: number = 0, right: number = 0, bottom: number = 0):void {}
-    //stopDrag():void {}
-    AS2MovieClipAdapter.prototype.swapDepths = function (target) {
-        var parent = this._adaptee.parent;
-        if (parent != null && target.parent == parent)
-            parent.swapChildren(this._adaptee, target);
-    };
-    //unloadMovie():void {}
-    AS2MovieClipAdapter.prototype.clone = function () {
-        var clone = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
-        this.adaptee.copyTo(clone.adaptee);
-        return clone;
-    };
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onEnterFrame", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onEnterFrame;
-        },
-        set: function (value) {
-            this._onEnterFrame = this._replaceEventListener(_awayjs_core.AssetEvent.ENTER_FRAME, this._onEnterFrame, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRollOut", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onRollOut;
-        },
-        set: function (value) {
-            this._onRollOut = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_OUT, this._onRollOut, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRollOver", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onRollOver;
-        },
-        set: function (value) {
-            this._onRollOver = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_OVER, this._onRollOver, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRelease", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onRelease;
-        },
-        set: function (value) {
-            this._onRelease = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_UP, this._onRelease, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onPress", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onPress;
-        },
-        set: function (value) {
-            this._onPress = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_DOWN, this._onPress, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseDown", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onMouseDown;
-        },
-        set: function (value) {
-            this._onMouseDown = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_DOWN, this._onMouseDown, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseUp", {
-        /**
-         *
-         */
-        get: function () {
-            return this._onMouseUp;
-        },
-        set: function (value) {
-            this._onMouseUp = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_UP, this._onMouseUp, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseWheel", {
-        get: function () {
-            return this._onMouseWheel;
-        },
-        set: function (value) {
-            var mc = this.adaptee;
-            if (this._onMouseWheel)
-                mc.removeEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, this._onMouseWheel);
-            if (value) {
-                var self = this;
-                var delegate = function (event) { return value.call(self, event); };
-                mc.addEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, delegate);
-                this._onMouseWheel = delegate;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AS2MovieClipAdapter.prototype.registerScriptObject = function (child) {
-        if (child.name)
-            this[child.name] = child._adapter ? child.adapter : child;
-    };
-    AS2MovieClipAdapter.prototype.unregisterScriptObject = function (child) {
-        delete this[child.name];
-        if (child.isAsset(_awayjs_scene.MovieClip))
-            child.removeButtonListeners();
-    };
-    AS2MovieClipAdapter.prototype._gotoFrame = function (frame) {
-        var mc = this.adaptee;
-        if (typeof frame === "string")
-            mc.jumpToLabel(frame);
-        else
-            mc.currentFrameIndex = frame - 1;
-    };
-    AS2MovieClipAdapter.prototype._replaceEventListener = function (eventType, currentListener, newListener) {
-        var mc = this.adaptee;
-        if (currentListener)
-            mc.removeEventListener(eventType, currentListener);
-        if (newListener) {
-            var self = this;
-            var delegate = function () { return newListener.call(self); };
-            mc.addEventListener(eventType, delegate);
-        }
-        return delegate;
-    };
-    return AS2MovieClipAdapter;
-}(AS2SymbolAdapter));
-
-var AS2TextFieldAdapter = (function (_super) {
-    __extends(AS2TextFieldAdapter, _super);
-    function AS2TextFieldAdapter(adaptee, view) {
-        return _super.call(this, adaptee, view) || this;
-    }
-    AS2TextFieldAdapter.prototype.clone = function () {
-        var clone = new AS2TextFieldAdapter(_awayjs_scene.TextField.getNewTextField(), this._view);
-        this.adaptee.copyTo(clone.adaptee);
-        return clone;
-    };
-    Object.defineProperty(AS2TextFieldAdapter.prototype, "textColor", {
-        get: function () {
-            return this._adaptee.textColor;
-        },
-        set: function (value) {
-            this._adaptee.textColor = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2TextFieldAdapter.prototype, "embedFonts", {
-        get: function () {
-            return this._embedFonts;
-        },
-        set: function (value) {
-            this._embedFonts = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AS2TextFieldAdapter.prototype, "text", {
-        get: function () {
-            return this._adaptee.text;
-        },
-        set: function (value) {
-            this._adaptee.text = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return AS2TextFieldAdapter;
-}(AS2SymbolAdapter));
-
-var AS2SceneGraphFactory = (function (_super) {
-    __extends(AS2SceneGraphFactory, _super);
-    function AS2SceneGraphFactory(view) {
-        var _this = _super.call(this) || this;
-        _this._view = view;
-        return _this;
-    }
-    AS2SceneGraphFactory.prototype.createMovieClip = function (timeline) {
-        if (timeline === void 0) { timeline = null; }
-        return new AS2MovieClipAdapter(new _awayjs_scene.MovieClip(timeline), this._view).adaptee;
-    };
-    AS2SceneGraphFactory.prototype.createTextField = function () {
-        return new AS2TextFieldAdapter(new _awayjs_scene.TextField(), this._view).adaptee;
-    };
-    return AS2SceneGraphFactory;
-}(_awayjs_scene.DefaultSceneGraphFactory));
-
-exports.AS2ColorAdapter = AS2ColorAdapter;
-exports.AS2KeyAdapter = AS2KeyAdapter;
-exports.AS2MCSoundProps = AS2MCSoundProps;
-exports.AS2MouseAdapter = AS2MouseAdapter;
-exports.AS2MovieClipAdapter = AS2MovieClipAdapter;
-exports.AS2SharedObjectAdapter = AS2SharedObjectAdapter;
-exports.AS2SoundAdapter = AS2SoundAdapter;
-exports.AS2StageAdapter = AS2StageAdapter;
-exports.AS2SymbolAdapter = AS2SymbolAdapter;
-exports.AS2SystemAdapter = AS2SystemAdapter;
-exports.AS2TextFieldAdapter = AS2TextFieldAdapter;
-exports.AS2SceneGraphFactory = AS2SceneGraphFactory;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-(function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(11), __webpack_require__(9)) :
-    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/renderer', '@awayjs/graphics'], factory) :
-    (factory((global.AwayjsView = global.AwayjsView || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsRenderer,global.AwayjsGraphics));
-}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_renderer,_awayjs_graphics) { 'use strict';
-
-/**
- * MouseManager enforces a singleton pattern and is not intended to be instanced.
- * it provides a manager class for detecting mouse hits on scene objects and sending out mouse events.
- */
-var MouseManager = (function () {
-    /**
-     * Creates a new <code>MouseManager</code> object.
-     */
-    function MouseManager() {
-        var _this = this;
-        this._viewLookup = new Array();
-        this._containerLookup = new Array();
-        this._nullVector = new _awayjs_core.Vector3D();
-        this._queuedEvents = new Array();
-        this._mouseUp = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_UP);
-        this._mouseClick = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.CLICK);
-        this._mouseOut = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_OUT);
-        this._mouseDown = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_DOWN);
-        this._mouseMove = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_MOVE);
-        this._mouseOver = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_OVER);
-        this._mouseWheel = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_WHEEL);
-        this._mouseDoubleClick = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.DOUBLE_CLICK);
-        this.onClickDelegate = function (event) { return _this.onClick(event); };
-        this.onDoubleClickDelegate = function (event) { return _this.onDoubleClick(event); };
-        this.onMouseDownDelegate = function (event) { return _this.onMouseDown(event); };
-        this.onMouseMoveDelegate = function (event) { return _this.onMouseMove(event); };
-        this.onMouseUpDelegate = function (event) { return _this.onMouseUp(event); };
-        this.onMouseWheelDelegate = function (event) { return _this.onMouseWheel(event); };
-        this.onMouseOverDelegate = function (event) { return _this.onMouseOver(event); };
-        this.onMouseOutDelegate = function (event) { return _this.onMouseOut(event); };
-    }
-    MouseManager.prototype.registerContainer = function (container) {
-        if (container && this._containerLookup.indexOf(container) == -1) {
-            container.addEventListener("click", this.onClickDelegate);
-            container.addEventListener("dblclick", this.onDoubleClickDelegate);
-            container.addEventListener("touchstart", this.onMouseDownDelegate);
-            container.addEventListener("mousedown", this.onMouseDownDelegate);
-            container.addEventListener("touchmove", this.onMouseMoveDelegate);
-            container.addEventListener("mousemove", this.onMouseMoveDelegate);
-            container.addEventListener("mouseup", this.onMouseUpDelegate);
-            container.addEventListener("touchend", this.onMouseUpDelegate);
-            container.addEventListener("mousewheel", this.onMouseWheelDelegate);
-            container.addEventListener("mouseover", this.onMouseOverDelegate);
-            container.addEventListener("mouseout", this.onMouseOutDelegate);
-            this._containerLookup.push(container);
-        }
-    };
-    MouseManager.prototype.unregisterContainer = function (container) {
-        if (container && this._containerLookup.indexOf(container) != -1) {
-            container.removeEventListener("click", this.onClickDelegate);
-            container.removeEventListener("dblclick", this.onDoubleClickDelegate);
-            container.removeEventListener("touchstart", this.onMouseDownDelegate);
-            container.removeEventListener("mousedown", this.onMouseDownDelegate);
-            container.removeEventListener("touchmove", this.onMouseMoveDelegate);
-            container.removeEventListener("mousemove", this.onMouseMoveDelegate);
-            container.removeEventListener("touchend", this.onMouseUpDelegate);
-            container.removeEventListener("mouseup", this.onMouseUpDelegate);
-            container.removeEventListener("mousewheel", this.onMouseWheelDelegate);
-            container.removeEventListener("mouseover", this.onMouseOverDelegate);
-            container.removeEventListener("mouseout", this.onMouseOutDelegate);
-            this._containerLookup.slice(this._containerLookup.indexOf(container), 1);
-        }
-    };
-    MouseManager.getInstance = function () {
-        if (this._instance)
-            return this._instance;
-        return (this._instance = new MouseManager());
-    };
-    MouseManager.prototype.fireMouseEvents = function (forceMouseMove) {
-        // If colliding object has changed, queue over/out events.
-        if (this._iCollision != this._previousCollidingObject) {
-            if (this._previousCollidingObject)
-                this.queueDispatch(this._mouseOut, this._mouseMoveEvent, this._previousCollidingObject);
-            if (this._iCollision)
-                this.queueDispatch(this._mouseOver, this._mouseMoveEvent);
-        }
-        // Fire mouse move events here if forceMouseMove is on.
-        if (forceMouseMove && this._iCollision)
-            this.queueDispatch(this._mouseMove, this._mouseMoveEvent);
-        var event;
-        var dispatcher;
-        // Dispatch all queued events.
-        var len = this._queuedEvents.length;
-        for (var i = 0; i < len; ++i) {
-            event = this._queuedEvents[i];
-            dispatcher = event.entity;
-            // bubble event up the heirarchy until the top level parent is reached
-            while (dispatcher) {
-                if (dispatcher._iIsMouseEnabled())
-                    dispatcher.dispatchEvent(event);
-                dispatcher = dispatcher.parent;
-            }
-            // not totally sure, but i think just calling it is easier and cheaper than any options for that
-            // if nothing is queued, the function will return directly anyway
-            _awayjs_scene.FrameScriptManager.execute_queue();
-        }
-        this._queuedEvents.length = 0;
-        this._previousCollidingObject = this._iCollision;
-        this._iUpdateDirty = false;
-    };
-    //		public addViewLayer(view:View)
-    //		{
-    //			var stg:Stage = view.stage;
-    //
-    //			// Add instance to mouse3dmanager to fire mouse events for multiple views
-    //			if (!view.stageGL.mouse3DManager)
-    //				view.stageGL.mouse3DManager = this;
-    //
-    //			if (!hasKey(view))
-    //				_view3Ds[view] = 0;
-    //
-    //			_childDepth = 0;
-    //			traverseDisplayObjects(stg);
-    //			_viewCount = _childDepth;
-    //		}
-    MouseManager.prototype.registerView = function (view) {
-        if (view)
-            this._viewLookup.push(view);
-    };
-    MouseManager.prototype.unregisterView = function (view) {
-        if (view)
-            this._viewLookup.slice(this._viewLookup.indexOf(view), 1);
-    };
-    MouseManager.prototype.addEventsForViewBinary = function (touchMessage, viewIdx) {
-        if (viewIdx === void 0) { viewIdx = 0; }
-        var newTouchEvent = {};
-        newTouchEvent.clientX = null; // we get the x position from the active touch
-        newTouchEvent.clientY = null; // we get the y position from the active touch
-        newTouchEvent.touches = [];
-        newTouchEvent.changedTouches = [];
-        newTouchEvent.preventDefault = function () { };
-        var messageView = new Float32Array(touchMessage);
-        // transfer touches to event
-        var i = 0;
-        var cnt = 0;
-        var touchCnt = 0;
-        cnt++; //we temporary added 1 float to transfer fps from java to js. skip this
-        var numTouches = messageView[cnt++];
-        var touchtype = messageView[cnt++];
-        var activeTouchID = messageView[cnt++];
-        var x = 0;
-        var y = 0;
-        if ((touchtype != 1) && (touchtype != 6) && (touchtype != 12) && (touchtype != 262) && (touchtype != 518)) {
-            // if this is not a UP command, we add all touches
-            for (i = 0; i < numTouches; i++) {
-                var newTouch = {};
-                newTouch.identifier = messageView[cnt++];
-                newTouch.clientX = messageView[cnt++];
-                newTouch.clientY = messageView[cnt++];
-                newTouchEvent.touches[i] = newTouch;
-            }
-            newTouchEvent.changedTouches[0] = newTouchEvent.touches[activeTouchID];
-            x = newTouchEvent.changedTouches[0].clientX;
-            y = newTouchEvent.changedTouches[0].clientY;
-        }
-        else {
-            // if this is a UP command, we add all touches, except the active one
-            if (numTouches == 1) {
-                var newTouch = {};
-                newTouch.identifier = messageView[cnt++];
-                newTouch.clientX = messageView[cnt++];
-                newTouch.clientY = messageView[cnt++];
-                newTouchEvent.clientX = newTouch.clientX;
-                newTouchEvent.clientY = newTouch.clientY;
-                x = newTouchEvent.clientX;
-                y = newTouchEvent.clientY;
-            }
-            else {
-                for (i = 0; i < numTouches; i++) {
-                    var newTouch = {};
-                    newTouch.identifier = messageView[cnt++];
-                    newTouch.clientX = messageView[cnt++];
-                    newTouch.clientY = messageView[cnt++];
-                    if (i != activeTouchID) {
-                        newTouchEvent.touches[touchCnt] = newTouch;
-                    }
-                    else {
-                        newTouchEvent.clientX = newTouch.clientX;
-                        newTouchEvent.clientY = newTouch.clientY;
-                        x = newTouchEvent.clientX;
-                        y = newTouchEvent.clientY;
-                    }
-                }
-            }
-        }
-        //console.log("Touch ID:"+touchtype+" activeTouchID "+activeTouchID+" numTouches "+numTouches+" x"+x+" y"+y);
-        /*
-         public static final int ACTION_DOWN = 0;
-         public static final int ACTION_POINTER_1_DOWN = 5;
-         public static final int ACTION_POINTER_DOWN = 5;
-         public static final int ACTION_BUTTON_PRESS = 11;
-         public static final int ACTION_POINTER_2_DOWN = 261;
-         public static final int ACTION_POINTER_3_DOWN = 517;
-
-
-         public static final int ACTION_UP = 1;
-         public static final int ACTION_POINTER_1_UP = 6;
-         public static final int ACTION_POINTER_UP = 6;
-         public static final int ACTION_BUTTON_RELEASE = 12;
-         public static final int ACTION_POINTER_2_UP = 262;
-         public static final int ACTION_POINTER_3_UP = 518;
-
-         public static final int ACTION_MOVE = 2;
-
-
-         */
-        if ((touchtype == 0) || (touchtype == 5) || (touchtype == 11) || (touchtype == 261) || (touchtype == 517)) {
-            this.onMouseDown(newTouchEvent);
-        }
-        else if ((touchtype == 1) || (touchtype == 6) || (touchtype == 12) || (touchtype == 262) || (touchtype == 518)) {
-            this.onMouseUp(newTouchEvent);
-        }
-        else if (touchtype == 2) {
-            this.onMouseMove(newTouchEvent);
-        }
-        else {
-            console.log("recieved unknown touch event-type: " + touchtype);
-        }
-    };
-    MouseManager.prototype.fireEventsForViewFromString = function (touchMessage, viewIdx) {
-        if (viewIdx === void 0) { viewIdx = 0; }
-        var newTouchEvent = {};
-        newTouchEvent.clientX = null; // set the x position from the active touch
-        newTouchEvent.clientY = null; // set the y position from the active touch
-        newTouchEvent.preventDefault = function () { };
-        var touchesFromMessage = touchMessage.split(",");
-        // transfer touches to event
-        var i = 0;
-        var cnt = 0;
-        var numTouches = parseInt(touchesFromMessage[cnt++]);
-        var touchtype = parseInt(touchesFromMessage[cnt++]);
-        var activeTouch = parseInt(touchesFromMessage[cnt++]);
-        newTouchEvent.touches = [];
-        newTouchEvent.changedTouches = [];
-        if ((touchtype != 1) && (touchtype != 6)) {
-            for (i = 0; i < numTouches; i++) {
-                var newTouch = {};
-                newTouch.identifier = touchesFromMessage[cnt++];
-                newTouch.clientX = touchesFromMessage[cnt++];
-                newTouch.clientY = touchesFromMessage[cnt++];
-                newTouchEvent.touches[i] = newTouch;
-                newTouchEvent.changedTouches[i] = newTouch;
-            }
-            
-            newTouchEvent.changedTouches[i] = newTouchEvent.touches[activeTouch];
-        }
-        else {
-            for (i = 0; i < numTouches; i++) {
-                if (i != activeTouch) {
-                    var newTouch = {};
-                    newTouch.identifier = touchesFromMessage[cnt++];
-                    newTouch.clientX = touchesFromMessage[cnt++];
-                    newTouch.clientY = touchesFromMessage[cnt++];
-                    newTouchEvent.touches[i] = newTouch;
-                    newTouchEvent.changedTouches[i] = newTouch;
-                }
-                else {
-                    newTouchEvent.clientX = touchesFromMessage[cnt++];
-                    newTouchEvent.clientY = touchesFromMessage[cnt++];
-                    cnt++;
-                }
-            }
-            
-        }
-        if (touchtype == 0) {
-            this.onMouseDown(newTouchEvent);
-        }
-        else if (touchtype == 1) {
-            this.onMouseUp(newTouchEvent);
-        }
-        else if (touchtype == 2) {
-            this.onMouseMove(newTouchEvent);
-        }
-        else if (touchtype == 261) {
-            this.onMouseDown(newTouchEvent);
-        }
-        else if (touchtype == 6) {
-            this.onMouseUp(newTouchEvent);
-        }
-    };
-    // ---------------------------------------------------------------------
-    // Private.
-    // ---------------------------------------------------------------------
-    MouseManager.prototype.queueDispatch = function (event, sourceEvent, collision) {
-        if (collision === void 0) { collision = null; }
-        // 2D properties.
-        if (sourceEvent) {
-            event.delta = sourceEvent.wheelDelta;
-            event.ctrlKey = sourceEvent.ctrlKey;
-            event.altKey = sourceEvent.altKey;
-            event.shiftKey = sourceEvent.shiftKey;
-            event.screenX = (sourceEvent.clientX != null) ? sourceEvent.clientX : sourceEvent.changedTouches[0].clientX;
-            event.screenY = (sourceEvent.clientY != null) ? sourceEvent.clientY : sourceEvent.changedTouches[0].clientY;
-        }
-        if (collision == null)
-            collision = this._iCollision;
-        // 3D properties.
-        if (collision) {
-            // Object.
-            event.entity = collision.entity;
-            event.renderable = collision.renderable;
-            // UV.
-            event.uv = collision.uv;
-            // Position.
-            event.position = collision.position ? collision.position.clone() : null;
-            // Normal.
-            event.normal = collision.normal ? collision.normal.clone() : null;
-            // Face index.
-            event.elementIndex = collision.elementIndex;
-        }
-        else {
-            // Set all to null.
-            event.uv = null;
-            event.entity = null;
-            event.position = this._nullVector;
-            event.normal = this._nullVector;
-            event.elementIndex = 0;
-        }
-        // Store event to be dispatched later.
-        this._queuedEvents.push(event);
-    };
-    // ---------------------------------------------------------------------
-    // Listeners.
-    // ---------------------------------------------------------------------
-    MouseManager.prototype.onMouseMove = function (event) {
-        event.preventDefault();
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseMove, this._mouseMoveEvent = event);
-    };
-    MouseManager.prototype.onMouseOut = function (event) {
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseOut, event);
-    };
-    MouseManager.prototype.onMouseOver = function (event) {
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseOver, event);
-    };
-    MouseManager.prototype.onClick = function (event) {
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseClick, event);
-    };
-    MouseManager.prototype.onDoubleClick = function (event) {
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseDoubleClick, event);
-    };
-    MouseManager.prototype.onMouseDown = function (event) {
-        event.preventDefault();
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseDown, event);
-    };
-    MouseManager.prototype.onMouseUp = function (event) {
-        event.preventDefault();
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseUp, event);
-    };
-    MouseManager.prototype.onMouseWheel = function (event) {
-        this.updateColliders(event);
-        if (this._iCollision)
-            this.queueDispatch(this._mouseWheel, event);
-    };
-    MouseManager.prototype.updateColliders = function (event) {
-        var view;
-        var mouseX = (event.clientX != null) ? event.clientX : event.changedTouches[0].clientX;
-        var mouseY = (event.clientY != null) ? event.clientY : event.changedTouches[0].clientY;
-        var len = this._viewLookup.length;
-        for (var i = 0; i < len; i++) {
-            view = this._viewLookup[i];
-            view._pTouchPoints.length = 0;
-            if (event.touches) {
-                var touch;
-                var len = event.touches.length;
-                for (var i = 0; i < len; i++) {
-                    touch = event.touches[i];
-                    view._pTouchPoints.push(new _awayjs_scene.TouchPoint(touch.clientX + view.x, touch.clientY + view.y, touch.identifier));
-                }
-            }
-            if (this._iUpdateDirty)
-                continue;
-            if (mouseX < view.x || mouseX > view.x + view.width || mouseY < view.y || mouseY > view.y + view.height) {
-                view._pMouseX = null;
-                view._pMouseY = null;
-            }
-            else {
-                view._pMouseX = mouseX + view.x;
-                view._pMouseY = mouseY + view.y;
-                view.updateCollider();
-                if (view.layeredView && this._iCollision)
-                    break;
-            }
-        }
-        this._iUpdateDirty = true;
-    };
-    return MouseManager;
-}());
+     true ? factory(exports, __webpack_require__(9), __webpack_require__(10), __webpack_require__(14), __webpack_require__(7), __webpack_require__(12)) :
+    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/graphics', '@awayjs/scene', '@awayjs/materials', '@awayjs/core', '@awayjs/renderer'], factory) :
+    (factory((global.AwayjsParsers = global.AwayjsParsers || {}),global.AwayjsGraphics,global.AwayjsScene,global.AwayjsMaterials,global.AwayjsCore,global.AwayjsRenderer));
+}(this, (function (exports,_awayjs_graphics,_awayjs_scene,_awayjs_materials,_awayjs_core,_awayjs_renderer) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -66074,1844 +64491,35 @@ function __await(v) {
     return this instanceof __await ? (this.v = v, this) : new __await(v);
 }
 
-/**
- * @class away.partition.EntityNode
- */
-var DisplayObjectNode = (function (_super) {
-    __extends(DisplayObjectNode, _super);
-    function DisplayObjectNode(entity, pool) {
-        var _this = _super.call(this, entity, pool) || this;
-        _this.numEntities = 0;
-        _this.isSceneGraphNode = false;
-        _this._boundsDirty = true;
-        _this._onInvalidatePartitionBoundsDelegate = function (event) { return _this._onInvalidatePartitionBounds(event); };
-        _this._entity = entity;
-        _this._entity.addEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, _this._onInvalidatePartitionBoundsDelegate);
-        _this._boundsType = _this._entity.boundsType;
-        return _this;
-    }
-    Object.defineProperty(DisplayObjectNode.prototype, "debugVisible", {
-        get: function () {
-            return this._entity.debugVisible;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DisplayObjectNode.prototype, "bounds", {
-        /**
-         * @internal
-         */
-        get: function () {
-            if (this._boundsDirty)
-                this._updateBounds();
-            return this._bounds;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isCastingShadow = function () {
-        return this._entity.castsShadows;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isMask = function () {
-        return this._entity.maskMode;
-    };
-    DisplayObjectNode.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._entity.removeEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, this._onInvalidatePartitionBoundsDelegate);
-        this._entity = null;
-        if (this._bounds)
-            this._bounds.dispose();
-        this._bounds = null;
-    };
-    DisplayObjectNode.prototype.onInvalidate = function (event) {
-        _super.prototype.onInvalidate.call(this, event);
-        if (this._boundsType != this._entity.boundsType) {
-            this._boundsType = this._entity.boundsType;
-            this._boundsDirty = true;
-        }
-    };
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isInFrustum = function (planes, numPlanes) {
-        return true;
-    };
-    /**
-     * @inheritDoc
-     */
-    DisplayObjectNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    DisplayObjectNode.prototype.isRenderable = function () {
-        return true;
-    };
-    DisplayObjectNode.prototype.renderBounds = function (traverser) {
-        traverser.applyEntity(this.bounds.boundsPrimitive);
-    };
-    /**
-     * @inheritDoc
-     */
-    DisplayObjectNode.prototype.acceptTraverser = function (traverser) {
-        // do nothing here
-    };
-    DisplayObjectNode.prototype._onInvalidatePartitionBounds = function (event) {
-        // do nothing here
-    };
-    DisplayObjectNode.prototype._updateBounds = function () {
-        if (this._bounds)
-            this._bounds.dispose();
-        if (this._boundsType == _awayjs_scene.BoundsType.AXIS_ALIGNED_BOX)
-            this._bounds = new _awayjs_scene.AxisAlignedBoundingBox(this._entity);
-        else if (this._boundsType == _awayjs_scene.BoundsType.SPHERE)
-            this._bounds = new _awayjs_scene.BoundingSphere(this._entity);
-        else if (this._boundsType == _awayjs_scene.BoundsType.NULL)
-            this._bounds = new _awayjs_scene.NullBounds();
-        this._boundsDirty = false;
-    };
-    return DisplayObjectNode;
-}(_awayjs_core.AbstractionBase));
-
-/**
- * Maintains scenegraph heirarchy when collecting nodes
- */
-var SceneGraphNode = (function (_super) {
-    __extends(SceneGraphNode, _super);
-    function SceneGraphNode() {
-        var _this = _super.apply(this, arguments) || this;
-        _this.isSceneGraphNode = true;
-        _this._numNodes = 0;
-        _this._pChildNodes = new Array();
-        _this._childDepths = new Array();
-        _this._numMasks = 0;
-        _this._childMasks = new Array();
-        return _this;
-    }
-    /**
-     *
-     * @param traverser
-     */
-    SceneGraphNode.prototype.acceptTraverser = function (traverser) {
-        //containers nodes are for ordering only, no need to check enterNode or debugVisible
-        if (this.numEntities == 0)
-            return;
-        var i;
-        for (i = this._numNodes - 1; i >= 0; i--)
-            this._pChildNodes[i].acceptTraverser(traverser);
-        for (i = this._numMasks - 1; i >= 0; i--)
-            this._childMasks[i].acceptTraverser(traverser);
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    SceneGraphNode.prototype.iAddNode = function (node) {
-        node.parent = this;
-        if (node._entity.maskMode) {
-            this._childMasks.push(node);
-            this._numMasks++;
-        }
-        else {
-            var depth = (this._entity != node._entity) ? node._entity._depthID : -16384;
-            var len = this._childDepths.length;
-            var index = len;
-            while (index--)
-                if (this._childDepths[index] < depth)
-                    break;
-            index++;
-            if (index < len) {
-                this._pChildNodes.splice(index, 0, node);
-                this._childDepths.splice(index, 0, depth);
-            }
-            else {
-                this._pChildNodes.push(node);
-                this._childDepths.push(depth);
-            }
-            this._numNodes++;
-        }
-        var numEntities = node.isSceneGraphNode ? node.numEntities : 1;
-        node = this;
-        do {
-            node.numEntities += numEntities;
-        } while ((node = node.parent) != null);
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    SceneGraphNode.prototype.iRemoveNode = function (node) {
-        if (node._entity.maskMode) {
-            this._childMasks.splice(this._childMasks.indexOf(node), 1);
-            this._numMasks--;
-        }
-        else {
-            var index = this._pChildNodes.indexOf(node);
-            this._pChildNodes.splice(index, 1);
-            this._childDepths.splice(index, 1);
-            this._numNodes--;
-        }
-        var numEntities = node.numEntities;
-        node = this;
-        do {
-            node.numEntities -= numEntities;
-        } while ((node = node.parent) != null);
-    };
-    return SceneGraphNode;
-}(DisplayObjectNode));
-
-/**
- * @class away.partition.Partition
- */
-var PartitionBase = (function () {
-    function PartitionBase(root) {
-        this._abstractionPool = new Object();
-        this._updatesMade = false;
-        this._root = root;
-    }
-    Object.defineProperty(PartitionBase.prototype, "root", {
-        get: function () {
-            return this._root;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PartitionBase.prototype.getAbstraction = function (entity) {
-        return (this._abstractionPool[entity.id] || (this._abstractionPool[entity.id] = new PartitionBase._abstractionClassPool[entity.assetType](entity, this)));
-    };
-    /**
-     *
-     * @param image
-     */
-    PartitionBase.prototype.clearAbstraction = function (entity) {
-        this._abstractionPool[entity.id] = null;
-    };
-    PartitionBase.prototype.traverse = function (traverser) {
-        if (this._updatesMade)
-            this.updateEntities();
-        if (this._rootNode)
-            this._rootNode.acceptTraverser(traverser);
-    };
-    PartitionBase.prototype.iMarkForUpdate = function (node) {
-        var t = this._updateQueue;
-        while (t) {
-            if (node == t)
-                return;
-            t = t._iUpdateQueueNext;
-        }
-        node._iUpdateQueueNext = this._updateQueue;
-        this._updateQueue = node;
-        this._updatesMade = true;
-    };
-    PartitionBase.prototype.iRemoveEntity = function (node) {
-        var t;
-        if (node.parent) {
-            node.parent.iRemoveNode(node);
-            node.parent = null;
-        }
-        if (node == this._updateQueue) {
-            this._updateQueue = node._iUpdateQueueNext;
-        }
-        else {
-            t = this._updateQueue;
-            while (t && t._iUpdateQueueNext != node)
-                t = t._iUpdateQueueNext;
-            if (t)
-                t._iUpdateQueueNext = node._iUpdateQueueNext;
-        }
-        node._iUpdateQueueNext = null;
-        if (!this._updateQueue)
-            this._updatesMade = false;
-    };
-    /**
-     *
-     * @param entity
-     * @returns {away.partition.NodeBase}
-     */
-    PartitionBase.prototype.findParentForNode = function (node) {
-        return this._rootNode;
-    };
-    PartitionBase.prototype.updateEntities = function () {
-        var node = this._updateQueue;
-        while (node) {
-            //required for controllers with autoUpdate set to true and queued events
-            node._entity._iInternalUpdate();
-            node = node._iUpdateQueueNext;
-        }
-        //reset head
-        node = this._updateQueue;
-        var targetNode;
-        var t;
-        this._updateQueue = null;
-        this._updatesMade = false;
-        do {
-            targetNode = this.findParentForNode(node);
-            if (node.parent != targetNode) {
-                if (node.parent)
-                    node.parent.iRemoveNode(node);
-                targetNode.iAddNode(node);
-            }
-            t = node._iUpdateQueueNext;
-            node._iUpdateQueueNext = null;
-        } while ((node = t) != null);
-    };
-    /**
-     * @internal
-     */
-    PartitionBase.prototype._iRegisterEntity = function (entity) {
-        if (entity.isEntity)
-            this.iMarkForUpdate(this.getAbstraction(entity));
-    };
-    /*
-     * @internal
-     */
-    PartitionBase.prototype._iUnregisterEntity = function (entity) {
-        if (entity.isEntity)
-            this.iRemoveEntity(this.getAbstraction(entity));
-    };
-    PartitionBase.prototype.dispose = function () {
-        //TODO
-    };
-    /**
-     *
-     * @param imageObjectClass
-     */
-    PartitionBase.registerAbstraction = function (entityNodeClass, assetClass) {
-        PartitionBase._abstractionClassPool[assetClass.assetType] = entityNodeClass;
-    };
-    return PartitionBase;
-}());
-PartitionBase._abstractionClassPool = new Object();
-
-/**
- * @class away.partition.Partition
- */
-var SceneGraphPartition = (function (_super) {
-    __extends(SceneGraphPartition, _super);
-    function SceneGraphPartition(root) {
-        var _this = _super.call(this, root) || this;
-        _this._sceneGraphNodePool = new SceneGraphNodePool();
-        return _this;
-    }
-    SceneGraphPartition.prototype.traverse = function (traverser) {
-        _super.prototype.traverse.call(this, traverser);
-    };
-    /**
-     *
-     * @param entity
-     * @returns {away.partition.NodeBase}
-     */
-    SceneGraphPartition.prototype.findParentForNode = function (node) {
-        if (this._root == node._entity && node.isSceneGraphNode) {
-            this._rootNode = node;
-            return null;
-        }
-        if (!node.isSceneGraphNode && node._entity.isContainer)
-            return this._sceneGraphNodePool.getAbstraction(node._entity);
-        return this._sceneGraphNodePool.getAbstraction(node._entity.parent);
-    };
-    /**
-     * @internal
-     */
-    SceneGraphPartition.prototype._iRegisterEntity = function (entity) {
-        _super.prototype._iRegisterEntity.call(this, entity);
-        if (entity.isContainer)
-            this.iMarkForUpdate(this._sceneGraphNodePool.getAbstraction(entity));
-    };
-    /**
-     * @internal
-     */
-    SceneGraphPartition.prototype._iUnregisterEntity = function (entity) {
-        _super.prototype._iUnregisterEntity.call(this, entity);
-        if (entity.isContainer)
-            this.iRemoveEntity(this._sceneGraphNodePool.getAbstraction(entity));
-    };
-    return SceneGraphPartition;
-}(PartitionBase));
-/**
- * @class away.pool.SceneGraphNodePool
- */
-var SceneGraphNodePool = (function () {
-    function SceneGraphNodePool() {
-        this._abstractionPool = new Object();
-    }
-    /**
-     * //TODO
-     *
-     * @param entity
-     * @returns EntityNode
-     */
-    SceneGraphNodePool.prototype.getAbstraction = function (entity) {
-        return (this._abstractionPool[entity.id] || (this._abstractionPool[entity.id] = new SceneGraphNode(entity, this)));
-    };
-    /**
-     * //TODO
-     *
-     * @param entity
-     */
-    SceneGraphNodePool.prototype.clearAbstraction = function (entity) {
-        delete this._abstractionPool[entity.id];
-    };
-    return SceneGraphNodePool;
-}());
-
-/**
- * Picks a 3d object from a view or scene by 3D raycast calculations.
- * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
- * then triggers an optional picking collider on individual renderable objects to further determine the precise values of the picking ray collision.
- *
- * @class away.pick.RaycastPicker
- */
-var RaycastPicker = (function (_super) {
-    __extends(RaycastPicker, _super);
-    /**
-     * Creates a new <code>RaycastPicker</code> object.
-     *
-     * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
-     * or simply returns the first collision encountered. Defaults to false.
-     */
-    function RaycastPicker(findClosestCollision) {
-        if (findClosestCollision === void 0) { findClosestCollision = false; }
-        var _this = _super.call(this) || this;
-        _this._entities = new Array();
-        /**
-         * @inheritDoc
-         */
-        _this.onlyMouseEnabled = true;
-        _this._findClosestCollision = findClosestCollision;
-        return _this;
-    }
-    /**
-     * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
-     *
-     * @param node The Partition3DNode object to frustum-test.
-     */
-    RaycastPicker.prototype.enterNode = function (node) {
-        return node.isIntersectingRay(this._rayPosition, this._rayDirection) && !node.isMask();
-    };
-    /**
-     * @inheritDoc
-     */
-    RaycastPicker.prototype.getCollision = function (rayPosition, rayDirection, view) {
-        this._rayPosition = rayPosition;
-        this._rayDirection = rayDirection;
-        // collect entities to test
-        view.traversePartitions(this);
-        //early out if no collisions detected
-        if (!this._entities.length)
-            return null;
-        var collision = this.getPickingCollision(view);
-        //discard entities
-        this._entities.length = 0;
-        return collision;
-    };
-    //		public getEntityCollision(position:Vector3D, direction:Vector3D, entities:Array<IEntity>):PickingCollision
-    //		{
-    //			this._numRenderables = 0;
-    //
-    //			var renderable:IEntity;
-    //			var l:number = entities.length;
-    //
-    //			for (var c:number = 0; c < l; c++) {
-    //				renderable = entities[c];
-    //
-    //				if (renderable.isIntersectingRay(position, direction))
-    //					this._renderables[this._numRenderables++] = renderable;
-    //			}
-    //
-    //			return this.getPickingCollision(this._raycastCollector);
-    //		}
-    RaycastPicker.prototype.setIgnoreList = function (entities) {
-        this._ignoredEntities = entities;
-    };
-    RaycastPicker.prototype.isIgnored = function (entity) {
-        if (this.onlyMouseEnabled && !entity._iIsMouseEnabled())
-            return true;
-        if (this._ignoredEntities) {
-            var len = this._ignoredEntities.length;
-            for (var i = 0; i < len; i++)
-                if (this._ignoredEntities[i] == entity)
-                    return true;
-        }
-        return false;
-    };
-    RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
-        return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance ? 1 : -1;
-    };
-    RaycastPicker.prototype.getPickingCollision = function (view) {
-        // Sort entities from closest to furthest to reduce tests.
-        this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
-        // ---------------------------------------------------------------------
-        // Evaluate triangle collisions when needed.
-        // Replaces collision data provided by bounds collider with more precise data.
-        // ---------------------------------------------------------------------
-        this._bestCollision = null;
-        var len = this._entities.length;
-        for (var i = 0; i < len; i++) {
-            this._entity = this._entities[i];
-            this._testCollision = this._entity._iPickingCollision;
-            if (this._bestCollision == null || this._testCollision.rayEntryDistance < this._bestCollision.rayEntryDistance) {
-                this._testCollider = view.getPartition(this._entity).getAbstraction(this._entity).pickingCollider;
-                if (this._testCollider) {
-                    this._testCollision.rayEntryDistance = Number.MAX_VALUE;
-                    this._entity._acceptTraverser(this);
-                    // If a collision exists, update the collision data and stop all checks.
-                    if (this._bestCollision && !this._findClosestCollision)
-                        break;
-                }
-                else if (!this._testCollision.rayOriginIsInsideBounds) {
-                    // A bounds collision with no picking collider stops all checks.
-                    // Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
-                    // to enable the detection of a corresponsding triangle collision.
-                    // Therefore, bounds collisions with a ray origin inside its bounds can be ignored
-                    // if it has been established that there is NO triangle collider to test
-                    this._bestCollision = this._testCollision;
-                    break;
-                }
-            }
-        }
-        if (this._bestCollision)
-            this.updatePosition(this._bestCollision);
-        return this._bestCollision;
-    };
-    RaycastPicker.prototype.updatePosition = function (pickingCollision) {
-        var collisionPos = pickingCollision.position || (pickingCollision.position = new _awayjs_core.Vector3D());
-        var rayDir = pickingCollision.rayDirection;
-        var rayPos = pickingCollision.rayPosition;
-        var t = pickingCollision.rayEntryDistance;
-        collisionPos.x = rayPos.x + t * rayDir.x;
-        collisionPos.y = rayPos.y + t * rayDir.y;
-        collisionPos.z = rayPos.z + t * rayDir.z;
-    };
-    RaycastPicker.prototype.dispose = function () {
-        //TODO
-    };
-    /**
-     *
-     * @param entity
-     */
-    RaycastPicker.prototype.applyEntity = function (entity) {
-        if (!this.isIgnored(entity))
-            this._entities.push(entity);
-    };
-    RaycastPicker.prototype.applyBillboard = function (billboard) {
-        if (this._testCollider.testBillboardCollision(billboard, billboard.material, this._testCollision))
-            this._bestCollision = this._testCollision;
-    };
-    RaycastPicker.prototype.applyLineShape = function (shape) {
-        if (this._testCollider.testLineCollision(shape.elements, shape.material || this._entity.material, this._testCollision, shape.count || shape.elements.numVertices, shape.offset))
-            this._bestCollision = this._testCollision;
-    };
-    RaycastPicker.prototype.applyTriangleShape = function (shape) {
-        if (this._testCollider.testTriangleCollision(shape.elements, shape.material || this._entity.material, this._testCollision, shape.count || shape.elements.numVertices, shape.offset))
-            this._bestCollision = this._testCollision;
-    };
-    /**
-     *
-     * @param entity
-     */
-    RaycastPicker.prototype.applyDirectionalLight = function (entity) {
-        //don't do anything here
-    };
-    /**
-     *
-     * @param entity
-     */
-    RaycastPicker.prototype.applyLightProbe = function (entity) {
-        //don't do anything here
-    };
-    /**
-     *
-     * @param entity
-     */
-    RaycastPicker.prototype.applyPointLight = function (entity) {
-        //don't do anything here
-    };
-    /**
-     *
-     * @param entity
-     */
-    RaycastPicker.prototype.applySkybox = function (entity) {
-        //don't do anything here
-    };
-    return RaycastPicker;
-}(_awayjs_graphics.TraverserBase));
-
-/**
- * @class away.partition.NodeBase
- */
-var NodeBase = (function () {
-    /**
-     *
-     */
-    function NodeBase() {
-        this._bounds = new _awayjs_scene.NullBounds();
-        this._pChildNodes = new Array();
-        this._pNumChildNodes = 0;
-        this.numEntities = 0;
-    }
-    Object.defineProperty(NodeBase.prototype, "debugVisible", {
-        get: function () {
-            return false;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NodeBase.prototype, "bounds", {
-        /**
-         * @internal
-         */
-        get: function () {
-            return this._bounds; //TODO
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     * @internal
-     */
-    NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
-        return true;
-    };
-    /**
-     *
-     * @param rayPosition
-     * @param rayDirection
-     * @returns {boolean}
-     */
-    NodeBase.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    NodeBase.prototype.isRenderable = function () {
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    NodeBase.prototype.isCastingShadow = function () {
-        return true;
-    };
-    NodeBase.prototype.renderBounds = function (traverser) {
-        //nothing to do here
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    NodeBase.prototype.isMask = function () {
-        return false;
-    };
-    NodeBase.prototype.dispose = function () {
-        this.parent = null;
-        this._pChildNodes = null;
-    };
-    /**
-     *
-     * @param traverser
-     */
-    NodeBase.prototype.acceptTraverser = function (traverser) {
-        if (this.numEntities == 0)
-            return;
-        if (traverser.enterNode(this)) {
-            for (var i = 0; i < this._pNumChildNodes; i++)
-                this._pChildNodes[i].acceptTraverser(traverser);
-        }
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    NodeBase.prototype.iAddNode = function (node) {
-        node.parent = this;
-        this.numEntities += node.numEntities;
-        this._pChildNodes[this._pNumChildNodes++] = node;
-        var numEntities = node.numEntities;
-        node = this;
-        do {
-            node.numEntities += numEntities;
-        } while ((node = node.parent) != null);
-    };
-    /**
-     *
-     * @param node
-     * @internal
-     */
-    NodeBase.prototype.iRemoveNode = function (node) {
-        var index = this._pChildNodes.indexOf(node);
-        this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
-        this._pChildNodes.pop();
-        var numEntities = node.numEntities;
-        node = this;
-        do {
-            node.numEntities -= numEntities;
-        } while ((node = node.parent) != null);
-    };
-    return NodeBase;
-}());
-
-/**
- * @class away.partition.Partition
- */
-var BasicPartition = (function (_super) {
-    __extends(BasicPartition, _super);
-    function BasicPartition(root) {
-        var _this = _super.call(this, root) || this;
-        _this._rootNode = new NodeBase();
-        return _this;
-    }
-    return BasicPartition;
-}(PartitionBase));
-
-var View = (function () {
-    /*
-     ***********************************************************************
-     * Disabled / Not yet implemented
-     ***********************************************************************
-     *
-     * private _background:away.textures.Texture2DBase;
-     *
-     * public _pTouch3DManager:away.managers.Touch3DManager;
-     *
-     */
-    function View(renderer, scene, camera) {
-        if (renderer === void 0) { renderer = null; }
-        if (scene === void 0) { scene = null; }
-        if (camera === void 0) { camera = null; }
-        var _this = this;
-        this._time = 0;
-        this._deltaTime = 0;
-        this._backgroundColor = 0x000000;
-        this._backgroundAlpha = 1;
-        this._viewportDirty = true;
-        this._scissorDirty = true;
-        this._mousePicker = new RaycastPicker();
-        this._partitions = new Object();
-        this._pTouchPoints = new Array();
-        this._onProjectionChangedDelegate = function (event) { return _this._onProjectionChanged(event); };
-        this._onViewportUpdatedDelegate = function (event) { return _this._onViewportUpdated(event); };
-        this._onScissorUpdatedDelegate = function (event) { return _this._onScissorUpdated(event); };
-        this._mouseManager = MouseManager.getInstance();
-        this._mouseManager.registerView(this);
-        this.scene = scene || new _awayjs_scene.Scene();
-        this.camera = camera || new _awayjs_scene.Camera();
-        this.renderer = renderer || new _awayjs_renderer.DefaultRenderer();
-        //			if (this._shareContext)
-        //				this._mouse3DManager.addViewLayer(this);
-    }
-    View.prototype.getPartition = function (entity) {
-        //use registered partition for the displayobject or fallback for scene
-        return this._partitions[entity.partition.id] || this._partitions[this._pScene.id];
-    };
-    View.prototype.setPartition = function (entity, partition) {
-        var oldPartition = this._partitions[entity.id];
-        if (oldPartition == partition)
-            return;
-        //clears all existing entities on the partition
-        entity.isPartition = false;
-        if (oldPartition) {
-            oldPartition.dispose();
-            delete this._partitions[entity.id];
-        }
-        if (partition) {
-            this._partitions[entity.id] = partition;
-            entity.isPartition = true;
-        }
-    };
-    View.prototype.getCollider = function (entity) {
-        return this.getPartition(entity).getAbstraction(entity).pickingCollider;
-    };
-    View.prototype.setCollider = function (entity, collider) {
-        this.getPartition(entity).getAbstraction(entity).pickingCollider = collider;
-    };
-    Object.defineProperty(View.prototype, "mouseX", {
-        get: function () {
-            return this._pMouseX;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "mouseY", {
-        get: function () {
-            return this._pMouseY;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "touchPoints", {
-        get: function () {
-            return this._pTouchPoints;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    View.prototype.getLocalMouseX = function (displayObject) {
-        return displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).x;
-    };
-    View.prototype.getLocalMouseY = function (displayObject) {
-        return displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).y;
-    };
-    View.prototype.getLocalTouchPoints = function (displayObject) {
-        var localPosition;
-        var localTouchPoints = new Array();
-        var len = this._pTouchPoints.length;
-        for (var i = 0; i < len; i++) {
-            localPosition = displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pTouchPoints[i].x, this._pTouchPoints[i].y, 1000));
-            localTouchPoints.push(new _awayjs_scene.TouchPoint(localPosition.x, localPosition.y, this._pTouchPoints[i].id));
-        }
-        return localTouchPoints;
-    };
-    Object.defineProperty(View.prototype, "renderer", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer;
-        },
-        set: function (value) {
-            if (this._pRenderer == value)
-                return;
-            if (this._pRenderer) {
-                //swap the old renderer width and height to the new renderer
-                value.width = this._pRenderer.width;
-                value.height = this._pRenderer.height;
-                this._pRenderer.dispose();
-                this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-                this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
-                this._mouseManager.unregisterContainer(this._pRenderer.stage.container);
-            }
-            this._pRenderer = value;
-            this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-            this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
-            this._mouseManager.registerContainer(this._pRenderer.stage.container);
-            //reset back buffer
-            this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
-            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "backgroundColor", {
-        /**
-         *
-         */
-        get: function () {
-            return this._backgroundColor;
-        },
-        set: function (value) {
-            if (this._backgroundColor == value)
-                return;
-            this._backgroundColor = value;
-            this._pRenderer._iBackgroundR = ((value >> 16) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundG = ((value >> 8) & 0xff) / 0xff;
-            this._pRenderer._iBackgroundB = (value & 0xff) / 0xff;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "backgroundAlpha", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return this._backgroundAlpha;
-        },
-        /**
-         *
-         * @param value
-         */
-        set: function (value) {
-            if (value > 1)
-                value = 1;
-            else if (value < 0)
-                value = 0;
-            if (this._backgroundAlpha == value)
-                return;
-            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "camera", {
-        /**
-         *
-         * @returns {Camera3D}
-         */
-        get: function () {
-            return this._pCamera;
-        },
-        /**
-         * Set camera that's used to render the scene for this viewport
-         */
-        set: function (value) {
-            if (this._pCamera == value)
-                return;
-            if (this._pCamera)
-                this._pCamera.removeEventListener(_awayjs_scene.CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
-            this._pCamera = value;
-            if (this._pScene)
-                this._partitions[this._pScene.id]._iRegisterEntity(this._pCamera);
-            this._pCamera.addEventListener(_awayjs_scene.CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
-            this._scissorDirty = true;
-            this._viewportDirty = true;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "scene", {
-        /**
-         *
-         * @returns {away.containers.Scene3D}
-         */
-        get: function () {
-            return this._pScene;
-        },
-        /**
-         * Set the scene that's used to render for this viewport
-         */
-        set: function (value) {
-            if (this._pScene == value)
-                return;
-            if (this._pScene) {
-                this._pScene._iUnregisterView(this);
-                this._partitions[this._pScene.id].dispose();
-            }
-            this._pScene = value;
-            this._partitions[this._pScene.id] = new BasicPartition(this._pScene);
-            this._pScene._iRegisterView(this);
-            if (this._pCamera)
-                this._partitions[this._pScene.id]._iRegisterEntity(this._pCamera);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "deltaTime", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return this._deltaTime;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "width", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer.width;
-        },
-        set: function (value) {
-            this._pRenderer.width = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "height", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer.height;
-        },
-        set: function (value) {
-            this._pRenderer.height = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "mousePicker", {
-        /**
-         *
-         */
-        get: function () {
-            return this._mousePicker;
-        },
-        set: function (value) {
-            if (this._mousePicker == value)
-                return;
-            if (value == null)
-                this._mousePicker = new RaycastPicker();
-            else
-                this._mousePicker = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "x", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer.x;
-        },
-        set: function (value) {
-            this._pRenderer.x = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "y", {
-        /**
-         *
-         */
-        get: function () {
-            return this._pRenderer.y;
-        },
-        set: function (value) {
-            this._pRenderer.y = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(View.prototype, "renderedFacesCount", {
-        /**
-         *
-         * @returns {number}
-         */
-        get: function () {
-            return 0; //TODO
-            //return this._pEntityCollector._pNumTriangles;//numTriangles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Renders the view.
-     */
-    View.prototype.render = function () {
-        this.pUpdateTime();
-        //update view and size data
-        if (this._scissorDirty) {
-            this._scissorDirty = false;
-            this._pCamera.projection.setViewRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
-        }
-        if (this._viewportDirty) {
-            this._viewportDirty = false;
-            this._pCamera.projection.setStageRect(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
-        }
-        // update picking
-        if (!this.disableMouseEvents) {
-            if (this.forceMouseMove && !this._mouseManager._iUpdateDirty)
-                this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-            this._mouseManager.fireMouseEvents(this.forceMouseMove);
-        }
-        //_touch3DManager.updateCollider();
-        //render the contents of the scene
-        this._pRenderer.render(this);
-    };
-    /**
-     *
-     */
-    View.prototype.pUpdateTime = function () {
-        var time = _awayjs_core.getTimer();
-        if (this._time == 0)
-            this._time = time;
-        this._deltaTime = time - this._time;
-        this._time = time;
-    };
-    /**
-     *
-     */
-    View.prototype.dispose = function () {
-        this._pRenderer.dispose();
-        // TODO: imeplement mouseManager / touch3DManager
-        this._mouseManager.unregisterView(this);
-        //this._touch3DManager.disableTouchListeners(this);
-        //this._touch3DManager.dispose();
-        this._mouseManager = null;
-        //this._touch3DManager = null;
-        this._pRenderer = null;
-    };
-    /**
-     *
-     */
-    View.prototype._onProjectionChanged = function (event) {
-        this._scissorDirty = true;
-        this._viewportDirty = true;
-    };
-    /**
-     *
-     */
-    View.prototype._onViewportUpdated = function (event) {
-        this._viewportDirty = true;
-    };
-    /**
-     *
-     */
-    View.prototype._onScissorUpdated = function (event) {
-        this._scissorDirty = true;
-    };
-    View.prototype.project = function (point3d) {
-        var v = this._pCamera.project(point3d);
-        v.x = v.x * this._pRenderer.viewPort.width / 2 + this._pRenderer.width * this._pCamera.projection.originX;
-        v.y = v.y * this._pRenderer.viewPort.height / 2 + this._pRenderer.height * this._pCamera.projection.originY;
-        return v;
-    };
-    View.prototype.unproject = function (sX, sY, sZ, target) {
-        if (target === void 0) { target = null; }
-        return this._pCamera.unproject((2 * sX - this._pRenderer.viewPort.width) / this._pRenderer.viewPort.width, (2 * sY - this._pRenderer.viewPort.height) / this._pRenderer.viewPort.height, sZ, target);
-    };
-    /*TODO: implement Background
-     public get background():away.textures.Texture2DBase
-     {
-     return this._background;
-     }
-     */
-    /*TODO: implement Background
-     public set background( value:away.textures.Texture2DBase )
-     {
-     this._background = value;
-     this._renderer.background = _background;
-     }
-     */
-    // TODO: required dependency stageGL
-    View.prototype.updateCollider = function () {
-        if (!this.disableMouseEvents) {
-            // if (!this._pRenderer.shareContext) {
-            this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
-        }
-    };
-    View.prototype.getViewCollision = function (x, y, view) {
-        //update ray
-        var rayPosition = view.unproject(x, y, 0);
-        var rayDirection = view.unproject(x, y, 1).subtract(rayPosition);
-        return this._mousePicker.getCollision(rayPosition, rayDirection, this);
-    };
-    View.prototype.traversePartitions = function (traverser) {
-        for (var key in this._partitions)
-            this._partitions[key].traverse(traverser);
-    };
-    View.prototype.registerObject = function (displayObject) {
-        this.getPartition(displayObject)._iRegisterEntity(displayObject);
-    };
-    View.prototype.unRegisterObject = function (displayObject) {
-        this.getPartition(displayObject)._iUnregisterEntity(displayObject);
-    };
-    return View;
-}());
-
-/**
- *
- */
-var ViewImage2D = (function (_super) {
-    __extends(ViewImage2D, _super);
-    /**
-     * Creates a BitmapImage2D object with a specified width and height. If you
-     * specify a value for the <code>fillColor</code> parameter, every pixel in
-     * the bitmap is set to that color.
-     *
-     * <p>By default, the bitmap is created as transparent, unless you pass
-     * the value <code>false</code> for the transparent parameter. After you
-     * create an opaque bitmap, you cannot change it to a transparent bitmap.
-     * Every pixel in an opaque bitmap uses only 24 bits of color channel
-     * information. If you define the bitmap as transparent, every pixel uses 32
-     * bits of color channel information, including an alpha transparency
-     * channel.</p>
-     *
-     * @param width       The width of the bitmap image in pixels.
-     * @param height      The height of the bitmap image in pixels.
-     * @param transparent Specifies whether the bitmap image supports per-pixel
-     *                    transparency. The default value is <code>true</code>
-     *                    (transparent). To create a fully transparent bitmap,
-     *                    set the value of the <code>transparent</code>
-     *                    parameter to <code>true</code> and the value of the
-     *                    <code>fillColor</code> parameter to 0x00000000(or to
-     *                    0). Setting the <code>transparent</code> property to
-     *                    <code>false</code> can result in minor improvements
-     *                    in rendering performance.
-     * @param fillColor   A 32-bit ARGB color value that you use to fill the
-     *                    bitmap image area. The default value is
-     *                    0xFFFFFFFF(solid white).
-     */
-    function ViewImage2D(width, height, transparent, fillColor, powerOfTwo, stage) {
-        if (transparent === void 0) { transparent = true; }
-        if (fillColor === void 0) { fillColor = 0xffffffff; }
-        if (powerOfTwo === void 0) { powerOfTwo = true; }
-        if (stage === void 0) { stage = null; }
-        var _this = _super.call(this, width, height, transparent, fillColor, powerOfTwo) || this;
-        _this._fillColor = fillColor;
-        _this._stage = stage;
-        return _this;
-    }
-    Object.defineProperty(ViewImage2D.prototype, "assetType", {
-        /**
-         *
-         * @returns {string}
-         */
-        get: function () {
-            return ViewImage2D.assetType;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ViewImage2D.prototype.createView = function () {
-        //create the view
-        this._view = new View(new _awayjs_renderer.DefaultRenderer(this._stage));
-        this._view.disableMouseEvents = true;
-        this._view.width = this._rect.width;
-        this._view.height = this._rect.height;
-        this._fillColor = this._fillColor;
-        this._view.backgroundAlpha = this._transparent ? (this._fillColor & 0xff000000) >>> 24 : 1;
-        this._view.backgroundColor = this._fillColor & 0xffffff;
-        this._view.renderer.renderableSorter = null; //new RenderableSort2D();
-        //create the projection
-        var projection = new _awayjs_core.PerspectiveProjection();
-        projection.coordinateSystem = _awayjs_core.CoordinateSystem.RIGHT_HANDED;
-        projection.originX = 0;
-        projection.originY = 0;
-        projection.preserveFocalLength = true;
-        projection.setViewRect(0, 0, this._rect.width, this._rect.height);
-        projection.setStageRect(0, 0, this._rect.width, this._rect.height);
-        this._view.camera.projection = projection;
-    };
-    /**
-     * Frees memory that is used to store the BitmapImage2D object.
-     *
-     * <p>When the <code>dispose()</code> method is called on an image, the width
-     * and height of the image are set to 0. All subsequent calls to methods or
-     * properties of this BitmapImage2D instance fail, and an exception is thrown.
-     * </p>
-     *
-     * <p><code>BitmapImage2D.dispose()</code> releases the memory occupied by the
-     * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
-     * memory). After using <code>BitmapImage2D.dispose()</code>, the BitmapImage2D
-     * object is no longer usable and an exception may be thrown if
-     * you call functions on the BitmapImage2D object. However,
-     * <code>BitmapImage2D.dispose()</code> does not garbage collect the BitmapImage2D
-     * object(approximately 128 bytes); the memory occupied by the actual
-     * BitmapImage2D object is released at the time the BitmapImage2D object is
-     * collected by the garbage collector.</p>
-     *
-     */
-    ViewImage2D.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-        //todo
-    };
-    ViewImage2D.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
-        if (source instanceof _awayjs_scene.DisplayObject) {
-            var root = new _awayjs_scene.DisplayObjectContainer();
-            root.addChild(source);
-            if (matrix) {
-                root.transform.scaleTo(matrix.a, -matrix.d, 1);
-                root.transform.moveTo(matrix.tx, matrix.ty, 0);
-            }
-            root.transform.colorTransform = colorTransform;
-            if (!this._view)
-                this.createView();
-            this._view.scene = new _awayjs_scene.Scene();
-            this._view.scene.addChild(root);
-            this._view.setPartition(root, new SceneGraphPartition(root));
-            //save snapshot if unlocked
-            if (!this._locked)
-                this._view.renderer.queueSnapshot(this);
-            this._view.renderer.disableClear = !this._locked;
-            //render
-            this._view.renderer._iRender(this._view.camera.projection, this._view, this);
-            return;
-        }
-        _super.prototype.draw.call(this, source, matrix, colorTransform, blendMode, clipRect, smoothing);
-    };
-    /**
-     *
-     * @param width
-     * @param height
-     * @private
-     */
-    ViewImage2D.prototype._setSize = function (width, height) {
-        _super.prototype._setSize.call(this, width, height);
-        if (this._view) {
-            this._view.width = this._rect.width;
-            this._view.height = this._rect.height;
-            this._view.camera.projection.setViewRect(0, 0, this._rect.width, this._rect.height);
-            this._view.camera.projection.setStageRect(0, 0, this._rect.width, this._rect.height);
-        }
-    };
-    return ViewImage2D;
-}(_awayjs_graphics.BitmapImage2D));
-ViewImage2D.assetType = "[image ViewImage2D]";
-
-/**
- * @class away.partition.EntityNode
- */
-var EntityNode = (function (_super) {
-    __extends(EntityNode, _super);
-    function EntityNode(displayObject, partition) {
-        var _this = _super.call(this, displayObject, partition) || this;
-        _this.numEntities = 1;
-        _this._maskPosition = new _awayjs_core.Vector3D();
-        _this._partition = partition;
-        return _this;
-    }
-    EntityNode.prototype.onClear = function (event) {
-        _super.prototype.onClear.call(this, event);
-        this._partition = null;
-    };
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    EntityNode.prototype.isInFrustum = function (planes, numPlanes) {
-        if (!this._entity._iIsVisible())
-            return false;
-        return true; // todo: hack for 2d. attention. might break stuff in 3d.
-        //return this._bounds.isInFrustum(planes, numPlanes);
-    };
-    /**
-     * @inheritDoc
-     */
-    EntityNode.prototype.isIntersectingRay = function (globalRayPosition, globalRayDirection) {
-        if (!this._entity._iIsVisible() || !this.isIntersectingMasks(globalRayPosition, globalRayDirection, this._entity._iAssignedMasks()))
-            return false;
-        var pickingCollision = this._entity._iPickingCollision;
-        pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition);
-        pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection);
-        if (!pickingCollision.normal)
-            pickingCollision.normal = new _awayjs_core.Vector3D();
-        var rayEntryDistance = this.bounds.rayIntersection(pickingCollision.rayPosition, pickingCollision.rayDirection, pickingCollision.normal);
-        if (rayEntryDistance < 0)
-            return false;
-        pickingCollision.rayEntryDistance = rayEntryDistance;
-        pickingCollision.globalRayPosition = globalRayPosition;
-        pickingCollision.globalRayDirection = globalRayDirection;
-        pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
-        return true;
-    };
-    /**
-     *
-     * @returns {boolean}
-     */
-    EntityNode.prototype.isRenderable = function () {
-        return this._entity._iAssignedColorTransform()._isRenderable();
-    };
-    /**
-     * @inheritDoc
-     */
-    EntityNode.prototype.acceptTraverser = function (traverser) {
-        if (traverser.enterNode(this))
-            traverser[this._entity.traverseName](this._entity);
-    };
-    EntityNode.prototype._onInvalidatePartitionBounds = function (event) {
-        this.bounds.invalidate();
-        this._partition.iMarkForUpdate(this);
-    };
-    EntityNode.prototype.isIntersectingMasks = function (globalRayPosition, globalRayDirection, masks) {
-        //horrible hack for 2d masks
-        if (masks != null) {
-            this._maskPosition.x = globalRayPosition.x + globalRayDirection.x * 1000;
-            this._maskPosition.y = globalRayPosition.y + globalRayDirection.y * 1000;
-            var numLayers = masks.length;
-            var children;
-            var numChildren;
-            var layerHit;
-            for (var i = 0; i < numLayers; i++) {
-                children = masks[i];
-                numChildren = children.length;
-                layerHit = false;
-                for (var j = 0; j < numChildren; j++) {
-                    if (children[j].hitTestPoint(this._maskPosition.x, this._maskPosition.y, true, true)) {
-                        layerHit = true;
-                        break;
-                    }
-                }
-                if (!layerHit)
-                    return false;
-            }
-        }
-        return true;
-    };
-    return EntityNode;
-}(DisplayObjectNode));
-
-/**
- * @class away.partition.CameraNode
- */
-var CameraNode = (function (_super) {
-    __extends(CameraNode, _super);
-    function CameraNode() {
+var DefaultSceneGraphFactory = (function (_super) {
+    __extends(DefaultSceneGraphFactory, _super);
+    function DefaultSceneGraphFactory() {
         return _super.apply(this, arguments) || this;
     }
-    /**
-     * @inheritDoc
-     */
-    CameraNode.prototype.acceptTraverser = function (traverser) {
-        // todo: dead end for now, if it has a debug sprite, then sure accept that
+    DefaultSceneGraphFactory.prototype.createMovieClip = function (timeline) {
+        if (timeline === void 0) { timeline = null; }
+        return new _awayjs_scene.MovieClip(timeline);
     };
-    return CameraNode;
-}(EntityNode));
-
-/**
- * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
- *
- * @class away.partition.SkyboxNode
- */
-var SkyboxNode = (function (_super) {
-    __extends(SkyboxNode, _super);
-    function SkyboxNode() {
-        return _super.apply(this, arguments) || this;
-    }
-    /**
-     *
-     * @param planes
-     * @param numPlanes
-     * @returns {boolean}
-     */
-    SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
-        if (!this._entity._iIsVisible)
-            return false;
-        //a skybox is always in view unless its visibility is set to false
-        return true;
+    DefaultSceneGraphFactory.prototype.createSprite = function (prefab) {
+        if (prefab === void 0) { prefab = null; }
+        if (prefab)
+            return prefab.getNewObject();
+        return new _awayjs_scene.Sprite();
     };
-    /**
-     *
-     * @returns {boolean}
-     */
-    SkyboxNode.prototype.isCastingShadow = function () {
-        return false; //skybox never casts shadows
+    DefaultSceneGraphFactory.prototype.createDisplayObjectContainer = function () {
+        return new _awayjs_scene.DisplayObjectContainer();
     };
-    return SkyboxNode;
-}(EntityNode));
-
-/**
- * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
- *
- * @see away.base.DisplayObject#pickingCollider
- * @see away.pick.RaycastPicker
- *
- * @class away.pick.JSPickingCollider
- */
-var JSPickingCollider = (function () {
-    /**
-     * Creates a new <code>JSPickingCollider</code> object.
-     *
-     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
-     */
-    function JSPickingCollider(findClosestCollision) {
-        if (findClosestCollision === void 0) { findClosestCollision = false; }
-        this._findClosestCollision = findClosestCollision;
-    }
-    /**
-     * Tests a <code>Billboard</code> object for a collision with the picking ray.
-     *
-     * @param billboard The billboard instance to be tested.
-     * @param pickingCollision The collision object used to store the collision results
-     * @param findClosest
-     */
-    JSPickingCollider.prototype.testBillboardCollision = function (billboard, material, pickingCollision) {
-        pickingCollision.renderable = null;
-        //if (this._testGraphicCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollision, shortestCollisionDistance)) {
-        //	shortestCollisionDistance = pickingCollision.rayEntryDistance;
-        //
-        //	pickingCollision.renderable = billboard;
-        //
-        //	return true;
-        //}
-        return false;
+    DefaultSceneGraphFactory.prototype.createTextField = function () {
+        return new _awayjs_scene.TextField();
     };
-    /**
-     * Tests a <code>TriangleElements</code> object for a collision with the picking ray.
-     *
-     * @param triangleElements
-     * @param material
-     * @param pickingCollision
-     * @returns {boolean}
-     */
-    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision, count, offset) {
-        if (offset === void 0) { offset = 0; }
-        var rayPosition = pickingCollision.rayPosition;
-        var rayDirection = pickingCollision.rayDirection;
-        var t;
-        var i0, i1, i2;
-        var rx, ry, rz;
-        var nx, ny, nz;
-        var cx, cy, cz;
-        var coeff, u, v, w;
-        var p0x, p0y, p0z;
-        var p1x, p1y, p1z;
-        var p2x, p2y, p2z;
-        var s0x, s0y, s0z;
-        var s1x, s1y, s1z;
-        var nl, nDotV, D, disToPlane;
-        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
-        var collisionTriangleIndex = -1;
-        var bothSides = material.bothSides;
-        var positions = triangleElements.positions.get(count, offset);
-        var posDim = triangleElements.positions.dimensions;
-        var posStride = triangleElements.positions.stride;
-        var indices;
-        if (triangleElements.indices) {
-            indices = triangleElements.indices.get(triangleElements.numElements);
-            count = indices.length;
-        }
-        for (var index = 0; index < count; index += 3) {
-            // evaluate triangle indices
-            if (indices) {
-                i0 = indices[index] * posStride;
-                i1 = indices[index + 1] * posStride;
-                i2 = indices[index + 2] * posStride;
-            }
-            else {
-                i0 = index * posStride;
-                i1 = (index + 1) * posStride;
-                i2 = (index + 2) * posStride;
-            }
-            // evaluate triangle positions
-            p0x = positions[i0];
-            p1x = positions[i1];
-            p2x = positions[i2];
-            s0x = p1x - p0x; // s0 = p1 - p0
-            s1x = p2x - p0x; // s1 = p2 - p0
-            p0y = positions[i0 + 1];
-            p1y = positions[i1 + 1];
-            p2y = positions[i2 + 1];
-            s0y = p1y - p0y;
-            s1y = p2y - p0y;
-            if (posDim == 3) {
-                p0z = positions[i0 + 2];
-                p1z = positions[i1 + 2];
-                p2z = positions[i2 + 2];
-                s0z = p1z - p0z;
-                s1z = p2z - p0z;
-                // evaluate sides and triangle normal
-                nx = s0y * s1z - s0z * s1y; // n = s0 x s1
-                ny = s0z * s1x - s0x * s1z;
-                nz = s0x * s1y - s0y * s1x;
-                nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
-                nx *= nl;
-                ny *= nl;
-                nz *= nl;
-            }
-            else {
-                nx = 0;
-                ny = 0;
-                nz = 1;
-            }
-            // -- plane intersection test --
-            nDotV = nx * rayDirection.x + ny * +rayDirection.y + nz * rayDirection.z; // rayDirection . normal
-            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
-                // find collision t
-                D = -(nx * p0x + ny * p0y + nz * p0z);
-                disToPlane = -(nx * rayPosition.x + ny * rayPosition.y + nz * rayPosition.z + D);
-                t = disToPlane / nDotV;
-                // find collision point
-                cx = rayPosition.x + t * rayDirection.x;
-                cy = rayPosition.y + t * rayDirection.y;
-                cz = rayPosition.z + t * rayDirection.z;
-                // collision point inside triangle? ( using barycentric coordinates )
-                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
-                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
-                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
-                rx = cx - p0x;
-                ry = cy - p0y;
-                rz = cz - p0z;
-                RQ1 = rx * s0x + ry * s0y + rz * s0z;
-                RQ2 = rx * s1x + ry * s1y + rz * s1z;
-                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
-                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
-                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
-                if (v < 0)
-                    continue;
-                if (w < 0)
-                    continue;
-                u = 1 - v - w;
-                if (!(u < 0) && t > 0 && t < pickingCollision.rayEntryDistance) {
-                    collisionTriangleIndex = index / 3;
-                    pickingCollision.rayEntryDistance = t;
-                    pickingCollision.position = new _awayjs_core.Vector3D(cx, cy, cz);
-                    pickingCollision.normal = new _awayjs_core.Vector3D(nx, ny, nz);
-                    if (triangleElements.uvs) {
-                        var uvs = triangleElements.uvs.get(triangleElements.numVertices);
-                        var uvStride = triangleElements.uvs.stride;
-                        var uIndex = indices[index] * uvStride;
-                        var uv0 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        uIndex = indices[index + 1] * uvStride;
-                        var uv1 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        uIndex = indices[index + 2] * uvStride;
-                        var uv2 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
-                        pickingCollision.uv = new _awayjs_core.Point(u * uv0.x + v * uv1.x + w * uv2.x, u * uv0.y + v * uv1.y + w * uv2.y);
-                    }
-                    pickingCollision.elementIndex = collisionTriangleIndex;
-                    // if not looking for best hit, first found will do...
-                    if (!this._findClosestCollision)
-                        return true;
-                }
-            }
-        }
-        if (collisionTriangleIndex >= 0)
-            return true;
-        return false;
+    DefaultSceneGraphFactory.prototype.createBillboard = function (material) {
+        return new _awayjs_scene.Billboard(material);
     };
-    //
-    ///**
-    // * Tests a <code>CurveElements</code> object for a collision with the picking ray.
-    // *
-    // * @param triangleElements
-    // * @param material
-    // * @param pickingCollision
-    // * @returns {boolean}
-    // */
-    //public testCurveCollision(curveElements:CurveElements, material:MaterialBase, pickingCollision:PickingCollision, shortestCollisionDistance:number):boolean
-    //{
-    //	var rayPosition:Vector3D = pickingCollision.localRayPosition;
-    //	var rayDirection:Vector3D = pickingCollision.localRayDirection;
-    //
-    //	//project ray onto x/y plane to generate useful test points from mouse coordinates
-    //	//this will only work while all points lie on the x/y plane
-    //	var plane:Vector3D = new Vector3D(0,0,-1,0);
-    //
-    //	var result:Vector3D = new Vector3D();
-    //	var distance:number = plane.x * rayPosition.x + plane.y * rayPosition.y + plane.z * rayPosition.z + plane.w;//distance(position);
-    //	result.x = rayPosition.x - ( plane.x*distance);
-    //	result.y = rayPosition.y - ( plane.y*distance);
-    //	result.z = rayPosition.z - ( plane.z*distance);
-    //	var normal:Vector3D = new Vector3D(plane.x,plane.y,plane.z);
-    //	var t:number = -(rayPosition.dotProduct(normal))/(rayDirection.dotProduct(normal));
-    //	rayDirection.scaleBy(t);
-    //	var p:Vector3D = rayPosition.add(rayDirection);
-    //
-    //	var indices:Uint16Array = curveElements.indices.get(curveElements.numElements);
-    //	var collisionCurveIndex:number = -1;
-    //	var bothSides:boolean = material.bothSides;
-    //
-    //
-    //	var positions:Float32Array = curveElements.positions.get(curveElements.numVertices);
-    //	var posDim:number = curveElements.positions.dimensions;
-    //	var curves:Float32Array = curveElements.curves.get(curveElements.numVertices);
-    //	var curveDim:number = curveElements.curves.dimensions;
-    //	var uvs:ArrayBufferView = curveElements.uvs.get(curveElements.numVertices);
-    //	var uvDim:number = curveElements.uvs.dimensions;
-    //	var numIndices:number = indices.length;
-    //
-    //
-    //	for(var index:number = 0; index < numIndices; index+=3)
-    //	{
-    //		var id0:number = indices[index];
-    //		var id1:number = indices[index + 1] * posDim;
-    //		var id2:number = indices[index + 2] * posDim;
-    //
-    //		var ax:number = positions[id0 * posDim];
-    //		var ay:number = positions[id0 * posDim + 1];
-    //		var bx:number = positions[id1];
-    //		var by:number = positions[id1 + 1];
-    //		var cx:number = positions[id2];
-    //		var cy:number = positions[id2 + 1];
-    //
-    //		var curvex:number = curves[id0 * curveDim];
-    //		var az:number = positions[id0 * posDim + 2];
-    //
-    //		//console.log(ax, ay, bx, by, cx, cy);
-    //
-    //		//from a to p
-    //		var dx:number = ax - p.x;
-    //		var dy:number = ay - p.y;
-    //
-    //		//edge normal (a-b)
-    //		var nx:number = by - ay;
-    //		var ny:number = -(bx - ax);
-    //
-    //		//console.log(ax,ay,bx,by,cx,cy);
-    //
-    //		var dot:number = (dx * nx) + (dy * ny);
-    //		//console.log("dot a",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		dx = bx - p.x;
-    //		dy = by - p.y;
-    //		nx = cy - by;
-    //		ny = -(cx - bx);
-    //
-    //		dot = (dx * nx) + (dy * ny);
-    //		//console.log("dot b",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		dx = cx - p.x;
-    //		dy = cy - p.y;
-    //		nx = ay - cy;
-    //		ny = -(ax - cx);
-    //
-    //		dot = (dx * nx) + (dy * ny);
-    //		//console.log("dot c",dot);
-    //		if (dot > 0)
-    //			continue;
-    //
-    //		//check if not solid
-    //		if (curvex != 2) {
-    //
-    //			var v0x:number = bx - ax;
-    //			var v0y:number = by - ay;
-    //			var v1x:number = cx - ax;
-    //			var v1y:number = cy - ay;
-    //			var v2x:number = p.x - ax;
-    //			var v2y:number = p.y - ay;
-    //
-    //			var den:number = v0x * v1y - v1x * v0y;
-    //			var v:number = (v2x * v1y - v1x * v2y) / den;
-    //			var w:number = (v0x * v2y - v2x * v0y) / den;
-    //			var u:number = 1 - v - w;
-    //
-    //			var uu:number = 0.5 * v + w;// (0 * u) + (0.5 * v) + (1 * w);// (lerp(0, 0.5, v) + lerp(0.5, 1, w) + lerp(1, 0, u)) / 1.5;
-    //			var vv:number = w;// (0 * u) + (0 * v) + (1 * w);// (lerp(0, 1, w) + lerp(1, 0, u)) / 1;
-    //
-    //			var d:number = uu * uu - vv;
-    //
-    //			if ((d > 0 && az == -1) || (d < 0 && az == 1))
-    //				continue;
-    //		}
-    //		//TODO optimize away this pointless check as the distance is always the same
-    //		//also this stuff should only be calculated right before the return and not for each hit
-    //		if (distance < shortestCollisionDistance) {
-    //			shortestCollisionDistance = distance;
-    //			collisionCurveIndex = index/3;
-    //			pickingCollision.rayEntryDistance = distance;
-    //			pickingCollision.localPosition = p;
-    //			pickingCollision.localNormal = new Vector3D(0, 0, 1);
-    //			pickingCollision.uv = this._getCollisionUV(indices, uvs, index, v, w, u, uvDim);
-    //			pickingCollision.index = index;
-    //			//						pickingCollision.elementIndex = this.pGetSpriteGraphicIndex(renderable);
-    //
-    //			// if not looking for best hit, first found will do...
-    //			if (!this._findClosestCollision)
-    //				return true;
-    //		}
-    //	}
-    //
-    //	if (collisionCurveIndex >= 0)
-    //		return true;
-    //
-    //	return false;
-    //}
-    /**
-     * Tests a <code>LineElements</code> object for a collision with the picking ray.
-     *
-     * @param triangleElements
-     * @param material
-     * @param pickingCollision
-     * @returns {boolean}
-     */
-    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision, count, offset) {
-        if (offset === void 0) { offset = 0; }
-        return false;
+    DefaultSceneGraphFactory.prototype.createMaterial = function (imageColor, alpha) {
+        return new _awayjs_materials.MethodMaterial(imageColor, alpha);
     };
-    return JSPickingCollider;
-}());
-
-exports.MouseManager = MouseManager;
-exports.ViewImage2D = ViewImage2D;
-exports.BasicPartition = BasicPartition;
-exports.CameraNode = CameraNode;
-exports.DisplayObjectNode = DisplayObjectNode;
-exports.EntityNode = EntityNode;
-exports.NodeBase = NodeBase;
-exports.PartitionBase = PartitionBase;
-exports.SceneGraphNode = SceneGraphNode;
-exports.SceneGraphPartition = SceneGraphPartition;
-exports.SkyboxNode = SkyboxNode;
-exports.JSPickingCollider = JSPickingCollider;
-exports.RaycastPicker = RaycastPicker;
-exports.View = View;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_graphics__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_materials__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_parsers__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lib_player__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_renderer__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__lib_scene__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__lib_stage__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__lib_view__ = __webpack_require__(2);
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__lib_core__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__lib_core__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_1__lib_graphics__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_1__lib_graphics__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_2__lib_materials__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_2__lib_materials__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_3__lib_parsers__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_3__lib_parsers__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_4__lib_player__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_4__lib_player__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_5__lib_renderer__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_5__lib_renderer__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_6__lib_scene__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_6__lib_scene__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_7__lib_stage__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_7__lib_stage__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_8__lib_view__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_8__lib_view__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-
-
-
-
-
-
-
-
-
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-(function (global, factory) {
-     true ? factory(exports, __webpack_require__(7), __webpack_require__(9), __webpack_require__(10), __webpack_require__(11), __webpack_require__(13), __webpack_require__(15)) :
-    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/graphics', '@awayjs/scene', '@awayjs/renderer', '@awayjs/materials', '@awayjs/player'], factory) :
-    (factory((global.AwayjsParsers = global.AwayjsParsers || {}),global.AwayjsCore,global.AwayjsGraphics,global.AwayjsScene,global.AwayjsRenderer,global.AwayjsMaterials,global.AwayjsPlayer));
-}(this, (function (exports,_awayjs_core,_awayjs_graphics,_awayjs_scene,_awayjs_renderer,_awayjs_materials,_awayjs_player) { 'use strict';
-
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
+    return DefaultSceneGraphFactory;
+}(_awayjs_graphics.DefaultGraphicsFactory));
 
 var AWD3Utils = (function () {
     function AWD3Utils() {
@@ -67983,8 +64591,8 @@ var AWDParser = (function (_super) {
      * @param uri The url or id of the data or file to be parsed.
      * @param extra The holder for extra contextual data that the parser might need.
      */
-    function AWDParser(view) {
-        if (view === void 0) { view = null; }
+    function AWDParser(factory) {
+        if (factory === void 0) { factory = null; }
         var _this = _super.call(this, _awayjs_core.URLLoaderDataFormat.ARRAY_BUFFER) || this;
         //set to "true" to have some console.logs in the Console
         _this._debug = false;
@@ -68056,7 +64664,7 @@ var AWDParser = (function (_super) {
             701: AWDParser.BOOL,
             702: AWDParser.BOOL
         };
-        _this._view = view;
+        _this._factory = factory || new DefaultSceneGraphFactory();
         _this._blocks = new Array();
         _this._blocks[0] = new AWDBlock(0, 255);
         _this._blocks[0].data = null; // Zero address means null in AWD
@@ -68230,7 +64838,7 @@ var AWDParser = (function (_super) {
     };
     AWDParser.prototype._pStartParsing = function (frameLimit) {
         //create a content object for Loaders
-        this._pContent = new _awayjs_scene.DisplayObjectContainer();
+        this._pContent = this._factory.createDisplayObjectContainer();
         _super.prototype._pStartParsing.call(this, frameLimit);
     };
     AWDParser.prototype.dispose = function () {
@@ -68294,8 +64902,7 @@ var AWDParser = (function (_super) {
             console.log("AWDBlock:  ID = " + this._cur_block_id + " | TypeID = " + type + " | Compression = " + blockCompression + " | Matrix-Precision = " + this._accuracyMatrix + " | Graphics-Precision = " + this._accuracyGeo + " | Properties-Precision = " + this._accuracyProps);
         this._blocks[this._cur_block_id] = block;
         if ((this._version[0] == 3) && (this._version[1] == 0)) {
-            // probably should contain some info about the type of animation
-            var factory = new _awayjs_player.AS2SceneGraphFactory(this._view);
+            // probably should contain some info about the type of animation;
             switch (type) {
                 case 24:
                     this.parseSpriteLibraryBlock(this._cur_block_id);
@@ -68306,15 +64913,15 @@ var AWDParser = (function (_super) {
                     isParsed = true;
                     break;
                 case 44:
-                    this.parseAudioBlock(this._cur_block_id, factory);
+                    this.parseAudioBlock(this._cur_block_id);
                     isParsed = true;
                     break;
                 case 133:
-                    this.parseMovieClip(this._cur_block_id, factory);
+                    this.parseMovieClip(this._cur_block_id);
                     isParsed = true;
                     break;
                 case 134:
-                    this.parseTextField(this._cur_block_id, factory);
+                    this.parseTextField(this._cur_block_id);
                     isParsed = true;
                     break;
                 case 135:
@@ -68628,10 +65235,10 @@ var AWDParser = (function (_super) {
         if (this._debug)
             console.log("Parsed a TextFormat: Name = '" + name + " font: " + font.name);
     };
-    AWDParser.prototype.parseTextField = function (blockID, factory) {
+    AWDParser.prototype.parseTextField = function (blockID) {
         var name = this.parseVarStr();
         this._blocks[blockID].name = name;
-        var newTextField = factory.createTextField();
+        var newTextField = this._factory.createTextField();
         var text_field_type = this._newBlockBytes.readUnsignedByte();
         newTextField.type = AWDParser.textFieldTypes[text_field_type];
         if (text_field_type == 3)
@@ -68680,7 +65287,7 @@ var AWDParser = (function (_super) {
         var name = this.parseVarStr();
         var mat = this._blocks[this._newBlockBytes.readUnsignedInt()].data;
         mat.bothSides = true;
-        var billboard = new _awayjs_scene.Billboard(mat);
+        var billboard = this._factory.createBillboard(mat);
         // todo: optional matrix etc can be put in properties.
         this.parseProperties(null);
         billboard.extra = this.parseUserAttributes();
@@ -68708,7 +65315,7 @@ var AWDParser = (function (_super) {
             materialNames[materials_parsed] = mat.name;
         }
         var start_timeing = performance.now();
-        var sprite = new _awayjs_scene.Sprite();
+        var sprite = this._factory.createSprite();
         sprite.mouseEnabled = false;
         graphics.copyTo(sprite.graphics);
         var end_timing = performance.now();
@@ -68796,7 +65403,7 @@ var AWDParser = (function (_super) {
         if (this._debug)
             console.log("Parsed a Library-Sprite: Name = '" + name + "| Graphics-Name = " + graphics.name + " | Graphics-Count = " + sprite.graphics.count + " | Mat-Names = " + materialNames);
     };
-    AWDParser.prototype.parseAudioBlock = function (blockID, factory) {
+    AWDParser.prototype.parseAudioBlock = function (blockID) {
         //var asset:Audio;todo create asset for audio
         this._blocks[blockID].name = this.parseVarStr();
         var type = this._newBlockBytes.readUnsignedByte();
@@ -68807,7 +65414,7 @@ var AWDParser = (function (_super) {
             var url;
             url = this._newBlockBytes.readUTFBytes(data_len);
             // todo parser needs to be able to handle mp3 and wav files if we trigger the loading of external ressource
-            this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), false, null, true);
+            this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), null, null, false, true);
         }
         else {
             // todo: exporter does not export embed sounds yet
@@ -68816,7 +65423,7 @@ var AWDParser = (function (_super) {
             this._newBlockBytes.readBytes(data, 0, data_len);
             // todo parse sound from bytes
             // this._pAddDependency(this._cur_block_id.toString(), null, false, ParserUtils.by(data), true);
-            this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
+            this._pAddDependency(this._cur_block_id.toString(), null, null, data, false, true);
         }
         // Ignore for now
         this.parseProperties(null);
@@ -68827,12 +65434,12 @@ var AWDParser = (function (_super) {
             console.log("Start parsing a " + ["external", "embed"][type] + " Audio file");
     };
     //Block ID = 4
-    AWDParser.prototype.parseMovieClip = function (blockID, factory) {
+    AWDParser.prototype.parseMovieClip = function (blockID) {
         var i;
         var j;
         var cmd_asset;
         var new_timeline = new _awayjs_scene.Timeline();
-        var new_mc = factory.createMovieClip(new_timeline);
+        var new_mc = this._factory.createMovieClip(new_timeline);
         var name = this.parseVarStr();
         // register list of potential childs
         // a potential child can be reused on a timeline (added / removed / added)
@@ -69204,7 +65811,7 @@ var AWDParser = (function (_super) {
                         }
                     }
                     graphics.endFill();
-                    graphics.scaleStrokes = true;
+                    graphics.scaleStrokes = _awayjs_graphics.LineScaleMode.NORMAL;
                 }
                 else {
                     console.log("skipping unknown subgeom stream");
@@ -69397,7 +66004,7 @@ var AWDParser = (function (_super) {
         mtx = this.parseMatrix3D();
         name = this.parseVarStr();
         var parentName = "Root (TopLevel)";
-        ctr = new _awayjs_scene.DisplayObjectContainer();
+        ctr = this._factory.createDisplayObjectContainer();
         ctr.transform.matrix3D = mtx;
         if (parent) {
             parent.addChild(ctr);
@@ -69451,10 +66058,10 @@ var AWDParser = (function (_super) {
         }
         var sprite;
         if (isPrefab) {
-            sprite = prefab.getNewObject();
+            sprite = this._factory.createSprite(prefab);
         }
         else {
-            sprite = new _awayjs_scene.Sprite();
+            sprite = this._factory.createSprite();
             graphics.copyTo(sprite.graphics);
         }
         sprite.transform.matrix3D = mtx;
@@ -69669,16 +66276,16 @@ var AWDParser = (function (_super) {
             debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
             var color = props.get(1, 0xffffff);
             if (this.materialMode < 2) {
-                mat = new _awayjs_materials.MethodMaterial(color, props.get(10, 1.0));
+                mat = this._factory.createMaterial(color, props.get(10, 1.0));
             }
             else {
-                mat = new _awayjs_materials.MethodMaterial(color);
+                mat = this._factory.createMaterial(color);
                 mat.mode = _awayjs_materials.MethodMaterialMode.MULTI_PASS;
             }
         }
         else if (type === 2) {
             var texture = new _awayjs_graphics.Single2DTexture(this._blocks[props.get(2, 0)].data);
-            mat = new _awayjs_materials.MethodMaterial();
+            mat = this._factory.createMaterial();
             mat.ambientMethod.texture = texture;
             if (this.materialMode < 2) {
                 mat.alphaBlending = props.get(11, false);
@@ -69723,28 +66330,26 @@ var AWDParser = (function (_super) {
                 if (type == 1) {
                     var color = props.get(1, 0xcccccc); //TODO temporarily swapped so that diffuse color goes to ambient
                     if (spezialType == 1) {
-                        mat = new _awayjs_materials.MethodMaterial(color);
+                        mat = this._factory.createMaterial(color);
                         mat.mode = _awayjs_materials.MethodMaterialMode.MULTI_PASS;
                         debugString += "Parsed a ColorMaterial(MultiPass): Name = '" + name + "' | ";
                     }
                     else {
-                        mat = new _awayjs_materials.MethodMaterial(color, props.get(10, 1.0));
+                        mat = this._factory.createMaterial(color, props.get(10, 1.0));
                         mat.alphaBlending = props.get(11, false);
                         debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
                     }
                 }
                 else if (type == 2) {
-                    var texture = new _awayjs_graphics.Single2DTexture(this._blocks[props.get(2, 0)].data);
-                    mat = new _awayjs_materials.MethodMaterial();
-                    mat.ambientMethod.texture = texture;
+                    mat = this._factory.createMaterial(this._blocks[props.get(2, 0)].data);
                     if (spezialType == 1) {
                         mat.mode = _awayjs_materials.MethodMaterialMode.MULTI_PASS;
-                        debugString += "Parsed a MethodMaterial(MultiPass): Name = '" + name + "'" + (texture ? " | Texture-Name = " + texture.name : "");
+                        debugString += "Parsed a MethodMaterial(MultiPass): Name = '" + name + "'" + (mat.ambientMethod.texture ? " | Texture-Name = " + mat.ambientMethod.texture.name : "");
                     }
                     else {
                         mat.alpha = props.get(10, 1.0);
                         mat.alphaBlending = props.get(11, false);
-                        debugString += "Parsed a MethodMaterial(SinglePass): Name = '" + name + "'" + (texture ? " | Texture-Name = " + texture.name : "");
+                        debugString += "Parsed a MethodMaterial(SinglePass): Name = '" + name + "'" + (mat.ambientMethod.texture ? " | Texture-Name = " + mat.ambientMethod.texture.name : "");
                     }
                 }
                 diffuseImage = this._blocks[props.get(17, 0)].data;
@@ -69862,7 +66467,7 @@ var AWDParser = (function (_super) {
             else if (type == 6) {
                 diffuseTexture.mappingMode = _awayjs_graphics.MappingMode.RADIAL;
             }
-            var basic_mat = new _awayjs_materials.MethodMaterial();
+            var basic_mat = this._factory.createMaterial();
             basic_mat.ambientMethod.texture = diffuseTexture;
             basic_mat.bothSides = true;
             basic_mat.alphaBlending = props.get(11, false);
@@ -69889,7 +66494,7 @@ var AWDParser = (function (_super) {
         // External
         if (type == 0) {
             var url = this._newBlockBytes.readUTFBytes(this._newBlockBytes.readUnsignedInt());
-            this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), false, null, true);
+            this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), new _awayjs_graphics.Image2DParser(this._factory), null, false, true);
         }
         else {
             var data_len = this._newBlockBytes.readUnsignedInt();
@@ -69900,7 +66505,7 @@ var AWDParser = (function (_super) {
             //
             // Converting data to image here instead of parser - fix FireFox bug where image width / height is 0 when created from data
             // This gives the browser time to initialise image width / height.
-            this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
+            this._pAddDependency(this._cur_block_id.toString(), null, new _awayjs_graphics.Image2DParser(this._factory), data, false, true);
         }
         // Ignore for now
         this.parseProperties(null);
@@ -69924,13 +66529,13 @@ var AWDParser = (function (_super) {
                 data_len = this._newBlockBytes.readUnsignedInt();
                 var url;
                 url = this._newBlockBytes.readUTFBytes(data_len);
-                this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), false, null, true, i);
+                this._pAddDependency(this._cur_block_id.toString(), new _awayjs_core.URLRequest(url), null, null, false, true, i);
             }
             else {
                 data_len = this._newBlockBytes.readUnsignedInt();
                 var data = new _awayjs_core.ByteArray(data_len);
                 this._newBlockBytes.readBytes(data, 0, data_len);
-                this._pAddDependency(this._cur_block_id.toString(), null, false, _awayjs_core.ParserUtils.byteArrayToImage(data), true, i);
+                this._pAddDependency(this._cur_block_id.toString(), null, null, _awayjs_core.ParserUtils.byteArrayToImage(data), false, true, i);
             }
         }
         // Ignore for now
@@ -70503,6 +67108,9 @@ var AWDParser = (function (_super) {
                 list[num_read] = read_func.call(this._newBlockBytes);
             return list;
         }
+        else if (type == AWDParser.BOOL) {
+            return Boolean(read_func.call(this._newBlockBytes));
+        }
         else {
             return read_func.call(this._newBlockBytes);
         }
@@ -70815,7 +67423,7 @@ var AWDProperties = (function () {
         this[key] = value;
     };
     AWDProperties.prototype.get = function (key, fallback) {
-        return (this[key] || fallback);
+        return this.hasOwnProperty(key.toString()) ? this[key] : fallback;
     };
     return AWDProperties;
 }());
@@ -73852,7 +70460,7 @@ var OBJParser = (function (_super) {
     OBJParser.prototype.loadMtl = function (mtlurl) {
         // Add raw-data dependency to queue and load dependencies now,
         // which will pause the parsing in the meantime.
-        this._pAddDependency('mtl', new _awayjs_core.URLRequest(mtlurl), true);
+        this._pAddDependency('mtl', new _awayjs_core.URLRequest(mtlurl), null, null, true);
         this._pPauseAndRetrieveDependencies(); //
     };
     OBJParser.prototype.applyMaterial = function (lm) {
@@ -74153,6 +70761,7 @@ var Parsers = (function () {
  */
 Parsers.ALL_BUNDLED = Array(AWDParser, Max3DSParser, MD2Parser, OBJParser, FNTParser);
 
+exports.DefaultSceneGraphFactory = DefaultSceneGraphFactory;
 exports.AWDParser = AWDParser;
 exports.Max3DSParser = Max3DSParser;
 exports.FNTParser = FNTParser;
@@ -74162,6 +70771,3404 @@ exports.MD5AnimParser = MD5AnimParser;
 exports.MD5MeshParser = MD5MeshParser;
 exports.OBJParser = OBJParser;
 exports.Parsers = Parsers;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+(function (global, factory) {
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(12), __webpack_require__(9)) :
+    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/renderer', '@awayjs/graphics'], factory) :
+    (factory((global.AwayjsView = global.AwayjsView || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsRenderer,global.AwayjsGraphics));
+}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_renderer,_awayjs_graphics) { 'use strict';
+
+/**
+ * MouseManager enforces a singleton pattern and is not intended to be instanced.
+ * it provides a manager class for detecting mouse hits on scene objects and sending out mouse events.
+ */
+var MouseManager = (function () {
+    /**
+     * Creates a new <code>MouseManager</code> object.
+     */
+    function MouseManager() {
+        var _this = this;
+        this._viewLookup = new Array();
+        this._containerLookup = new Array();
+        this._nullVector = new _awayjs_core.Vector3D();
+        this._queuedEvents = new Array();
+        this._mouseUp = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_UP);
+        this._mouseClick = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.CLICK);
+        this._mouseOut = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_OUT);
+        this._mouseDown = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_DOWN);
+        this._mouseMove = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_MOVE);
+        this._mouseOver = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_OVER);
+        this._mouseWheel = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.MOUSE_WHEEL);
+        this._mouseDoubleClick = new _awayjs_scene.MouseEvent(_awayjs_scene.MouseEvent.DOUBLE_CLICK);
+        this.onClickDelegate = function (event) { return _this.onClick(event); };
+        this.onDoubleClickDelegate = function (event) { return _this.onDoubleClick(event); };
+        this.onMouseDownDelegate = function (event) { return _this.onMouseDown(event); };
+        this.onMouseMoveDelegate = function (event) { return _this.onMouseMove(event); };
+        this.onMouseUpDelegate = function (event) { return _this.onMouseUp(event); };
+        this.onMouseWheelDelegate = function (event) { return _this.onMouseWheel(event); };
+        this.onMouseOverDelegate = function (event) { return _this.onMouseOver(event); };
+        this.onMouseOutDelegate = function (event) { return _this.onMouseOut(event); };
+    }
+    MouseManager.prototype.registerContainer = function (container) {
+        if (container && this._containerLookup.indexOf(container) == -1) {
+            container.addEventListener("click", this.onClickDelegate);
+            container.addEventListener("dblclick", this.onDoubleClickDelegate);
+            container.addEventListener("touchstart", this.onMouseDownDelegate);
+            container.addEventListener("mousedown", this.onMouseDownDelegate);
+            container.addEventListener("touchmove", this.onMouseMoveDelegate);
+            container.addEventListener("mousemove", this.onMouseMoveDelegate);
+            container.addEventListener("mouseup", this.onMouseUpDelegate);
+            container.addEventListener("touchend", this.onMouseUpDelegate);
+            container.addEventListener("mousewheel", this.onMouseWheelDelegate);
+            container.addEventListener("mouseover", this.onMouseOverDelegate);
+            container.addEventListener("mouseout", this.onMouseOutDelegate);
+            this._containerLookup.push(container);
+        }
+    };
+    MouseManager.prototype.unregisterContainer = function (container) {
+        if (container && this._containerLookup.indexOf(container) != -1) {
+            container.removeEventListener("click", this.onClickDelegate);
+            container.removeEventListener("dblclick", this.onDoubleClickDelegate);
+            container.removeEventListener("touchstart", this.onMouseDownDelegate);
+            container.removeEventListener("mousedown", this.onMouseDownDelegate);
+            container.removeEventListener("touchmove", this.onMouseMoveDelegate);
+            container.removeEventListener("mousemove", this.onMouseMoveDelegate);
+            container.removeEventListener("touchend", this.onMouseUpDelegate);
+            container.removeEventListener("mouseup", this.onMouseUpDelegate);
+            container.removeEventListener("mousewheel", this.onMouseWheelDelegate);
+            container.removeEventListener("mouseover", this.onMouseOverDelegate);
+            container.removeEventListener("mouseout", this.onMouseOutDelegate);
+            this._containerLookup.slice(this._containerLookup.indexOf(container), 1);
+        }
+    };
+    MouseManager.getInstance = function () {
+        if (this._instance)
+            return this._instance;
+        return (this._instance = new MouseManager());
+    };
+    MouseManager.prototype.fireMouseEvents = function (forceMouseMove) {
+        // If colliding object has changed, queue over/out events.
+        if (this._iCollision != this._previousCollidingObject) {
+            if (this._previousCollidingObject)
+                this.queueDispatch(this._mouseOut, this._mouseMoveEvent, this._previousCollidingObject);
+            if (this._iCollision)
+                this.queueDispatch(this._mouseOver, this._mouseMoveEvent);
+        }
+        // Fire mouse move events here if forceMouseMove is on.
+        if (forceMouseMove && this._iCollision)
+            this.queueDispatch(this._mouseMove, this._mouseMoveEvent);
+        var event;
+        var dispatcher;
+        // Dispatch all queued events.
+        var len = this._queuedEvents.length;
+        for (var i = 0; i < len; ++i) {
+            event = this._queuedEvents[i];
+            dispatcher = event.entity;
+            // bubble event up the heirarchy until the top level parent is reached
+            while (dispatcher) {
+                if (dispatcher._iIsMouseEnabled())
+                    dispatcher.dispatchEvent(event);
+                dispatcher = dispatcher.parent;
+            }
+            // not totally sure, but i think just calling it is easier and cheaper than any options for that
+            // if nothing is queued, the function will return directly anyway
+            _awayjs_scene.FrameScriptManager.execute_queue();
+        }
+        this._queuedEvents.length = 0;
+        this._previousCollidingObject = this._iCollision;
+        this._iUpdateDirty = false;
+    };
+    //		public addViewLayer(view:View)
+    //		{
+    //			var stg:Stage = view.stage;
+    //
+    //			// Add instance to mouse3dmanager to fire mouse events for multiple views
+    //			if (!view.stageGL.mouse3DManager)
+    //				view.stageGL.mouse3DManager = this;
+    //
+    //			if (!hasKey(view))
+    //				_view3Ds[view] = 0;
+    //
+    //			_childDepth = 0;
+    //			traverseDisplayObjects(stg);
+    //			_viewCount = _childDepth;
+    //		}
+    MouseManager.prototype.registerView = function (view) {
+        if (view)
+            this._viewLookup.push(view);
+    };
+    MouseManager.prototype.unregisterView = function (view) {
+        if (view)
+            this._viewLookup.slice(this._viewLookup.indexOf(view), 1);
+    };
+    MouseManager.prototype.addEventsForViewBinary = function (touchMessage, viewIdx) {
+        if (viewIdx === void 0) { viewIdx = 0; }
+        var newTouchEvent = {};
+        newTouchEvent.clientX = null; // we get the x position from the active touch
+        newTouchEvent.clientY = null; // we get the y position from the active touch
+        newTouchEvent.touches = [];
+        newTouchEvent.changedTouches = [];
+        newTouchEvent.preventDefault = function () { };
+        var messageView = new Float32Array(touchMessage);
+        // transfer touches to event
+        var i = 0;
+        var cnt = 0;
+        var touchCnt = 0;
+        cnt++; //we temporary added 1 float to transfer fps from java to js. skip this
+        var numTouches = messageView[cnt++];
+        var touchtype = messageView[cnt++];
+        var activeTouchID = messageView[cnt++];
+        var x = 0;
+        var y = 0;
+        if ((touchtype != 1) && (touchtype != 6) && (touchtype != 12) && (touchtype != 262) && (touchtype != 518)) {
+            // if this is not a UP command, we add all touches
+            for (i = 0; i < numTouches; i++) {
+                var newTouch = {};
+                newTouch.identifier = messageView[cnt++];
+                newTouch.clientX = messageView[cnt++];
+                newTouch.clientY = messageView[cnt++];
+                newTouchEvent.touches[i] = newTouch;
+            }
+            newTouchEvent.changedTouches[0] = newTouchEvent.touches[activeTouchID];
+            x = newTouchEvent.changedTouches[0].clientX;
+            y = newTouchEvent.changedTouches[0].clientY;
+        }
+        else {
+            // if this is a UP command, we add all touches, except the active one
+            if (numTouches == 1) {
+                var newTouch = {};
+                newTouch.identifier = messageView[cnt++];
+                newTouch.clientX = messageView[cnt++];
+                newTouch.clientY = messageView[cnt++];
+                newTouchEvent.clientX = newTouch.clientX;
+                newTouchEvent.clientY = newTouch.clientY;
+                x = newTouchEvent.clientX;
+                y = newTouchEvent.clientY;
+            }
+            else {
+                for (i = 0; i < numTouches; i++) {
+                    var newTouch = {};
+                    newTouch.identifier = messageView[cnt++];
+                    newTouch.clientX = messageView[cnt++];
+                    newTouch.clientY = messageView[cnt++];
+                    if (i != activeTouchID) {
+                        newTouchEvent.touches[touchCnt] = newTouch;
+                    }
+                    else {
+                        newTouchEvent.clientX = newTouch.clientX;
+                        newTouchEvent.clientY = newTouch.clientY;
+                        x = newTouchEvent.clientX;
+                        y = newTouchEvent.clientY;
+                    }
+                }
+            }
+        }
+        //console.log("Touch ID:"+touchtype+" activeTouchID "+activeTouchID+" numTouches "+numTouches+" x"+x+" y"+y);
+        /*
+         public static final int ACTION_DOWN = 0;
+         public static final int ACTION_POINTER_1_DOWN = 5;
+         public static final int ACTION_POINTER_DOWN = 5;
+         public static final int ACTION_BUTTON_PRESS = 11;
+         public static final int ACTION_POINTER_2_DOWN = 261;
+         public static final int ACTION_POINTER_3_DOWN = 517;
+
+
+         public static final int ACTION_UP = 1;
+         public static final int ACTION_POINTER_1_UP = 6;
+         public static final int ACTION_POINTER_UP = 6;
+         public static final int ACTION_BUTTON_RELEASE = 12;
+         public static final int ACTION_POINTER_2_UP = 262;
+         public static final int ACTION_POINTER_3_UP = 518;
+
+         public static final int ACTION_MOVE = 2;
+
+
+         */
+        if ((touchtype == 0) || (touchtype == 5) || (touchtype == 11) || (touchtype == 261) || (touchtype == 517)) {
+            this.onMouseDown(newTouchEvent);
+        }
+        else if ((touchtype == 1) || (touchtype == 6) || (touchtype == 12) || (touchtype == 262) || (touchtype == 518)) {
+            this.onMouseUp(newTouchEvent);
+        }
+        else if (touchtype == 2) {
+            this.onMouseMove(newTouchEvent);
+        }
+        else {
+            console.log("recieved unknown touch event-type: " + touchtype);
+        }
+    };
+    MouseManager.prototype.fireEventsForViewFromString = function (touchMessage, viewIdx) {
+        if (viewIdx === void 0) { viewIdx = 0; }
+        var newTouchEvent = {};
+        newTouchEvent.clientX = null; // set the x position from the active touch
+        newTouchEvent.clientY = null; // set the y position from the active touch
+        newTouchEvent.preventDefault = function () { };
+        var touchesFromMessage = touchMessage.split(",");
+        // transfer touches to event
+        var i = 0;
+        var cnt = 0;
+        var numTouches = parseInt(touchesFromMessage[cnt++]);
+        var touchtype = parseInt(touchesFromMessage[cnt++]);
+        var activeTouch = parseInt(touchesFromMessage[cnt++]);
+        newTouchEvent.touches = [];
+        newTouchEvent.changedTouches = [];
+        if ((touchtype != 1) && (touchtype != 6)) {
+            for (i = 0; i < numTouches; i++) {
+                var newTouch = {};
+                newTouch.identifier = touchesFromMessage[cnt++];
+                newTouch.clientX = touchesFromMessage[cnt++];
+                newTouch.clientY = touchesFromMessage[cnt++];
+                newTouchEvent.touches[i] = newTouch;
+                newTouchEvent.changedTouches[i] = newTouch;
+            }
+            
+            newTouchEvent.changedTouches[i] = newTouchEvent.touches[activeTouch];
+        }
+        else {
+            for (i = 0; i < numTouches; i++) {
+                if (i != activeTouch) {
+                    var newTouch = {};
+                    newTouch.identifier = touchesFromMessage[cnt++];
+                    newTouch.clientX = touchesFromMessage[cnt++];
+                    newTouch.clientY = touchesFromMessage[cnt++];
+                    newTouchEvent.touches[i] = newTouch;
+                    newTouchEvent.changedTouches[i] = newTouch;
+                }
+                else {
+                    newTouchEvent.clientX = touchesFromMessage[cnt++];
+                    newTouchEvent.clientY = touchesFromMessage[cnt++];
+                    cnt++;
+                }
+            }
+            
+        }
+        if (touchtype == 0) {
+            this.onMouseDown(newTouchEvent);
+        }
+        else if (touchtype == 1) {
+            this.onMouseUp(newTouchEvent);
+        }
+        else if (touchtype == 2) {
+            this.onMouseMove(newTouchEvent);
+        }
+        else if (touchtype == 261) {
+            this.onMouseDown(newTouchEvent);
+        }
+        else if (touchtype == 6) {
+            this.onMouseUp(newTouchEvent);
+        }
+    };
+    // ---------------------------------------------------------------------
+    // Private.
+    // ---------------------------------------------------------------------
+    MouseManager.prototype.queueDispatch = function (event, sourceEvent, collision) {
+        if (collision === void 0) { collision = null; }
+        // 2D properties.
+        if (sourceEvent) {
+            event.delta = sourceEvent.wheelDelta;
+            event.ctrlKey = sourceEvent.ctrlKey;
+            event.altKey = sourceEvent.altKey;
+            event.shiftKey = sourceEvent.shiftKey;
+            event.screenX = (sourceEvent.clientX != null) ? sourceEvent.clientX : sourceEvent.changedTouches[0].clientX;
+            event.screenY = (sourceEvent.clientY != null) ? sourceEvent.clientY : sourceEvent.changedTouches[0].clientY;
+        }
+        if (collision == null)
+            collision = this._iCollision;
+        // 3D properties.
+        if (collision) {
+            // Object.
+            event.entity = collision.entity;
+            event.renderable = collision.renderable;
+            // UV.
+            event.uv = collision.uv;
+            // Position.
+            event.position = collision.position ? collision.position.clone() : null;
+            // Normal.
+            event.normal = collision.normal ? collision.normal.clone() : null;
+            // Face index.
+            event.elementIndex = collision.elementIndex;
+        }
+        else {
+            // Set all to null.
+            event.uv = null;
+            event.entity = null;
+            event.position = this._nullVector;
+            event.normal = this._nullVector;
+            event.elementIndex = 0;
+        }
+        // Store event to be dispatched later.
+        this._queuedEvents.push(event);
+    };
+    // ---------------------------------------------------------------------
+    // Listeners.
+    // ---------------------------------------------------------------------
+    MouseManager.prototype.onMouseMove = function (event) {
+        event.preventDefault();
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseMove, this._mouseMoveEvent = event);
+    };
+    MouseManager.prototype.onMouseOut = function (event) {
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseOut, event);
+    };
+    MouseManager.prototype.onMouseOver = function (event) {
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseOver, event);
+    };
+    MouseManager.prototype.onClick = function (event) {
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseClick, event);
+    };
+    MouseManager.prototype.onDoubleClick = function (event) {
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseDoubleClick, event);
+    };
+    MouseManager.prototype.onMouseDown = function (event) {
+        event.preventDefault();
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseDown, event);
+    };
+    MouseManager.prototype.onMouseUp = function (event) {
+        event.preventDefault();
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseUp, event);
+    };
+    MouseManager.prototype.onMouseWheel = function (event) {
+        this.updateColliders(event);
+        if (this._iCollision)
+            this.queueDispatch(this._mouseWheel, event);
+    };
+    MouseManager.prototype.updateColliders = function (event) {
+        var view;
+        var mouseX = (event.clientX != null) ? event.clientX : event.changedTouches[0].clientX;
+        var mouseY = (event.clientY != null) ? event.clientY : event.changedTouches[0].clientY;
+        var len = this._viewLookup.length;
+        for (var i = 0; i < len; i++) {
+            view = this._viewLookup[i];
+            view._pTouchPoints.length = 0;
+            if (event.touches) {
+                var touch;
+                var len = event.touches.length;
+                for (var i = 0; i < len; i++) {
+                    touch = event.touches[i];
+                    view._pTouchPoints.push(new _awayjs_scene.TouchPoint(touch.clientX + view.x, touch.clientY + view.y, touch.identifier));
+                }
+            }
+            if (this._iUpdateDirty)
+                continue;
+            if (mouseX < view.x || mouseX > view.x + view.width || mouseY < view.y || mouseY > view.y + view.height) {
+                view._pMouseX = null;
+                view._pMouseY = null;
+            }
+            else {
+                view._pMouseX = mouseX + view.x;
+                view._pMouseY = mouseY + view.y;
+                view.updateCollider();
+                if (view.layeredView && this._iCollision)
+                    break;
+            }
+        }
+        this._iUpdateDirty = true;
+    };
+    return MouseManager;
+}());
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+/**
+ * @class away.partition.EntityNode
+ */
+var DisplayObjectNode = (function (_super) {
+    __extends(DisplayObjectNode, _super);
+    function DisplayObjectNode(entity, pool) {
+        var _this = _super.call(this, entity, pool) || this;
+        _this.numEntities = 0;
+        _this.isSceneGraphNode = false;
+        _this._boundsDirty = true;
+        _this._onInvalidatePartitionBoundsDelegate = function (event) { return _this._onInvalidatePartitionBounds(event); };
+        _this._entity = entity;
+        _this._entity.addEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, _this._onInvalidatePartitionBoundsDelegate);
+        _this._boundsType = _this._entity.boundsType;
+        return _this;
+    }
+    Object.defineProperty(DisplayObjectNode.prototype, "debugVisible", {
+        get: function () {
+            return this._entity.debugVisible;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DisplayObjectNode.prototype, "bounds", {
+        /**
+         * @internal
+         */
+        get: function () {
+            if (this._boundsDirty)
+                this._updateBounds();
+            return this._bounds;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isCastingShadow = function () {
+        return this._entity.castsShadows;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isMask = function () {
+        return this._entity.maskMode;
+    };
+    DisplayObjectNode.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._entity.removeEventListener(_awayjs_scene.DisplayObjectEvent.INVALIDATE_PARTITION_BOUNDS, this._onInvalidatePartitionBoundsDelegate);
+        this._entity = null;
+        if (this._bounds)
+            this._bounds.dispose();
+        this._bounds = null;
+    };
+    DisplayObjectNode.prototype.onInvalidate = function (event) {
+        _super.prototype.onInvalidate.call(this, event);
+        if (this._boundsType != this._entity.boundsType) {
+            this._boundsType = this._entity.boundsType;
+            this._boundsDirty = true;
+        }
+    };
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isInFrustum = function (planes, numPlanes) {
+        return true;
+    };
+    /**
+     * @inheritDoc
+     */
+    DisplayObjectNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    DisplayObjectNode.prototype.isRenderable = function () {
+        return true;
+    };
+    DisplayObjectNode.prototype.renderBounds = function (traverser) {
+        traverser.applyEntity(this.bounds.boundsPrimitive);
+    };
+    /**
+     * @inheritDoc
+     */
+    DisplayObjectNode.prototype.acceptTraverser = function (traverser) {
+        // do nothing here
+    };
+    DisplayObjectNode.prototype._onInvalidatePartitionBounds = function (event) {
+        // do nothing here
+    };
+    DisplayObjectNode.prototype._updateBounds = function () {
+        if (this._bounds)
+            this._bounds.dispose();
+        if (this._boundsType == _awayjs_scene.BoundsType.AXIS_ALIGNED_BOX)
+            this._bounds = new _awayjs_scene.AxisAlignedBoundingBox(this._entity);
+        else if (this._boundsType == _awayjs_scene.BoundsType.SPHERE)
+            this._bounds = new _awayjs_scene.BoundingSphere(this._entity);
+        else if (this._boundsType == _awayjs_scene.BoundsType.NULL)
+            this._bounds = new _awayjs_scene.NullBounds();
+        this._boundsDirty = false;
+    };
+    return DisplayObjectNode;
+}(_awayjs_core.AbstractionBase));
+
+/**
+ * Maintains scenegraph heirarchy when collecting nodes
+ */
+var SceneGraphNode = (function (_super) {
+    __extends(SceneGraphNode, _super);
+    function SceneGraphNode() {
+        var _this = _super.apply(this, arguments) || this;
+        _this.isSceneGraphNode = true;
+        _this._numNodes = 0;
+        _this._pChildNodes = new Array();
+        _this._childDepths = new Array();
+        _this._numMasks = 0;
+        _this._childMasks = new Array();
+        return _this;
+    }
+    /**
+     *
+     * @param traverser
+     */
+    SceneGraphNode.prototype.acceptTraverser = function (traverser) {
+        //containers nodes are for ordering only, no need to check enterNode or debugVisible
+        if (this.numEntities == 0)
+            return;
+        var i;
+        for (i = this._numNodes - 1; i >= 0; i--)
+            this._pChildNodes[i].acceptTraverser(traverser);
+        for (i = this._numMasks - 1; i >= 0; i--)
+            this._childMasks[i].acceptTraverser(traverser);
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    SceneGraphNode.prototype.iAddNode = function (node) {
+        node.parent = this;
+        if (node._entity.maskMode) {
+            this._childMasks.push(node);
+            this._numMasks++;
+        }
+        else {
+            var depth = (this._entity != node._entity) ? node._entity._depthID : -16384;
+            var len = this._childDepths.length;
+            var index = len;
+            while (index--)
+                if (this._childDepths[index] < depth)
+                    break;
+            index++;
+            if (index < len) {
+                this._pChildNodes.splice(index, 0, node);
+                this._childDepths.splice(index, 0, depth);
+            }
+            else {
+                this._pChildNodes.push(node);
+                this._childDepths.push(depth);
+            }
+            this._numNodes++;
+        }
+        var numEntities = node.isSceneGraphNode ? node.numEntities : 1;
+        node = this;
+        do {
+            node.numEntities += numEntities;
+        } while ((node = node.parent) != null);
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    SceneGraphNode.prototype.iRemoveNode = function (node) {
+        if (node._entity.maskMode) {
+            this._childMasks.splice(this._childMasks.indexOf(node), 1);
+            this._numMasks--;
+        }
+        else {
+            var index = this._pChildNodes.indexOf(node);
+            this._pChildNodes.splice(index, 1);
+            this._childDepths.splice(index, 1);
+            this._numNodes--;
+        }
+        var numEntities = node.numEntities;
+        node = this;
+        do {
+            node.numEntities -= numEntities;
+        } while ((node = node.parent) != null);
+    };
+    return SceneGraphNode;
+}(DisplayObjectNode));
+
+/**
+ * @class away.partition.Partition
+ */
+var PartitionBase = (function () {
+    function PartitionBase(root) {
+        this._abstractionPool = new Object();
+        this._updateQueue = {};
+        this._root = root;
+    }
+    Object.defineProperty(PartitionBase.prototype, "root", {
+        get: function () {
+            return this._root;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PartitionBase.prototype.getAbstraction = function (entity) {
+        return (this._abstractionPool[entity.id] || (this._abstractionPool[entity.id] = new PartitionBase._abstractionClassPool[entity.assetType](entity, this)));
+    };
+    /**
+     *
+     * @param image
+     */
+    PartitionBase.prototype.clearAbstraction = function (entity) {
+        this._abstractionPool[entity.id] = null;
+    };
+    PartitionBase.prototype.traverse = function (traverser) {
+        this.updateEntities();
+        if (this._rootNode)
+            this._rootNode.acceptTraverser(traverser);
+    };
+    PartitionBase.prototype.invalidateEntity = function (entity) {
+        this._updateQueue[entity.id] = entity;
+    };
+    PartitionBase.prototype.updateEntity = function (entity) {
+        entity._iInternalUpdate();
+        if (entity.isEntity)
+            this.updateNode(this.getAbstraction(entity));
+    };
+    PartitionBase.prototype.updateNode = function (node) {
+        var targetNode = this.findParentForNode(node);
+        if (node.parent != targetNode) {
+            if (node.parent)
+                node.parent.iRemoveNode(node);
+            targetNode.iAddNode(node);
+        }
+    };
+    PartitionBase.prototype.clearEntity = function (entity) {
+        delete this._updateQueue[entity.id];
+        if (entity.isEntity)
+            this.clearNode(this.getAbstraction(entity));
+    };
+    PartitionBase.prototype.clearNode = function (node) {
+        if (node.parent) {
+            node.parent.iRemoveNode(node);
+            node.parent = null;
+        }
+    };
+    /**
+     *
+     * @param entity
+     * @returns {away.partition.NodeBase}
+     */
+    PartitionBase.prototype.findParentForNode = function (node) {
+        return this._rootNode;
+    };
+    PartitionBase.prototype.updateEntities = function () {
+        var entity;
+        //required for controllers with autoUpdate set to true and queued events
+        for (var key in this._updateQueue)
+            this.updateEntity(this._updateQueue[key]);
+        //clear updateQueue
+        this._updateQueue = {};
+    };
+    PartitionBase.prototype.dispose = function () {
+        //TODO
+    };
+    /**
+     *
+     * @param imageObjectClass
+     */
+    PartitionBase.registerAbstraction = function (entityNodeClass, assetClass) {
+        PartitionBase._abstractionClassPool[assetClass.assetType] = entityNodeClass;
+    };
+    return PartitionBase;
+}());
+PartitionBase._abstractionClassPool = new Object();
+
+/**
+ * @class away.partition.Partition
+ */
+var SceneGraphPartition = (function (_super) {
+    __extends(SceneGraphPartition, _super);
+    function SceneGraphPartition(root) {
+        var _this = _super.call(this, root) || this;
+        _this._sceneGraphNodePool = new SceneGraphNodePool();
+        return _this;
+    }
+    SceneGraphPartition.prototype.traverse = function (traverser) {
+        _super.prototype.traverse.call(this, traverser);
+    };
+    /**
+     *
+     * @param entity
+     * @returns {away.partition.NodeBase}
+     */
+    SceneGraphPartition.prototype.findParentForNode = function (node) {
+        if (this._root == node._entity && node.isSceneGraphNode) {
+            this._rootNode = node;
+            return null;
+        }
+        if (!node.isSceneGraphNode && node._entity.isContainer)
+            return this._sceneGraphNodePool.getAbstraction(node._entity);
+        return this._sceneGraphNodePool.getAbstraction(node._entity.parent);
+    };
+    SceneGraphPartition.prototype.updateEntity = function (entity) {
+        _super.prototype.updateEntity.call(this, entity);
+        if (entity.isContainer)
+            this.updateNode(this._sceneGraphNodePool.getAbstraction(entity));
+    };
+    SceneGraphPartition.prototype.clearEntity = function (entity) {
+        _super.prototype.clearEntity.call(this, entity);
+        if (entity.isContainer)
+            this.clearNode(this._sceneGraphNodePool.getAbstraction(entity));
+    };
+    return SceneGraphPartition;
+}(PartitionBase));
+/**
+ * @class away.pool.SceneGraphNodePool
+ */
+var SceneGraphNodePool = (function () {
+    function SceneGraphNodePool() {
+        this._abstractionPool = new Object();
+    }
+    /**
+     * //TODO
+     *
+     * @param entity
+     * @returns EntityNode
+     */
+    SceneGraphNodePool.prototype.getAbstraction = function (entity) {
+        return (this._abstractionPool[entity.id] || (this._abstractionPool[entity.id] = new SceneGraphNode(entity, this)));
+    };
+    /**
+     * //TODO
+     *
+     * @param entity
+     */
+    SceneGraphNodePool.prototype.clearAbstraction = function (entity) {
+        delete this._abstractionPool[entity.id];
+    };
+    return SceneGraphNodePool;
+}());
+
+/**
+ * Picks a 3d object from a view or scene by 3D raycast calculations.
+ * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+ * then triggers an optional picking collider on individual renderable objects to further determine the precise values of the picking ray collision.
+ *
+ * @class away.pick.RaycastPicker
+ */
+var RaycastPicker = (function (_super) {
+    __extends(RaycastPicker, _super);
+    /**
+     * Creates a new <code>RaycastPicker</code> object.
+     *
+     * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+     * or simply returns the first collision encountered. Defaults to false.
+     */
+    function RaycastPicker(findClosestCollision) {
+        if (findClosestCollision === void 0) { findClosestCollision = false; }
+        var _this = _super.call(this) || this;
+        _this._entities = new Array();
+        /**
+         * @inheritDoc
+         */
+        _this.onlyMouseEnabled = true;
+        _this._findClosestCollision = findClosestCollision;
+        return _this;
+    }
+    /**
+     * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
+     *
+     * @param node The Partition3DNode object to frustum-test.
+     */
+    RaycastPicker.prototype.enterNode = function (node) {
+        return node.isIntersectingRay(this._rayPosition, this._rayDirection) && !node.isMask();
+    };
+    /**
+     * @inheritDoc
+     */
+    RaycastPicker.prototype.getCollision = function (rayPosition, rayDirection, view) {
+        this._rayPosition = rayPosition;
+        this._rayDirection = rayDirection;
+        // collect entities to test
+        view.traversePartitions(this);
+        //early out if no collisions detected
+        if (!this._entities.length)
+            return null;
+        var collision = this.getPickingCollision(view);
+        //discard entities
+        this._entities.length = 0;
+        return collision;
+    };
+    //		public getEntityCollision(position:Vector3D, direction:Vector3D, entities:Array<IEntity>):PickingCollision
+    //		{
+    //			this._numRenderables = 0;
+    //
+    //			var renderable:IEntity;
+    //			var l:number = entities.length;
+    //
+    //			for (var c:number = 0; c < l; c++) {
+    //				renderable = entities[c];
+    //
+    //				if (renderable.isIntersectingRay(position, direction))
+    //					this._renderables[this._numRenderables++] = renderable;
+    //			}
+    //
+    //			return this.getPickingCollision(this._raycastCollector);
+    //		}
+    RaycastPicker.prototype.setIgnoreList = function (entities) {
+        this._ignoredEntities = entities;
+    };
+    RaycastPicker.prototype.isIgnored = function (entity) {
+        if (this.onlyMouseEnabled && !entity._iIsMouseEnabled())
+            return true;
+        if (this._ignoredEntities) {
+            var len = this._ignoredEntities.length;
+            for (var i = 0; i < len; i++)
+                if (this._ignoredEntities[i] == entity)
+                    return true;
+        }
+        return false;
+    };
+    RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
+        return entity1._iPickingCollision.rayEntryDistance > entity2._iPickingCollision.rayEntryDistance ? 1 : -1;
+    };
+    RaycastPicker.prototype.getPickingCollision = function (view) {
+        // Sort entities from closest to furthest to reduce tests.
+        this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
+        // ---------------------------------------------------------------------
+        // Evaluate triangle collisions when needed.
+        // Replaces collision data provided by bounds collider with more precise data.
+        // ---------------------------------------------------------------------
+        this._bestCollision = null;
+        var len = this._entities.length;
+        for (var i = 0; i < len; i++) {
+            this._entity = this._entities[i];
+            this._testCollision = this._entity._iPickingCollision;
+            if (this._bestCollision == null || this._testCollision.rayEntryDistance < this._bestCollision.rayEntryDistance) {
+                this._testCollider = view.getPartition(this._entity).getAbstraction(this._entity).pickingCollider;
+                if (this._testCollider) {
+                    this._testCollision.rayEntryDistance = Number.MAX_VALUE;
+                    this._entity._acceptTraverser(this);
+                    // If a collision exists, update the collision data and stop all checks.
+                    if (this._bestCollision && !this._findClosestCollision)
+                        break;
+                }
+                else if (!this._testCollision.rayOriginIsInsideBounds) {
+                    // A bounds collision with no picking collider stops all checks.
+                    // Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
+                    // to enable the detection of a corresponsding triangle collision.
+                    // Therefore, bounds collisions with a ray origin inside its bounds can be ignored
+                    // if it has been established that there is NO triangle collider to test
+                    this._bestCollision = this._testCollision;
+                    break;
+                }
+            }
+        }
+        if (this._bestCollision)
+            this.updatePosition(this._bestCollision);
+        return this._bestCollision;
+    };
+    RaycastPicker.prototype.updatePosition = function (pickingCollision) {
+        var collisionPos = pickingCollision.position || (pickingCollision.position = new _awayjs_core.Vector3D());
+        var rayDir = pickingCollision.rayDirection;
+        var rayPos = pickingCollision.rayPosition;
+        var t = pickingCollision.rayEntryDistance;
+        collisionPos.x = rayPos.x + t * rayDir.x;
+        collisionPos.y = rayPos.y + t * rayDir.y;
+        collisionPos.z = rayPos.z + t * rayDir.z;
+    };
+    RaycastPicker.prototype.dispose = function () {
+        //TODO
+    };
+    /**
+     *
+     * @param entity
+     */
+    RaycastPicker.prototype.applyEntity = function (entity) {
+        if (!this.isIgnored(entity))
+            this._entities.push(entity);
+    };
+    RaycastPicker.prototype.applyBillboard = function (billboard) {
+        if (this._testCollider.testBillboardCollision(billboard, billboard.material, this._testCollision))
+            this._bestCollision = this._testCollision;
+    };
+    RaycastPicker.prototype.applyLineShape = function (shape) {
+        if (this._testCollider.testLineCollision(shape.elements, shape.material || this._entity.material, this._testCollision, shape.count || shape.elements.numVertices, shape.offset))
+            this._bestCollision = this._testCollision;
+    };
+    RaycastPicker.prototype.applyTriangleShape = function (shape) {
+        if (this._testCollider.testTriangleCollision(shape.elements, shape.material || this._entity.material, this._testCollision, shape.count || shape.elements.numVertices, shape.offset))
+            this._bestCollision = this._testCollision;
+    };
+    /**
+     *
+     * @param entity
+     */
+    RaycastPicker.prototype.applyDirectionalLight = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RaycastPicker.prototype.applyLightProbe = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RaycastPicker.prototype.applyPointLight = function (entity) {
+        //don't do anything here
+    };
+    /**
+     *
+     * @param entity
+     */
+    RaycastPicker.prototype.applySkybox = function (entity) {
+        //don't do anything here
+    };
+    return RaycastPicker;
+}(_awayjs_graphics.TraverserBase));
+
+/**
+ * @class away.partition.NodeBase
+ */
+var NodeBase = (function () {
+    /**
+     *
+     */
+    function NodeBase() {
+        this._bounds = new _awayjs_scene.NullBounds();
+        this._pChildNodes = new Array();
+        this._pNumChildNodes = 0;
+        this.numEntities = 0;
+    }
+    Object.defineProperty(NodeBase.prototype, "debugVisible", {
+        get: function () {
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(NodeBase.prototype, "bounds", {
+        /**
+         * @internal
+         */
+        get: function () {
+            return this._bounds; //TODO
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     * @internal
+     */
+    NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+        return true;
+    };
+    /**
+     *
+     * @param rayPosition
+     * @param rayDirection
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isRenderable = function () {
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isCastingShadow = function () {
+        return true;
+    };
+    NodeBase.prototype.renderBounds = function (traverser) {
+        //nothing to do here
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    NodeBase.prototype.isMask = function () {
+        return false;
+    };
+    NodeBase.prototype.dispose = function () {
+        this.parent = null;
+        this._pChildNodes = null;
+    };
+    /**
+     *
+     * @param traverser
+     */
+    NodeBase.prototype.acceptTraverser = function (traverser) {
+        if (this.numEntities == 0)
+            return;
+        if (traverser.enterNode(this)) {
+            for (var i = 0; i < this._pNumChildNodes; i++)
+                this._pChildNodes[i].acceptTraverser(traverser);
+        }
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    NodeBase.prototype.iAddNode = function (node) {
+        node.parent = this;
+        this.numEntities += node.numEntities;
+        this._pChildNodes[this._pNumChildNodes++] = node;
+        var numEntities = node.numEntities;
+        node = this;
+        do {
+            node.numEntities += numEntities;
+        } while ((node = node.parent) != null);
+    };
+    /**
+     *
+     * @param node
+     * @internal
+     */
+    NodeBase.prototype.iRemoveNode = function (node) {
+        var index = this._pChildNodes.indexOf(node);
+        this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
+        this._pChildNodes.pop();
+        var numEntities = node.numEntities;
+        node = this;
+        do {
+            node.numEntities -= numEntities;
+        } while ((node = node.parent) != null);
+    };
+    return NodeBase;
+}());
+
+/**
+ * @class away.partition.Partition
+ */
+var BasicPartition = (function (_super) {
+    __extends(BasicPartition, _super);
+    function BasicPartition(root) {
+        var _this = _super.call(this, root) || this;
+        _this._rootNode = new NodeBase();
+        return _this;
+    }
+    return BasicPartition;
+}(PartitionBase));
+
+var View = (function () {
+    /*
+     ***********************************************************************
+     * Disabled / Not yet implemented
+     ***********************************************************************
+     *
+     * private _background:away.textures.Texture2DBase;
+     *
+     * public _pTouch3DManager:away.managers.Touch3DManager;
+     *
+     */
+    function View(renderer, scene, camera) {
+        if (renderer === void 0) { renderer = null; }
+        if (scene === void 0) { scene = null; }
+        if (camera === void 0) { camera = null; }
+        var _this = this;
+        this._time = 0;
+        this._deltaTime = 0;
+        this._backgroundColor = 0x000000;
+        this._backgroundAlpha = 1;
+        this._viewportDirty = true;
+        this._scissorDirty = true;
+        this._mousePicker = new RaycastPicker();
+        this._partitions = new Object();
+        this._pTouchPoints = new Array();
+        this._onProjectionChangedDelegate = function (event) { return _this._onProjectionChanged(event); };
+        this._onViewportUpdatedDelegate = function (event) { return _this._onViewportUpdated(event); };
+        this._onScissorUpdatedDelegate = function (event) { return _this._onScissorUpdated(event); };
+        this._mouseManager = MouseManager.getInstance();
+        this._mouseManager.registerView(this);
+        this.scene = scene || new _awayjs_scene.Scene();
+        this.camera = camera || new _awayjs_scene.Camera();
+        this.renderer = renderer || new _awayjs_renderer.DefaultRenderer();
+        //			if (this._shareContext)
+        //				this._mouse3DManager.addViewLayer(this);
+    }
+    View.prototype.getPartition = function (entity) {
+        //use registered partition for the displayobject or fallback for scene
+        return this._partitions[entity.partition.id] || this._partitions[this._pScene.id];
+    };
+    View.prototype.setPartition = function (entity, partition) {
+        var oldPartition = this._partitions[entity.id];
+        if (oldPartition == partition)
+            return;
+        //clears all existing entities on the partition
+        entity.isPartition = false;
+        if (oldPartition) {
+            oldPartition.dispose();
+            delete this._partitions[entity.id];
+        }
+        if (partition) {
+            this._partitions[entity.id] = partition;
+            entity.isPartition = true;
+        }
+    };
+    View.prototype.getCollider = function (entity) {
+        return this.getPartition(entity).getAbstraction(entity).pickingCollider;
+    };
+    View.prototype.setCollider = function (entity, collider) {
+        this.getPartition(entity).getAbstraction(entity).pickingCollider = collider;
+    };
+    Object.defineProperty(View.prototype, "mouseX", {
+        get: function () {
+            return this._pMouseX;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "mouseY", {
+        get: function () {
+            return this._pMouseY;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "touchPoints", {
+        get: function () {
+            return this._pTouchPoints;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    View.prototype.getLocalMouseX = function (displayObject) {
+        return displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).x;
+    };
+    View.prototype.getLocalMouseY = function (displayObject) {
+        return displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pMouseX, this._pMouseY, 1000)).y;
+    };
+    View.prototype.getLocalTouchPoints = function (displayObject) {
+        var localPosition;
+        var localTouchPoints = new Array();
+        var len = this._pTouchPoints.length;
+        for (var i = 0; i < len; i++) {
+            localPosition = displayObject.transform.inverseConcatenatedMatrix3D.transformVector(this.unproject(this._pTouchPoints[i].x, this._pTouchPoints[i].y, 1000));
+            localTouchPoints.push(new _awayjs_scene.TouchPoint(localPosition.x, localPosition.y, this._pTouchPoints[i].id));
+        }
+        return localTouchPoints;
+    };
+    Object.defineProperty(View.prototype, "renderer", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer;
+        },
+        set: function (value) {
+            if (this._pRenderer == value)
+                return;
+            if (this._pRenderer) {
+                //swap the old renderer width and height to the new renderer
+                value.width = this._pRenderer.width;
+                value.height = this._pRenderer.height;
+                this._pRenderer.dispose();
+                this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                this._pRenderer.removeEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+                this._mouseManager.unregisterContainer(this._pRenderer.stage.container);
+            }
+            this._pRenderer = value;
+            this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+            this._pRenderer.addEventListener(_awayjs_renderer.RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+            this._mouseManager.registerContainer(this._pRenderer.stage.container);
+            //reset back buffer
+            this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
+            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "backgroundColor", {
+        /**
+         *
+         */
+        get: function () {
+            return this._backgroundColor;
+        },
+        set: function (value) {
+            if (this._backgroundColor == value)
+                return;
+            this._backgroundColor = value;
+            this._pRenderer._iBackgroundR = ((value >> 16) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundG = ((value >> 8) & 0xff) / 0xff;
+            this._pRenderer._iBackgroundB = (value & 0xff) / 0xff;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "backgroundAlpha", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return this._backgroundAlpha;
+        },
+        /**
+         *
+         * @param value
+         */
+        set: function (value) {
+            if (value > 1)
+                value = 1;
+            else if (value < 0)
+                value = 0;
+            if (this._backgroundAlpha == value)
+                return;
+            this._pRenderer._iBackgroundAlpha = this._backgroundAlpha = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "camera", {
+        /**
+         *
+         * @returns {Camera3D}
+         */
+        get: function () {
+            return this._pCamera;
+        },
+        /**
+         * Set camera that's used to render the scene for this viewport
+         */
+        set: function (value) {
+            if (this._pCamera == value)
+                return;
+            if (this._pCamera)
+                this._pCamera.removeEventListener(_awayjs_scene.CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
+            this._pCamera = value;
+            if (this._pScene)
+                this._partitions[this._pScene.id].invalidateEntity(this._pCamera);
+            this._pCamera.addEventListener(_awayjs_scene.CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
+            this._scissorDirty = true;
+            this._viewportDirty = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "scene", {
+        /**
+         *
+         * @returns {away.containers.Scene3D}
+         */
+        get: function () {
+            return this._pScene;
+        },
+        /**
+         * Set the scene that's used to render for this viewport
+         */
+        set: function (value) {
+            if (this._pScene == value)
+                return;
+            if (this._pScene) {
+                this._pScene._iUnregisterView(this);
+                this._partitions[this._pScene.id].dispose();
+            }
+            this._pScene = value;
+            this._partitions[this._pScene.id] = new BasicPartition(this._pScene);
+            this._pScene._iRegisterView(this);
+            if (this._pCamera)
+                this._partitions[this._pScene.id].invalidateEntity(this._pCamera);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "deltaTime", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return this._deltaTime;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "width", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.width;
+        },
+        set: function (value) {
+            this._pRenderer.width = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "height", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.height;
+        },
+        set: function (value) {
+            this._pRenderer.height = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "mousePicker", {
+        /**
+         *
+         */
+        get: function () {
+            return this._mousePicker;
+        },
+        set: function (value) {
+            if (this._mousePicker == value)
+                return;
+            if (value == null)
+                this._mousePicker = new RaycastPicker();
+            else
+                this._mousePicker = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "x", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.x;
+        },
+        set: function (value) {
+            this._pRenderer.x = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "y", {
+        /**
+         *
+         */
+        get: function () {
+            return this._pRenderer.y;
+        },
+        set: function (value) {
+            this._pRenderer.y = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "renderedFacesCount", {
+        /**
+         *
+         * @returns {number}
+         */
+        get: function () {
+            return 0; //TODO
+            //return this._pEntityCollector._pNumTriangles;//numTriangles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Renders the view.
+     */
+    View.prototype.render = function () {
+        this.pUpdateTime();
+        //update view and size data
+        if (this._scissorDirty) {
+            this._scissorDirty = false;
+            this._pCamera.projection.setViewRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
+        }
+        if (this._viewportDirty) {
+            this._viewportDirty = false;
+            this._pCamera.projection.setStageRect(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
+        }
+        // update picking
+        if (!this.disableMouseEvents) {
+            if (this.forceMouseMove && !this._mouseManager._iUpdateDirty)
+                this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
+            this._mouseManager.fireMouseEvents(this.forceMouseMove);
+        }
+        //_touch3DManager.updateCollider();
+        //render the contents of the scene
+        this._pRenderer.render(this);
+    };
+    /**
+     *
+     */
+    View.prototype.pUpdateTime = function () {
+        var time = _awayjs_core.getTimer();
+        if (this._time == 0)
+            this._time = time;
+        this._deltaTime = time - this._time;
+        this._time = time;
+    };
+    /**
+     *
+     */
+    View.prototype.dispose = function () {
+        this._pRenderer.dispose();
+        // TODO: imeplement mouseManager / touch3DManager
+        this._mouseManager.unregisterView(this);
+        //this._touch3DManager.disableTouchListeners(this);
+        //this._touch3DManager.dispose();
+        this._mouseManager = null;
+        //this._touch3DManager = null;
+        this._pRenderer = null;
+    };
+    /**
+     *
+     */
+    View.prototype._onProjectionChanged = function (event) {
+        this._scissorDirty = true;
+        this._viewportDirty = true;
+    };
+    /**
+     *
+     */
+    View.prototype._onViewportUpdated = function (event) {
+        this._viewportDirty = true;
+    };
+    /**
+     *
+     */
+    View.prototype._onScissorUpdated = function (event) {
+        this._scissorDirty = true;
+    };
+    View.prototype.project = function (point3d) {
+        var v = this._pCamera.project(point3d);
+        v.x = (v.x * this._pRenderer.viewPort.width + this._pRenderer.viewPort.width) / 2;
+        v.y = (v.y * this._pRenderer.viewPort.height + this._pRenderer.viewPort.height) / 2;
+        return v;
+    };
+    View.prototype.unproject = function (sX, sY, sZ, target) {
+        if (target === void 0) { target = null; }
+        return this._pCamera.unproject((2 * sX - this._pRenderer.viewPort.width) / this._pRenderer.viewPort.width, (2 * sY - this._pRenderer.viewPort.height) / this._pRenderer.viewPort.height, sZ, target);
+    };
+    /*TODO: implement Background
+     public get background():away.textures.Texture2DBase
+     {
+     return this._background;
+     }
+     */
+    /*TODO: implement Background
+     public set background( value:away.textures.Texture2DBase )
+     {
+     this._background = value;
+     this._renderer.background = _background;
+     }
+     */
+    // TODO: required dependency stageGL
+    View.prototype.updateCollider = function () {
+        if (!this.disableMouseEvents) {
+            // if (!this._pRenderer.shareContext) {
+            this._mouseManager._iCollision = this.getViewCollision(this._pMouseX, this._pMouseY, this);
+        }
+    };
+    View.prototype.getViewCollision = function (x, y, view) {
+        //update ray
+        var rayPosition = view.unproject(x, y, 0);
+        var rayDirection = view.unproject(x, y, 1).subtract(rayPosition);
+        return this._mousePicker.getCollision(rayPosition, rayDirection, this);
+    };
+    View.prototype.traversePartitions = function (traverser) {
+        for (var key in this._partitions)
+            this._partitions[key].traverse(traverser);
+    };
+    View.prototype.registerObject = function (displayObject) {
+        this.getPartition(displayObject).invalidateEntity(displayObject);
+    };
+    View.prototype.unRegisterObject = function (displayObject) {
+        this.getPartition(displayObject).clearEntity(displayObject);
+    };
+    return View;
+}());
+
+/**
+ *
+ */
+var ViewImage2D = (function (_super) {
+    __extends(ViewImage2D, _super);
+    /**
+     * Creates a BitmapImage2D object with a specified width and height. If you
+     * specify a value for the <code>fillColor</code> parameter, every pixel in
+     * the bitmap is set to that color.
+     *
+     * <p>By default, the bitmap is created as transparent, unless you pass
+     * the value <code>false</code> for the transparent parameter. After you
+     * create an opaque bitmap, you cannot change it to a transparent bitmap.
+     * Every pixel in an opaque bitmap uses only 24 bits of color channel
+     * information. If you define the bitmap as transparent, every pixel uses 32
+     * bits of color channel information, including an alpha transparency
+     * channel.</p>
+     *
+     * @param width       The width of the bitmap image in pixels.
+     * @param height      The height of the bitmap image in pixels.
+     * @param transparent Specifies whether the bitmap image supports per-pixel
+     *                    transparency. The default value is <code>true</code>
+     *                    (transparent). To create a fully transparent bitmap,
+     *                    set the value of the <code>transparent</code>
+     *                    parameter to <code>true</code> and the value of the
+     *                    <code>fillColor</code> parameter to 0x00000000(or to
+     *                    0). Setting the <code>transparent</code> property to
+     *                    <code>false</code> can result in minor improvements
+     *                    in rendering performance.
+     * @param fillColor   A 32-bit ARGB color value that you use to fill the
+     *                    bitmap image area. The default value is
+     *                    0xFFFFFFFF(solid white).
+     */
+    function ViewImage2D(width, height, transparent, fillColor, powerOfTwo, stage) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = 0xffffffff; }
+        if (powerOfTwo === void 0) { powerOfTwo = true; }
+        if (stage === void 0) { stage = null; }
+        var _this = _super.call(this, width, height, transparent, fillColor, powerOfTwo) || this;
+        _this._fillColor = fillColor;
+        _this._stage = stage;
+        return _this;
+    }
+    Object.defineProperty(ViewImage2D.prototype, "assetType", {
+        /**
+         *
+         * @returns {string}
+         */
+        get: function () {
+            return ViewImage2D.assetType;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ViewImage2D.prototype.createView = function () {
+        //create the view
+        this._view = new View(new _awayjs_renderer.DefaultRenderer(this._stage));
+        this._view.disableMouseEvents = true;
+        this._view.width = this._rect.width;
+        this._view.height = this._rect.height;
+        this._fillColor = this._fillColor;
+        this._view.backgroundAlpha = this._transparent ? (this._fillColor & 0xff000000) >>> 24 : 1;
+        this._view.backgroundColor = this._fillColor & 0xffffff;
+        this._view.renderer.renderableSorter = null; //new RenderableSort2D();
+        //create the projection
+        var projection = new _awayjs_core.PerspectiveProjection();
+        projection.coordinateSystem = _awayjs_core.CoordinateSystem.RIGHT_HANDED;
+        projection.originX = 0;
+        projection.originY = 0;
+        projection.preserveFocalLength = true;
+        projection.setViewRect(0, 0, this._rect.width, this._rect.height);
+        projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+        this._view.camera.projection = projection;
+    };
+    /**
+     * Frees memory that is used to store the BitmapImage2D object.
+     *
+     * <p>When the <code>dispose()</code> method is called on an image, the width
+     * and height of the image are set to 0. All subsequent calls to methods or
+     * properties of this BitmapImage2D instance fail, and an exception is thrown.
+     * </p>
+     *
+     * <p><code>BitmapImage2D.dispose()</code> releases the memory occupied by the
+     * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
+     * memory). After using <code>BitmapImage2D.dispose()</code>, the BitmapImage2D
+     * object is no longer usable and an exception may be thrown if
+     * you call functions on the BitmapImage2D object. However,
+     * <code>BitmapImage2D.dispose()</code> does not garbage collect the BitmapImage2D
+     * object(approximately 128 bytes); the memory occupied by the actual
+     * BitmapImage2D object is released at the time the BitmapImage2D object is
+     * collected by the garbage collector.</p>
+     *
+     */
+    ViewImage2D.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        //todo
+    };
+    ViewImage2D.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+        if (source instanceof _awayjs_scene.DisplayObject) {
+            var root = new _awayjs_scene.DisplayObjectContainer();
+            root.addChild(source);
+            if (matrix) {
+                root.transform.scaleTo(matrix.a, -matrix.d, 1);
+                root.transform.moveTo(matrix.tx, matrix.ty, 0);
+            }
+            root.transform.colorTransform = colorTransform;
+            if (!this._view)
+                this.createView();
+            this._view.scene = new _awayjs_scene.Scene();
+            this._view.scene.addChild(root);
+            this._view.setPartition(root, new SceneGraphPartition(root));
+            //save snapshot if unlocked
+            if (!this._locked)
+                this._view.renderer.queueSnapshot(this);
+            this._view.renderer.disableClear = !this._locked;
+            //render
+            this._view.renderer._iRender(this._view.camera.projection, this._view, this);
+            return;
+        }
+        _super.prototype.draw.call(this, source, matrix, colorTransform, blendMode, clipRect, smoothing);
+    };
+    /**
+     *
+     * @param width
+     * @param height
+     * @private
+     */
+    ViewImage2D.prototype._setSize = function (width, height) {
+        _super.prototype._setSize.call(this, width, height);
+        if (this._view) {
+            this._view.width = this._rect.width;
+            this._view.height = this._rect.height;
+            this._view.camera.projection.setViewRect(0, 0, this._rect.width, this._rect.height);
+            this._view.camera.projection.setStageRect(0, 0, this._rect.width, this._rect.height);
+        }
+    };
+    return ViewImage2D;
+}(_awayjs_graphics.BitmapImage2D));
+ViewImage2D.assetType = "[image ViewImage2D]";
+
+/**
+ * @class away.partition.EntityNode
+ */
+var EntityNode = (function (_super) {
+    __extends(EntityNode, _super);
+    function EntityNode(displayObject, partition) {
+        var _this = _super.call(this, displayObject, partition) || this;
+        _this.numEntities = 1;
+        _this._maskPosition = new _awayjs_core.Vector3D();
+        _this._partition = partition;
+        return _this;
+    }
+    EntityNode.prototype.onClear = function (event) {
+        _super.prototype.onClear.call(this, event);
+        this._partition = null;
+    };
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     */
+    EntityNode.prototype.isInFrustum = function (planes, numPlanes) {
+        if (!this._entity._iIsVisible())
+            return false;
+        return true; // todo: hack for 2d. attention. might break stuff in 3d.
+        //return this._bounds.isInFrustum(planes, numPlanes);
+    };
+    /**
+     * @inheritDoc
+     */
+    EntityNode.prototype.isIntersectingRay = function (globalRayPosition, globalRayDirection) {
+        if (!this._entity._iIsVisible() || !this.isIntersectingMasks(globalRayPosition, globalRayDirection, this._entity._iAssignedMasks()))
+            return false;
+        var pickingCollision = this._entity._iPickingCollision;
+        pickingCollision.rayPosition = this._entity.transform.inverseConcatenatedMatrix3D.transformVector(globalRayPosition);
+        pickingCollision.rayDirection = this._entity.transform.inverseConcatenatedMatrix3D.deltaTransformVector(globalRayDirection);
+        if (!pickingCollision.normal)
+            pickingCollision.normal = new _awayjs_core.Vector3D();
+        var rayEntryDistance = this.bounds.rayIntersection(pickingCollision.rayPosition, pickingCollision.rayDirection, pickingCollision.normal);
+        if (rayEntryDistance < 0)
+            return false;
+        pickingCollision.rayEntryDistance = rayEntryDistance;
+        pickingCollision.globalRayPosition = globalRayPosition;
+        pickingCollision.globalRayDirection = globalRayDirection;
+        pickingCollision.rayOriginIsInsideBounds = rayEntryDistance == 0;
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    EntityNode.prototype.isRenderable = function () {
+        return this._entity._iAssignedColorTransform()._isRenderable();
+    };
+    /**
+     * @inheritDoc
+     */
+    EntityNode.prototype.acceptTraverser = function (traverser) {
+        if (traverser.enterNode(this))
+            traverser[this._entity.traverseName](this._entity);
+    };
+    EntityNode.prototype._onInvalidatePartitionBounds = function (event) {
+        this.bounds.invalidate();
+        this._partition.invalidateEntity(this._entity);
+    };
+    EntityNode.prototype.isIntersectingMasks = function (globalRayPosition, globalRayDirection, masks) {
+        //horrible hack for 2d masks
+        if (masks != null) {
+            this._maskPosition.x = globalRayPosition.x + globalRayDirection.x * 1000;
+            this._maskPosition.y = globalRayPosition.y + globalRayDirection.y * 1000;
+            var numLayers = masks.length;
+            var children;
+            var numChildren;
+            var layerHit;
+            for (var i = 0; i < numLayers; i++) {
+                children = masks[i];
+                numChildren = children.length;
+                layerHit = false;
+                for (var j = 0; j < numChildren; j++) {
+                    if (children[j].hitTestPoint(this._maskPosition.x, this._maskPosition.y, true, true)) {
+                        layerHit = true;
+                        break;
+                    }
+                }
+                if (!layerHit)
+                    return false;
+            }
+        }
+        return true;
+    };
+    return EntityNode;
+}(DisplayObjectNode));
+
+/**
+ * @class away.partition.CameraNode
+ */
+var CameraNode = (function (_super) {
+    __extends(CameraNode, _super);
+    function CameraNode() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     * @inheritDoc
+     */
+    CameraNode.prototype.acceptTraverser = function (traverser) {
+        // todo: dead end for now, if it has a debug sprite, then sure accept that
+    };
+    return CameraNode;
+}(EntityNode));
+
+/**
+ * SkyboxNode is a space partitioning leaf node that contains a Skybox object.
+ *
+ * @class away.partition.SkyboxNode
+ */
+var SkyboxNode = (function (_super) {
+    __extends(SkyboxNode, _super);
+    function SkyboxNode() {
+        return _super.apply(this, arguments) || this;
+    }
+    /**
+     *
+     * @param planes
+     * @param numPlanes
+     * @returns {boolean}
+     */
+    SkyboxNode.prototype.isInFrustum = function (planes, numPlanes) {
+        if (!this._entity._iIsVisible)
+            return false;
+        //a skybox is always in view unless its visibility is set to false
+        return true;
+    };
+    /**
+     *
+     * @returns {boolean}
+     */
+    SkyboxNode.prototype.isCastingShadow = function () {
+        return false; //skybox never casts shadows
+    };
+    return SkyboxNode;
+}(EntityNode));
+
+/**
+ * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
+ *
+ * @see away.base.DisplayObject#pickingCollider
+ * @see away.pick.RaycastPicker
+ *
+ * @class away.pick.JSPickingCollider
+ */
+var JSPickingCollider = (function () {
+    /**
+     * Creates a new <code>JSPickingCollider</code> object.
+     *
+     * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+     */
+    function JSPickingCollider(findClosestCollision) {
+        if (findClosestCollision === void 0) { findClosestCollision = false; }
+        this._findClosestCollision = findClosestCollision;
+    }
+    /**
+     * Tests a <code>Billboard</code> object for a collision with the picking ray.
+     *
+     * @param billboard The billboard instance to be tested.
+     * @param pickingCollision The collision object used to store the collision results
+     * @param findClosest
+     */
+    JSPickingCollider.prototype.testBillboardCollision = function (billboard, material, pickingCollision) {
+        pickingCollision.renderable = null;
+        //if (this._testGraphicCollision(<RenderableBase> this._renderablePool.getItem(billboard), pickingCollision, shortestCollisionDistance)) {
+        //	shortestCollisionDistance = pickingCollision.rayEntryDistance;
+        //
+        //	pickingCollision.renderable = billboard;
+        //
+        //	return true;
+        //}
+        return false;
+    };
+    /**
+     * Tests a <code>TriangleElements</code> object for a collision with the picking ray.
+     *
+     * @param triangleElements
+     * @param material
+     * @param pickingCollision
+     * @returns {boolean}
+     */
+    JSPickingCollider.prototype.testTriangleCollision = function (triangleElements, material, pickingCollision, count, offset) {
+        if (offset === void 0) { offset = 0; }
+        var rayPosition = pickingCollision.rayPosition;
+        var rayDirection = pickingCollision.rayDirection;
+        var t;
+        var i0, i1, i2;
+        var rx, ry, rz;
+        var nx, ny, nz;
+        var cx, cy, cz;
+        var coeff, u, v, w;
+        var p0x, p0y, p0z;
+        var p1x, p1y, p1z;
+        var p2x, p2y, p2z;
+        var s0x, s0y, s0z;
+        var s1x, s1y, s1z;
+        var nl, nDotV, D, disToPlane;
+        var Q1Q2, Q1Q1, Q2Q2, RQ1, RQ2;
+        var collisionTriangleIndex = -1;
+        var bothSides = material.bothSides;
+        var positions = triangleElements.positions.get(count, offset);
+        var posDim = triangleElements.positions.dimensions;
+        var posStride = triangleElements.positions.stride;
+        var indices;
+        if (triangleElements.indices) {
+            indices = triangleElements.indices.get(triangleElements.numElements);
+            count = indices.length;
+        }
+        for (var index = 0; index < count; index += 3) {
+            // evaluate triangle indices
+            if (indices) {
+                i0 = indices[index] * posStride;
+                i1 = indices[index + 1] * posStride;
+                i2 = indices[index + 2] * posStride;
+            }
+            else {
+                i0 = index * posStride;
+                i1 = (index + 1) * posStride;
+                i2 = (index + 2) * posStride;
+            }
+            // evaluate triangle positions
+            p0x = positions[i0];
+            p1x = positions[i1];
+            p2x = positions[i2];
+            s0x = p1x - p0x; // s0 = p1 - p0
+            s1x = p2x - p0x; // s1 = p2 - p0
+            p0y = positions[i0 + 1];
+            p1y = positions[i1 + 1];
+            p2y = positions[i2 + 1];
+            s0y = p1y - p0y;
+            s1y = p2y - p0y;
+            if (posDim == 3) {
+                p0z = positions[i0 + 2];
+                p1z = positions[i1 + 2];
+                p2z = positions[i2 + 2];
+                s0z = p1z - p0z;
+                s1z = p2z - p0z;
+                // evaluate sides and triangle normal
+                nx = s0y * s1z - s0z * s1y; // n = s0 x s1
+                ny = s0z * s1x - s0x * s1z;
+                nz = s0x * s1y - s0y * s1x;
+                nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
+                nx *= nl;
+                ny *= nl;
+                nz *= nl;
+            }
+            else {
+                nx = 0;
+                ny = 0;
+                nz = 1;
+            }
+            // -- plane intersection test --
+            nDotV = nx * rayDirection.x + ny * +rayDirection.y + nz * rayDirection.z; // rayDirection . normal
+            if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
+                // find collision t
+                D = -(nx * p0x + ny * p0y + nz * p0z);
+                disToPlane = -(nx * rayPosition.x + ny * rayPosition.y + nz * rayPosition.z + D);
+                t = disToPlane / nDotV;
+                // find collision point
+                cx = rayPosition.x + t * rayDirection.x;
+                cy = rayPosition.y + t * rayDirection.y;
+                cz = rayPosition.z + t * rayDirection.z;
+                // collision point inside triangle? ( using barycentric coordinates )
+                Q1Q2 = s0x * s1x + s0y * s1y + s0z * s1z;
+                Q1Q1 = s0x * s0x + s0y * s0y + s0z * s0z;
+                Q2Q2 = s1x * s1x + s1y * s1y + s1z * s1z;
+                rx = cx - p0x;
+                ry = cy - p0y;
+                rz = cz - p0z;
+                RQ1 = rx * s0x + ry * s0y + rz * s0z;
+                RQ2 = rx * s1x + ry * s1y + rz * s1z;
+                coeff = 1 / (Q1Q1 * Q2Q2 - Q1Q2 * Q1Q2);
+                v = coeff * (Q2Q2 * RQ1 - Q1Q2 * RQ2);
+                w = coeff * (-Q1Q2 * RQ1 + Q1Q1 * RQ2);
+                if (v < 0)
+                    continue;
+                if (w < 0)
+                    continue;
+                u = 1 - v - w;
+                if (!(u < 0) && t > 0 && t < pickingCollision.rayEntryDistance) {
+                    collisionTriangleIndex = index / 3;
+                    pickingCollision.rayEntryDistance = t;
+                    pickingCollision.position = new _awayjs_core.Vector3D(cx, cy, cz);
+                    pickingCollision.normal = new _awayjs_core.Vector3D(nx, ny, nz);
+                    if (triangleElements.uvs) {
+                        var uvs = triangleElements.uvs.get(triangleElements.numVertices);
+                        var uvStride = triangleElements.uvs.stride;
+                        var uIndex = indices[index] * uvStride;
+                        var uv0 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        uIndex = indices[index + 1] * uvStride;
+                        var uv1 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        uIndex = indices[index + 2] * uvStride;
+                        var uv2 = new _awayjs_core.Vector3D(uvs[uIndex], uvs[uIndex + 1]);
+                        pickingCollision.uv = new _awayjs_core.Point(u * uv0.x + v * uv1.x + w * uv2.x, u * uv0.y + v * uv1.y + w * uv2.y);
+                    }
+                    pickingCollision.elementIndex = collisionTriangleIndex;
+                    // if not looking for best hit, first found will do...
+                    if (!this._findClosestCollision)
+                        return true;
+                }
+            }
+        }
+        if (collisionTriangleIndex >= 0)
+            return true;
+        return false;
+    };
+    //
+    ///**
+    // * Tests a <code>CurveElements</code> object for a collision with the picking ray.
+    // *
+    // * @param triangleElements
+    // * @param material
+    // * @param pickingCollision
+    // * @returns {boolean}
+    // */
+    //public testCurveCollision(curveElements:CurveElements, material:MaterialBase, pickingCollision:PickingCollision, shortestCollisionDistance:number):boolean
+    //{
+    //	var rayPosition:Vector3D = pickingCollision.localRayPosition;
+    //	var rayDirection:Vector3D = pickingCollision.localRayDirection;
+    //
+    //	//project ray onto x/y plane to generate useful test points from mouse coordinates
+    //	//this will only work while all points lie on the x/y plane
+    //	var plane:Vector3D = new Vector3D(0,0,-1,0);
+    //
+    //	var result:Vector3D = new Vector3D();
+    //	var distance:number = plane.x * rayPosition.x + plane.y * rayPosition.y + plane.z * rayPosition.z + plane.w;//distance(position);
+    //	result.x = rayPosition.x - ( plane.x*distance);
+    //	result.y = rayPosition.y - ( plane.y*distance);
+    //	result.z = rayPosition.z - ( plane.z*distance);
+    //	var normal:Vector3D = new Vector3D(plane.x,plane.y,plane.z);
+    //	var t:number = -(rayPosition.dotProduct(normal))/(rayDirection.dotProduct(normal));
+    //	rayDirection.scaleBy(t);
+    //	var p:Vector3D = rayPosition.add(rayDirection);
+    //
+    //	var indices:Uint16Array = curveElements.indices.get(curveElements.numElements);
+    //	var collisionCurveIndex:number = -1;
+    //	var bothSides:boolean = material.bothSides;
+    //
+    //
+    //	var positions:Float32Array = curveElements.positions.get(curveElements.numVertices);
+    //	var posDim:number = curveElements.positions.dimensions;
+    //	var curves:Float32Array = curveElements.curves.get(curveElements.numVertices);
+    //	var curveDim:number = curveElements.curves.dimensions;
+    //	var uvs:ArrayBufferView = curveElements.uvs.get(curveElements.numVertices);
+    //	var uvDim:number = curveElements.uvs.dimensions;
+    //	var numIndices:number = indices.length;
+    //
+    //
+    //	for(var index:number = 0; index < numIndices; index+=3)
+    //	{
+    //		var id0:number = indices[index];
+    //		var id1:number = indices[index + 1] * posDim;
+    //		var id2:number = indices[index + 2] * posDim;
+    //
+    //		var ax:number = positions[id0 * posDim];
+    //		var ay:number = positions[id0 * posDim + 1];
+    //		var bx:number = positions[id1];
+    //		var by:number = positions[id1 + 1];
+    //		var cx:number = positions[id2];
+    //		var cy:number = positions[id2 + 1];
+    //
+    //		var curvex:number = curves[id0 * curveDim];
+    //		var az:number = positions[id0 * posDim + 2];
+    //
+    //		//console.log(ax, ay, bx, by, cx, cy);
+    //
+    //		//from a to p
+    //		var dx:number = ax - p.x;
+    //		var dy:number = ay - p.y;
+    //
+    //		//edge normal (a-b)
+    //		var nx:number = by - ay;
+    //		var ny:number = -(bx - ax);
+    //
+    //		//console.log(ax,ay,bx,by,cx,cy);
+    //
+    //		var dot:number = (dx * nx) + (dy * ny);
+    //		//console.log("dot a",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		dx = bx - p.x;
+    //		dy = by - p.y;
+    //		nx = cy - by;
+    //		ny = -(cx - bx);
+    //
+    //		dot = (dx * nx) + (dy * ny);
+    //		//console.log("dot b",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		dx = cx - p.x;
+    //		dy = cy - p.y;
+    //		nx = ay - cy;
+    //		ny = -(ax - cx);
+    //
+    //		dot = (dx * nx) + (dy * ny);
+    //		//console.log("dot c",dot);
+    //		if (dot > 0)
+    //			continue;
+    //
+    //		//check if not solid
+    //		if (curvex != 2) {
+    //
+    //			var v0x:number = bx - ax;
+    //			var v0y:number = by - ay;
+    //			var v1x:number = cx - ax;
+    //			var v1y:number = cy - ay;
+    //			var v2x:number = p.x - ax;
+    //			var v2y:number = p.y - ay;
+    //
+    //			var den:number = v0x * v1y - v1x * v0y;
+    //			var v:number = (v2x * v1y - v1x * v2y) / den;
+    //			var w:number = (v0x * v2y - v2x * v0y) / den;
+    //			var u:number = 1 - v - w;
+    //
+    //			var uu:number = 0.5 * v + w;// (0 * u) + (0.5 * v) + (1 * w);// (lerp(0, 0.5, v) + lerp(0.5, 1, w) + lerp(1, 0, u)) / 1.5;
+    //			var vv:number = w;// (0 * u) + (0 * v) + (1 * w);// (lerp(0, 1, w) + lerp(1, 0, u)) / 1;
+    //
+    //			var d:number = uu * uu - vv;
+    //
+    //			if ((d > 0 && az == -1) || (d < 0 && az == 1))
+    //				continue;
+    //		}
+    //		//TODO optimize away this pointless check as the distance is always the same
+    //		//also this stuff should only be calculated right before the return and not for each hit
+    //		if (distance < shortestCollisionDistance) {
+    //			shortestCollisionDistance = distance;
+    //			collisionCurveIndex = index/3;
+    //			pickingCollision.rayEntryDistance = distance;
+    //			pickingCollision.localPosition = p;
+    //			pickingCollision.localNormal = new Vector3D(0, 0, 1);
+    //			pickingCollision.uv = this._getCollisionUV(indices, uvs, index, v, w, u, uvDim);
+    //			pickingCollision.index = index;
+    //			//						pickingCollision.elementIndex = this.pGetSpriteGraphicIndex(renderable);
+    //
+    //			// if not looking for best hit, first found will do...
+    //			if (!this._findClosestCollision)
+    //				return true;
+    //		}
+    //	}
+    //
+    //	if (collisionCurveIndex >= 0)
+    //		return true;
+    //
+    //	return false;
+    //}
+    /**
+     * Tests a <code>LineElements</code> object for a collision with the picking ray.
+     *
+     * @param triangleElements
+     * @param material
+     * @param pickingCollision
+     * @returns {boolean}
+     */
+    JSPickingCollider.prototype.testLineCollision = function (lineElements, material, pickingCollision, count, offset) {
+        if (offset === void 0) { offset = 0; }
+        return false;
+    };
+    return JSPickingCollider;
+}());
+
+exports.MouseManager = MouseManager;
+exports.ViewImage2D = ViewImage2D;
+exports.BasicPartition = BasicPartition;
+exports.CameraNode = CameraNode;
+exports.DisplayObjectNode = DisplayObjectNode;
+exports.EntityNode = EntityNode;
+exports.NodeBase = NodeBase;
+exports.PartitionBase = PartitionBase;
+exports.SceneGraphNode = SceneGraphNode;
+exports.SceneGraphPartition = SceneGraphPartition;
+exports.SkyboxNode = SkyboxNode;
+exports.JSPickingCollider = JSPickingCollider;
+exports.RaycastPicker = RaycastPicker;
+exports.View = View;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_graphics__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_materials__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_parsers__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__lib_player__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_renderer__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__lib_scene__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__lib_stage__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__lib_view__ = __webpack_require__(2);
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_0__lib_core__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_0__lib_core__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_1__lib_graphics__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_1__lib_graphics__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_2__lib_materials__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_2__lib_materials__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_3__lib_parsers__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_3__lib_parsers__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_4__lib_player__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_4__lib_player__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_5__lib_renderer__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_5__lib_renderer__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_6__lib_scene__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_6__lib_scene__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_7__lib_stage__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_7__lib_stage__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony namespace reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in __WEBPACK_IMPORTED_MODULE_8__lib_view__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(exports, key, function() { return __WEBPACK_IMPORTED_MODULE_8__lib_view__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+
+
+
+
+
+
+
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+(function (global, factory) {
+     true ? factory(exports, __webpack_require__(7), __webpack_require__(10), __webpack_require__(13), __webpack_require__(15)) :
+    typeof define === 'function' && define.amd ? define(['exports', '@awayjs/core', '@awayjs/scene', '@awayjs/stage', '@awayjs/parsers'], factory) :
+    (factory((global.AwayjsPlayer = global.AwayjsPlayer || {}),global.AwayjsCore,global.AwayjsScene,global.AwayjsStage,global._awayjs_parsers));
+}(this, (function (exports,_awayjs_core,_awayjs_scene,_awayjs_stage,_awayjs_parsers) { 'use strict';
+
+// also contains global AS2 functions
+var AS2ColorAdapter = (function () {
+    function AS2ColorAdapter(symbol) {
+        this._rgb = 0xffffff;
+        this._symbol = symbol;
+        this._symbol._blockedByScript = true;
+        this._target = symbol.adaptee.transform.colorTransform || (symbol.adaptee.transform.colorTransform = new _awayjs_core.ColorTransform());
+        this._transform = { ra: 100, rb: 0, ga: 100, gb: 0, ba: 100, bb: 0, aa: 100, ab: 0 };
+    }
+    AS2ColorAdapter.prototype.getRGB = function () {
+        return this._rgb;
+    };
+    AS2ColorAdapter.prototype.setRGB = function (value) {
+        this._rgb = value;
+        var r = (value >> 16) & 0xff;
+        var g = (value >> 8) & 0xff;
+        var b = value & 0xff;
+        this.setTransform({ ra: r / 0xff * 100, ga: g / 0xff * 100, ba: b / 0xff * 100, aa: 100, rb: 0, gb: 0, bb: 0, ab: 0 });
+    };
+    AS2ColorAdapter.prototype.getTransform = function () {
+        return this._transform;
+    };
+    AS2ColorAdapter.prototype.setTransform = function (value) {
+        this._transform = value;
+        var ct = this._target;
+        ct.redMultiplier = value.ra === undefined ? 1 : value.ra / 100;
+        ct.greenMultiplier = value.ga === undefined ? 1 : value.ga / 100;
+        ct.blueMultiplier = value.ba === undefined ? 1 : value.ba / 100;
+        ct.alphaMultiplier = value.aa === undefined ? 1 : value.aa / 100;
+        ct.redOffset = value.rb || 0;
+        ct.greenOffset = value.gb || 0;
+        ct.blueOffset = value.bb || 0;
+        ct.alphaOffset = value.ab || 0;
+        this._symbol.adaptee.pInvalidateHierarchicalProperties(_awayjs_scene.HierarchicalProperties.COLOR_TRANSFORM);
+    };
+    return AS2ColorAdapter;
+}());
+
+var AS2KeyAdapter = (function () {
+    function AS2KeyAdapter() {
+    }
+    AS2KeyAdapter.addListener = function (listener) {
+        AS2KeyAdapter._listeners.push(listener);
+    };
+    AS2KeyAdapter.removeListener = function (listener) {
+        var listeners = AS2KeyAdapter._listeners;
+        var index = listeners.indexOf(listener);
+        if (index != -1)
+            listeners.splice(index, 1);
+    };
+    AS2KeyAdapter.isDown = function (code) {
+        return AS2KeyAdapter._keys[code];
+    };
+    AS2KeyAdapter.getCode = function () {
+        return AS2KeyAdapter._key;
+    };
+    AS2KeyAdapter.getAscii = function () {
+        return AS2KeyAdapter._char;
+    };
+    AS2KeyAdapter._onKeyDown = function (event) {
+        AS2KeyAdapter._key = event.keyCode;
+        AS2KeyAdapter._char = event.charCode;
+        AS2KeyAdapter._keys[event.keyCode] = true;
+        var len = AS2KeyAdapter._listeners.length;
+        for (var i = 0; i < len; i++)
+            if (AS2KeyAdapter._listeners[i].onKeyDown)
+                AS2KeyAdapter._listeners[i].onKeyDown();
+    };
+    AS2KeyAdapter._onKeyUp = function (event) {
+        AS2KeyAdapter._keys[event.keyCode] = false;
+        var len = AS2KeyAdapter._listeners.length;
+        for (var i = 0; i < len; i++)
+            if (AS2KeyAdapter._listeners[i].onKeyUp)
+                AS2KeyAdapter._listeners[i].onKeyUp();
+    };
+    return AS2KeyAdapter;
+}());
+AS2KeyAdapter._keys = new Array();
+AS2KeyAdapter._listeners = new Array();
+AS2KeyAdapter._addListeners = (function () {
+    if (typeof document !== "undefined") {
+        document.onkeydown = function (event) { return AS2KeyAdapter._onKeyDown(event); };
+        document.onkeyup = function (event) { return AS2KeyAdapter._onKeyUp(event); };
+    }
+})();
+/**
+ * Constant associated with the key code value for the Backspace key (8).
+ */
+AS2KeyAdapter.BACKSPACE = 8;
+/**
+ * Constant associated with the key code value for the Caps Lock key (20).
+ */
+AS2KeyAdapter.CAPSLOCK = 20;
+/**
+ * Constant associated with the key code value for the Control key (17).
+ */
+AS2KeyAdapter.CONTROL = 17;
+/**
+ * Constant associated with the key code value for the Delete key (46).
+ */
+AS2KeyAdapter.DELETEKEY = 46;
+/**
+ * Constant associated with the key code value for the Down Arrow key (40).
+ */
+AS2KeyAdapter.DOWN = 40;
+/**
+ * Constant associated with the key code value for the End key (35).
+ */
+AS2KeyAdapter.END = 35;
+/**
+ * Constant associated with the key code value for the Enter key (13).
+ */
+AS2KeyAdapter.ENTER = 13;
+/**
+ * Constant associated with the key code value for the Escape key (27).
+ */
+AS2KeyAdapter.ESCAPE = 27;
+/**
+ * Constant associated with the key code value for the Home key (36).
+ */
+AS2KeyAdapter.HOME = 36;
+/**
+ * Constant associated with the key code value for the Insert key (45).
+ */
+AS2KeyAdapter.INSERT = 45;
+/**
+ * Constant associated with the key code value for the Left Arrow key (37).
+ */
+AS2KeyAdapter.LEFT = 37;
+/**
+ * Constant associated with the key code value for the Page Down key (34).
+ */
+AS2KeyAdapter.PGDN = 34;
+/**
+ * Constant associated with the key code value for the Page Up key (33).
+ */
+AS2KeyAdapter.PGUP = 33;
+/**
+ * Constant associated with the key code value for the Right Arrow key (39).
+ */
+AS2KeyAdapter.RIGHT = 39;
+/**
+ * Constant associated with the key code value for the Shift key (16).
+ */
+AS2KeyAdapter.SHIFT = 16;
+/**
+ * Constant associated with the key code value for the Spacebar (32).
+ */
+AS2KeyAdapter.SPACE = 32;
+/**
+ * Constant associated with the key code value for the Tab key (9).
+ */
+AS2KeyAdapter.TAB = 9;
+/**
+ * Constant associated with the key code value for the Up Arrow key (38).
+ */
+AS2KeyAdapter.UP = 38;
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+function __extends(d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var AS2MCSoundProps = (function (_super) {
+    __extends(AS2MCSoundProps, _super);
+    function AS2MCSoundProps() {
+        var _this = _super.call(this) || this;
+        _this._volume = 1;
+        _this._pan = 1;
+        _this._changeEvent = new _awayjs_core.AssetEvent(_awayjs_core.AssetEvent.INVALIDATE, _this);
+        return _this;
+    }
+    AS2MCSoundProps.prototype.dispose = function () {
+        this._audio = null;
+        this._changeEvent = null;
+    };
+    Object.defineProperty(AS2MCSoundProps.prototype, "volume", {
+        get: function () {
+            return this._volume;
+        },
+        set: function (value) {
+            if (this._volume != value) {
+                this._volume = value;
+                this.dispatchEvent(this._changeEvent);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MCSoundProps.prototype, "pan", {
+        get: function () {
+            return this._pan;
+        },
+        set: function (value) {
+            if (this._pan != value) {
+                this._pan = value;
+                this.dispatchEvent(this._changeEvent);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MCSoundProps.prototype, "audio", {
+        get: function () {
+            return this._audio;
+        },
+        set: function (value) {
+            if (this._audio)
+                this._audio.stop();
+            this._audio = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return AS2MCSoundProps;
+}(_awayjs_core.AssetBase));
+
+var AS2MouseAdapter = (function () {
+    function AS2MouseAdapter() {
+    }
+    // this does nothing really, just to catch usage in scripts
+    AS2MouseAdapter.addListener = function (listener) {
+        AS2MouseAdapter._globalListeners.push(listener);
+        // TODO: Init actual mouse events here, relative to root MovieClip (I suppose?)
+    };
+    return AS2MouseAdapter;
+}());
+AS2MouseAdapter._globalListeners = [];
+
+// also contains global AS2 gunctions
+var AS2SymbolAdapter = (function () {
+    function AS2SymbolAdapter(adaptee, view) {
+        this.__quality = "high";
+        this._adaptee = adaptee;
+        this._adaptee.adapter = this;
+        this._view = view;
+        this._blockedByScript = false;
+        if (AS2SymbolAdapter.REFERENCE_TIME === -1)
+            AS2SymbolAdapter.REFERENCE_TIME = Date.now();
+    }
+    AS2SymbolAdapter.prototype.isBlockedByScript = function () { return this._blockedByScript; };
+    AS2SymbolAdapter.prototype.isVisibilityByScript = function () { return this._visibilityByScript; };
+    AS2SymbolAdapter.prototype.freeFromScript = function () { this._blockedByScript = false; this._visibilityByScript = false; };
+    AS2SymbolAdapter.prototype.dispose = function () {
+        this._adaptee.dispose();
+        this._adaptee = null;
+        this._view = null;
+    };
+    AS2SymbolAdapter.prototype.getVersion = function () {
+        return 0;
+    };
+    Object.defineProperty(AS2SymbolAdapter.prototype, "adaptee", {
+        get: function () {
+            return this._adaptee;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_height", {
+        get: function () {
+            return this._adaptee.height;
+        },
+        set: function (value) {
+            this._adaptee.height = value;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_name", {
+        get: function () {
+            return this._adaptee.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_rotation", {
+        get: function () {
+            return this._adaptee.rotationZ;
+        },
+        set: function (value) {
+            this._adaptee.rotationZ = value;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_x", {
+        get: function () {
+            return this._adaptee.x;
+        },
+        set: function (value) {
+            this._adaptee.x = value;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_xmouse", {
+        get: function () {
+            return this._view.getLocalMouseX(this._adaptee);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_y", {
+        get: function () {
+            return this._adaptee.y;
+        },
+        set: function (value) {
+            this._adaptee.y = value;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_ymouse", {
+        get: function () {
+            return this._view.getLocalMouseY(this._adaptee);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_xscale", {
+        get: function () {
+            return this._adaptee.scaleX * 100;
+        },
+        set: function (value) {
+            this._adaptee.scaleX = value / 100;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_yscale", {
+        get: function () {
+            return this._adaptee.scaleY * 100;
+        },
+        set: function (value) {
+            this._adaptee.scaleY = value / 100;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_visible", {
+        get: function () {
+            return this._adaptee.visible;
+        },
+        set: function (value) {
+            this._adaptee.visible = value;
+            this._visibilityByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_width", {
+        get: function () {
+            return this._adaptee.width;
+        },
+        set: function (value) {
+            this._adaptee.width = value;
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_touchpoints", {
+        get: function () {
+            return this._view.getLocalTouchPoints(this._adaptee);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2SymbolAdapter.prototype.getDepth = function () {
+        return this._adaptee.z;
+    };
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_quality", {
+        // just assure consistency for scripts, doesn't actually effect rendering.
+        get: function () {
+            return this.__quality;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "quality", {
+        set: function (value) {
+            this.__quality = value;
+            // this._blockedByScript=true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2SymbolAdapter.prototype.trace = function (message) {
+        console.log(message);
+    };
+    // may need proper high-def timer mechanism
+    AS2SymbolAdapter.prototype.getTimer = function () {
+        return Date.now() - AS2SymbolAdapter.REFERENCE_TIME;
+    };
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_alpha", {
+        get: function () {
+            return this.adaptee.transform.colorTransform ? (this.adaptee.transform.colorTransform.alphaMultiplier * 100) : 100;
+        },
+        set: function (value) {
+            if (!this.adaptee.transform.colorTransform)
+                this.adaptee.transform.colorTransform = new _awayjs_core.ColorTransform();
+            this.adaptee.transform.colorTransform.alphaMultiplier = value / 100;
+            this.adaptee.pInvalidateHierarchicalProperties(_awayjs_scene.HierarchicalProperties.COLOR_TRANSFORM);
+            this._blockedByScript = true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_url", {
+        get: function () {
+            return document.URL;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_global", {
+        get: function () {
+            return null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_level0", {
+        get: function () {
+            return this._root;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2SymbolAdapter.prototype.clearInterval = function (handle) {
+        _awayjs_scene.FrameScriptManager.clearInterval(handle); //window.clearInterval(handle);
+        return;
+    };
+    AS2SymbolAdapter.prototype.setInterval = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var scope;
+        var func;
+        if (typeof (args[0]) == "function") {
+            scope = this;
+            func = args[0];
+        }
+        else {
+            //remove scope variable from args
+            scope = args.shift();
+            //reformat function string to actual function variable in the scope
+            func = scope[args[0]];
+        }
+        //wrap function to maintain scope
+        args[0] = function () { func.apply(scope, arguments); };
+        return _awayjs_scene.FrameScriptManager.setInterval(args[0]); // window.setInterval.apply(window, args);
+    };
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_level10301", {
+        // temporary:
+        get: function () {
+            return this._root;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_root", {
+        get: function () {
+            if (!this.__root) {
+                var p = this._parent;
+                // parents are always MovieClips
+                this.__root = p ? p._root : this;
+            }
+            return this.__root;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2SymbolAdapter.prototype.random = function (range) {
+        return Math.floor(Math.random() * range);
+    };
+    Object.defineProperty(AS2SymbolAdapter.prototype, "_parent", {
+        get: function () {
+            var parent = this.adaptee.parent;
+            return parent ? parent._adapter : null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return AS2SymbolAdapter;
+}());
+AS2SymbolAdapter.REFERENCE_TIME = -1;
+
+// also contains global AS2 functions
+var AS2SystemAdapter = (function () {
+    function AS2SystemAdapter() {
+    }
+    return AS2SystemAdapter;
+}());
+AS2SystemAdapter.security = null;
+AS2SystemAdapter.capabilities = { version: 6 };
+
+// also contains global AS2 functions
+var AS2SoundAdapter = (function () {
+    // TODO: Any real Sound stuff should be externalized for AwayJS use. For now use internally since it's only 2D.
+    function AS2SoundAdapter(target) {
+        var _this = this;
+        this._loop = false;
+        this._name = "";
+        this._id = -1;
+        this._playing = false;
+        this._volume = 0; // uses this vol property on sound.
+        // not sure how to handle target yet
+        this._id = AS2SoundAdapter._soundIDCnt++;
+        this._target = target;
+        this._soundProps = (target != null && target.__pSoundProps) ? this._target.__pSoundProps : AS2SoundAdapter._globalSoundProps;
+        this._onGlobalChangeDelegate = function (event) { return _this.onGlobalChange(event); };
+        AS2SoundAdapter._globalSoundProps.addEventListener(_awayjs_core.AssetEvent.INVALIDATE, this._onGlobalChangeDelegate);
+    }
+    AS2SoundAdapter.prototype.attachSound = function (id) {
+        this._name = id.replace(".wav", "").replace(".mp3", "").replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+        var asset = _awayjs_core.AssetLibrary.getAsset(this._name);
+        if (asset)
+            this._soundProps.audio = asset.clone();
+        else {
+            console.log("audio-asset not found " + this._name);
+        }
+        this.updateVolume();
+    };
+    /*getBytesLoaded():number
+    {
+        return 1;
+    }
+
+    getBytesTotal():number
+    {
+        return 1;
+    }*/
+    AS2SoundAdapter.prototype.getPan = function () {
+        return this._soundProps.pan * 100;
+    };
+    AS2SoundAdapter.prototype.setPan = function (value) {
+        this._soundProps.pan = value / 100;
+        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
+        }
+        else if (this._soundProps.audio)
+            this._soundProps.audio.pan = value / 100;
+    };
+    /*getTransform():Object
+    {
+        return this._transform;
+    }
+
+    setTransform(value:Object):void
+    {
+        this._transform = value;
+    }*/
+    AS2SoundAdapter.prototype.getVolume = function () {
+        return this._soundProps.volume * 100;
+    };
+    AS2SoundAdapter.prototype.setVolume = function (value) {
+        this._soundProps.volume = value / 100;
+        this.updateVolume();
+    };
+    /*loadSound(url:string, isStreaming:boolean):void
+    {
+        this.disposeAudio();
+        // how to handle isStreaming == false? Manually?
+        this._soundProps.audio = new Audio();
+        this._soundProps.audio.src = url;
+        this.initAudio();
+    }*/
+    AS2SoundAdapter.prototype.start = function (offsetInSeconds, loops) {
+        if (offsetInSeconds === void 0) { offsetInSeconds = 0; }
+        if (loops === void 0) { loops = 0; }
+        this._playing = true;
+        this._loop = Boolean(loops > 0);
+        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
+            _awayjs_stage.ContextGLES.startSound(this._name, this._id, this._volume, this._loop);
+            //AudioManager.getExternalSoundInterface().startSound(this._name, this._id, this._volume, this._loop);
+            return;
+        }
+        if (this._soundProps.audio) {
+            this._soundProps.audio.play(offsetInSeconds, this._loop);
+            return;
+        }
+        //console.log("Calling AS2SoundAdapter.start() was not successfull. Audio not set for this sound.")
+    };
+    AS2SoundAdapter.prototype.stop = function (linkageID) {
+        if (linkageID === void 0) { linkageID = null; }
+        if (!this._playing)
+            return;
+        this._playing = false;
+        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
+            _awayjs_stage.ContextGLES.stopSound(this._id);
+            //AudioManager.getExternalSoundInterface().stopSound(this._id);
+            return;
+        }
+        else if (this._soundProps.audio) {
+            this._soundProps.audio.stop();
+            return;
+        }
+        //console.log("Calling AS2SoundAdapter.stop() was not successfull. Audio not set for this sound.")
+    };
+    Object.defineProperty(AS2SoundAdapter.prototype, "position", {
+        get: function () {
+            if (this._soundProps.audio)
+                return this._soundProps.audio.currentTime;
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SoundAdapter.prototype, "duration", {
+        get: function () {
+            if (this._soundProps.audio)
+                return this._soundProps.audio.duration;
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2SoundAdapter.prototype, "id3", {
+        get: function () {
+            return {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2SoundAdapter.prototype.onGlobalChange = function (event) {
+        this.updateVolume();
+    };
+    AS2SoundAdapter.prototype.updateVolume = function () {
+        var vol = this._soundProps.volume * AS2SoundAdapter._globalSoundProps.volume;
+        if (vol > 1)
+            vol = 1;
+        if (vol < 0)
+            vol = 0;
+        vol = Math.round(vol * 100) / 100;
+        if (this._volume == vol)
+            return;
+        this._volume = vol;
+        if (_awayjs_core.AudioManager.getExternalSoundInterface()) {
+            if (this._playing) {
+                _awayjs_stage.ContextGLES.updateSound(this._id, this._volume, this._loop);
+            }
+        }
+        else if (this._soundProps.audio)
+            this._soundProps.audio.volume = this._volume;
+    };
+    return AS2SoundAdapter;
+}());
+AS2SoundAdapter._globalSoundProps = new AS2MCSoundProps();
+AS2SoundAdapter._soundIDCnt = 0;
+
+var AS2StageAdapter = (function () {
+    function AS2StageAdapter() {
+    }
+    return AS2StageAdapter;
+}());
+// this does nothing really, just to catch usage in scripts
+AS2StageAdapter.showMenu = true;
+
+var AS2SharedObjectAdapter = (function () {
+    function AS2SharedObjectAdapter(name) {
+        this._object_name = name;
+        if (typeof (Storage) !== "undefined") {
+            this.data = JSON.parse(localStorage.getItem(name));
+        }
+        if (this.data == null) {
+            console.log("no shared object found");
+            this.data = {};
+        }
+    }
+    // should become a static
+    AS2SharedObjectAdapter.getLocal = function (name, localPath, secure) {
+        return new AS2SharedObjectAdapter(name);
+    };
+    // needs to stay as it is
+    AS2SharedObjectAdapter.prototype.flush = function () {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem(this._object_name, JSON.stringify(this.data));
+        }
+        else {
+            console.log("no local storage available");
+        }
+        // save all local data to wherever it needs to go
+    };
+    return AS2SharedObjectAdapter;
+}());
+
+var includeString = 'var Color			= this._includes.Color;\n' +
+    'var System				= this._includes.System;\n' +
+    'var Sound				= this._includes.Sound;\n' +
+    'var Key				= this._includes.Key;\n' +
+    'var Mouse				= this._includes.Mouse;\n' +
+    'var Stage				= this._includes.Stage;\n' +
+    'var SharedObject		= this._includes.SharedObject;\n' +
+    'var int = function(value) {return Math.floor(value) | 0;}\n' +
+    'var string = function(value) {return value.toString();}\n' +
+    'var getURL = function(value) {window.open(value,"_blank");}\n\n';
+var AS2MovieClipAdapter = (function (_super) {
+    __extends(AS2MovieClipAdapter, _super);
+    function AS2MovieClipAdapter(adaptee, view) {
+        var _this = 
+        // create an empty MovieClip if none is passed
+        _super.call(this, adaptee, view) || this;
+        _this._includes = {
+            Color: AS2ColorAdapter,
+            System: AS2SystemAdapter,
+            Sound: AS2SoundAdapter,
+            Key: AS2KeyAdapter,
+            Mouse: AS2MouseAdapter,
+            Stage: AS2StageAdapter,
+            SharedObject: AS2SharedObjectAdapter
+        };
+        _this.__pSoundProps = new AS2MCSoundProps();
+        _this._onLoaderCompleteDelegate = function (event) { return _this.onLoaderComplete(event); };
+        _this._onAssetCompleteDelegate = function (event) { return _this.onAssetComplete(event); };
+        return _this;
+    }
+    AS2MovieClipAdapter.prototype.loadMovie = function (url, method) {
+        if (method === void 0) { method = null; }
+        this._loader = new _awayjs_scene.LoaderContainer();
+        this._loader.addEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
+        this._loader.addEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+        this._loader.load(new _awayjs_core.URLRequest(url));
+    };
+    AS2MovieClipAdapter.prototype.onLoaderComplete = function (event) {
+        console.log("loaded url!");
+        this._loader.removeEventListener(_awayjs_core.LoaderEvent.LOAD_COMPLETE, this._onLoaderCompleteDelegate);
+        this._loader.removeEventListener(_awayjs_core.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+        this._loader = null;
+        //todo: dispose loader ?
+    };
+    AS2MovieClipAdapter.prototype.onAssetComplete = function (event) {
+        event.asset;
+        if (event.asset.isAsset(_awayjs_scene.MovieClip)) {
+            var awayMC = event.asset;
+            // if this is the "Scene 1", we transfer the timeline into the mc that is loading the movie
+            if (event.asset.name == "Scene 1" || event.asset.name == "main") {
+                //this.adaptee.addChild(awayMC);
+                this._adaptee.timeline = awayMC.timeline;
+                this._adaptee.reset();
+                this.gotoAndPlay(1);
+            }
+        }
+    };
+    AS2MovieClipAdapter.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.__pSoundProps.dispose();
+        this.__pSoundProps = null;
+    };
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "_framesloaded", {
+        get: function () {
+            // not loading frame by frame?
+            return this._adaptee.numFrames;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "_currentframe", {
+        get: function () {
+            return this._adaptee.currentFrameIndex + 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "_totalframes", {
+        get: function () {
+            return this._adaptee.numFrames;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "enabled", {
+        get: function () {
+            return this._adaptee.mouseEnabled;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2MovieClipAdapter.prototype.evalScript = function (str) {
+        var tag = document.createElement('script');
+        tag.text = 'var __framescript__ = function() {\n' + includeString + str + '\n}';
+        //add and remove script tag to dom to trigger compilation
+        var sibling = document.scripts[0];
+        sibling.parentNode.insertBefore(tag, sibling).parentNode.removeChild(tag);
+        var script = __framescript__;
+        window['__framescript__'] = null;
+        return script;
+    };
+    //attachAudio(id: AS2SoundAdapter):void {	}
+    //attachBitmap(bmp: BitmapImage2D, depth: Number, pixelSnapping: String = null, smoothing: boolean = false):void { }
+    AS2MovieClipAdapter.prototype.attachMovie = function (id, name, depth, initObject) {
+        if (initObject === void 0) { initObject = null; }
+        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        _awayjs_core.AssetLibrary.getAsset(id).adaptee.copyTo(adapter.adaptee);
+        this._adaptee.addChildAtDepth(adapter.adaptee, depth);
+        adapter.adaptee.name = name;
+        this.registerScriptObject(adapter.adaptee);
+        return adapter;
+    };
+    //beginBitmapFill(bmp: BitmapImage2D, matrix: Matrix = null, repeat: boolean = false, smoothing: boolean = false):void {}
+    //beginFill(rgb: Number, alpha: number = 1.0):void {}
+    //beginGradientFill(fillType: string, colors: Array, alphas: Array, ratios: Array, matrix: Object, spreadMethod: string = null, interpolationMethod: string  = null, focalPointRatio: number  = null):void {}
+    //clear():void {}
+    AS2MovieClipAdapter.prototype.createEmptyMovieClip = function (name, depth) {
+        var adapter = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        adapter.adaptee.name = name;
+        this.adaptee.addChildAtDepth(adapter.adaptee, depth);
+        this.registerScriptObject(adapter.adaptee);
+        return adapter;
+    };
+    //createTextField(instanceName: String, depth: Number, x: Number, y: Number, width: Number, height: Number):TextField {}
+    //curveTo(controlX: number, controlY: number, anchorX: number, anchorY: number):void {}
+    AS2MovieClipAdapter.prototype.duplicateMovieClip = function (name, depth, initObject) {
+        var duplicate = this.clone();
+        duplicate.adaptee.name = name;
+        if (initObject)
+            for (var key in initObject)
+                if (duplicate.hasOwnProperty(key))
+                    duplicate[key] = initObject[key];
+        this._adaptee.parent.addChildAtDepth(duplicate.adaptee, depth);
+        return duplicate;
+    };
+    //endFill():void {}
+    //getBounds(bounds: Object):Object { return null; }
+    // not applicable?
+    AS2MovieClipAdapter.prototype.getBytesLoaded = function () { return 1; };
+    // not applicable?
+    AS2MovieClipAdapter.prototype.getBytesTotal = function () { return 1; };
+    AS2MovieClipAdapter.prototype.getInstanceAtDepth = function (depth) {
+        return this._adaptee.getChildAtDepth(depth);
+    };
+    AS2MovieClipAdapter.prototype.getNextHighestDepth = function () {
+        return this._adaptee.getNextHighestDepth();
+    };
+    //getRect(bounds: Object):Object { return null; }
+    //getSWFVersion():number { return 0; }
+    //getTextSnapshot():TextSnapshot {}
+    //getURL(url: string, window: string, method: string):void {}
+    AS2MovieClipAdapter.prototype.globalToLocal = function (pt) {
+        var newPoint = this._adaptee.globalToLocal(new _awayjs_core.Point(pt.x, pt.y));
+        pt.x = newPoint.x;
+        pt.y = newPoint.y;
+    };
+    AS2MovieClipAdapter.prototype.gotoAndPlay = function (frame) {
+        if (frame == null)
+            return;
+        this.play();
+        this._gotoFrame(frame);
+    };
+    AS2MovieClipAdapter.prototype.gotoAndStop = function (frame) {
+        if (frame == null)
+            return;
+        this.stop();
+        this._gotoFrame(frame);
+    };
+    AS2MovieClipAdapter.prototype.play = function () {
+        this._adaptee.play();
+    };
+    AS2MovieClipAdapter.prototype.stop = function () {
+        this._adaptee.stop();
+    };
+    AS2MovieClipAdapter.prototype.hitTest = function (x, y, shapeFlag) {
+        if (shapeFlag === void 0) { shapeFlag = false; }
+        return this._adaptee.hitTestPoint(x, y, shapeFlag);
+    };
+    //lineGradientStyle(fillType: string, colors: array, alphas: array, ratios: array, matrix: Object, spreadMethod: string = null, interpolationMethod: string, focalPointRatio: number):void {}
+    //lineStyle(thickness: number, rgb: number, alpha: number, pixelHinting: boolean, noScale: string, capsStyle: string, jointStyle: string, miterLimit: number):void {}
+    //lineTo(x: number, y: number):void {}
+    //loadMovie(url: string, method: string = null):void {}
+    //loadVariables(url: string, method: string = null):void {}
+    AS2MovieClipAdapter.prototype.localToGlobal = function (pt) {
+        var newPoint = this._adaptee.localToGlobal(new _awayjs_core.Point(pt.x, pt.y));
+        pt.x = newPoint.x;
+        pt.y = newPoint.y;
+    };
+    //moveTo(x: number, y: number):void {}
+    AS2MovieClipAdapter.prototype.nextFrame = function () {
+        ++this._adaptee.currentFrameIndex;
+    };
+    AS2MovieClipAdapter.prototype.prevFrame = function () {
+        --this._adaptee.currentFrameIndex;
+    };
+    AS2MovieClipAdapter.prototype.removeMovieClip = function () {
+        if (this._adaptee.parent) {
+            this._adaptee.parent.removeChild(this._adaptee);
+        }
+    };
+    AS2MovieClipAdapter.prototype.setMask = function (mc) {
+        this._adaptee.masks = [mc];
+    };
+    //startDrag(lockCenter: boolean = false, left: number = 0, top: number = 0, right: number = 0, bottom: number = 0):void {}
+    //stopDrag():void {}
+    AS2MovieClipAdapter.prototype.swapDepths = function (target) {
+        var parent = this._adaptee.parent;
+        if (parent != null && target.parent == parent)
+            parent.swapChildren(this._adaptee, target);
+    };
+    //unloadMovie():void {}
+    AS2MovieClipAdapter.prototype.clone = function () {
+        var clone = new AS2MovieClipAdapter(_awayjs_scene.MovieClip.getNewMovieClip(), this._view);
+        this.adaptee.copyTo(clone.adaptee);
+        return clone;
+    };
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onEnterFrame", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onEnterFrame;
+        },
+        set: function (value) {
+            this._onEnterFrame = this._replaceEventListener(_awayjs_core.AssetEvent.ENTER_FRAME, this._onEnterFrame, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRollOut", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onRollOut;
+        },
+        set: function (value) {
+            this._onRollOut = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_OUT, this._onRollOut, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRollOver", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onRollOver;
+        },
+        set: function (value) {
+            this._onRollOver = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_OVER, this._onRollOver, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onRelease", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onRelease;
+        },
+        set: function (value) {
+            this._onRelease = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_UP, this._onRelease, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onPress", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onPress;
+        },
+        set: function (value) {
+            this._onPress = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_DOWN, this._onPress, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseDown", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onMouseDown;
+        },
+        set: function (value) {
+            this._onMouseDown = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_DOWN, this._onMouseDown, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseUp", {
+        /**
+         *
+         */
+        get: function () {
+            return this._onMouseUp;
+        },
+        set: function (value) {
+            this._onMouseUp = this._replaceEventListener(_awayjs_scene.MouseEvent.MOUSE_UP, this._onMouseUp, value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2MovieClipAdapter.prototype, "onMouseWheel", {
+        get: function () {
+            return this._onMouseWheel;
+        },
+        set: function (value) {
+            var mc = this.adaptee;
+            if (this._onMouseWheel)
+                mc.removeEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, this._onMouseWheel);
+            if (value) {
+                var self = this;
+                var delegate = function (event) { return value.call(self, event); };
+                mc.addEventListener(_awayjs_scene.MouseEvent.MOUSE_WHEEL, delegate);
+                this._onMouseWheel = delegate;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AS2MovieClipAdapter.prototype.registerScriptObject = function (child) {
+        if (child.name)
+            this[child.name] = child._adapter ? child.adapter : child;
+    };
+    AS2MovieClipAdapter.prototype.unregisterScriptObject = function (child) {
+        delete this[child.name];
+        if (child.isAsset(_awayjs_scene.MovieClip))
+            child.removeButtonListeners();
+    };
+    AS2MovieClipAdapter.prototype._gotoFrame = function (frame) {
+        var mc = this.adaptee;
+        if (typeof frame === "string")
+            mc.jumpToLabel(frame);
+        else
+            mc.currentFrameIndex = frame - 1;
+    };
+    AS2MovieClipAdapter.prototype._replaceEventListener = function (eventType, currentListener, newListener) {
+        var mc = this.adaptee;
+        if (currentListener)
+            mc.removeEventListener(eventType, currentListener);
+        if (newListener) {
+            var self = this;
+            var delegate = function () { return newListener.call(self); };
+            mc.addEventListener(eventType, delegate);
+        }
+        return delegate;
+    };
+    return AS2MovieClipAdapter;
+}(AS2SymbolAdapter));
+
+var AS2TextFieldAdapter = (function (_super) {
+    __extends(AS2TextFieldAdapter, _super);
+    function AS2TextFieldAdapter(adaptee, view) {
+        return _super.call(this, adaptee, view) || this;
+    }
+    AS2TextFieldAdapter.prototype.clone = function () {
+        var clone = new AS2TextFieldAdapter(_awayjs_scene.TextField.getNewTextField(), this._view);
+        this.adaptee.copyTo(clone.adaptee);
+        return clone;
+    };
+    Object.defineProperty(AS2TextFieldAdapter.prototype, "textColor", {
+        get: function () {
+            return this._adaptee.textColor;
+        },
+        set: function (value) {
+            this._adaptee.textColor = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2TextFieldAdapter.prototype, "embedFonts", {
+        get: function () {
+            return this._embedFonts;
+        },
+        set: function (value) {
+            this._embedFonts = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AS2TextFieldAdapter.prototype, "text", {
+        get: function () {
+            return this._adaptee.text;
+        },
+        set: function (value) {
+            this._adaptee.text = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return AS2TextFieldAdapter;
+}(AS2SymbolAdapter));
+
+var AS2SceneGraphFactory = (function (_super) {
+    __extends(AS2SceneGraphFactory, _super);
+    function AS2SceneGraphFactory(view) {
+        var _this = _super.call(this) || this;
+        _this._view = view;
+        return _this;
+    }
+    AS2SceneGraphFactory.prototype.createMovieClip = function (timeline) {
+        if (timeline === void 0) { timeline = null; }
+        return new AS2MovieClipAdapter(new _awayjs_scene.MovieClip(timeline), this._view).adaptee;
+    };
+    AS2SceneGraphFactory.prototype.createTextField = function () {
+        return new AS2TextFieldAdapter(new _awayjs_scene.TextField(), this._view).adaptee;
+    };
+    return AS2SceneGraphFactory;
+}(_awayjs_parsers.DefaultSceneGraphFactory));
+
+exports.AS2ColorAdapter = AS2ColorAdapter;
+exports.AS2KeyAdapter = AS2KeyAdapter;
+exports.AS2MCSoundProps = AS2MCSoundProps;
+exports.AS2MouseAdapter = AS2MouseAdapter;
+exports.AS2MovieClipAdapter = AS2MovieClipAdapter;
+exports.AS2SharedObjectAdapter = AS2SharedObjectAdapter;
+exports.AS2SoundAdapter = AS2SoundAdapter;
+exports.AS2StageAdapter = AS2StageAdapter;
+exports.AS2SymbolAdapter = AS2SymbolAdapter;
+exports.AS2SystemAdapter = AS2SystemAdapter;
+exports.AS2TextFieldAdapter = AS2TextFieldAdapter;
+exports.AS2SceneGraphFactory = AS2SceneGraphFactory;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
