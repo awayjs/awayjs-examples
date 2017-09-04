@@ -41,6 +41,7 @@ import {MethodMaterial}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {DefaultRenderer} from  "awayjs-full/lib/renderer";
 import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
 
 class AWD3ViewerMinimal
 {
@@ -128,7 +129,7 @@ class AWD3ViewerMinimal
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-		loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(this._view));
+		loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
 		//loader.load(new URLRequest("assets/AWD3/TextConstructionTest.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));
