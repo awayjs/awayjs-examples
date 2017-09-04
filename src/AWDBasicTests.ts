@@ -39,6 +39,7 @@ import {HoverController, Camera, LoaderContainer, MovieClip} from "awayjs-full/l
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {DefaultRenderer} from  "awayjs-full/lib/renderer";
 import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
 
 class AWDBasicTests
 {
@@ -331,7 +332,7 @@ class AWDBasicTests
         }
         this.thisDiv.innerHTML="loading AWD";
         this.dropDown.selectedIndex=this._currentAWDIdx+1;
-        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(this._view));
+        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
     }
     private loadPrev(): void
     {
@@ -344,7 +345,7 @@ class AWDBasicTests
         }
         this.thisDiv.innerHTML="loading AWD";
         this.dropDown.selectedIndex=this._currentAWDIdx+1;
-        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(this._view));
+        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
     }
     /**
      * Key down listener for animation
