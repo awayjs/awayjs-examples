@@ -1,15 +1,16 @@
 webpackJsonp([16],{
 
-/***/ 24:
-/***/ function(module, exports, __webpack_require__) {
+/***/ 25:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_materials__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_view__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_renderer__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_renderer__ = __webpack_require__(7);
 /*
 
 Creating fire effects with particles in Away3D
@@ -344,7 +345,7 @@ window.onload = function () {
     new Basic_Fire();
 };
 
-/***/ }
+/***/ })
 
-},[24]);
+},[25]);
 //# sourceMappingURL=Basic_Fire.js.map

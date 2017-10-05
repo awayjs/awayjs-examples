@@ -1,15 +1,16 @@
 webpackJsonp([20],{
 
-/***/ 20:
-/***/ function(module, exports, __webpack_require__) {
+/***/ 21:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_scene__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_parsers__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_awayjs_full_lib_renderer__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_awayjs_full_lib_view__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_player__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_awayjs_full_lib_player__ = __webpack_require__(13);
 /*
 
  AWD3 file loading example in
@@ -354,7 +355,7 @@ window.onload = function () {
     new AWDBasicTests();
 };
 
-/***/ }
+/***/ })
 
-},[20]);
+},[21]);
 //# sourceMappingURL=AWDBasicTests.js.map

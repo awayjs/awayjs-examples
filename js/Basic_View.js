@@ -1,9 +1,10 @@
 webpackJsonp([11],{
 
-/***/ 29:
-/***/ function(module, exports, __webpack_require__) {
+/***/ 30:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__ = __webpack_require__(1);
@@ -121,7 +122,7 @@ window.onload = function () {
     new Basic_View();
 };
 
-/***/ }
+/***/ })
 
-},[29]);
+},[30]);
 //# sourceMappingURL=Basic_View.js.map

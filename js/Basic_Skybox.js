@@ -1,9 +1,10 @@
 webpackJsonp([12],{
 
-/***/ 28:
-/***/ function(module, exports, __webpack_require__) {
+/***/ 29:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_graphics__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_scene__ = __webpack_require__(1);
@@ -172,7 +173,7 @@ window.onload = function () {
     new Basic_SkyBox();
 };
 
-/***/ }
+/***/ })
 
-},[28]);
+},[29]);
 //# sourceMappingURL=Basic_Skybox.js.map

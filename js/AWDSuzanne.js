@@ -1,9 +1,10 @@
 webpackJsonp([19],{
 
-/***/ 21:
-/***/ function(module, exports, __webpack_require__) {
+/***/ 22:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_awayjs_full_lib_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_awayjs_full_lib_scene__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_awayjs_full_lib_materials__ = __webpack_require__(4);
@@ -160,7 +161,7 @@ window.onload = function () {
     new AWDSuzanne();
 };
 
-/***/ }
+/***/ })
 
-},[21]);
+},[22]);
 //# sourceMappingURL=AWDSuzanne.js.map
