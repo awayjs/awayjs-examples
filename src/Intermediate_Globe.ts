@@ -36,11 +36,11 @@ THE SOFTWARE.
 
 */
 
-import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture, PointLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase} from "awayjs-full/lib/stage";
 import {LightingShader} from "awayjs-full/lib/renderer";
-import {OrientationMode, AlignmentMode, HoverController, PointLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
+import {OrientationMode, AlignmentMode, HoverController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, LightingCompositeChunk, ILightingChunk} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
@@ -210,7 +210,6 @@ class Intermediate_Globe
 	private initObjects():void
 	{
 		this.orbitContainer = new DisplayObjectContainer();
-		this.orbitContainer.addChild(this.light);
 		this.scene.addChild(this.orbitContainer);
 
 		this.sun = new Billboard(this.sunMaterial);

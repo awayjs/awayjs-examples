@@ -40,8 +40,8 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
-import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils} from "awayjs-full/lib/graphics";
-import {HoverController, PointLight, DirectionalLight, Sprite, Scene, Camera, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/scene";
+import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera}	from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
@@ -155,14 +155,13 @@ class Intermediate_MonsterHeadShading
 		var z:number = Math.sin(this._lightElevation)*Math.sin(this._lightDirection);
 
 		// main light casting the shadows
-		this._directionalLight = new DirectionalLight(x, y, z);
+		this._directionalLight = new DirectionalLight(new Vector3D(x, y, z));
 		this._directionalLight.color = 0xffeedd;
 		this._directionalLight.ambient = 1;
 		this._directionalLight.specular = .3;
 		this._directionalLight.ambientColor = 0x101025;
 		this._directionalLight.shadowsEnabled = true;
 		(<DirectionalShadowMapper> this._directionalLight.shadowMapper).lightOffset = 1000;
-		this._scene.addChild(this._directionalLight);
 
 		// blue point light coming from the right
 		this._blueLight = new PointLight();
@@ -170,7 +169,6 @@ class Intermediate_MonsterHeadShading
 		this._blueLight.x = 3000;
 		this._blueLight.z = 700;
 		this._blueLight.y = 20;
-		this._scene.addChild(this._blueLight);
 
 		// red light coming from the left
 		this._redLight = new PointLight();
@@ -178,7 +176,6 @@ class Intermediate_MonsterHeadShading
 		this._redLight.x = -2000;
 		this._redLight.z = 800;
 		this._redLight.y = -400;
-		this._scene.addChild(this._redLight);
 
 		this._lightPicker = new StaticLightPicker([this._directionalLight, this._blueLight, this._redLight]);
 

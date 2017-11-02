@@ -46,8 +46,8 @@ THE SOFTWARE.
 */
 
 import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
-import {Style, Shape, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/graphics";
-import {FirstPersonController, Sprite, Skybox, PointLight, DirectionalLight, LoaderContainer, StaticLightPicker, DirectionalShadowMapper, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
+import {Style, Shape, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper} from "awayjs-full/lib/graphics";
+import {FirstPersonController, Sprite, Skybox, LoaderContainer, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
@@ -198,12 +198,11 @@ class Advanced_MultiPassSponzaDemo
 		//create global directional light
 //			this._cascadeShadowMapper = new CascadeShadowMapper(3);
 //			this._cascadeShadowMapper.lightOffset = 20000;
-		this._directionalLight = new DirectionalLight(-1, -15, 1);
+		this._directionalLight = new DirectionalLight(new Vector3D(-1, -15, 1));
 //			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
 		this._directionalLight.color = 0xeedddd;
 		this._directionalLight.ambient = .35;
 		this._directionalLight.ambientColor = 0x808090;
-		this._view.scene.addChild(this._directionalLight);
 		this._lights.push(this._directionalLight);
 
 		this.updateDirection();
@@ -252,7 +251,7 @@ class Advanced_MultiPassSponzaDemo
 			shape.style.uvMatrix = new Matrix();
 			shape.style.uvMatrix.scale(1/16, 1);
 			this._view.scene.addChild(sprite);
-			sprite.addChild(flameVO.light);
+			flameVO.light.transform = sprite.transform;
 		}
 	}
 
@@ -638,7 +637,7 @@ class Advanced_MultiPassSponzaDemo
 				multiMaterial.shadowMethod = this._baseShadowMethod;
 				multiMaterial.addEffectMethod(this._fogMethod);
 				multiMaterial.style.sampler = new Sampler2D(true, true, true);
-				multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.depthMap);
+				multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.textureMap);
 				multiMaterial.specularMethod.strength = 2;
 				
 				

@@ -36,8 +36,8 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, DefaultMaterialManager, Single2DTexture} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, DirectionalLight, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {BitmapImage2D, Sampler2D, ElementsType, DefaultMaterialManager, DirectionalLight, Single2DTexture, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 /**
@@ -129,15 +129,11 @@ class Basic_Shading
 		this._light1.ambient = 0.1;
 		this._light1.diffuse = 0.7;
 
-		this._scene.addChild(this._light1);
-
 		this._light2 = new DirectionalLight();
 		this._light2.direction = new Vector3D(0, -1, 0);
 		this._light2.color = 0x00FFFF;
 		this._light2.ambient = 0.1;
 		this._light2.diffuse = 0.7;
-
-		this._scene.addChild(this._light2);
 
 		this._lightPicker = new StaticLightPicker([this._light1, this._light2]);
 	}

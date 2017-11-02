@@ -1,6 +1,6 @@
-import {BitmapImage2D, Sampler2D} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, Sampler2D, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {Sprite, DisplayObjectContainer, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {Sprite, DisplayObjectContainer} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
@@ -39,7 +39,6 @@ class ObjLoaderMasterChief
 		this.light.ambientColor = 0x85b2cd;
 		this.light.diffuse = 2.8;
 		this.light.specular = 1.8;
-		this.view.scene.addChild(this.light);
 
 		this.spartan.transform.scaleTo(.25, .25, .25);
 		this.spartan.y = 0;

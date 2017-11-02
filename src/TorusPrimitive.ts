@@ -1,6 +1,6 @@
 import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {ElementsType, Sampler2D, ImageUtils} from "awayjs-full/lib/graphics";
-import {Sprite, DirectionalLight, StaticLightPicker, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
+import {ElementsType, Sampler2D, ImageUtils, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {Sprite, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
@@ -66,7 +66,6 @@ class TorusPrimitive
 		this._light = new DirectionalLight();
 		this._light.diffuse = .7;
 		this._light.specular = 1;
-		this._view.scene.addChild(this._light);
 
 		this._lightPicker = new StaticLightPicker([this._light]);
 	}

@@ -38,8 +38,8 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, PointLight, DirectionalLight, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics, PointLight, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, Scene, Camera, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, MethodMaterialMode}	from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 import {ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
@@ -129,14 +129,12 @@ class Basic_Fire
 	 */
 	private initLights():void
 	{
-		this.directionalLight = new DirectionalLight(0, -1, 0);
-		this.directionalLight.castsShadows = false;
+		this.directionalLight = new DirectionalLight(new Vector3D(0, -1, 0));
 		this.directionalLight.color = 0xeedddd;
 		this.directionalLight.diffuse = .5;
 		this.directionalLight.ambient = .5;
 		this.directionalLight.specular = 0;
 		this.directionalLight.ambientColor = 0x808090;
-		this.view.scene.addChild(this.directionalLight);
 
 		this.lightPicker = new StaticLightPicker([this.directionalLight]);
 	}

@@ -37,7 +37,8 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {Sprite} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
@@ -105,7 +106,6 @@ class Basic_LoadAWD
 		this._light.ambientColor = 0x30353b;
 		this._light.diffuse = 2.8;
 		this._light.specular = 1.8;
-		this._view.scene.addChild(this._light);
 
 		//create the light picker for the material
 		this._lightPicker = new StaticLightPicker([this._light]);

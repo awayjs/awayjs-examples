@@ -38,8 +38,8 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, ColorTransform, AssetLibrary, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Graphics, ElementsType} from "awayjs-full/lib/graphics";
-import {Scene, Camera, Sprite, PointLight, HoverController, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {BitmapImage2D, Graphics, ElementsType, PointLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {Scene, Camera, Sprite, HoverController, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {ParticleAnimator, ParticleAnimationSet, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleBezierCurveNode, ParticleInitialColorNode, ParticlePositionNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
@@ -138,7 +138,6 @@ class Intermediate_ParticleExplosions
 		this.greenLight.fallOff = 600;
 		this.greenLight.radius = 100;
 		this.greenLight.specular = 2;
-		this.scene.addChild(this.greenLight);
 		
 		//create a red pointlight
 		this.blueLight = new PointLight();
@@ -146,7 +145,6 @@ class Intermediate_ParticleExplosions
 		this.blueLight.fallOff = 600;
 		this.blueLight.radius = 100;
 		this.blueLight.specular = 2;
-		this.scene.addChild(this.blueLight);
 		
 		//create a lightpicker for the green and red light
 		this.lightPicker = new StaticLightPicker([this.greenLight, this.blueLight]);

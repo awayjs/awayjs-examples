@@ -38,10 +38,10 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard} from "awayjs-full/lib/core";
-import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard, Vector3D} from "awayjs-full/lib/core";
+import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture, PointLight, DirectionalLight, StaticLightPicker, NearDirectionalShadowMapper} from "awayjs-full/lib/graphics";
 import {AnimationSetBase} from "awayjs-full/lib/stage";
-import {LookAtController, PointLight, DirectionalLight, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, StaticLightPicker, NearDirectionalShadowMapper, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {LookAtController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
 import {MethodMaterial, EffectFogMethod, ShadowNearMethod, ShadowSoftMethod} from "awayjs-full/lib/materials";
 import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";
@@ -173,22 +173,18 @@ class Intermediate_MD5Animation
 		this.redLight.y = 200;
 		this.redLight.z = -1400;
 		this.redLight.color = 0xff1111;
-		this.scene.addChild(this.redLight);
 
 		this.blueLight = new PointLight();
 		this.blueLight.x = 1000;
 		this.blueLight.y = 200;
 		this.blueLight.z = 1400;
 		this.blueLight.color = 0x1111ff;
-		this.scene.addChild(this.blueLight);
 
-		this.whiteLight = new DirectionalLight(-50, -20, 10);
+		this.whiteLight = new DirectionalLight(new Vector3D(-50, -20, 10));
 		this.whiteLight.color = 0xffffee;
-		this.whiteLight.castsShadows = true;
 		this.whiteLight.ambient = 1;
 		this.whiteLight.ambientColor = 0x303040;
-		this.whiteLight.shadowMapper = new NearDirectionalShadowMapper(.2);
-		this.scene.addChild(this.whiteLight);
+		this.whiteLight.shadowMapper = new NearDirectionalShadowMapper(null, .2);
 
 		this.lightPicker = new StaticLightPicker([this.redLight, this.blueLight, this.whiteLight]);
 
@@ -255,8 +251,8 @@ class Intermediate_MD5Animation
 		blueSprite.width = 200;
 		blueSprite.height = 200;
 		blueSprite.castsShadows = false;
-		this.redLight.addChild(redSprite);
-		this.blueLight.addChild(blueSprite);
+		this.redLight.transform = redSprite.transform;
+		this.blueLight.transform = blueSprite.transform;
 
 		AssetLibrary.enableParser(MD5MeshParser);
 		AssetLibrary.enableParser(MD5AnimParser);

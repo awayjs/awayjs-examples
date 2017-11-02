@@ -1,6 +1,6 @@
 import {LoaderEvent, Matrix, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, BitmapImageCube, Sampler2D, Style, Single2DTexture, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
-import {Sprite, Skybox, DirectionalLight, DisplayObjectContainer, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {BitmapImage2D, BitmapImageCube, Sampler2D, Style, Single2DTexture, SingleCubeTexture, ElementsType, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {Sprite, Skybox, DisplayObjectContainer, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod}	from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
@@ -108,7 +108,6 @@ class AircraftDemo
 		light.ambientColor = 0x7196ac;
 		light.diffuse = 1.2;
 		light.specular = 1.1;
-		this._view.scene.addChild(light);
 		
 		this._lightPicker = new StaticLightPicker([light]);
 	}

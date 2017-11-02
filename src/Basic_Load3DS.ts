@@ -37,8 +37,8 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, DirectionalLight, LoaderContainer, PrimitivePlanePrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {HoverController, Sprite, LoaderContainer, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial, ShadowSoftMethod} from "awayjs-full/lib/materials";
 import {Max3DSParser} from "awayjs-full/lib/parsers";
 
@@ -111,11 +111,9 @@ class Basic_Load3DS
 	 */
 	private initLights():void
 	{
-		this._light = new DirectionalLight(-1, -1, 1);
-		this._light.castsShadows = true;
+		this._light = new DirectionalLight(new Vector3D(-1, -1, 1));
 		this._direction = new Vector3D(-1, -1, 1);
 		this._lightPicker = new StaticLightPicker([this._light]);
-		this._view.scene.addChild(this._light);
 	}
 
 	/**
@@ -127,7 +125,7 @@ class Basic_Load3DS
 		this._groundMaterial.ambientMethod.texture = new Single2DTexture();
 		this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
 		this._groundMaterial.style.sampler = new Sampler2D(true, true, true);
-		this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.depthMap);
+		this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.textureMap);
 		this._groundMaterial.shadowMethod.epsilon = 0.2;
 		this._groundMaterial.lightPicker = this._lightPicker;
 		this._groundMaterial.specularMethod.strength = 0;

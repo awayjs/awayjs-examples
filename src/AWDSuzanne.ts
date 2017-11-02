@@ -1,5 +1,6 @@
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {MouseEvent, Sprite, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/scene";
+import {DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {MouseEvent, Sprite} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View, JSPickingCollider} from "awayjs-full/lib/view";
@@ -64,7 +65,6 @@ class AWDSuzanne
 		this._light.ambientColor = 0x85b2cd;
 		this._light.diffuse = 2.8;
 		this._light.specular = 1.8;
-		this._view.scene.addChild(this._light);
 		this._lightPicker = new StaticLightPicker([this._light]);
 	}
 
@@ -91,8 +91,7 @@ class AWDSuzanne
 			this._view.camera.x = Math.cos(this._cameraIncrement)*1400;
 			this._view.camera.z = Math.sin(this._cameraIncrement)*1400;
 
-			this._light.x = Math.cos(this._cameraIncrement)*1400;
-			this._light.y = Math.sin(this._cameraIncrement)*1400;
+			this._light.direction = new Vector3D(Math.cos(this._cameraIncrement)*1400, Math.sin(this._cameraIncrement)*1400, 0);
 
 		}
 

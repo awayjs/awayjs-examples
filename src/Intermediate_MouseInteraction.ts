@@ -36,8 +36,8 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, Vector3D, AssetLibrary, Loader, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {ElementsType, BitmapImage2D, BasicMaterial, PickingCollision} from "awayjs-full/lib/graphics";
-import {HoverController, BoundsType, PointLight, Sprite, Scene, Camera, LineSegment, StaticLightPicker, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/scene";
+import {ElementsType, BitmapImage2D, BasicMaterial, PickingCollision, PointLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {HoverController, BoundsType, Sprite, Scene, Camera, LineSegment, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View, RaycastPicker, JSPickingCollider} from "awayjs-full/lib/view";
@@ -138,7 +138,6 @@ class Intermediate_MouseInteraction
 	{
 		//create a light for the camera
 		this._pointLight = new PointLight();
-		this._scene.addChild(this._pointLight);
 		this._lightPicker = new StaticLightPicker([this._pointLight]);
 	}
 

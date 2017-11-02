@@ -39,9 +39,9 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {AnimationSetBase} from "awayjs-full/lib/stage";
-import {HoverController, DirectionalLight, Sprite, StaticLightPicker, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
+import {HoverController, Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {VertexAnimationSet, VertexAnimator} from "awayjs-full/lib/renderer";
 import {MethodMaterial, ShadowFilteredMethod} from "awayjs-full/lib/materials";
 import {MD2Parser} from "awayjs-full/lib/parsers";
@@ -127,10 +127,9 @@ class Intermediate_PerelithKnight
 		*/
 
 		//setup the lights for the scene
-		this._light = new DirectionalLight(-0.5, -1, -1);
+		this._light = new DirectionalLight(new Vector3D(-0.5, -1, -1));
 		this._light.ambient = 0.4;
 		this._lightPicker = new StaticLightPicker([this._light]);
-		this._view.scene.addChild(this._light);
 
 		//setup listeners on AssetLibrary
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));

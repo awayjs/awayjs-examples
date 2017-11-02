@@ -1,6 +1,6 @@
 import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "awayjs-full/lib/core";
-import {Sampler2D, BlendMode, ElementsType, ImageUtils} from "awayjs-full/lib/graphics";
-import {Sprite, DirectionalLight, PrimitiveCubePrefab, PrimitiveTorusPrefab, StaticLightPicker} from "awayjs-full/lib/scene";
+import {Sampler2D, BlendMode, ElementsType, ImageUtils, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {Sprite, PrimitiveCubePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
 import {MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
