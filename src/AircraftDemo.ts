@@ -1,7 +1,9 @@
 import {LoaderEvent, Matrix, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, BitmapImageCube, Sampler2D, Style, Single2DTexture, SingleCubeTexture, ElementsType, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
+import {Style} from "awayjs-full/lib/renderer";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {Sprite, Skybox, DisplayObjectContainer, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod}	from "awayjs-full/lib/materials";
+import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod, ImageTexture2D, ImageTextureCube, DirectionalLight, StaticLightPicker}	from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -117,7 +119,7 @@ class AircraftDemo
 		this._f14Initialized = true;
 		
 		var f14Material: MethodMaterial = new MethodMaterial(this._seaNormalImage); // will be the cubemap
-		f14Material.style.sampler = new Sampler2D(true, true, false);
+		f14Material.style.sampler = new ImageSampler(true, true, false);
 		f14Material.lightPicker = this._lightPicker;
 		
 		this._view.scene.addChild(this._f14Geom);
@@ -132,8 +134,8 @@ class AircraftDemo
 	private initSea()
 	{
 		this._seaMaterial = new MethodMaterial(this._seaNormalImage); // will be the cubemap
-		this._seaMaterial.style.sampler = new Sampler2D(true, true, false)
-		this._waterMethod = new NormalSimpleWaterMethod(new Single2DTexture(this._seaNormalImage), new Single2DTexture(this._seaNormalImage));
+		this._seaMaterial.style.sampler = new ImageSampler(true, true, false)
+		this._waterMethod = new NormalSimpleWaterMethod(new ImageTexture2D(this._seaNormalImage), new ImageTexture2D(this._seaNormalImage));
 		var fresnelMethod:SpecularFresnelMethod  = new SpecularFresnelMethod();
 		fresnelMethod.normalReflectance = .3;
 		fresnelMethod.gloss = 10;
@@ -141,10 +143,10 @@ class AircraftDemo
 		
 		this._seaMaterial.alphaBlending = true;
 		this._seaMaterial.lightPicker = this._lightPicker;
-		this._seaMaterial.style.sampler = new Sampler2D(true);
+		this._seaMaterial.style.sampler = new ImageSampler(true);
 		this._seaMaterial.animateUVs = true;
 		this._seaMaterial.normalMethod = this._waterMethod ;
-		this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(new SingleCubeTexture(this._skyboxImageCube)));
+		this._seaMaterial.addEffectMethod(new EffectEnvMapMethod(new ImageTextureCube(this._skyboxImageCube)));
 		this._seaMaterial.specularMethod = fresnelMethod;
 		
 		this._seaGeom = new PrimitivePlanePrefab(this._seaMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1, true, false );

@@ -40,9 +40,9 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
-import {SpecularImage2D, Sampler2D, Single2DTexture, ImageUtils, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper} from "awayjs-full/lib/graphics";
+import {SpecularImage2D, ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
 import {HoverController, Sprite, Scene, Camera}	from "awayjs-full/lib/scene";
-import {MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod}	from "awayjs-full/lib/materials";
+import {ImageTexture2D, MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -161,6 +161,7 @@ class Intermediate_MonsterHeadShading
 		this._directionalLight.specular = .3;
 		this._directionalLight.ambientColor = 0x101025;
 		this._directionalLight.shadowsEnabled = true;
+        this._directionalLight.shadowMapper.epsilon = 0.2;
 		(<DirectionalShadowMapper> this._directionalLight.shadowMapper).lightOffset = 1000;
 
 		// blue point light coming from the right
@@ -300,7 +301,7 @@ class Intermediate_MonsterHeadShading
 		image.onload = null;
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._textureStrings[this._n]])
-			this._textureDictionary[this._textureStrings[this._n]] = new Single2DTexture((this._n == 1)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._textureStrings[this._n]] = new ImageTexture2D((this._n == 1)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		this._n++;
 
@@ -343,7 +344,6 @@ class Intermediate_MonsterHeadShading
 
 		var material:MethodMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
 		material.shadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
-		material.shadowMethod.epsilon = 0.2;
 		material.lightPicker = this._lightPicker;
 		material.specularMethod.gloss = 30;
 		material.specularMethod.strength = 1;
@@ -354,7 +354,7 @@ class Intermediate_MonsterHeadShading
 		this._headMaterial = new MethodMaterial();
 		this._headMaterial.ambientMethod.texture = this._textureDictionary["monsterhead_diffuse.jpg"];
 		this._headMaterial.mode = MethodMaterialMode.MULTI_PASS;
-		this._headMaterial.style.sampler = new Sampler2D(true, true);
+		this._headMaterial.style.sampler = new ImageSampler(true, true);
 		this._headMaterial.normalMethod.texture = this._textureDictionary["monsterhead_normals.jpg"];
 		this._headMaterial.lightPicker = this._lightPicker;
 		this._headMaterial.style.color = 0x303040;
@@ -363,7 +363,6 @@ class Intermediate_MonsterHeadShading
 		// create soft shadows with a lot of samples for best results. With the current method setup, any more samples would fail to compile
 		this._softShadowMethod = new ShadowSoftMethod(this._directionalLight, 20);
 		this._softShadowMethod.range = this._shadowRange;	// the sample radius defines the softness of the shadows
-		this._softShadowMethod.epsilon = .1;
 		this._headMaterial.shadowMethod = this._softShadowMethod;
 
 		// create specular reflections that are stronger from the sides
@@ -394,7 +393,7 @@ class Intermediate_MonsterHeadShading
 		switch (event.url) {
 			case "assets/diffuseGradient.jpg" :
 				// very low-cost and crude subsurface scattering for diffuse shading
-				//this._headMaterial.diffuseMethod = new DiffuseGradientMethod(<Single2DTexture> event.assets[ 0 ]);
+				//this._headMaterial.diffuseMethod = new DiffuseGradientMethod(<ImageTexture2D> event.assets[ 0 ]);
 				break;
 		}
 	}

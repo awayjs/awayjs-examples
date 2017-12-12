@@ -37,9 +37,10 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {HoverController, Sprite, LoaderContainer, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {MethodMaterial, ShadowSoftMethod, ShadowHardMethod, ImageTexture2D, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {Max3DSParser} from "awayjs-full/lib/parsers";
 
 import {View} from "awayjs-full/lib/view";
@@ -112,6 +113,7 @@ class Basic_Load3DS
 	private initLights():void
 	{
 		this._light = new DirectionalLight(new Vector3D(-1, -1, 1));
+        this._light.shadowMapper.epsilon = 0.2;
 		this._direction = new Vector3D(-1, -1, 1);
 		this._lightPicker = new StaticLightPicker([this._light]);
 	}
@@ -122,11 +124,10 @@ class Basic_Load3DS
 	private initMaterials():void
 	{
 		this._groundMaterial = new MethodMaterial();
-		this._groundMaterial.ambientMethod.texture = new Single2DTexture();
+		this._groundMaterial.ambientMethod.texture = new ImageTexture2D();
 		this._groundMaterial.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
-		this._groundMaterial.style.sampler = new Sampler2D(true, true, true);
-		this._groundMaterial.style.addSamplerAt(new Sampler2D(true, true), this._light.shadowMapper.textureMap);
-		this._groundMaterial.shadowMethod.epsilon = 0.2;
+		this._groundMaterial.style.sampler = new ImageSampler(true, true, true);
+		this._groundMaterial.style.addSamplerAt(new ImageSampler(true, true), this._light.shadowMapper.textureMap);
 		this._groundMaterial.lightPicker = this._lightPicker;
 		this._groundMaterial.specularMethod.strength = 0;
 		//this._groundMaterial.mipmap = false;
@@ -205,7 +206,6 @@ class Basic_Load3DS
 			case MethodMaterial.assetType :
 				var material:MethodMaterial = <MethodMaterial> event.asset;
 				material.shadowMethod = new ShadowSoftMethod(this._light , 10 , 5 );
-				material.shadowMethod.epsilon = 0.2;
 				material.lightPicker = this._lightPicker;
 				material.specularMethod.gloss = 30;
 				material.specularMethod.strength = 1;

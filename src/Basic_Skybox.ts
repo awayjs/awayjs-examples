@@ -36,9 +36,10 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "awayjs-full/lib/core";
-import {BitmapImageCube, SamplerCube, SingleCubeTexture, ElementsType} from "awayjs-full/lib/graphics";
+import {BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, EffectEnvMapMethod} from "awayjs-full/lib/materials";
+import {MethodMaterial, ImageTextureCube, EffectEnvMapMethod} from "awayjs-full/lib/materials";
 
 import {View} from "awayjs-full/lib/view";
 
@@ -48,7 +49,7 @@ class Basic_SkyBox
 	private _view:View;
 
 	//material objects
-	private _cubeTexture:SingleCubeTexture;
+	private _cubeTexture:ImageTextureCube;
 	private _torusMaterial:MethodMaterial;
 
 	//scene objects
@@ -105,7 +106,7 @@ class Basic_SkyBox
 		//setup the torus material
 		this._torusMaterial = new MethodMaterial(0xFFFFFF, 1);
 		this._torusMaterial.style.color = 0x111199;
-		this._torusMaterial.style.sampler = new SamplerCube(true, true);
+		this._torusMaterial.style.sampler = new ImageSampler(false, true, true);
 		this._torusMaterial.specularMethod.strength = 0.5;
 		this._torusMaterial.ambientMethod.strength = 1;
 	}
@@ -167,7 +168,7 @@ class Basic_SkyBox
 		switch (event.url)
 		{
 			case 'assets/skybox/snow_texture.cube':
-				this._cubeTexture = new SingleCubeTexture(<BitmapImageCube> event.assets[0]);
+				this._cubeTexture = new ImageTextureCube(<BitmapImageCube> event.assets[0]);
 
 				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
 				this._view.scene.addChild(this._skyBox);

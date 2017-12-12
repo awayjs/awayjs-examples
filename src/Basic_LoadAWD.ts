@@ -37,9 +37,8 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {Sprite} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 

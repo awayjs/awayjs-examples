@@ -35,9 +35,9 @@
  */
 
 import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem} from "awayjs-full/lib/core";
+import {DefaultRenderer} from "awayjs-full/lib/renderer";
 import {GraphicsFactoryHelper, CapsStyle, JointStyle, Graphics} from "awayjs-full/lib/graphics";
 import {MouseEvent, HoverController, MovieClip, Sprite, Camera} from "awayjs-full/lib/scene";
-import {DefaultRenderer} from "awayjs-full/lib/renderer";
 import {View, SceneGraphPartition} from "awayjs-full/lib/view";
 import {AS2MovieClipAdapter} from "awayjs-full/lib/player";
 

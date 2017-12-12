@@ -37,7 +37,9 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, ElementsType, BasicMaterial, Single2DTexture} from "awayjs-full/lib/graphics";
+import {BitmapImage2D} from "awayjs-full/lib/stage";
+import {ElementsType} from "awayjs-full/lib/graphics";
+import {BasicMaterial, ImageTexture2D} from "awayjs-full/lib/materials";
 import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
 import {View} from "awayjs-full/lib/view";
 
@@ -115,7 +117,7 @@ class Basic_View
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this._planeMaterial.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 			}
 		}

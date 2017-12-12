@@ -1,7 +1,8 @@
 import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {ElementsType, Sampler2D, ImageUtils, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {ElementsType} from "awayjs-full/lib/graphics";
+import {ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
 import {Sprite, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class TorusPrimitive
@@ -76,7 +77,7 @@ class TorusPrimitive
 	private initMaterial(image:HTMLImageElement)
 	{
 		this._material = new MethodMaterial(ImageUtils.imageToBitmapImage2D(image));
-		this._material.style.sampler = new Sampler2D(true, true, false);
+		this._material.style.sampler = new ImageSampler(true, true, false);
 		this._material.lightPicker = this._lightPicker;
 	}
 

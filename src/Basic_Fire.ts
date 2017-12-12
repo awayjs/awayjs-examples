@@ -38,11 +38,11 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, BlendMode, Single2DTexture, ElementsType, Graphics, PointLight, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, ImageSampler, BlendMode} from "awayjs-full/lib/stage";
+import {ElementsType, Graphics, ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/graphics";
 import {HoverController, Sprite, Scene, Camera, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, MethodMaterialMode}	from "awayjs-full/lib/materials";
+import {MethodMaterial, MethodMaterialMode, PointLight, DirectionalLight, StaticLightPicker, ImageTexture2D}	from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
-import {ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
 
 class Basic_Fire
 {
@@ -147,7 +147,7 @@ class Basic_Fire
 		this.planeMaterial = new MethodMaterial();
 		this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
 		this.planeMaterial.lightPicker = this.lightPicker;
-		this.planeMaterial.style.sampler = new Sampler2D(true, true, false);
+		this.planeMaterial.style.sampler = new ImageSampler(true, true, false);
 		this.planeMaterial.specularMethod.strength = 10;
 
 		this.particleMaterial = new MethodMaterial();
@@ -352,18 +352,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.planeMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this.particleMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 			}
 		}

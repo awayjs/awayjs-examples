@@ -36,12 +36,12 @@ THE SOFTWARE.
 
 */
 
-import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, Sampler2D, ElementsType, Single2DTexture, PointLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData, ShaderBase} from "awayjs-full/lib/stage";
-import {LightingShader} from "awayjs-full/lib/renderer";
+import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, ImageSampler, ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData} from "awayjs-full/lib/stage";
+import {ShaderBase} from "awayjs-full/lib/renderer";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {OrientationMode, AlignmentMode, HoverController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, LightingCompositeChunk, ILightingChunk} from "awayjs-full/lib/materials";
+import {LightingShader, MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, LightingCompositeChunk, ILightingChunk, ImageTexture2D, PointLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe
@@ -172,18 +172,18 @@ class Intermediate_Globe
 		specular.strength = 1;
 
 		this.sunMaterial = new MethodMaterial();
-		this.sunMaterial.style.sampler = new Sampler2D(false, true, true);
+		this.sunMaterial.style.sampler = new ImageSampler(false, true, true);
 		this.sunMaterial.blendMode = BlendMode.ADD;
 
 		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.style.sampler = new Sampler2D(false, true, true);
+		this.groundMaterial.style.sampler = new ImageSampler(false, true, true);
 		this.groundMaterial.specularMethod = specular;
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.ambientMethod.strength = 1;
 		this.groundMaterial.diffuseMethod.multiply = false;
 
 		this.cloudMaterial = new MethodMaterial();
-		this.cloudMaterial.style.sampler = new Sampler2D(false, true, true);
+		this.cloudMaterial.style.sampler = new ImageSampler(false, true, true);
 		this.cloudMaterial.alphaBlending = true;
 		this.cloudMaterial.lightPicker = this.lightPicker;
 		this.cloudMaterial.style.color = 0x1b2048;
@@ -347,7 +347,7 @@ class Intermediate_Globe
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
 				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
-				this.skyBox.style.sampler = new Sampler2D(false, true);
+				this.skyBox.style.sampler = new ImageSampler(false, true);
 				this.scene.addChild(this.skyBox);
 				break;
 
@@ -356,21 +356,21 @@ class Intermediate_Globe
 				var cloudBitmapImage2D:BitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
 				cloudBitmapImage2D.copyChannel(<BitmapImage2D> event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-				this.cloudMaterial.ambientMethod.texture = new Single2DTexture(cloudBitmapImage2D);
+				this.cloudMaterial.ambientMethod.texture = new ImageTexture2D(cloudBitmapImage2D);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
 				var specBitmapImage2D:BitmapImage2D = <BitmapImage2D> event.assets[0];
 				specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMethod.texture = new Single2DTexture(specBitmapImage2D);
+				this.groundMaterial.specularMethod.texture = new ImageTexture2D(specBitmapImage2D);
 				break;
 			case "assets/globe/EarthNormal.png" :
-				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_lights_16384.jpg" :
-				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_ocean_ice_2048_match.jpg" :
-				this.groundMaterial.diffuseMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.diffuseMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//flare textures
@@ -396,7 +396,7 @@ class Intermediate_Globe
 				this.flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this.scene);
 				break;
 			case "assets/lensflare/flare10.jpg" :
-				this.sunMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.sunMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				this.flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this.scene);
 				break;
 			case "assets/lensflare/flare11.jpg" :
@@ -542,7 +542,7 @@ class FlareObject
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
 		var billboardMaterial:MethodMaterial = new MethodMaterial(bd);
-		billboardMaterial.style.sampler = new Sampler2D(false, true);
+		billboardMaterial.style.sampler = new ImageSampler(false, true);
 		billboardMaterial.alpha = opacity/100;
 		billboardMaterial.alphaBlending = true;
 		//billboardMaterial.blendMode = BlendMode.LAYER;

@@ -39,11 +39,10 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, Single2DTexture, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
-import {AnimationSetBase} from "awayjs-full/lib/stage";
+import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
+import {ElementsType, VertexAnimationSet, VertexAnimator, AnimationSetBase} from "awayjs-full/lib/graphics";
 import {HoverController, Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {VertexAnimationSet, VertexAnimator} from "awayjs-full/lib/renderer";
-import {MethodMaterial, ShadowFilteredMethod} from "awayjs-full/lib/materials";
+import {MethodMaterial, ShadowFilteredMethod, ImageTexture2D, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {MD2Parser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -129,6 +128,7 @@ class Intermediate_PerelithKnight
 		//setup the lights for the scene
 		this._light = new DirectionalLight(new Vector3D(-0.5, -1, -1));
 		this._light.ambient = 0.4;
+        this._light.shadowMapper.epsilon = 0.2;
 		this._lightPicker = new StaticLightPicker([this._light]);
 
 		//setup listeners on AssetLibrary
@@ -149,7 +149,6 @@ class Intermediate_PerelithKnight
 
 		//create a global shadow map method
 		this._shadowMapMethod = new ShadowFilteredMethod(this._light);
-		this._shadowMapMethod.epsilon = 0.2;
 
 		//setup floor material
 		this._floorMaterial = new MethodMaterial();
@@ -157,7 +156,7 @@ class Intermediate_PerelithKnight
 		this._floorMaterial.specularMethod.strength = 0;
 		this._floorMaterial.ambientMethod.strength = 1;
 		this._floorMaterial.shadowMethod = this._shadowMapMethod;
-		this._floorMaterial.style.sampler = new Sampler2D(true);
+		this._floorMaterial.style.sampler = new ImageSampler(true);
 
 		//setup knight materials
 		for (var i:number /*uint*/  = 0; i < this._pKnightTextures.length; i++) {
@@ -292,7 +291,7 @@ class Intermediate_PerelithKnight
 			{
 				//floor texture
 				case "assets/floor_diffuse.jpg" :
-					this._floorMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._floorMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//knight textures
@@ -300,7 +299,7 @@ class Intermediate_PerelithKnight
 				case "assets/pknight2.png" :
 				case "assets/pknight3.png" :
 				case "assets/pknight4.png" :
-					this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._pKnightMaterials[this._pKnightTextures.indexOf(event.url)].ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//knight data

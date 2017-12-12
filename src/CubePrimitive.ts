@@ -1,7 +1,8 @@
 import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "awayjs-full/lib/core";
-import {Sampler2D, BlendMode, ElementsType, ImageUtils, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {ImageSampler, ImageUtils, BlendMode} from "awayjs-full/lib/stage";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {Sprite, PrimitiveCubePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class CubePrimitive
@@ -96,7 +97,7 @@ class CubePrimitive
 	private imageCompleteHandler(event:Event)
 	{
 		var matTx:MethodMaterial = new MethodMaterial(ImageUtils.imageToBitmapImage2D(this._image));
-		matTx.style.sampler = new Sampler2D(true, true);
+		matTx.style.sampler = new ImageSampler(true, true);
 		matTx.blendMode = BlendMode.ADD;
 		matTx.bothSides = true;
 		matTx.lightPicker = this._lightPicker;

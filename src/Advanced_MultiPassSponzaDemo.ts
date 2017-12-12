@@ -46,9 +46,11 @@ THE SOFTWARE.
 */
 
 import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
-import {Style, Shape, Single2DTexture, Sampler2D, SpecularImage2D, ElementsType, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper} from "awayjs-full/lib/graphics";
+import {ImageSampler, SpecularImage2D, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/stage";
+import {Style} from "awayjs-full/lib/renderer";
+import {Shape, ElementsType} from "awayjs-full/lib/graphics";
 import {FirstPersonController, Sprite, Skybox, LoaderContainer, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
-import {MethodMaterial, MethodMaterialMode, ShadowCascadeMethod, ShadowSoftMethod, EffectFogMethod}	from "awayjs-full/lib/materials";
+import {MethodMaterial, ImageTexture2D, MethodMaterialMode, CascadeShadowMapper, ShadowSoftMethod, EffectFogMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -100,7 +102,7 @@ class Advanced_MultiPassSponzaDemo
 	//light variables
 	private _lightPicker:StaticLightPicker;
 	private _baseShadowMethod:ShadowSoftMethod;
-	private _cascadeMethod:ShadowCascadeMethod;
+	//private _cascadeMethod:ShadowCascadeMethod;
 	private _fogMethod : EffectFogMethod;
 	private _cascadeShadowMapper:DirectionalShadowMapper;
 	private _directionalLight:DirectionalLight;
@@ -451,7 +453,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//create bitmap texture in dictionary
 		if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-			this._textureDictionary[this._loadingTextureStrings[this._n]] = new Single2DTexture((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
+			this._textureDictionary[this._loadingTextureStrings[this._n]] = new ImageTexture2D((this._loadingTextureStrings == this._specularTextureStrings)? new SpecularImage2D(ImageUtils.imageToBitmapImage2D(image)) : ImageUtils.imageToBitmapImage2D(image));
 
 		//skip null textures
 		while (this._n++ < this._loadingTextureStrings.length - 1)
@@ -636,8 +638,8 @@ class Advanced_MultiPassSponzaDemo
 //					multiMaterial.shadowMethod = this._cascadeMethod;
 				multiMaterial.shadowMethod = this._baseShadowMethod;
 				multiMaterial.addEffectMethod(this._fogMethod);
-				multiMaterial.style.sampler = new Sampler2D(true, true, true);
-				multiMaterial.style.addSamplerAt(new Sampler2D(true, true), this._directionalLight.shadowMapper.textureMap);
+				multiMaterial.style.sampler = new ImageSampler(true, true, true);
+				multiMaterial.style.addSamplerAt(new ImageSampler(true, true), this._directionalLight.shadowMapper.textureMap);
 				multiMaterial.specularMethod.strength = 2;
 				
 				

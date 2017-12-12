@@ -38,10 +38,10 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, ColorTransform, AssetLibrary, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Graphics, ElementsType, PointLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D} from "awayjs-full/lib/stage";
+import {Graphics, ElementsType, ParticleAnimator, ParticleAnimationSet, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleBezierCurveNode, ParticleInitialColorNode, ParticlePositionNode, ParticleGraphicsHelper} from "awayjs-full/lib/graphics";
 import {Scene, Camera, Sprite, HoverController, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {ParticleAnimator, ParticleAnimationSet, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleBezierCurveNode, ParticleInitialColorNode, ParticlePositionNode, ParticleGraphicsHelper} from "awayjs-full/lib/renderer";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {PointLight, StaticLightPicker, MethodMaterial} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class Intermediate_ParticleExplosions

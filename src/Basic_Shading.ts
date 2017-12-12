@@ -36,9 +36,10 @@ THE SOFTWARE.
 */
 
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, Sampler2D, ElementsType, DefaultMaterialManager, DirectionalLight, Single2DTexture, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
+import {ElementsType} from "awayjs-full/lib/graphics";
 import {HoverController, Sprite, Scene, Camera, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, ImageTexture2D, StaticLightPicker} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 /**
  *
@@ -143,20 +144,20 @@ class Basic_Shading
 	 */
 	private initMaterials():void
 	{
-		this._planeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
+		this._planeMaterial = new MethodMaterial(ImageUtils.getDefaultImage2D());
 		this._planeMaterial.lightPicker = this._lightPicker;
-		this._planeMaterial.style.sampler = new Sampler2D(true, true, true);
+		this._planeMaterial.style.sampler = new ImageSampler(true, true, true);
 
-		this._sphereMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
+		this._sphereMaterial = new MethodMaterial(ImageUtils.getDefaultImage2D());
 		this._sphereMaterial.lightPicker = this._lightPicker;
 
-		this._cubeMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
+		this._cubeMaterial = new MethodMaterial(ImageUtils.getDefaultImage2D());
 		this._cubeMaterial.lightPicker = this._lightPicker;
-		this._cubeMaterial.style.sampler = new Sampler2D(true, true);
+		this._cubeMaterial.style.sampler = new ImageSampler(true, true);
 
-		this._torusMaterial = new MethodMaterial(DefaultMaterialManager.getDefaultImage2D());
+		this._torusMaterial = new MethodMaterial(ImageUtils.getDefaultImage2D());
 		this._torusMaterial.lightPicker = this._lightPicker;
-		this._torusMaterial.style.sampler = new Sampler2D(true, true, true);
+		this._torusMaterial.style.sampler = new ImageSampler(true, true, true);
 	}
 
 	/**
@@ -263,10 +264,10 @@ class Basic_Shading
 					this._planeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/floor_normal.jpg" :
-					this._planeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this._planeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._planeMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//sphere textures
@@ -274,7 +275,7 @@ class Basic_Shading
 					this._sphereMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/beachball_specular.jpg" :
-					this._sphereMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._sphereMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//cube textures
@@ -282,10 +283,10 @@ class Basic_Shading
 					this._cubeMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/trinket_normal.jpg" :
-					this._cubeMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/trinket_specular.jpg" :
-					this._cubeMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._cubeMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//torus textures
@@ -293,7 +294,7 @@ class Basic_Shading
 					this._torusMaterial.style.image = <BitmapImage2D> asset;
 					break;
 				case "assets/weave_normal.jpg" :
-					this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> asset);
+					this._torusMaterial.normalMethod.texture = this._torusMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 			}
 		}

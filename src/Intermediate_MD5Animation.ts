@@ -39,11 +39,11 @@ THE SOFTWARE.
 */
 
 import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard, Vector3D} from "awayjs-full/lib/core";
-import {AnimationNodeBase, Style, BitmapImage2D, BitmapImageCube, Sampler2D, ElementsType, Single2DTexture, PointLight, DirectionalLight, StaticLightPicker, NearDirectionalShadowMapper} from "awayjs-full/lib/graphics";
-import {AnimationSetBase} from "awayjs-full/lib/stage";
+import {BitmapImage2D, BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
+import {AnimationSetBase, ElementsType, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/graphics";
 import {LookAtController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/renderer";
-import {MethodMaterial, EffectFogMethod, ShadowNearMethod, ShadowSoftMethod} from "awayjs-full/lib/materials";
+import {AnimationNodeBase, Style} from "awayjs-full/lib/renderer";
+import {ImageTexture2D, MethodMaterial, EffectFogMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, NearDirectionalShadowMapper} from "awayjs-full/lib/materials";
 import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -82,7 +82,7 @@ class Intermediate_MD5Animation
 	private blueLight:PointLight;
 	private whiteLight:DirectionalLight;
 	private lightPicker:StaticLightPicker;
-	private shadowMapMethod:ShadowNearMethod;
+	private shadowMapMethod:ShadowSoftMethod;
 	private fogMethod:EffectFogMethod;
 	private count:number = 0;
 
@@ -185,13 +185,13 @@ class Intermediate_MD5Animation
 		this.whiteLight.ambient = 1;
 		this.whiteLight.ambientColor = 0x303040;
 		this.whiteLight.shadowMapper = new NearDirectionalShadowMapper(null, .2);
+        this.whiteLight.shadowMapper.epsilon = .1;
 
 		this.lightPicker = new StaticLightPicker([this.redLight, this.blueLight, this.whiteLight]);
 
 
 		//create a global shadow method
-		this.shadowMapMethod = new ShadowNearMethod(new ShadowSoftMethod(this.whiteLight, 15, 8));
-		this.shadowMapMethod.epsilon = .1;
+		this.shadowMapMethod = new ShadowSoftMethod(this.whiteLight, 15, 8);
 
 		//create a global fog method
 		this.fogMethod = new EffectFogMethod(0, this.camera.projection.far*0.5, 0x000000);
@@ -214,7 +214,7 @@ class Intermediate_MD5Animation
 
 		//ground material
 		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.style.sampler = new Sampler2D(true, true);
+		this.groundMaterial.style.sampler = new ImageSampler(true, true);
 		this.groundMaterial.lightPicker = this.lightPicker;
 		this.groundMaterial.shadowMethod = this.shadowMapMethod;
 		this.groundMaterial.addEffectMethod(this.fogMethod);
@@ -230,7 +230,7 @@ class Intermediate_MD5Animation
 		//gob material
 		this.gobMaterial = new MethodMaterial();
 		this.gobMaterial.alphaBlending = true;
-		this.gobMaterial.style.sampler = new Sampler2D(true, true);
+		this.gobMaterial.style.sampler = new ImageSampler(true, true);
 		this.gobMaterial.animateUVs = true;
 		this.gobMaterial.addEffectMethod(this.fogMethod);
 		this.gobMaterial.lightPicker = this.lightPicker;
@@ -395,35 +395,35 @@ class Intermediate_MD5Animation
 
 			//entities textures
 			case "assets/redlight.png" :
-				this.redLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.redLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/bluelight.png" :
-				this.blueLightMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.blueLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//floor textures
 			case "assets/rockbase_diffuse.jpg" :
-				this.groundMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_normals.png" :
-				this.groundMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_specular.png" :
-				this.groundMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.groundMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//hellknight textures
 			case "assets/hellknight/hellknight_diffuse.jpg" :
-				this.bodyMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_normals.png" :
-				this.bodyMaterial.normalMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_specular.png" :
-				this.bodyMaterial.specularMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.bodyMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new Single2DTexture(<BitmapImage2D> event.assets[0]);
+				this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}

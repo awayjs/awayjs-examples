@@ -1,7 +1,6 @@
 import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
 import {MouseEvent, Sprite} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View, JSPickingCollider} from "awayjs-full/lib/view";
 
@@ -91,7 +90,7 @@ class AWDSuzanne
 			this._view.camera.x = Math.cos(this._cameraIncrement)*1400;
 			this._view.camera.z = Math.sin(this._cameraIncrement)*1400;
 
-			this._light.direction = new Vector3D(Math.cos(this._cameraIncrement)*1400, Math.sin(this._cameraIncrement)*1400, 0);
+			this._light.direction = new Vector3D(-Math.cos(-this._cameraIncrement)*1400, 0, -Math.sin(this._cameraIncrement)*1400);
 
 		}
 

@@ -1,7 +1,7 @@
-import {BitmapImage2D, Sampler2D, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/graphics";
+import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
 import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
 import {Sprite, DisplayObjectContainer} from "awayjs-full/lib/scene";
-import {MethodMaterial} from "awayjs-full/lib/materials";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {OBJParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
 
@@ -117,11 +117,11 @@ class ObjLoaderMasterChief
 				case BitmapImage2D.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
 						this.mat = new MethodMaterial(<BitmapImage2D> d);
-						this.mat.style.sampler = new Sampler2D(true, true, false);
+						this.mat.style.sampler = new ImageSampler(true, true, false);
 						this.mat.lightPicker = new StaticLightPicker([this.light]);
 					} else if (event.url == 'assets/stone_tx.jpg') {
 						this.terrainMaterial = new MethodMaterial(<BitmapImage2D> d);
-						this.terrainMaterial.style.sampler = new Sampler2D(true, true, false);
+						this.terrainMaterial.style.sampler = new ImageSampler(true, true, false);
 						this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
 					}
 
