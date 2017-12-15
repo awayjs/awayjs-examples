@@ -41,7 +41,7 @@ import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, ImageSamp
 import {ShaderBase} from "awayjs-full/lib/renderer";
 import {ElementsType} from "awayjs-full/lib/graphics";
 import {OrientationMode, AlignmentMode, HoverController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
-import {LightingShader, MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, LightingCompositeChunk, ILightingChunk, ImageTexture2D, PointLight, StaticLightPicker} from "awayjs-full/lib/materials";
+import {LightingShader, MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, _Shader_LightingCompositeMethod, _IShader_LightingMethod, ImageTexture2D, PointLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {View} from "awayjs-full/lib/view";
 
 class Intermediate_Globe
@@ -574,7 +574,7 @@ class DiffuseGlobeMethod extends DiffuseCompositeMethod
 	}
 }
 
-class DiffuseGlobeChunk extends LightingCompositeChunk
+class DiffuseGlobeChunk extends _Shader_LightingCompositeMethod
 {
 	/**
 	 * Creates a new DiffuseCelChunk object.
@@ -585,7 +585,7 @@ class DiffuseGlobeChunk extends LightingCompositeChunk
 	{
 		super(method, shader);
 
-		(<ILightingChunk> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateDiffuseMethod(targetReg, registerCache, sharedRegisters);
+		(<_IShader_LightingMethod> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateDiffuseMethod(targetReg, registerCache, sharedRegisters);
 	}
 
 	private modulateDiffuseMethod(targetReg:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
@@ -614,7 +614,7 @@ class SpecularGlobeMethod extends SpecularCompositeMethod
 	}
 }
 
-class SpecularGlobeChunk extends LightingCompositeChunk
+class SpecularGlobeChunk extends _Shader_LightingCompositeMethod
 {
 	/**
 	 * Creates a new DiffuseCelChunk object.
@@ -625,7 +625,7 @@ class SpecularGlobeChunk extends LightingCompositeChunk
 	{
 		super(method, shader);
 
-		(<ILightingChunk> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateSpecularMethod(targetReg, registerCache, sharedRegisters);
+		(<_IShader_LightingMethod> this._baseChunk)._modulateFunction = (targetReg: ShaderRegisterElement, registerCache: ShaderRegisterCache, sharedRegisters: ShaderRegisterData) => this.modulateSpecularMethod(targetReg, registerCache, sharedRegisters);
 	}
 
 
