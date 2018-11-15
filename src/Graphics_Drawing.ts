@@ -35,10 +35,10 @@
  */
 
 import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem} from "awayjs-full/lib/core";
-import {DefaultRenderer} from "awayjs-full/lib/renderer";
+import {DefaultRenderer, SceneGraphPartition} from "awayjs-full/lib/renderer";
 import {GraphicsFactoryHelper, CapsStyle, JointStyle, Graphics} from "awayjs-full/lib/graphics";
-import {MouseEvent, HoverController, MovieClip, Sprite, Camera} from "awayjs-full/lib/scene";
-import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene} from "awayjs-full/lib/scene";
+import {View} from "awayjs-full/lib/view";
 import {AS2MovieClipAdapter} from "awayjs-full/lib/player";
 
 class Graphics_Drawing
@@ -94,7 +94,8 @@ class Graphics_Drawing
 	private initEngine(): void
 	{
 		//create the view
-		this._renderer = new DefaultRenderer();
+		this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
+		
 		this._renderer.renderableSorter = null;//new RenderableSort2D();
 		this._view = new View(this._renderer);
 		this._view.backgroundColor = 0x777777;
@@ -105,8 +106,8 @@ class Graphics_Drawing
 		this._projection = new PerspectiveProjection();
 		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._projection.fieldOfView = 30;
-		this._projection.originX = 0;
-		this._projection.originY = 0;
+		this._projection.originX = -1;
+		this._projection.originY = 1;
 		this._camera_perspective = new Camera();
 		this._camera_perspective.projection = this._projection;
 		//this._projection.far = 500000;
@@ -119,9 +120,9 @@ class Graphics_Drawing
 	 */
 	private initObjects(): void
 	{
-		var root_timeline:MovieClip=new MovieClip();
-		this._view.setPartition(root_timeline, new SceneGraphPartition(root_timeline));
-		root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
+		// var root_timeline:MovieClip=new MovieClip();
+		// this._view.setPartition(root_timeline, new SceneGraphPartition(root_timeline));
+		// root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
 
 		// Graphics is not wired into any Displayobjects yet.
 		// to have it produce geometry, for now we have to pass it a sprite when constructing it

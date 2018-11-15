@@ -2,7 +2,8 @@ import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Request
 import {MouseEvent, Sprite} from "awayjs-full/lib/scene";
 import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
-import {View, JSPickingCollider} from "awayjs-full/lib/view";
+import {View} from "awayjs-full/lib/view";
+import { BasicPartition } from "awayjs-full/lib/renderer";
 
 class AWDSuzanne
 {
@@ -123,6 +124,7 @@ class AWDSuzanne
 
 						var clone:Sprite = <Sprite> sprite.clone();
 						var scale:number = this.getRandom(50, 200);
+						clone.partition = new BasicPartition(clone);
 						clone.x = this.getRandom(-2000, 2000);
 						clone.y = this.getRandom(-2000, 2000);
 						clone.z = this.getRandom(-2000, 2000);
@@ -133,11 +135,12 @@ class AWDSuzanne
 						this._view.scene.addChild(clone);
 					}
 
+					this._view.renderer.pickGroup.getAbstraction(sprite).shapeFlag = true;
+					sprite.partition = new BasicPartition(sprite);
 					sprite.transform.scaleTo(500, 500, 500);
 					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
 					this._view.scene.addChild(sprite);
-					this._view.setCollider(sprite, new JSPickingCollider());
 
 					break;
 			}

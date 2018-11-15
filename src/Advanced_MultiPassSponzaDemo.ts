@@ -53,6 +53,7 @@ import {FirstPersonController, Sprite, Skybox, LoaderContainer, PrimitivePlanePr
 import {MethodMaterial, ImageTexture2D, MethodMaterialMode, CascadeShadowMapper, ShadowSoftMethod, EffectFogMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
 import {View} from "awayjs-full/lib/view";
+import { IShape } from "../../@awayjs/graphics/dist/lib/renderables/IShape";
 
 
 class Advanced_MultiPassSponzaDemo
@@ -248,7 +249,7 @@ class Advanced_MultiPassSponzaDemo
 			flameVO = this._flameData[i];
 			var sprite:Sprite = flameVO.sprite = <Sprite> this._flameGraphics.getNewObject();
 			sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			var shape:Shape = sprite.graphics.getShapeAt(0);
+			var shape:IShape = sprite.graphics.getShapeAt(0);
 			shape.style = new Style();
 			shape.style.uvMatrix = new Matrix();
 			shape.style.uvMatrix.scale(1/16, 1);
@@ -762,7 +763,7 @@ class Advanced_MultiPassSponzaDemo
 			if (!sprite)
 				continue;
 			
-			var shape:Shape = sprite.graphics.getShapeAt(0);
+			var shape:IShape = sprite.graphics.getShapeAt(0);
 			shape.style.uvMatrix.tx += 1/16;
 			shape.style.uvMatrix.tx %= 1;
 			sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z)*180/Math.PI;

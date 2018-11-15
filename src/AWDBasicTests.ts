@@ -35,10 +35,10 @@
  */
 
 import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
-import {HoverController, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/scene";
+import {HoverController, Camera, LoaderContainer, MovieClip, Scene} from "awayjs-full/lib/scene";
 import {AWDParser} from "awayjs-full/lib/parsers";
-import {DefaultRenderer} from  "awayjs-full/lib/renderer";
-import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {DefaultRenderer, SceneGraphPartition, BasicPartition} from  "awayjs-full/lib/renderer";
+import {View} from "awayjs-full/lib/view";
 import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
 
 class AWDBasicTests
@@ -221,7 +221,7 @@ class AWDBasicTests
     private initEngine(): void
     {
         //create the view
-        this._renderer = new DefaultRenderer();
+        this._renderer = new DefaultRenderer(new BasicPartition(new Scene()));
         this._renderer.renderableSorter = null;//new RenderableSort2D();
         this._view = new View(this._renderer);
         this._view.backgroundColor = 0x000000;
@@ -237,9 +237,9 @@ class AWDBasicTests
         this._isperspective=true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-        this._projection.fieldOfView = 60;
-        this._projection.originX = 0;
-        this._projection.originY = 0;
+        this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*360/Math.PI;
+        this._projection.originX = -1;
+        this._projection.originY = 1;
         var camera:Camera = new Camera();
         camera.projection = this._projection;
 
@@ -310,7 +310,7 @@ class AWDBasicTests
     private onRessourceComplete(event: LoaderEvent): void {
         this.thisDiv.innerHTML=this._awd_descriptions[this._currentAWDIdx];
         if (this._rootTimeLine) {
-            this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
+            this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 
             this._view.scene.addChild(this._rootTimeLine);
@@ -393,8 +393,7 @@ class AWDBasicTests
         this._view.x         = 0;
         this._view.width     = window.innerWidth;
         this._view.height    = window.innerHeight;
-        this._projection.fieldOfView = Math.atan(this._stage_height / 2000)*360/Math.PI;
-        this._projection.originX = (0.5 - 0.5*(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth));
+        this._projection.originX = -(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth);
     }
 
 }

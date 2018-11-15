@@ -117,7 +117,7 @@ class Basic_SkyBox
 	private initObjects():void
 	{
 		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
-		this._torus.debugVisible = true;
+		this._torus.boundsVisible = true;
 		this._view.scene.addChild(this._torus);
 	}
 

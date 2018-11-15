@@ -36,17 +36,19 @@
 
 import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
 import {Graphics, Shape} from "awayjs-full/lib/graphics";
-import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip} from "awayjs-full/lib/scene";
+import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip, Scene} from "awayjs-full/lib/scene";
 import {MethodMaterial}	from "awayjs-full/lib/materials";
 import {AWDParser} from "awayjs-full/lib/parsers";
-import {DefaultRenderer} from  "awayjs-full/lib/renderer";
-import {View, SceneGraphPartition} from "awayjs-full/lib/view";
+import {DefaultRenderer, SceneGraphPartition} from  "awayjs-full/lib/renderer";
+import {View} from "awayjs-full/lib/view";
 import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
+import { IShape } from "../../@awayjs/graphics/dist/lib/renderables/IShape";
 
 class AWD3ViewerMinimal
 {
 	private _fps:number = 30;
 	private _view: View;
+	private _scene:Scene;
 	private _renderer: DefaultRenderer;
 	private _rootTimeLine: MovieClip;
 	private _timer: RequestAnimationFrame;
@@ -56,7 +58,7 @@ class AWD3ViewerMinimal
 	private _stage_width: number;
 	private _stage_height: number;
 	private _material:MethodMaterial;
-	private _shapes:Array<Shape> = new Array<Shape>();
+	private _shapes:Array<IShape> = new Array<IShape>();
 
 	private counter: number;
 
@@ -89,8 +91,12 @@ class AWD3ViewerMinimal
 	private initEngine(): void
 	{
 		//create the view
-		this._renderer = new DefaultRenderer();
+		this._scene = new Scene();
+		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._scene));
 		this._renderer.renderableSorter = null;//new RenderableSort2D();
+		this._scene.partition = this._renderer.partition;
+		//this._renderer.viewport.preserveFocalLength = true;
+		//this._renderer.viewport.focalLength = 1000;
 		this._view = new View(this._renderer);
 		this._view.backgroundColor = 0x000000;
 		this._stage_width = 550;
@@ -104,9 +110,10 @@ class AWD3ViewerMinimal
 */
 		this._projection = new PerspectiveProjection();
 		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-		this._projection.fieldOfView = 30;
-		this._projection.originX = 0;
-		this._projection.originY = 0;
+		this._projection.originX = -1;
+		this._projection.originY = 1;
+		this._projection.fieldOfView = Math.atan(this._stage_height/1000/2)*360/Math.PI;
+
 		var camera:Camera = new Camera();
 		camera.projection = this._projection;
 
@@ -222,9 +229,8 @@ class AWD3ViewerMinimal
 				//this._shapes[i].material = this._material;
 			}
 
-			this._view.setPartition(this._rootTimeLine, new SceneGraphPartition(this._rootTimeLine));
 			//console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
-			this._view.scene.addChild(this._rootTimeLine);
+			this._scene.addChild(this._rootTimeLine);
 			//this._rootTimeLine.x=-this._stage_width/2;
 			//this._rootTimeLine.y=-this._stage_height/2;
 			// autoplay like in Flash
@@ -266,9 +272,7 @@ class AWD3ViewerMinimal
 		this._view.x         = 0;
 		this._view.width     = window.innerWidth;
 		this._view.height    = window.innerHeight;
-		var newHeight:number = this._stage_height;
-		this._projection.fieldOfView = Math.atan(newHeight/1000/2)*360/Math.PI;
-		this._projection.originX = (0.5 - 0.5*(window.innerHeight/newHeight)*(this._stage_width/window.innerWidth));
+		this._projection.originX = -(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth);
 	}
 
 }
