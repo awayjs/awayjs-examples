@@ -34,12 +34,13 @@
 
  */
 
-import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem} from "awayjs-full/lib/core";
-import {DefaultRenderer, SceneGraphPartition} from "awayjs-full/lib/renderer";
-import {GraphicsFactoryHelper, CapsStyle, JointStyle, Graphics} from "awayjs-full/lib/graphics";
-import {MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene} from "awayjs-full/lib/scene";
+import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem, Box, Vector3D} from "awayjs-full/lib/core";
+import {DefaultRenderer, SceneGraphPartition, PickEntity, PickGroup} from "awayjs-full/lib/renderer";
+import {CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle} from "awayjs-full/lib/graphics";
+import {MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene, OrientationMode, AlignmentMode} from "awayjs-full/lib/scene";
 import {View} from "awayjs-full/lib/view";
 import {AS2MovieClipAdapter} from "awayjs-full/lib/player";
+import { MethodMaterial } from "awayjs-full/lib/materials";
 
 class Graphics_Drawing
 {
@@ -69,6 +70,10 @@ class Graphics_Drawing
 	private drawingMC: Sprite;
 	private _activePoint: Sprite;
 	private _points: Array<Sprite>;
+	private static _colorMaterials:Object = {};
+	private static _textureMaterials:Object = {};
+	private _animSprites:Sprite[] = [];
+	private _animSpeeds:number[] = [];
 
 	/**
 	 * Constructor
@@ -84,6 +89,7 @@ class Graphics_Drawing
 	private init(): void
 	{
 		this.initEngine();
+		this.initMaterials();
 		this.initObjects();
 		this.initListeners();
 	}
@@ -115,6 +121,58 @@ class Graphics_Drawing
 		this._view.camera = this._camera_perspective;
 	}
 
+		/**
+	 * Initialise the engine
+	 */
+	private initMaterials(): void
+	{
+		Graphics.get_material_for_color = function(color:number, alpha:number=1):any
+		{
+			if(color==0){
+				color=0x000001;
+			}
+			//color=0xFF8100;
+			//console.log("get color");
+			//alpha=0.5;
+			var texObj:any=TextureAtlas.getTextureForColor(color, alpha);
+			if(Graphics_Drawing._colorMaterials[texObj.bitmap.id]){
+				texObj.material = Graphics_Drawing._colorMaterials[texObj.bitmap.id];
+				return texObj;
+			}
+
+			var newmat:MethodMaterial=new MethodMaterial(texObj.bitmap);
+			newmat.alphaBlending = true;
+			newmat.useColorTransform = true;
+			newmat.bothSides = true;
+			Graphics_Drawing._colorMaterials[texObj.bitmap.id] = newmat;
+			texObj.material=newmat;
+			return texObj;
+		};
+		Graphics.get_material_for_gradient = function(gradient:GradientFillStyle):any
+		{
+			var texObj=TextureAtlas.getTextureForGradient(gradient);
+			/*if(alpha==0){
+			 alpha=1;
+			 }*/
+			//alpha=0.5;
+			/*if(color==0xffffff){
+			 color=0xcccccc;
+			 }*/
+			var lookupId:string=texObj.bitmap.id+gradient.type;
+			if(Graphics_Drawing._textureMaterials[lookupId]){
+				texObj.material=Graphics_Drawing._textureMaterials[lookupId];
+				return texObj;
+			}
+			var newmat:MethodMaterial=new MethodMaterial(texObj.bitmap);
+			newmat.useColorTransform = true;
+			newmat.alphaBlending=true;
+			newmat.bothSides = true;
+			Graphics_Drawing._textureMaterials[lookupId]=newmat;
+			texObj.material=newmat;
+			return texObj;
+		};
+	}
+
 	/**
 	 * Initialise the scene objects
 	 */
@@ -132,23 +190,19 @@ class Graphics_Drawing
 		// for now i did not find a way to activate this other than doing it in js (not in ts)
 		// so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
 
-		GraphicsFactoryHelper._tess_obj= null;//new TESS();
-		this._view.scene.addChild(this.drawingMC );
+		//this._view.scene.addChild(this.drawingMC );
 
 		this._points=new Array<Sprite>();
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
 		var thisCircleGraphic:Graphics=new Graphics();
 		thisCircleGraphic.beginFill(0xFF0000, 1);
 		thisCircleGraphic.drawCircle(0,0,30);
 		thisCircleGraphic.endFill();
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
 
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
 		var thisCircleGraphicsmall:Graphics = new Graphics();
 		thisCircleGraphicsmall.beginFill(0xFF0000, 1);
 		thisCircleGraphicsmall.drawCircle(0, 0, 10);
 		thisCircleGraphicsmall.endFill();
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
+
 		var batman_logo:Array<Array<any> >=[];
 		var cnt=0;
 		batman_logo[cnt++]=["l", 50, 50];
@@ -194,6 +248,22 @@ class Graphics_Drawing
 		document.onmouseup = (event) => this.onMouseUp(event);
 		this.draw_shape();
 
+		var numSpritesV:number = 20;
+		var numSpritesH:number = 20;
+
+		for (var i:number = 0; i < numSpritesV; i++) {
+			for (var j:number = 0; j < numSpritesH; j++) {
+				var sprite:Sprite = this.drawingMC.clone();
+				sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+				sprite.transform.moveTo(i*50, j*25, 0);
+				sprite.transform.scaleTo(0.1, 0.1, 0.1);
+				sprite.transform.colorTransform = new ColorTransform(i/numSpritesV, 1 - i/numSpritesV, 1-j/numSpritesV, 1);
+
+				this._animSprites.push(sprite);
+				this._animSpeeds.push(0);
+				this._view.scene.addChild(sprite);
+			}
+		}
 	}
 
 	private onPointDown(event:MouseEvent): void{
@@ -216,9 +286,7 @@ class Graphics_Drawing
 
 		this.drawingMC.graphics.clear()
 
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.newTess();
-
-		this.drawingMC.graphics.beginFill(0xFF0000, 1);
+		this.drawingMC.graphics.beginFill(0xFFFFFF, 1);
 		this.drawingMC.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
 		this.drawingMC.graphics.moveTo(this._points[0].x, this._points[0].y);
 		var i = 1;
@@ -243,15 +311,16 @@ class Graphics_Drawing
 			this.drawingMC.graphics.lineTo(this._points[0].x, this._points[0].y);
 		}
 		this.drawingMC.graphics.endFill();
-		if (GraphicsFactoryHelper._tess_obj) GraphicsFactoryHelper._tess_obj.deleteTess();
+		var boxBounds:Box = PickGroup.getInstance(this._renderer.viewport).getAbstraction(this.drawingMC).getBoxBounds(null, false, true);
 
-		var new_ct:ColorTransform = this.drawingMC.transform.colorTransform || (this.drawingMC.transform.colorTransform = new ColorTransform());
-		new_ct.redMultiplier = 1;
-		new_ct.greenMultiplier = 1;
-		new_ct.blueMultiplier = 0;
-		new_ct.alphaMultiplier = 1;
+		this.drawingMC.registrationPoint = new Vector3D(boxBounds.width/2, boxBounds.height/2);
+	
 
-		this.drawingMC.transform.invalidateColorTransform();
+		// var new_ct:ColorTransform = this.drawingMC.transform.colorTransform = new ColorTransform();
+		// new_ct.redMultiplier = 1;
+		// new_ct.greenMultiplier = 0.5;
+		// new_ct.blueMultiplier = 0;
+		// new_ct.alphaMultiplier = 1;
 	}
 	/**
 	 * Initialise the listeners
@@ -277,7 +346,16 @@ class Graphics_Drawing
 		//update camera controler
 		// this._cameraController.update();
 
-		//console.log("RENDER = ");
+		//animate
+		var len:number = this._animSprites.length;
+		for (var i:number = 0; i < len; i++) {
+			var sprite:Sprite = this._animSprites[i];
+			sprite.rotationZ += this._animSpeeds[i];
+			this._animSpeeds[i] += (1 - 2*Math.random());
+			this._animSpeeds[i] *= 0.98;
+		}
+
+
 		//update view
 		this._view.render();
 	}
