@@ -51,7 +51,8 @@
   },
   "homepage": "https://github.com/awayjs/awayjs-examples#readme",
   "dependencies": {
-    "awayjs-full": "^0.3.0"
+    "awayjs-full": "^0.3.0",
+    "@awayjs/swf-viewer": "^0.2.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "3.2.3",
