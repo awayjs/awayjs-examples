@@ -75,7 +75,12 @@ class SWFViewerMinimal
 		AssetLibrary.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
         
         AssetLibrary.load(new URLRequest("assets/SWF/Bacon_Ipsem.swf"), null, null, new SWFParser(this._avm1SceneGraphFactory));
-		
+        var myThis=this;
+        window.addEventListener("keydown", function(event){
+            if(event.key=="Tab"){
+                MouseManager.getInstance(myThis._stage.view.renderer.pickGroup).focusNextTab();
+            }
+        })
 	}
 
 
