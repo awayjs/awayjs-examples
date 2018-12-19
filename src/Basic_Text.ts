@@ -31,13 +31,13 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, CoordinateSystem} from "awayjs-full/lib/core";
 import {BitmapImage2D} from "awayjs-full/lib/stage";
 import {ElementsType, Graphics, TextureAtlas, GradientFillStyle} from "awayjs-full/lib/graphics";
 import {BasicMaterial, MethodMaterial, ImageTexture2D} from "awayjs-full/lib/materials";
-import {Sprite, Font, PrimitivePlanePrefab, TesselatedFontTable, TextField, TextFormat} from "awayjs-full/lib/scene";
-import {View} from "awayjs-full/lib/view";
-import {SceneGraphPartition} from "awayjs-full/lib/renderer";
+import {Sprite, Font, PrimitivePlanePrefab, TesselatedFontTable, TextField, TextFormat, TextFieldType, Scene} from "awayjs-full/lib/scene";
+import {View, MouseManager} from "awayjs-full/lib/view";
+import {SceneGraphPartition, DefaultRenderer} from "awayjs-full/lib/renderer";
 import {Parsers, FontParser} from "awayjs-full/lib/parsers";
 
 class Basic_Text
@@ -126,19 +126,24 @@ class Basic_Text
 		};
         Parsers.enableAllBundled()
 		//setup the view
-		this._view = new View();
+		this._view = new View(new DefaultRenderer(new SceneGraphPartition(new Scene())));
+		this._view.renderer.viewport.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._view.renderer.renderableSorter = null;//new RenderableSort2D();
         this._view.backgroundColor=0xcccccc;
 		//setup the camera
-		this._view.camera.z = -600;
-		this._view.camera.y = 500;
-        this._view.camera.lookAt(new Vector3D());
+		// this._view.camera.z = -600;
+		// this._view.camera.y = 500;
+        // this._view.camera.lookAt(new Vector3D());
         
 
-
+		window.onwheel = (event:WheelEvent) => this.onMouseWheel(event);
+		
 		//setup the render loop
 		window.onresize  = (event:UIEvent) => this.onResize(event);
 
+		window.onwheel
+		window.addEventListener("keydown", (event:KeyboardEvent) => this.onKeyDown(event))
+		
 		this.onResize();
 
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
@@ -154,8 +159,8 @@ class Basic_Text
 	 */
 	private onEnterFrame(dt:number):void
 	{
-        if(this._tf)
-		    this._tf.rotationY += 1;
+        // if(textfield)
+		//     textfield.rotationY += 1;
 
 		this._view.render();
 	}
@@ -175,23 +180,27 @@ class Basic_Text
 
             if(asset.isAsset(Font)){
                 console.log("loaded a font");
-                var mySprite:Sprite=new Sprite();
-                mySprite.partition = new SceneGraphPartition(mySprite, true);
-                this._tf=new TextField();
-                var newFormat:TextFormat=new TextFormat();
-                this._tf.textFormat=newFormat;
-                this._tf.text="";
-                //this._tf.background=true;
-                //this._tf.backgroundColor=0xff0000;
-                this._tf.border=true;
-                this._tf.borderColor=0xff0000;
-                this._tf.textFormat.font=<Font>asset;
-                this._tf.textFormat.color=0xff0000;
-                this._tf.textFormat.size=40;
-                this._tf.text="123456789";
-                this._tf.invalidateElements();
-                mySprite.addChild(this._tf);
-                this._view.scene.addChild(mySprite);
+				var textFormat:TextFormat = new TextFormat();
+				textFormat.font = <Font>asset;
+				textFormat.color = 0xff0000;
+				textFormat.size = 40;
+				
+				var textfield:TextField = new TextField();
+				textfield.textFormat = textFormat;
+                textfield.background = true;
+                textfield.border = true;
+                textfield.borderColor = 0xff0000;
+                textfield.multiline = true;
+				textfield.text="12345\n67890";
+				textfield.selectable = true;
+				textfield.type = TextFieldType.INPUT;
+
+				for (var i:number = 0; i < 300; i++) {
+					var tf:TextField = textfield.clone();
+					tf.x = (Math.random() - 0.5)*1000*window.innerWidth/window.innerHeight;
+					tf.y = (Math.random() - 0.5)*1000;
+					this._view.scene.addChild(tf);
+				}
             }
             /*
 			switch (event.url) {
@@ -200,6 +209,13 @@ class Basic_Text
 					this._planeMaterial.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 			}*/
+		}
+	}
+
+	private onKeyDown(event:KeyboardEvent = null):void
+	{
+		if(event.key=="Tab"){
+			MouseManager.getInstance(this._view.renderer.pickGroup).focusNextTab();
 		}
 	}
 
@@ -212,6 +228,28 @@ class Basic_Text
 		this._view.x = 0;
 		this._view.width = window.innerWidth;
 		this._view.height = window.innerHeight;
+	}
+
+	/**
+	 * Mouse wheel listener for navigation
+	 */
+	private onMouseWheel(event:WheelEvent)
+	{
+		event.preventDefault();
+		if (event.ctrlKey) {
+			this._view.camera.z -= event.deltaY;
+
+
+			if (this._view.camera.z > -100)
+				this._view.camera.z = -100;
+			else if (this._view.camera.z < -2000)
+				this._view.camera.z = -2000;
+		} else {
+			this._view.camera.x += event.deltaX;
+
+			this._view.camera.y += event.deltaY;
+		}
+
 	}
 }
 
