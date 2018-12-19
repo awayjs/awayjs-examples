@@ -69,14 +69,13 @@ class BSWFViewerMinimal_text
 		this._avm1SceneGraphFactory.avm1Context.setStage(this._stage, document);
         AVM1Globals._scenegraphFactory=this._avm1SceneGraphFactory;
         
-        
-		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
+        this._onAssetCompleteDelegate=(event: AssetEvent) => this.onAssetComplete(event);
+		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onLoadComplete(event));
 		AssetLibrary.addEventListener(URLLoaderEvent.LOAD_ERROR, (event: URLLoaderEvent) => this.onLoadError(event));
 		AssetLibrary.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
         
 		AssetLibrary.load(new URLRequest("assets/georgia.ttf"),null, null, new FontParser(true) );
-        //AssetLibrary.load(new URLRequest("assets/SWF/Bacon_Ipsem.swf"), null, null, new SWFParser(this._avm1SceneGraphFactory));
         var myThis=this;
         window.addEventListener("keydown", function(event){
             if(event.key=="Tab"){
@@ -88,15 +87,19 @@ class BSWFViewerMinimal_text
 
 	private _onAssetCompleteDelegate: (event: AssetEvent) => void;
 
-	private onAssetComplete(event: AssetEvent): void {
+	private onAssetComplete2(event: AssetEvent): void {
         var asset: IAsset = event.asset;
 		if (asset.isAsset(MovieClip)) {
 			if (asset.name == "scene") {
 				this._stage.getLayer(0).addChild(<MovieClip>asset);
-				(<AVM1MovieClip> (<MovieClip>asset).adapter).doInitEvents();
+                (<AVM1MovieClip> (<MovieClip>asset).adapter).doInitEvents();
+                (<MovieClip>asset).alpha=0.5;
 				//console.log("loaded root mc for lesson in awayjs", event);
 			}
-		}
+        }
+    }
+	private onAssetComplete(event: AssetEvent): void {
+        var asset: IAsset = event.asset;
         if(asset.isAsset(Font)){
             console.log("loaded a font");
             var mySprite:Sprite=new Sprite();
@@ -116,16 +119,23 @@ class BSWFViewerMinimal_text
             _tf.textFormat.font=<Font>asset;
             _tf.textFormat.color=0xff0000;
             _tf.textFormat.size=40;
-            _tf.text="5678\n12345";
+            _tf.text="12345";
             _tf.invalidateElements();
             mySprite.addChild(_tf);
+            //mySprite.x=250;
             this._stage.getLayer(0).addChild(mySprite);
         }
 	}
 
+    private cnt:number=0;
 
 	private onLoadComplete(event: LoaderEvent): void {
-		AVM1Globals.lessonStartTime=new Date().getTime();
+		AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete2(event));
+        if(this.cnt==0)
+            AssetLibrary.load(new URLRequest("assets/SWF/text_test.swf"), null, null, new SWFParser(this._avm1SceneGraphFactory));
+        this.cnt++;
+		//AVM1Globals.lessonStartTime=new Date().getTime();
 	}
 
 	private onLoadError(event: URLLoaderEvent): void {
