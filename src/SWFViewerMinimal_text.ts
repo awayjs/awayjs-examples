@@ -118,9 +118,9 @@ class BSWFViewerMinimal_text
             _tf.textFormat.font=<Font>asset;
             _tf.textFormat.color=0xff0000;
             _tf.textFormat.size=72;
-            //_tf.textFormat.align=TextFormatAlign.CENTER;
+            _tf.textFormat.align=TextFormatAlign.CENTER;
             _tf.autoSize=TextFieldAutoSize.NONE;
-            _tf.text="AwayJS\ntext-test\nSWF-VS-TTF";
+            _tf.text="AwayJS\ntext-test\nSWF VS TTF";
             mySprite.addChild(_tf);
             //mySprite.x=250;
             this._stage.getLayer(0).addChild(mySprite);
