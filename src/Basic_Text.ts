@@ -37,6 +37,7 @@ import {ElementsType, Graphics, TextureAtlas, GradientFillStyle} from "awayjs-fu
 import {BasicMaterial, MethodMaterial, ImageTexture2D} from "awayjs-full/lib/materials";
 import {Sprite, Font, PrimitivePlanePrefab, TesselatedFontTable, TextField, TextFormat} from "awayjs-full/lib/scene";
 import {View} from "awayjs-full/lib/view";
+import {SceneGraphPartition} from "awayjs-full/lib/renderer";
 import {Parsers, FontParser} from "awayjs-full/lib/parsers";
 
 class Basic_Text
@@ -126,11 +127,13 @@ class Basic_Text
         Parsers.enableAllBundled()
 		//setup the view
 		this._view = new View();
+		this._view.renderer.renderableSorter = null;//new RenderableSort2D();
         this._view.backgroundColor=0xcccccc;
 		//setup the camera
 		this._view.camera.z = -600;
 		this._view.camera.y = 500;
-		this._view.camera.lookAt(new Vector3D());
+        this._view.camera.lookAt(new Vector3D());
+        
 
 
 		//setup the render loop
@@ -151,7 +154,8 @@ class Basic_Text
 	 */
 	private onEnterFrame(dt:number):void
 	{
-		//this._tf.rotationY += 1;
+        if(this._tf)
+		    this._tf.rotationY += 1;
 
 		this._view.render();
 	}
@@ -172,6 +176,7 @@ class Basic_Text
             if(asset.isAsset(Font)){
                 console.log("loaded a font");
                 var mySprite:Sprite=new Sprite();
+                mySprite.partition = new SceneGraphPartition(mySprite, true);
                 this._tf=new TextField();
                 var newFormat:TextFormat=new TextFormat();
                 this._tf.textFormat=newFormat;
