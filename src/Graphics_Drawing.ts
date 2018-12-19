@@ -1,10 +1,13 @@
 /*
 
- AWD3 file loading example in AwayJS
+ Create shape using the Graphics API
 
  Demonstrates:
 
- How to use the Loader object to load an embedded internal awd model.
+ How to use the Graphics API to draw a shape. 
+ How to clone shapes.
+ How to animate the positions of the clones.
+ How to use ColorTranforms on the clones.
 
  Code by Rob Bateman
  rob@infiniteturtles.co.uk
@@ -48,33 +51,18 @@ class Graphics_Drawing
 	private _view: View;
 	private _renderer: DefaultRenderer;
 
-	private _rootTimeLine: MovieClip;
 
 	private _timer: RequestAnimationFrame;
-	private _time: number = 0;
 
 	//navigation
-	private _lastPanAngle: number;
-	private _lastTiltAngle: number;
-	private _lastMouseX: number;
-	private _lastMouseY: number;
-	private _move: boolean;
-	private _isperspective: boolean;
 	private _projection: PerspectiveProjection;
-	private _ortho_projection: OrthographicProjection;
-	private _hoverControl: HoverController;
 	private _camera_perspective: Camera;
-	private _camera_ortho: Camera;
-	private _stage_width: number;
-	private _stage_height: number;
-	private drawingMC: Sprite;
-	private _activePoint: Sprite;
-	private _points: Array<Sprite>;
-	private static _colorMaterials:Object = {};
-	private static _textureMaterials:Object = {};
+	private batmanLogo: Sprite;
 	private _animSprites:Sprite[] = [];
 	private _animSpeeds:number[] = [];
 
+	private static _colorMaterials:Object = {};
+	private static _textureMaterials:Object = {};
 	/**
 	 * Constructor
 	 */
@@ -102,22 +90,20 @@ class Graphics_Drawing
 		//create the view
 		this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
 		
-		this._renderer.renderableSorter = null;//new RenderableSort2D();
+		this._renderer.renderableSorter = null;
 		this._view = new View(this._renderer);
 		this._view.backgroundColor = 0x777777;
-		this._stage_width = 550;
-		this._stage_height = 400;
 
-		this._isperspective=true;
+        // create and setup Camera and Projection
+
 		this._projection = new PerspectiveProjection();
 		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._projection.fieldOfView = 30;
 		this._projection.originX = -1;
 		this._projection.originY = 1;
 		this._camera_perspective = new Camera();
-		this._camera_perspective.projection = this._projection;
-		//this._projection.far = 500000;
-		this._hoverControl = new HoverController(this._camera_perspective, null, 180, 0, 1000);
+        this._camera_perspective.projection = this._projection;
+        
 		this._view.camera = this._camera_perspective;
 	}
 
@@ -131,9 +117,6 @@ class Graphics_Drawing
 			if(color==0){
 				color=0x000001;
 			}
-			//color=0xFF8100;
-			//console.log("get color");
-			//alpha=0.5;
 			var texObj:any=TextureAtlas.getTextureForColor(color, alpha);
 			if(Graphics_Drawing._colorMaterials[texObj.bitmap.id]){
 				texObj.material = Graphics_Drawing._colorMaterials[texObj.bitmap.id];
@@ -151,13 +134,6 @@ class Graphics_Drawing
 		Graphics.get_material_for_gradient = function(gradient:GradientFillStyle):any
 		{
 			var texObj=TextureAtlas.getTextureForGradient(gradient);
-			/*if(alpha==0){
-			 alpha=1;
-			 }*/
-			//alpha=0.5;
-			/*if(color==0xffffff){
-			 color=0xcccccc;
-			 }*/
 			var lookupId:string=texObj.bitmap.id+gradient.type;
 			if(Graphics_Drawing._textureMaterials[lookupId]){
 				texObj.material=Graphics_Drawing._textureMaterials[lookupId];
@@ -178,83 +154,47 @@ class Graphics_Drawing
 	 */
 	private initObjects(): void
 	{
-		// var root_timeline:MovieClip=new MovieClip();
-		// this._view.setPartition(root_timeline, new SceneGraphPartition(root_timeline));
-		// root_timeline.adapter = new AS2MovieClipAdapter(root_timeline, this._view);
 
-		// Graphics is not wired into any Displayobjects yet.
-		// to have it produce geometry, for now we have to pass it a sprite when constructing it
-		this.drawingMC = new Sprite(null);
-
-		this._activePoint=null;
-		// for now i did not find a way to activate this other than doing it in js (not in ts)
-		// so for this example to work, after packaging the example, one have to go into the js file and activate follwing line:
-
-		//this._view.scene.addChild(this.drawingMC );
-
-		this._points=new Array<Sprite>();
-		var thisCircleGraphic:Graphics=new Graphics();
-		thisCircleGraphic.beginFill(0xFF0000, 1);
-		thisCircleGraphic.drawCircle(0,0,30);
-		thisCircleGraphic.endFill();
-
-		var thisCircleGraphicsmall:Graphics = new Graphics();
-		thisCircleGraphicsmall.beginFill(0xFF0000, 1);
-		thisCircleGraphicsmall.drawCircle(0, 0, 10);
-		thisCircleGraphicsmall.endFill();
-
-		var batman_logo:Array<Array<any> >=[];
-		var cnt=0;
-		batman_logo[cnt++]=["l", 50, 50];
-		batman_logo[cnt++]=["l", 290, 50];
-		batman_logo[cnt++]=["c1", 290, 150];
-		batman_logo[cnt++]=["c2", 450, 150];
-		batman_logo[cnt++]=["l", 460, 60];
-		batman_logo[cnt++]=["l", 470, 100];
-		batman_logo[cnt++]=["l", 530, 100];
-		batman_logo[cnt++]=["l", 540, 60];
-		batman_logo[cnt++]=["l", 550, 150];
-		batman_logo[cnt++]=["c1", 710, 150];
-		batman_logo[cnt++]=["c2", 710, 50];
-		batman_logo[cnt++]=["l", 950, 50];
-		batman_logo[cnt++]=["c1", 800, 120];
-		batman_logo[cnt++]=["c2", 825, 250];
-		batman_logo[cnt++]=["c1", 630, 280];
-		batman_logo[cnt++]=["c2", 500, 450];
-		batman_logo[cnt++]=["c1", 370, 280];
-		batman_logo[cnt++]=["c2", 175, 250];
-		batman_logo[cnt++]=["c1", 200, 120];
-		var i = 0;
-		for (i = 0; i < batman_logo.length; i++) {
-			this._points[i] = new Sprite();
-			this._points[i].name=batman_logo[i][0];
-			this._points[i].x = batman_logo[i][1];
-			this._points[i].y = batman_logo[i][2];
-
-		}
-		this.draw_shape();
-		for (i = 0; i <  batman_logo.length; i++) {
-			var thisshape=thisCircleGraphic;
-			if(this._points[i].name=="c1"){
-				thisshape=thisCircleGraphicsmall;
-			}
-			this._points[i].graphics.copyFrom(thisshape);
-			this._points[i].visible=false;
-			this._view.scene.addChild(this._points[i]);
-			this._points[i].addEventListener(MouseEvent.MOUSE_DOWN, function (event) { return this.onPointDown(event); });
-		}
-
-		this._view.scene.addEventListener(MouseEvent.MOUSE_MOVE, (event:MouseEvent) => this.onMouseMove(event));
-		document.onmouseup = (event) => this.onMouseUp(event);
-		this.draw_shape();
+        //  create a new Sprite that will hold the graphics that we are going todraw in next step
+        this.batmanLogo = new Sprite(null);
+        
+        //  set fillstyle and linestyle that should be used for drawing
+		this.batmanLogo.graphics.beginFill(0xFFFFFF, 1);
+        this.batmanLogo.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+        
+        //  issue drawing commands on the Sprite´s graphics. This will draw a batman-logo
+        this.batmanLogo.graphics.moveTo(50, 50);
+        this.batmanLogo.graphics.lineTo(50, 50);
+		this.batmanLogo.graphics.lineTo(50, 50);
+		this.batmanLogo.graphics.lineTo(290, 50);
+		this.batmanLogo.graphics.curveTo( 290, 150, 450, 150);
+		this.batmanLogo.graphics.lineTo(460, 60);
+		this.batmanLogo.graphics.lineTo(470, 100);
+		this.batmanLogo.graphics.lineTo(530, 100);
+		this.batmanLogo.graphics.lineTo(540, 60);
+		this.batmanLogo.graphics.lineTo(550, 150);
+		this.batmanLogo.graphics.curveTo( 710, 150, 710, 50);
+		this.batmanLogo.graphics.lineTo(950, 50);
+		this.batmanLogo.graphics.curveTo( 800, 120, 825, 250);
+		this.batmanLogo.graphics.curveTo( 630, 280, 500, 450);
+		this.batmanLogo.graphics.curveTo( 370, 280, 175, 250);
+        this.batmanLogo.graphics.endFill();
+        
+        // move the registration-point of the Sprite to be at the center of the shape that we have been drawing into it
+        var boxBounds:Box = PickGroup.getInstance(this._renderer.viewport).getAbstraction(this.batmanLogo).getBoxBounds(null, false, true);
+        this.batmanLogo.registrationPoint = new Vector3D(boxBounds.width/2, boxBounds.height/2);
+        
+        // clone the Sprite on a grid of 20 x 20
 
 		var numSpritesV:number = 20;
 		var numSpritesH:number = 20;
 
 		for (var i:number = 0; i < numSpritesV; i++) {
 			for (var j:number = 0; j < numSpritesH; j++) {
-				var sprite:Sprite = this.drawingMC.clone();
-				sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+
+				var sprite:Sprite = this.batmanLogo.clone();
+                sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+                
 				sprite.transform.moveTo(i*50, j*25, 0);
 				sprite.transform.scaleTo(0.1, 0.1, 0.1);
 				sprite.transform.colorTransform = new ColorTransform(i/numSpritesV, 1 - i/numSpritesV, 1-j/numSpritesV, 1);
@@ -266,69 +206,12 @@ class Graphics_Drawing
 		}
 	}
 
-	private onPointDown(event:MouseEvent): void{
-		this._activePoint = (<Sprite> event.target);
-		this._activePoint.x=event.scenePosition.x;
-		this._activePoint.y=event.scenePosition.y;
-	}
-	private onMouseUp(event): void{
-		this._activePoint = null;
-		//this.draw_shape();
-	}
-	private onMouseMove(event:MouseEvent): void{
-		if (this._activePoint){
-			this._activePoint.x=event.scenePosition.x;
-			this._activePoint.y=event.scenePosition.y;
-		}
-	}
-
-	private draw_shape(): void{
-
-		this.drawingMC.graphics.clear()
-
-		this.drawingMC.graphics.beginFill(0xFFFFFF, 1);
-		this.drawingMC.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
-		this.drawingMC.graphics.moveTo(this._points[0].x, this._points[0].y);
-		var i = 1;
-		var tmpspite:Sprite=null;
-		for (i = 1; i < this._points.length; i++) {
-			if(this._points[i].name=="c1"){
-				tmpspite=this._points[i];
-			}
-			else if (this._points[i].name=="c2"){
-				this.drawingMC.graphics.curveTo(tmpspite.x, tmpspite.y, this._points[i].x, this._points[i].y);
-				tmpspite=null;
-			}
-			else if (this._points[i].name=="l") {
-				this.drawingMC.graphics.lineTo(this._points[i].x, this._points[i].y);
-				tmpspite=null;
-			}
-		}
-		if(tmpspite){
-			this.drawingMC.graphics.curveTo(tmpspite.x, tmpspite.y, this._points[0].x, this._points[0].y);
-		}
-		else{
-			this.drawingMC.graphics.lineTo(this._points[0].x, this._points[0].y);
-		}
-		this.drawingMC.graphics.endFill();
-		var boxBounds:Box = PickGroup.getInstance(this._renderer.viewport).getAbstraction(this.drawingMC).getBoxBounds(null, false, true);
-
-		this.drawingMC.registrationPoint = new Vector3D(boxBounds.width/2, boxBounds.height/2);
-	
-
-		// var new_ct:ColorTransform = this.drawingMC.transform.colorTransform = new ColorTransform();
-		// new_ct.redMultiplier = 1;
-		// new_ct.greenMultiplier = 0.5;
-		// new_ct.blueMultiplier = 0;
-		// new_ct.alphaMultiplier = 1;
-	}
 	/**
 	 * Initialise the listeners
 	 */
 	private initListeners(): void
 	{
 		window.onresize  = (event) => this.onResize(event);
-
 
 		this.onResize();
 
@@ -341,10 +224,6 @@ class Graphics_Drawing
 	 * Render loop
 	 */
 	private onEnterFrame(dt: number): void {
-		this._time += dt;
-
-		//update camera controler
-		// this._cameraController.update();
 
 		//animate
 		var len:number = this._animSprites.length;
