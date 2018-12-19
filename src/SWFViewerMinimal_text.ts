@@ -36,7 +36,7 @@
 
 import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEvent, URLRequest} from "awayjs-full/lib/core";
 
-import {MovieClip, Sprite, Font, TextField, TextFormat} from "awayjs-full/lib/scene";
+import {MovieClip, Sprite, Font, TextField, TextFormat, TextFormatAlign, TextFieldAutoSize} from "awayjs-full/lib/scene";
 
 import {SWFParser, AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayjs/swf-viewer"
 
@@ -106,9 +106,8 @@ class BSWFViewerMinimal_text
             var _tf=new TextField();
             var newFormat:TextFormat=new TextFormat();
             _tf.textFormat=newFormat;
-            _tf.text="";
-            //this._tf.background=true;
-            //this._tf.backgroundColor=0xff0000;
+            //_tf.background=true;
+            //_tf.backgroundColor=0xff0000;
             _tf.border=true;
             _tf.x=25;
             _tf.y=25;
@@ -118,9 +117,10 @@ class BSWFViewerMinimal_text
             _tf.borderColor=0xff0000;
             _tf.textFormat.font=<Font>asset;
             _tf.textFormat.color=0xff0000;
-            _tf.textFormat.size=40;
-            _tf.text="12345";
-            _tf.invalidateElements();
+            _tf.textFormat.size=72;
+            //_tf.textFormat.align=TextFormatAlign.CENTER;
+            _tf.autoSize=TextFieldAutoSize.NONE;
+            _tf.text="AwayJS\ntext-test\nSWF-VS-TTF";
             mySprite.addChild(_tf);
             //mySprite.x=250;
             this._stage.getLayer(0).addChild(mySprite);
