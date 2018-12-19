@@ -1,0 +1,143 @@
+/*
+
+ AWD3 file loading example in
+
+ Demonstrates:
+
+ How to use the Loader object to load an embedded internal awd model.
+
+ Code by Rob Bateman
+ rob@infiniteturtles.co.uk
+ http://www.infiniteturtles.co.uk
+
+ This code is distributed under the MIT License
+
+ Copyright (c) The Away Foundation http://www.theawayfoundation.org
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the �Software�), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED �AS IS�, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+
+ */
+
+import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEvent, URLRequest} from "awayjs-full/lib/core";
+
+import {MovieClip, Sprite, Font, TextField, TextFormat} from "awayjs-full/lib/scene";
+
+import {SWFParser, AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayjs/swf-viewer"
+
+import { MouseManager} from "awayjs-full/lib/view";
+import { FontParser} from "awayjs-full/lib/parsers";
+
+class BSWFViewerMinimal_text
+{
+
+	private _stage: AVMAwayStage;
+	private _avm1SceneGraphFactory: AVM1SceneGraphFactory;
+
+
+	/**
+	 * Constructor
+	 */
+	constructor()
+	{
+		
+		this._stage = new AVMAwayStage(window.innerWidth / 2, window.innerHeight / 2, 0xcccccc, 24, null);
+		MouseManager.getInstance(this._stage.view.renderer.pickGroup)._stage=this._stage;
+        //this._getTimeCallback=null;
+        this._stage.updateSize((window.innerWidth-550)/2, (window.innerHeight-450)/2, 550, 450);
+
+		// create the AVM1Context and the AVM1Scenegraphfactory
+        var loaderInfo=new LoaderInfo();
+        loaderInfo.swfVersion=6;
+		this._avm1SceneGraphFactory = new AVM1SceneGraphFactory(new AVM1ContextImpl(loaderInfo));
+		this._avm1SceneGraphFactory.avm1Context.sec = new SecurityDomain();
+		this._avm1SceneGraphFactory.avm1Context.setStage(this._stage, document);
+        AVM1Globals._scenegraphFactory=this._avm1SceneGraphFactory;
+        
+        
+		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onLoadComplete(event));
+		AssetLibrary.addEventListener(URLLoaderEvent.LOAD_ERROR, (event: URLLoaderEvent) => this.onLoadError(event));
+		AssetLibrary.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
+        
+		AssetLibrary.load(new URLRequest("assets/georgia.ttf"),null, null, new FontParser(true) );
+        //AssetLibrary.load(new URLRequest("assets/SWF/Bacon_Ipsem.swf"), null, null, new SWFParser(this._avm1SceneGraphFactory));
+        var myThis=this;
+        window.addEventListener("keydown", function(event){
+            if(event.key=="Tab"){
+                MouseManager.getInstance(myThis._stage.view.renderer.pickGroup).focusNextTab();
+            }
+        })
+	}
+
+
+	private _onAssetCompleteDelegate: (event: AssetEvent) => void;
+
+	private onAssetComplete(event: AssetEvent): void {
+        var asset: IAsset = event.asset;
+		if (asset.isAsset(MovieClip)) {
+			if (asset.name == "scene") {
+				this._stage.getLayer(0).addChild(<MovieClip>asset);
+				(<AVM1MovieClip> (<MovieClip>asset).adapter).doInitEvents();
+				//console.log("loaded root mc for lesson in awayjs", event);
+			}
+		}
+        if(asset.isAsset(Font)){
+            console.log("loaded a font");
+            var mySprite:Sprite=new Sprite();
+            var _tf=new TextField();
+            var newFormat:TextFormat=new TextFormat();
+            _tf.textFormat=newFormat;
+            _tf.text="";
+            //this._tf.background=true;
+            //this._tf.backgroundColor=0xff0000;
+            _tf.border=true;
+            _tf.x=25;
+            _tf.y=25;
+            _tf.width=440;
+            _tf.height=355;
+
+            _tf.borderColor=0xff0000;
+            _tf.textFormat.font=<Font>asset;
+            _tf.textFormat.color=0xff0000;
+            _tf.textFormat.size=40;
+            _tf.text="5678\n12345";
+            _tf.invalidateElements();
+            mySprite.addChild(_tf);
+            this._stage.getLayer(0).addChild(mySprite);
+        }
+	}
+
+
+	private onLoadComplete(event: LoaderEvent): void {
+		AVM1Globals.lessonStartTime=new Date().getTime();
+	}
+
+	private onLoadError(event: URLLoaderEvent): void {
+        console.log("Loading error", event);
+	}
+	private onParseError(event: ParserEvent): void {
+        console.log("Parsing error", event);
+	}
+
+}
+
+window.onload = function () {
+	(<HTMLElement>document.getElementsByTagName("BODY")[0]).style.overflow="hidden";
+	new BSWFViewerMinimal_text();
+};
