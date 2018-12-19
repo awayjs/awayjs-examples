@@ -1,6 +1,6 @@
 {
   "name": "awayjs-examples",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "A collection of simple code examples implementing the awayjs engine",
   "scripts": {
     "rimraf": "rimraf",
