@@ -130,11 +130,11 @@ class Basic_Fire
 	private initLights():void
 	{
 		this.directionalLight = new DirectionalLight(new Vector3D(0, -1, 0));
-		this.directionalLight.color = 0xeedddd;
+		this.directionalLight.color = 0x00dddd;
 		this.directionalLight.diffuse = .5;
 		this.directionalLight.ambient = .5;
 		this.directionalLight.specular = 0;
-		this.directionalLight.ambientColor = 0x808090;
+		this.directionalLight.ambientColor = 0x008090;
 
 		this.lightPicker = new StaticLightPicker([this.directionalLight]);
 	}
@@ -166,8 +166,8 @@ class Basic_Fire
 		//add some animations which can control the particles:
 		//the global animations can be set directly, because they influence all the particles with the same factor
 		this.fireAnimationSet.addAnimation(new ParticleBillboardNode());
-		this.fireAnimationSet.addAnimation(new ParticleScaleNode(ParticlePropertiesMode.GLOBAL, false, false, 2.5, 0.5));
-		this.fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 80, 0)));
+		//this.fireAnimationSet.addAnimation(new ParticleScaleNode(ParticlePropertiesMode.GLOBAL, false, false, 5.5, 0.5));
+		this.fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 10, 0)));
 		this.fireAnimationSet.addAnimation(new ParticleColorNode(ParticlePropertiesMode.GLOBAL, true, true, false, false, new ColorTransform(0, 0, 0, 1, 0xFF, 0x33, 0x01), new ColorTransform(0, 0, 0, 1, 0x99)));
 
 		//no need to set the local animations here, because they influence all the particle with different factors.
@@ -177,11 +177,11 @@ class Basic_Fire
 		this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
 		//create the original particle geometry
-		var particle:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
+		var particle:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 2, 2, 1, 1, false)).getNewObject();
 
 		//combine them into a list
 		var graphicsSet:Array<Graphics> = new Array<Graphics>();
-		for (var i:number /*int*/ = 0; i < 500; i++)
+		for (var i:number /*int*/ = 0; i < 50000; i++)
 			graphicsSet.push(particle.graphics);
 
 		this.particleSprite = new Sprite(this.particleMaterial);
@@ -218,7 +218,7 @@ class Basic_Fire
 		}
 
 		//setup timer for triggering each particle aniamtor
-		this.fireTimer = new Timer(1000, this.fireObjects.length);
+		this.fireTimer = new Timer(5000, this.fireObjects.length);
 		this.fireTimer.addEventListener(TimerEvent.TIMER, (event:TimerEvent) => this.onTimer(event));
 		this.fireTimer.start();
 	}
@@ -247,7 +247,7 @@ class Basic_Fire
 		AssetLibrary.load(new URLRequest("assets/floor_specular.jpg"));
 
 		//particle texture
-		AssetLibrary.load(new URLRequest("assets/blue.png"));
+		AssetLibrary.load(new URLRequest("assets/white.png"));
 	}
 
 	/**
@@ -255,12 +255,12 @@ class Basic_Fire
 	 */
 	private initParticleFunc(prop:ParticleProperties):void
 	{
-		prop.startTime = Math.random()*5;
+		prop.startTime = Math.random()*1;
 		prop.duration = Math.random() * 4 + 0.1;
 
 		var degree1:number = Math.random() * Math.PI * 2;
 		var degree2:number = Math.random() * Math.PI * 2;
-		var r:number = 15;
+		var r:number = 55;
 		prop[ParticleVelocityNode.VELOCITY_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
 	}
 
@@ -295,7 +295,7 @@ class Basic_Fire
 
 		//create the lightsource
 		var light:PointLight = new PointLight();
-		light.color = 0xFF3301;
+		light.color = 0xccccff;
 		light.diffuse = 0;
 		light.specular = 0;
 		light.transform.moveTo(fireObject.sprite.x, fireObject.sprite.y, fireObject.sprite.z);
@@ -318,7 +318,7 @@ class Basic_Fire
 		var fireVO:FireVO;
 		for (var i:number /*uint*/ = 0; i < this.fireObjects.length; i++) {
 			fireVO = this.fireObjects[i];
-
+            //fireVO.sprite.x+=5;
 			//update flame light
 			var light : PointLight = fireVO.light;
 

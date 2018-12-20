@@ -42,7 +42,7 @@ import { View, MouseManager } from "awayjs-full/lib/view";
 import { AS2MovieClipAdapter } from "awayjs-full/lib/player";
 import { MethodMaterial } from "awayjs-full/lib/materials";
 
-class Graphics_Drawing_Interactive {
+class Graphics_Drawing_Tracer {
     //engine variables
     private _view: View;
     private _renderer: DefaultRenderer;
@@ -56,9 +56,7 @@ class Graphics_Drawing_Interactive {
     private _camera_perspective: Camera;
 
     private _shape: Sprite;
-    private _circleGraphic: Sprite;
-    private _drawing_path: any[];
-    private _drawing_points: any[];
+    private _drawing_path: any[][];
 
     
     private static _colorMaterials: Object = {};
@@ -93,10 +91,13 @@ class Graphics_Drawing_Interactive {
 
         this._renderer.renderableSorter = null;//new RenderableSort2D();
         this._view = new View(this._renderer);
+
+        //console.log("this._view.width", this._renderer.width);
+
         this._view.backgroundColor = 0x777777;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-        this._projection.fieldOfView = 30;
+		this._projection.fieldOfView = Math.atan(window.innerHeight/1000/2)*360/Math.PI;
         this._projection.originX = -1;
         this._projection.originY = 1;
         this._camera_perspective = new Camera();
@@ -116,8 +117,8 @@ class Graphics_Drawing_Interactive {
             //console.log("get color");
             //alpha=0.5;
             var texObj: any = TextureAtlas.getTextureForColor(color, alpha);
-            if (Graphics_Drawing_Interactive._colorMaterials[texObj.bitmap.id]) {
-                texObj.material = Graphics_Drawing_Interactive._colorMaterials[texObj.bitmap.id];
+            if (Graphics_Drawing_Tracer._colorMaterials[texObj.bitmap.id]) {
+                texObj.material = Graphics_Drawing_Tracer._colorMaterials[texObj.bitmap.id];
                 return texObj;
             }
 
@@ -125,7 +126,7 @@ class Graphics_Drawing_Interactive {
             newmat.alphaBlending = true;
             newmat.useColorTransform = true;
             newmat.bothSides = true;
-            Graphics_Drawing_Interactive._colorMaterials[texObj.bitmap.id] = newmat;
+            Graphics_Drawing_Tracer._colorMaterials[texObj.bitmap.id] = newmat;
             texObj.material = newmat;
             return texObj;
         };
@@ -139,108 +140,110 @@ class Graphics_Drawing_Interactive {
 			 color=0xcccccc;
 			 }*/
             var lookupId: string = texObj.bitmap.id + gradient.type;
-            if (Graphics_Drawing_Interactive._textureMaterials[lookupId]) {
-                texObj.material = Graphics_Drawing_Interactive._textureMaterials[lookupId];
+            if (Graphics_Drawing_Tracer._textureMaterials[lookupId]) {
+                texObj.material = Graphics_Drawing_Tracer._textureMaterials[lookupId];
                 return texObj;
             }
             var newmat: MethodMaterial = new MethodMaterial(texObj.bitmap);
             newmat.useColorTransform = true;
             newmat.alphaBlending = true;
             newmat.bothSides = true;
-            Graphics_Drawing_Interactive._textureMaterials[lookupId] = newmat;
+            Graphics_Drawing_Tracer._textureMaterials[lookupId] = newmat;
             texObj.material = newmat;
             return texObj;
         };
     }
 
+    private _movingRect:Sprite;
 	/**
 	 * Initialise the scene objects
 	 */
     private initObjects(): void {
 
-        this._drawing_path = [];
-        this._drawing_points = [];
+        this._drawing_path = [[],[],[],[]];
 
         this._shape = new Sprite(null);
 
-        var bgSprite = new Sprite(null);
-        bgSprite.graphics.beginFill(0xdddddd, 1);
-        bgSprite.graphics.drawRect(0, 0, window.innerWidth, window.innerHeight);
-        bgSprite.graphics.endFill();
+        this._movingRect = new Sprite(null);
+        this._movingRect.x=window.innerWidth/2;
+        this._movingRect.y=window.innerHeight/2;
 
+        var circle1 = new Sprite(null);
+        circle1.graphics.beginFill(0xdddddd, 1);
+        circle1.graphics.drawCircle(0, 0, 5);
+        circle1.graphics.endFill();
+        circle1.x=-50;
+        circle1.y=-50;
 
-        this._circleGraphic = new Sprite(null);
-        this._circleGraphic.graphics.beginFill(0xFF0000, 1);
-        this._circleGraphic.graphics.drawCircle(0, 0, 30);
-        this._circleGraphic.graphics.endFill();
+        var circle2 = new Sprite(null);
+        circle2.graphics.beginFill(0xdddddd, 1);
+        circle2.graphics.drawCircle(0, 0, 5);
+        circle2.graphics.endFill();
+        circle2.x=50;
+        circle2.y=-50;
 
+        var circle3 = new Sprite(null);
+        circle3.graphics.beginFill(0xdddddd, 1);
+        circle3.graphics.drawCircle(0, 0, 5);
+        circle3.graphics.endFill();
+        circle3.x=-50;
+        circle3.y=50;
 
-        this._view.scene.addChild(bgSprite);
+        var circle4 = new Sprite(null);
+        circle4.graphics.beginFill(0xdddddd, 1);
+        circle4.graphics.drawCircle(0, 0, 5);
+        circle4.graphics.endFill();
+        circle4.x=50;
+        circle4.y=50;
+
+        this._movingRect.addChild(circle1);
+        this._movingRect.addChild(circle2);
+        this._movingRect.addChild(circle3);
+        this._movingRect.addChild(circle4);
+
         this._view.scene.addChild(this._shape);
-        this._view.scene.addChild(this._circleGraphic);
+        this._view.scene.addChild(this._movingRect);
 
     }
 
-    private onMouseDown(event: MouseEvent): void {
-        this._circleGraphic.x = event.scenePosition.x;
-        this._circleGraphic.y = event.scenePosition.y;
-        this._circleGraphic.alpha = 1;
-        this._circleGraphic.scaleX = this._circleGraphic.scaleY = 1;
-
-        this._drawing_path[this._drawing_path.length] = {
-            cmd: "l",
-            x: event.scenePosition.x,
-            y: event.scenePosition.y
-        }
-        if (this._drawing_path.length == 2)
-            return;
-        this.draw_shape();
-        this._isMouseDown = true;
-    }
-    private onMouseUp(event: MouseEvent): void {
-        this.updateNewPointForMousePosition(event);
-        this._isMouseDown = false;
-    }
-
-    private onMouseMove(event: MouseEvent): void {
-        this.updateNewPointForMousePosition(event);
-    }
-
-    private updateNewPointForMousePosition(event: MouseEvent) {
-        if (this._isMouseDown) {
-            var deltaX: number = event.scenePosition.x - this._drawing_path[this._drawing_path.length - 1].x;
-            var deltaY: number = event.scenePosition.y - this._drawing_path[this._drawing_path.length - 1].y;
-            var distance: number = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance > 20) {
-                this._drawing_path[this._drawing_path.length - 1].cmd = "c";
-                this._drawing_path[this._drawing_path.length - 1].cx = this._drawing_path[this._drawing_path.length - 1].x - deltaX;
-                this._drawing_path[this._drawing_path.length - 1].cy = this._drawing_path[this._drawing_path.length - 1].y - deltaY;
-            }
-            else {
-                this._drawing_path[this._drawing_path.length - 1].cmd = "l";
-            }
-            this.draw_shape();
-        }
-    }
 
     private draw_shape(): void {
 
-        
-        this._shape.graphics.clear()
-
-        this._shape.graphics.beginFill(0xFFFFFF, 1);
-        this._shape.graphics.lineStyle(5, 0xFF0000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+        var i = 1;
+        var p = 1;
+        for (i = 0; i < 4; i++) {
+            var globalPos:Vector3D=this._movingRect.getChildAt(i).scenePosition;
+            this._drawing_path[i].push({x:globalPos.x, y:globalPos.y});
+            if(this._drawing_path[i].length>500){
+                this._drawing_path[i].shift();
+            }
+        }
+        this._shape.graphics.clear();
+        this._shape.graphics.lineStyle(2, 0x000000, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
 
         if (this._drawing_path.length == 0)
             return;
-        this._shape.graphics.moveTo(this._drawing_path[0].x, this._drawing_path[0].y);
-        var i = 1;
-        for (i = 1; i < this._drawing_path.length; i++) { 
-            if (this._drawing_path[i].cmd == "l") {
-                this._shape.graphics.lineTo(this._drawing_path[i].x, this._drawing_path[i].y);
-            }
-            else if (this._drawing_path[i].cmd == "c") {
-                this._shape.graphics.curveTo(this._drawing_path[i].cx, this._drawing_path[i].cy, this._drawing_path[i].x, this._drawing_path[i].y);
+        var color:number=0x000000;
+        for (p = 0; p < 4; p++) {
+            if(this._drawing_path[p].length==0)
+                continue;
+            color=0x000000;
+            this._shape.graphics.lineStyle(1, color, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+            this._shape.graphics.moveTo(this._drawing_path[p][0].x, this._drawing_path[p][0].y);
+            for (i = 1; i < this._drawing_path[p].length; i++) {
+                if(i>this._drawing_path[p].length*0.9){
+                    if(color!=0xFFFFFF){
+                        color=0xFFFFFF;
+                        this._shape.graphics.lineStyle(5, color, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+                    }
+                }
+                else if(i>this._drawing_path[p].length*0.5){
+                    if(color!=0xcccccc){
+                        color=0xcccccc;
+                        this._shape.graphics.lineStyle(3, color, 1, false, null, CapsStyle.ROUND, JointStyle.MITER, 1.8);
+                    }
+                }
+                this._shape.graphics.lineTo(this._drawing_path[p][i].x, this._drawing_path[p][i].y);                
             }
         }
         this._shape.graphics.endFill();
@@ -251,11 +254,6 @@ class Graphics_Drawing_Interactive {
 	 */
     private initListeners(): void {
 
-        
-        this._view.scene.addEventListener(MouseEvent.MOUSE_DOWN, (event: MouseEvent) => this.onMouseDown(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_MOVE, (event: MouseEvent) => this.onMouseMove(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP, (event: MouseEvent) => this.onMouseUp(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP_OUTSIDE, (event: MouseEvent) => this.onMouseUp(event));
 
         window.onresize = (event) => this.onResize(event);
 
@@ -267,18 +265,33 @@ class Graphics_Drawing_Interactive {
     }
 
 
+    private _dirVec:Vector3D=new Vector3D(0, 0, 0);
+    private _rotation:number=3;
+    private _scale:number=0;
 	/**
 	 * Render loop
 	 */
     private onEnterFrame(dt: number): void {
+        this._rotation+=0.1-Math.random()*0.2;
+        this._scale=0.005-Math.random()*0.01;
+        this._dirVec.x+=0.1-Math.random()*0.2;
+        this._dirVec.y+=0.1-Math.random()*0.2;
 
-        if (this._circleGraphic.alpha > 0) {
-            this._circleGraphic.alpha -= 0.05;
+        if(this._movingRect.x<=(-71*this._movingRect.scaleX) || this._movingRect.x>=(window.innerWidth+(71*this._movingRect.scaleX))){
+            this._dirVec.x*=-1;
         }
-        if (this._circleGraphic.scaleX > 0.1) {
-            this._circleGraphic.scaleX-=0.05;
-            this._circleGraphic.scaleY-=0.05;
+        if(this._movingRect.y<=(-71*this._movingRect.scaleX) || this._movingRect.y>=(window.innerHeight+(71*this._movingRect.scaleX))){
+            this._dirVec.y*=-1;
         }
+        this._movingRect.x+=this._dirVec.x;
+        this._movingRect.y+=this._dirVec.y;
+        this._movingRect.rotationZ+=this._rotation;
+        this._movingRect.scaleX+=this._scale;
+        this._movingRect.scaleY+=this._scale;
+        this.draw_shape();
+
+
+
         //update view
         this._view.render();
     }
@@ -289,10 +302,11 @@ class Graphics_Drawing_Interactive {
         this._view.x = 0;
         this._view.width = window.innerWidth;
         this._view.height = window.innerHeight;
+		this._projection.fieldOfView = Math.atan(window.innerHeight/1000/2)*360/Math.PI;
     }
 
 }
 
 window.onload = function () {
-    new Graphics_Drawing_Interactive();
+    new Graphics_Drawing_Tracer();
 };
