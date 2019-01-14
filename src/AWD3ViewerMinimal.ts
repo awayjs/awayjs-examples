@@ -42,7 +42,6 @@ import {AWDParser} from "@awayjs/parsers";
 import {DefaultRenderer} from  "@awayjs/renderer";
 import {View} from "@awayjs/view";
 import {AS2SceneGraphFactory} from "@awayjs/player";
-import { IShape } from "../../@awayjs/graphics/dist/lib/renderables/IShape";
 
 class AWD3ViewerMinimal
 {
@@ -58,7 +57,7 @@ class AWD3ViewerMinimal
 	private _stage_width: number;
 	private _stage_height: number;
 	private _material:MethodMaterial;
-	private _shapes:Array<IShape> = new Array<IShape>();
+	private _shapes:Array<Shape> = new Array<Shape>();
 
 	private counter: number;
 
@@ -172,7 +171,7 @@ class AWD3ViewerMinimal
 		if(event.asset.isAsset(Graphics)){
 			var one_graphics:Graphics = <Graphics> event.asset;
 			for (var i:number = 0; i < one_graphics.count; i++) {
-				this._shapes.push(one_graphics.getShapeAt(i));
+				this._shapes.push(<Shape> one_graphics.getShapeAt(i));
 			}
 		}else if(event.asset.isAsset(TextField)){
 			var one_textfield:TextField=<TextField> event.asset;
