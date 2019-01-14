@@ -36,19 +36,19 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, LoaderContainer, PrimitivePlanePrefab, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, ShadowSoftMethod, ShadowHardMethod, ImageTexture2D, DirectionalLight, StaticLightPicker, ShadowFilteredMethod} from "awayjs-full/lib/materials";
-import {Max3DSParser} from "awayjs-full/lib/parsers";
+import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D, ImageSampler} from "@awayjs/stage";
+import {ElementsType} from "@awayjs/graphics";
+import {HoverController, Sprite, LoaderContainer, PrimitivePlanePrefab, PrimitiveSpherePrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, ShadowSoftMethod, ShadowHardMethod, ImageTexture2D, DirectionalLight, StaticLightPicker, ShadowFilteredMethod} from "@awayjs/materials";
+import {Max3DSParser} from "@awayjs/parsers";
 
-import {View} from "awayjs-full/lib/view";
+import {View} from "@awayjs/view";
 
 class Basic_Load3DS
 {
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 	private _cameraController:HoverController;
 
 	//material objects
@@ -98,13 +98,13 @@ class Basic_Load3DS
 	 */
 	private initEngine():void
 	{
-		this._view = new View();
+		this._scene = new Scene();
 
 		//setup the camera for optimal shadow rendering
-		this._view.camera.projection.far = 2100;
+		this._scene.camera.projection.far = 2100;
 
 		//setup controller to be used on the camera
-		this._cameraController = new HoverController(this._view.camera, null, 45, 20, 1000, 10);
+		this._cameraController = new HoverController(this._scene.camera, null, 45, 20, 1000, 10);
 	}
 
 	/**
@@ -141,12 +141,12 @@ class Basic_Load3DS
 		this._loader = new LoaderContainer();
 		this._loader.transform.scaleTo(300, 300, 300);
 		this._loader.z = -200;
-		this._view.scene.addChild(this._loader);
+		this._scene.root.addChild(this._loader);
 
 		this._plane = new PrimitivePlanePrefab(this._groundMaterial, ElementsType.TRIANGLE, 1000, 1000);
 		this._ground = <Sprite> this._plane.getNewObject();
 		this._ground.castsShadows = false;
-		this._view.scene.addChild(this._ground);
+		this._scene.root.addChild(this._ground);
 	}
 
 	/**
@@ -187,7 +187,7 @@ class Basic_Load3DS
 		this._direction.z = -Math.cos(this._time/4000);
 		this._light.direction = this._direction;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -272,10 +272,10 @@ class Basic_Load3DS
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

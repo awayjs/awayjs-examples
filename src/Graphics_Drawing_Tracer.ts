@@ -34,20 +34,19 @@
 
  */
 
-import { RequestAnimationFrame, ColorUtils,  ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem, Box, Vector3D } from "awayjs-full/lib/core";
-import { DefaultRenderer, SceneGraphPartition, PickEntity, PickGroup } from "awayjs-full/lib/renderer";
-import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "awayjs-full/lib/graphics";
-import { MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene, OrientationMode, AlignmentMode } from "awayjs-full/lib/scene";
-import { View, MouseManager } from "awayjs-full/lib/view";
-import { AS2MovieClipAdapter } from "awayjs-full/lib/player";
-import { MethodMaterial } from "awayjs-full/lib/materials";
+import { RequestAnimationFrame, PerspectiveProjection, CoordinateSystem, Vector3D } from "@awayjs/core";
+import { DefaultRenderer} from "@awayjs/renderer";
+import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "@awayjs/graphics";
+import { Sprite, Camera, Scene, MouseManager, SceneGraphPartition, DisplayObjectContainer } from "@awayjs/scene";
+import { View, PickGroup } from "@awayjs/view";
+import { MethodMaterial } from "@awayjs/materials";
 
 class Graphics_Drawing_Tracer {
     //engine variables
+    private _scene: Scene;
     private _view: View;
+    private _root: DisplayObjectContainer;
     private _renderer: DefaultRenderer;
-
-    private _isMouseDown: boolean = false;
 
     private _timer: RequestAnimationFrame;
 
@@ -84,17 +83,19 @@ class Graphics_Drawing_Tracer {
 	 */
     private initEngine(): void {
         //create the view
-        this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
+        this._root = new DisplayObjectContainer();
+        this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
+        this._view = this._renderer.view;
+        this._view.backgroundColor = 0x777777;
 
-        MouseManager.getInstance(PickGroup.getInstance(this._renderer.viewport)).eventBubbling = true;
+        MouseManager.getInstance(PickGroup.getInstance(this._renderer.view)).eventBubbling = true;
 
 
         this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view = new View(this._renderer);
+        this._scene = new Scene(this._renderer);
 
-        //console.log("this._view.width", this._renderer.width);
+        //console.log("this._scene.width", this._renderer.width);
 
-        this._view.backgroundColor = 0x777777;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._projection.fieldOfView = Math.atan(window.innerHeight/1000/2)*360/Math.PI;
@@ -102,7 +103,7 @@ class Graphics_Drawing_Tracer {
         this._projection.originY = 1;
         this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
-        this._view.camera = this._camera_perspective;
+        this._scene.camera = this._camera_perspective;
     }
 
     /**
@@ -201,8 +202,8 @@ class Graphics_Drawing_Tracer {
         this._movingRect.addChild(circle3);
         this._movingRect.addChild(circle4);
 
-        this._view.scene.addChild(this._shape);
-        this._view.scene.addChild(this._movingRect);
+        this._root.addChild(this._shape);
+        this._root.addChild(this._movingRect);
 
     }
 
@@ -293,7 +294,7 @@ class Graphics_Drawing_Tracer {
 
 
         //update view
-        this._view.render();
+        this._scene.render();
     }
 
 

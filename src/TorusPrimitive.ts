@@ -1,13 +1,13 @@
-import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
-import {Sprite, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {View} from "awayjs-full/lib/view";
+import {URLLoaderEvent, URLLoader, URLRequest, URLLoaderDataFormat, ParserUtils, RequestAnimationFrame} from "@awayjs/core";
+import {ElementsType} from "@awayjs/graphics";
+import {ImageSampler, ImageUtils} from "@awayjs/stage";
+import {Sprite, PrimitiveTorusPrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
+import {View} from "@awayjs/view";
 
 class TorusPrimitive
 {
-	private _view:View;
+	private _scene:Scene;
 	private _torus:PrimitiveTorusPrefab;
 	private _sprite:Sprite;
 	private _raf:RequestAnimationFrame;
@@ -34,8 +34,8 @@ class TorusPrimitive
 	 */
 	private initView()
 	{
-		this._view = new View();// Create the Away3D View
-		this._view.backgroundColor = 0x000000;// Change the background color to black
+		this._scene = new Scene();// Create the Away3D View
+		this._scene.view.backgroundColor = 0x000000;// Change the background color to black
 	}
 
 	/**
@@ -90,7 +90,7 @@ class TorusPrimitive
 
 		this._sprite = <Sprite> this._torus.getNewObject();
 
-		this._view.scene.addChild(this._sprite);
+		this._scene.root.addChild(this._sprite);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class TorusPrimitive
 		if (this._sprite)
 			this._sprite.rotationY += 1;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -119,10 +119,10 @@ class TorusPrimitive
 	 */
 	public onResize(event:UIEvent = null)
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

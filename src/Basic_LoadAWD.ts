@@ -36,16 +36,16 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {Sprite} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "@awayjs/core";
+import {Sprite, Scene} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
+import {AWDParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class Basic_LoadAWD
 {
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 
 	//light objects
 	private _light:DirectionalLight;
@@ -83,13 +83,13 @@ class Basic_LoadAWD
 	 */
 	private initEngine():void
 	{
-		this._view = new View();
+		this._scene = new Scene();
 
 		//set the background of the view to something suitable
-		this._view.backgroundColor = 0x1e2125;
+		this._scene.view.backgroundColor = 0x1e2125;
 
 		//position the camera
-		this._view.camera.z = -2000;
+		this._scene.camera.z = -2000;
 	}
 
 	/**
@@ -152,7 +152,7 @@ class Basic_LoadAWD
 		if (this._suzanne)
 			this._suzanne.rotationY += 1;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -170,7 +170,7 @@ class Basic_LoadAWD
 				sprite.transform.scaleTo(900, 900, 900);
 
 				this._suzanne = sprite;
-				this._view.scene.addChild(sprite);
+				this._scene.root.addChild(sprite);
 				break;
 			case MethodMaterial.assetType:
 				var material:MethodMaterial = <MethodMaterial> asset;
@@ -184,10 +184,10 @@ class Basic_LoadAWD
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

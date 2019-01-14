@@ -37,48 +37,47 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, LoaderContext, URLRequest, RequestAnimationFrame, Timer} from "awayjs-full/lib/core";
-import {BitmapImage2D, ImageSampler, BlendMode} from "awayjs-full/lib/stage";
-import {ElementsType, Graphics, ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, MethodMaterialMode, PointLight, DirectionalLight, StaticLightPicker, ImageTexture2D}	from "awayjs-full/lib/materials";
-import {View} from "awayjs-full/lib/view";
+import {LoaderEvent, TimerEvent, Vector3D, ColorTransform, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, Timer} from "@awayjs/core";
+import {BitmapImage2D, ImageSampler, BlendMode} from "@awayjs/stage";
+import {ElementsType, Graphics, ParticleAnimationSet, ParticleAnimator, ParticleProperties, ParticlePropertiesMode, ParticleBillboardNode, ParticleScaleNode, ParticleVelocityNode, ParticleColorNode, ParticleGraphicsHelper} from "@awayjs/graphics";
+import {HoverController, Sprite, Scene, Camera, PrimitivePlanePrefab} from "@awayjs/scene";
+import {MethodMaterial, MethodMaterialMode, PointLight, DirectionalLight, StaticLightPicker, ImageTexture2D}	from "@awayjs/materials";
+import {View} from "@awayjs/view";
 
 class Basic_Fire
 {
 	private static NUM_FIRES:number /*uint*/ = 10;
 
 	//engine variables
-	private scene:Scene;
-	private camera:Camera;
-	private view:View;
-	private cameraController:HoverController;
+	private _scene:Scene;
+	private _camera:Camera;
+	private _cameraController:HoverController;
 
 	//material objects
-	private planeMaterial:MethodMaterial;
-	private particleMaterial:MethodMaterial;
+	private _planeMaterial:MethodMaterial;
+	private _particleMaterial:MethodMaterial;
 
 	//light objects
-	private directionalLight:DirectionalLight;
-	private lightPicker:StaticLightPicker;
+	private _directionalLight:DirectionalLight;
+	private _lightPicker:StaticLightPicker;
 
 	//particle objects
-	private fireAnimationSet:ParticleAnimationSet;
-	private particleSprite:Sprite;
-	private fireTimer:Timer;
+	private _fireAnimationSet:ParticleAnimationSet;
+	private _particleSprite:Sprite;
+	private _fireTimer:Timer;
 
 	//scene objects
-	private plane:Sprite;
-	private fireObjects:Array<FireVO> = new Array<FireVO>();
+	private _plane:Sprite;
+	private _fireObjects:Array<FireVO> = new Array<FireVO>();
 
 	//navigation variables
-	private timer:RequestAnimationFrame;
-	private time:number = 0;
-	private move:boolean = false;
-	private lastPanAngle:number;
-	private lastTiltAngle:number;
-	private lastMouseX:number;
-	private lastMouseY:number;
+	private _timer:RequestAnimationFrame;
+	private _time:number = 0;
+	private _move:boolean = false;
+	private _lastPanAngle:number;
+	private _lastTiltAngle:number;
+	private _lastMouseX:number;
+	private _lastMouseY:number;
 
 	/**
 	 * Constructor
@@ -106,22 +105,20 @@ class Basic_Fire
 	 */
 	private initEngine():void
 	{
-		this.scene = new Scene();
+		this._scene = new Scene();
 
-		this.camera = new Camera();
+		this._camera = new Camera();
 
-		this.view = new View();
 		//this.view.antiAlias = 4;
-		this.view.scene = this.scene;
-		this.view.camera = this.camera;
+		this._scene.camera = this._camera;
 
 		//setup controller to be used on the camera
-		this.cameraController = new HoverController(this.camera);
-		this.cameraController.distance = 1000;
-		this.cameraController.minTiltAngle = 0;
-		this.cameraController.maxTiltAngle = 90;
-		this.cameraController.panAngle = 45;
-		this.cameraController.tiltAngle = 20;
+		this._cameraController = new HoverController(this._camera);
+		this._cameraController.distance = 1000;
+		this._cameraController.minTiltAngle = 0;
+		this._cameraController.maxTiltAngle = 90;
+		this._cameraController.panAngle = 45;
+		this._cameraController.tiltAngle = 20;
 	}
 
 	/**
@@ -129,14 +126,14 @@ class Basic_Fire
 	 */
 	private initLights():void
 	{
-		this.directionalLight = new DirectionalLight(new Vector3D(0, -1, 0));
-		this.directionalLight.color = 0xeedddd;
-		this.directionalLight.diffuse = .5;
-		this.directionalLight.ambient = .5;
-		this.directionalLight.specular = 0;
-		this.directionalLight.ambientColor = 0x808090;
+		this._directionalLight = new DirectionalLight(new Vector3D(0, -1, 0));
+		this._directionalLight.color = 0xeedddd;
+		this._directionalLight.diffuse = .5;
+		this._directionalLight.ambient = .5;
+		this._directionalLight.specular = 0;
+		this._directionalLight.ambientColor = 0x808090;
 
-		this.lightPicker = new StaticLightPicker([this.directionalLight]);
+		this._lightPicker = new StaticLightPicker([this._directionalLight]);
 	}
 
 	/**
@@ -144,14 +141,14 @@ class Basic_Fire
 	 */
 	private initMaterials():void
 	{
-		this.planeMaterial = new MethodMaterial();
-		this.planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
-		this.planeMaterial.lightPicker = this.lightPicker;
-		this.planeMaterial.style.sampler = new ImageSampler(true, true, false);
-		this.planeMaterial.specularMethod.strength = 10;
+		this._planeMaterial = new MethodMaterial();
+		this._planeMaterial.mode = MethodMaterialMode.MULTI_PASS;
+		this._planeMaterial.lightPicker = this._lightPicker;
+		this._planeMaterial.style.sampler = new ImageSampler(true, true, false);
+		this._planeMaterial.specularMethod.strength = 10;
 
-		this.particleMaterial = new MethodMaterial();
-		this.particleMaterial.blendMode = BlendMode.ADD;
+		this._particleMaterial = new MethodMaterial();
+		this._particleMaterial.blendMode = BlendMode.ADD;
 	}
 
 	/**
@@ -161,20 +158,20 @@ class Basic_Fire
 	{
 
 		//create the particle animation set
-		this.fireAnimationSet = new ParticleAnimationSet(true, true);
+		this._fireAnimationSet = new ParticleAnimationSet(true, true);
 
 		//add some animations which can control the particles:
 		//the global animations can be set directly, because they influence all the particles with the same factor
-		this.fireAnimationSet.addAnimation(new ParticleBillboardNode());
-		this.fireAnimationSet.addAnimation(new ParticleScaleNode(ParticlePropertiesMode.GLOBAL, false, false, 2.5, 0.5));
-		this.fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 80, 0)));
-		this.fireAnimationSet.addAnimation(new ParticleColorNode(ParticlePropertiesMode.GLOBAL, true, true, false, false, new ColorTransform(0, 0, 0, 1, 0xFF, 0x33, 0x01), new ColorTransform(0, 0, 0, 1, 0x99)));
+		this._fireAnimationSet.addAnimation(new ParticleBillboardNode());
+		this._fireAnimationSet.addAnimation(new ParticleScaleNode(ParticlePropertiesMode.GLOBAL, false, false, 2.5, 0.5));
+		this._fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 80, 0)));
+		this._fireAnimationSet.addAnimation(new ParticleColorNode(ParticlePropertiesMode.GLOBAL, true, true, false, false, new ColorTransform(0, 0, 0, 1, 0xFF, 0x33, 0x01), new ColorTransform(0, 0, 0, 1, 0x99)));
 
 		//no need to set the local animations here, because they influence all the particle with different factors.
-		this.fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.LOCAL_STATIC));
+		this._fireAnimationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.LOCAL_STATIC));
 
 		//set the initParticleFunc. It will be invoked for the local static property initialization of every particle
-		this.fireAnimationSet.initParticleFunc = this.initParticleFunc;
+		this._fireAnimationSet.initParticleFunc = this.initParticleFunc;
 
 		//create the original particle geometry
 		var particle:Sprite = <Sprite> (new PrimitivePlanePrefab(null, ElementsType.TRIANGLE, 10, 10, 1, 1, false)).getNewObject();
@@ -184,8 +181,8 @@ class Basic_Fire
 		for (var i:number /*int*/ = 0; i < 500; i++)
 			graphicsSet.push(particle.graphics);
 
-		this.particleSprite = new Sprite(this.particleMaterial);
-		ParticleGraphicsHelper.generateGraphics(this.particleSprite.graphics, graphicsSet);
+		this._particleSprite = new Sprite(this._particleMaterial);
+		ParticleGraphicsHelper.generateGraphics(this._particleSprite.graphics, graphicsSet);
 	}
 
 	/**
@@ -193,17 +190,17 @@ class Basic_Fire
 	 */
 	private initObjects():void
 	{
-		this.plane = <Sprite> new PrimitivePlanePrefab(this.planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
-		this.plane.material = this.planeMaterial;
-		this.plane.graphics.scaleUV(2, 2);
-		this.plane.y = -20;
+		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 1000, 1000).getNewObject();
+		this._plane.material = this._planeMaterial;
+		this._plane.graphics.scaleUV(2, 2);
+		this._plane.y = -20;
 
-		this.scene.addChild(this.plane);
+		this._scene.root.addChild(this._plane);
 
 		//create fire object sprites from geomtry and material, and apply particle animators to each
 		for (var i:number /*int*/ = 0; i < Basic_Fire.NUM_FIRES; i++) {
-			var particleSprite:Sprite = this.particleSprite.clone();
-			var animator:ParticleAnimator = new ParticleAnimator(this.fireAnimationSet);
+			var particleSprite:Sprite = this._particleSprite.clone();
+			var animator:ParticleAnimator = new ParticleAnimator(this._fireAnimationSet);
 			particleSprite.animator = animator;
 
 			//position the sprite
@@ -213,14 +210,14 @@ class Basic_Fire
 			particleSprite.y = 5;
 
 			//create a fire object and add it to the fire object vector
-			this.fireObjects.push(new FireVO(particleSprite, animator));
-			this.view.scene.addChild(particleSprite);
+			this._fireObjects.push(new FireVO(particleSprite, animator));
+			this._scene.root.addChild(particleSprite);
 		}
 
 		//setup timer for triggering each particle aniamtor
-		this.fireTimer = new Timer(1000, this.fireObjects.length);
-		this.fireTimer.addEventListener(TimerEvent.TIMER, (event:TimerEvent) => this.onTimer(event));
-		this.fireTimer.start();
+		this._fireTimer = new Timer(1000, this._fireObjects.length);
+		this._fireTimer.addEventListener(TimerEvent.TIMER, (event:TimerEvent) => this.onTimer(event));
+		this._fireTimer.start();
 	}
 
 	/**
@@ -236,8 +233,8 @@ class Basic_Fire
 
 		this.onResize();
 
-		this.timer = new RequestAnimationFrame(this.onEnterFrame, this);
-		this.timer.start();
+		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
+		this._timer.start();
 
 		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
@@ -271,11 +268,11 @@ class Basic_Fire
 	{
 		var lights:Array<any> = new Array<any>();
 
-		lights.push(this.directionalLight);
+		lights.push(this._directionalLight);
 
 		var fireVO:FireVO;
-		for (var i:number /*uint*/ = 0; i < this.fireObjects.length; i++) {
-			fireVO = this.fireObjects[i];
+		for (var i:number /*uint*/ = 0; i < this._fireObjects.length; i++) {
+			fireVO = this._fireObjects[i];
 			if (fireVO.light)
 				lights.push(fireVO.light);
 		}
@@ -288,7 +285,7 @@ class Basic_Fire
 	 */
 	private onTimer(event:TimerEvent):void
 	{
-		var fireObject:FireVO = this.fireObjects[this.fireTimer.currentCount-1];
+		var fireObject:FireVO = this._fireObjects[this._fireTimer.currentCount-1];
 
 		//start the animator
 		fireObject.animator.start();
@@ -304,7 +301,7 @@ class Basic_Fire
 		fireObject.light = light;
 
 		//update the lightpicker
-		this.lightPicker.lights = this.getAllLights();
+		this._lightPicker.lights = this.getAllLights();
 	}
 
 	/**
@@ -312,12 +309,12 @@ class Basic_Fire
 	 */
 	private onEnterFrame(dt:number):void
 	{
-		this.time += dt;
+		this._time += dt;
 
 		//animate lights
 		var fireVO:FireVO;
-		for (var i:number /*uint*/ = 0; i < this.fireObjects.length; i++) {
-			fireVO = this.fireObjects[i];
+		for (var i:number /*uint*/ = 0; i < this._fireObjects.length; i++) {
+			fireVO = this._fireObjects[i];
 
 			//update flame light
 			var light : PointLight = fireVO.light;
@@ -333,7 +330,7 @@ class Basic_Fire
 			light.diffuse = light.specular = fireVO.strength+Math.random()*.2;
 		}
 
-		this.view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -352,18 +349,18 @@ class Basic_Fire
 			switch (event.url) {
 				//plane textures
 				case "assets/floor_diffuse.jpg" :
-					this.planeMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
+					this._planeMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_normal.jpg" :
-					this.planeMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
+					this._planeMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 				case "assets/floor_specular.jpg" :
-					this.planeMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
+					this._planeMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 
 				//particle texture
 				case "assets/blue.png" :
-					this.particleMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
+					this._particleMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> asset);
 					break;
 			}
 		}
@@ -374,11 +371,11 @@ class Basic_Fire
 	 */
 	private onMouseDown(event:MouseEvent):void
 	{
-		this.lastPanAngle = this.cameraController.panAngle;
-		this.lastTiltAngle = this.cameraController.tiltAngle;
-		this.lastMouseX = event.clientX;
-		this.lastMouseY = event.clientY;
-		this.move = true;
+		this._lastPanAngle = this._cameraController.panAngle;
+		this._lastTiltAngle = this._cameraController.tiltAngle;
+		this._lastMouseX = event.clientX;
+		this._lastMouseY = event.clientY;
+		this._move = true;
 	}
 
 	/**
@@ -386,14 +383,14 @@ class Basic_Fire
 	 */
 	private onMouseUp(event:MouseEvent):void
 	{
-		this.move = false;
+		this._move = false;
 	}
 
 	private onMouseMove(event:MouseEvent)
 	{
-		if (this.move) {
-			this.cameraController.panAngle = 0.3*(event.clientX - this.lastMouseX) + this.lastPanAngle;
-			this.cameraController.tiltAngle = 0.3*(event.clientY - this.lastMouseY) + this.lastTiltAngle;
+		if (this._move) {
+			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+			this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
 		}
 	}
 
@@ -402,10 +399,10 @@ class Basic_Fire
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this.view.y = 0;
-		this.view.x = 0;
-		this.view.width = window.innerWidth;
-		this.view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

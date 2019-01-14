@@ -35,14 +35,14 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, Vector3D, AssetLibrary, Loader, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D} from "awayjs-full/lib/stage";
-import {PickingCollision, BoundingVolumeType, RaycastPicker, BasicPartition} from "awayjs-full/lib/renderer";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, LineSegment, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent} from "awayjs-full/lib/scene";
-import {MethodMaterial, BasicMaterial, PointLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {OBJParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, Vector3D, AssetLibrary, Loader, URLRequest, Keyboard, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D} from "@awayjs/stage";
+import {PickingCollision, BoundingVolumeType, RaycastPicker, BasicPartition, PickGroup} from "@awayjs/view";
+import {ElementsType} from "@awayjs/graphics";
+import {HoverController, Sprite, Scene, Camera, LineSegment, PrimitiveCubePrefab, PrimitiveCylinderPrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, MouseEvent, DisplayObjectContainer} from "@awayjs/scene";
+import {MethodMaterial, BasicMaterial, PointLight, StaticLightPicker} from "@awayjs/materials";
+import {OBJParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 /**
  *
  */
@@ -52,6 +52,7 @@ class Intermediate_MouseInteraction
 	private _scene:Scene;
 	private _camera:Camera;
 	private _view:View;
+	private _root:DisplayObjectContainer;
 	private _session:Loader;
 	private _cameraController:HoverController;
 
@@ -123,13 +124,13 @@ class Intermediate_MouseInteraction
 	 */
 	private initEngine():void
 	{
-		this._view = new View();
-		this._view.forceMouseMove = true;
-		this._scene = this._view.scene;
-		this._camera = this._view.camera;
-		this._view.mousePicker = new RaycastPicker(this._view.renderer.partition, this._view.renderer.pickGroup);
+		this._scene = new Scene();
+		this._scene.forceMouseMove = true;
+		this._camera = this._scene.camera;
+		this._view = this._scene.view;
+		this._root = this._scene.root;
 
-		this._raycastPicker = new RaycastPicker(this._view.renderer.partition, this._view.renderer.pickGroup);
+		this._raycastPicker = PickGroup.getInstance(this._view).getRaycastPicker(this._scene.renderer.partition);
 		this._raycastPicker.findClosestCollision = true;
 
 		//setup controller to be used on the camera
@@ -180,24 +181,24 @@ class Intermediate_MouseInteraction
 		this._pickingPositionTracer.visible = false;
 		this._pickingPositionTracer.mouseEnabled = false;
 		this._pickingPositionTracer.mouseChildren = false;
-		this._scene.addChild(this._pickingPositionTracer);
+		this._root.addChild(this._pickingPositionTracer);
 
 		this._scenePositionTracer = <Sprite> new PrimitiveSpherePrefab(new MethodMaterial(0x0000FF, 0.5), ElementsType.TRIANGLE, 2).getNewObject();
 		this._scenePositionTracer.visible = false;
 		this._scenePositionTracer.mouseEnabled = false;
-		this._scene.addChild(this._scenePositionTracer);
+		this._root.addChild(this._scenePositionTracer);
 
 
 		// To trace picking normals.
 		this._pickingNormalTracer = new LineSegment(new BasicMaterial(0xFFFFFF), new Vector3D(), new Vector3D(), 3);
 		this._pickingNormalTracer.mouseEnabled = false;
 		this._pickingNormalTracer.visible = false;
-		this._view.scene.addChild(this._pickingNormalTracer);
+		this._root.addChild(this._pickingNormalTracer);
 
 		this._sceneNormalTracer = new LineSegment(new BasicMaterial(0xFFFFFF), new Vector3D(), new Vector3D(), 3);
 		this._sceneNormalTracer.mouseEnabled = false;
 		this._sceneNormalTracer.visible = false;
-		this._view.scene.addChild(this._sceneNormalTracer);
+		this._root.addChild(this._sceneNormalTracer);
 
 
 		// Load a head model that we will be able to paint on on mouse down.
@@ -208,7 +209,7 @@ class Intermediate_MouseInteraction
 		// Produce a bunch of objects to be around the scene.
 		this.createABunchOfObjects();
 
-		this._view.mousePicker.setIgnoreList([this._pickingNormalTracer, this._pickingPositionTracer, this._sceneNormalTracer, this._scenePositionTracer]);
+		this._scene.mousePicker.setIgnoreList([this._pickingNormalTracer, this._pickingPositionTracer, this._sceneNormalTracer, this._scenePositionTracer]);
 		this._raycastPicker.setIgnoreList([this._pickingNormalTracer, this._pickingPositionTracer, this._sceneNormalTracer, this._scenePositionTracer]);
 		//this._raycastPicker.onlyMouseEnabled = false;
 	}
@@ -240,8 +241,8 @@ class Intermediate_MouseInteraction
 
 		this.enableSpriteMouseListeners(model);
 
-		this._view.scene.addChild(model);
-		this._view.renderer.pickGroup.getAbstraction(model).shapeFlag = true;
+		this._root.addChild(model);
+		this._scene.renderer.pickGroup.getAbstraction(model).shapeFlag = true;
 	}
 
 	private createABunchOfObjects():void
@@ -307,10 +308,10 @@ class Intermediate_MouseInteraction
 		}
 
 		// Add to scene and store.
-		this._view.scene.addChild(sprite);
+		this._root.addChild(sprite);
 
 		// Randomly decide if the sprite has a triangle collider.
-		this._view.renderer.pickGroup.getAbstraction(sprite).shapeFlag = Boolean(Math.random() > 0.5);
+		this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag = Boolean(Math.random() > 0.5);
 
 		// Apply material according to the random setup of the object.
 		this.choseSpriteMaterial(sprite);
@@ -326,7 +327,7 @@ class Intermediate_MouseInteraction
 			if (!sprite.hasEventListener(MouseEvent.MOUSE_MOVE)) {
 				sprite.material = this._grayMaterial;
 			} else {
-				sprite.material = this._view.renderer.pickGroup.getAbstraction(sprite).shapeFlag? this._redMaterial : this._blueMaterial;
+				sprite.material = this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag? this._redMaterial : this._blueMaterial;
 			}
 		}
 	}
@@ -360,7 +361,7 @@ class Intermediate_MouseInteraction
 		var pos:Vector3D = this._camera.transform.position;
 		this._pointLight.transform.moveTo(pos.x, pos.y, pos.z);
 
-		var collidingObject:PickingCollision = this._raycastPicker.getCollision(this._camera.transform.position, this._view.camera.transform.forwardVector);
+		var collidingObject:PickingCollision = this._raycastPicker.getCollision(this._camera.transform.position, this._scene.camera.transform.forwardVector);
 		//var sprite:Sprite;
 
 		if (this._previoiusCollidingObject && this._previoiusCollidingObject != collidingObject) { //equivalent to mouse out
@@ -389,7 +390,7 @@ class Intermediate_MouseInteraction
 		this._previoiusCollidingObject = collidingObject;
 
 		// Render 3D.
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**

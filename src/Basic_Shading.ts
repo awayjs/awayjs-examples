@@ -35,12 +35,12 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, Scene, Camera, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, ImageTexture2D, StaticLightPicker} from "awayjs-full/lib/materials";
-import {View} from "awayjs-full/lib/view";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D, ImageSampler, ImageUtils} from "@awayjs/stage";
+import {ElementsType} from "@awayjs/graphics";
+import {HoverController, Sprite, Scene, Camera, PrimitiveCubePrefab, PrimitivePlanePrefab, PrimitiveSpherePrefab, PrimitiveTorusPrefab, DisplayObjectContainer} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, ImageTexture2D, StaticLightPicker} from "@awayjs/materials";
+import {View} from "@awayjs/view";
 /**
  *
  */
@@ -48,8 +48,9 @@ class Basic_Shading
 {
 	//engine variables
 	private _scene:Scene;
-	private _camera:Camera;
+	private _root:DisplayObjectContainer;
 	private _view:View;
+	private _camera:Camera;
 	private _cameraController:HoverController;
 
 	//material objects
@@ -107,9 +108,10 @@ class Basic_Shading
 
 		this._camera = new Camera();
 
-		this._view = new View();
-		this._view.scene = this._scene;
-		this._view.camera = this._camera;
+		this._scene.camera = this._camera;
+
+		this._root = this._scene.root;
+		this._view = this._scene.view;
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera);
@@ -169,21 +171,21 @@ class Basic_Shading
 		this._plane.graphics.scaleUV(2, 2);
 		this._plane.y = -20;
 
-		this._scene.addChild(this._plane);
+		this._root.addChild(this._plane);
 
 		this._sphere = <Sprite> new PrimitiveSpherePrefab(this._sphereMaterial, ElementsType.TRIANGLE, 150, 40, 20).getNewObject();
 		this._sphere.x = 300;
 		this._sphere.y = 160;
 		this._sphere.z = 300;
 
-		this._scene.addChild(this._sphere);
+		this._root.addChild(this._sphere);
 
 		this._cube = <Sprite> new PrimitiveCubePrefab(this._cubeMaterial, ElementsType.TRIANGLE, 200, 200, 200, 1, 1, 1, false).getNewObject();
 		this._cube.x = 300;
 		this._cube.y = 160;
 		this._cube.z = -250;
 
-		this._scene.addChild(this._cube);
+		this._root.addChild(this._cube);
 
 		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.graphics.scaleUV(10, 5);
@@ -191,7 +193,7 @@ class Basic_Shading
 		this._torus.y = 160;
 		this._torus.z = -250;
 
-		this._scene.addChild(this._torus);
+		this._root.addChild(this._torus);
 	}
 
 	/**
@@ -241,7 +243,7 @@ class Basic_Shading
 
 		this._light1.direction = new Vector3D(Math.sin(this._time/10000)*150000, -1000, Math.cos(this._time/10000)*150000);
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**

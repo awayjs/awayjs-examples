@@ -37,18 +37,19 @@
 
  */
 
-import {RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem, Box, Vector3D} from "awayjs-full/lib/core";
-import {DefaultRenderer, SceneGraphPartition, PickEntity, PickGroup} from "awayjs-full/lib/renderer";
-import {CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle} from "awayjs-full/lib/graphics";
-import {MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene, OrientationMode, AlignmentMode} from "awayjs-full/lib/scene";
-import {View} from "awayjs-full/lib/view";
-import {AS2MovieClipAdapter} from "awayjs-full/lib/player";
-import { MethodMaterial } from "awayjs-full/lib/materials";
+import {RequestAnimationFrame, ColorTransform, PerspectiveProjection, CoordinateSystem, Box, Vector3D} from "@awayjs/core";
+import {DefaultRenderer} from "@awayjs/renderer";
+import {CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle} from "@awayjs/graphics";
+import {Sprite, Camera, Scene, AlignmentMode, SceneGraphPartition, DisplayObjectContainer} from "@awayjs/scene";
+import {View, PickGroup} from "@awayjs/view";
+import { MethodMaterial } from "@awayjs/materials";
 
 class Graphics_Drawing
 {
 	//engine variables
-	private _view: View;
+	private _scene: Scene;
+    private _view: View;
+    private _root: DisplayObjectContainer;
 	private _renderer: DefaultRenderer;
 
 
@@ -88,11 +89,13 @@ class Graphics_Drawing
 	private initEngine(): void
 	{
 		//create the view
-		this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
+		this._root = new DisplayObjectContainer();
+		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
+		this._view = this._renderer.view;
+		this._view.backgroundColor = 0x777777;
 		
 		this._renderer.renderableSorter = null;
-		this._view = new View(this._renderer);
-		this._view.backgroundColor = 0x777777;
+		this._scene = new Scene(this._renderer);
 
         // create and setup Camera and Projection
 
@@ -104,7 +107,7 @@ class Graphics_Drawing
 		this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
         
-		this._view.camera = this._camera_perspective;
+		this._scene.camera = this._camera_perspective;
 	}
 
 		/**
@@ -181,7 +184,7 @@ class Graphics_Drawing
         this.batmanLogo.graphics.endFill();
         
         // move the registration-point of the Sprite to be at the center of the shape that we have been drawing into it
-        var boxBounds:Box = PickGroup.getInstance(this._renderer.viewport).getAbstraction(this.batmanLogo).getBoxBounds(null, false, true);
+        var boxBounds:Box = PickGroup.getInstance(this._renderer.view).getAbstraction(this.batmanLogo).getBoxBounds(null, false, true);
         this.batmanLogo.registrationPoint = new Vector3D(boxBounds.width/2, boxBounds.height/2);
         
         // clone the Sprite on a grid of 20 x 20
@@ -201,7 +204,7 @@ class Graphics_Drawing
 
 				this._animSprites.push(sprite);
 				this._animSpeeds.push(0);
-				this._view.scene.addChild(sprite);
+				this._root.addChild(sprite);
 			}
 		}
 	}
@@ -236,7 +239,7 @@ class Graphics_Drawing
 
 
 		//update view
-		this._view.render();
+		this._scene.render();
 	}
 
 

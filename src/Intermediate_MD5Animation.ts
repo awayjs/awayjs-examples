@@ -38,34 +38,35 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard, Vector3D} from "awayjs-full/lib/core";
-import {BitmapImage2D, BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
-import {AnimationSetBase, ElementsType, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/graphics";
-import {LookAtController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {AnimationNodeBase, Style} from "awayjs-full/lib/renderer";
-import {ImageTexture2D, MethodMaterial, EffectFogMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, NearDirectionalShadowMapper} from "awayjs-full/lib/materials";
-import {MD5AnimParser, MD5MeshParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, LoaderEvent, Matrix, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, Keyboard, Vector3D} from "@awayjs/core";
+import {BitmapImage2D, BitmapImageCube, ImageSampler} from "@awayjs/stage";
+import {AnimationSetBase, ElementsType, SkeletonAnimationSet, SkeletonAnimator, Skeleton, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "@awayjs/graphics";
+import {LookAtController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitivePlanePrefab} from "@awayjs/scene";
+import {AnimationNodeBase, Style} from "@awayjs/renderer";
+import {ImageTexture2D, MethodMaterial, EffectFogMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, NearDirectionalShadowMapper} from "@awayjs/materials";
+import {MD5AnimParser, MD5MeshParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class Intermediate_MD5Animation
 {
 	//engine variables
-	private scene:Scene;
-	private camera:Camera;
-	private view:View;
-	private cameraController:LookAtController;
+	private _scene:Scene;
+	private _camera:Camera;
+	private _view:View;
+	private _root:DisplayObjectContainer;
+	private _cameraController:LookAtController;
 
 	//animation variables
-	private animator:SkeletonAnimator;
-	private animationSet:SkeletonAnimationSet;
-	private stateTransition:CrossfadeTransition = new CrossfadeTransition(0.5);
-	private skeleton:Skeleton;
-	private isRunning:Boolean;
-	private isMoving:Boolean;
-	private movementDirection:number;
-	private onceAnim:string;
-	private currentAnim:string;
-	private currentRotationInc:number = 0;
+	private _animator:SkeletonAnimator;
+	private _animationSet:SkeletonAnimationSet;
+	private _stateTransition:CrossfadeTransition = new CrossfadeTransition(0.5);
+	private _skeleton:Skeleton;
+	private _isRunning:Boolean;
+	private _isMoving:Boolean;
+	private _movementDirection:number;
+	private _onceAnim:string;
+	private _currentAnim:string;
+	private _currentRotationInc:number = 0;
 
 	//animation constants
 	private static IDLE_NAME:string = "idle2";
@@ -78,27 +79,27 @@ class Intermediate_MD5Animation
 	private static ACTION_SPEED:number = 1;
 
 	//light objects
-	private redLight:PointLight;
-	private blueLight:PointLight;
-	private whiteLight:DirectionalLight;
-	private lightPicker:StaticLightPicker;
-	private shadowMapMethod:ShadowSoftMethod;
-	private fogMethod:EffectFogMethod;
-	private count:number = 0;
+	private _redLight:PointLight;
+	private _blueLight:PointLight;
+	private _whiteLight:DirectionalLight;
+	private _lightPicker:StaticLightPicker;
+	private _shadowMapMethod:ShadowSoftMethod;
+	private _fogMethod:EffectFogMethod;
+	private _count:number = 0;
 
 	//material objects
-	private redLightMaterial:MethodMaterial;
-	private blueLightMaterial:MethodMaterial;
-	private groundMaterial:MethodMaterial;
-	private bodyMaterial:MethodMaterial;
-	private gobMaterial:MethodMaterial;
+	private _redLightMaterial:MethodMaterial;
+	private _blueLightMaterial:MethodMaterial;
+	private _groundMaterial:MethodMaterial;
+	private _bodyMaterial:MethodMaterial;
+	private _gobMaterial:MethodMaterial;
 
 	//scene objects
-	private placeHolder:DisplayObjectContainer;
-	private sprite:Sprite;
-	private gobStyle:Style;
-	private ground:Sprite;
-	private skyBox:Skybox;
+	private _placeHolder:DisplayObjectContainer;
+	private _sprite:Sprite;
+	private _gobStyle:Style;
+	private _ground:Sprite;
+	private _skyBox:Skybox;
 
 	private _timer:RequestAnimationFrame;
 	private _time:number = 0;
@@ -129,18 +130,19 @@ class Intermediate_MD5Animation
 	 */
 	private initEngine():void
 	{
-		this.view = new View();
-		this.scene = this.view.scene;
-		this.camera = this.view.camera;
+		this._scene = new Scene();
+		this._camera = this._scene.camera;
+		this._view = this._scene.view;
+		this._root = this._scene.root;
 
-		this.camera.projection.far = 5000;
-		this.camera.z = -200;
-		this.camera.y = 160;
+		this._camera.projection.far = 5000;
+		this._camera.z = -200;
+		this._camera.y = 160;
 
 		//setup controller to be used on the camera
-		this.placeHolder = new DisplayObjectContainer();
-		this.placeHolder.y = 50;
-		this.cameraController = new LookAtController(this.camera, this.placeHolder);
+		this._placeHolder = new DisplayObjectContainer();
+		this._placeHolder.y = 50;
+		this._cameraController = new LookAtController(this._camera, this._placeHolder);
 	}
 
 	/**
@@ -168,33 +170,33 @@ class Intermediate_MD5Animation
 	private initLights():void
 	{
 		//create a light for shadows that mimics the sun's position in the skybox
-		this.redLight = new PointLight();
-		this.redLight.x = -1000;
-		this.redLight.y = 200;
-		this.redLight.z = -1400;
-		this.redLight.color = 0xff1111;
+		this._redLight = new PointLight();
+		this._redLight.x = -1000;
+		this._redLight.y = 200;
+		this._redLight.z = -1400;
+		this._redLight.color = 0xff1111;
 
-		this.blueLight = new PointLight();
-		this.blueLight.x = 1000;
-		this.blueLight.y = 200;
-		this.blueLight.z = 1400;
-		this.blueLight.color = 0x1111ff;
+		this._blueLight = new PointLight();
+		this._blueLight.x = 1000;
+		this._blueLight.y = 200;
+		this._blueLight.z = 1400;
+		this._blueLight.color = 0x1111ff;
 
-		this.whiteLight = new DirectionalLight(new Vector3D(-50, -20, 10));
-		this.whiteLight.color = 0xffffee;
-		this.whiteLight.ambient = 1;
-		this.whiteLight.ambientColor = 0x303040;
-		this.whiteLight.shadowMapper = new NearDirectionalShadowMapper(null, .2);
-        this.whiteLight.shadowMapper.epsilon = .1;
+		this._whiteLight = new DirectionalLight(new Vector3D(-50, -20, 10));
+		this._whiteLight.color = 0xffffee;
+		this._whiteLight.ambient = 1;
+		this._whiteLight.ambientColor = 0x303040;
+		this._whiteLight.shadowMapper = new NearDirectionalShadowMapper(null, .2);
+        this._whiteLight.shadowMapper.epsilon = .1;
 
-		this.lightPicker = new StaticLightPicker([this.redLight, this.blueLight, this.whiteLight]);
+		this._lightPicker = new StaticLightPicker([this._redLight, this._blueLight, this._whiteLight]);
 
 
 		//create a global shadow method
-		this.shadowMapMethod = new ShadowSoftMethod(this.whiteLight, 15, 8);
+		this._shadowMapMethod = new ShadowSoftMethod(this._whiteLight, 15, 8);
 
 		//create a global fog method
-		this.fogMethod = new EffectFogMethod(0, this.camera.projection.far*0.5, 0x000000);
+		this._fogMethod = new EffectFogMethod(0, this._camera.projection.far*0.5, 0x000000);
 	}
 
 	/**
@@ -203,38 +205,38 @@ class Intermediate_MD5Animation
 	private initMaterials():void
 	{
 		//red light material
-		this.redLightMaterial = new MethodMaterial();
-		this.redLightMaterial.alphaBlending = true;
-		this.redLightMaterial.addEffectMethod(this.fogMethod);
+		this._redLightMaterial = new MethodMaterial();
+		this._redLightMaterial.alphaBlending = true;
+		this._redLightMaterial.addEffectMethod(this._fogMethod);
 
 		//blue light material
-		this.blueLightMaterial = new MethodMaterial();
-		this.blueLightMaterial.alphaBlending = true;
-		this.blueLightMaterial.addEffectMethod(this.fogMethod);
+		this._blueLightMaterial = new MethodMaterial();
+		this._blueLightMaterial.alphaBlending = true;
+		this._blueLightMaterial.addEffectMethod(this._fogMethod);
 
 		//ground material
-		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.style.sampler = new ImageSampler(true, true);
-		this.groundMaterial.lightPicker = this.lightPicker;
-		this.groundMaterial.shadowMethod = this.shadowMapMethod;
-		this.groundMaterial.addEffectMethod(this.fogMethod);
+		this._groundMaterial = new MethodMaterial();
+		this._groundMaterial.style.sampler = new ImageSampler(true, true);
+		this._groundMaterial.lightPicker = this._lightPicker;
+		this._groundMaterial.shadowMethod = this._shadowMapMethod;
+		this._groundMaterial.addEffectMethod(this._fogMethod);
 
 		//body material
-		this.bodyMaterial = new MethodMaterial();
-		this.bodyMaterial.specularMethod.gloss = 20;
-		this.bodyMaterial.specularMethod.strength = 1.5;
-		this.bodyMaterial.addEffectMethod(this.fogMethod);
-		this.bodyMaterial.lightPicker = this.lightPicker;
-		this.bodyMaterial.shadowMethod = this.shadowMapMethod;
+		this._bodyMaterial = new MethodMaterial();
+		this._bodyMaterial.specularMethod.gloss = 20;
+		this._bodyMaterial.specularMethod.strength = 1.5;
+		this._bodyMaterial.addEffectMethod(this._fogMethod);
+		this._bodyMaterial.lightPicker = this._lightPicker;
+		this._bodyMaterial.shadowMethod = this._shadowMapMethod;
 
 		//gob material
-		this.gobMaterial = new MethodMaterial();
-		this.gobMaterial.alphaBlending = true;
-		this.gobMaterial.style.sampler = new ImageSampler(true, true);
-		this.gobMaterial.animateUVs = true;
-		this.gobMaterial.addEffectMethod(this.fogMethod);
-		this.gobMaterial.lightPicker = this.lightPicker;
-		this.gobMaterial.shadowMethod = this.shadowMapMethod;
+		this._gobMaterial = new MethodMaterial();
+		this._gobMaterial.alphaBlending = true;
+		this._gobMaterial.style.sampler = new ImageSampler(true, true);
+		this._gobMaterial.animateUVs = true;
+		this._gobMaterial.addEffectMethod(this._fogMethod);
+		this._gobMaterial.lightPicker = this._lightPicker;
+		this._gobMaterial.shadowMethod = this._shadowMapMethod;
 	}
 
 	/**
@@ -243,25 +245,25 @@ class Intermediate_MD5Animation
 	private initObjects():void
 	{
 		//create light billboards
-		var redSprite:Billboard = new Billboard(this.redLightMaterial);
+		var redSprite:Billboard = new Billboard(this._redLightMaterial);
 		redSprite.width = 200;
 		redSprite.height = 200;
 		redSprite.castsShadows = false;
-		var blueSprite:Billboard = new Billboard(this.blueLightMaterial);
+		var blueSprite:Billboard = new Billboard(this._blueLightMaterial);
 		blueSprite.width = 200;
 		blueSprite.height = 200;
 		blueSprite.castsShadows = false;
-		this.redLight.transform = redSprite.transform;
-		this.blueLight.transform = blueSprite.transform;
+		this._redLight.transform = redSprite.transform;
+		this._blueLight.transform = blueSprite.transform;
 
 		AssetLibrary.enableParser(MD5MeshParser);
 		AssetLibrary.enableParser(MD5AnimParser);
 
 		//create a rocky ground plane
-		this.ground = <Sprite> new PrimitivePlanePrefab(this.groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
-		this.ground.graphics.scaleUV(200, 200);
-		this.ground.castsShadows = false;
-		this.scene.addChild(this.ground);
+		this._ground = <Sprite> new PrimitivePlanePrefab(this._groundMaterial, ElementsType.TRIANGLE, 50000, 50000, 1, 1).getNewObject();
+		this._ground.graphics.scaleUV(200, 200);
+		this._ground.castsShadows = false;
+		this._root.addChild(this._ground);
 	}
 
 	/**
@@ -313,24 +315,24 @@ class Intermediate_MD5Animation
 	{
 		this._time += dt;
 
-		this.cameraController.update();
+		this._cameraController.update();
 
 		//update character animation
-		if (this.sprite) {
-			this.gobStyle.uvMatrix.ty = (-this._time/2000 % 1);
-			this.sprite.rotationY += this.currentRotationInc;
+		if (this._sprite) {
+			this._gobStyle.uvMatrix.ty = (-this._time/2000 % 1);
+			this._sprite.rotationY += this._currentRotationInc;
 		}
 
-		this.count += 0.01;
+		this._count += 0.01;
 
-		this.redLight.x = Math.sin(this.count)*1500;
-		this.redLight.y = 250 + Math.sin(this.count*0.54)*200;
-		this.redLight.z = Math.cos(this.count*0.7)*1500;
-		this.blueLight.x = -Math.sin(this.count*0.8)*1500;
-		this.blueLight.y = 250 - Math.sin(this.count*.65)*200;
-		this.blueLight.z = -Math.cos(this.count*0.9)*1500;
+		this._redLight.x = Math.sin(this._count)*1500;
+		this._redLight.y = 250 + Math.sin(this._count*0.54)*200;
+		this._redLight.z = Math.cos(this._count*0.7)*1500;
+		this._blueLight.x = -Math.sin(this._count*0.8)*1500;
+		this._blueLight.y = 250 - Math.sin(this._count*.65)*200;
+		this._blueLight.z = -Math.cos(this._count*0.9)*1500;
 
-		this.view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -344,7 +346,7 @@ class Intermediate_MD5Animation
 			var name:string = event.asset.assetNamespace;
 
 			node.name = name;
-			this.animationSet.addAnimation(node);
+			this._animationSet.addAnimation(node);
 
 			if (name == Intermediate_MD5Animation.IDLE_NAME || name == Intermediate_MD5Animation.WALK_NAME) {
 				node.looping = true;
@@ -356,27 +358,27 @@ class Intermediate_MD5Animation
 			if (name == Intermediate_MD5Animation.IDLE_NAME)
 				this.stop();
 		} else if (event.asset.isAsset(AnimationSetBase)) {
-			this.animationSet = <SkeletonAnimationSet> event.asset;
-			this.animator = new SkeletonAnimator(this.animationSet, this.skeleton);
+			this._animationSet = <SkeletonAnimationSet> event.asset;
+			this._animator = new SkeletonAnimator(this._animationSet, this._skeleton);
 			for (var i:number /*uint*/ = 0; i < Intermediate_MD5Animation.ANIM_NAMES.length; ++i)
 				AssetLibrary.load(new URLRequest("assets/hellknight/" + Intermediate_MD5Animation.ANIM_NAMES[i] + ".md5anim"), null, Intermediate_MD5Animation.ANIM_NAMES[i], new MD5AnimParser());
 
-			this.sprite.animator = this.animator;
+			this._sprite.animator = this._animator;
 		} else if (event.asset.isAsset(Skeleton)) {
-			this.skeleton = <Skeleton> event.asset;
+			this._skeleton = <Skeleton> event.asset;
 		} else if (event.asset.isAsset(Sprite)) {
 			//grab sprite object and assign our material object
-			this.sprite = <Sprite> event.asset;
-			this.sprite.graphics.getShapeAt(0).material = this.bodyMaterial;
-			this.sprite.graphics.getShapeAt(1).material = this.sprite.graphics.getShapeAt(2).material = this.sprite.graphics.getShapeAt(3).material = this.gobMaterial;
-			this.sprite.castsShadows = true;
-			this.sprite.rotationY = 180;
-			this.gobStyle = this.sprite.graphics.getShapeAt(1).style = this.sprite.graphics.getShapeAt(2).style = this.sprite.graphics.getShapeAt(3).style = new Style();
-			this.gobStyle.uvMatrix = new Matrix();
-			this.scene.addChild(this.sprite);
+			this._sprite = <Sprite> event.asset;
+			this._sprite.graphics.getShapeAt(0).material = this._bodyMaterial;
+			this._sprite.graphics.getShapeAt(1).material = this._sprite.graphics.getShapeAt(2).material = this._sprite.graphics.getShapeAt(3).material = this._gobMaterial;
+			this._sprite.castsShadows = true;
+			this._sprite.rotationY = 180;
+			this._gobStyle = this._sprite.graphics.getShapeAt(1).style = this._sprite.graphics.getShapeAt(2).style = this._sprite.graphics.getShapeAt(3).style = new Style();
+			this._gobStyle.uvMatrix = new Matrix();
+			this._root.addChild(this._sprite);
 
 			//add our lookat object to the sprite
-			this.sprite.addChild(this.placeHolder);
+			this._sprite.addChild(this._placeHolder);
 		}
 	}
 
@@ -389,61 +391,61 @@ class Intermediate_MD5Animation
 		{
 			//environment texture
 			case 'assets/skybox/grimnight_texture.cube':
-				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
-				this.scene.addChild(this.skyBox);
+				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
+				this._root.addChild(this._skyBox);
 				break;
 
 			//entities textures
 			case "assets/redlight.png" :
-				this.redLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._redLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/bluelight.png" :
-				this.blueLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._blueLightMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//floor textures
 			case "assets/rockbase_diffuse.jpg" :
-				this.groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_normals.png" :
-				this.groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/rockbase_specular.png" :
-				this.groundMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//hellknight textures
 			case "assets/hellknight/hellknight_diffuse.jpg" :
-				this.bodyMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._bodyMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_normals.png" :
-				this.bodyMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._bodyMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/hellknight_specular.png" :
-				this.bodyMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._bodyMaterial.specularMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/hellknight/gob.png" :
-				this.gobMaterial.specularMethod.texture = this.gobMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._gobMaterial.specularMethod.texture = this._gobMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 		}
 	}
 
 	private onPlaybackComplete(event:AnimationStateEvent):void
 	{
-		if (this.animator.activeState != event.animationState)
+		if (this._animator.activeState != event.animationState)
 			return;
 
-		this.onceAnim = null;
+		this._onceAnim = null;
 
-		this.animator.play(this.currentAnim, this.stateTransition);
-		this.animator.playbackSpeed = this.isMoving? this.movementDirection*(this.isRunning? Intermediate_MD5Animation.RUN_SPEED : Intermediate_MD5Animation.WALK_SPEED) : Intermediate_MD5Animation.IDLE_SPEED;
+		this._animator.play(this._currentAnim, this._stateTransition);
+		this._animator.playbackSpeed = this._isMoving? this._movementDirection*(this._isRunning? Intermediate_MD5Animation.RUN_SPEED : Intermediate_MD5Animation.WALK_SPEED) : Intermediate_MD5Animation.IDLE_SPEED;
 	}
 
 	private playAction(val:number /*uint*/):void
 	{
-		this.onceAnim = Intermediate_MD5Animation.ANIM_NAMES[val + 2];
-		this.animator.playbackSpeed = Intermediate_MD5Animation.ACTION_SPEED;
-		this.animator.play(this.onceAnim, this.stateTransition, 0);
+		this._onceAnim = Intermediate_MD5Animation.ANIM_NAMES[val + 2];
+		this._animator.playbackSpeed = Intermediate_MD5Animation.ACTION_SPEED;
+		this._animator.play(this._onceAnim, this._stateTransition, 0);
 	}
 
 	/**
@@ -453,27 +455,27 @@ class Intermediate_MD5Animation
 	{
 		switch (event.keyCode) {
 			case Keyboard.SHIFT:
-				this.isRunning = true;
-				if (this.isMoving)
-					this.updateMovement(this.movementDirection);
+				this._isRunning = true;
+				if (this._isMoving)
+					this.updateMovement(this._movementDirection);
 				break;
 			case Keyboard.UP:
 			case Keyboard.W:
 			case Keyboard.Z: //fr
-				this.updateMovement(this.movementDirection = 1);
+				this.updateMovement(this._movementDirection = 1);
 				break;
 			case Keyboard.DOWN:
 			case Keyboard.S:
-				this.updateMovement(this.movementDirection = -1);
+				this.updateMovement(this._movementDirection = -1);
 				break;
 			case Keyboard.LEFT:
 			case Keyboard.A:
 			case Keyboard.Q: //fr
-				this.currentRotationInc = -Intermediate_MD5Animation.ROTATION_SPEED;
+				this._currentRotationInc = -Intermediate_MD5Animation.ROTATION_SPEED;
 				break;
 			case Keyboard.RIGHT:
 			case Keyboard.D:
-				this.currentRotationInc = Intermediate_MD5Animation.ROTATION_SPEED;
+				this._currentRotationInc = Intermediate_MD5Animation.ROTATION_SPEED;
 				break;
 		}
 	}
@@ -485,9 +487,9 @@ class Intermediate_MD5Animation
 	{
 		switch (event.keyCode) {
 			case Keyboard.SHIFT:
-				this.isRunning = false;
-				if (this.isMoving)
-					this.updateMovement(this.movementDirection);
+				this._isRunning = false;
+				if (this._isMoving)
+					this.updateMovement(this._movementDirection);
 				break;
 			case Keyboard.UP:
 			case Keyboard.W:
@@ -501,7 +503,7 @@ class Intermediate_MD5Animation
 			case Keyboard.Q: //fr
 			case Keyboard.RIGHT:
 			case Keyboard.D:
-				this.currentRotationInc = 0;
+				this._currentRotationInc = 0;
 				break;
 			case Keyboard.NUMBER_1:
 				this.playAction(1);
@@ -535,36 +537,36 @@ class Intermediate_MD5Animation
 
 	private updateMovement(dir:number):void
 	{
-		this.isMoving = true;
-		this.animator.playbackSpeed = dir*(this.isRunning? Intermediate_MD5Animation.RUN_SPEED : Intermediate_MD5Animation.WALK_SPEED);
+		this._isMoving = true;
+		this._animator.playbackSpeed = dir*(this._isRunning? Intermediate_MD5Animation.RUN_SPEED : Intermediate_MD5Animation.WALK_SPEED);
 
-		if (this.currentAnim == Intermediate_MD5Animation.WALK_NAME)
+		if (this._currentAnim == Intermediate_MD5Animation.WALK_NAME)
 			return;
 
-		this.currentAnim = Intermediate_MD5Animation.WALK_NAME;
+		this._currentAnim = Intermediate_MD5Animation.WALK_NAME;
 
-		if (this.onceAnim)
+		if (this._onceAnim)
 			return;
 
 		//update animator
-		this.animator.play(this.currentAnim, this.stateTransition);
+		this._animator.play(this._currentAnim, this._stateTransition);
 	}
 
 	private stop():void
 	{
-		this.isMoving = false;
+		this._isMoving = false;
 
-		if (this.currentAnim == Intermediate_MD5Animation.IDLE_NAME)
+		if (this._currentAnim == Intermediate_MD5Animation.IDLE_NAME)
 			return;
 
-		this.currentAnim = Intermediate_MD5Animation.IDLE_NAME;
+		this._currentAnim = Intermediate_MD5Animation.IDLE_NAME;
 
-		if (this.onceAnim)
+		if (this._onceAnim)
 			return;
 
 		//update animator
-		this.animator.playbackSpeed = Intermediate_MD5Animation.IDLE_SPEED;
-		this.animator.play(this.currentAnim, this.stateTransition);
+		this._animator.playbackSpeed = Intermediate_MD5Animation.IDLE_SPEED;
+		this._animator.play(this._currentAnim, this._stateTransition);
 	}
 
 	/**
@@ -572,8 +574,8 @@ class Intermediate_MD5Animation
 	 */
 	private onResize(event:Event = null):void
 	{
-		this.view.width = window.innerWidth;
-		this.view.height = window.innerHeight;
+		this._view.width = window.innerWidth;
+		this._view.height = window.innerHeight;
 	}
 }
 

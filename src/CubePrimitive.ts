@@ -1,13 +1,12 @@
-import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "awayjs-full/lib/core";
-import {ImageSampler, ImageUtils, BlendMode} from "awayjs-full/lib/stage";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {Sprite, PrimitiveCubePrefab, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {View} from "awayjs-full/lib/view";
+import {URLLoaderEvent, Vector3D, URLLoader, URLRequest, URLLoaderDataFormat, RequestAnimationFrame, PerspectiveProjection, ParserUtils} from "@awayjs/core";
+import {ImageSampler, ImageUtils, BlendMode} from "@awayjs/stage";
+import {ElementsType} from "@awayjs/graphics";
+import {Sprite, PrimitiveCubePrefab, PrimitiveTorusPrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
 
 class CubePrimitive
 {
-	private _view:View;
+	private _scene:Scene;
 	private _cube:PrimitiveCubePrefab;
 	private _torus:PrimitiveTorusPrefab;
 	private _sprite:Sprite;
@@ -31,11 +30,11 @@ class CubePrimitive
 	 */
 	private initView():void
 	{
-		this._view = new View();
-		this._view.backgroundColor = 0x000000;
-		this._view.camera.x = 130;
-		this._view.camera.y = 0;
-		this._view.camera.z = 0;
+		this._scene = new Scene();
+		this._scene.view.backgroundColor = 0x000000;
+		this._scene.camera.x = 130;
+		this._scene.camera.y = 0;
+		this._scene.camera.z = 0;
 	}
 
 	/**
@@ -60,8 +59,8 @@ class CubePrimitive
 	private initCamera():void
 	{
 		this._cameraAxis = new Vector3D(0, 0, 1);
-		this._view.camera.projection = new PerspectiveProjection(120);
-		this._view.camera.projection.near = 0.1;
+		this._scene.camera.projection = new PerspectiveProjection(120);
+		this._scene.camera.projection.near = 0.1;
 	}
 
 	/**
@@ -110,8 +109,8 @@ class CubePrimitive
 		this._sprite2.x = 130;
 		this._sprite2.z = 40;
 
-		this._view.scene.addChild(this._sprite);
-		this._view.scene.addChild(this._sprite2);
+		this._scene.root.addChild(this._sprite);
+		this._scene.root.addChild(this._sprite2);
 
 		this._raf = new RequestAnimationFrame(this.render, this);
 		this._raf.start();
@@ -126,11 +125,11 @@ class CubePrimitive
 	 */
 	public render(dt:number = null):void
 	{
-		this._view.camera.transform.rotate(this._cameraAxis, 1);
+		this._scene.camera.transform.rotate(this._cameraAxis, 1);
 		this._sprite.rotationY += 1;
 		this._sprite2.rotationX += 0.4;
 		this._sprite2.rotationY += 0.4;
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -138,11 +137,11 @@ class CubePrimitive
 	 */
 	public onResize(event:UIEvent = null)
 	{
-		this._view.y = 0;
-		this._view.x = 0;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
 
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

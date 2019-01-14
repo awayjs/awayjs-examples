@@ -34,14 +34,13 @@
 
  */
 
-import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEvent, URLRequest} from "awayjs-full/lib/core";
+import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEvent, URLRequest} from "@awayjs/core";
 
-import {MovieClip, Sprite, Font, TextField, TextFormat, TextFormatAlign, TextFieldAutoSize} from "awayjs-full/lib/scene";
+import {MovieClip, Sprite, Font, TextField, TextFormat, TextFormatAlign, TextFieldAutoSize, MouseManager} from "@awayjs/scene";
 
 import {SWFParser, AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayjs/swf-viewer"
 
-import { MouseManager} from "awayjs-full/lib/view";
-import { FontParser} from "awayjs-full/lib/parsers";
+import { FontParser} from "@awayjs/parsers";
 
 class BSWFViewerMinimal_text
 {
@@ -57,7 +56,7 @@ class BSWFViewerMinimal_text
 	{
 		
 		this._stage = new AVMAwayStage(window.innerWidth / 2, window.innerHeight / 2, 0xcccccc, 24, null);
-		MouseManager.getInstance(this._stage.view.renderer.pickGroup)._stage=this._stage;
+		MouseManager.getInstance(this._stage.scene.renderer.pickGroup)._stage=this._stage;
         //this._getTimeCallback=null;
         this._stage.updateSize((window.innerWidth-550)/2, (window.innerHeight-450)/2, 550, 450);
 
@@ -79,7 +78,7 @@ class BSWFViewerMinimal_text
         var myThis=this;
         window.addEventListener("keydown", function(event){
             if(event.key=="Tab"){
-                MouseManager.getInstance(myThis._stage.view.renderer.pickGroup).focusNextTab();
+                MouseManager.getInstance(myThis._stage.scene.renderer.pickGroup).focusNextTab();
             }
         })
 	}

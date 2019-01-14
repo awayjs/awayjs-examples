@@ -34,20 +34,20 @@
 
  */
 
-import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "awayjs-full/lib/core";
-import {Graphics, Shape} from "awayjs-full/lib/graphics";
-import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip, Scene} from "awayjs-full/lib/scene";
-import {MethodMaterial}	from "awayjs-full/lib/materials";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {DefaultRenderer, SceneGraphPartition} from  "awayjs-full/lib/renderer";
-import {View} from "awayjs-full/lib/view";
-import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
+import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "@awayjs/core";
+import {Graphics, Shape} from "@awayjs/graphics";
+import {HoverController, TextField, Sprite, Billboard, Camera, LoaderContainer, MovieClip, Scene, SceneGraphPartition, DisplayObjectContainer} from "@awayjs/scene";
+import {MethodMaterial}	from "@awayjs/materials";
+import {AWDParser} from "@awayjs/parsers";
+import {DefaultRenderer} from  "@awayjs/renderer";
+import {View} from "@awayjs/view";
+import {AS2SceneGraphFactory} from "@awayjs/player";
 import { IShape } from "../../@awayjs/graphics/dist/lib/renderables/IShape";
 
 class AWD3ViewerMinimal
 {
 	private _fps:number = 30;
-	private _view: View;
+	private _root:DisplayObjectContainer;
 	private _scene:Scene;
 	private _renderer: DefaultRenderer;
 	private _rootTimeLine: MovieClip;
@@ -90,15 +90,20 @@ class AWD3ViewerMinimal
 	 */
 	private initEngine(): void
 	{
-		//create the view
-		this._scene = new Scene();
-		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._scene));
+		//create the root container
+		this._root = new DisplayObjectContainer();
+
+		//create the renderer
+		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
 		this._renderer.renderableSorter = null;//new RenderableSort2D();
-		this._scene.partition = this._renderer.partition;
-		//this._renderer.viewport.preserveFocalLength = true;
-		//this._renderer.viewport.focalLength = 1000;
-		this._view = new View(this._renderer);
-		this._view.backgroundColor = 0x000000;
+
+		//create the scene
+		this._scene = new Scene(this._renderer);
+
+		//setup the view
+		this._renderer.view.backgroundColor = 0x000000;
+		//this._renderer.view.preserveFocalLength = true;
+		//this._renderer.view.focalLength = 1000;
 		this._stage_width = 550;
 		this._stage_height = 400;
 
@@ -108,17 +113,19 @@ class AWD3ViewerMinimal
 		 this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
 		 this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
 */
+		//setup projection
 		this._projection = new PerspectiveProjection();
 		this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._projection.originX = -1;
 		this._projection.originY = 1;
 		this._projection.fieldOfView = Math.atan(this._stage_height/1000/2)*360/Math.PI;
 
+		//setup the camera
 		var camera:Camera = new Camera();
 		camera.projection = this._projection;
 
 		this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
-		this._view.camera = camera;
+		this._scene.camera = camera;
 	}
 
 	/**
@@ -136,7 +143,7 @@ class AWD3ViewerMinimal
 		//for plugin preview-runtime:
 		//loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
 
-		loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
+		loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(new AS2SceneGraphFactory(this._scene)));
 		//loader.load(new URLRequest("assets/AWD3/TextConstructionTest.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/scarecrow_zoom_demo.awd"), null, null, new AWDParser(this._view));
 		//loader.load(new URLRequest("assets/AWD3/BigBenClock.awd"));
@@ -230,7 +237,7 @@ class AWD3ViewerMinimal
 			}
 
 			//console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
-			this._scene.addChild(this._rootTimeLine);
+			this._root.addChild(this._rootTimeLine);
 			//this._rootTimeLine.x=-this._stage_width/2;
 			//this._rootTimeLine.y=-this._stage_height/2;
 			// autoplay like in Flash
@@ -262,16 +269,16 @@ class AWD3ViewerMinimal
 			if (this._rootTimeLine != undefined)
 				this._rootTimeLine.update();
 
-			this._view.render();
+			this._scene.render();
 		}
 	}
 
 	private onResize(event = null): void
 	{
-		this._view.y         = 0;
-		this._view.x         = 0;
-		this._view.width     = window.innerWidth;
-		this._view.height    = window.innerHeight;
+		this._scene.view.y         = 0;
+		this._scene.view.x         = 0;
+		this._scene.view.width     = window.innerWidth;
+		this._scene.view.height    = window.innerHeight;
 		this._projection.originX = -(window.innerHeight/this._stage_height)*(this._stage_width/window.innerWidth);
 	}
 

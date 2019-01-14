@@ -38,13 +38,13 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
-import {ElementsType, VertexAnimationSet, VertexAnimator, AnimationSetBase} from "awayjs-full/lib/graphics";
-import {HoverController, Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, ShadowFilteredMethod, ImageTexture2D, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {MD2Parser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, Keyboard, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D, ImageSampler} from "@awayjs/stage";
+import {ElementsType, VertexAnimationSet, VertexAnimator, AnimationSetBase} from "@awayjs/graphics";
+import {HoverController, Sprite, PrimitivePlanePrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, ShadowFilteredMethod, ImageTexture2D, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
+import {MD2Parser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class Intermediate_PerelithKnight
 {
@@ -58,7 +58,7 @@ class Intermediate_PerelithKnight
 	private _pKnightMaterials:Array<MethodMaterial> = new Array<MethodMaterial>();
 
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 	private _cameraController:HoverController;
 
 	//stats
@@ -97,13 +97,13 @@ class Intermediate_PerelithKnight
 	constructor()
 	{
 		//setup the view
-		this._view = new View();
+		this._scene = new Scene();
 
 		//setup the camera for optimal rendering
-		this._view.camera.projection.far = 5000;
+		this._scene.camera.projection.far = 5000;
 
 		//setup controller to be used on the camera
-		this._cameraController = new HoverController(this._view.camera, null, 45, 20, 2000, 5);
+		this._cameraController = new HoverController(this._scene.camera, null, 45, 20, 2000, 5);
 
 		//setup the help text
 		/*
@@ -176,10 +176,10 @@ class Intermediate_PerelithKnight
 		this._floor.graphics.scaleUV(5, 5);
 
 		//setup the scene
-		this._view.scene.addChild(this._floor);
+		this._scene.root.addChild(this._floor);
 
 		//add stats panel
-		//addChild(_stats = new AwayStats(_view));
+		//addChild(_stats = new AwayStats(_scene));
 
 		//add listeners
 		window.onresize  = (event:UIEvent) => this.onResize(event);
@@ -214,7 +214,7 @@ class Intermediate_PerelithKnight
 
 		this._cameraController.lookAtPosition = this._lookAtPosition;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Intermediate_PerelithKnight
 					clone.z = (j-(numDeep-1)/2)*5000/numDeep;
 					clone.castsShadows = true;
 					clone.material = this._pKnightMaterials[Math.floor(Math.random()*this._pKnightMaterials.length)];
-					this._view.scene.addChild(clone);
+					this._scene.root.addChild(clone);
 
 					//create animator
 					var vertexAnimator:VertexAnimator = new VertexAnimator(this._animationSet);
@@ -410,10 +410,10 @@ class Intermediate_PerelithKnight
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

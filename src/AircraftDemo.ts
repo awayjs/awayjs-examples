@@ -1,11 +1,11 @@
-import {LoaderEvent, Matrix, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
-import {Style} from "awayjs-full/lib/renderer";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {Sprite, Skybox, DisplayObjectContainer, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod, ImageTexture2D, ImageTextureCube, DirectionalLight, StaticLightPicker}	from "awayjs-full/lib/materials";
-import {OBJParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {LoaderEvent, Matrix, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, Debug, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D, BitmapImageCube, ImageSampler} from "@awayjs/stage";
+import {Style} from "@awayjs/renderer";
+import {ElementsType} from "@awayjs/graphics";
+import {Sprite, Skybox, DisplayObjectContainer, PrimitivePlanePrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, EffectEnvMapMethod, NormalSimpleWaterMethod, SpecularFresnelMethod, ImageTexture2D, ImageTextureCube, DirectionalLight, StaticLightPicker}	from "@awayjs/materials";
+import {OBJParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class AircraftDemo
 {
@@ -19,7 +19,7 @@ class AircraftDemo
 	//}
 	
 	private _lightPicker:StaticLightPicker;
-	private _view:View;
+	private _scene:Scene;
 	private _timer:RequestAnimationFrame;
 	
 	//{ sea
@@ -46,7 +46,7 @@ class AircraftDemo
 		Debug.LOG_PI_ERRORS = false;
 		Debug.THROW_ERRORS = false;
 		
-		this.initView();
+		this.initScene();
 		this.initLights();
 		this.initAnimation();
 		this.initParsers();
@@ -79,15 +79,15 @@ class AircraftDemo
 		this._timer = new RequestAnimationFrame( this.render, this );
 	}
 
-	private initView()
+	private initScene()
 	{
-		this._view = new View();
-		this._view.camera.z	= -500;
-		this._view.camera.y	= 250;
-		this._view.camera.rotationX	= 20;
-		this._view.camera.projection.near = 0.5;
-		this._view.camera.projection.far = 14000;
-		this._view.backgroundColor = 0x2c2c32;
+		this._scene = new Scene();
+		this._scene.camera.z	= -500;
+		this._scene.camera.y	= 250;
+		this._scene.camera.rotationX	= 20;
+		this._scene.camera.projection.near = 0.5;
+		this._scene.camera.projection.far = 14000;
+		this._scene.view.backgroundColor = 0x2c2c32;
 
 		this.onResize();
 	}
@@ -122,11 +122,11 @@ class AircraftDemo
 		f14Material.style.sampler = new ImageSampler(true, true, false);
 		f14Material.lightPicker = this._lightPicker;
 		
-		this._view.scene.addChild(this._f14Geom);
+		this._scene.root.addChild(this._f14Geom);
 		this._f14Geom.transform.scaleTo(20, 20, 20);
 		this._f14Geom.rotationX = 90;
 		this._f14Geom.y = 200;
-		this._view.camera.lookAt(this._f14Geom.transform.position);
+		this._scene.camera.lookAt(this._f14Geom.transform.position);
 		
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 	}
@@ -154,8 +154,8 @@ class AircraftDemo
 		this._seaSprite.graphics.scaleUV( 100, 100 );
 		this._seaSprite.style = new Style();
 		this._seaSprite.style.uvMatrix = new Matrix();
-		this._view.scene.addChild( new Skybox(this._skyboxImageCube));
-		this._view.scene.addChild( this._seaSprite );
+		this._scene.root.addChild( new Skybox(this._skyboxImageCube));
+		this._scene.root.addChild( this._seaSprite );
 	}
 	
 	public onResourceComplete(event:LoaderEvent)
@@ -213,17 +213,17 @@ class AircraftDemo
 		}
 		
 		if (this._f14Geom) {
-			this._view.camera.lookAt(this._f14Geom.transform.position);
+			this._scene.camera.lookAt(this._f14Geom.transform.position);
 		}
 		
-		if (this._view.camera) {
+		if (this._scene.camera) {
 			this._cameraIncrement += 0.01;
-			this._view.camera.x = Math.cos(this._cameraIncrement)*400;
-			this._view.camera.z = Math.sin(this._cameraIncrement)*400;
+			this._scene.camera.x = Math.cos(this._cameraIncrement)*400;
+			this._scene.camera.z = Math.sin(this._cameraIncrement)*400;
 		}
 		
 		if ( this._f14Geom ) {
-			this._view.camera.lookAt(this._f14Geom.transform.position);
+			this._scene.camera.lookAt(this._f14Geom.transform.position);
 		}
 		
 		if (this._seaMaterial) {
@@ -238,15 +238,15 @@ class AircraftDemo
 		}
 		
 		this._appTime += dt;
-		this._view.render();
+		this._scene.render();
 	}
 	
 	public onResize(event:UIEvent = null)
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 	
 	private onMouseDown(event:MouseEvent)

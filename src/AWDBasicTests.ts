@@ -34,19 +34,21 @@
 
  */
 
-import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
-import {HoverController, Camera, LoaderContainer, MovieClip, Scene} from "awayjs-full/lib/scene";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {DefaultRenderer, SceneGraphPartition, BasicPartition} from  "awayjs-full/lib/renderer";
-import {View} from "awayjs-full/lib/view";
-import {AS2SceneGraphFactory} from "awayjs-full/lib/player";
+import {AssetEvent, LoaderEvent, ParserEvent, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection, Keyboard} from "@awayjs/core";
+import {HoverController, Camera, LoaderContainer, MovieClip, Scene, SceneGraphPartition, DisplayObjectContainer} from "@awayjs/scene";
+import {AWDParser} from "@awayjs/parsers";
+import {DefaultRenderer} from  "@awayjs/renderer";
+import {View, BasicPartition} from "@awayjs/view";
+import {AS2SceneGraphFactory} from "@awayjs/player";
 
 class AWDBasicTests
 {
     private _fps:number = 30;
 
     //engine variables
+    private _scene: Scene;
     private _view: View;
+    private _root: DisplayObjectContainer;
     private _renderer: DefaultRenderer;
 
     private _rootTimeLine: MovieClip;
@@ -186,7 +188,7 @@ class AWDBasicTests
     private dropDownChange( e ) : void {
         if(this.dropDown.selectedIndex==0){
             if(this._rootTimeLine)
-                this._view.scene.removeChild(this._rootTimeLine);
+                this._scene.root.removeChild(this._rootTimeLine);
             this._rootTimeLine=null;
             this._currentAWDIdx=this._awd_names.length;
             this.thisDiv.innerHTML="Choose a AWDFile in the select box,<br>or use the left and right keys to skip through the tests";
@@ -220,20 +222,14 @@ class AWDBasicTests
      */
     private initEngine(): void
     {
-        //create the view
-        this._renderer = new DefaultRenderer(new BasicPartition(new Scene()));
-        this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view = new View(this._renderer);
+        //create the renderer
+        this._root = new DisplayObjectContainer();
+        this._view = new View();
         this._view.backgroundColor = 0x000000;
-        this._stage_width = 550;
-        this._stage_height = 400;
+        this._renderer = new DefaultRenderer(new BasicPartition(this._root), this._view);
+        this._renderer.renderableSorter = null;//new RenderableSort2D();
 
-        //for plugin preview-runtime:
-/*
-         this._view.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
-         this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
-         this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
-*/
+        //create the camera
         this._isperspective=true;
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
@@ -242,9 +238,19 @@ class AWDBasicTests
         this._projection.originY = 1;
         var camera:Camera = new Camera();
         camera.projection = this._projection;
-
         this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
-        this._view.camera = camera;
+
+        //create the scene
+        this._scene = new Scene(this._renderer, camera);
+        this._stage_width = 550;
+        this._stage_height = 400;
+
+        //for plugin preview-runtime:
+/*
+         this._scene.backgroundColor = parseInt(document.getElementById("bgColor").innerHTML.replace("#", "0x"));
+         this._stage_width = parseInt(document.getElementById("awdWidth").innerHTML);
+         this._stage_height = parseInt(document.getElementById("awdHeight").innerHTML);
+*/
     }
 
     /**
@@ -259,7 +265,7 @@ class AWDBasicTests
         //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
         //this.loadNext();
         //for plugin preview-runtime:
-        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._view));
+        //loader.load(new URLRequest(document.getElementById("awdPath").innerHTML), null, null, new AWDParser(this._scene));
 
     }
 
@@ -313,7 +319,7 @@ class AWDBasicTests
             this._rootTimeLine.partition = new SceneGraphPartition(this._rootTimeLine);
             //console.log("LOADING A ROOT name = " + this._rootTimeLine.name + " duration=" + this._rootTimeLine.duration);
 
-            this._view.scene.addChild(this._rootTimeLine);
+            this._scene.root.addChild(this._rootTimeLine);
         }
     }
 
@@ -324,7 +330,7 @@ class AWDBasicTests
     {
 
         if(this._rootTimeLine)
-            this._view.scene.removeChild(this._rootTimeLine);
+            this._scene.root.removeChild(this._rootTimeLine);
         this._rootTimeLine=null;
         this._currentAWDIdx++;
         if(this._currentAWDIdx>=this._awd_names.length){
@@ -332,12 +338,12 @@ class AWDBasicTests
         }
         this.thisDiv.innerHTML="loading AWD";
         this.dropDown.selectedIndex=this._currentAWDIdx+1;
-        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
+        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._scene)));
     }
     private loadPrev(): void
     {
         if(this._rootTimeLine)
-            this._view.scene.removeChild(this._rootTimeLine);
+            this._scene.root.removeChild(this._rootTimeLine);
         this._rootTimeLine=null;
         this._currentAWDIdx--;
         if(this._currentAWDIdx<0){
@@ -345,7 +351,7 @@ class AWDBasicTests
         }
         this.thisDiv.innerHTML="loading AWD";
         this.dropDown.selectedIndex=this._currentAWDIdx+1;
-        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._view)));
+        this._loader.load(new URLRequest("assets/AWD3/BasicTests/"+this._awd_names[this._currentAWDIdx]), null, null, new AWDParser(new AS2SceneGraphFactory(this._scene)));
     }
     /**
      * Key down listener for animation
@@ -383,7 +389,7 @@ class AWDBasicTests
             if (this._rootTimeLine != undefined)
                 this._rootTimeLine.update();
 
-            this._view.render();
+            this._scene.render();
         }
     }
 

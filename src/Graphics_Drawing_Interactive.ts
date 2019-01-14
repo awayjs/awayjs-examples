@@ -34,17 +34,18 @@
 
  */
 
-import { RequestAnimationFrame, ColorUtils,  ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem, Box, Vector3D } from "awayjs-full/lib/core";
-import { DefaultRenderer, SceneGraphPartition, PickEntity, PickGroup } from "awayjs-full/lib/renderer";
-import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "awayjs-full/lib/graphics";
-import { MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene, OrientationMode, AlignmentMode } from "awayjs-full/lib/scene";
-import { View, MouseManager } from "awayjs-full/lib/view";
-import { AS2MovieClipAdapter } from "awayjs-full/lib/player";
-import { MethodMaterial } from "awayjs-full/lib/materials";
+import { RequestAnimationFrame, PerspectiveProjection, CoordinateSystem } from "@awayjs/core";
+import { DefaultRenderer } from "@awayjs/renderer";
+import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "@awayjs/graphics";
+import { MouseEvent, Sprite, Camera, Scene, MouseManager, SceneGraphPartition, DisplayObjectContainer } from "@awayjs/scene";
+import { View, PickGroup } from "@awayjs/view";
+import { MethodMaterial } from "@awayjs/materials";
 
 class Graphics_Drawing_Interactive {
     //engine variables
+    private _scene: Scene;
     private _view: View;
+    private _root: DisplayObjectContainer;
     private _renderer: DefaultRenderer;
 
     private _isMouseDown: boolean = false;
@@ -86,14 +87,15 @@ class Graphics_Drawing_Interactive {
 	 */
     private initEngine(): void {
         //create the view
-        this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
-
-        MouseManager.getInstance(PickGroup.getInstance(this._renderer.viewport)).eventBubbling = true;
+        this._root = new DisplayObjectContainer();
+        this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
+        this._view = this._renderer.view;
+        this._view.backgroundColor = 0x777777;
+        MouseManager.getInstance(PickGroup.getInstance(this._view)).eventBubbling = true;
 
 
         this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view = new View(this._renderer);
-        this._view.backgroundColor = 0x777777;
+        this._scene = new Scene(this._renderer);
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._projection.fieldOfView = 30;
@@ -101,7 +103,7 @@ class Graphics_Drawing_Interactive {
         this._projection.originY = 1;
         this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
-        this._view.camera = this._camera_perspective;
+        this._scene.camera = this._camera_perspective;
     }
 
     /**
@@ -175,9 +177,9 @@ class Graphics_Drawing_Interactive {
         this._circleGraphic.graphics.endFill();
 
 
-        this._view.scene.addChild(bgSprite);
-        this._view.scene.addChild(this._shape);
-        this._view.scene.addChild(this._circleGraphic);
+        this._root.addChild(bgSprite);
+        this._root.addChild(this._shape);
+        this._root.addChild(this._circleGraphic);
 
     }
 
@@ -252,10 +254,10 @@ class Graphics_Drawing_Interactive {
     private initListeners(): void {
 
         
-        this._view.scene.addEventListener(MouseEvent.MOUSE_DOWN, (event: MouseEvent) => this.onMouseDown(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_MOVE, (event: MouseEvent) => this.onMouseMove(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP, (event: MouseEvent) => this.onMouseUp(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP_OUTSIDE, (event: MouseEvent) => this.onMouseUp(event));
+        this._root.addEventListener(MouseEvent.MOUSE_DOWN, (event: MouseEvent) => this.onMouseDown(event));
+        this._root.addEventListener(MouseEvent.MOUSE_MOVE, (event: MouseEvent) => this.onMouseMove(event));
+        this._root.addEventListener(MouseEvent.MOUSE_UP, (event: MouseEvent) => this.onMouseUp(event));
+        this._root.addEventListener(MouseEvent.MOUSE_UP_OUTSIDE, (event: MouseEvent) => this.onMouseUp(event));
 
         window.onresize = (event) => this.onResize(event);
 
@@ -280,7 +282,7 @@ class Graphics_Drawing_Interactive {
             this._circleGraphic.scaleY-=0.05;
         }
         //update view
-        this._view.render();
+        this._scene.render();
     }
 
 

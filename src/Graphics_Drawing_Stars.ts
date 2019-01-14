@@ -34,17 +34,18 @@
 
  */
 
-import { RequestAnimationFrame, ColorTransform, OrthographicProjection, PerspectiveProjection, CoordinateSystem, Box, Vector3D, ColorUtils } from "awayjs-full/lib/core";
-import { DefaultRenderer, SceneGraphPartition, PickEntity, PickGroup } from "awayjs-full/lib/renderer";
-import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "awayjs-full/lib/graphics";
-import { MouseEvent, HoverController, MovieClip, Sprite, Camera, Scene, OrientationMode, AlignmentMode } from "awayjs-full/lib/scene";
-import { View, MouseManager } from "awayjs-full/lib/view";
-import { AS2MovieClipAdapter } from "awayjs-full/lib/player";
-import { MethodMaterial } from "awayjs-full/lib/materials";
+import { RequestAnimationFrame, PerspectiveProjection, CoordinateSystem, ColorUtils } from "@awayjs/core";
+import { DefaultRenderer } from "@awayjs/renderer";
+import { CapsStyle, JointStyle, Graphics, TextureAtlas, GradientFillStyle } from "@awayjs/graphics";
+import { MouseEvent, Sprite, Camera, Scene, MouseManager, SceneGraphPartition, DisplayObjectContainer } from "@awayjs/scene";
+import { View, PickGroup } from "@awayjs/view";
+import { MethodMaterial } from "@awayjs/materials";
 
-class GGraphics_Drawing_Stars {
+class Graphics_Drawing_Stars {
     //engine variables
+    private _scene: Scene;
     private _view: View;
+    private _root: DisplayObjectContainer;
     private _renderer: DefaultRenderer;
 
 
@@ -53,11 +54,6 @@ class GGraphics_Drawing_Stars {
     //navigation
     private _projection: PerspectiveProjection;
     private _camera_perspective: Camera;
-
-    private _shape: Sprite;
-    private _circleGraphic: Sprite;
-    private _drawing_path: any[];
-    private _drawing_points: any[];
 
     private static _colorMaterials: Object = {};
     private static _textureMaterials: Object = {};
@@ -84,14 +80,15 @@ class GGraphics_Drawing_Stars {
 	 */
     private initEngine(): void {
         //create the view
-        this._renderer = new DefaultRenderer(new SceneGraphPartition(new Scene()));
-
-        MouseManager.getInstance(PickGroup.getInstance(this._renderer.viewport)).eventBubbling = true;
+        this._root = new DisplayObjectContainer();
+        this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
+        this._view = this._renderer.view;
+        this._view.backgroundColor = 0x777777;
+        MouseManager.getInstance(PickGroup.getInstance(this._view)).eventBubbling = true;
 
 
         this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view = new View(this._renderer);
-        this._view.backgroundColor = 0x777777;
+        this._scene = new Scene(this._renderer);
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._projection.fieldOfView = 30;
@@ -99,7 +96,7 @@ class GGraphics_Drawing_Stars {
         this._projection.originY = 1;
         this._camera_perspective = new Camera();
         this._camera_perspective.projection = this._projection;
-        this._view.camera = this._camera_perspective;
+        this._scene.camera = this._camera_perspective;
     }
 
     /**
@@ -114,8 +111,8 @@ class GGraphics_Drawing_Stars {
             //console.log("get color");
             //alpha=0.5;
             var texObj: any = TextureAtlas.getTextureForColor(color, alpha);
-            if (GGraphics_Drawing_Stars._colorMaterials[texObj.bitmap.id]) {
-                texObj.material = GGraphics_Drawing_Stars._colorMaterials[texObj.bitmap.id];
+            if (Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id]) {
+                texObj.material = Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id];
                 return texObj;
             }
 
@@ -123,7 +120,7 @@ class GGraphics_Drawing_Stars {
             newmat.alphaBlending = true;
             newmat.useColorTransform = true;
             newmat.bothSides = true;
-            GGraphics_Drawing_Stars._colorMaterials[texObj.bitmap.id] = newmat;
+            Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id] = newmat;
             texObj.material = newmat;
             return texObj;
         };
@@ -137,15 +134,15 @@ class GGraphics_Drawing_Stars {
 			 color=0xcccccc;
 			 }*/
             var lookupId: string = texObj.bitmap.id + gradient.type;
-            if (GGraphics_Drawing_Stars._textureMaterials[lookupId]) {
-                texObj.material = GGraphics_Drawing_Stars._textureMaterials[lookupId];
+            if (Graphics_Drawing_Stars._textureMaterials[lookupId]) {
+                texObj.material = Graphics_Drawing_Stars._textureMaterials[lookupId];
                 return texObj;
             }
             var newmat: MethodMaterial = new MethodMaterial(texObj.bitmap);
             newmat.useColorTransform = true;
             newmat.alphaBlending = true;
             newmat.bothSides = true;
-            GGraphics_Drawing_Stars._textureMaterials[lookupId] = newmat;
+            Graphics_Drawing_Stars._textureMaterials[lookupId] = newmat;
             texObj.material = newmat;
             return texObj;
         };
@@ -160,7 +157,7 @@ class GGraphics_Drawing_Stars {
         bgSprite.graphics.beginFill(0xdddddd, 1);
         bgSprite.graphics.drawRect(0, 0, window.innerWidth, window.innerHeight);
         bgSprite.graphics.endFill();
-        this._view.scene.addChild(bgSprite);
+        this._root.addChild(bgSprite);
 
     }
 
@@ -171,7 +168,7 @@ class GGraphics_Drawing_Stars {
         this._star.x = event.scenePosition.x;
         this._star.y= event.scenePosition.y;
         this.draw_star(this._star, 10);
-        this._view.scene.addChild(this._star);
+        this._root.addChild(this._star);
     }
     private onMouseUp(event: MouseEvent): void {
         this._star = null;
@@ -227,12 +224,12 @@ class GGraphics_Drawing_Stars {
     private onKeyDown(event){
         if(event.key=="c"){
             
-            this._view.scene.removeChildren(0, this._view.scene.numChildren);
+            this._root.removeChildren(0, this._root.numChildren);
             var bgSprite = new Sprite(null);
             bgSprite.graphics.beginFill(0xdddddd, 1);
             bgSprite.graphics.drawRect(0, 0, window.innerWidth, window.innerHeight);
             bgSprite.graphics.endFill();
-            this._view.scene.addChild(bgSprite);
+            this._root.addChild(bgSprite);
         }
     }
 	/**
@@ -241,10 +238,10 @@ class GGraphics_Drawing_Stars {
     private initListeners(): void {
 
         
-        this._view.scene.addEventListener(MouseEvent.MOUSE_DOWN, (event: MouseEvent) => this.onMouseDown(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_MOVE, (event: MouseEvent) => this.onMouseMove(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP, (event: MouseEvent) => this.onMouseUp(event));
-        this._view.scene.addEventListener(MouseEvent.MOUSE_UP_OUTSIDE, (event: MouseEvent) => this.onMouseUp(event));
+        this._root.addEventListener(MouseEvent.MOUSE_DOWN, (event: MouseEvent) => this.onMouseDown(event));
+        this._root.addEventListener(MouseEvent.MOUSE_MOVE, (event: MouseEvent) => this.onMouseMove(event));
+        this._root.addEventListener(MouseEvent.MOUSE_UP, (event: MouseEvent) => this.onMouseUp(event));
+        this._root.addEventListener(MouseEvent.MOUSE_UP_OUTSIDE, (event: MouseEvent) => this.onMouseUp(event));
 
         window.onresize = (event) => this.onResize(event);
 
@@ -263,7 +260,7 @@ class GGraphics_Drawing_Stars {
     private onEnterFrame(dt: number): void {
 
         //update view
-        this._view.render();
+        this._scene.render();
     }
 
 
@@ -277,5 +274,5 @@ class GGraphics_Drawing_Stars {
 }
 
 window.onload = function () {
-    new GGraphics_Drawing_Stars();
+    new Graphics_Drawing_Stars();
 };

@@ -36,56 +36,57 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, ImageSampler, ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData} from "awayjs-full/lib/stage";
-import {ShaderBase} from "awayjs-full/lib/renderer";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {OrientationMode, AlignmentMode, HoverController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitiveSpherePrefab} from "awayjs-full/lib/scene";
-import {LightingShader, MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, _Shader_LightingCompositeMethod, _IShader_LightingMethod, ImageTexture2D, PointLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {View} from "awayjs-full/lib/view";
+import {LoaderEvent, ColorTransform, Vector3D, Point, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame} from "@awayjs/core";
+import {BitmapImage2D, BitmapImageCube, BitmapImageChannel, BlendMode, ImageSampler, ShaderRegisterElement, ShaderRegisterCache, ShaderRegisterData} from "@awayjs/stage";
+import {ShaderBase} from "@awayjs/renderer";
+import {ElementsType} from "@awayjs/graphics";
+import {OrientationMode, AlignmentMode, HoverController, Sprite, Scene, Camera, DisplayObjectContainer, Skybox, Billboard, PrimitiveSpherePrefab} from "@awayjs/scene";
+import {LightingShader, MethodMaterial, SpecularPhongMethod, DiffuseBasicMethod, SpecularBasicMethod, SpecularFresnelMethod, DiffuseCompositeMethod, SpecularCompositeMethod, _Shader_LightingCompositeMethod, _IShader_LightingMethod, ImageTexture2D, PointLight, StaticLightPicker} from "@awayjs/materials";
+import {View} from "@awayjs/view";
 
 class Intermediate_Globe
 {
 	//engine variables
-	private scene:Scene;
-	private camera:Camera;
-	private view:View;
-	private cameraController:HoverController;
+	private _scene:Scene;
+	private _root:DisplayObjectContainer;
+	private _camera:Camera;
+	private _view:View;
+	private _cameraController:HoverController;
 
 	//material objects
-	private sunMaterial:MethodMaterial;
-	private groundMaterial:MethodMaterial;
-	private cloudMaterial:MethodMaterial;
-	private atmosphereMaterial:MethodMaterial;
-	private atmosphereDiffuseMethod:SpecularGlobeMethod;
-	private atmosphereSpecularMethod:SpecularGlobeMethod;
+	private _sunMaterial:MethodMaterial;
+	private _groundMaterial:MethodMaterial;
+	private _cloudMaterial:MethodMaterial;
+	private _atmosphereMaterial:MethodMaterial;
+	private _atmosphereDiffuseMethod:SpecularGlobeMethod;
+	private _atmosphereSpecularMethod:SpecularGlobeMethod;
 
 	//scene objects
-	private sun:Billboard;
-	private earth:Sprite;
-	private clouds:Sprite;
-	private atmosphere:Sprite;
-	private tiltContainer:DisplayObjectContainer;
-	private orbitContainer:DisplayObjectContainer;
-	private skyBox:Skybox;
+	private _sun:Billboard;
+	private _earth:Sprite;
+	private _clouds:Sprite;
+	private _atmosphere:Sprite;
+	private _tiltContainer:DisplayObjectContainer;
+	private _orbitContainer:DisplayObjectContainer;
+	private _skyBox:Skybox;
 
 	//light objects
-	private light:PointLight;
-	private lightPicker:StaticLightPicker;
-	private flares:FlareObject[] = new Array<FlareObject>(12);
+	private _light:PointLight;
+	private _lightPicker:StaticLightPicker;
+	private _flares:FlareObject[] = new Array<FlareObject>(12);
 
 	//navigation variables
 	private _timer:RequestAnimationFrame;
 	private _time:number = 0;
-	private move:boolean = false;
-	private lastPanAngle:number;
-	private lastTiltAngle:number;
-	private lastMouseX:number;
-	private lastMouseY:number;
-	private mouseLockX:number = 0;
-	private mouseLockY:number = 0;
-	private mouseLocked:boolean;
-	private flareVisible:boolean;
+	private _move:boolean = false;
+	private _lastPanAngle:number;
+	private _lastTiltAngle:number;
+	private _lastMouseX:number;
+	private _lastMouseY:number;
+	private _mouseLockX:number = 0;
+	private _mouseLockY:number = 0;
+	private _mouseLocked:boolean;
+	private _flareVisible:boolean;
 
 	/**
 	 * Constructor
@@ -113,20 +114,20 @@ class Intermediate_Globe
 	 */
 	private initEngine():void
 	{
-		this.scene = new Scene();
+		this._scene = new Scene();
 
 		//setup camera for optimal skybox rendering
-		this.camera = new Camera();
-		this.camera.projection.far = 100000;
+		this._camera = new Camera();
+		this._camera.projection.far = 100000;
+		this._scene.camera = this._camera;
 
-		this.view = new View();
-		this.view.scene = this.scene;
-		this.view.camera = this.camera;
+		this._view = this._scene.view;
+		this._root = this._scene.root;
 
 		//setup controller to be used on the camera
-		this.cameraController = new HoverController(this.camera, null, 0, 0, 600, -90, 90);
-		this.cameraController.autoUpdate = false;
-		this.cameraController.yFactor = 1;
+		this._cameraController = new HoverController(this._camera, null, 0, 0, 600, -90, 90);
+		this._cameraController.autoUpdate = false;
+		this._cameraController.yFactor = 1;
 	}
 
 	/**
@@ -134,12 +135,12 @@ class Intermediate_Globe
 	 */
 	private initLights():void
 	{
-		this.light = new PointLight();
-		this.light.x = 10000;
-		this.light.ambient = 1;
-		this.light.diffuse = 2;
+		this._light = new PointLight();
+		this._light.x = 10000;
+		this._light.ambient = 1;
+		this._light.diffuse = 2;
 
-		this.lightPicker = new StaticLightPicker([this.light]);
+		this._lightPicker = new StaticLightPicker([this._light]);
 	}
 /*
 	private initLensFlare():void
@@ -171,37 +172,37 @@ class Intermediate_Globe
 		specular.gloss = 5;
 		specular.strength = 1;
 
-		this.sunMaterial = new MethodMaterial();
-		this.sunMaterial.style.sampler = new ImageSampler(false, true, true);
-		this.sunMaterial.blendMode = BlendMode.ADD;
+		this._sunMaterial = new MethodMaterial();
+		this._sunMaterial.style.sampler = new ImageSampler(false, true, true);
+		this._sunMaterial.blendMode = BlendMode.ADD;
 
-		this.groundMaterial = new MethodMaterial();
-		this.groundMaterial.style.sampler = new ImageSampler(false, true, true);
-		this.groundMaterial.specularMethod = specular;
-		this.groundMaterial.lightPicker = this.lightPicker;
-		this.groundMaterial.ambientMethod.strength = 1;
-		this.groundMaterial.diffuseMethod.multiply = false;
+		this._groundMaterial = new MethodMaterial();
+		this._groundMaterial.style.sampler = new ImageSampler(false, true, true);
+		this._groundMaterial.specularMethod = specular;
+		this._groundMaterial.lightPicker = this._lightPicker;
+		this._groundMaterial.ambientMethod.strength = 1;
+		this._groundMaterial.diffuseMethod.multiply = false;
 
-		this.cloudMaterial = new MethodMaterial();
-		this.cloudMaterial.style.sampler = new ImageSampler(false, true, true);
-		this.cloudMaterial.alphaBlending = true;
-		this.cloudMaterial.lightPicker = this.lightPicker;
-		this.cloudMaterial.style.color = 0x1b2048;
-		this.cloudMaterial.specularMethod.strength = 0;
-		this.cloudMaterial.ambientMethod.strength = 1;
-		this.cloudMaterial.diffuseMethod.multiply = false;
+		this._cloudMaterial = new MethodMaterial();
+		this._cloudMaterial.style.sampler = new ImageSampler(false, true, true);
+		this._cloudMaterial.alphaBlending = true;
+		this._cloudMaterial.lightPicker = this._lightPicker;
+		this._cloudMaterial.style.color = 0x1b2048;
+		this._cloudMaterial.specularMethod.strength = 0;
+		this._cloudMaterial.ambientMethod.strength = 1;
+		this._cloudMaterial.diffuseMethod.multiply = false;
 
-		this.atmosphereMaterial = new MethodMaterial();
-		this.atmosphereMaterial.diffuseMethod = new DiffuseGlobeMethod();
-		this.atmosphereMaterial.specularMethod = new SpecularGlobeMethod(new SpecularPhongMethod());
-		this.atmosphereMaterial.blendMode = BlendMode.ADD;
-		this.atmosphereMaterial.lightPicker = this.lightPicker;
-		this.atmosphereMaterial.specularMethod.strength = 0.5;
-		this.atmosphereMaterial.specularMethod.gloss = 5;
-		this.atmosphereMaterial.style.color = 0;
-		this.atmosphereMaterial.diffuseMethod.color = 0x1671cc;
-		this.atmosphereMaterial.ambientMethod.strength = 1;
-		this.atmosphereMaterial.diffuseMethod.multiply = false;
+		this._atmosphereMaterial = new MethodMaterial();
+		this._atmosphereMaterial.diffuseMethod = new DiffuseGlobeMethod();
+		this._atmosphereMaterial.specularMethod = new SpecularGlobeMethod(new SpecularPhongMethod());
+		this._atmosphereMaterial.blendMode = BlendMode.ADD;
+		this._atmosphereMaterial.lightPicker = this._lightPicker;
+		this._atmosphereMaterial.specularMethod.strength = 0.5;
+		this._atmosphereMaterial.specularMethod.gloss = 5;
+		this._atmosphereMaterial.style.color = 0;
+		this._atmosphereMaterial.diffuseMethod.color = 0x1671cc;
+		this._atmosphereMaterial.ambientMethod.strength = 1;
+		this._atmosphereMaterial.diffuseMethod.multiply = false;
 	}
 
 	/**
@@ -209,33 +210,33 @@ class Intermediate_Globe
 	 */
 	private initObjects():void
 	{
-		this.orbitContainer = new DisplayObjectContainer();
-		this.scene.addChild(this.orbitContainer);
+		this._orbitContainer = new DisplayObjectContainer();
+		this._root.addChild(this._orbitContainer);
 
-		this.sun = new Billboard(this.sunMaterial);
-		this.sun.width = 3000;
-		this.sun.height = 3000;
-		this.sun.registrationPoint = new Vector3D(1500,1500,0);
-		this.sun.orientationMode = OrientationMode.CAMERA_PLANE;
-		this.sun.x = 10000;
-		this.orbitContainer.addChild(this.sun);
+		this._sun = new Billboard(this._sunMaterial);
+		this._sun.width = 3000;
+		this._sun.height = 3000;
+		this._sun.registrationPoint = new Vector3D(1500,1500,0);
+		this._sun.orientationMode = OrientationMode.CAMERA_PLANE;
+		this._sun.x = 10000;
+		this._orbitContainer.addChild(this._sun);
 
-		this.earth = <Sprite> new PrimitiveSpherePrefab(this.groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
+		this._earth = <Sprite> new PrimitiveSpherePrefab(this._groundMaterial, ElementsType.TRIANGLE, 200, 200, 100).getNewObject();
 
-		this.clouds = <Sprite> new PrimitiveSpherePrefab(this.cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
+		this._clouds = <Sprite> new PrimitiveSpherePrefab(this._cloudMaterial, ElementsType.TRIANGLE, 202, 200, 100).getNewObject();
 
-		this.atmosphere = <Sprite> new PrimitiveSpherePrefab(this.atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
-		this.atmosphere.scaleX = -1;
+		this._atmosphere = <Sprite> new PrimitiveSpherePrefab(this._atmosphereMaterial, ElementsType.TRIANGLE, 210, 200, 100).getNewObject();
+		this._atmosphere.scaleX = -1;
 
-		this.tiltContainer = new DisplayObjectContainer();
-		this.tiltContainer.rotationX = 23;
-		this.tiltContainer.addChild(this.earth);
-		this.tiltContainer.addChild(this.clouds);
-		this.tiltContainer.addChild(this.atmosphere);
+		this._tiltContainer = new DisplayObjectContainer();
+		this._tiltContainer.rotationX = 23;
+		this._tiltContainer.addChild(this._earth);
+		this._tiltContainer.addChild(this._clouds);
+		this._tiltContainer.addChild(this._atmosphere);
 
-		this.scene.addChild(this.tiltContainer);
+		this._root.addChild(this._tiltContainer);
 
-		this.cameraController.lookAtObject = this.tiltContainer;
+		this._cameraController.lookAtObject = this._tiltContainer;
 	}
 
 	/**
@@ -291,47 +292,47 @@ class Intermediate_Globe
 	{
 		this._time += dt;
 
-		this.earth.rotationY -= 0.2;
-		this.clouds.rotationY -= 0.21;
-		this.orbitContainer.rotationY -= 0.02;
+		this._earth.rotationY -= 0.2;
+		this._clouds.rotationY -= 0.21;
+		this._orbitContainer.rotationY -= 0.02;
 
-		this.cameraController.update();
+		this._cameraController.update();
 
 		this.updateFlares();
 
-		this.view.render();
+		this._scene.render();
 	}
 
 	private updateFlares():void
 	{
-		var flareVisibleOld:boolean = this.flareVisible;
+		var flareVisibleOld:boolean = this._flareVisible;
 
-		var sunScreenPosition:Vector3D = this.view.project(this.sun.scenePosition);
+		var sunScreenPosition:Vector3D = this._view.project(this._sun.scenePosition);
 		var xOffset:number = sunScreenPosition.x - window.innerWidth/2;
 		var yOffset:number = sunScreenPosition.y - window.innerHeight/2;
 
-		var earthScreenPosition:Vector3D = this.view.project(this.earth.scenePosition);
+		var earthScreenPosition:Vector3D = this._view.project(this._earth.scenePosition);
 		var earthRadius:number = 190 * window.innerHeight/earthScreenPosition.z;
 		var flareObject:FlareObject;
 
-		this.flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < window.innerWidth && sunScreenPosition.y > 0 && sunScreenPosition.y  < window.innerHeight && sunScreenPosition.z > 0 && Math.sqrt(xOffset*xOffset + yOffset*yOffset) > earthRadius);
+		this._flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < window.innerWidth && sunScreenPosition.y > 0 && sunScreenPosition.y  < window.innerHeight && sunScreenPosition.z > 0 && Math.sqrt(xOffset*xOffset + yOffset*yOffset) > earthRadius);
 
 		//update flare visibility
-		if (this.flareVisible != flareVisibleOld) {
-			for (var i:number = 0; i < this.flares.length; i++) {
-				flareObject = this.flares[i];
+		if (this._flareVisible != flareVisibleOld) {
+			for (var i:number = 0; i < this._flares.length; i++) {
+				flareObject = this._flares[i];
 				if (flareObject)
-					flareObject.billboard.visible = this.flareVisible;
+					flareObject.billboard.visible = this._flareVisible;
 			}
 		}
 
 		//update flare position
-		if (this.flareVisible) {
+		if (this._flareVisible) {
 			var flareDirection:Point = new Point(xOffset, yOffset);
-			for (var i:number = 0; i < this.flares.length; i++) {
-				flareObject = this.flares[i];
+			for (var i:number = 0; i < this._flares.length; i++) {
+				flareObject = this._flares[i];
 				if (flareObject) {
-					var position:Vector3D = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+					var position:Vector3D = this._view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
 					flareObject.billboard.transform.moveTo(position.x, position.y, position.z);
 				}
 			}
@@ -346,9 +347,9 @@ class Intermediate_Globe
 		switch(event.url) {
 			//environment texture
 			case 'assets/skybox/space_texture.cube':
-				this.skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
-				this.skyBox.style.sampler = new ImageSampler(false, true);
-				this.scene.addChild(this.skyBox);
+				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
+				this._skyBox.style.sampler = new ImageSampler(false, true);
+				this._root.addChild(this._skyBox);
 				break;
 
 			//globe textures
@@ -356,54 +357,54 @@ class Intermediate_Globe
 				var cloudBitmapImage2D:BitmapImage2D = new BitmapImage2D(2048, 1024, true, 0xFFFFFFFF);
 				cloudBitmapImage2D.copyChannel(<BitmapImage2D> event.assets[0], cloudBitmapImage2D.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
 
-				this.cloudMaterial.ambientMethod.texture = new ImageTexture2D(cloudBitmapImage2D);
+				this._cloudMaterial.ambientMethod.texture = new ImageTexture2D(cloudBitmapImage2D);
 				break;
 			case "assets/globe/earth_specular_2048.jpg" :
 				var specBitmapImage2D:BitmapImage2D = <BitmapImage2D> event.assets[0];
 				specBitmapImage2D.colorTransform(specBitmapImage2D.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-				this.groundMaterial.specularMethod.texture = new ImageTexture2D(specBitmapImage2D);
+				this._groundMaterial.specularMethod.texture = new ImageTexture2D(specBitmapImage2D);
 				break;
 			case "assets/globe/EarthNormal.png" :
-				this.groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.normalMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_lights_16384.jpg" :
-				this.groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 			case "assets/globe/land_ocean_ice_2048_match.jpg" :
-				this.groundMaterial.diffuseMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._groundMaterial.diffuseMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
 				break;
 
 			//flare textures
 			case "assets/lensflare/flare2.jpg" :
-				this.flares[6] = new FlareObject(<BitmapImage2D> event.assets[0], 1.25, 1.1, 48.45, this.scene);
+				this._flares[6] = new FlareObject(<BitmapImage2D> event.assets[0], 1.25, 1.1, 48.45, this._root);
 				break;
 			case "assets/lensflare/flare3.jpg" :
-				this.flares[7] = new FlareObject(<BitmapImage2D> event.assets[0], 1.75, 1.37, 7.65, this.scene);
+				this._flares[7] = new FlareObject(<BitmapImage2D> event.assets[0], 1.75, 1.37, 7.65, this._root);
 				break;
 			case "assets/lensflare/flare4.jpg" :
-				this.flares[8] = new FlareObject(<BitmapImage2D> event.assets[0], 2.75, 1.85, 12.75, this.scene);
+				this._flares[8] = new FlareObject(<BitmapImage2D> event.assets[0], 2.75, 1.85, 12.75, this._root);
 				break;
 			case "assets/lensflare/flare6.jpg" :
-				this.flares[5] = new FlareObject(<BitmapImage2D> event.assets[0], 1, 0.68, 20.4, this.scene);
-				this.flares[10] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 2.5, 10.4, this.scene);
+				this._flares[5] = new FlareObject(<BitmapImage2D> event.assets[0], 1, 0.68, 20.4, this._root);
+				this._flares[10] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 2.5, 10.4, this._root);
 				break;
 			case "assets/lensflare/flare7.jpg" :
-				this.flares[2] = new FlareObject(<BitmapImage2D> event.assets[0], 2, 0, 25.5, this.scene);
-				this.flares[3] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 0, 17.85, this.scene);
-				this.flares[11] = new FlareObject(<BitmapImage2D> event.assets[0], 10, 2.66, 50, this.scene);
+				this._flares[2] = new FlareObject(<BitmapImage2D> event.assets[0], 2, 0, 25.5, this._root);
+				this._flares[3] = new FlareObject(<BitmapImage2D> event.assets[0], 4, 0, 17.85, this._root);
+				this._flares[11] = new FlareObject(<BitmapImage2D> event.assets[0], 10, 2.66, 50, this._root);
 				break;
 			case "assets/lensflare/flare8.jpg" :
-				this.flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this.scene);
+				this._flares[9] = new FlareObject(<BitmapImage2D> event.assets[0], 0.5, 2.21, 33.15, this._root);
 				break;
 			case "assets/lensflare/flare10.jpg" :
-				this.sunMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
-				this.flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this.scene);
+				this._sunMaterial.ambientMethod.texture = new ImageTexture2D(<BitmapImage2D> event.assets[0]);
+				this._flares[0] = new FlareObject(<BitmapImage2D> event.assets[0], 3.2, -0.01, 100, this._root);
 				break;
 			case "assets/lensflare/flare11.jpg" :
-				this.flares[1] = new FlareObject(<BitmapImage2D> event.assets[0], 6, 0, 30.6, this.scene);
+				this._flares[1] = new FlareObject(<BitmapImage2D> event.assets[0], 6, 0, 30.6, this._root);
 				break;
 			case "assets/lensflare/flare12.jpg" :
-				this.flares[4] = new FlareObject(<BitmapImage2D> event.assets[0], 0.4, 0.32, 22.95, this.scene);
+				this._flares[4] = new FlareObject(<BitmapImage2D> event.assets[0], 0.4, 0.32, 22.95, this._root);
 				break;
 		}
 	}
@@ -413,11 +414,11 @@ class Intermediate_Globe
 	 */
 	private onMouseDown(event:MouseEvent):void
 	{
-		this.lastPanAngle = this.cameraController.panAngle;
-		this.lastTiltAngle = this.cameraController.tiltAngle;
-		this.lastMouseX = event.clientX;
-		this.lastMouseY = event.clientY;
-		this.move = true;
+		this._lastPanAngle = this._cameraController.panAngle;
+		this._lastTiltAngle = this._cameraController.tiltAngle;
+		this._lastMouseX = event.clientX;
+		this._lastMouseY = event.clientY;
+		this._move = true;
 	}
 
 	/**
@@ -425,7 +426,7 @@ class Intermediate_Globe
 	 */
 	private onMouseUp(event:MouseEvent):void
 	{
-		this.move = false;
+		this._move = false;
 	}
 
 	/**
@@ -468,9 +469,9 @@ class Intermediate_Globe
 //                cameraController.tiltAngle = 0.3*(stage.mouseY - lastMouseY) + lastTiltAngle;
 //            }
 
-		if (this.move) {
-			this.cameraController.panAngle = 0.3*(event.clientX - this.lastMouseX) + this.lastPanAngle;
-			this.cameraController.tiltAngle = 0.3*(event.clientY - this.lastMouseY) + this.lastTiltAngle;
+		if (this._move) {
+			this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+			this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
 		}
 	}
 
@@ -479,12 +480,12 @@ class Intermediate_Globe
 	 */
 	private onMouseWheel(event:WheelEvent)
 	{
-		this.cameraController.distance -= event.wheelDelta;
+		this._cameraController.distance -= event.wheelDelta;
 
-		if (this.cameraController.distance < 400)
-			this.cameraController.distance = 400;
-		else if (this.cameraController.distance > 10000)
-			this.cameraController.distance = 10000;
+		if (this._cameraController.distance < 400)
+			this._cameraController.distance = 400;
+		else if (this._cameraController.distance > 10000)
+			this._cameraController.distance = 10000;
 	}
 
 	/**
@@ -514,10 +515,10 @@ class Intermediate_Globe
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this.view.y         = 0;
-		this.view.x         = 0;
-		this.view.width     = window.innerWidth;
-		this.view.height    = window.innerHeight;
+		this._view.y         = 0;
+		this._view.x         = 0;
+		this._view.width     = window.innerWidth;
+		this._view.height    = window.innerHeight;
 	}
 }
 
@@ -536,7 +537,7 @@ class FlareObject
 	/**
 	 * Constructor
 	 */
-	constructor(bitmapData:BitmapImage2D, size:number, position:number, opacity:number, scene:Scene)
+	constructor(bitmapData:BitmapImage2D, size:number, position:number, opacity:number, root:DisplayObjectContainer)
 	{
 		var bd:BitmapImage2D = new BitmapImage2D(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
 		bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapImageChannel.RED, BitmapImageChannel.ALPHA);
@@ -557,7 +558,7 @@ class FlareObject
 		this.position = position;
 		this.opacity = opacity;
 
-		scene.addChild(this.billboard)
+		root.addChild(this.billboard)
 	}
 }
 

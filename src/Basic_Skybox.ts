@@ -35,18 +35,18 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "awayjs-full/lib/core";
-import {BitmapImageCube, ImageSampler} from "awayjs-full/lib/stage";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {Sprite, Skybox, PrimitiveTorusPrefab} from "awayjs-full/lib/scene";
-import {MethodMaterial, ImageTextureCube, EffectEnvMapMethod} from "awayjs-full/lib/materials";
+import {LoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, RequestAnimationFrame, PerspectiveProjection} from "@awayjs/core";
+import {BitmapImageCube, ImageSampler} from "@awayjs/stage";
+import {ElementsType} from "@awayjs/graphics";
+import {Sprite, Skybox, PrimitiveTorusPrefab, Scene} from "@awayjs/scene";
+import {MethodMaterial, ImageTextureCube, EffectEnvMapMethod} from "@awayjs/materials";
 
-import {View} from "awayjs-full/lib/view";
+import {View} from "@awayjs/view";
 
 class Basic_SkyBox
 {
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 
 	//material objects
 	private _cubeTexture:ImageTextureCube;
@@ -87,14 +87,14 @@ class Basic_SkyBox
 	private initEngine():void
 	{
 		//setup the view
-		this._view = new View();
+		this._scene = new Scene();
 
 		//setup the camera
-		this._view.camera.z = -600;
-		this._view.camera.y = 0;
-		this._view.camera.lookAt(new Vector3D());
-		this._view.camera.projection = new PerspectiveProjection(90);
-		this._view.backgroundColor = 0xFFFF00;
+		this._scene.camera.z = -600;
+		this._scene.camera.y = 0;
+		this._scene.camera.lookAt(new Vector3D());
+		this._scene.camera.projection = new PerspectiveProjection(90);
+		this._scene.view.backgroundColor = 0xFFFF00;
 		this._mouseX = window.innerWidth/2;
 	}
 
@@ -118,7 +118,7 @@ class Basic_SkyBox
 	{
 		this._torus = <Sprite> new PrimitiveTorusPrefab(this._torusMaterial, ElementsType.TRIANGLE, 150, 60, 40, 20).getNewObject();
 		this._torus.boundsVisible = true;
-		this._view.scene.addChild(this._torus);
+		this._scene.root.addChild(this._torus);
 	}
 
 	/**
@@ -154,10 +154,10 @@ class Basic_SkyBox
 		this._torus.rotationX += 2;
 		this._torus.rotationY += 1;
 
-		this._view.camera.transform.moveTo(0, 0, 0);
-		this._view.camera.rotationY += 0.5*(this._mouseX - window.innerWidth/2)/800;
-		this._view.camera.transform.moveBackward(600);
-		this._view.render();
+		this._scene.camera.transform.moveTo(0, 0, 0);
+		this._scene.camera.rotationY += 0.5*(this._mouseX - window.innerWidth/2)/800;
+		this._scene.camera.transform.moveBackward(600);
+		this._scene.render();
 	}
 
 	/**
@@ -171,7 +171,7 @@ class Basic_SkyBox
 				this._cubeTexture = new ImageTextureCube(<BitmapImageCube> event.assets[0]);
 
 				this._skyBox = new Skybox(<BitmapImageCube> event.assets[0]);
-				this._view.scene.addChild(this._skyBox);
+				this._scene.root.addChild(this._skyBox);
 
 				this._torusMaterial.addEffectMethod(new EffectEnvMapMethod(this._cubeTexture, 1));
 
@@ -193,10 +193,10 @@ class Basic_SkyBox
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

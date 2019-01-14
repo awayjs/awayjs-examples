@@ -39,12 +39,12 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "awayjs-full/lib/core";
-import {SpecularImage2D, ImageSampler, ImageUtils} from "awayjs-full/lib/stage";
-import {HoverController, Sprite, Scene, Camera}	from "awayjs-full/lib/scene";
-import {ImageTexture2D, MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, LoaderEvent, URLLoaderEvent, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils} from "@awayjs/core";
+import {SpecularImage2D, ImageSampler, ImageUtils} from "@awayjs/stage";
+import {HoverController, Sprite, Scene, Camera, DisplayObjectContainer}	from "@awayjs/scene";
+import {ImageTexture2D, MethodMaterial, MethodMaterialMode, SpecularFresnelMethod, ShadowSoftMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "@awayjs/materials";
+import {AWDParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class Intermediate_MonsterHeadShading
 {
@@ -56,6 +56,7 @@ class Intermediate_MonsterHeadShading
 	private _scene:Scene;
 	private _camera:Camera;
 	private _view:View;
+	private _root:DisplayObjectContainer;
 	private _cameraController:HoverController;
 
 	//material objects
@@ -132,15 +133,16 @@ class Intermediate_MonsterHeadShading
 	{
 		this._scene = new Scene();
 
-		this._camera = new Camera();
+		this._camera = this._scene.camera;
 		this._camera.projection.near = 20;
 		this._camera.projection.far = 1000;
-
-		this._view = new View(null, this._scene, this._camera);
 
 		//setup controller to be used on the camera
 		this._cameraController = new HoverController(this._camera, null, 225, 10, 800);
 		this._cameraController.yFactor = 1;
+		
+		this._view = this._scene.view;
+		this._root = this._scene.root;
 	}
 
 	/**
@@ -318,7 +320,7 @@ class Intermediate_MonsterHeadShading
 	 */
 	private onEnterFrame(dt:number)
 	{
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -330,7 +332,7 @@ class Intermediate_MonsterHeadShading
 			this._headModel = <Sprite> event.asset;
 			this._headModel.graphics.scale(4);
 			this._headModel.y = -20;
-			this._scene.addChild(this._headModel);
+			this._root.addChild(this._headModel);
 		}
 	}
 

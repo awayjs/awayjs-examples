@@ -34,18 +34,17 @@ THE SOFTWARE.
 
 */
 
-import {AssetEvent, Vector3D, AssetLibrary, URLRequest, RequestAnimationFrame, PerspectiveProjection, Keyboard} from "awayjs-full/lib/core";
-import {AnimationNodeBase} from "awayjs-full/lib/renderer";
-import {AnimatorBase, SkeletonAnimator, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "awayjs-full/lib/graphics";
-import {HoverController, LoaderContainer} from "awayjs-full/lib/scene";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {AssetEvent, Vector3D, AssetLibrary, URLRequest, RequestAnimationFrame, PerspectiveProjection, Keyboard} from "@awayjs/core";
+import {AnimationNodeBase} from "@awayjs/renderer";
+import {AnimatorBase, SkeletonAnimator, SkeletonClipNode, CrossfadeTransition, AnimationStateEvent} from "@awayjs/graphics";
+import {HoverController, LoaderContainer, Scene} from "@awayjs/scene";
+import {AWDParser} from "@awayjs/parsers";
 
 class Intermediate_AWDViewer
 {
 	
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 	private _cameraController:HoverController;
 	private _animator:SkeletonAnimator;
 
@@ -85,16 +84,16 @@ class Intermediate_AWDViewer
 	private initEngine():void
 	{
 		//create the view
-		this._view = new View();
-		this._view.backgroundColor = 0x333338;
+		this._scene = new Scene();
+		this._scene.view.backgroundColor = 0x333338;
 		
 		//create custom lens
-		this._view.camera.projection = new PerspectiveProjection(70);
-		this._view.camera.projection.far = 5000;
-		this._view.camera.projection.near = 1;
+		this._scene.camera.projection = new PerspectiveProjection(70);
+		this._scene.camera.projection.far = 5000;
+		this._scene.camera.projection.near = 1;
 		
 		//setup controller to be used on the camera
-		this._cameraController = new HoverController(this._view.camera, null, 0, 0, 150, 10, 90);
+		this._cameraController = new HoverController(this._scene.camera, null, 0, 0, 150, 10, 90);
 		this._cameraController.lookAtPosition = new Vector3D(0,60, 0);
 		this._cameraController.tiltAngle = 0;
 		this._cameraController.panAngle = 0;
@@ -116,7 +115,7 @@ class Intermediate_AWDViewer
 
 		loader.load(new URLRequest("assets/shambler.awd"));
 
-		this._view.scene.addChild(loader);
+		this._scene.root.addChild(loader);
 	}
 
 	/**
@@ -207,7 +206,7 @@ class Intermediate_AWDViewer
 	
 		
 		//update view
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -256,10 +255,10 @@ class Intermediate_AWDViewer
 	 */
 	private onResize(event = null):void
 	{
-		this._view.y         = 0;
-		this._view.x         = 0;
-		this._view.width     = window.innerWidth;
-		this._view.height    = window.innerHeight;
+		this._scene.view.y         = 0;
+		this._scene.view.x         = 0;
+		this._scene.view.width     = window.innerWidth;
+		this._scene.view.height    = window.innerHeight;
 	}
 }
 

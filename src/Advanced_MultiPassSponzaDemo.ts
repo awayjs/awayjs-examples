@@ -45,15 +45,13 @@ THE SOFTWARE.
 
 */
 
-import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "awayjs-full/lib/core";
-import {ImageSampler, SpecularImage2D, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "awayjs-full/lib/stage";
-import {Style} from "awayjs-full/lib/renderer";
-import {Shape, ElementsType} from "awayjs-full/lib/graphics";
-import {FirstPersonController, Sprite, Skybox, LoaderContainer, PrimitivePlanePrefab, Merge} from "awayjs-full/lib/scene";
-import {MethodMaterial, ImageTexture2D, MethodMaterialMode, CascadeShadowMapper, ShadowSoftMethod, EffectFogMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "awayjs-full/lib/materials";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
-import { IShape } from "../../@awayjs/graphics/dist/lib/renderables/IShape";
+import {URLLoaderEvent, AssetEvent, LoaderEvent, Matrix, Vector3D, AssetLibrary, LoaderContext, URLRequest, URLLoader, URLLoaderDataFormat, RequestAnimationFrame, ParserUtils, Keyboard} from "@awayjs/core";
+import {ImageSampler, SpecularImage2D, BitmapImage2D, BitmapImageCube, BlendMode, ImageUtils} from "@awayjs/stage";
+import {Style} from "@awayjs/renderer";
+import {Shape, ElementsType} from "@awayjs/graphics";
+import {FirstPersonController, Sprite, Skybox, LoaderContainer, PrimitivePlanePrefab, Merge, Scene} from "@awayjs/scene";
+import {MethodMaterial, ImageTexture2D, MethodMaterialMode, CascadeShadowMapper, ShadowSoftMethod, EffectFogMethod, PointLight, DirectionalLight, StaticLightPicker, DirectionalShadowMapper}	from "@awayjs/materials";
+import {AWDParser} from "@awayjs/parsers";
 
 
 class Advanced_MultiPassSponzaDemo
@@ -88,7 +86,7 @@ class Advanced_MultiPassSponzaDemo
 	private colSprites:Array<Sprite> = new Array<Sprite>();
 
 	//engien variablesf
-	private _view:View;
+	private _scene:Scene;
 	private _cameraController:FirstPersonController;
 
 	//gui variables
@@ -182,12 +180,12 @@ class Advanced_MultiPassSponzaDemo
 	private initEngine()
 	{
 		//create the view
-		this._view = new View();
-		this._view.camera.y = 150;
-		this._view.camera.z = 0;
+		this._scene = new Scene();
+		this._scene.camera.y = 150;
+		this._scene.camera.z = 0;
 
 		//setup controller to be used on the camera
-		this._cameraController = new FirstPersonController(this._view.camera, 90, 0, -80, 80);
+		this._cameraController = new FirstPersonController(this._scene.camera, 90, 0, -80, 80);
 	}
 
 	/**
@@ -239,7 +237,7 @@ class Advanced_MultiPassSponzaDemo
 	private initObjects()
 	{
 		//create skybox
-		this._view.scene.addChild(new Skybox(this._skyMap));
+		this._scene.root.addChild(new Skybox(this._skyMap));
 
 		//create flame sprites
 		this._flameGraphics = new PrimitivePlanePrefab(this._flameMaterial, ElementsType.TRIANGLE, 40, 80, 1, 1, false, true);
@@ -249,11 +247,11 @@ class Advanced_MultiPassSponzaDemo
 			flameVO = this._flameData[i];
 			var sprite:Sprite = flameVO.sprite = <Sprite> this._flameGraphics.getNewObject();
 			sprite.transform.moveTo(flameVO.position.x, flameVO.position.y, flameVO.position.z);
-			var shape:IShape = sprite.graphics.getShapeAt(0);
+			var shape:Shape = <Shape> sprite.graphics.getShapeAt(0);
 			shape.style = new Style();
 			shape.style.uvMatrix = new Matrix();
 			shape.style.uvMatrix.scale(1/16, 1);
-			this._view.scene.addChild(sprite);
+			this._scene.root.addChild(sprite);
 			flameVO.light.transform = sprite.transform;
 		}
 	}
@@ -665,14 +663,14 @@ class Advanced_MultiPassSponzaDemo
 			if (_spriteReference[textureIndex]) {
 				var m:Sprite = sprite.clone() as Sprite;
 				m.material = multiMaterial;
-				_view.scene.addChild(m);
+				_scene.scene.addChild(m);
 				continue;
 			}
 			*/
 			//default to multipass material
 			sprite.material = multiMaterial;
 
-			this._view.scene.addChild(sprite);
+			this._scene.root.addChild(sprite);
 
 			this._spriteReference[textureIndex] = sprite;
 		}
@@ -763,13 +761,13 @@ class Advanced_MultiPassSponzaDemo
 			if (!sprite)
 				continue;
 			
-			var shape:IShape = sprite.graphics.getShapeAt(0);
+			var shape:Shape = <Shape> sprite.graphics.getShapeAt(0);
 			shape.style.uvMatrix.tx += 1/16;
 			shape.style.uvMatrix.tx %= 1;
-			sprite.rotationY = Math.atan2(sprite.x - this._view.camera.x, sprite.z - this._view.camera.z)*180/Math.PI;
+			sprite.rotationY = Math.atan2(sprite.x - this._scene.camera.x, sprite.z - this._scene.camera.z)*180/Math.PI;
 		}
 
-		this._view.render();
+		this._scene.render();
 		
 	}
 	
@@ -858,10 +856,10 @@ class Advanced_MultiPassSponzaDemo
 	 */
 	private onResize(event = null)
 	{
-		this._view.y         = 0;
-		this._view.x         = 0;
-		this._view.width     = window.innerWidth;
-		this._view.height    = window.innerHeight;
+		this._scene.view.y         = 0;
+		this._scene.view.x         = 0;
+		this._scene.view.width     = window.innerWidth;
+		this._scene.view.height    = window.innerHeight;
 	}
 }
 

@@ -31,14 +31,14 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, CoordinateSystem} from "awayjs-full/lib/core";
-import {BitmapImage2D} from "awayjs-full/lib/stage";
-import {ElementsType, Graphics, TextureAtlas, GradientFillStyle} from "awayjs-full/lib/graphics";
-import {BasicMaterial, MethodMaterial, ImageTexture2D} from "awayjs-full/lib/materials";
-import {Sprite, Font, PrimitivePlanePrefab, TesselatedFontTable, TextField, TextFormat, TextFieldType, Scene} from "awayjs-full/lib/scene";
-import {View, MouseManager} from "awayjs-full/lib/view";
-import {SceneGraphPartition, DefaultRenderer} from "awayjs-full/lib/renderer";
-import {Parsers, FontParser} from "awayjs-full/lib/parsers";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, CoordinateSystem, PerspectiveProjection} from "@awayjs/core";
+import {BitmapImage2D} from "@awayjs/stage";
+import {ElementsType, Graphics, TextureAtlas, GradientFillStyle} from "@awayjs/graphics";
+import {BasicMaterial, MethodMaterial, ImageTexture2D} from "@awayjs/materials";
+import {Sprite, Font, PrimitivePlanePrefab, TesselatedFontTable, TextField, TextFormat, TextFieldType, Scene, MouseManager, SceneGraphPartition, DisplayObjectContainer} from "@awayjs/scene";
+import {View} from "@awayjs/view";
+import {DefaultRenderer} from "@awayjs/renderer";
+import {Parsers, FontParser} from "@awayjs/parsers";
 
 class Basic_Text
 {
@@ -47,7 +47,7 @@ class Basic_Text
 	private static _textureMaterials:any={};
 	private static _useTextureAtlasForColors:boolean=true;
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 
 	//material objects
 	private _planeMaterial:BasicMaterial;
@@ -126,14 +126,15 @@ class Basic_Text
 		};
         Parsers.enableAllBundled()
 		//setup the view
-		this._view = new View(new DefaultRenderer(new SceneGraphPartition(new Scene())));
-		this._view.renderer.viewport.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
-		this._view.renderer.renderableSorter = null;//new RenderableSort2D();
-        this._view.backgroundColor=0xcccccc;
+		this._scene = new Scene(new DefaultRenderer(new SceneGraphPartition(new DisplayObjectContainer())));
+		this._scene.renderer.view.projection.scale = 1;
+		this._scene.renderer.view.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+		this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
+        this._scene.view.backgroundColor=0xcccccc;
 		//setup the camera
-		// this._view.camera.z = -600;
-		// this._view.camera.y = 500;
-        // this._view.camera.lookAt(new Vector3D());
+		// this._scene.camera.z = -600;
+		// this._scene.camera.y = 500;
+        // this._scene.camera.lookAt(new Vector3D());
         
 
 		window.onwheel = (event:WheelEvent) => this.onMouseWheel(event);
@@ -162,7 +163,7 @@ class Basic_Text
         // if(textfield)
 		//     textfield.rotationY += 1;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -199,7 +200,7 @@ class Basic_Text
 					var tf:TextField = textfield.clone();
 					tf.x = (Math.random() - 0.5)*1000*window.innerWidth/window.innerHeight;
 					tf.y = (Math.random() - 0.5)*1000;
-					this._view.scene.addChild(tf);
+					this._scene.root.addChild(tf);
 				}
             }
             /*
@@ -215,7 +216,7 @@ class Basic_Text
 	private onKeyDown(event:KeyboardEvent = null):void
 	{
 		if(event.key=="Tab"){
-			MouseManager.getInstance(this._view.renderer.pickGroup).focusNextTab();
+			MouseManager.getInstance(this._scene.renderer.pickGroup).focusNextTab();
 		}
 	}
 
@@ -224,10 +225,10 @@ class Basic_Text
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 
 	/**
@@ -237,17 +238,17 @@ class Basic_Text
 	{
 		event.preventDefault();
 		if (event.ctrlKey) {
-			this._view.camera.z -= event.deltaY;
+			this._scene.camera.z -= event.deltaY;
 
 
-			if (this._view.camera.z > -100)
-				this._view.camera.z = -100;
-			else if (this._view.camera.z < -2000)
-				this._view.camera.z = -2000;
+			if (this._scene.camera.z > -100)
+				this._scene.camera.z = -100;
+			else if (this._scene.camera.z < -2000)
+				this._scene.camera.z = -2000;
 		} else {
-			this._view.camera.x += event.deltaX;
+			this._scene.camera.x += event.deltaX;
 
-			this._view.camera.y += event.deltaY;
+			this._scene.camera.y += event.deltaY;
 		}
 
 	}

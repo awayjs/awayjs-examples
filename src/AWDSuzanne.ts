@@ -1,13 +1,12 @@
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {MouseEvent, Sprite} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {AWDParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
-import { BasicPartition } from "awayjs-full/lib/renderer";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, Loader, URLRequest, RequestAnimationFrame} from "@awayjs/core";
+import {MouseEvent, Sprite, Scene} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
+import {AWDParser} from "@awayjs/parsers";
+import { BasicPartition } from "@awayjs/view";
 
 class AWDSuzanne
 {
-	private _view:View;
+	private _scene:Scene;
 	private _timer:RequestAnimationFrame;
 	private _suzane:Sprite;
 	private _light:DirectionalLight;
@@ -19,7 +18,7 @@ class AWDSuzanne
 
 	constructor()
 	{
-		this.initView();
+		this.initScene();
 		this.loadAssets();
 		this.initLights();
 
@@ -31,11 +30,11 @@ class AWDSuzanne
 	/**
 	 *
 	 */
-	private initView():void
+	private initScene():void
 	{
-		this._view = new View();
-		this._view.camera.projection.far = 6000;
-		this._view.forceMouseMove = true;
+		this._scene = new Scene();
+		this._scene.camera.projection.far = 6000;
+		this._scene.forceMouseMove = true;
 	}
 
 	/**
@@ -73,10 +72,10 @@ class AWDSuzanne
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 
 	/**
@@ -85,17 +84,17 @@ class AWDSuzanne
 	 */
 	private render(dt:number) //animate based on dt for firefox
 	{
-		if (this._view.camera) {
-			this._view.camera.lookAt(this._lookAtPosition);
+		if (this._scene.camera) {
+			this._scene.camera.lookAt(this._lookAtPosition);
 			this._cameraIncrement += 0.01;
-			this._view.camera.x = Math.cos(this._cameraIncrement)*1400;
-			this._view.camera.z = Math.sin(this._cameraIncrement)*1400;
+			this._scene.camera.x = Math.cos(this._cameraIncrement)*1400;
+			this._scene.camera.z = Math.sin(this._cameraIncrement)*1400;
 
 			this._light.direction = new Vector3D(-Math.cos(-this._cameraIncrement)*1400, 0, -Math.sin(this._cameraIncrement)*1400);
 
 		}
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -132,15 +131,15 @@ class AWDSuzanne
 						clone.rotationY = this.getRandom (0, 360);
 						clone.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 						clone.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
-						this._view.scene.addChild(clone);
+						this._scene.root.addChild(clone);
 					}
 
-					this._view.renderer.pickGroup.getAbstraction(sprite).shapeFlag = true;
+					this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag = true;
 					sprite.partition = new BasicPartition(sprite);
 					sprite.transform.scaleTo(500, 500, 500);
 					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));
 					sprite.addEventListener(MouseEvent.MOUSE_OUT, (event:MouseEvent) => this.onMouseOut(event));
-					this._view.scene.addChild(sprite);
+					this._scene.root.addChild(sprite);
 
 					break;
 			}

@@ -1,48 +1,49 @@
-import {BitmapImage2D, ImageSampler} from "awayjs-full/lib/stage";
-import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {Sprite, DisplayObjectContainer} from "awayjs-full/lib/scene";
-import {MethodMaterial, DirectionalLight, StaticLightPicker} from "awayjs-full/lib/materials";
-import {OBJParser} from "awayjs-full/lib/parsers";
-import {View} from "awayjs-full/lib/view";
+import {BitmapImage2D, ImageSampler} from "@awayjs/stage";
+import {LoaderEvent, Vector3D, AssetLibrary, Loader, IAsset, URLRequest, Debug, RequestAnimationFrame} from "@awayjs/core";
+import {Sprite, DisplayObjectContainer, Scene} from "@awayjs/scene";
+import {MethodMaterial, DirectionalLight, StaticLightPicker} from "@awayjs/materials";
+import {OBJParser} from "@awayjs/parsers";
+import {View} from "@awayjs/view";
 
 class ObjLoaderMasterChief
 {
-	private view:View;
-	private raf:RequestAnimationFrame;
-	private sprites:Array<Sprite> = new Array<Sprite>();
-	private mat:MethodMaterial;
+	private _scene:Scene;
+	private _raf:RequestAnimationFrame;
+	private _sprites:Array<Sprite> = new Array<Sprite>();
+	private _mat:MethodMaterial;
 
-	private terrainMaterial:MethodMaterial;
+	private _terrainMaterial:MethodMaterial;
 
-	private light:DirectionalLight;
+	private _light:DirectionalLight;
 
-	private spartan:DisplayObjectContainer = new DisplayObjectContainer();
-	private terrain:Sprite;
+	private _spartan:DisplayObjectContainer = new DisplayObjectContainer();
+	private _terrain:Sprite;
+	private _spartanFlag:boolean = false;
 
 	constructor()
 	{
 		Debug.LOG_PI_ERRORS = false;
 		Debug.THROW_ERRORS = false;
 
-		this.view = new View();
-		this.view.camera.z = -50;
-		this.view.camera.y = 20;
-		this.view.camera.projection.near = 0.1;
-		this.view.backgroundColor = 0xCEC8C6;
+		this._scene = new Scene();
+		this._scene.camera.z = -50;
+		this._scene.camera.y = 20;
+		this._scene.camera.projection.near = 0.1;
+		this._scene.view.backgroundColor = 0xCEC8C6;
 
-		this.raf = new RequestAnimationFrame(this.render, this);
+		this._raf = new RequestAnimationFrame(this.render, this);
 
-		this.light = new DirectionalLight();
-		this.light.color = 0xc1582d;
-		this.light.direction = new Vector3D(1, 0, 0);
-		this.light.ambient = 0.4;
-		this.light.ambientColor = 0x85b2cd;
-		this.light.diffuse = 2.8;
-		this.light.specular = 1.8;
+		this._light = new DirectionalLight();
+		this._light.color = 0xc1582d;
+		this._light.direction = new Vector3D(1, 0, 0);
+		this._light.ambient = 0.4;
+		this._light.ambientColor = 0x85b2cd;
+		this._light.diffuse = 2.8;
+		this._light.specular = 1.8;
 
-		this.spartan.transform.scaleTo(.25, .25, .25);
-		this.spartan.y = 0;
-		this.view.scene.addChild(this.spartan);
+		this._spartan.transform.scaleTo(.25, .25, .25);
+		this._spartan.y = 0;
+		this._scene.root.addChild(this._spartan);
 
 		AssetLibrary.enableParser(OBJParser);
 
@@ -66,19 +67,17 @@ class ObjLoaderMasterChief
 
 		window.onresize = (event:UIEvent) => this.onResize();
 
-		this.raf.start();
+		this._raf.start();
 	}
 
 	private render()
 	{
-		if ( this.terrain)
-			this.terrain.rotationY += 0.4;
+		if ( this._terrain)
+			this._terrain.rotationY += 0.4;
 
-		this.spartan.rotationY += 0.4;
-		this.view.render();
+		this._spartan.rotationY += 0.4;
+		this._scene.render();
 	}
-
-	private spartanFlag    :boolean = false;
 
 	public onResourceComplete (event:LoaderEvent)
 	{
@@ -103,49 +102,49 @@ class ObjLoaderMasterChief
 					if (event.url =='assets/Halo_3_SPARTAN4.obj') {
 						var sprite:Sprite = <Sprite> d;
 
-						this.spartan.addChild(sprite);
-						this.spartanFlag = true;
-						this.sprites.push(sprite);
+						this._spartan.addChild(sprite);
+						this._spartanFlag = true;
+						this._sprites.push(sprite);
 					} else if (event.url =='assets/terrain.obj') {
-						this.terrain = <Sprite> d;
-						this.terrain.y = 98;
-						this.terrain.graphics.scaleUV(20, 20);
-						this.view.scene.addChild(this.terrain);
+						this._terrain = <Sprite> d;
+						this._terrain.y = 98;
+						this._terrain.graphics.scaleUV(20, 20);
+						this._scene.root.addChild(this._terrain);
 					}
 
 					break;
 				case BitmapImage2D.assetType :
 					if (event.url == 'assets/masterchief_base.png' ) {
-						this.mat = new MethodMaterial(<BitmapImage2D> d);
-						this.mat.style.sampler = new ImageSampler(true, true, false);
-						this.mat.lightPicker = new StaticLightPicker([this.light]);
+						this._mat = new MethodMaterial(<BitmapImage2D> d);
+						this._mat.style.sampler = new ImageSampler(true, true, false);
+						this._mat.lightPicker = new StaticLightPicker([this._light]);
 					} else if (event.url == 'assets/stone_tx.jpg') {
-						this.terrainMaterial = new MethodMaterial(<BitmapImage2D> d);
-						this.terrainMaterial.style.sampler = new ImageSampler(true, true, false);
-						this.terrainMaterial.lightPicker = new StaticLightPicker([this.light]);
+						this._terrainMaterial = new MethodMaterial(<BitmapImage2D> d);
+						this._terrainMaterial.style.sampler = new ImageSampler(true, true, false);
+						this._terrainMaterial.lightPicker = new StaticLightPicker([this._light]);
 					}
 
 					break;
 			}
 		}
 
-		if (this.terrain && this.terrainMaterial)
-			this.terrain.material = this.terrainMaterial;
+		if (this._terrain && this._terrainMaterial)
+			this._terrain.material = this._terrainMaterial;
 
-		if (this.mat && this.spartanFlag)
-			for (var c:number = 0; c < this.sprites.length; c++)
-				this.sprites[c].material = this.mat;
+		if (this._mat && this._spartanFlag)
+			for (var c:number = 0; c < this._sprites.length; c++)
+				this._sprites[c].material = this._mat;
 
 		this.onResize();
 	}
 
 	public onResize(event:UIEvent = null)
 	{
-		this.view.y = 0;
-		this.view.x = 0;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
 
-		this.view.width = window.innerWidth;
-		this.view.height = window.innerHeight;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 

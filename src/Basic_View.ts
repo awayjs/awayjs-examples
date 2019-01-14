@@ -36,17 +36,20 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame} from "awayjs-full/lib/core";
-import {BitmapImage2D} from "awayjs-full/lib/stage";
-import {ElementsType} from "awayjs-full/lib/graphics";
-import {BasicMaterial, ImageTexture2D} from "awayjs-full/lib/materials";
-import {Sprite, PrimitivePlanePrefab} from "awayjs-full/lib/scene";
-import {View} from "awayjs-full/lib/view";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, Loader} from "@awayjs/core";
+import {BitmapImage2D, Image2DParser, ImageCubeParser, TextureAtlasParser} from "@awayjs/stage";
+import {ElementsType} from "@awayjs/graphics";
+import {BasicMaterial, ImageTexture2D} from "@awayjs/materials";
+import {Scene, Sprite, PrimitivePlanePrefab} from "@awayjs/scene";
+
+Loader.enableParser(Image2DParser);
+Loader.enableParser(ImageCubeParser);
+Loader.enableParser(TextureAtlasParser);
 
 class Basic_View
 {
 	//engine variables
-	private _view:View;
+	private _scene:Scene;
 
 	//material objects
 	private _planeMaterial:BasicMaterial;
@@ -63,19 +66,19 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._view = new View();
+		this._scene = new Scene();
 
 		//setup the camera
-		this._view.camera.z = -600;
-		this._view.camera.y = 500;
-		this._view.camera.lookAt(new Vector3D());
+		this._scene.camera.z = -600;
+		this._scene.camera.y = 500;
+		this._scene.camera.lookAt(new Vector3D());
 
 		//setup the materials
 		this._planeMaterial = new BasicMaterial();
 
 		//setup the scene
 		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
-		this._view.scene.addChild(this._plane);
+		this._scene.root.addChild(this._plane);
 
 		//setup the render loop
 		window.onresize  = (event:UIEvent) => this.onResize(event);
@@ -98,7 +101,7 @@ class Basic_View
 	{
 		this._plane.rotationY += 1;
 
-		this._view.render();
+		this._scene.render();
 	}
 
 	/**
@@ -128,10 +131,10 @@ class Basic_View
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._view.y = 0;
-		this._view.x = 0;
-		this._view.width = window.innerWidth;
-		this._view.height = window.innerHeight;
+		this._scene.view.y = 0;
+		this._scene.view.x = 0;
+		this._scene.view.width = window.innerWidth;
+		this._scene.view.height = window.innerHeight;
 	}
 }
 
