@@ -18,14 +18,14 @@ for (var i = 0; i < examples.length; i++) {
 }
 
 //add awayjs modules to entry object
-entry['awayjs-full'] = ['awayjs-full'];
+entry['awayjs'] = ['@awayjs/core', '@awayjs/stage', '@awayjs/view', '@awayjs/renderer', '@awayjs/graphics', '@awayjs/materials', '@awayjs/scene', '@awayjs/player', '@awayjs/parsers', '@awayjs/swf-viewer'];
 
 var plugins = [
     // new webpack.DllReferencePlugin({
     //     context: path.join(__dirname, "src"),
     //     manifest: require("./libs/awayjs-full-manifest.json")
     // }),
-    new webpack.optimize.CommonsChunkPlugin({name:'awayjs-full', filename:'js/awayjs-full.bundle.js'}),
+    new webpack.optimize.CommonsChunkPlugin({name:'awayjs', filename:'js/awayjs.bundle.js'}),
 
     new CopyWebPackPlugin([{
             from: path.join(__dirname, "src", "assets"),
@@ -45,7 +45,7 @@ for (var i = 0; i < examples.length; i++) {
         template: 'html-template/example.html',
         filename: name + '.html',
         inject: false,
-        commonChunk: 'awayjs-full'
+        commonChunk: 'awayjs'
         // libs: ['libs/awayjs-full.js']
     }));
 }
@@ -71,7 +71,7 @@ module.exports = {
     },
     resolve: {
 		alias: {
-			"awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist"),
+			//"awayjs-full": path.join(__dirname, "node_modules", "awayjs-full", "dist"),
 			//uncomment aliases for recompiling libs
 			// "tslib": path.join(__dirname, "node_modules", "tslib", "tslib.es6.js"),
 			// "@awayjs/core": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/core", "dist"),
