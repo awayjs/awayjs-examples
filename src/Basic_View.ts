@@ -36,20 +36,20 @@ THE SOFTWARE.
 
 */
 
-import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, Loader} from "@awayjs/core";
+import {LoaderEvent, Vector3D, AssetLibrary, IAsset, URLRequest, RequestAnimationFrame, Loader, Transform} from "@awayjs/core";
 import {BitmapImage2D, Image2DParser, ImageCubeParser, TextureAtlasParser} from "@awayjs/stage";
 import {ElementsType} from "@awayjs/graphics";
 import {BasicMaterial, ImageTexture2D} from "@awayjs/materials";
-import {Scene, Sprite, PrimitivePlanePrefab} from "@awayjs/scene";
-
-Loader.enableParser(Image2DParser);
-Loader.enableParser(ImageCubeParser);
-Loader.enableParser(TextureAtlasParser);
+import {Scene, Sprite, PrimitivePlanePrefab, DisplayObjectContainer} from "@awayjs/scene";
+import { View, BasicPartition } from "@awayjs/view";
+import { DefaultRenderer } from "@awayjs/renderer";
 
 class Basic_View
 {
 	//engine variables
-	private _scene:Scene;
+	private _view:View;
+	private _renderer:DefaultRenderer;
+	private _root:DisplayObjectContainer;
 
 	//material objects
 	private _planeMaterial:BasicMaterial;
@@ -66,19 +66,22 @@ class Basic_View
 	constructor()
 	{
 		//setup the view
-		this._scene = new Scene();
-
-		//setup the camera
-		this._scene.camera.z = -600;
-		this._scene.camera.y = 500;
-		this._scene.camera.lookAt(new Vector3D());
+		this._view = new View();
+		this._root = new DisplayObjectContainer();
+		this._renderer = new DefaultRenderer(new BasicPartition(this._root), this._view);
+		this._root.partition = this._renderer.partition;
+		
+		//setup the projection
+		this._view.projection.transform = new Transform();
+		this._view.projection.transform.moveTo(0, 500, -600);
+		this._view.projection.transform.lookAt(new Vector3D());
 
 		//setup the materials
 		this._planeMaterial = new BasicMaterial();
 
 		//setup the scene
 		this._plane = <Sprite> new PrimitivePlanePrefab(this._planeMaterial, ElementsType.TRIANGLE, 700, 700).getNewObject();
-		this._scene.root.addChild(this._plane);
+		this._root.addChild(this._plane);
 
 		//setup the render loop
 		window.onresize  = (event:UIEvent) => this.onResize(event);
@@ -101,7 +104,7 @@ class Basic_View
 	{
 		this._plane.rotationY += 1;
 
-		this._scene.render();
+		this._renderer.render();
 	}
 
 	/**
@@ -131,10 +134,10 @@ class Basic_View
 	 */
 	private onResize(event:UIEvent = null):void
 	{
-		this._scene.view.y = 0;
-		this._scene.view.x = 0;
-		this._scene.view.width = window.innerWidth;
-		this._scene.view.height = window.innerHeight;
+		this._view.y = 0;
+		this._view.x = 0;
+		this._view.width = window.innerWidth;
+		this._view.height = window.innerHeight;
 	}
 }
 
