@@ -54,13 +54,13 @@
     "@awayjs/core": "^0.7.0",
     "@awayjs/graphics": "^0.3.0",
     "@awayjs/scene": "^0.11.0",
-    "@awayjs/stage": "^0.9.0",
-    "@awayjs/view": "^0.4.0",
+    "@awayjs/stage": "^0.10.0",
+    "@awayjs/view": "^0.5.0",
     "@awayjs/renderer": "^0.9.0",
     "@awayjs/materials": "^0.4.0",
     "@awayjs/player": "^0.6.0",
     "@awayjs/parsers": "^0.6.0",
-    "@awayjs/swf-viewer": "^0.2.0"
+    "@awayjs/swf-viewer": "^0.3.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "3.2.3",
