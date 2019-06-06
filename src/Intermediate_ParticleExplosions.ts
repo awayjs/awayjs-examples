@@ -254,7 +254,7 @@ class Intermediate_ParticleExplosions
 			colorGraphicsSet.push(plane.graphics);
 
 		//create the particle sprite
-		this._colorParticleSprite = new Sprite(this._colorMaterial);
+		this._colorParticleSprite = new Sprite(null, this._colorMaterial);
 
 		//generate the particle geometries
 		ParticleGraphicsHelper.generateGraphics(this._colorParticleSprite.graphics, colorGraphicsSet);

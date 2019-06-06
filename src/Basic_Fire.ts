@@ -181,7 +181,7 @@ class Basic_Fire
 		for (var i:number /*int*/ = 0; i < 500; i++)
 			graphicsSet.push(particle.graphics);
 
-		this._particleSprite = new Sprite(this._particleMaterial);
+		this._particleSprite = new Sprite(null, this._particleMaterial);
 		ParticleGraphicsHelper.generateGraphics(this._particleSprite.graphics, graphicsSet);
 	}
 
