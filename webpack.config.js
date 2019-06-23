@@ -85,7 +85,7 @@ module.exports = {
 			// "@awayjs/parsers": path.join(__dirname, "node_modules", "awayjs-full", "node_modules", "@awayjs/parsers", "dist")
 		},
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.webpack.js', '.web.js', '.js']
+        extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js']
     },
     module: {
         rules: [
