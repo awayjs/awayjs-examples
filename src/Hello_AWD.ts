@@ -19,12 +19,9 @@ class Hello_AWD
 
     constructor()
     {
-        //set renderableSorter to null for 2D
-        this._renderer = new DefaultRenderer(new BasicPartition(new DisplayObjectContainer()));
-        this._renderer.renderableSorter = null;
-
         //create View object
-        this._scene = new Scene(this._renderer);
+        this._scene = new Scene(new BasicPartition(new DisplayObjectContainer()));
+        this._scene.renderer.renderableSorter = null; //set renderableSorter to null for 2D
         this._scene.view.width = 500;
         this._scene.view.height = 500;
 

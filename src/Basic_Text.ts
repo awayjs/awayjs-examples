@@ -126,10 +126,11 @@ class Basic_Text
 		};
         Parsers.enableAllBundled()
 		//setup the view
-		this._scene = new Scene(new DefaultRenderer(new SceneGraphPartition(new DisplayObjectContainer())));
-		this._scene.renderer.view.projection.scale = 1;
-		this._scene.renderer.view.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+		this._scene = new Scene(new SceneGraphPartition(new DisplayObjectContainer()));
 		this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
+
+		this._scene.view.projection.scale = 1;
+		this._scene.view.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._scene.view.backgroundColor=0xcccccc;
 		//setup the camera
 		// this._scene.camera.z = -600;
@@ -196,7 +197,7 @@ class Basic_Text
 				textfield.selectable = true;
 				textfield.type = TextFieldType.INPUT;
 
-				for (var i:number = 0; i < 300; i++) {
+				for (var i:number = 0; i < 30; i++) {
 					var tf:TextField = textfield.clone();
 					tf.x = (Math.random() - 0.5)*1000*window.innerWidth/window.innerHeight;
 					tf.y = (Math.random() - 0.5)*1000;
@@ -216,7 +217,7 @@ class Basic_Text
 	private onKeyDown(event:KeyboardEvent = null):void
 	{
 		if(event.key=="Tab"){
-			MouseManager.getInstance(this._scene.renderer.pickGroup).focusNextTab();
+			this._scene.mouseManager.focusNextTab();
 		}
 	}
 

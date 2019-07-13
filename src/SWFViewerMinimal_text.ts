@@ -56,7 +56,7 @@ class BSWFViewerMinimal_text
 	{
 		
 		this._stage = new AVMAwayStage(window.innerWidth / 2, window.innerHeight / 2, 0xcccccc, 24, null);
-		MouseManager.getInstance(this._stage.scene.renderer.pickGroup)._stage=this._stage;
+		this._stage.scene.mouseManager._stage=this._stage;
         //this._getTimeCallback=null;
         this._stage.updateSize((window.innerWidth-550)/2, (window.innerHeight-450)/2, 550, 450);
 
@@ -78,7 +78,7 @@ class BSWFViewerMinimal_text
         var myThis=this;
         window.addEventListener("keydown", function(event){
             if(event.key=="Tab"){
-                MouseManager.getInstance(myThis._stage.scene.renderer.pickGroup).focusNextTab();
+                myThis._stage.scene.mouseManager.focusNextTab();
             }
         })
 	}

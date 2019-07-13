@@ -242,7 +242,7 @@ class Intermediate_MouseInteraction
 		this.enableSpriteMouseListeners(model);
 
 		this._root.addChild(model);
-		this._scene.renderer.pickGroup.getAbstraction(model).shapeFlag = true;
+		this._scene.renderer.renderGroup.pickGroup.getAbstraction(model).shapeFlag = true;
 	}
 
 	private createABunchOfObjects():void
@@ -311,7 +311,7 @@ class Intermediate_MouseInteraction
 		this._root.addChild(sprite);
 
 		// Randomly decide if the sprite has a triangle collider.
-		this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag = Boolean(Math.random() > 0.5);
+		this._scene.renderer.renderGroup.pickGroup.getAbstraction(sprite).shapeFlag = Boolean(Math.random() > 0.5);
 
 		// Apply material according to the random setup of the object.
 		this.choseSpriteMaterial(sprite);
@@ -327,7 +327,7 @@ class Intermediate_MouseInteraction
 			if (!sprite.hasEventListener(MouseEvent.MOUSE_MOVE)) {
 				sprite.material = this._grayMaterial;
 			} else {
-				sprite.material = this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag? this._redMaterial : this._blueMaterial;
+				sprite.material = this._scene.renderer.renderGroup.pickGroup.getAbstraction(sprite).shapeFlag? this._redMaterial : this._blueMaterial;
 			}
 		}
 	}

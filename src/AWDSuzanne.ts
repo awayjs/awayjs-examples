@@ -134,7 +134,7 @@ class AWDSuzanne
 						this._scene.root.addChild(clone);
 					}
 
-					this._scene.renderer.pickGroup.getAbstraction(sprite).shapeFlag = true;
+					this._scene.renderer.renderGroup.pickGroup.getAbstraction(sprite).shapeFlag = true;
 					sprite.partition = new BasicPartition(sprite);
 					sprite.transform.scaleTo(500, 500, 500);
 					sprite.addEventListener(MouseEvent.MOUSE_OVER, (event:MouseEvent) => this.onMouseOver(event));

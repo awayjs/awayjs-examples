@@ -46,7 +46,6 @@ class Graphics_Drawing_Interactive {
     private _scene: Scene;
     private _view: View;
     private _root: DisplayObjectContainer;
-    private _renderer: DefaultRenderer;
 
     private _isMouseDown: boolean = false;
 
@@ -86,16 +85,16 @@ class Graphics_Drawing_Interactive {
 	 * Initialise the engine
 	 */
     private initEngine(): void {
-        //create the view
+        //create the scene
         this._root = new DisplayObjectContainer();
-        this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
-        this._view = this._renderer.view;
+        this._scene = new Scene(new SceneGraphPartition(this._root));
+        this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
+
+        this._view = this._scene.view;
         this._view.backgroundColor = 0x777777;
-        MouseManager.getInstance(PickGroup.getInstance(this._view)).eventBubbling = true;
 
+        this._scene.mouseManager.eventBubbling = true;
 
-        this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._scene = new Scene(this._renderer);
         this._projection = new PerspectiveProjection();
         this._projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
         this._projection.fieldOfView = 30;
@@ -106,7 +105,7 @@ class Graphics_Drawing_Interactive {
         this._scene.camera = this._camera_perspective;
     }
 
-    /**
+/**
  * Initialise the engine
  */
     private initMaterials(): void {

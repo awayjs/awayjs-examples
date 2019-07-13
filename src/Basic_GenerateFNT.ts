@@ -130,10 +130,11 @@ class Basic_GenerateFNT
 		};
         Parsers.enableAllBundled()
 		//setup the view
-		this._scene = new Scene(new DefaultRenderer(new SceneGraphPartition(new DisplayObjectContainer())));
-		this._scene.renderer.view.projection.scale = 1;
-		this._scene.renderer.view.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
+		this._scene = new Scene(new SceneGraphPartition(new DisplayObjectContainer()));
 		this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
+		
+		this._scene.view.projection.scale = 1;
+		this._scene.view.projection.coordinateSystem = CoordinateSystem.RIGHT_HANDED;
 		this._scene.view.backgroundColor=0xcccccc;
 		
 		this._fntRenderer=new FNTGenerator(this._scene.renderer.stage);
@@ -258,7 +259,7 @@ class Basic_GenerateFNT
 	private onKeyDown(event:KeyboardEvent = null):void
 	{
 		if(event.key=="Tab"){
-			MouseManager.getInstance(this._scene.renderer.pickGroup).focusNextTab();
+			this._scene.mouseManager.focusNextTab();
 		}
 	}
 

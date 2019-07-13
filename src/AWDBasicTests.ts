@@ -226,8 +226,6 @@ class AWDBasicTests
         this._root = new DisplayObjectContainer();
         this._view = new View();
         this._view.backgroundColor = 0x000000;
-        this._renderer = new DefaultRenderer(new BasicPartition(this._root), this._view);
-        this._renderer.renderableSorter = null;//new RenderableSort2D();
 
         //create the camera
         this._isperspective=true;
@@ -241,7 +239,8 @@ class AWDBasicTests
         this._hoverControl = new HoverController(camera, null, 180, 0, 1000);
 
         //create the scene
-        this._scene = new Scene(this._renderer, camera);
+        this._scene = new Scene(new BasicPartition(this._root), camera, this._view);
+        this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
         this._stage_width = 550;
         this._stage_height = 400;
 

@@ -46,7 +46,6 @@ class Graphics_Drawing_Tracer {
     private _scene: Scene;
     private _view: View;
     private _root: DisplayObjectContainer;
-    private _renderer: DefaultRenderer;
 
     private _timer: RequestAnimationFrame;
 
@@ -84,15 +83,13 @@ class Graphics_Drawing_Tracer {
     private initEngine(): void {
         //create the view
         this._root = new DisplayObjectContainer();
-        this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
-        this._view = this._renderer.view;
+        this._scene = new Scene(new SceneGraphPartition(this._root));
+        this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
+
+        this._view = this._scene.view;
         this._view.backgroundColor = 0x777777;
 
-        MouseManager.getInstance(PickGroup.getInstance(this._renderer.view)).eventBubbling = true;
-
-
-        this._renderer.renderableSorter = null;//new RenderableSort2D();
-        this._scene = new Scene(this._renderer);
+        this._scene.mouseManager.eventBubbling = true;
 
         //console.log("this._scene.width", this._renderer.width);
 

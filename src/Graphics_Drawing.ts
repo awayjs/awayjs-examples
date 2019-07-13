@@ -50,7 +50,6 @@ class Graphics_Drawing
 	private _scene: Scene;
     private _view: View;
     private _root: DisplayObjectContainer;
-	private _renderer: DefaultRenderer;
 
 
 	private _timer: RequestAnimationFrame;
@@ -59,6 +58,7 @@ class Graphics_Drawing
 	private _projection: PerspectiveProjection;
 	private _camera_perspective: Camera;
 	private batmanLogo: Sprite;
+	private circle: Sprite;
 	private _animSprites:Sprite[] = [];
 	private _animSpeeds:number[] = [];
 
@@ -89,13 +89,12 @@ class Graphics_Drawing
 	private initEngine(): void
 	{
 		//create the view
-		this._root = new DisplayObjectContainer();
-		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
-		this._view = this._renderer.view;
+		this._root = new DisplayObjectContainer();		
+		this._scene = new Scene(new SceneGraphPartition(this._root));
+		this._scene.renderer.renderableSorter = null;
+
+		this._view = this._scene.view;
 		this._view.backgroundColor = 0x777777;
-		
-		this._renderer.renderableSorter = null;
-		this._scene = new Scene(this._renderer);
 
         // create and setup Camera and Projection
 
@@ -184,29 +183,84 @@ class Graphics_Drawing
         this.batmanLogo.graphics.endFill();
         
         // move the registration-point of the Sprite to be at the center of the shape that we have been drawing into it
-        var boxBounds:Box = PickGroup.getInstance(this._renderer.view).getAbstraction(this.batmanLogo).getBoxBounds(null, false, true);
+        var boxBounds:Box = PickGroup.getInstance(this._view).getAbstraction(this.batmanLogo).getBoxBounds(null, false, true);
         this.batmanLogo.registrationPoint = new Vector3D(boxBounds.width/2, boxBounds.height/2);
-        
+		
+		this.circle = new Sprite(null);
+		this.circle.graphics.beginFill(0x000000, 1);
+		this.circle.graphics.drawCircle(0, 0, 100);
+		this.circle.graphics.endFill();
         // clone the Sprite on a grid of 20 x 20
 
-		var numSpritesV:number = 20;
-		var numSpritesH:number = 20;
+		var numSpritesV:number = 5;
+		var numSpritesH:number = 5;
 
+		////issue for graphics masking
+		// for (var i:number = 0; i < numSpritesV; i++) {
+		// 	for (var j:number = 0; j < numSpritesH; j++) {
+		// 		var mask:Sprite = this.circle.clone();
+
+		// 		var sprite:Sprite = this.batmanLogo.clone();
+        //         //sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+                
+		// 		mask.transform.moveTo(i*50, j*25, 0);
+		// 		mask.transform.scaleTo(0.1, 0.1, 0.1);
+		// 		sprite.transform.colorTransform = new ColorTransform(i/numSpritesV, 1 - i/numSpritesV, 1-j/numSpritesV, 1);
+
+		// 		this._animSprites.push(sprite);
+		// 		this._animSpeeds.push(0);
+		// 		sprite.masks = [mask];
+		// 		mask.addChild(sprite);
+		// 		this._root.addChild(mask);
+		// 	}
+		// }
+
+
+		//issue for masks that are underneath sprite
 		for (var i:number = 0; i < numSpritesV; i++) {
 			for (var j:number = 0; j < numSpritesH; j++) {
+				var container:Sprite = new Sprite(null);
+
+				var mask:Sprite = this.circle.clone();
 
 				var sprite:Sprite = this.batmanLogo.clone();
-                sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+                //sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
                 
-				sprite.transform.moveTo(i*50, j*25, 0);
-				sprite.transform.scaleTo(0.1, 0.1, 0.1);
+				container.transform.moveTo(i*50, j*25, 0);
+				container.transform.scaleTo(0.1, 0.1, 0.1);
 				sprite.transform.colorTransform = new ColorTransform(i/numSpritesV, 1 - i/numSpritesV, 1-j/numSpritesV, 1);
 
 				this._animSprites.push(sprite);
 				this._animSpeeds.push(0);
-				this._root.addChild(sprite);
+				sprite.masks = [mask];
+				container.addChild(sprite);
+				container.addChild(mask);
+				this._root.addChild(container);
 			}
 		}
+
+		
+		// for (var i:number = 0; i < numSpritesV; i++) {
+		// 	for (var j:number = 0; j < numSpritesH; j++) {
+		// 		var container:Sprite = new Sprite(null);
+
+		// 		var mask:Sprite = this.circle.clone();
+
+		// 		var sprite:Sprite = this.batmanLogo.clone();
+        //         //sprite.alignmentMode = AlignmentMode.TRANSFORM_POINT;
+                
+		// 		container.transform.moveTo(i*50, j*25, 0);
+		// 		container.transform.scaleTo(0.1, 0.1, 0.1);
+		// 		sprite.transform.colorTransform = new ColorTransform(i/numSpritesV, 1 - i/numSpritesV, 1-j/numSpritesV, 1);
+
+		// 		this._animSprites.push(sprite);
+		// 		this._animSpeeds.push(0);
+		// 		sprite.masks = [mask];
+		// 		container.addChild(mask);
+		// 		container.addChild(sprite);
+		// 		this._root.addChild(container);
+		// 	}
+		// }
 	}
 
 	/**

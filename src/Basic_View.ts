@@ -42,13 +42,13 @@ import {ElementsType} from "@awayjs/graphics";
 import {BasicMaterial, ImageTexture2D} from "@awayjs/materials";
 import {Scene, Sprite, PrimitivePlanePrefab, DisplayObjectContainer} from "@awayjs/scene";
 import { View, BasicPartition } from "@awayjs/view";
-import { DefaultRenderer } from "@awayjs/renderer";
+import { RenderGroup, RendererType, RendererBase } from "@awayjs/renderer";
 
 class Basic_View
 {
 	//engine variables
 	private _view:View;
-	private _renderer:DefaultRenderer;
+	private _renderer:RendererBase;
 	private _root:DisplayObjectContainer;
 
 	//material objects
@@ -68,7 +68,7 @@ class Basic_View
 		//setup the view
 		this._view = new View();
 		this._root = new DisplayObjectContainer();
-		this._renderer = new DefaultRenderer(new BasicPartition(this._root), this._view);
+		this._renderer = RenderGroup.getInstance(this._view, RendererType.DEFAULT).getRenderer(new BasicPartition(this._root));
 		this._root.partition = this._renderer.partition;
 		
 		//setup the projection

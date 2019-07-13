@@ -55,9 +55,9 @@ class SWFViewerMinimal
 	{
 		
 		this._stage = new AVMAwayStage(window.innerWidth / 2, window.innerHeight / 2, 0xffffff, 24, null);
-		MouseManager.getInstance(this._stage.scene.renderer.pickGroup)._stage=this._stage;
+		this._stage.scene.mouseManager._stage=this._stage;
         //this._getTimeCallback=null;
-        this._stage.updateSize(0, 0, 550, 450);
+        this._stage.updateSize(0, 0, 200, 200);
 
 		// create the AVM1Context and the AVM1Scenegraphfactory
         var loaderInfo=new LoaderInfo();
@@ -77,7 +77,7 @@ class SWFViewerMinimal
         var myThis=this;
         window.addEventListener("keydown", function(event){
             if(event.key=="Tab"){
-                MouseManager.getInstance(myThis._stage.scene.renderer.pickGroup).focusNextTab();
+                myThis._stage.scene.mouseManager.focusNextTab();
             }
         })
 	}

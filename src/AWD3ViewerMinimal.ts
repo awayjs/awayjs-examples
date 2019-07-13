@@ -48,7 +48,6 @@ class AWD3ViewerMinimal
 	private _fps:number = 30;
 	private _root:DisplayObjectContainer;
 	private _scene:Scene;
-	private _renderer: DefaultRenderer;
 	private _rootTimeLine: MovieClip;
 	private _timer: RequestAnimationFrame;
 	private _time: number = 0;
@@ -92,17 +91,14 @@ class AWD3ViewerMinimal
 		//create the root container
 		this._root = new DisplayObjectContainer();
 
-		//create the renderer
-		this._renderer = new DefaultRenderer(new SceneGraphPartition(this._root));
-		this._renderer.renderableSorter = null;//new RenderableSort2D();
-
 		//create the scene
-		this._scene = new Scene(this._renderer);
+		this._scene = new Scene(new SceneGraphPartition(this._root));
+		this._scene.renderer.renderableSorter = null;//new RenderableSort2D();
 
 		//setup the view
-		this._renderer.view.backgroundColor = 0x000000;
-		//this._renderer.view.preserveFocalLength = true;
-		//this._renderer.view.focalLength = 1000;
+		this._scene.view.backgroundColor = 0x000000;
+		//this._scene.view.preserveFocalLength = true;
+		//this._scene.view.focalLength = 1000;
 		this._stage_width = 550;
 		this._stage_height = 400;
 
