@@ -249,7 +249,7 @@ class Intermediate_Globe
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-		document.onmousewheel= (event:WheelEvent) => this.onMouseWheel(event);
+		document.onwheel = (event:WheelEvent) => this.onWheel(event);
 
 
 		this.onResize();
@@ -478,9 +478,9 @@ class Intermediate_Globe
 	/**
 	 * Mouse wheel listener for navigation
 	 */
-	private onMouseWheel(event:WheelEvent)
+	private onWheel(event:WheelEvent)
 	{
-		this._cameraController.distance -= event.wheelDelta;
+		this._cameraController.distance -= event.deltaY/2;
 
 		if (this._cameraController.distance < 400)
 			this._cameraController.distance = 400;

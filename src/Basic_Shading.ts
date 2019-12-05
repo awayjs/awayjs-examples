@@ -206,7 +206,7 @@ class Basic_Shading
 		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
 		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
 		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
-		document.onmousewheel= (event:WheelEvent) => this.onMouseWheel(event);
+		document.onwheel = (event:WheelEvent) => this.onMouseWheel(event);
 
 		this.onResize();
 
@@ -338,7 +338,7 @@ class Basic_Shading
 	 */
 	private onMouseWheel(event:WheelEvent)
 	{
-		this._cameraController.distance -= event.wheelDelta;
+		this._cameraController.distance -= event.deltaY/2;
 
 		if (this._cameraController.distance < 100)
 			this._cameraController.distance = 100;

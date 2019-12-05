@@ -125,11 +125,11 @@ class Intermediate_AWDViewer
 	{
 		window.onresize  = (event) => this.onResize(event);
 
-		document.onmousedown = (event) => this.onMouseDown(event);
-		document.onmouseup = (event) => this.onMouseUp(event);
-		document.onmousemove = (event) => this.onMouseMove(event);
-		document.onmousewheel = (event) => this.onMouseWheel(event);
-		document.onkeydown = (event) => this.onKeyDown(event);
+		document.onmousedown = (event:MouseEvent) => this.onMouseDown(event);
+		document.onmouseup = (event:MouseEvent) => this.onMouseUp(event);
+		document.onmousemove = (event:MouseEvent) => this.onMouseMove(event);
+		document.onwheel = (event:WheelEvent) => this.onWheel(event);
+		document.onkeydown = (event:KeyboardEvent) => this.onKeyDown(event);
 
 		this.onResize();
 
@@ -240,9 +240,9 @@ class Intermediate_AWDViewer
 	/**
 	 * Mouse wheel listener for navigation
 	 */
-	private onMouseWheel(event):void
+	private onWheel(event:WheelEvent):void
 	{
-		this._cameraController.distance -= event.wheelDelta * 5;
+		this._cameraController.distance -= event.deltaY/2;
 
 		if (this._cameraController.distance < 100)
 			this._cameraController.distance = 100;
