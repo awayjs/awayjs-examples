@@ -181,7 +181,7 @@ class Basic_GenerateFNT
 		this._scene.render();
 	}
 
-	private showGeneratedBitmaps(bitmaps:BitmapImage2D[]){
+	private showGeneratedBitmaps(bitmaps:BitmapImage2D[], pixelRatio:number){
 
 		for (var b:number = 0; b < bitmaps.length; b++) {
 			var htmlWrapper:HTMLDivElement=document.createElement("div");
@@ -190,6 +190,8 @@ class Basic_GenerateFNT
 			//htmlImage.style.top = "0px";
 			//htmlImage.style.right = "0px";
 			htmlImage.style.transform = "scaleY(-1)";
+			htmlImage.style.width = bitmaps[b].width/pixelRatio + "px";
+			htmlImage.style.height = bitmaps[b].height/pixelRatio + "px";
 			htmlWrapper.appendChild(htmlImage);
 			document.body.appendChild(htmlWrapper);
 			for(var m:number=0;m<bitmaps[b].mipLevels.length;m++){
@@ -199,6 +201,8 @@ class Basic_GenerateFNT
 				//htmlImage.style.top = "0px";
 				//htmlImage.style.right = "0px";
 				htmlImage2.style.transform = "scaleY(-1)";
+				htmlImage2.style.width = bitmaps[b].mipLevels[m].width/pixelRatio + "px";
+				htmlImage2.style.height = bitmaps[b].mipLevels[m].height/pixelRatio + "px";
 				htmlWrapper.appendChild(htmlImage2);
 			}
 		}
@@ -217,8 +221,8 @@ class Basic_GenerateFNT
 			console.log(asset.name, event.url);
 
             if(asset.isAsset(Font)){
-				var bitmaps:BitmapImage2D[] = this._fntRenderer.generate(<Font>asset, 2048, 64, 5);
-				//this.showGeneratedBitmaps(bitmaps);
+				var bitmaps:BitmapImage2D[] = this._fntRenderer.generate(<Font>asset, 2048, 128, 5);
+				//this.showGeneratedBitmaps(bitmaps, this._scene.view.stage.context.pixelRatio);
 				
 				var textFormat:TextFormat = new TextFormat();
 				textFormat.font = <Font>asset;
