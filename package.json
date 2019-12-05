@@ -53,14 +53,14 @@
   "dependencies": {
     "@awayjs/core": "^0.8.0",
     "@awayjs/graphics": "^0.4.0",
+    "@awayjs/materials": "^0.5.0",
+    "@awayjs/parsers": "^0.7.0",
+    "@awayjs/player": "^0.6.0",
+    "@awayjs/renderer": "^0.10.0",
     "@awayjs/scene": "^0.12.0",
     "@awayjs/stage": "^0.10.0",
-    "@awayjs/view": "^0.5.0",
-    "@awayjs/renderer": "^0.10.0",
-    "@awayjs/materials": "^0.5.0",
-    "@awayjs/player": "^0.6.0",
-    "@awayjs/parsers": "^0.7.0",
-    "@awayjs/swf-viewer": "^0.3.0"
+    "@awayjs/swf-viewer": "^0.3.0",
+    "@awayjs/view": "^0.5.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "3.2.3",
@@ -71,7 +71,7 @@
     "rimraf": "^2.5.2",
     "source-map-loader": "^0.2.1",
     "tslib": "^1.2.0",
-    "typescript": "2.1.4",
+    "typescript": "^3.7.3",
     "webpack": "3.5.5",
     "webpack-dev-server": "2.7.1"
   }
