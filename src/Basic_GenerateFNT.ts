@@ -185,24 +185,40 @@ class Basic_GenerateFNT
 
 		for (var b:number = 0; b < bitmaps.length; b++) {
 			var htmlWrapper:HTMLDivElement=document.createElement("div");
-			var htmlImage=bitmaps[b].getCanvas();
+			var bitmap:BitmapImage2D = bitmaps[b];
+			var htmlImage = document.createElement("canvas");
+			htmlImage.width = bitmap.width;
+			htmlImage.height = bitmap.height;
 			//htmlImage.style.position = "absolute";
 			//htmlImage.style.top = "0px";
 			//htmlImage.style.right = "0px";
 			htmlImage.style.transform = "scaleY(-1)";
-			htmlImage.style.width = bitmaps[b].width/pixelRatio + "px";
-			htmlImage.style.height = bitmaps[b].height/pixelRatio + "px";
+			htmlImage.style.width = bitmap.width/pixelRatio + "px";
+			htmlImage.style.height = bitmap.height/pixelRatio + "px";
+
+			var context:CanvasRenderingContext2D = htmlImage.getContext("2d");
+			var imageData:ImageData = context.getImageData(0, 0, bitmap.width, bitmap.height);
+			imageData.data.set(bitmap.data);
+			context.putImageData(imageData, 0, 0);
 			htmlWrapper.appendChild(htmlImage);
 			document.body.appendChild(htmlWrapper);
-			for(var m:number=0;m<bitmaps[b].mipLevels.length;m++){
+			for(var m:number=0;m<bitmap.mipLevels.length;m++){
 				
-				var htmlImage2=bitmaps[b].mipLevels[m].getCanvas();
+				var bitmap2:BitmapImage2D = bitmap.mipLevels[m];
+				var htmlImage2 = document.createElement("canvas");
+				htmlImage2.width = bitmap2.width;
+				htmlImage2.height = bitmap2.height;
 				//htmlImage.style.position = "absolute";
 				//htmlImage.style.top = "0px";
 				//htmlImage.style.right = "0px";
 				htmlImage2.style.transform = "scaleY(-1)";
-				htmlImage2.style.width = bitmaps[b].mipLevels[m].width/pixelRatio + "px";
-				htmlImage2.style.height = bitmaps[b].mipLevels[m].height/pixelRatio + "px";
+				htmlImage2.style.width = bitmap.mipLevels[m].width/pixelRatio + "px";
+				htmlImage2.style.height = bitmap.mipLevels[m].height/pixelRatio + "px";
+
+				var context2:CanvasRenderingContext2D = htmlImage2.getContext("2d");
+				var imageData2:ImageData = context2.getImageData(0, 0, bitmap2.width, bitmap2.height);
+				imageData2.data.set(bitmap2.data);
+				context2.putImageData(imageData2, 0, 0);	
 				htmlWrapper.appendChild(htmlImage2);
 			}
 		}
