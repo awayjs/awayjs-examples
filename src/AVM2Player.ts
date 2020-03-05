@@ -1,7 +1,7 @@
-import {Player} from "@awayjs/swf-viewer"
+import {Player} from "@awayfl/awayfl-player"
 
 
 window.onload = function () {
     var player=new Player();
-    player.playSWF(null, "./assets/SWF/BasicAS3Tests_FP30.swf");
+    player.playSWF(null, "./assets/SWF/na7.swf");
 };

@@ -38,7 +38,8 @@ import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEve
 
 import {MovieClip, MouseManager} from "@awayjs/scene";
 
-import {SWFParser, AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayjs/swf-viewer"
+import {SWFParser} from "@awayfl/swf-loader";
+import { AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayfl/avm1";
 
 
 class SWFViewerMinimal
@@ -90,7 +91,7 @@ class SWFViewerMinimal
 		if (asset.isAsset(MovieClip)) {
 			if (asset.name == "scene") {
 				this._stage.getLayer(0).addChild(<MovieClip>asset);
-				(<AVM1MovieClip> (<MovieClip>asset).adapter).doInitEvents();
+				(<AVM1MovieClip> (<MovieClip>asset).adapter).initAdapter();
 				//console.log("loaded root mc for lesson in awayjs", event);
 			}
 		}

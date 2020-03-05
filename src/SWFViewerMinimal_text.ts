@@ -38,7 +38,8 @@ import {AssetEvent, AssetLibrary, URLLoaderEvent, IAsset, LoaderEvent, ParserEve
 
 import {MovieClip, Sprite, Font, TextField, TextFormat, TextFormatAlign, TextFieldAutoSize, MouseManager} from "@awayjs/scene";
 
-import {SWFParser, AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayjs/swf-viewer"
+import {SWFParser} from "@awayfl/swf-loader";
+import { AVM1MovieClip, LoaderInfo, AVM1SceneGraphFactory, AVM1ContextImpl, SecurityDomain, AVM1Globals, AVMAwayStage} from "@awayfl/avm1";
 
 import { FontParser} from "@awayjs/parsers";
 
@@ -91,7 +92,7 @@ class BSWFViewerMinimal_text
 		if (asset.isAsset(MovieClip)) {
 			if (asset.name == "scene") {
 				this._stage.getLayer(0).addChild(<MovieClip>asset);
-                (<AVM1MovieClip> (<MovieClip>asset).adapter).doInitEvents();
+                (<AVM1MovieClip> (<MovieClip>asset).adapter).initAdapter();
                 (<MovieClip>asset).alpha=0.5;
 				//console.log("loaded root mc for lesson in awayjs", event);
 			}
