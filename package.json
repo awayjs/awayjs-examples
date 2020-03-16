@@ -77,6 +77,6 @@
     "tslib": "^1.2.0",
     "typescript": "^3.7.3",
     "webpack": "3.5.5",
-    "webpack-dev-server": "2.7.1"
+    "webpack-dev-server": "3.1.11"
   }
 }
