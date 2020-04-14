@@ -18,7 +18,9 @@ for (var i = 0; i < examples.length; i++) {
 }
 
 //add awayjs modules to entry object
-entry['awayjs'] = ['@awayjs/core', '@awayjs/stage', '@awayjs/view', '@awayjs/renderer', '@awayjs/graphics', '@awayjs/materials', '@awayjs/scene', '@awayjs/player', '@awayjs/parsers', '@awayjs/swf-viewer'];
+entry['awayjs'] = ['@awayjs/core', '@awayjs/stage', '@awayjs/view', '@awayjs/renderer', '@awayjs/graphics', 
+'@awayjs/materials', '@awayjs/scene', '@awayjs/player', '@awayjs/parsers', '@awayfl/swf-loader',
+'@awayfl/avm1', '@awayfl/avm2', '@awayfl/playerglobal', '@awayfl/awayfl-player'];
 
 var plugins = [
     // new webpack.DllReferencePlugin({
