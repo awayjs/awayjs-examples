@@ -64,66 +64,7 @@ class Basic_Text
 	constructor()
 	{
         
-		//todo: better implement this in graphics (this function provides the drawing api with materials for a color / alpha)
-		Graphics.get_material_for_color=function(color:number, alpha:number=1):any{
-			if(color==0){
-				color=0x000001;
-			}
-			//color=0xFF8100;
-			//console.log("get color");
-			//alpha=0.5;
-			var texObj:any={};
 
-			if(Basic_Text._useTextureAtlasForColors){
-				texObj=TextureAtlas.getTextureForColor(color, alpha);
-				if(Basic_Text._colorMaterials[texObj.bitmap.id]){
-					texObj.material=Basic_Text._colorMaterials[texObj.bitmap.id];
-					return texObj;
-				}
-				var newmat:MethodMaterial=new MethodMaterial(texObj.bitmap);
-				newmat.alphaBlending=true;
-				newmat.useColorTransform = true;
-				newmat.bothSides = true;
-				Basic_Text._colorMaterials[texObj.bitmap.id]=newmat;
-				texObj.material=newmat;
-				return texObj;
-			}
-
-			var colorstr:string=color+"_"+Math.round(alpha*100).toString();
-			if(Basic_Text._colorMaterials[colorstr]){
-				texObj.material=Basic_Text._colorMaterials[colorstr];
-				return texObj;
-			}
-			var newmat:MethodMaterial=new MethodMaterial(color, alpha);
-			newmat.alphaBlending=true;
-			newmat.useColorTransform = true;
-			newmat.bothSides = true;
-			texObj.material=newmat;
-			Basic_Text._colorMaterials[colorstr]=newmat;
-			return texObj;
-		};
-		Graphics.get_material_for_gradient=function(gradient:GradientFillStyle):any{
-			var texObj=TextureAtlas.getTextureForGradient(gradient);
-			/*if(alpha==0){
-			 alpha=1;
-			 }*/
-			//alpha=0.5;
-			/*if(color==0xffffff){
-			 color=0xcccccc;
-			 }*/
-			var lookupId:string=texObj.bitmap.id+gradient.type;
-			if(Basic_Text._textureMaterials[lookupId]){
-				texObj.material=Basic_Text._textureMaterials[lookupId];
-				return texObj;
-			}
-			var newmat:MethodMaterial=new MethodMaterial(texObj.bitmap);
-			newmat.useColorTransform = true;
-			newmat.alphaBlending=true;
-			newmat.bothSides = true;
-			Basic_Text._textureMaterials[lookupId]=newmat;
-			texObj.material=newmat;
-			return texObj;
-		};
         Parsers.enableAllBundled()
 		//setup the view
 		this._scene = new Scene(new SceneGraphPartition(new DisplayObjectContainer()));

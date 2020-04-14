@@ -102,49 +102,7 @@ class Graphics_Drawing_Stars {
  * Initialise the engine
  */
     private initMaterials(): void {
-        Graphics.get_material_for_color = function (color: number, alpha: number = 1): any {
-            if (color == 0) {
-                color = 0x000001;
-            }
-            //color=0xFF8100;
-            //console.log("get color");
-            //alpha=0.5;
-            var texObj: any = TextureAtlas.getTextureForColor(color, alpha);
-            if (Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id]) {
-                texObj.material = Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id];
-                return texObj;
-            }
 
-            var newmat: MethodMaterial = new MethodMaterial(texObj.bitmap);
-            newmat.alphaBlending = true;
-            newmat.useColorTransform = true;
-            newmat.bothSides = true;
-            Graphics_Drawing_Stars._colorMaterials[texObj.bitmap.id] = newmat;
-            texObj.material = newmat;
-            return texObj;
-        };
-        Graphics.get_material_for_gradient = function (gradient: GradientFillStyle): any {
-            var texObj = TextureAtlas.getTextureForGradient(gradient);
-			/*if(alpha==0){
-			 alpha=1;
-			 }*/
-            //alpha=0.5;
-			/*if(color==0xffffff){
-			 color=0xcccccc;
-			 }*/
-            var lookupId: string = texObj.bitmap.id + gradient.type;
-            if (Graphics_Drawing_Stars._textureMaterials[lookupId]) {
-                texObj.material = Graphics_Drawing_Stars._textureMaterials[lookupId];
-                return texObj;
-            }
-            var newmat: MethodMaterial = new MethodMaterial(texObj.bitmap);
-            newmat.useColorTransform = true;
-            newmat.alphaBlending = true;
-            newmat.bothSides = true;
-            Graphics_Drawing_Stars._textureMaterials[lookupId] = newmat;
-            texObj.material = newmat;
-            return texObj;
-        };
     }
 
 	/**
