@@ -15,12 +15,19 @@ var optimization = {
     splitChunks: {
         chunks: 'all',
         cacheGroups: {
+            vendors: false,
+            default: false,
             awayjs: {
                 name: 'awayjs',
                 filename: 'js/awayjs.bundle.js',
                 chunks: 'all',
-                test: /[\\/]node_modules[\\/]/,
-                priority: 1
+                test: /[\\/]@awayjs[\\/]/,
+            },
+            awayfl: {
+                name: 'awayfl',
+                filename: 'js/awayfl.bundle.js',
+                chunks: 'all',
+                test: /[\\/]@awayfl[\\/]/,
             }
         }
     }
@@ -33,7 +40,6 @@ for (var i = 0; i < examples.length; i++) {
 }
 
 //add awayjs modules to entry object
-
 
 var plugins = [
     // new webpack.DllReferencePlugin({
@@ -56,7 +62,7 @@ for (var i = 0; i < examples.length; i++) {
     var name = examples[i].split('.')[0];
     plugins.push(new HtmlWebPackPlugin({
         title: name,
-        chunks:[name, 'awayjs'],
+        chunks:[name],
         template: 'html-template/example.html',
         filename: name + '.html',
         commonChunk: 'awayjs'
@@ -79,6 +85,10 @@ module.exports = {
     entry: entry,
     optimization: optimization,
 
+    node: {
+        global: false,
+        Buffer: false,
+    },
     mode: 'development',
     devtool: 'source-map',
     //devtool: 'cheap-module-eval-source-map',//use this option for recompiling libs
