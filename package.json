@@ -65,19 +65,20 @@
     "@awayjs/scene": "^0.13.0",
     "@awayjs/stage": "^0.11.0",
     "@awayjs/view": "^0.6.0",
-    "opentype.js": "^0.11.0"
+    "opentype.js": "^0.11.0",
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "3.2.3",
-    "babel-core": "^6.18.2",
-    "compression-webpack-plugin": "^0.3.1",
-    "copy-webpack-plugin": "^1.1.1",
-    "html-webpack-plugin": "^2.15.0",
-    "rimraf": "^2.5.2",
+    "babel-core": "^6.26.3",
+    "compression-webpack-plugin": "^3.1.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "html-webpack-plugin": "^4.2.0",
+    "rimraf": "^3.0.2",
     "source-map-loader": "^0.2.1",
-    "tslib": "^1.2.0",
-    "typescript": "^3.7.3",
-    "webpack": "3.5.5",
-    "webpack-dev-server": "2.7.1"
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   }
 }

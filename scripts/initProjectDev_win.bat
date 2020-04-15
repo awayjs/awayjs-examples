@@ -24,6 +24,12 @@ call yarn link @awayjs/materials
 ECHO [32m link "@awayjs/scene" module[0m
 call yarn link @awayjs/scene
 
+ECHO [32m link "@awayjs/parsers" module[0m
+call yarn link @awayjs/parsers
+
+ECHO [32m link "@awayjs/player" module[0m
+call yarn link @awayjs/player
+
 ECHO [32m link "@awayfl/swf-loader" module[0m
 call yarn link @awayfl/swf-loader
 
