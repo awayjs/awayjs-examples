@@ -50,19 +50,19 @@ class ObjLoaderMasterChief
 		var session:Loader;
 		
 		session = AssetLibrary.getLoader();
-		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/Halo_3_SPARTAN4.obj'));
 
 		session = AssetLibrary.getLoader();
-		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/terrain.obj'));
 
 		session = AssetLibrary.getLoader();
-		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/masterchief_base.png'));
 
 		session = AssetLibrary.getLoader();
-		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest('assets/stone_tx.jpg'));
 
 		window.onresize = (event:UIEvent) => this.onResize();
@@ -85,7 +85,7 @@ class ObjLoaderMasterChief
 		var l:number = loader.baseDependency.assets.length;
 
 		console.log( '------------------------------------------------------------------------------');
-		console.log( 'away.events.LoaderEvent.LOAD_COMPLETE' , event , l , loader );
+		console.log( 'away.events.LoaderEvent.LOADER_COMPLETE' , event , l , loader );
 		console.log( '------------------------------------------------------------------------------');
 
 		var loader:Loader = <Loader> event.target;

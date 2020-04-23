@@ -135,7 +135,7 @@ class Basic_SkyBox
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();

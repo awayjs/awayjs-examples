@@ -92,7 +92,7 @@ class Basic_Text
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		AssetLibrary.load(new URLRequest("assets/georgia.ttf"),null, null, new FontParser(true) );
 	}

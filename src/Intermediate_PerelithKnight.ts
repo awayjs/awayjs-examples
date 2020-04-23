@@ -133,7 +133,7 @@ class Intermediate_PerelithKnight
 
 		//setup listeners on AssetLibrary
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//load perilith knight textures
 		AssetLibrary.load(new URLRequest("assets/pknight1.png"));

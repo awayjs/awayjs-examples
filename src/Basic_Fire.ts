@@ -236,7 +236,7 @@ class Basic_Fire
 		this._timer = new RequestAnimationFrame(this.onEnterFrame, this);
 		this._timer.start();
 
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 
 		//plane textures
 		AssetLibrary.load(new URLRequest("assets/floor_diffuse.jpg"));

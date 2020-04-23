@@ -485,7 +485,7 @@ class Advanced_MultiPassSponzaDemo
 		var loader:LoaderContainer = new LoaderContainer(false);
 
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+		loader.addEventListener(LoaderEvent.LOADER_COMPLETE, this.onResourceCompleteDelegate);
 		loader.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
 		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
@@ -513,7 +513,7 @@ class Advanced_MultiPassSponzaDemo
 
 		var loader:LoaderContainer = event.target;
 		loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		loader.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+		loader.removeEventListener(LoaderEvent.LOADER_COMPLETE, this.onResourceCompleteDelegate);
 
 		//reassign materials
 		var sprite:Sprite;
@@ -685,7 +685,7 @@ class Advanced_MultiPassSponzaDemo
 
 		//load skybox and flame texture
 
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//setup the url map for textures in the cubemap file
 		var loaderContext:LoaderContext = new LoaderContext();

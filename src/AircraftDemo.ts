@@ -65,7 +65,7 @@ class AircraftDemo
 	private loadAsset(path:string)
 	{
 		var session:Loader = AssetLibrary.getLoader();
-		session.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
+		session.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
 		session.load(new URLRequest(path));
 	}
 	

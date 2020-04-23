@@ -40,7 +40,7 @@ class Hello_AWD
 
         //create Loader container and load awd file
         var loader:LoaderContainer = new LoaderContainer();
-        loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
+        loader.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onLoadComplete(event));
         loader.load(new URLRequest("assets/AWD3/MagnifyGlass.awd"), null, null, new AWDParser(new AS2SceneGraphFactory(this._scene)));
 
         //start RAF timer

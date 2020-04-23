@@ -131,7 +131,7 @@ class AWD3ViewerMinimal
 		//kickoff asset loading
 		var loader:LoaderContainer = new LoaderContainer();
 		loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
-		loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
+		loader.addEventListener(LoaderEvent.LOADER_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
 		loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
 		//loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
 

@@ -286,7 +286,7 @@ class Intermediate_MonsterHeadShading
 
 		//setup parser
 		AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, this.onResourceCompleteDelegate);
 		AssetLibrary.loadData(urlLoader.data, new LoaderContext(false), null, new AWDParser());
 
 		urlLoader.removeEventListener(URLLoaderEvent.LOAD_PROGRESS, this.loadProgressDelegate);
@@ -342,7 +342,7 @@ class Intermediate_MonsterHeadShading
 	private onResourceComplete(e:LoaderEvent)
 	{
 		AssetLibrary.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetCompleteDelegate);
-		AssetLibrary.removeEventListener(LoaderEvent.LOAD_COMPLETE, this.onResourceCompleteDelegate);
+		AssetLibrary.removeEventListener(LoaderEvent.LOADER_COMPLETE, this.onResourceCompleteDelegate);
 
 		var material:MethodMaterial = new MethodMaterial(this._textureDictionary["monsterhead_diffuse.jpg"]);
 		material.shadowMethod = new ShadowSoftMethod(this._directionalLight , 10 , 5 );
@@ -380,7 +380,7 @@ class Intermediate_MonsterHeadShading
 		for (var i:number = 0; i < len; i++)
 			this._headModel.graphics.getShapeAt(i).material = this._headMaterial;
 
-		AssetLibrary.addEventListener(LoaderEvent.LOAD_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
+		AssetLibrary.addEventListener(LoaderEvent.LOADER_COMPLETE, (event:LoaderEvent) => this.onExtraResourceComplete(event));
 
 		//diffuse gradient texture
 		AssetLibrary.load(new URLRequest("assets/diffuseGradient.jpg"));

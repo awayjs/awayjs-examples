@@ -259,7 +259,7 @@ class AWDBasicTests
     {
         //kickoff asset loading
         this._loader.addEventListener(AssetEvent.ASSET_COMPLETE, (event: AssetEvent) => this.onAssetComplete(event));
-        this._loader.addEventListener(LoaderEvent.LOAD_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
+        this._loader.addEventListener(LoaderEvent.LOADER_COMPLETE, (event: LoaderEvent) => this.onRessourceComplete(event));
         this._loader.addEventListener(ParserEvent.PARSE_ERROR, (event: ParserEvent) => this.onParseError(event));
         //loader.addEventListener(IOErrorEvent.IO_ERROR, (event: ParserEvent) => this.onParseError(event));
         //this.loadNext();
