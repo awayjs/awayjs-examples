@@ -103,7 +103,7 @@ module.exports = {
     module: {
         rules: [
             // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-            { test: /\.ts(x?)$/, exclude: /node_modules/, loader: require.resolve('ts-loader')},
+            { test: /\.ts(x?)$/, exclude: /node_modules/, loader: require.resolve('ts-loader'), options: { experimentalWatchApi: true}},
 
             // all files with a `.js` or `.jsx` extension will be handled by `source-map-loader`
             { test: /\.js(x?)$/, loader: require.resolve('source-map-loader') }
