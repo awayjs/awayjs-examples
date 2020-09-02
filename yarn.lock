@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
+"@awayfl/avm1@^0.1.0":
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm1/-/avm1-0.1.23.tgz#3a0c207ed3762ac99466120a45e9b8b1dd444043"
+  dependencies:
+    "@types/random-seed" "^0.3.3"
+    big.js "^5.1.2"
+    random-seed "^0.3.0"
+
+"@awayfl/avm2@^0.1.0":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm2/-/avm2-0.1.8.tgz#4a138082512b6670d3a77aff81d82863956973fd"
+
+"@awayfl/awayfl-player@^0.1.0":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@awayfl/awayfl-player/-/awayfl-player-0.1.14.tgz#217c6fafd138dea8235c2dbeea37037e1ca9261b"
+
+"@awayfl/playerglobal@^0.1.0":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@awayfl/playerglobal/-/playerglobal-0.1.12.tgz#447b12545790018e1be9fe99567a030abe049695"
+
+"@awayfl/swf-loader@^0.3.0":
+  version "0.3.143"
+  resolved "https://registry.yarnpkg.com/@awayfl/swf-loader/-/swf-loader-0.3.143.tgz#fb4a14c68a46bbb6ebea7df455e872d402429fe0"
+
 "@awayjs/core@^0.8.0":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@awayjs/core/-/core-0.8.10.tgz#db1058634dafb9d2f7e639e4c5dd41db7339bddf"
@@ -55,14 +79,6 @@
 "@awayjs/stage@^0.10.0":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@awayjs/stage/-/stage-0.10.15.tgz#4f606bf3f518e2183ac5ab76e840a2b7396e0c66"
-
-"@awayjs/swf-viewer@^0.3.0":
-  version "0.3.103"
-  resolved "https://registry.yarnpkg.com/@awayjs/swf-viewer/-/swf-viewer-0.3.103.tgz#e5971ddc0176e2264baeb2bb0e164804755561c7"
-  dependencies:
-    "@types/random-seed" "^0.3.3"
-    big.js "^5.1.2"
-    random-seed "^0.3.0"
 
 "@awayjs/view@^0.5.0":
   version "0.5.11"
@@ -408,8 +424,8 @@ binary-extensions@^1.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.13.1.tgz#598afe54755b2868a5330d2aff9d4ebb53209b65"
 
 bl@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/bl/-/bl-3.0.0.tgz#3611ec00579fd18561754360b21e9f784500ff88"
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/bl/-/bl-3.0.1.tgz#1cbb439299609e419b5a74d7fce2f8b37d8e5c6f"
   dependencies:
     readable-stream "^3.0.1"
 
@@ -3133,8 +3149,8 @@ readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.6, readable
     util-deprecate "~1.0.1"
 
 readable-stream@^3.0.1, readable-stream@^3.1.1:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-3.4.0.tgz#a51c26754658e0a3c21dbf59163bd45ba6f447fc"
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-3.6.0.tgz#337bbda3adc0706bd3e024426a286d4b4b2c9198"
   dependencies:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
@@ -3259,9 +3275,13 @@ safe-buffer@5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
-safe-buffer@>=5.1.0, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.2.0:
+safe-buffer@>=5.1.0, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.0.tgz#b74daec49b1148f88c64b68d49b1e815c1f2f519"
+
+safe-buffer@~5.2.0:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
 
 safe-regex@^1.1.0:
   version "1.1.0"
