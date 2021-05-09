@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
+"@awayfl/avm1@^0.1.0":
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm1/-/avm1-0.1.24.tgz#0ab212a2fb85ef8264538cfbfcd5267bd1b786bc"
+  dependencies:
+    "@types/random-seed" "^0.3.3"
+    big.js "^5.1.2"
+    random-seed "^0.3.0"
+
+"@awayfl/avm2@^0.1.0":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm2/-/avm2-0.1.8.tgz#4a138082512b6670d3a77aff81d82863956973fd"
+
+"@awayfl/awayfl-player@^0.1.0":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@awayfl/awayfl-player/-/awayfl-player-0.1.14.tgz#217c6fafd138dea8235c2dbeea37037e1ca9261b"
+
+"@awayfl/playerglobal@^0.1.0":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@awayfl/playerglobal/-/playerglobal-0.1.12.tgz#447b12545790018e1be9fe99567a030abe049695"
+
+"@awayfl/swf-loader@^0.3.0":
+  version "0.3.143"
+  resolved "https://registry.yarnpkg.com/@awayfl/swf-loader/-/swf-loader-0.3.143.tgz#fb4a14c68a46bbb6ebea7df455e872d402429fe0"
+
 "@awayjs/core@^0.8.0":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@awayjs/core/-/core-0.8.10.tgz#db1058634dafb9d2f7e639e4c5dd41db7339bddf"
@@ -55,14 +79,6 @@
 "@awayjs/stage@^0.10.0":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@awayjs/stage/-/stage-0.10.15.tgz#4f606bf3f518e2183ac5ab76e840a2b7396e0c66"
-
-"@awayjs/swf-viewer@^0.3.0":
-  version "0.3.103"
-  resolved "https://registry.yarnpkg.com/@awayjs/swf-viewer/-/swf-viewer-0.3.103.tgz#e5971ddc0176e2264baeb2bb0e164804755561c7"
-  dependencies:
-    "@types/random-seed" "^0.3.3"
-    big.js "^5.1.2"
-    random-seed "^0.3.0"
 
 "@awayjs/view@^0.5.0":
   version "0.5.11"
@@ -3038,8 +3054,8 @@ querystring@0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
 querystringify@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.1.1.tgz#60e5a5fd64a7f8bfa4d2ab2ed6fdf4c85bad154e"
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
 
 random-seed@^0.3.0:
   version "0.3.0"
@@ -3839,8 +3855,8 @@ urix@^0.1.0:
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
 
 url-parse@^1.1.8, url-parse@^1.4.3:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.7.tgz#a8a83535e8c00a316e403a5db4ac1b9b853ae278"
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.1.tgz#d5fa9890af8a5e1f274a2c98376510f6425f6e3b"
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
