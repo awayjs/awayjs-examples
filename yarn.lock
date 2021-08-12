@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
+"@awayfl/avm1@^0.1.0":
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm1/-/avm1-0.1.24.tgz#0ab212a2fb85ef8264538cfbfcd5267bd1b786bc"
+  dependencies:
+    "@types/random-seed" "^0.3.3"
+    big.js "^5.1.2"
+    random-seed "^0.3.0"
+
+"@awayfl/avm2@^0.1.0":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@awayfl/avm2/-/avm2-0.1.8.tgz#4a138082512b6670d3a77aff81d82863956973fd"
+
+"@awayfl/awayfl-player@^0.1.0":
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/@awayfl/awayfl-player/-/awayfl-player-0.1.14.tgz#217c6fafd138dea8235c2dbeea37037e1ca9261b"
+
+"@awayfl/playerglobal@^0.1.0":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@awayfl/playerglobal/-/playerglobal-0.1.12.tgz#447b12545790018e1be9fe99567a030abe049695"
+
+"@awayfl/swf-loader@^0.3.0":
+  version "0.3.143"
+  resolved "https://registry.yarnpkg.com/@awayfl/swf-loader/-/swf-loader-0.3.143.tgz#fb4a14c68a46bbb6ebea7df455e872d402429fe0"
+
 "@awayjs/core@^0.8.0":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@awayjs/core/-/core-0.8.10.tgz#db1058634dafb9d2f7e639e4c5dd41db7339bddf"
@@ -55,14 +79,6 @@
 "@awayjs/stage@^0.10.0":
   version "0.10.15"
   resolved "https://registry.yarnpkg.com/@awayjs/stage/-/stage-0.10.15.tgz#4f606bf3f518e2183ac5ab76e840a2b7396e0c66"
-
-"@awayjs/swf-viewer@^0.3.0":
-  version "0.3.103"
-  resolved "https://registry.yarnpkg.com/@awayjs/swf-viewer/-/swf-viewer-0.3.103.tgz#e5971ddc0176e2264baeb2bb0e164804755561c7"
-  dependencies:
-    "@types/random-seed" "^0.3.3"
-    big.js "^5.1.2"
-    random-seed "^0.3.0"
 
 "@awayjs/view@^0.5.0":
   version "0.5.11"
@@ -2880,8 +2896,8 @@ path-key@^2.0.0:
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-2.0.1.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
 
 path-to-regexp@0.1.7:
   version "0.1.7"
